@@ -51,6 +51,7 @@
 #include "TTree.h"
 // miniAOD
 //#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
 using namespace reco;
@@ -67,21 +68,23 @@ using namespace std;
 
 TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 
-  pfCandidatesTag_		= iConfig.getParameter<InputTag>	("pfCandidatesTag");
-  vertexInputTag_               = iConfig.getParameter<InputTag>        ("vertexInputTag");
-  
+  pfCandidatesTag_		= iConfig.getParameter<InputTag>("pfCandidatesTag");
+  vertexInputTag_               = iConfig.getParameter<InputTag>("vertexInputTag");
+  MetInputTag_      = iConfig.getParameter<InputTag>("METTag");
   dR_               = iConfig.getParameter<double>          ("dR_ConeSize");       // dR value used to define the isolation cone                (default 0.3 )
   dzcut_            = iConfig.getParameter<double>          ("dz_CutValue");       // cut value for dz(trk,vtx) for track to include in iso sum (default 0.05)
   minPt_            = iConfig.getParameter<double>          ("minPt_PFCandidate"); // store PFCandidates with pt above this cut                 (default 0   )
   isoCut_           = iConfig.getParameter<double>          ("isoCut"); // isolation cut value
   doTrkIsoVeto_     = iConfig.getParameter<bool>            ("doTrkIsoVeto");
-
+  mTCut_=   iConfig.getParameter<double>   ("mTCut");
+  maxEta_= iConfig.getParameter<double>("etaCut");
  // produces<std::vector<reco::PFCandidate> >(""); 
   produces<std::vector<pat::PackedCandidate> >(""); 
   produces<vector<float> >("pfcandstrkiso").setBranchAlias("pfcands_trkiso");
   produces<vector<float> >("pfcandsdzpv"  ).setBranchAlias("pfcands_dzpv");
   produces<vector<float> >("pfcandspt"    ).setBranchAlias("pfcands_pt");
   produces<vector<int>   >("pfcandschg"   ).setBranchAlias("pfcands_chg");
+  produces<int>("isoTracks").setBranchAlias("isoTracks");
 
 }
 
@@ -97,6 +100,13 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
   auto_ptr<vector<float> >  pfcands_dzpv  (new vector<float>);
   auto_ptr<vector<float> >  pfcands_pt    (new vector<float>);
   auto_ptr<vector<int>   >  pfcands_chg   (new vector<int>  );
+
+  edm::Handle< edm::View<pat::MET> > MET;
+  iEvent.getByLabel(MetInputTag_,MET);
+  reco::MET::LorentzVector metLorentz(0,0,0,0);
+  if(MET.isValid() ){
+        metLorentz=MET->at(0).p4();
+  }
 
   //---------------------------------
   // get PFCandidate collection
@@ -213,9 +223,13 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	// only store PFCandidate values if pt > minPt
 	//-------------------------------------------------------------------------------------
 	if((*pfCandidates)[i].pt() <minPt_) continue;
+	if(fabs((*pfCandidates)[i].eta()) >maxEta_) continue;
 	//-------------------------------------------------------------------------------------
 	// store pt and charge of PFCandidate
 	//-------------------------------------------------------------------------------------
+	double dphiMET=fabs((*pfCandidates)[i].phi()-metLorentz.phi());
+        double mT=sqrt(2 *metLorentz.pt() * (*pfCandidates)[i].pt() * (1 - cos(dphiMET)));
+        if(mT>mTCut_)continue;
 	pfcands_pt->push_back((*pfCandidates)[i].pt());
 	pfcands_chg->push_back((*pfCandidates)[i].charge());
 	//----------------------------------------------------------------------------
@@ -267,14 +281,17 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 
   bool result = (doTrkIsoVeto_ ? (prod->size() == 0) : true);
 
+  int isoTracks=prodminiAOD->size();
+  std::auto_ptr<int> htp(new int(isoTracks));
+  iEvent.put(htp,"isoTracks" );
+
   // put trkiso and dz values back into event
   iEvent.put(pfcands_trkiso,"pfcandstrkiso");
   iEvent.put(pfcands_dzpv  ,"pfcandsdzpv"  );
   iEvent.put(pfcands_pt    ,"pfcandspt"    );
   iEvent.put(pfcands_chg   ,"pfcandschg"   );
 
-  iEvent.put(prodminiAOD);
-
+  iEvent.put(prodminiAOD); 
   return result;
 }
 

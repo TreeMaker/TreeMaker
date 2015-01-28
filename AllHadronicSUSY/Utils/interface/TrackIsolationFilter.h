@@ -44,13 +44,14 @@ private:
   double dR_;
   double dzcut_;
   double minPt_;
-
+  double maxEta_;
   double isoCut_;
-
+  double mTCut_;
   bool doTrkIsoVeto_;
 
   edm::InputTag pfCandidatesTag_;
   edm::InputTag vertexInputTag_;
+  edm::InputTag MetInputTag_;
 
   int vtxSize;
 };

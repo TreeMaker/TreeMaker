@@ -23,7 +23,7 @@ def getWeightProducer(fileName):
 
     # Set default values to produce an event weight of 1
     weightProducer.weight = cms.double(1.0)
-    weightProducer.Method = cms.string("")
+    weightProducer.Method = cms.string("Constant")
     weightProducer.LumiScale = cms.double(1.0)
     weightProducer.FileNamePUDataDistribution = cms.string("NONE")
     weightProducer.PU = cms.int32(0)
@@ -354,14 +354,133 @@ def getWeightProducer(fileName):
         print "TTJets_MSDecaysCKM_central_Tune4C_13TeV_PU50x25_V5_v2 : '"+fileName+"'"
         applyWeight = True
         weightProducer.weight = cms.double(-1.)
-        
-    #phys14
+
+                
+#phys14
+#Signal
+    if "SMS-T1bbbb_2J_mGl-1000_mLSP-900_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(0.325388)
+			weightProducer.NumberEvts = cms.double(97584)  
+			print "T1bbbb_2J_mGl-1000_mLSP-900 : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)  
+    if "SMS-T1bbbb_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(0.0141903)
+			weightProducer.NumberEvts = cms.double(105964)  
+			print "SMS-T1bbbb_2J_mGl-1500_mLSP-100 : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.) 
+
+    if "SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(0.085)
+			weightProducer.NumberEvts = cms.double(100322)  
+			print "SMS-T1tttt_2J_mGl-1500_mLSP-100 : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)
+
+    if "SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(0.0141903)
+			weightProducer.NumberEvts = cms.double(105679)  
+			print "SMS-T1tttt_2J_mGl-1500_mLSP-100 : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)  
+
+#BKG
+    if "QCD_HT-250To500_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(6.705e+5)
+			weightProducer.NumberEvts = cms.double(663953)  
+			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
+			applyWeight = True
+            		weightProducer.weight = cms.double(-1.)
+
+    if "QCD_HT-500To1000_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(2.674e+4)
+			weightProducer.NumberEvts = cms.double(849033)  
+			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
+			applyWeight = True
+            		weightProducer.weight = cms.double(-1.)
+    if "QCD_HT-1000ToInf_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(769.7)
+			weightProducer.NumberEvts = cms.double(333733)  
+			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
+			applyWeight = True
+            		weightProducer.weight = cms.double(-1.)
+    if "TBarToLeptons_t-channel_Tune4C_CSA14_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(16.9)
+			weightProducer.NumberEvts = cms.double(1999800)  
+			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
+			applyWeight = True
+            		weightProducer.weight = cms.double(-1.)
+    if "TBarToLeptons_s-channel-CSA14_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(1.0)
+			weightProducer.NumberEvts = cms.double(250000)  
+			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
+			applyWeight = True
+            		weightProducer.weight = cms.double(-1.)
+    if "TToLeptons_t-channel-CSA14_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(45.0)
+			weightProducer.NumberEvts = cms.double(3991000)  
+			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)
+    if "TToLeptons_s-channel-CSA14_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(2.0)
+			weightProducer.NumberEvts = cms.double(500000)  
+			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)
+    if "TTZJets_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(2.232)
+			weightProducer.NumberEvts = cms.double(249275)  
+			print "TTJets_MSDecaysCKM_central_Tune4C_13TeV_PU50x25_V5_v2 : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)
+    if "TTWJets_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(1.152)
+			weightProducer.NumberEvts = cms.double(246521)  
+			print "TTWJets_Tune4C_13TeV-madgraph-tauola : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)
+    if "T_tW-channel-DR_Tune4C_13TeV-CSA14" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(35.0)
+			weightProducer.NumberEvts = cms.double(986100)  
+			print "TTJets_MSDecaysCKM_central_Tune4C_13TeV : '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)
     if "TTJets_MSDecaysCKM_central_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
 			mcVersion = "Phys14DR"
 			weightProducer.Method     = cms.string("Constant")
-			weightProducer.XS         = cms.double(818.8)
+			weightProducer.XS         = cms.double(806.1)
 			weightProducer.NumberEvts = cms.double(25446993)  
-			print "TTJets_MSDecaysCKM_central_Tune4C_13TeV_PU50x25_V5_v2 : '"+fileName+"'"
+			print "TTJets_MSDecaysCKM_central_Tune4C_13TeV : '"+fileName+"'"
 			applyWeight = True
 			weightProducer.weight = cms.double(-1.)
     if "WJetsToLNu_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
