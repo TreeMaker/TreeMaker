@@ -86,12 +86,23 @@ gammajets=False):
       pfCandidatesTag = cms.InputTag("packedPFCandidates"),
       dR_ConeSize         = cms.double(0.3),
       dz_CutValue         = cms.double(0.05),
-      minPt_PFCandidate   = cms.double(15.0),
+      minPt_PFCandidate   = cms.double(10.0),
       isoCut              = cms.double(0.1),
-      mTCut=cms.double(100.),
+      mTCut=cms.double(-1.),
       )
-    process.Baseline += process.IsolatedTracks
-    VarsInt.extend(['IsolatedTracks:isoTracks'])
+    process.LostLepton += process.IsolatedTracks
+    process.IsolatedTracksVeto = trackIsolationFilter.clone(
+    doTrkIsoVeto= False,
+    vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+    pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+    dR_ConeSize         = cms.double(0.3),
+    dz_CutValue         = cms.double(0.05),
+    minPt_PFCandidate   = cms.double(15.0),
+    isoCut              = cms.double(0.1),
+    mTCut=cms.double(100.),
+    )
+    process.Baseline += process.IsolatedTracksVeto
+    VarsInt.extend(['IsolatedTracksVeto:isoTracks'])
     process.load("PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi")
     process.load("PhysicsTools.PatAlgos.selectionLayer1.electronCountFilter_cfi")
     process.selectedIDIsoMuons = cms.EDFilter("CandPtrSelector", src = cms.InputTag("slimmedMuons"), cut = cms.string('''abs(eta)<2.5 && pt>10. &&
@@ -121,7 +132,19 @@ gammajets=False):
     LeptonTag = cms.VInputTag(cms.InputTag('selectedIDIsoMuons'),cms.InputTag('selectedIDIsoElectrons')),
     )
     process.Baseline += process.Leptons
-    VarsInt.extend(['Leptons'])
+    VarsInt.extend(['Leptons(LeptonsOld)'])
+    from AllHadronicSUSY.Utils.leptonproducer_cfi import leptonproducer
+    process.LeptonsNew = leptonproducer.clone(
+      MuonTag = cms.InputTag('slimmedMuons'),
+      ElectronTag = cms.InputTag('slimmedElectrons'),
+      PrimaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices'),
+      minElecPt								  = cms.double(5),
+      maxElecEta								  = cms.double(2.5),
+      minMuPt								  = cms.double(5),
+      maxMuEta								  = cms.double(2.4),
+      )
+    process.Baseline += process.LeptonsNew
+    VarsInt.extend(['LeptonsNew(Leptons)'])
     from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
     process.HTJets = SubJetSelection.clone(
     JetTag  = cms.InputTag('slimmedJets'),
@@ -175,7 +198,7 @@ gammajets=False):
     JetTag  = cms.InputTag('slimmedJets'),
     )
     process.Baseline += process.MET
-    VarsDouble.extend(['MET:minDeltaPhiN'])
+    VarsDouble.extend(['MET:minDeltaPhiN','MET:DeltaPhiN1','MET:DeltaPhiN2','MET:DeltaPhiN3','MET:Pt(METPt)','MET:Phi(METPhi)'])
     #lost-lepton producers
     from AllHadronicSUSY.Utils.jetproperties_cfi import jetproperties
     process.JetsProperties = jetproperties.clone(
@@ -189,6 +212,13 @@ gammajets=False):
     PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
     )
     process.LostLepton += process.GenLeptons
+    from AllHadronicSUSY.Utils.selectpfcandidates_cfi import SelectPFCandidates
+    process.SelectedPFCandidates = SelectPFCandidates.clone(
+    PackedPFCandidatesTag               = cms.InputTag('packedPFCandidates'),
+    MinPt								  = cms.double(4),
+    MaxEta								  = cms.double(5.0),
+    )
+    process.LostLepton += process.SelectedPFCandidates
     #gamma+jet producers
 
 
@@ -197,6 +227,7 @@ gammajets=False):
     #define sequences
     
     #baseline RA2/b variables default shared variables
+    RecoCandVector.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
 
 
 
@@ -208,7 +239,9 @@ gammajets=False):
     if lostlepton:
       print "Adding LostLepton calculations to final path and tree"
       process.AdditionalSequence += process.LostLepton 
-      VarsRecoCand = cms.vstring('selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDMuons','IsolatedTracks','HTJets'),
+    #  VarsRecoCand = cms.vstring('selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDMuons','IsolatedTracks','HTJets'),
+   #   RecoCandVector.extend(['selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDElectrons','IsolatedTracks']),
+      RecoCandVector.extend(['IsolatedTracks','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
       RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminator(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
 
@@ -227,7 +260,7 @@ gammajets=False):
     process.WriteTree = cms.Path(
         process.Baseline *
         process.AdditionalSequence *
-    #	process.dump *
+   # 	process.dump *
     	process.TreeMaker2
 
         )

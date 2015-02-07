@@ -229,7 +229,7 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	//-------------------------------------------------------------------------------------
 	double dphiMET=fabs((*pfCandidates)[i].phi()-metLorentz.phi());
         double mT=sqrt(2 *metLorentz.pt() * (*pfCandidates)[i].pt() * (1 - cos(dphiMET)));
-        if(mT>mTCut_)continue;
+        if(mTCut_>0.01 && mT>mTCut_)continue;
 	pfcands_pt->push_back((*pfCandidates)[i].pt());
 	pfcands_chg->push_back((*pfCandidates)[i].charge());
 	//----------------------------------------------------------------------------

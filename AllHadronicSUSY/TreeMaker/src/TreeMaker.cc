@@ -35,7 +35,7 @@
 // constructors and destructor
 //
 TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
-: nMaxCandidates_(200), tree_(0)
+: nMaxCandidates_(10000), tree_(0)
 {
   // generell
   treeName_ = iConfig.getParameter<std::string>("TreeName");
@@ -407,11 +407,11 @@ TreeMaker::beginJob()
   RecoCandN_ = std::vector<UShort_t>(varsRecoCandNames_.size(),0);
   for(unsigned int i=0; i<varsRecoCandNames_.size();i++)
   {
-    RecoCandPt_.push_back (new Float_t[200]);
-    RecoCandEta_.push_back(new Float_t[200]);
-    RecoCandPhi_.push_back(new Float_t[200]);
-    RecoCandE_.push_back  (new Float_t[200]);
-    RecoCandLorentzVector_.push_back(new TLorentzVector[200]);
+    RecoCandPt_.push_back (new Float_t[10000]);
+    RecoCandEta_.push_back(new Float_t[10000]);
+    RecoCandPhi_.push_back(new Float_t[10000]);
+    RecoCandE_.push_back  (new Float_t[10000]);
+    RecoCandLorentzVector_.push_back(new TLorentzVector[10000]);
     
     std::string temp = varsRecoCandNames_[i];
     std::string nameInTree = "";
@@ -501,7 +501,7 @@ TreeMaker::beginJob()
       {
 	
 	RecoCandAdditionalBoolVariablesTags_[i].push_back(edm::InputTag(tag ) );
-	RecoCandAdditionalBoolVariables_[i].push_back(new UChar_t[200]);
+	RecoCandAdditionalBoolVariables_[i].push_back(new UChar_t[10000]);
 	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalBoolVariables_.at(i).at(countBool), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/b").c_str());
 	// 				tree_->Branch((nameInTree).c_str(), RecoCandAdditionalBoolVariables_.at(i).at(countBool), (nameInTree+"["+mainNameInTree+"Num]/b").c_str());
 	countBool++;
@@ -510,7 +510,7 @@ TreeMaker::beginJob()
       {
 	
 	RecoCandAdditionalIntVariablesTags_[i].push_back(edm::InputTag(tag ) );
-	RecoCandAdditionalIntVariables_[i].push_back(new Int_t[200]);
+	RecoCandAdditionalIntVariables_[i].push_back(new Int_t[10000]);
 	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalIntVariables_.at(i).at(countInt), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/I").c_str());
 	// 				tree_->Branch((nameInTree).c_str(), RecoCandAdditionalIntVariables_.at(i).at(countInt), (nameInTree+"["+mainNameInTree+"Num]/I").c_str());
 	countInt++;
@@ -519,7 +519,7 @@ TreeMaker::beginJob()
       {
 	
 	RecoCandAdditionalFloatVariablesTags_[i].push_back(edm::InputTag(tag ) );
-	RecoCandAdditionalFloatVariables_[i].push_back(new Float_t[200]);
+	RecoCandAdditionalFloatVariables_[i].push_back(new Float_t[10000]);
 	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalFloatVariables_.at(i).at(countFloat), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/F").c_str());
 	countFloat++;
       }

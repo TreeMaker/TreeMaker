@@ -394,28 +394,28 @@ def getWeightProducer(fileName):
 			weightProducer.weight = cms.double(-1.)  
 
 #BKG
-    if "QCD_HT-250To500_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+    if "QCD_HT-250To500_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
 			mcVersion = "Phys14DR"
 			weightProducer.Method     = cms.string("Constant")
 			weightProducer.XS         = cms.double(6.705e+5)
-			weightProducer.NumberEvts = cms.double(663953)  
+			weightProducer.NumberEvts = cms.double(2668172)
 			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
 			applyWeight = True
             		weightProducer.weight = cms.double(-1.)
 
-    if "QCD_HT-500To1000_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+    if "QCD_HT-500To1000_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
 			mcVersion = "Phys14DR"
 			weightProducer.Method     = cms.string("Constant")
 			weightProducer.XS         = cms.double(2.674e+4)
-			weightProducer.NumberEvts = cms.double(849033)  
+			weightProducer.NumberEvts = cms.double(4063345)  
 			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
 			applyWeight = True
             		weightProducer.weight = cms.double(-1.)
-    if "QCD_HT-1000ToInf_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+    if "QCD_HT-1000ToInf_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
 			mcVersion = "Phys14DR"
 			weightProducer.Method     = cms.string("Constant")
 			weightProducer.XS         = cms.double(769.7)
-			weightProducer.NumberEvts = cms.double(333733)  
+			weightProducer.NumberEvts = cms.double(1464453)  
 			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
 			applyWeight = True
             		weightProducer.weight = cms.double(-1.)
