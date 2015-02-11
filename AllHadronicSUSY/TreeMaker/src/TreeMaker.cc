@@ -440,7 +440,7 @@ TreeMaker::beginJob()
     tree_->Branch((temp+"Eta").c_str(),RecoCandEta_.at(i),(temp+"Eta["+temp+"Num]/F").c_str());
     tree_->Branch((temp+"Phi").c_str(),RecoCandPhi_.at(i),(temp+"Phi["+temp+"Num]/F").c_str());
     tree_->Branch((temp+"E").c_str(),  RecoCandE_.at(i),  (temp+"E["+temp+"Num]/F").c_str());
-    tree_->Branch((temp+"TLorentzVector").c_str(),  RecoCandLorentzVector_.at(i),  (temp+"TLorentzVector["+temp+"Num]/F").c_str());
+//     tree_->Branch((temp+"TLorentzVector").c_str(),  RecoCandLorentzVector_.at(i),  (temp+"TLorentzVector["+temp+"Num]/F").c_str());
     std::string mainNameInTree=temp;
     temp = varsRecoCandNames_[i];
     unsigned int countBool=0;

@@ -20,7 +20,6 @@
 
 // system include files
 #include <memory>
-#include "GoodJets.cc"
 #include <TMath.h>
 // user include files
 //
@@ -57,6 +56,7 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag metTag_, JetTag_;
+	double MinJetPt_;
 	
 	
 	// ----------member data ---------------------------
@@ -141,8 +141,6 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(htp2,"Phi");
 	if( Jets.isValid() ) {
                 for(unsigned int i=0; i<Jets->size();i++){
-		GoodJets gj(Jets->at(i));
-		if(!gj.isGood())continue;
 		if(goodcount<3 && Jets->at(i).pt()>30){ //make this pt cut configurable
                 float dphi=std::abs(reco::deltaPhi(Jets->at(i).phi(),metLorentz.phi()));
                 float dT=DeltaT(i, Jets);
@@ -181,9 +179,6 @@ double METDouble::DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets
     if( Jets.isValid() ) {
         for(unsigned int j=0; j<Jets->size(); ++j){
             if(j==i)continue;
-		GoodJets gj(Jets->at(j));
-            if(!gj.isGood())continue;
-            if(Jets->at(j).pt()<30)continue;
             sum=sum+(Jets->at(i).px()*Jets->at(j).py()-Jets->at(j).px()*Jets->at(i).py()) * (Jets->at(i).px()*Jets->at(j).py()-Jets->at(j).px()*Jets->at(i).py());
         }
         deltaT=jres*sqrt(sum)/Jets->at(i).pt();

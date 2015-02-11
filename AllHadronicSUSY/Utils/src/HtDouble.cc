@@ -20,7 +20,6 @@
 
 // system include files
 #include <memory>
-#include "GoodJets.cc"
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
@@ -114,8 +113,6 @@ HTDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if( Jets.isValid() ) {
 		for(unsigned int i=0; i<Jets->size();i++)
 		{
-			GoodJets gj(Jets->at(i));
-			if(!gj.isGood())continue;
 			ht_ +=Jets->at(i).pt();
 		}
 	}
