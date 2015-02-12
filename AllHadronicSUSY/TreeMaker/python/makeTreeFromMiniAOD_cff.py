@@ -138,9 +138,9 @@ gammajets=False):
       MuonTag = cms.InputTag('slimmedMuons'),
       ElectronTag = cms.InputTag('slimmedElectrons'),
       PrimaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices'),
-      minElecPt								  = cms.double(5),
+      minElecPt								  = cms.double(10),
       maxElecEta								  = cms.double(2.5),
-      minMuPt								  = cms.double(5),
+      minMuPt								  = cms.double(10),
       maxMuEta								  = cms.double(2.4),
       )
     process.Baseline += process.LeptonsNew
