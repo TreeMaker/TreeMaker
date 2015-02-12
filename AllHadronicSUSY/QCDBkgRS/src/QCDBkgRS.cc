@@ -17,7 +17,7 @@
 //
 //
 
-#include "RA2Classic/QCDBkgRS/interface/QCDBkgRS.h"
+#include "AllHadronicSUSY/QCDBkgRS/interface/QCDBkgRS.h"
 
 
 #include <TROOT.h>
