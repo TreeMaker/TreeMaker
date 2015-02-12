@@ -51,7 +51,7 @@ process.WeightProducer.PU = cms.int32(0) # PU: 3 for S10, 2 for S7
 process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
 
 ## --- Setup MC Truth templates writer ---------------------------------
-from RA2Classic.MCResolutions.mcresolutions_cfi import MCResolutions
+from AllHadronicSUSY.MCResolutions.mcresolutions_cfi import MCResolutions
 process.MCReso = MCResolutions.clone()
 process.MCReso.jetTag = mcResoJetTag
 process.MCReso.fileName = mcResoFileName

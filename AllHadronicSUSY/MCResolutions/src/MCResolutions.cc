@@ -17,7 +17,7 @@
 //
 //
 
-#include "RA2Classic/MCResolutions/interface/MCResolutions.h"
+#include "AllHadronicSUSY/MCResolutions/interface/MCResolutions.h"
 
 //
 // constructors and destructor
@@ -261,7 +261,7 @@ void MCResolutions::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
          bool bTag = false;
          if ( matchedJet->bDiscriminator(_btagTag) > _btagCut) {
             bTag = true;
-            cout << "!!!!!!!!!! BTag: " << matchedJet->bDiscriminator(_btagTag) << endl;
+            //cout << "!!!!!!!!!! BTag: " << matchedJet->bDiscriminator(_btagTag) << endl;
          }
 
          if (bTag) {
