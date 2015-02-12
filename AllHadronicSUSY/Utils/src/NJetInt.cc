@@ -20,7 +20,6 @@
 
 // system include files
 #include <memory>
-#include "GoodJets.cc"
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
@@ -115,8 +114,6 @@ NJetInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  	     	
 		//NJets=Jets->size();
 		for(unsigned int j=0; j<Jets->size(); ++j){
-			GoodJets gj(Jets->at(j));
-			if(!gj.isGood())continue;
 			++NJets;
 		}
 	}
