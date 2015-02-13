@@ -49,6 +49,8 @@ QCDBkgRS::QCDBkgRS(const edm::ParameterSet& iConfig)
    jets_reb_ = iConfig.getParameter<std::string> ("jetCollection_reb");
    jets_smeared_ = iConfig.getParameter<std::string> ("jetCollection_smeared");
    genjets_smeared_ = iConfig.getParameter<std::string> ("genjetCollection_smeared");
+   btagTag_ = iConfig.getParameter<std::string> ("btagTag");
+   btagCut_ = iConfig.getParameter<double> ("btagCut");
    uncertaintyName_ = iConfig.getParameter<std::string> ("uncertaintyName");
    inputhist1HF_ = iConfig.getParameter<std::string> ("InputHisto1_HF");
    inputhist2HF_ = iConfig.getParameter<std::string> ("InputHisto2_HF");
@@ -61,7 +63,6 @@ QCDBkgRS::QCDBkgRS(const edm::ParameterSet& iConfig)
    isData_ = iConfig.getParameter<bool> ("IsData");
    isMadgraph_ = iConfig.getParameter<bool> ("IsMadgraph");
    smearingfile_ = iConfig.getParameter<std::string> ("SmearingFile");
-   bprobabilityfile_ = iConfig.getParameter<std::string> ("BProbabilityFile");
    outputfile_ = iConfig.getParameter<std::string> ("OutputFile");
    NRebin_ = iConfig.getParameter<int> ("NRebin");
    weightName_ = iConfig.getParameter<edm::InputTag> ("weightName");
@@ -208,12 +209,9 @@ double QCDBkgRS::JetResolutionHist_Pt_Smear(const double& pt, const double& eta,
    int i_Pt = GetIndex(pt, &PtBinEdges_);
    int i_eta = GetIndex(eta, &EtaBinEdges_);
    
-   int jet_rank = i+1;
-   double x_rand = rand_->Rndm();
-   double hf_prob = GetHFProb(NJets, HT, jet_rank);
-   
+   bool btag = false;
    double res = 1.0;
-   if( x_rand <= hf_prob ){
+   if( btag ){
       // get heavy flavor smear function
       res = smearFunc_->getSmearFunc(1, i_jet, i_eta, i_Pt)->GetRandom();
    }
@@ -223,38 +221,6 @@ double QCDBkgRS::JetResolutionHist_Pt_Smear(const double& pt, const double& eta,
    }
    
    return res;
-}
-//--------------------------------------------------------------------------
-
-//--------------------------------------------------------------------------
-// HF probability for smearing
-double QCDBkgRS::GetHFProb(const int& NJets, const double& HT, const int& jet_rank) {
-   
-   int i_bin;
-   
-   if( NJets == 2){
-      i_bin = h_bProb_NJets2->FindBin(HT, jet_rank);
-      return h_bProb_NJets2->GetBinContent(i_bin);
-   }
-   if( NJets == 3){
-      i_bin = h_bProb_NJets3->FindBin(HT, jet_rank);
-      return h_bProb_NJets3->GetBinContent(i_bin);
-   }
-   if( NJets == 4){
-      i_bin = h_bProb_NJets4->FindBin(HT, jet_rank);
-      return h_bProb_NJets4->GetBinContent(i_bin);
-   }
-   if( NJets == 5 || NJets == 6){
-      i_bin = h_bProb_NJets5p6->FindBin(HT, jet_rank);
-      return h_bProb_NJets5p6->GetBinContent(i_bin);
-   }
-   if( NJets >= 7){
-      i_bin = h_bProb_NJets7p->FindBin(HT, jet_rank);
-      return h_bProb_NJets7p->GetBinContent(i_bin);
-   }
-   else {
-      return -1;
-   }
 }
 //--------------------------------------------------------------------------
 
@@ -1611,15 +1577,6 @@ void QCDBkgRS::beginJob()
       h_weightedWeight = fs->make<TH1F> ("h_weightedWeight", "h_weightedWeight", 70, -1., 6.);
       h_weightedWeight->Sumw2();
    }
-   
-   //// load b-jet probability histos
-   TFile *f_bProb = new TFile(bprobabilityfile_.c_str(), "READ", "", 0);
-   // h_bProb_NJets1 = (TH2F*) f_bProb->FindObjectAny("Data_truth_Prob_NJets1");
-   h_bProb_NJets2 = (TH2F*) f_bProb->FindObjectAny("Data_truth_Prob_NJets2");
-   h_bProb_NJets3 = (TH2F*) f_bProb->FindObjectAny("Data_truth_Prob_NJets3");
-   h_bProb_NJets4 = (TH2F*) f_bProb->FindObjectAny("Data_truth_Prob_NJets4");
-   h_bProb_NJets5p6 = (TH2F*) f_bProb->FindObjectAny("Data_truth_Prob_NJets5p6");
-   h_bProb_NJets7p = (TH2F*) f_bProb->FindObjectAny("Data_truth_Prob_NJets7p");
    
    //// get rebalance correction histo
    TFile *f_rebCorr = new TFile(RebalanceCorrectionFile_.c_str(), "READ", "", 0);

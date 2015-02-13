@@ -26,12 +26,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-//#include "Utilities/Parang/interface/Paramatrix.h"
 
 using namespace std;
 
-//typedef Paramatrix<PopulationF> ParamatrixF;
-//typedef Paramatrix<PopulationD> ParamatrixD;
 
 class SmearFunction {
 

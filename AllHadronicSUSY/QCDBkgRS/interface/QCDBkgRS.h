@@ -56,13 +56,9 @@
 #include "TMath.h"
 #include "TArray.h"
 
-//#include "Utilities/Parang/interface/Paramatrix.h"
 #include "SmearFunction.h"
 
 using namespace std;
-
-//typedef Paramatrix<PopulationF> ParamatrixF;
-//typedef Paramatrix<PopulationD> ParamatrixD;
 
 class QCDBkgRS: public edm::EDAnalyzer {
 public:
@@ -102,7 +98,10 @@ private:
    std::string met_reb_;
    std::string jets_smeared_;
    std::string genjets_smeared_;
-   
+
+   std::string btagTag_;
+   double btagCut_;
+
    //// vector of response function
    std::vector<std::vector<std::vector<TH1F*> > > smearFunc;
    std::vector<std::vector<std::vector<TH1F*> > > smearFunc_Core;
@@ -177,7 +176,6 @@ private:
    double JetResolution_Eta2(const double&, const double&);
    double JetResolution_Phi2(const double&, const double&);
    double JetResolutionHist_Pt_Smear(const double&, const double&, const int&,const double&, const int&);
-   double GetHFProb(const int&, const double&, const int&);
    int GetIndex(const double&, const std::vector<double>*);
    void FillPredictions(const std::vector<pat::Jet>&, const int&, const double&);
    void FillPredictions_gen(const std::vector<reco::GenJet>&, const int&, const double&);
@@ -212,13 +210,6 @@ private:
    TH2F* h_RebCorrection_vsReco;  
    TH1F* h_RebCorrectionFactor;
   
-   // TH2F* h_bProb_NJets1;
-   TH2F* h_bProb_NJets2;
-   TH2F* h_bProb_NJets3;
-   TH2F* h_bProb_NJets4;
-   TH2F* h_bProb_NJets5p6;
-   TH2F* h_bProb_NJets7p;
-
    TH1F* h_nJets_gen;
    TH1F* h_nJets_reco;
    TH1F* h_nJets_reb;
