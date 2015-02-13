@@ -422,7 +422,7 @@ def getWeightProducer(fileName):
     if "TBarToLeptons_t-channel_Tune4C_CSA14_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
 			mcVersion = "Phys14DR"
 			weightProducer.Method     = cms.string("Constant")
-			weightProducer.XS         = cms.double(16.9)
+			weightProducer.XS         = cms.double(61.6)
 			weightProducer.NumberEvts = cms.double(1999800)  
 			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
 			applyWeight = True
@@ -438,7 +438,7 @@ def getWeightProducer(fileName):
     if "TToLeptons_t-channel-CSA14_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
 			mcVersion = "Phys14DR"
 			weightProducer.Method     = cms.string("Constant")
-			weightProducer.XS         = cms.double(45.0)
+			weightProducer.XS         = cms.double(103.4)
 			weightProducer.NumberEvts = cms.double(3991000)  
 			print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
 			applyWeight = True
@@ -515,6 +515,15 @@ def getWeightProducer(fileName):
 			print "WJetsToLNu_HT-600toInf_Tune4C_13TeV Phys14DR: '"+fileName+"'"
 			applyWeight = True
 			weightProducer.weight = cms.double(-1.)
+    if "ZJetsToNuNu_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+			mcVersion = "Phys14DR"
+			weightProducer.Method     = cms.string("Constant")
+			weightProducer.XS         = cms.double(372.6)
+			weightProducer.NumberEvts = cms.double(4986424)
+			print "ZJetsToNuNu_HT-100to200_Tune4C_13TeV '"+fileName+"'"
+			applyWeight = True
+			weightProducer.weight = cms.double(-1.)
+				
     if "ZJetsToNuNu_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
 			mcVersion = "Phys14DR"
 			weightProducer.Method     = cms.string("Constant")
