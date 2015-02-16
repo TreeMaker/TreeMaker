@@ -148,7 +148,8 @@ gammajets=False):
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
       JetTag= cms.InputTag('slimmedJets'),
-      maxMuFraction								  = cms.double(2),
+      maxJetEta								  = cms.double(2.4),
+      maxMuFraction								  = cms.double(200), ## effectively no cut if above 1
       minNConstituents								  = cms.double(1),
       maxNeutralFraction								  = cms.double(0.99),
       maxPhotonFraction								  = cms.double(0.99),
