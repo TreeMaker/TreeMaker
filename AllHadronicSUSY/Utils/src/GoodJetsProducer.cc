@@ -56,6 +56,7 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
+	double maxEta_;
 	double maxMuFraction_, minNConstituents_, maxNeutralFraction_, maxPhotonFraction_, minChargedMultiplicity_, minChargedFraction_, maxChargedEMFraction_;
 	
 	// ----------member data ---------------------------
@@ -77,6 +78,7 @@ using namespace pat;
 GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
 {
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+	maxEta_ = iConfig.getParameter <double> ("maxJetEta");
 	maxMuFraction_ = iConfig.getParameter <double> ("maxMuFraction");
 	minNConstituents_ = iConfig.getParameter <double> ("minNConstituents");
 	maxNeutralFraction_ = iConfig.getParameter <double> ("maxNeutralFraction");
@@ -105,38 +107,43 @@ GoodJetsProducer::~GoodJetsProducer()
 void
 GoodJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-	using namespace edm;
-	std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
-	edm::Handle< edm::View<Jet> > Jets;
-	iEvent.getByLabel(JetTag_,Jets);
-	if(Jets.isValid())
-	{
-		for(unsigned int i=0; i<Jets->size();i++)
-		{
-		          float neufrac=Jets->at(i).neutralHadronEnergyFraction();//gives raw energy in the denominator
-        float phofrac=Jets->at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
-        float chgfrac=Jets->at(i).chargedHadronEnergyFraction();
-        float chgEMfrac=Jets->at(i).chargedEmEnergyFraction();
-        float muFrac=Jets->at(i).muonEnergyFraction();
-        unsigned int nconstit=Jets->at(i).nConstituents();
-        int chgmulti=Jets->at(i).chargedHadronMultiplicity();
-//       	if(muFrac<0.99 && nconstit>1 && neufrac<0.99 && phofrac<0.99 &&chgmulti>0 && chgfrac>0 && chgEMfrac<0.99)prodJets->push_back(Jet(Jets->at(i)) );
-	if(muFrac<maxMuFraction_ && nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)prodJets->push_back(Jet(Jets->at(i)) );
-// 	std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
-// 	<<"nconstit>minNConstituents_"<<nconstit<<" > "<<minNConstituents_<<std::endl
-// 	<<"neufrac<maxNeutralFraction_"<<neufrac<<" < "<<maxNeutralFraction_<<std::endl
-// 	<<"phofrac<maxPhotonFraction_"<<phofrac<<" < "<<maxPhotonFraction_<<std::endl
-// 	<<"chgmulti>minChargedMultiplicity_"<<chgmulti<<" > "<<minChargedMultiplicity_<<std::endl
-// 	<<"chgfrac>minChargedFraction_"<<chgfrac<<" > "<<minChargedFraction_<<std::endl
-// 	<<"chgEMfrac<maxChargedEMFraction_"<<chgEMfrac<<" < "<<maxChargedEMFraction_<<std::endl
-// 	<<std::endl<<std::endl<<std::endl;
-		  
-		}
-	}
-	// put in the event
-	const std::string string1("");
-	iEvent.put(prodJets );
-	
+  using namespace edm;
+  std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
+  edm::Handle< edm::View<Jet> > Jets;
+  iEvent.getByLabel(JetTag_,Jets);
+  if(Jets.isValid())
+  {
+    for(unsigned int i=0; i<Jets->size();i++)
+    {
+      if(std::abs(Jets->at(i).eta())>maxEta_)
+      {
+	prodJets->push_back(Jet(Jets->at(i)) );
+	continue;
+      }
+      float neufrac=Jets->at(i).neutralHadronEnergyFraction();//gives raw energy in the denominator
+      float phofrac=Jets->at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
+      float chgfrac=Jets->at(i).chargedHadronEnergyFraction();
+      float chgEMfrac=Jets->at(i).chargedEmEnergyFraction();
+      float muFrac=Jets->at(i).muonEnergyFraction();
+      unsigned int nconstit=Jets->at(i).nConstituents();
+      int chgmulti=Jets->at(i).chargedHadronMultiplicity();
+      //       	if(muFrac<0.99 && nconstit>1 && neufrac<0.99 && phofrac<0.99 &&chgmulti>0 && chgfrac>0 && chgEMfrac<0.99)prodJets->push_back(Jet(Jets->at(i)) );
+      if(muFrac<maxMuFraction_ && nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)prodJets->push_back(Jet(Jets->at(i)) );
+      // 	std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
+      // 	<<"nconstit>minNConstituents_"<<nconstit<<" > "<<minNConstituents_<<std::endl
+      // 	<<"neufrac<maxNeutralFraction_"<<neufrac<<" < "<<maxNeutralFraction_<<std::endl
+      // 	<<"phofrac<maxPhotonFraction_"<<phofrac<<" < "<<maxPhotonFraction_<<std::endl
+      // 	<<"chgmulti>minChargedMultiplicity_"<<chgmulti<<" > "<<minChargedMultiplicity_<<std::endl
+      // 	<<"chgfrac>minChargedFraction_"<<chgfrac<<" > "<<minChargedFraction_<<std::endl
+      // 	<<"chgEMfrac<maxChargedEMFraction_"<<chgEMfrac<<" < "<<maxChargedEMFraction_<<std::endl
+      // 	<<std::endl<<std::endl<<std::endl;
+      
+    }
+  }
+  // put in the event
+  const std::string string1("");
+  iEvent.put(prodJets );
+  
 }
 
 // ------------ method called once each job just before starting event loop  ------------
