@@ -142,9 +142,22 @@ gammajets=False):
       maxElecEta								  = cms.double(2.5),
       minMuPt								  = cms.double(10),
       maxMuEta								  = cms.double(2.4),
+      UseMiniIsolation = cms.bool(False),
       )
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
+    process.LeptonsNewNoMiniIso = leptonproducer.clone(
+      MuonTag = cms.InputTag('slimmedMuons'),
+      ElectronTag = cms.InputTag('slimmedElectrons'),
+      PrimaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices'),
+      minElecPt								  = cms.double(10),
+      maxElecEta								  = cms.double(2.5),
+      minMuPt								  = cms.double(10),
+      maxMuEta								  = cms.double(2.4),
+      UseMiniIsolation = cms.bool(True),
+      )
+    process.Baseline += process.LeptonsNewNoMiniIso
+    VarsInt.extend(['LeptonsNewNoMiniIso(LeptonsNoMiniIsolation)'])
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
       JetTag= cms.InputTag('slimmedJets'),
@@ -256,6 +269,7 @@ gammajets=False):
    #   RecoCandVector.extend(['selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDElectrons','IsolatedTracks']),
       RecoCandVector.extend(['IsolatedTracks','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
       RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
+      RecoCandVector.extend(['LeptonsNewNoMiniIso:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewNoMiniIso:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] ) # gen information on leptons
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminator(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
 
     if gammajets:
