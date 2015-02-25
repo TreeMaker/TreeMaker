@@ -38,6 +38,7 @@ private:
    TTree* QCDPrediction; 
    UShort_t vtxN;
    UShort_t NJets;
+   UShort_t BTags;
    UShort_t NSmear;
    Float_t weight;
    Float_t DeltaPhi1;
@@ -49,6 +50,7 @@ private:
    Int_t EvtNum_RA2;
    UShort_t vtxN_RA2;
    UShort_t NJets_RA2;
+   UShort_t BTags_RA2;
    Float_t weight_RA2;
    Float_t DeltaPhi1_RA2;
    Float_t DeltaPhi2_RA2;
@@ -57,14 +59,6 @@ private:
    // store deltaPhi cut
    vector<bool> MinDeltaPhiCut;
 
-   // cut variables for search bins
-   double HTlow;
-   double HTmedium;
-   double HThigh;
-   double MHTlow;
-   double MHTmedium;
-   double MHThigh;
- 
    // ------------------------------------------------------- //
    // raw prediction histograms   
    // preselection 
@@ -202,27 +196,6 @@ private:
    TH2F* MHT_JetBin3_HTinclusive_pred_raw;
    // HT inclusive >=8 jets
    TH2F* MHT_JetBin4_HTinclusive_pred_raw;
-
-   // used for non-closure uncertainty
-   // 2 jets, HT 500-1000 
-   TH2F* MHT_JetBin1_HTlow_pred_raw;
-   // 2 jets, HT >1000
-   TH2F* MHT_JetBin1_HThigh_pred_raw;
-
-   // 3-5 jets, HT 500-1000 
-   TH2F* MHT_JetBin2_HTlow_pred_raw;
-   // 3-5 jets, HT >1000
-   TH2F* MHT_JetBin2_HThigh_pred_raw;
-
-   // 6-7 jets, HT 500-1000 
-   TH2F* MHT_JetBin3_HTlow_pred_raw;
-   // 6-7 jets, HT >1000
-   TH2F* MHT_JetBin3_HThigh_pred_raw;
-
-   // >=8 jets, HT 500-1000 
-   TH2F* MHT_JetBin4_HTlow_pred_raw;
-   // >=8 jets, HT >1000
-   TH2F* MHT_JetBin4_HThigh_pred_raw;
 
    // ------------------------------------------------------- //
    // prediction histograms
@@ -364,27 +337,6 @@ private:
    TH1F* MHT_JetBin3_HTinclusive_pred;
    // HT inclusive >=8 jets
    TH1F* MHT_JetBin4_HTinclusive_pred;
-
-   // used for non-closure uncertainty
-   // 2 jets, HT 500-1000 
-   TH1F* MHT_JetBin1_HTlow_pred;
-   // 2 jets, HT >1000
-   TH1F* MHT_JetBin1_HThigh_pred;
-
-   // 3-5 jets, HT 500-1000 
-   TH1F* MHT_JetBin2_HTlow_pred;
-   // 3-5 jets, HT >1000
-   TH1F* MHT_JetBin2_HThigh_pred;
-
-   // 6-7 jets, HT 500-1000 
-   TH1F* MHT_JetBin3_HTlow_pred;
-   // 6-7 jets, HT >1000
-   TH1F* MHT_JetBin3_HThigh_pred;
-
-   // >=8 jets, HT 500-1000 
-   TH1F* MHT_JetBin4_HTlow_pred;
-   // >=8 jets, HT >1000
-   TH1F* MHT_JetBin4_HThigh_pred;
    // ------------------------------------------------------- //
 
    // selection histograms 
@@ -526,27 +478,6 @@ private:
    TH1F* MHT_JetBin3_HTinclusive_sel;
    // HT inclusive >=8 jets
    TH1F* MHT_JetBin4_HTinclusive_sel;
-
-   // used for non-closure uncertainty
-   // 2 jets, HT 500-1000 
-   TH1F* MHT_JetBin1_HTlow_sel;
-   // 2 jets, HT >1000
-   TH1F* MHT_JetBin1_HThigh_sel;
-
-   // 3-5 jets, HT 500-1000 
-   TH1F* MHT_JetBin2_HTlow_sel;
-   // 3-5 jets, HT >1000
-   TH1F* MHT_JetBin2_HThigh_sel;
-
-   // 6-7 jets, HT 500-1000 
-   TH1F* MHT_JetBin3_HTlow_sel;
-   // 6-7 jets, HT >1000
-   TH1F* MHT_JetBin3_HThigh_sel;
-
-   // >=8 jets, HT 500-1000 
-   TH1F* MHT_JetBin4_HTlow_sel;
-   // >=8 jets, HT >1000
-   TH1F* MHT_JetBin4_HThigh_sel;
    // ------------------------------------------------------- //
 
    // dummy histo

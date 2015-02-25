@@ -1,4 +1,3 @@
-
 #include "../interface/SmearFunction.h"
 
 #include <TROOT.h>

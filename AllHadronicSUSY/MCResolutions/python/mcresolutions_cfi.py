@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 MCResolutions = cms.EDAnalyzer('MCResolutions',
-	jetTag				= cms.InputTag('slimmedJets'),
+   leptonTag         = cms.InputTag('GoodLeptons'),
+	jetTag				= cms.InputTag('GoodJets'),
    btagTag           = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
    btagCut           = cms.double(0.814),
 	genJetTag			= cms.InputTag('slimmedGenJets'),

@@ -54,6 +54,7 @@ class MCResolutions: public edm::EDAnalyzer {
 
    // ----------member data ---------------------------
    edm::InputTag _jetTag;
+   edm::InputTag _leptonTag;
    std::string _btagTag;
    edm::InputTag _genJetTag;
    edm::InputTag _weightName;

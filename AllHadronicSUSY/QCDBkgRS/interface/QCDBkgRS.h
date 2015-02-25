@@ -73,6 +73,8 @@ private:
    typedef math::XYZTLorentzVector LorentzVector;
    typedef std::vector<std::string>::const_iterator StrIter;
 
+   int debug;
+   
    SmearFunction *smearFunc_;        // Object of class SmearFunction
    
    double rebalancedJetPt_;
@@ -93,6 +95,7 @@ private:
    edm::InputTag vertices_;
    edm::InputTag genjets_;
    edm::InputTag jets_;
+   edm::InputTag leptonTag_;
    edm::InputTag weightName_;
    std::string jets_reb_;
    std::string met_reb_;
@@ -131,7 +134,6 @@ private:
    std::string inputhist2NoHF_;
    std::string inputhist3pNoHF_;
    std::string smearingfile_;
-   std::string bprobabilityfile_;
    std::string outputfile_;
    std::string RebalanceCorrectionFile_;
    int NRebin_;
@@ -144,6 +146,12 @@ private:
    double A0RMS_;
    double A1RMS_;
    double probExtreme_;
+   
+   edm::InputTag HTSeedTag_;
+   double HTSeedMin_;
+   edm::InputTag NJetsSeedTag_;
+   int NJetsSeedMin_;
+
    double MHTmin_;
    double MHTmax_;
    double HTmin_;
@@ -185,6 +193,8 @@ private:
    math::PtEtaPhiMLorentzVector calcMHT_gen(const std::vector<reco::GenJet>&);
    int calcNJets(const std::vector<pat::Jet>&);
    int calcNJets_gen(const std::vector<reco::GenJet>&);
+   int calcNBJets(const std::vector<pat::Jet>&);
+   int calcNBJets_gen(const std::vector<reco::GenJet>&);
    bool calcMinDeltaPhi(const std::vector<pat::Jet>&, math::PtEtaPhiMLorentzVector&);
    bool calcMinDeltaPhi_gen(const std::vector<reco::GenJet>&, math::PtEtaPhiMLorentzVector&);
    void FillLeadingJetPredictions(const std::vector<pat::Jet>&); 
@@ -255,6 +265,7 @@ private:
    TTree *PredictionTree;
    UShort_t vtxN;
    UShort_t Njets_pred;
+   UShort_t BTags_pred;
    UShort_t Ntries_pred;
    Float_t HT_seed;
    Float_t HT_pred;

@@ -1,0 +1,1 @@
+/afs/desy.de/user/c/csander/xxl-af-cms/CMSSW_7_2_3_patch1/src/AllHadronicSUSY/QCDBkgRS/test/QCDSmearingClosure_OnMC.root

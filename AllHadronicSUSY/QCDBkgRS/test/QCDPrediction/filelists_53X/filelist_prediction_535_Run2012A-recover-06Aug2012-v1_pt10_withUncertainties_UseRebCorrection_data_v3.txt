@@ -1,6 +1,0 @@
-/afs/naf.desy.de/user/k/kriheine/kriheine/QCDSmearing_OnData_8TeV_2012_DR53X_RunABCD_pt10_ScalingUncertainty_UseRebCorrection_v3/Run2012A-recover-06Aug2012-v1/QCDSmearing_OnData_61.root
-/afs/naf.desy.de/user/k/kriheine/kriheine/QCDSmearing_OnData_8TeV_2012_DR53X_RunABCD_pt10_ScalingUncertainty_UseRebCorrection_v3/Run2012A-recover-06Aug2012-v1/QCDSmearing_OnData_56.root
-/afs/naf.desy.de/user/k/kriheine/kriheine/QCDSmearing_OnData_8TeV_2012_DR53X_RunABCD_pt10_ScalingUncertainty_UseRebCorrection_v3/Run2012A-recover-06Aug2012-v1/QCDSmearing_OnData_57.root
-/afs/naf.desy.de/user/k/kriheine/kriheine/QCDSmearing_OnData_8TeV_2012_DR53X_RunABCD_pt10_ScalingUncertainty_UseRebCorrection_v3/Run2012A-recover-06Aug2012-v1/QCDSmearing_OnData_59.root
-/afs/naf.desy.de/user/k/kriheine/kriheine/QCDSmearing_OnData_8TeV_2012_DR53X_RunABCD_pt10_ScalingUncertainty_UseRebCorrection_v3/Run2012A-recover-06Aug2012-v1/QCDSmearing_OnData_60.root
-/afs/naf.desy.de/user/k/kriheine/kriheine/QCDSmearing_OnData_8TeV_2012_DR53X_RunABCD_pt10_ScalingUncertainty_UseRebCorrection_v3/Run2012A-recover-06Aug2012-v1/QCDSmearing_OnData_58.root

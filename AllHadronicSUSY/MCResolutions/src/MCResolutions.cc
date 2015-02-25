@@ -24,6 +24,7 @@
 //
 MCResolutions::MCResolutions(const edm::ParameterSet& iConfig) {
    //now do what ever initialization is needed
+   _leptonTag = iConfig.getParameter<edm::InputTag> ("leptonTag");
    _jetTag = iConfig.getParameter<edm::InputTag> ("jetTag");
    _btagTag = iConfig.getParameter<std::string> ("btagTag");
    _btagCut = iConfig.getParameter<double> ("btagCut");
@@ -138,6 +139,12 @@ MCResolutions::~MCResolutions() {
 // ------------ method called to for each event  ------------
 void MCResolutions::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
    using namespace std;
+
+   //LeptonVeto
+   edm::Handle<int> NLeptons;
+   iEvent.getByLabel(_leptonTag, NLeptons);
+   if ((*NLeptons) != 0)
+      return;
 
    //Weight
    edm::Handle<double> event_weight;
