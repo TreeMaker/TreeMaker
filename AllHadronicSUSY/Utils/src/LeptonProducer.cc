@@ -19,6 +19,8 @@
 
 
 // system include files
+
+#include <cmath>
 #include <memory>
 
 // user include files
@@ -39,12 +41,91 @@
 // class declaration
 //
 
+
+
 class LeptonProducer : public edm::EDProducer {
 public:
 	explicit LeptonProducer(const edm::ParameterSet&);
 	~LeptonProducer();
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+	
+	double getPFIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
+			      const reco::Candidate* ptcl,
+		       double r_iso_min, double r_iso_max, double kt_scale,
+		       bool use_pfweight, bool charged_only) 
+	{
+	  if (ptcl->pt()<5.) return 99999.;
+	  double deadcone_nh(0.), deadcone_ch(0.), deadcone_ph(0.), deadcone_pu(0.);
+	  if(ptcl->isElectron()) {
+	    if (fabs(ptcl->eta())>1.479) {deadcone_ch = 0.015; deadcone_pu = 0.015; deadcone_ph = 0.08;}
+	  } else if(ptcl->isMuon()) {
+	    deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01;
+	  } else {
+	    //deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01; // maybe use muon cones??
+	  }
+	  double iso_nh(0.); double iso_ch(0.);
+	  double iso_ph(0.); double iso_pu(0.);
+	  double ptThresh(0.5);
+	  if(ptcl->isElectron()) ptThresh = 0;
+	  double r_iso = std::max(r_iso_min,std::min(r_iso_max, kt_scale/ptcl->pt()));
+	  for (const pat::PackedCandidate &pfc : *pfcands) {
+	    if (abs(pfc.pdgId())<7) continue;
+	    double dr = deltaR(pfc, *ptcl);
+	    if (dr > r_iso) continue;
+	    ////////////////// NEUTRALS /////////////////////////
+	    if (pfc.charge()==0){
+	      if (pfc.pt()>ptThresh) {
+		double wpf(1.);
+		if (use_pfweight){
+		  double wpv(0.), wpu(0.);
+		  for (const pat::PackedCandidate &jpfc : *pfcands) {
+		    double jdr = deltaR(pfc, jpfc);
+		    if (pfc.charge()!=0 || jdr<0.00001) continue;
+		    double jpt = jpfc.pt();
+		    if (pfc.fromPV()>1) wpv *= jpt/jdr;
+		    else wpu *= jpt/jdr;
+		  }
+		  wpv = log(wpv);
+		  wpu = log(wpu);
+		  wpf = wpv/(wpv+wpu);
+		}
+		/////////// PHOTONS ////////////
+		if (abs(pfc.pdgId())==22) {
+		  if(dr < deadcone_ph) continue;
+		  iso_ph += wpf*pfc.pt();
+		  /////////// NEUTRAL HADRONS ////////////
+		} else if (abs(pfc.pdgId())==130) {
+		  if(dr < deadcone_nh) continue;
+		  iso_nh += wpf*pfc.pt();
+		}
+	      }
+	      ////////////////// CHARGED from PV /////////////////////////
+	    } else if (pfc.fromPV()>1){
+	      if (abs(pfc.pdgId())==211) {
+		if(dr < deadcone_ch) continue;
+		iso_ch += pfc.pt();
+	      }
+	      ////////////////// CHARGED from PU /////////////////////////
+	    } else {
+	      if (pfc.pt()>ptThresh){
+		if(dr < deadcone_pu) continue;
+		iso_pu += pfc.pt();
+	      }
+	    }
+	  }
+	  double iso(0.);
+	  if (charged_only){
+	    iso = iso_ch;
+	  } else {
+	    iso = iso_ph + iso_nh;
+	    if (!use_pfweight) iso -= 0.5*iso_pu;
+	    if (iso>0) iso += iso_ch;
+	    else iso = iso_ch;
+	  }
+	  iso = iso/ptcl->pt();
+	  return iso;
+		       }
 	
 private:
 	virtual void beginJob() ;
@@ -57,6 +138,7 @@ private:
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag MuonTag_, ElecTag_, PrimVtxTag_;
 	double minElecPt_, maxElecEta_, minMuPt_, maxMuEta_;
+	bool useMiniIsolation_;
 	
 	
 	// ----------member data ---------------------------
@@ -84,15 +166,20 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
 	maxElecEta_=iConfig.getParameter<double>          ("maxElecEta");
 	minMuPt_=iConfig.getParameter<double>          ("minMuPt");
 	maxMuEta_=iConfig.getParameter<double>          ("maxMuEta");
+	useMiniIsolation_ = iConfig.getParameter<bool>("UseMiniIsolation");
   
   const std::string string1("IdMuon");
   produces<std::vector<pat::Muon> > (string1).setBranchAlias(string1);
   const std::string string2("IdIsoMuon");
   produces<std::vector<pat::Muon> > (string2).setBranchAlias(string2);
+//   const std::string string2b("IdIsoMuon_DeltaR");
+//   produces<std::vector<double> > (string2b).setBranchAlias(string2b);
   const std::string string3("IdElectron");
   produces<std::vector<pat::Electron> > (string3).setBranchAlias(string3);
   const std::string string4("IdIsoElectron");
   produces<std::vector<pat::Electron> > (string4).setBranchAlias(string4);
+//   const std::string string4b("IdIsoElectron_DeltaR");
+//   produces<std::vector<double> > (string4b).setBranchAlias(string4b);
 	
 	produces<int>("");
 	/* Examples
@@ -128,6 +215,9 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
 	int Leptons=0;
+	edm::Handle<pat::PackedCandidateCollection> pfcands;
+	iEvent.getByLabel("packedPFCandidates", pfcands);
+	
 	std::vector<pat::Electron> isoElectrons_, idElectrons_;
 	std::vector<pat::Muon> isoMuons_, idMuons_;
 	edm::Handle<reco::VertexCollection> vtx_h;
@@ -147,6 +237,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      float NeuIso=muonHandle->at(m).pfIsolationR04().sumNeutralHadronEt+
 	      muonHandle->at(m).pfIsolationR04().sumPhotonEt;
 	      float dBIsoMu= (ChgIso+std::max(0., NeuIso-0.5*ChgPU))/muonHandle->at(m).pt();
+	      if(useMiniIsolation_) dBIsoMu = getPFIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&muonHandle->at(m)), 0.05, 0.2, 10., false, false);
 	      if(dBIsoMu<0.2)
 	      {
 		Leptons++;
@@ -181,6 +272,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    d0vtx = aEle.gsfTrack()->dxy(vtx.position());
 	    dzvtx = aEle.gsfTrack()->dz(vtx.position());
 	    absiso=absiso/aEle.pt(); 
+	    if(useMiniIsolation_) absiso = getPFIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&aEle), 0.05, 0.2, 10., false, false);
 	    
 	    if(aEle.isEB())
 	    {

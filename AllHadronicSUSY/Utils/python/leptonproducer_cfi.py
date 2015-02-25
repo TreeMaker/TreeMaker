@@ -8,4 +8,5 @@ minElecPt								  = cms.double(10),
 maxElecEta								  = cms.double(2.5),
 minMuPt								  = cms.double(10),
 maxMuEta								  = cms.double(2.4),
+UseMiniIsolation = cms.bool(False),
 )
