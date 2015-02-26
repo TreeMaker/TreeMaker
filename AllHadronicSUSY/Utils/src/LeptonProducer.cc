@@ -257,11 +257,11 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    const reco::Vertex vtx = vtx_h->at(0);
 	    float sieie         = aEle.full5x5_sigmaIetaIeta();
 	    bool convVeto       = aEle.passConversionVeto();
-	    int mhits 		 = aEle.gsfTrack()->numberOfLostHits();
+	    int mhits 		 = aEle.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);;
 	    float dEtaIn        = aEle.deltaEtaSuperClusterTrackAtVtx();
 	    float dPhiIn        = aEle.deltaPhiSuperClusterTrackAtVtx();
 	    float hoe           = aEle.hadronicOverEm();
-	    float ooemoop       = (1.0/aEle.ecalEnergy() - aEle.eSuperClusterOverP()/aEle.ecalEnergy());
+	    float ooemoop       = fabs(1.0/aEle.ecalEnergy() - aEle.eSuperClusterOverP()/aEle.ecalEnergy());
 	    float d0vtx         = 0.0;
 	    float dzvtx         = 0.0;
 	    reco::GsfElectron::PflowIsolationVariables pfIso = aEle.pfIsolationVariables();
