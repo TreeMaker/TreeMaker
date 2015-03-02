@@ -161,7 +161,7 @@ gammajets=False):
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
       JetTag= cms.InputTag('slimmedJets'),
-      maxJetEta								  = cms.double(2.4),
+      maxJetEta								  = cms.double(99), #store all jets 
       maxMuFraction								  = cms.double(200), ## effectively no cut if above 1
       minNConstituents								  = cms.double(1),
       maxNeutralFraction								  = cms.double(0.99),
@@ -228,7 +228,7 @@ gammajets=False):
     #lost-lepton producers
     from AllHadronicSUSY.Utils.jetproperties_cfi import jetproperties
     process.JetsProperties = jetproperties.clone(
-    JetTag  = cms.InputTag('GoodJets'),
+    JetTag  = cms.InputTag('HTJets'),
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     METTag  = cms.InputTag("slimmedMETs"),
     )

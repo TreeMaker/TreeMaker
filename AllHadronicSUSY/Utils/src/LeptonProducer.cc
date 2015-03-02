@@ -252,7 +252,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	{
 	  for(unsigned int e=0; e<eleHandle->size(); ++e)
 	  {
-			if(fabs(eleHandle->at(e).eta())>maxElecEta_ ||eleHandle->at(e).pt()<minElecPt_)continue;
+			if(fabs(eleHandle->at(e).superCluster()->eta())>maxElecEta_ ||eleHandle->at(e).pt()<minElecPt_)continue;
 	    const pat::Electron aEle = eleHandle->at(e);
 	    const reco::Vertex vtx = vtx_h->at(0);
 	    float sieie         = aEle.full5x5_sigmaIetaIeta();

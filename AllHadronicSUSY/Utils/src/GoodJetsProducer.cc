@@ -115,11 +115,11 @@ GoodJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
     for(unsigned int i=0; i<Jets->size();i++)
     {
-      if(std::abs(Jets->at(i).eta())>maxEta_)
-      {
-	prodJets->push_back(Jet(Jets->at(i)) );
-	continue;
-      }
+      //if(std::abs(Jets->at(i).eta())>maxEta_)
+      //{
+	//prodJets->push_back(Jet(Jets->at(i)) );
+	//continue;
+     // }
       float neufrac=Jets->at(i).neutralHadronEnergyFraction();//gives raw energy in the denominator
       float phofrac=Jets->at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
       float chgfrac=Jets->at(i).chargedHadronEnergyFraction();
@@ -127,9 +127,9 @@ GoodJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       float muFrac=Jets->at(i).muonEnergyFraction();
       unsigned int nconstit=Jets->at(i).nConstituents();
       int chgmulti=Jets->at(i).chargedHadronMultiplicity();
-      //       	if(muFrac<0.99 && nconstit>1 && neufrac<0.99 && phofrac<0.99 &&chgmulti>0 && chgfrac>0 && chgEMfrac<0.99)prodJets->push_back(Jet(Jets->at(i)) );
-      if(muFrac<maxMuFraction_ && nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)prodJets->push_back(Jet(Jets->at(i)) );
-      // 	std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
+      if(muFrac<maxMuFraction_ && std::abs(Jets->at(i).eta())<2.4 &&  nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)prodJets->push_back(Jet(Jets->at(i)) );
+      if(muFrac<maxMuFraction_ && std::abs(Jets->at(i).eta())>=2.4 && nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_)prodJets->push_back(Jet(Jets->at(i)) ); 
+     // 	std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
       // 	<<"nconstit>minNConstituents_"<<nconstit<<" > "<<minNConstituents_<<std::endl
       // 	<<"neufrac<maxNeutralFraction_"<<neufrac<<" < "<<maxNeutralFraction_<<std::endl
       // 	<<"phofrac<maxPhotonFraction_"<<phofrac<<" < "<<maxPhotonFraction_<<std::endl
