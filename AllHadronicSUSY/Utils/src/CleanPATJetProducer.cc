@@ -43,6 +43,7 @@ CleanPATJetProducer::CleanPATJetProducer(const edm::ParameterSet& iConfig):
   debug(iConfig.getUntrackedParameter<bool>("debug",true))
 {
   produces< std::vector< pat::Jet > >("");
+  produces< std::vector< pat::Photon > >("bestPhoton");
 }
 
 
@@ -66,7 +67,7 @@ CleanPATJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //initialize 'collection' to be saved in event
   std::auto_ptr< std::vector< pat::Jet > >  patJet4Vec( new std::vector< pat::Jet > () );
-  vector< TLorentzVector > *purePhoton = 0;
+  std::auto_ptr< std::vector< pat::Photon > > purePhoton( new std::vector< pat::Photon > () );
 
   using namespace edm;
   Handle< View< pat::Photon> > photonCands;
@@ -187,7 +188,7 @@ CleanPATJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			  iPhoton->eta(),
 			  iPhoton->phi(),
 			  iPhoton->energy());
-	purePhoton->push_back( temp );
+	purePhoton->push_back( *iPhoton );
 	PhotonPt=iPhoton->pt();
 
       }
@@ -222,8 +223,8 @@ CleanPATJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }// end debug
 
     if(purePhoton->size()==1){
-      double PhEta=purePhoton->at(0).Eta();  
-      double PhPhi=purePhoton->at(0).Phi();
+      double PhEta=purePhoton->at(0).eta();  
+      double PhPhi=purePhoton->at(0).phi();
   
       double jetEta=iPart->eta();
       double jetPhi=iPart->phi();
@@ -248,9 +249,10 @@ CleanPATJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
 
   }// end loop over ak4Jets 
+  
+  iEvent.put(purePhoton, "bestPhoton" ); 
+  iEvent.put(patJet4Vec ); 
 
- 
-  iEvent.put(patJet4Vec); 
 }
 
 
