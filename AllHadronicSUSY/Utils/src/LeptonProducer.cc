@@ -139,6 +139,7 @@ private:
 	edm::InputTag MuonTag_, ElecTag_, PrimVtxTag_;
 	double minElecPt_, maxElecEta_, minMuPt_, maxMuEta_;
 	bool useMiniIsolation_;
+	double muIsoValue_, elecIsoValue_;
 	
 	
 	// ----------member data ---------------------------
@@ -167,6 +168,8 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
 	minMuPt_=iConfig.getParameter<double>          ("minMuPt");
 	maxMuEta_=iConfig.getParameter<double>          ("maxMuEta");
 	useMiniIsolation_ = iConfig.getParameter<bool>("UseMiniIsolation");
+	muIsoValue_=iConfig.getParameter<double>          ("muIsoValue");
+	elecIsoValue_=iConfig.getParameter<double>          ("elecIsoValue");
   
   const std::string string1("IdMuon");
   produces<std::vector<pat::Muon> > (string1).setBranchAlias(string1);
@@ -238,7 +241,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      muonHandle->at(m).pfIsolationR04().sumPhotonEt;
 	      float dBIsoMu= (ChgIso+std::max(0., NeuIso-0.5*ChgPU))/muonHandle->at(m).pt();
 	      if(useMiniIsolation_) dBIsoMu = getPFIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&muonHandle->at(m)), 0.05, 0.2, 10., false, false);
-	      if(dBIsoMu<0.2)
+				if(dBIsoMu<muIsoValue_)
 	      {
 		Leptons++;
 		isoMuons_.push_back(muonHandle->at(m));
@@ -280,7 +283,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      {
 		// id passed
 		idElectrons_.push_back(eleHandle->at(e));
-		if (absiso<0.164369 )
+		if (absiso<0.164369 && !useMiniIsolation_)
 		{
 		 // iso passed
 		  isoElectrons_.push_back(eleHandle->at(e));
@@ -294,7 +297,14 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      {
 		// id passed
 		idElectrons_.push_back(eleHandle->at(e));
-		if (absiso<0.212604 )
+		if(absiso<elecIsoValue_ && useMiniIsolation_)
+{
+                  // iso passed
+                  isoElectrons_.push_back(eleHandle->at(e));
+                  Leptons++;
+
+}
+		if (absiso<0.212604  && !useMiniIsolation_)
 		{
 		  // iso passed
 		  isoElectrons_.push_back(eleHandle->at(e));

@@ -10,7 +10,8 @@ testFileName="",
 Global_Tag="",
 numProcessedEvt=1000,
 lostlepton=False,
-gammajets=False):
+gammajets=False,
+applybaseline=False):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
     process.GlobalTag.globaltag = Global_Tag
@@ -103,36 +104,6 @@ gammajets=False):
     )
     process.Baseline += process.IsolatedTracksVeto
     VarsInt.extend(['IsolatedTracksVeto:isoTracks'])
-    #process.load("PhysicsTools.PatAlgos.selectionLayer1.muonCountFilter_cfi")
-    #process.load("PhysicsTools.PatAlgos.selectionLayer1.electronCountFilter_cfi")
-    #process.selectedIDIsoMuons = cms.EDFilter("CandPtrSelector", src = cms.InputTag("slimmedMuons"), cut = cms.string('''abs(eta)<2.5 && pt>10. &&
-    #(pfIsolationR04().sumChargedHadronPt+
-    #max(0.,pfIsolationR04().sumNeutralHadronEt+
-    #pfIsolationR04().sumPhotonEt-
-    #0.50*pfIsolationR04().sumPUPt))/pt < 0.20 &&
-    #(isPFMuon && (isGlobalMuon || isTrackerMuon) )'''))
-    #process.Baseline += process.selectedIDIsoMuons
-    #process.selectedIDMuons = cms.EDFilter("CandPtrSelector", src = cms.InputTag("slimmedMuons"), cut = cms.string('''abs(eta)<2.5 && pt>10. &&
-    #(isPFMuon && (isGlobalMuon || isTrackerMuon) )'''))
-    #process.LostLepton += process.selectedIDMuons
-    #process.selectedIDIsoElectrons = cms.EDFilter("CandPtrSelector", src = cms.InputTag("slimmedElectrons"), cut = cms.string('''abs(eta)<2.5 && pt>10. &&
-    #gsfTrack.isAvailable() &&
-    #gsfTrack.hitPattern().numberOfLostHits('MISSING_INNER_HITS')<2 &&
-    #(pfIsolationVariables().sumChargedHadronPt+
-    #max(0.,pfIsolationVariables().sumNeutralHadronEt+
-    #pfIsolationVariables().sumPhotonEt-
-    #0.5*pfIsolationVariables().sumPUPt))/pt < 0.20'''))
-    #process.Baseline += process.selectedIDIsoElectrons
-    #process.selectedIDElectrons = cms.EDFilter("CandPtrSelector", src = cms.InputTag("slimmedElectrons"), cut = cms.string('''abs(eta)<2.5 && pt>10. &&
-    #gsfTrack.isAvailable() &&
-    #gsfTrack.hitPattern().numberOfLostHits('MISSING_INNER_HITS')<2'''))
-    #process.LostLepton += process.selectedIDElectrons
-    #from AllHadronicSUSY.Utils.leptonint_cfi import leptonint
-    #process.Leptons = leptonint.clone(
-    #LeptonTag = cms.VInputTag(cms.InputTag('selectedIDIsoMuons'),cms.InputTag('selectedIDIsoElectrons')),
-    #)
-    #process.Baseline += process.Leptons
-    #VarsInt.extend(['Leptons(LeptonsOld)'])
     from AllHadronicSUSY.Utils.leptonproducer_cfi import leptonproducer
     process.LeptonsNew = leptonproducer.clone(
       MuonTag = cms.InputTag('slimmedMuons'),
@@ -142,7 +113,9 @@ gammajets=False):
       maxElecEta								  = cms.double(2.5),
       minMuPt								  = cms.double(10),
       maxMuEta								  = cms.double(2.4),
-      UseMiniIsolation = cms.bool(False),
+      UseMiniIsolation = cms.bool(True),
+      muIsoValue								  = cms.double(0.1),
+      elecIsoValue								  = cms.double(0.4),
       )
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
@@ -154,7 +127,9 @@ gammajets=False):
       maxElecEta								  = cms.double(2.5),
       minMuPt								  = cms.double(10),
       maxMuEta								  = cms.double(2.4),
-      UseMiniIsolation = cms.bool(True),
+      muIsoValue								  = cms.double(0.1),
+      elecIsoValue								  = cms.double(0.4), # only has an effect when used with miniIsolation
+      UseMiniIsolation = cms.bool(False),
       )
     process.Baseline += process.LeptonsNewNoMiniIso
     VarsInt.extend(['LeptonsNewNoMiniIso(LeptonsNoMiniIsolation)'])
@@ -184,6 +159,11 @@ gammajets=False):
     )
     process.Baseline += process.HT
     VarsDouble.extend(['HT'])
+    from AllHadronicSUSY.Utils.doublefilter_cfi import DoubleFilter
+    process.HTFilter = DoubleFilter.clone(
+    DoubleTag          = cms.InputTag('HT'),
+    CutValue	= cms.double('500'),
+    )
     from AllHadronicSUSY.Utils.njetint_cfi import njetint
     process.NJets = njetint.clone(
     JetTag  = cms.InputTag('HTJets'),
@@ -211,6 +191,13 @@ gammajets=False):
     )
     process.Baseline += process.MHT
     VarsDouble.extend(['MHT'])
+    process.MHTFilter = DoubleFilter.clone(
+    DoubleTag          = cms.InputTag('MHT'),
+    CutValue	= cms.double('200'),
+    )
+    if applybaseline:
+			process.Baseline += process.HTFilter
+			process.Baseline += process.MHTFilter
     from AllHadronicSUSY.Utils.deltaphidouble_cfi import deltaphidouble
     process.DeltaPhi = deltaphidouble.clone(
     DeltaPhiJets  = cms.InputTag('HTJets'),

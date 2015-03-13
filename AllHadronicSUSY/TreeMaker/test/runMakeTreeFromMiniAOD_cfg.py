@@ -5,11 +5,13 @@ dataSetName = parameters.value("dataset","file:/pnfs/desy.de/cms/tier2/store/mc/
 global_tag = parameters.value("global_tag","")
 lostlepton= parameters.value("lostlepton", False)
 gammajets= parameters.value("gammajets", False)
+applybaseline= parameters.value("applybaseline", False)
 print "***** SETUP ************************************"
 print " dataSetName : "+dataSetName
 print " global_tag : "+global_tag
 print " storing lostlepton variables: "+str(lostlepton)
 print " storing gammajets variables: "+str(gammajets)
+print " Applying baseline selection filter: "+str(applybaseline)
 print "************************************************"
 
 # The process needs to be defined AFTER reading sys.argv,
@@ -25,5 +27,6 @@ makeTreeTreeFromMiniADO(process,
   Global_Tag=global_tag,
   numProcessedEvt=1000,
   lostlepton=lostlepton,
-  gammajets=gammajets
+  gammajets=gammajets,
+  applybaseline=applybaseline
   )
