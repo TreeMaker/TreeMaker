@@ -113,9 +113,9 @@ applybaseline=False):
       maxElecEta								  = cms.double(2.5),
       minMuPt								  = cms.double(10),
       maxMuEta								  = cms.double(2.4),
-      UseMiniIsolation = cms.bool(True),
-      muIsoValue								  = cms.double(0.1),
-      elecIsoValue								  = cms.double(0.4),
+      UseMiniIsolation = cms.bool(False),
+      muIsoValue								  = cms.double(0.2),
+      elecIsoValue								  = cms.double(0.2), # only has an effect when used with miniIsolation
       )
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
@@ -127,8 +127,8 @@ applybaseline=False):
       maxElecEta								  = cms.double(2.5),
       minMuPt								  = cms.double(10),
       maxMuEta								  = cms.double(2.4),
-      muIsoValue								  = cms.double(0.1),
-      elecIsoValue								  = cms.double(0.4), # only has an effect when used with miniIsolation
+      muIsoValue								  = cms.double(0.2),
+      elecIsoValue								  = cms.double(0.2), # only has an effect when used with miniIsolation
       UseMiniIsolation = cms.bool(False),
       )
     process.Baseline += process.LeptonsNewNoMiniIso

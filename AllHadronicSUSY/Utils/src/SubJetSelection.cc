@@ -57,7 +57,6 @@ private:
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
 	double MinPt_, MaxEta_;
-        bool applyLooseID;
 	
 	// ----------member data ---------------------------
 };
@@ -80,7 +79,6 @@ SubJetSelection::SubJetSelection(const edm::ParameterSet& iConfig)
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 	MinPt_ = iConfig.getParameter <double> ("MinPt");
 	MaxEta_ = iConfig.getParameter <double> ("MaxEta");
-	applyLooseID = iConfig.getUntrackedParameter<bool>("applyLooseID",true);
 	//register your products
 	/* Examples
 	 *   produces<ExampleData2>();
@@ -126,24 +124,11 @@ SubJetSelection::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	{
 		for(unsigned int i=0; i<Jets->size();i++)
 		{
-		  // applying loose jet ID
-		  // neutralEmEnergyFraction<0.99&&neutralHadronEnergyFraction<0.99&&numberOfDaughters>1
-		  if( applyLooseID )
-		  {
-		    if(Jets->at(i).pt()>MinPt_ && std::abs(Jets->at(i).eta() ) < MaxEta_ &&
-		       Jets->at(i).neutralEmEnergyFraction()<0.99 && 
-		       Jets->at(i).neutralHadronEnergyFraction()<0.99 &&
-		       Jets->at(i).numberOfDaughters()>1 )
-		      {
-			prodJets->push_back(Jet(Jets->at(i)) );
-		      }
-		  }else
-		  {
+
 		    if(Jets->at(i).pt()>MinPt_ && std::abs(Jets->at(i).eta() ) < MaxEta_)
 		    {
 		      prodJets->push_back(Jet(Jets->at(i)) );
 		    }
-		  }
 		}
 	}
 	// put in the event
