@@ -13,6 +13,10 @@
 //
 // Original Author:  Arne-Rasmus Draeger,68/111,4719,
 //         Created:  Fri Apr 11 16:35:33 CEST 2014
+// March 8, 2015: Making pt & eta cut on jets configurable and adding 
+// the ability to pass a collection of reco::candidates to be removed
+// from the MET calculation -- Andrew Whitbeck.  
+//
 // $Id$
 //
 //
@@ -55,9 +59,8 @@ private:
 	virtual void endRun(edm::Run&, edm::EventSetup const&);
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	edm::InputTag metTag_, JetTag_;
-	double MinJetPt_;
-	
+        edm::InputTag metTag_, JetTag_, cleanTag_;
+        double MinJetPt_,MaxJetEta_;	
 	
 	// ----------member data ---------------------------
 };
@@ -76,10 +79,12 @@ private:
 //
 METDouble::METDouble(const edm::ParameterSet& iConfig)
 {
-	//register your produc
-	metTag_ = iConfig.getParameter<edm::InputTag> ("METTag");
-	JetTag_ = iConfig.getParameter<edm::InputTag> ("JetTag");
-
+	//register your product
+	metTag_   = iConfig.getParameter<edm::InputTag> ("METTag");
+	JetTag_   = iConfig.getParameter<edm::InputTag> ("JetTag");
+	cleanTag_ = iConfig.getUntrackedParameter<edm::InputTag> ("cleanTag",edm::InputTag(""));
+	MinJetPt_ = iConfig.getUntrackedParameter<double> ("minJetPt",30.);
+	MaxJetEta_= iConfig.getUntrackedParameter<double> ("minJetEta",5.);
 
 	produces<double>("DeltaPhiN1");
         produces<double>("DeltaPhiN2");
@@ -87,17 +92,7 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
         produces<double>("minDeltaPhiN");	
 	produces<double>("Pt");
 	produces<double>("Phi");
-	/* Examples
-	 *   produces<ExampleData2>();
-	 * 
-	 *   //if do put with a label
-	 *   produces<ExampleData2>("label");
-	 * 
-	 *   //if you want to put into the Run
-	 *   produces<ExampleData2,InRun>();
-	 */
-	//now do what ever other initialization is needed
-	
+
 }
 
 
@@ -120,36 +115,60 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
 	double metpt_=0, metphi_=0;;
-	edm::Handle< edm::View<reco::MET> > MET;
+	edm::Handle< edm::View<pat::MET> > MET;
 	iEvent.getByLabel(metTag_,MET); 
 	
 	edm::Handle< edm::View<pat::Jet> > Jets;
         iEvent.getByLabel(JetTag_,Jets);
+	
+	edm::Handle< edm::View<reco::Candidate> > cleanCands;
+	iEvent.getByLabel(cleanTag_,cleanCands);
+	
 	double dpnhat[3];
-	  unsigned int goodcount=0;
-    	for(int i=0; i<3; ++i)dpnhat[i]=-999;
+	unsigned int goodcount=0;
+    	
+	for(int i=0; i<3; ++i)dpnhat[i]=-999;
 	    reco::MET::LorentzVector metLorentz(0,0,0,0);
 	if(MET.isValid() ){
+
 		metpt_=MET->at(0).pt();
 		metphi_=MET->at(0).phi();
 		metLorentz=MET->at(0).p4();
+
+	}else std::cout<<"METDouble::Invlide Tag: "<<metTag_.label()<<std::endl;
+	
+	// loop over all reco::candidates in cleanCands
+	// and remove from the MET four vector 
+	if( cleanCands.isValid() ){
+	 
+	  for( View< reco::Candidate >::const_iterator iCand = cleanCands->begin();
+	       iCand != cleanCands->end();
+	       ++iCand){
+	    
+	    metLorentz += iCand->p4();
+
+	  }// end loop over cleanCands
+
+	  metpt_ = metLorentz.Pt();
+	  metphi_ = metLorentz.Phi();
+	  
 	}
-	else std::cout<<"METDouble::Invlide Tag: "<<metTag_.label()<<std::endl;
+	
 	std::auto_ptr<double> htp(new double(metpt_));
 	iEvent.put(htp,"Pt");
 	std::auto_ptr<double> htp2(new double(metphi_));
 	iEvent.put(htp2,"Phi");
 	if( Jets.isValid() ) {
-                for(unsigned int i=0; i<Jets->size();i++){
-		if(goodcount<3 && Jets->at(i).pt()>30){ //make this pt cut configurable
-                float dphi=std::abs(reco::deltaPhi(Jets->at(i).phi(),metLorentz.phi()));
-                float dT=DeltaT(i, Jets);
-                if(dT/metLorentz.pt()>=1.0)dpnhat[goodcount]=dphi/(TMath::Pi()/2.0);
-                else dpnhat[goodcount]=dphi/asin(dT/metLorentz.pt());
-		++goodcount;
-	   }
-	}
-      }
+	  for(unsigned int i=0; i<Jets->size();i++){
+	    if(goodcount<3 && Jets->at(i).pt()>MinJetPt_ && fabs( Jets->at(i).eta() ) < MaxJetEta_ ){ 
+	      float dphi=std::abs(reco::deltaPhi(Jets->at(i).phi(),metLorentz.phi()));
+	      float dT=DeltaT(i, Jets);
+	      if(dT/metLorentz.pt()>=1.0)dpnhat[goodcount]=dphi/(TMath::Pi()/2.0);
+	      else dpnhat[goodcount]=dphi/asin(dT/metLorentz.pt());
+	      ++goodcount;
+	    }
+	  }// end loop over jets
+	}// end Jets.isValid()
 	std::auto_ptr<double> htp3(new double(dpnhat[0]));
         iEvent.put(htp3,"DeltaPhiN1");
         std::auto_ptr<double> htp4(new double(dpnhat[1]));
