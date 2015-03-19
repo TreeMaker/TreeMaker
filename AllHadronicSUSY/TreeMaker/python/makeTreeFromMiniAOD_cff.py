@@ -11,6 +11,7 @@ Global_Tag="",
 numProcessedEvt=1000,
 lostlepton=False,
 gammajets=False,
+tagandprobe=False,
 applybaseline=False):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -113,9 +114,9 @@ applybaseline=False):
       maxElecEta								  = cms.double(2.5),
       minMuPt								  = cms.double(10),
       maxMuEta								  = cms.double(2.4),
-      UseMiniIsolation = cms.bool(False),
+      UseMiniIsolation = cms.bool(True),
       muIsoValue								  = cms.double(0.2),
-      elecIsoValue								  = cms.double(0.2), # only has an effect when used with miniIsolation
+      elecIsoValue								  = cms.double(0.1), # only has an effect when used with miniIsolation
       )
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
@@ -144,6 +145,27 @@ applybaseline=False):
       minChargedMultiplicity								  = cms.double(0),
       minChargedFraction								  = cms.double(0),
       maxChargedEMFraction								  = cms.double(0.99),
+      )
+    from AllHadronicSUSY.Utils.leptontagandprobeproducer_cfi import leptontagandprobeproducer
+    process.MuonIsoTagAndProbe = leptontagandprobeproducer.clone(
+    	TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
+      ProbePFCand = cms.InputTag('LeptonsNew:IdMuon'),
+      ProbeTestPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
+      )
+    process.MuonIdTagAndProbe = leptontagandprobeproducer.clone(
+    	TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
+    	ProbePFCand = cms.InputTag('slimmedMuons'),
+    	ProbeTestPFCand = cms.InputTag('LeptonsNew:IdMuon'),
+      )
+    process.ElectronIsoTagAndProbe = leptontagandprobeproducer.clone(
+    	TagPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
+      ProbePFCand = cms.InputTag('LeptonsNew:IdElectron'),
+      ProbeTestPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
+      )
+    process.ElectronIdTagAndProbe = leptontagandprobeproducer.clone(
+    	TagPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
+    	ProbePFCand = cms.InputTag('slimmedElectrons'),
+    	ProbeTestPFCand = cms.InputTag('LeptonsNew:IdElectron'),
       )
     process.Baseline += process.GoodJets
     from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
@@ -235,7 +257,20 @@ applybaseline=False):
     #gamma+jet producers
 
 
-
+    #tag and probe
+    if tagandprobe:
+			process.Baseline += process.GenLeptons
+			process.Baseline += process.JetsProperties
+			process.Baseline += process.SelectedPFCandidates
+			process.Baseline += process.MuonIsoTagAndProbe
+			RecoCandVector.extend(['MuonIsoTagAndProbe:Tag(TagIsoMuon)','MuonIsoTagAndProbe:Probe(ProbeIsoMuon)|MuonIsoTagAndProbe:InvariantMass(F_InvariantMass)|MuonIsoTagAndProbe:PassingOrFail(I_PassingOrFail)'])
+			process.Baseline += process.MuonIdTagAndProbe
+			RecoCandVector.extend(['MuonIdTagAndProbe:Tag(TagIDMuon)','MuonIdTagAndProbe:Probe(ProbeIDMuon)|MuonIdTagAndProbe:InvariantMass(F_InvariantMass)|MuonIdTagAndProbe:PassingOrFail(I_PassingOrFail)'])
+			process.Baseline += process.ElectronIsoTagAndProbe
+			RecoCandVector.extend(['ElectronIsoTagAndProbe:Tag(TagIsoElectron)','ElectronIsoTagAndProbe:Probe(ProbeIsoElectron)|ElectronIsoTagAndProbe:InvariantMass(F_InvariantMass)|ElectronIsoTagAndProbe:PassingOrFail(I_PassingOrFail)'])
+			process.Baseline += process.ElectronIdTagAndProbe
+			RecoCandVector.extend(['ElectronIdTagAndProbe:Tag(TagIDElectron)','ElectronIdTagAndProbe:Probe(ProbeIDElectron)|ElectronIdTagAndProbe:InvariantMass(F_InvariantMass)|ElectronIdTagAndProbe:PassingOrFail(I_PassingOrFail)'])
+			RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminator(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)'] ) # jet
 
     #define sequences
     

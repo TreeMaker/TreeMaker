@@ -388,7 +388,42 @@ def getWeightProducer(fileName):
       print "ZJetsToNuNu_HT-600toInf_Tune4C_13TeV '"+fileName+"'"
       applyWeight = True
       weightProducer.weight = cms.double(-1.)
-				
+      
+   if "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(194.3)
+      weightProducer.NumberEvts = cms.double(4054159)
+      print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+      
+   if "DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(52.24)
+      weightProducer.NumberEvts = cms.double(4666496)
+      print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+      
+   if "DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(6.546)
+      weightProducer.NumberEvts = cms.double(4931372)
+      print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+      
+   if "DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(2.179)
+      weightProducer.NumberEvts = cms.double(4493574)
+      print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
         
    ## --- PU Reweighting and Lumi ------------------------------------------------
          
