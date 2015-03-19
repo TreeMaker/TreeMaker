@@ -163,6 +163,22 @@ def getWeightProducer(fileName):
    # 13 TeV miniAOD samples - PHYS14
 
    # signal
+   if "SMS-T1qqqq_2J_mGl-1400_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double( 0.0252977 )
+      weightProducer.NumberEvts = cms.double(102891)
+      print "SMS-T1qqqq_2J_mGl-1400_mLSP-100 : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+   if "SMS-T1qqqq_2J_mGl-1000_mLSP-800_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double( 0.325388 )
+      weightProducer.NumberEvts = cms.double(96681)
+      print "SMS-T1qqqq_2J_mGl-1000_mLSP-800 : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
 
    if "SMS-T1bbbb_2J_mGl-1000_mLSP-900_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
       mcVersion = "Phys14DR"
@@ -185,7 +201,7 @@ def getWeightProducer(fileName):
    if "SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(0.085)
+      weightProducer.XS         = cms.double(0.0856418)
       weightProducer.NumberEvts = cms.double(100322)
       print "SMS-T1tttt_2J_mGl-1200_mLSP-800 : '"+fileName+"'"
       applyWeight = True
@@ -359,8 +375,8 @@ def getWeightProducer(fileName):
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
       weightProducer.XS         = cms.double(11.99)
-      weightProducer.NumberEvts = cms.double(100)
-      print "ZJetsToNuNu_HT-400to600_Tune4C_13TeV: UPDATE NUMBER OF EVENTS NOT YET AVAILABLE '"+fileName+"'"
+      weightProducer.NumberEvts = cms.double(4433784)
+      #print "ZJetsToNuNu_HT-400to600_Tune4C_13TeV: UPDATE NUMBER OF EVENTS NOT YET AVAILABLE '"+fileName+"'"
       applyWeight = True
       weightProducer.weight = cms.double(-1.)
 
