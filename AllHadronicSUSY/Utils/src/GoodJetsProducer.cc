@@ -123,18 +123,8 @@ GoodJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          float muFrac=Jets->at(i).muonEnergyFraction();
          unsigned int nconstit=Jets->at(i).nConstituents();
          int chgmulti=Jets->at(i).chargedHadronMultiplicity();
-         //if(muFrac<0.99 && nconstit>1 && neufrac<0.99 && phofrac<0.99 &&chgmulti>0 && chgfrac>0 && chgEMfrac<0.99)prodJets->push_back(Jet(Jets->at(i)) );
          if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)
             prodJets->push_back(Jet(Jets->at(i)));
-         //std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
-         //<<"nconstit>minNConstituents_"<<nconstit<<" > "<<minNConstituents_<<std::endl
-         //<<"neufrac<maxNeutralFraction_"<<neufrac<<" < "<<maxNeutralFraction_<<std::endl
-         //<<"phofrac<maxPhotonFraction_"<<phofrac<<" < "<<maxPhotonFraction_<<std::endl
-         //<<"chgmulti>minChargedMultiplicity_"<<chgmulti<<" > "<<minChargedMultiplicity_<<std::endl
-         //<<"chgfrac>minChargedFraction_"<<chgfrac<<" > "<<minChargedFraction_<<std::endl
-         //<<"chgEMfrac<maxChargedEMFraction_"<<chgEMfrac<<" < "<<maxChargedEMFraction_<<std::endl
-         //<<std::endl<<std::endl<<std::endl;
-         
       }
    }
    // put in the event
