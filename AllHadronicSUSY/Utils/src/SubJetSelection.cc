@@ -47,6 +47,7 @@ public:
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
+<<<<<<< HEAD
    virtual void beginJob() ;
    virtual void produce(edm::Event&, const edm::EventSetup&);
    virtual void endJob() ;
@@ -60,6 +61,20 @@ private:
    bool applyLooseID;
    
    // ----------member data ---------------------------
+=======
+	virtual void beginJob() ;
+	virtual void produce(edm::Event&, const edm::EventSetup&);
+	virtual void endJob() ;
+	
+	virtual void beginRun(edm::Run&, edm::EventSetup const&);
+	virtual void endRun(edm::Run&, edm::EventSetup const&);
+	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+	edm::InputTag JetTag_;
+	double MinPt_, MaxEta_;
+	
+	// ----------member data ---------------------------
+>>>>>>> b60334f714f434a20912eac0b1d57cbf36f959e1
 };
 
 //
@@ -77,6 +92,7 @@ private:
 using namespace pat;
 SubJetSelection::SubJetSelection(const edm::ParameterSet& iConfig)
 {
+
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
    MinPt_ = iConfig.getParameter <double> ("MinPt");
    MaxEta_ = iConfig.getParameter <double> ("MaxEta");

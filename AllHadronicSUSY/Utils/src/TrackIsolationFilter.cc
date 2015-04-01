@@ -126,9 +126,15 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
   edm::Handle<edm::View<reco::Vertex> > vertices;
   iEvent.getByLabel(vertexInputTag_, vertices);
   reco::Vertex::Point vtxpos = (vertices->size() > 0 ? (*vertices)[0].position() : reco::Vertex::Point());
-
+int firstGoodVertexIdx = -1;
   vtxSize = vertices->size();
-  
+for(int v=0; v<vtxSize;++v){
+        if ( !(*vertices)[v].isFake() && (*vertices)[v].ndof()>=4. && (*vertices)[v].position().Rho()<=2.0 && fabs((*vertices)[v].position().Z())<=24.0) {
+        firstGoodVertexIdx=v;
+// 				std::cout<<"GoodVertexIdV found: "<<firstGoodVertexIdx<<std::endl;
+        break;
+        }
+}  
   //-------------------------------------------------------------------------------------------------
   // loop over PFCandidates and calculate the trackIsolation and dz w.r.t. 1st good PV for each one
   // for neutral PFCandidates, store trkiso = 999 and dzpv = 999
@@ -136,8 +142,8 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 
   std::auto_ptr<std::vector<reco::PFCandidate> > prod(new std::vector<reco::PFCandidate>());
   std::auto_ptr<std::vector<pat::PackedCandidate> > prodminiAOD(new std::vector<pat::PackedCandidate>());
-  if( vertices->size() > 0) {
-
+   if( vertices->size() > 0 && firstGoodVertexIdx>=0) {
+// 	if( vertices->size() > 0) {
     /* for( PFCandidateCollection::const_iterator pf_it = pfCandidatesHandle->begin(); pf_it != pfCandidatesHandle->end(); pf_it++ ) {
 
         //-------------------------------------------------------------------------------------
