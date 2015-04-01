@@ -58,6 +58,11 @@ process.TFileService = cms.Service("TFileService",fileName = cms.string("QCDSmea
 ###############################################################################
 
 ###############################################################################
+process.load("AllHadronicSUSY.TruthNoiseFilter.truthnoisefilter_cfi")
+process.TruthNoiseFilter.jetCollection = InputJetTag
+###############################################################################
+
+###############################################################################
 process.load("AllHadronicSUSY.QCDBkgRS.qcdbkgrs_cfi")
 ###############################################################################
 
@@ -65,7 +70,7 @@ process.load("AllHadronicSUSY.QCDBkgRS.qcdbkgrs_cfi")
 # Rebalancing and Smearing configuration
 ###############################################################################
 print "*** R+S Configuration **************************************************"
-process.QCDfromSmearing.SmearingFile = '/afs/desy.de/user/c/csander/xxl-af-cms/CMSSW_7_2_3_patch1/src/AllHadronicSUSY/MCResolutions/data/QCD_13TeV_madgraph_PHYS14_v2.root'
+process.QCDfromSmearing.SmearingFile = '/afs/desy.de/user/c/csander/xxl-af-cms/CMSSW_7_2_3_patch1/src/AllHadronicSUSY/MCResolutions/data/QCD_13TeV_madgraph_PHYS14_fineBins_wideRange.root'
 process.QCDfromSmearing.jetCollection = InputJetTag
 process.QCDfromSmearing.leptonTag = InputLeptonTag
 process.QCDfromSmearing.uncertaintyName = ''
@@ -81,10 +86,10 @@ process.QCDfromSmearing.InputHisto3p_HF = 'h_b_JetAll_ResponsePt'
 process.QCDfromSmearing.InputHisto1_NoHF = 'h_nob_JetAll_ResponsePt'
 process.QCDfromSmearing.InputHisto2_NoHF = 'h_nob_JetAll_ResponsePt'
 process.QCDfromSmearing.InputHisto3p_NoHF = 'h_nob_JetAll_ResponsePt'
-process.QCDfromSmearing.RebalanceCorrectionFile = '/nfs/dust/cms/user/csander/RA2/AdditionalInputFiles_8TeV/RebalanceCorrection_DR53X_withoutPUReweighting_pt10.root'
+process.QCDfromSmearing.RebalanceCorrectionFile = '/nfs/dust/cms/user/csander/RA2/AdditionalInputFiles_13TeV/RebalanceCorrectionFactors_madgraph_phys14_withoutPUReweighting_pt10.root'
 process.QCDfromSmearing.NRebin = 1
 process.QCDfromSmearing.NJets = 2
-process.QCDfromSmearing.SmearCollection = 'Reco'
+process.QCDfromSmearing.SmearCollection = 'Gen'
 process.QCDfromSmearing.PtBinEdges_scaling = cms.vdouble(0., 7000.)
 process.QCDfromSmearing.EtaBinEdges_scaling = cms.vdouble(0.0, 5.0)
 process.QCDfromSmearing.AdditionalSmearing = cms.vdouble(1.0)
@@ -145,8 +150,9 @@ print "*** good jets producer **************************************************
 from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
 process.GoodJets = GoodJetsProducer.clone(
                                           JetTag                  = cms.InputTag('slimmedJets'),
+                                          maxJetEta               = cms.double(5.0),
                                           maxMuFraction           = cms.double(2),
-                                          minNConstituents        = cms.double(1),
+                                          minNConstituents        = cms.double(2),
                                           maxNeutralFraction      = cms.double(0.99),
                                           maxPhotonFraction       = cms.double(0.99),
                                           minChargedMultiplicity  = cms.double(0),
@@ -168,6 +174,7 @@ process.GoodLeptons = leptonproducer.clone(
                                            maxMuEta       = cms.double(2.4),
 )
 process.Baseline += process.GoodLeptons
+VarsInt.extend(['GoodLeptons'])
 
 ## --- HT jets producer ------------------------------------------------
 print "*** HT jets producer **************************************************"
@@ -232,7 +239,7 @@ print "*** DeltaPhi producer **************************************************"
 from AllHadronicSUSY.Utils.deltaphidouble_cfi import deltaphidouble
 process.DeltaPhi = deltaphidouble.clone(
                                         DeltaPhiJets  = cms.InputTag('HTJets'),
-                                        MHTJets       = cms.InputTag("MHTJets"),
+                                        MHTJets       = cms.InputTag('MHTJets'),
 )
 process.Baseline += process.DeltaPhi
 VarsDouble.extend(['DeltaPhi:Jet1Pt','DeltaPhi:Jet2Pt','DeltaPhi:Jet3Pt'])
@@ -263,20 +270,57 @@ process.RA2TreeMaker = TreeMaker.clone(
 )
 ###############################################################################
 
+## --- MET filters -----------------------------------------------------
+## We don't use "import *" because the cff contains some modules for which the C++ class doesn't exist
+## and this triggers an error under unscheduled mode
+from RecoMET.METFilters.metFilters_cff import HBHENoiseFilter, CSCTightHaloFilter, hcalLaserEventFilter, EcalDeadCellTriggerPrimitiveFilter, eeBadScFilter, ecalLaserCorrFilter
+from RecoMET.METFilters.metFilters_cff import goodVertices, trackingFailureFilter, trkPOGFilters, manystripclus53X, toomanystripclus53X, logErrorTooManyClusters
+from RecoMET.METFilters.metFilters_cff import metFilters
+
+## individual filters
+#Flag_HBHENoiseFilter = cms.Path(HBHENoiseFilter)
+#Flag_CSCTightHaloFilter = cms.Path(CSCTightHaloFilter)
+#Flag_hcalLaserEventFilter = cms.Path(hcalLaserEventFilter)
+#Flag_EcalDeadCellTriggerPrimitiveFilter = cms.Path(EcalDeadCellTriggerPrimitiveFilter)
+#Flag_goodVertices = cms.Path(goodVertices)
+#Flag_trackingFailureFilter = cms.Path(goodVertices + trackingFailureFilter)
+#Flag_eeBadScFilter = cms.Path(eeBadScFilter)
+#Flag_ecalLaserCorrFilter = cms.Path(ecalLaserCorrFilter)
+#Flag_trkPOGFilters = cms.Path(trkPOGFilters)
+## and the sub-filters
+#Flag_trkPOG_manystripclus53X = cms.Path(~manystripclus53X)
+#Flag_trkPOG_toomanystripclus53X = cms.Path(~toomanystripclus53X)
+#Flag_trkPOG_logErrorTooManyClusters = cms.Path(~logErrorTooManyClusters)
+
+process.Filter_HBHENoiseFilter = HBHENoiseFilter.clone()
+
+# and the summary
+#Flag_METFilters = cms.Path(metFilters)
+
+#def miniAOD_customizeMETFiltersFastSim(process):
+#   """Replace some MET filters that don't work in FastSim with trivial bools"""
+#   for X in 'CSCTightHaloFilter', 'HBHENoiseFilter':
+#      process.globalReplace(X, cms.EDFilter("HLTBool", result=cms.bool(True)))
+#   for X in 'manystripclus53X', 'toomanystripclus53X', 'logErrorTooManyClusters':
+#      process.globalReplace(X, cms.EDFilter("HLTBool", result=cms.bool(False)))
+#   return process
+
 ###############################################################################
 process.dump   = cms.EDAnalyzer("EventContentAnalyzer")
 ###############################################################################
 
 process.prediction = cms.Path(
                               process.Baseline *
+                              #process.TruthNoiseFilter *
                               process.WeightProducer *
                               process.QCDfromSmearing
                               #* process.dump
 )
 
 process.mc = cms.Path(
-                      process.WeightProducer *
                       process.Baseline *
+                      #process.TruthNoiseFilter *
+                      process.WeightProducer *
                       process.RA2TreeMaker
                       #* process.dump
 )

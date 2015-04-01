@@ -207,13 +207,12 @@ double QCDBkgRS::JetResolution_Phi2(const double& e, const double& eta) {
 
 //--------------------------------------------------------------------------
 // pt resolution for smearing
-double QCDBkgRS::JetResolutionHist_Pt_Smear(const double& pt, const double& eta, const int& i, const double& HT, const int& NJets) {
+double QCDBkgRS::JetResolutionHist_Pt_Smear(const double& pt, const double& eta, const int& i, const double& HT, const int& NJets, const bool btag) {
    int i_jet;
    i < 2 ? i_jet = i : i_jet = 2;
    int i_Pt = GetIndex(pt, &PtBinEdges_);
    int i_eta = GetIndex(eta, &EtaBinEdges_);
    
-   bool btag = false;
    double res = 1.0;
    if( btag ){
       // get heavy flavor smear function
@@ -431,7 +430,8 @@ void QCDBkgRS::SmearingJets(const std::vector<pat::Jet> &Jets_reb, std::vector<p
          for (std::vector<pat::Jet>::const_iterator it = Jets_reb.begin(); it != Jets_reb.end(); ++it) {
             if (it->pt() > smearedJetPt_) {
                double newPt = 0;
-               newPt = it->pt() * JetResolutionHist_Pt_Smear(it->pt(), it->eta(), i_jet, HT, NJets_reb);
+               bool btag = (it->bDiscriminator(btagTag_) > btagCut_);
+               newPt = it->pt() * JetResolutionHist_Pt_Smear(it->pt(), it->eta(), i_jet, HT, NJets_reb, btag);
                //double newEta = rand_->Gaus(it->eta(), TMath::Sqrt(JetResolution_Eta2(it->energy(), it->eta())));
                //double newPhi = rand_->Gaus(it->phi(), TMath::Sqrt(JetResolution_Phi2(it->energy(), it->eta())));
                double newEta = it->eta();
@@ -468,6 +468,7 @@ void QCDBkgRS::SmearingJets(const std::vector<pat::Jet> &Jets_reb, std::vector<p
             weight = 0.;
             Ntries_pred = 0.;
             Njets_pred = 0;
+            BTags_pred = 0;
             HT_pred = 0.;
             MHT_pred = 0.;
             Jet1Pt_pred = 0.;
@@ -490,8 +491,6 @@ void QCDBkgRS::SmearingJets(const std::vector<pat::Jet> &Jets_reb, std::vector<p
 //--------------------------------------------------------------------------
 void QCDBkgRS::SmearingGenJets(edm::View<reco::GenJet>* Jets_gen, std::vector<reco::GenJet> &GenJets_smeared) {
    
-   // ToDo: Smear with HF and noHF templates, e. g. via gen-reco matching to define flavor
-   
    double dPx = 0;
    double dPy = 0;
    
@@ -506,14 +505,18 @@ void QCDBkgRS::SmearingGenJets(edm::View<reco::GenJet>* Jets_gen, std::vector<re
    }
    
    for (int i = 1; i <= Ntries_; ++i) {
+      
       GenJets_smeared.clear();
+      std::map <const reco::GenJet*, bool> genJet2_btag;
+      
       int i_jet = 0;
       
       for (edm::View<reco::GenJet>::const_iterator it = Jets_gen->begin(); it != Jets_gen->end(); ++it) {
          
          if (it->pt() > smearedJetPt_) {
             double newPt = 0;
-            newPt = it->pt() * JetResolutionHist_Pt_Smear(it->pt(), it->eta(), i_jet, HT, NJets_gen);
+            bool btag = genJet_btag[&(*it)];
+            newPt = it->pt() * JetResolutionHist_Pt_Smear(it->pt(), it->eta(), i_jet, HT, NJets_gen, btag);
             //double newEta = rand_->Gaus(it->eta(), TMath::Sqrt(JetResolution_Eta2(it->energy(), it->eta())));
             //double newPhi = rand_->Gaus(it->phi(), TMath::Sqrt(JetResolution_Phi2(it->energy(), it->eta())));
             double newEta = it->eta();
@@ -524,6 +527,7 @@ void QCDBkgRS::SmearingGenJets(edm::View<reco::GenJet>* Jets_gen, std::vector<re
             GenJets_smeared.push_back(smearedJet);
             dPx -= newP4.Px() - it->px();
             dPy -= newP4.Py() - it->py();
+            genJet2_btag[&(GenJets_smeared.back())] = btag;
             ++i_jet;
          } else {
             reco::GenJet smearedJet(*it);
@@ -536,7 +540,7 @@ void QCDBkgRS::SmearingGenJets(edm::View<reco::GenJet>* Jets_gen, std::vector<re
       //Fill HT and MHT prediction histos for i-th iteration of smearing
       int NJets = calcNJets_gen(GenJets_smeared);
       if (NJets >= NJets_) {
-         FillPredictions_gen(GenJets_smeared, i, weight_);
+         FillPredictions_gen(GenJets_smeared, i, weight_, genJet2_btag);
          PredictionTree->Fill();
          
          // clean variables in tree
@@ -603,7 +607,7 @@ bool QCDBkgRS::calcMinDeltaPhi(const std::vector<pat::Jet>& Jets_smeared, math::
    bool result = true;
    unsigned int i = 0;
    for (vector<pat::Jet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
-      if (it->pt() > JetsMHTPt_ && std::abs(it->eta()) < JetsMHTEta_) {
+      if (it->pt() > JetsHTPt_ && std::abs(it->eta()) < JetsHTEta_) {
          if (i < JetDeltaMin_.size()) {
             if (std::abs(deltaPhi(MHT, *it)) < JetDeltaMin_.at(i))
                result = false;
@@ -664,7 +668,7 @@ void QCDBkgRS::FillLeadingJetPredictions(const std::vector<pat::Jet>& Jets_smear
 void QCDBkgRS::FillDeltaPhiPredictions(const std::vector<pat::Jet>& Jets_smeared, math::PtEtaPhiMLorentzVector& vMHT) {
    int NJets = 0;
    for (vector<pat::Jet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
-      if (it->pt() > JetsMHTPt_ && std::abs(it->eta()) < JetsMHTEta_) {
+      if (it->pt() > JetsHTPt_ && std::abs(it->eta()) < JetsHTEta_) {
          ++NJets;
          
          if( NJets == 1 ) {
@@ -700,9 +704,15 @@ int QCDBkgRS::calcNJets_gen(const std::vector<reco::GenJet>& Jets_smeared) {
 //--------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------
-int QCDBkgRS::calcNBJets_gen(const std::vector<reco::GenJet>& Jets_smeared) {
-   // ToDo: Do something
+int QCDBkgRS::calcNBJets_gen(const std::vector<reco::GenJet>& Jets_smeared, std::map <const reco::GenJet*, bool>& b_map) {
    int NBJets = 0;
+   for (vector<reco::GenJet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
+      if (it->pt() > JetsHTPt_ && std::abs(it->eta()) < JetsHTEta_) {
+         if (b_map[&(*it)]){
+          ++NBJets;
+         }
+      }
+   }
    return NBJets;
 }
 //--------------------------------------------------------------------------
@@ -724,7 +734,7 @@ bool QCDBkgRS::calcMinDeltaPhi_gen(const std::vector<reco::GenJet>& Jets_smeared
    bool result = true;
    unsigned int i = 0;
    for (vector<reco::GenJet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
-      if (it->pt() > JetsMHTPt_ && std::abs(it->eta()) < JetsMHTEta_) {
+      if (it->pt() > JetsHTPt_ && std::abs(it->eta()) < JetsHTEta_) {
          if (i < JetDeltaMin_.size()) {
             if (std::abs(deltaPhi(MHT, *it)) < JetDeltaMin_.at(i))
                result = false;
@@ -786,7 +796,7 @@ void QCDBkgRS::FillLeadingJetPredictions_gen(const std::vector<reco::GenJet>& Je
 void QCDBkgRS::FillDeltaPhiPredictions_gen(const std::vector<reco::GenJet>& Jets_smeared, math::PtEtaPhiMLorentzVector& vMHT) {
    int NJets = 0;
    for (vector<reco::GenJet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
-      if (it->pt() > JetsMHTPt_ && std::abs(it->eta()) < JetsMHTEta_) {
+      if (it->pt() > JetsHTPt_ && std::abs(it->eta()) < JetsHTEta_) {
          ++NJets;
          
          if( NJets == 1 ) {
@@ -835,10 +845,10 @@ void QCDBkgRS::FillPredictions(const std::vector<pat::Jet>& Jets_smeared, const 
 
 //--------------------------------------------------------------------------
 void QCDBkgRS::FillPredictions_gen(const std::vector<reco::GenJet>& Jets_smeared, const int& i,
-                                   const double& w) {
+                                   const double& w, std::map <const reco::GenJet*, bool>& b_map ) {
    
    int NJets = calcNJets_gen(Jets_smeared);
-   int NBJets = calcNBJets_gen(Jets_smeared);
+   int NBJets = calcNBJets_gen(Jets_smeared, b_map);
    double HT = calcHT_gen(Jets_smeared);
    math::PtEtaPhiMLorentzVector vMHT = calcMHT_gen(Jets_smeared);
    double MHT = vMHT.pt();
@@ -863,13 +873,13 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    using namespace edm;
    
    if (debug > 0) cout << "analyze:1" << endl;
-
+   
    //LeptonVeto
    edm::Handle<int> NLeptons;
    iEvent.getByLabel(leptonTag_, NLeptons);
    if ((*NLeptons) != 0)
       return;
-
+   
    //NJets
    edm::Handle<int> NJetsSeed;
    iEvent.getByLabel(NJetsSeedTag_, NJetsSeed);
@@ -881,7 +891,7 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel(HTSeedTag_, HTSeed);
    if ((*HTSeed) < HTSeedMin_)
       return;
-
+   
    //Weight
    edm::Handle<double> event_weight;
    iEvent.getByLabel(weightName_, event_weight);
@@ -924,7 +934,7 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    
    
    if (debug > 0) cout << "analyze:2" << endl;
-
+   
    // ------------------------------------------------------------------------ //
    // plots for reco jets
    HT_seed = 0;
@@ -1182,9 +1192,9 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
    }
    // ------------------------------------------------------------------------ //
-
+   
    if (debug > 0) cout << "analyze:4" << endl;
-
+   
    Jets_reb->reserve(Jets_rec.size());
    Jets_smeared->reserve(Jets_rec.size());
    
@@ -1342,13 +1352,35 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // ------------------------------------------------------------------------ //
    
    if (debug > 0) cout << "analyze:5" << endl;
-
+   
    //
    // Smear rebalanced multi jet system
    //
    if (smearCollection_ == "Reco") {
       SmearingJets(*(Jets_reb.get()), *(Jets_smeared.get()));
    } else if (smearCollection_ == "Gen") {
+      // Fill the map if genJet can be associated to reco b-tag
+      if (gj_present) {
+         for (edm::View<reco::GenJet>::const_iterator it = Jets_gen.begin(); it != Jets_gen.end(); ++it) {
+            double dRmin = 100;
+            const pat::Jet* matchedJet = 0;
+            // match reb jets to gen jets
+            for (edm::View<pat::Jet>::const_iterator jt = Jets_rec.begin(); jt != Jets_rec.end(); ++jt) {
+               double dR = deltaR(*jt, *it);
+               if (dR < dRmin) {
+                  dRmin = dR;
+                  matchedJet = &(*jt);
+               }
+            }
+            if (dRmin < 0.15){
+               if (matchedJet->bDiscriminator(btagTag_) > btagCut_){
+                  genJet_btag[&(*it)] = true;
+               } else {
+                  genJet_btag[&(*it)] = false;
+               }
+            }
+         }
+      }
       SmearingGenJets(&Jets_gen, *(GenJets_smeared.get()));
    }
    
@@ -1421,7 +1453,7 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // ------------------------------------------------------------------------ //
    
    if (debug > 0) cout << "analyze:6" << endl;
-
+   
    // ------------------------------------------------------------------------ //
    //// plots for matched/not-matched smeared gen - gen jets
    if (smearCollection_ == "Gen") {
@@ -1473,9 +1505,9 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
       }
    }
-
+   
    if (debug > 0) cout << "analyze:end" << endl;
-
+   
 }
 //--------------------------------------------------------------------------
 
@@ -1667,9 +1699,7 @@ void QCDBkgRS::beginJob()
    
    //// get rebalance correction histo
    TFile *f_rebCorr = new TFile(RebalanceCorrectionFile_.c_str(), "READ", "", 0);
-   if( !isMadgraph_ )
-      h_RebCorrectionFactor = (TH1F*) f_rebCorr->FindObjectAny("RebCorrection_vsReco_px");
-   else h_RebCorrectionFactor = (TH1F*) f_rebCorr->FindObjectAny("RebCorrection_vsReco_madgraph_px");
+   h_RebCorrectionFactor = (TH1F*) f_rebCorr->FindObjectAny("RebCorrection_vsReco_px");
    
    // define output tree
    PredictionTree = fs->make<TTree> ("QCDPrediction", "QCDPrediction", 0);
@@ -1696,7 +1726,7 @@ void QCDBkgRS::beginJob()
    PredictionTree->Branch("DeltaPhi3", &DeltaPhi3_pred);
    
    if (debug > 0) cout << "beginJob:end" << endl;
-
+   
 }
 //--------------------------------------------------------------------------
 

@@ -42,11 +42,11 @@ TCanvas* DrawComparison(TH1F* prediction, TH1F* selection, TString Title, TStrin
       RatioTitle = "(Pred-Data)/Data";
    }
    else {
-      titlePrediction = "Data-driven Pred. from MC";
-      //titlePrediction = "Smeared Generator Jets";
+      //titlePrediction = "Data-driven Pred. from MC";
+      titlePrediction = "Smeared Generator Jets";
       titleSelection = "MC Expectation";
-      RatioTitle = "(Pred-MC)/MC";
-      //RatioTitle = "(Gen-MC)/MC";
+      //RatioTitle = "(Pred-MC)/MC";
+      RatioTitle = "(Gen-MC)/MC";
    }
    
    static Int_t c_LightBrown   = TColor::GetColor( "#D9D9CC" );
@@ -220,7 +220,9 @@ int main()
    TChain* selection = new TChain("RA2TreeMaker/PreSelection");
    
    // open files for MC --- madgraph QCD ---- //
-   ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_v1.txt");
+   //ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_withRBcorr_pt10.txt");
+   //ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_withoutRBcorr_pt10.txt");
+   ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_GenSmear.txt");
    //ifstream myfile1 ("filelists_phys14/test.txt");
    if (myfile1.is_open()) {
       while( myfile1.good() ) {
@@ -248,12 +250,16 @@ int main()
    else LumiTitle = "CMS Simulation, #sqrt{s} = 13 TeV";
    //else LumiTitle = "CMS work in progress, #sqrt{s} = 13 TeV";
    
-   TString postfix = "_test";
+   //TString postfix = "_withoutRBcorr_pt10";
+   //TString postfix = "_withRBcorr_pt10";
+   TString postfix = "_GenSmear_fineBins_wideRange";
+   //TString postfix = "_test";
    
    vector<TString> xTitle_presel;
    xTitle_presel.push_back("H_{T} (GeV)");
    xTitle_presel.push_back("#slash{H}_{T} (GeV)");
    xTitle_presel.push_back("N_{Jets}");
+   xTitle_presel.push_back("N_{b-Tags}");
    xTitle_presel.push_back("Jet1 p_{T} (GeV)");
    xTitle_presel.push_back("Jet2 p_{T} (GeV)");
    xTitle_presel.push_back("Jet1 #eta");
@@ -367,6 +373,7 @@ int main()
    hist_type_presel.push_back("HT_presel");
    hist_type_presel.push_back("MHT_presel");
    hist_type_presel.push_back("NJets_presel");
+   hist_type_presel.push_back("NBJets_presel");
    hist_type_presel.push_back("Jet1Pt_presel");
    hist_type_presel.push_back("Jet2Pt_presel");
    hist_type_presel.push_back("Jet1Eta_presel");
@@ -732,7 +739,27 @@ int main()
    c =  DrawComparison( pred_->GetPredictionHisto("NJets_baseline_withoutDeltaPhi"), pred_->GetSelectionHisto("NJets_baseline_withoutDeltaPhi"), Title, LumiTitle,"N_{Jets}", yTitle, isData);
    c->Print("output_GetPrediction/QCD_NJets_withoutDeltaPhi" + postfix + ".ps");
    c->Print("output_GetPrediction/NJets_baseline_withoutDeltaPhi" + postfix + ".png");
+
+   Title = "#Delta#phi cut, HT > 500 GeV";
+   c =  DrawComparison( pred_->GetPredictionHisto("NBJets_baseline_withoutMHT"), pred_->GetSelectionHisto("NBJets_baseline_withoutMHT"), Title, LumiTitle,"N_{b-Tags}", yTitle, isData);
+   c->Print("output_GetPrediction/QCD_NBJets_withoutMHT" + postfix + ".ps");
+   c->Print("output_GetPrediction/NBJets_baseline_withoutMHT" + postfix + ".png");
    
+   Title = "#Delta#phi cut, HT > 500 GeV, MHT > 200 GeV";
+   c =  DrawComparison( pred_->GetPredictionHisto("NBJets_baseline"), pred_->GetSelectionHisto("NBJets_baseline"), Title, LumiTitle,"N_{b-Tags}", yTitle, isData);
+   c->Print("output_GetPrediction/QCD_NBJets" + postfix + ".ps");
+   c->Print("output_GetPrediction/NBJets_baseline" + postfix + ".png");
+   
+   Title = "HT > 500 GeV";
+   c =  DrawComparison( pred_->GetPredictionHisto("NBJets_baseline_withoutDeltaPhi_withoutMHT"), pred_->GetSelectionHisto("NBJets_baseline_withoutDeltaPhi_withoutMHT"), Title, LumiTitle,"N_{b-Tags}", yTitle, isData);
+   c->Print("output_GetPrediction/QCD_NBJets_withoutDeltaPhi_withoutMHT" + postfix + ".ps");
+   c->Print("output_GetPrediction/NBJets_baseline_withoutDeltaPhi_withoutMHT" + postfix + ".png");
+   
+   Title = "HT > 500 GeV, MHT > 200 GeV";
+   c =  DrawComparison( pred_->GetPredictionHisto("NBJets_baseline_withoutDeltaPhi"), pred_->GetSelectionHisto("NBJets_baseline_withoutDeltaPhi"), Title, LumiTitle,"N_{b-Tags}", yTitle, isData);
+   c->Print("output_GetPrediction/QCD_NBJets_withoutDeltaPhi" + postfix + ".ps");
+   c->Print("output_GetPrediction/NBJets_baseline_withoutDeltaPhi" + postfix + ".png");
+
    Title = ">= 3 jets, #Delta#phi cut, HT > 500 GeV";
    c =  DrawComparison( pred_->GetPredictionHisto("MHT_baseline"), pred_->GetSelectionHisto("MHT_baseline"), Title, LumiTitle,"#slash{H}_{T} (GeV)", yTitle, isData);
    c->Print("output_GetPrediction/QCD_MHT_baseline" + postfix + ".ps");

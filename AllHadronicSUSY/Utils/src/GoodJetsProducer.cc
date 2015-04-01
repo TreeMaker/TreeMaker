@@ -2,11 +2,11 @@
 //
 // Package:    GoodJetsProducer
 // Class:      GoodJetsProducer
-// 
+//
 /**\class GoodJetsProducer GoodJetsProducer.cc RA2Classic/GoodJetsProducer/src/GoodJetsProducer.cc
- * 
+ *
  * Description: [one line class summary]
- * 
+ *
  * Implementation:
  *     [Notes on implementation]
  */
@@ -41,25 +41,25 @@
 
 class GoodJetsProducer : public edm::EDProducer {
 public:
-	explicit GoodJetsProducer(const edm::ParameterSet&);
-	~GoodJetsProducer();
-	
-	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-	
+   explicit GoodJetsProducer(const edm::ParameterSet&);
+   ~GoodJetsProducer();
+   
+   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+   
 private:
-	virtual void beginJob() ;
-	virtual void produce(edm::Event&, const edm::EventSetup&);
-	virtual void endJob() ;
-	
-	virtual void beginRun(edm::Run&, edm::EventSetup const&);
-	virtual void endRun(edm::Run&, edm::EventSetup const&);
-	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	edm::InputTag JetTag_;
-	double maxEta_;
-	double maxMuFraction_, minNConstituents_, maxNeutralFraction_, maxPhotonFraction_, minChargedMultiplicity_, minChargedFraction_, maxChargedEMFraction_;
-	
-	// ----------member data ---------------------------
+   virtual void beginJob() ;
+   virtual void produce(edm::Event&, const edm::EventSetup&);
+   virtual void endJob() ;
+   
+   virtual void beginRun(edm::Run&, edm::EventSetup const&);
+   virtual void endRun(edm::Run&, edm::EventSetup const&);
+   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+   edm::InputTag JetTag_;
+   double maxEta_;
+   double maxMuFraction_, minNConstituents_, maxNeutralFraction_, maxPhotonFraction_, minChargedMultiplicity_, minChargedFraction_, maxChargedEMFraction_;
+   
+   // ----------member data ---------------------------
 };
 
 //
@@ -77,25 +77,25 @@ private:
 using namespace pat;
 GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
 {
-	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
-	maxEta_ = iConfig.getParameter <double> ("maxJetEta");
-	maxMuFraction_ = iConfig.getParameter <double> ("maxMuFraction");
-	minNConstituents_ = iConfig.getParameter <double> ("minNConstituents");
-	maxNeutralFraction_ = iConfig.getParameter <double> ("maxNeutralFraction");
-	maxPhotonFraction_ = iConfig.getParameter <double> ("maxPhotonFraction");
-	minChargedMultiplicity_ = iConfig.getParameter <double> ("minChargedMultiplicity");
-	minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
-	maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
-	produces<std::vector<Jet> >();	
+   JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+   maxEta_ = iConfig.getParameter <double> ("maxJetEta");
+   maxMuFraction_ = iConfig.getParameter <double> ("maxMuFraction");
+   minNConstituents_ = iConfig.getParameter <double> ("minNConstituents");
+   maxNeutralFraction_ = iConfig.getParameter <double> ("maxNeutralFraction");
+   maxPhotonFraction_ = iConfig.getParameter <double> ("maxPhotonFraction");
+   minChargedMultiplicity_ = iConfig.getParameter <double> ("minChargedMultiplicity");
+   minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
+   maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
+   produces<std::vector<Jet> >();
 }
 
 
 GoodJetsProducer::~GoodJetsProducer()
 {
-	
-	// do anything here that needs to be done at desctruction time
-	// (e.g. close files, deallocate resources etc.)
-	
+   
+   // do anything here that needs to be done at desctruction time
+   // (e.g. close files, deallocate resources etc.)
+   
 }
 
 
@@ -107,76 +107,73 @@ GoodJetsProducer::~GoodJetsProducer()
 void
 GoodJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  using namespace edm;
-  std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
-  edm::Handle< edm::View<Jet> > Jets;
-  iEvent.getByLabel(JetTag_,Jets);
-  if(Jets.isValid())
-  {
-    for(unsigned int i=0; i<Jets->size();i++)
-    {
-      if(std::abs(Jets->at(i).eta())>maxEta_)
+   using namespace edm;
+   std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
+   edm::Handle< edm::View<Jet> > Jets;
+   iEvent.getByLabel(JetTag_,Jets);
+   if(Jets.isValid())
+   {
+      for(unsigned int i=0; i<Jets->size();i++)
       {
-	prodJets->push_back(Jet(Jets->at(i)) );
-	continue;
+         if (std::abs(Jets->at(i).eta())>maxEta_) continue;
+         float neufrac=Jets->at(i).neutralHadronEnergyFraction();//gives raw energy in the denominator
+         float phofrac=Jets->at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
+         float chgfrac=Jets->at(i).chargedHadronEnergyFraction();
+         float chgEMfrac=Jets->at(i).chargedEmEnergyFraction();
+         float muFrac=Jets->at(i).muonEnergyFraction();
+         unsigned int nconstit=Jets->at(i).nConstituents();
+         int chgmulti=Jets->at(i).chargedHadronMultiplicity();
+         //if(muFrac<0.99 && nconstit>1 && neufrac<0.99 && phofrac<0.99 &&chgmulti>0 && chgfrac>0 && chgEMfrac<0.99)prodJets->push_back(Jet(Jets->at(i)) );
+         if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)
+            prodJets->push_back(Jet(Jets->at(i)));
+         //std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
+         //<<"nconstit>minNConstituents_"<<nconstit<<" > "<<minNConstituents_<<std::endl
+         //<<"neufrac<maxNeutralFraction_"<<neufrac<<" < "<<maxNeutralFraction_<<std::endl
+         //<<"phofrac<maxPhotonFraction_"<<phofrac<<" < "<<maxPhotonFraction_<<std::endl
+         //<<"chgmulti>minChargedMultiplicity_"<<chgmulti<<" > "<<minChargedMultiplicity_<<std::endl
+         //<<"chgfrac>minChargedFraction_"<<chgfrac<<" > "<<minChargedFraction_<<std::endl
+         //<<"chgEMfrac<maxChargedEMFraction_"<<chgEMfrac<<" < "<<maxChargedEMFraction_<<std::endl
+         //<<std::endl<<std::endl<<std::endl;
+         
       }
-      float neufrac=Jets->at(i).neutralHadronEnergyFraction();//gives raw energy in the denominator
-      float phofrac=Jets->at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
-      float chgfrac=Jets->at(i).chargedHadronEnergyFraction();
-      float chgEMfrac=Jets->at(i).chargedEmEnergyFraction();
-      float muFrac=Jets->at(i).muonEnergyFraction();
-      unsigned int nconstit=Jets->at(i).nConstituents();
-      int chgmulti=Jets->at(i).chargedHadronMultiplicity();
-      //       	if(muFrac<0.99 && nconstit>1 && neufrac<0.99 && phofrac<0.99 &&chgmulti>0 && chgfrac>0 && chgEMfrac<0.99)prodJets->push_back(Jet(Jets->at(i)) );
-      if(muFrac<maxMuFraction_ && nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)prodJets->push_back(Jet(Jets->at(i)) );
-      // 	std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
-      // 	<<"nconstit>minNConstituents_"<<nconstit<<" > "<<minNConstituents_<<std::endl
-      // 	<<"neufrac<maxNeutralFraction_"<<neufrac<<" < "<<maxNeutralFraction_<<std::endl
-      // 	<<"phofrac<maxPhotonFraction_"<<phofrac<<" < "<<maxPhotonFraction_<<std::endl
-      // 	<<"chgmulti>minChargedMultiplicity_"<<chgmulti<<" > "<<minChargedMultiplicity_<<std::endl
-      // 	<<"chgfrac>minChargedFraction_"<<chgfrac<<" > "<<minChargedFraction_<<std::endl
-      // 	<<"chgEMfrac<maxChargedEMFraction_"<<chgEMfrac<<" < "<<maxChargedEMFraction_<<std::endl
-      // 	<<std::endl<<std::endl<<std::endl;
-      
-    }
-  }
-  // put in the event
-  const std::string string1("");
-  iEvent.put(prodJets );
-  
+   }
+   // put in the event
+   const std::string string1("");
+   iEvent.put(prodJets );
+   
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void 
+void
 GoodJetsProducer::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
+void
 GoodJetsProducer::endJob() {
 }
 
 // ------------ method called when starting to processes a run  ------------
-void 
+void
 GoodJetsProducer::beginRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
-void 
+void
 GoodJetsProducer::endRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
-void 
+void
 GoodJetsProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
-void 
+void
 GoodJetsProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
@@ -184,11 +181,11 @@ GoodJetsProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup cons
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 GoodJetsProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-	//The following says we do not know what parameters are allowed so do no validation
-	// Please change this to state exactly what you do use, even if it is no parameters
-	edm::ParameterSetDescription desc;
-	desc.setUnknown();
-	descriptions.addDefault(desc);
+   //The following says we do not know what parameters are allowed so do no validation
+   // Please change this to state exactly what you do use, even if it is no parameters
+   edm::ParameterSetDescription desc;
+   desc.setUnknown();
+   descriptions.addDefault(desc);
 }
 
 //define this as a plug-in
