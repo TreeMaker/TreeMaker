@@ -709,7 +709,7 @@ int QCDBkgRS::calcNBJets_gen(const std::vector<reco::GenJet>& Jets_smeared, std:
    for (vector<reco::GenJet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
       if (it->pt() > JetsHTPt_ && std::abs(it->eta()) < JetsHTEta_) {
          if (b_map[&(*it)]){
-          ++NBJets;
+            ++NBJets;
          }
       }
    }
@@ -986,6 +986,67 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
          vMHThigh_rec -= it->p4();
       }
    }
+   
+   ////////// checks on high MHT events
+   //   if (vMHThigh_rec.pt()>400){
+   //      int NJ = 0;
+   //      cout << "-------------------------------" << endl;
+   //      cout << "RecoJet summary: " << endl;
+   //      for (edm::View<pat::Jet>::const_iterator it = Jets_rec.begin(); it != Jets_rec.end(); ++it) {
+   //         if (NJ < 5) {
+   //            cout << "Jet number: " << NJ << endl;
+   //            cout << "pt, eta, phi: " << it->pt() << ", " << it->eta() << ", " << it->phi() << endl;
+   //            cout << "neutral hadron fraction: " << it->neutralHadronEnergyFraction() << endl;
+   //            cout << "charged hadron fraction: " << it->chargedHadronEnergyFraction() << endl;
+   //            cout << "charged EM fraction: " << it->chargedEmEnergyFraction() << endl;
+   //            cout << "photon fraction: " << it->neutralEmEnergyFraction() << endl;
+   //            cout << "muon fraction: " << it->muonEnergyFraction() << endl;
+   //            cout << "N constituents: " << it->nConstituents() << endl;
+   //            cout << "charged hadron multiplicity: " << it->chargedHadronMultiplicity() << endl;
+   //            double dRmin = 100;
+   //            const reco::GenJet* matchedGenJet = 0;
+   //            for (edm::View<reco::GenJet>::const_iterator jt = Jets_gen.begin(); jt != Jets_gen.end(); ++jt) {
+   //               double dR = deltaR(*jt, *it);
+   //               if (dR < dRmin) {
+   //                  dRmin = dR;
+   //                  matchedGenJet = &(*jt);
+   //               }
+   //            }
+   //            if (dRmin < 0.5) {
+   //               cout << "Matched genJet dR: " << dRmin << endl;
+   //               cout << "pt, eta, phi: " << matchedGenJet->pt() << ", " << matchedGenJet->eta() << ", " << matchedGenJet->phi() << endl;
+   //            } else {
+   //               cout << "NOT MATCHED!" << endl;
+   //            }
+   //            ++NJ;
+   //         }
+   //      }
+   //      cout << " " << endl;
+   //      cout << "GenJet summary: " << endl;
+   //      int NGJ = 0;
+   //      for (edm::View<reco::GenJet>::const_iterator jt = Jets_gen.begin(); jt != Jets_gen.end(); ++jt) {
+   //         if (NGJ < 5) {
+   //            cout << "Jet number: " << NGJ << endl;
+   //            cout << "pt, eta, phi: " << jt->pt() << ", " << jt->eta() << ", " << jt->phi() << endl;
+   //            double dRmin = 100;
+   //            const reco::Jet* matchedJet = 0;
+   //            for (edm::View<pat::Jet>::const_iterator it = Jets_rec.begin(); it != Jets_rec.end(); ++it) {
+   //               double dR = deltaR(*jt, *it);
+   //               if (dR < dRmin) {
+   //                  dRmin = dR;
+   //                  matchedJet = &(*it);
+   //               }
+   //            }
+   //            if (dRmin < 0.5) {
+   //               cout << "Matched recoJet dR: " << dRmin << endl;
+   //               cout << "pt, eta, phi: " << matchedJet->pt() << ", " << matchedJet->eta() << ", " << matchedJet->phi() << endl;
+   //            } else {
+   //               cout << "NOT MATCHED!" << endl;
+   //            }
+   //            ++NGJ;
+   //         }
+   //      }
+   //   }
    
    // fill control plots for reasonable event weights
    if (controlPlots_ && weight_ < 30000) {

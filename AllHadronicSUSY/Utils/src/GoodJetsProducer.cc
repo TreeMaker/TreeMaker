@@ -123,7 +123,7 @@ GoodJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          float muFrac=Jets->at(i).muonEnergyFraction();
          unsigned int nconstit=Jets->at(i).nConstituents();
          int chgmulti=Jets->at(i).chargedHadronMultiplicity();
-         if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)
+         if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>=minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)
             prodJets->push_back(Jet(Jets->at(i)));
       }
    }

@@ -148,16 +148,27 @@ process.Baseline += process.IsolatedTracksVeto
 ## --- god jets producer -----------------------------------------------
 print "*** good jets producer **************************************************"
 from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
+   #process.GoodJets = GoodJetsProducer.clone(
+   #                                          JetTag                  = cms.InputTag('slimmedJets'),
+   #                                          maxJetEta               = cms.double(5.0),
+   #                                          maxMuFraction           = cms.double(2),
+   #                                          minNConstituents        = cms.double(2),
+   #                                          maxNeutralFraction      = cms.double(0.99),
+   #                                          maxPhotonFraction       = cms.double(0.99),
+   #                                          minChargedMultiplicity  = cms.double(0),
+   #                                          minChargedFraction      = cms.double(0),
+   #                                          maxChargedEMFraction    = cms.double(0.99),
+#                                          )
 process.GoodJets = GoodJetsProducer.clone(
                                           JetTag                  = cms.InputTag('slimmedJets'),
                                           maxJetEta               = cms.double(5.0),
                                           maxMuFraction           = cms.double(2),
-                                          minNConstituents        = cms.double(2),
-                                          maxNeutralFraction      = cms.double(0.99),
-                                          maxPhotonFraction       = cms.double(0.99),
+                                          minNConstituents        = cms.double(0),
+                                          maxNeutralFraction      = cms.double(2),
+                                          maxPhotonFraction       = cms.double(2),
                                           minChargedMultiplicity  = cms.double(0),
                                           minChargedFraction      = cms.double(0),
-                                          maxChargedEMFraction    = cms.double(0.99),
+                                          maxChargedEMFraction    = cms.double(2),
 )
 process.Baseline += process.GoodJets
 
@@ -181,7 +192,7 @@ print "*** HT jets producer **************************************************"
 from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
 process.HTJets = SubJetSelection.clone(
                                        JetTag   = cms.InputTag('GoodJets'),
-                                       MinPt    = cms.double(30),
+                                       MinPt    = cms.double(50),
                                        MaxEta   = cms.double(2.4),
 )
 process.Baseline += process.HTJets
