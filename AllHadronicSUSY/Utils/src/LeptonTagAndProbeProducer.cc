@@ -34,6 +34,8 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 
 #include "DataFormats/PatCandidates/interface/Electron.h"
+#include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include <TRandom2.h>
@@ -48,14 +50,13 @@
 //
 
 
-
 class LeptonTagAndProbeProducer : public edm::EDProducer {
 public:
 	explicit LeptonTagAndProbeProducer(const edm::ParameterSet&);
 	~LeptonTagAndProbeProducer();
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-	
+	double GetMinDeltaPhi(reco::LeafCandidate lepCand, edm::Handle< edm::View<pat::Jet> > Jets);
 private:
 	virtual void beginJob() ;
 	virtual void produce(edm::Event&, const edm::EventSetup&);
@@ -65,13 +66,43 @@ private:
 	virtual void endRun(edm::Run&, edm::EventSetup const&);
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	edm::InputTag TagPFCandTag_, ProbePFCandTag_, ProbeTestPFCandTag_;
+	edm::InputTag TagPFCandTag_, ProbePFCandTag_, ProbeTestPFCandTag_, JetTag_;
 	double deltaR(double eta1, double phi1, double eta2, double phi2);
+	double DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets );
 
 	
 	
 	// ----------member data ---------------------------
 };
+
+
+double LeptonTagAndProbeProducer::GetMinDeltaPhi(reco::LeafCandidate lepCand, edm::Handle< edm::View<pat::Jet> > Jets)
+{
+	double result =9999;
+
+	
+	double dpnhat[3];
+	unsigned int goodcount=0;
+	for(int i=0; i<3; ++i)dpnhat[i]=-999;
+	reco::MET::LorentzVector metLorentz(0,0,0,0);
+		metLorentz=lepCand.p4();
+	if( Jets.isValid() ) {
+		for(unsigned int i=0; i<Jets->size();i++){
+			if(goodcount<3 && Jets->at(i).pt()>30){ //make this pt cut configurable
+                float dphi=std::abs(reco::deltaPhi(Jets->at(i).phi(),metLorentz.phi()));
+								float dT=DeltaT(i, Jets);
+								if(dT/metLorentz.pt()>=1.0)dpnhat[goodcount]=dphi/(TMath::Pi()/2.0);
+								else dpnhat[goodcount]=dphi/asin(dT/metLorentz.pt());
+								++goodcount;
+			}
+		}
+	}
+	for(int i=0; i<3; ++i){
+		if(result>fabs(dpnhat[i]))result=fabs(dpnhat[i]);
+	}
+	
+	return result;
+}
 
 //
 // constants, enums and typedefs
@@ -91,6 +122,7 @@ LeptonTagAndProbeProducer::LeptonTagAndProbeProducer(const edm::ParameterSet& iC
 	TagPFCandTag_ 				= 	iConfig.getParameter<edm::InputTag >("TagPFCand");
 	ProbePFCandTag_ 				= 	iConfig.getParameter<edm::InputTag >("ProbePFCand");
 	ProbeTestPFCandTag_ 				= 	iConfig.getParameter<edm::InputTag >("ProbeTestPFCand");
+	JetTag_ = iConfig.getParameter<edm::InputTag> ("JetTag");
 
 	
 	const std::string string1("Tag");
@@ -101,6 +133,8 @@ LeptonTagAndProbeProducer::LeptonTagAndProbeProducer(const edm::ParameterSet& iC
 	produces<std::vector<int> > (string2t).setBranchAlias(string2t);
 	const std::string string2tt("InvariantMass");
 	produces<std::vector<double> > (string2tt).setBranchAlias(string2tt);
+	const std::string string3("MinDeltaPhiN");
+	produces<double> (string3).setBranchAlias(string3);
 }
 
 
@@ -127,6 +161,9 @@ LeptonTagAndProbeProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 	std::auto_ptr< std::vector<double> > invariantMass_ (new std::vector<double>);
 	edm::Handle< edm::View<reco::LeafCandidate> > ProbeCands;
 	iEvent.getByLabel(ProbePFCandTag_,ProbeCands);
+	edm::Handle< edm::View<pat::Jet> > Jets;
+	iEvent.getByLabel(JetTag_,Jets);
+	double minDeltaPhiTemp=0;
 	if( !ProbeCands.isValid() ) 
 	{
 		std::cout<<"TagCand invalide, with tag: "<<ProbePFCandTag_.label()<<std::endl;
@@ -152,6 +189,8 @@ LeptonTagAndProbeProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 			TRandom2 * random = new TRandom2(0);
 			int tagIndex = (int) random->Uniform(tagSize);
 			tagCandidate_.push_back(TagCands->at(tagIndex));
+			// compute min deltaPhi for tag lepton which is assmued to be the neutrino in w decay
+			minDeltaPhiTemp = GetMinDeltaPhi(TagCands->at(tagIndex),Jets);
 			// 		std::cout<<"TagSize: "<<tagSize<<"Random number: "<< index<<"\n";
 			// do anti matching with probe collection
 			int tagInProbeIndex = -1;
@@ -214,6 +253,7 @@ LeptonTagAndProbeProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 	const std::string string2("Probe");
 	const std::string string2t("PassingOrFail");
 	const std::string string2tt("InvariantMass");
+	const std::string string3("MinDeltaPhiN");
 	
 	std::auto_ptr<std::vector<reco::LeafCandidate> > htp1(new std::vector<reco::LeafCandidate>(tagCandidate_));
 	iEvent.put(htp1,string1);
@@ -221,6 +261,8 @@ LeptonTagAndProbeProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 	iEvent.put(htp2,string2);
 	iEvent.put(passing_,string2t);
 	iEvent.put(invariantMass_,string2tt);
+std::auto_ptr<double> htp6(new double(minDeltaPhiTemp));
+iEvent.put(htp6,string3);	
 
 	
 }
@@ -279,3 +321,20 @@ double LeptonTagAndProbeProducer::deltaR(double eta1, double phi1, double eta2, 
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(LeptonTagAndProbeProducer);
+
+double LeptonTagAndProbeProducer::DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets ){
+	
+	double deltaT=0;
+	float jres=0.1;
+	double sum=0;
+	if( Jets.isValid() ) {
+		for(unsigned int j=0; j<Jets->size(); ++j){
+			if(j==i)continue;
+			sum=sum+(Jets->at(i).px()*Jets->at(j).py()-Jets->at(j).px()*Jets->at(i).py()) * (Jets->at(i).px()*Jets->at(j).py()-Jets->at(j).px()*Jets->at(i).py());
+		}
+		deltaT=jres*sqrt(sum)/Jets->at(i).pt();
+		
+	}
+	
+	return deltaT;
+}

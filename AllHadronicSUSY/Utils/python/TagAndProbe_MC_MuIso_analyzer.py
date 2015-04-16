@@ -13,7 +13,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 #InputFileName = "/scratch/hh/dust/naf/cms/user/draeger/results/Z-MC.root"
-InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe.root"
+InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe2.root"
 
 OutputFilePrefix = "efficiency-mc-"
 
@@ -28,7 +28,7 @@ EfficiencyBins = cms.PSet(
     HT = cms.vdouble(0, 2000 ),
     NJets = cms.vdouble( 3,20 ), 
     Activity = cms.vdouble(0,1600),
-    Pt = cms.vdouble(0,1900),
+    Pt = cms.vdouble(0,200),
 )
 ## for super clusters
 
@@ -58,7 +58,7 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     InputFileNames = cms.vstring(InputFileName),
     InputDirectoryName = cms.string("MuIso"),
     InputTreeName = cms.string("TagAndProbeMuIso"),
-    OutputFileName = cms.string("MuIsoMC.root"),
+    OutputFileName = cms.string("MuIsoMC2.root"),
                                                  
     #numbrer of CPUs to use for fitting
     NumCPU = cms.uint32(12),
@@ -70,8 +70,8 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
         InvariantMass = cms.vstring("Tag-Probe Mass", "60.0", "120.0", "GeV/c^{2}"),
         HT = cms.vstring("H_{T}", "0","2000", "GeV/c"),
         NJets = cms.vstring("NJets", "2", "22", ""),
-        Activity = cms.vstring("Activity", "0", "1600", ""),
-        Pt = cms.vstring("p_{T}", "10", "1900", "GeV/c"),
+        Activity = cms.vstring("Activity", "0", "1600", "GeV/c"),
+        Pt = cms.vstring("p_{T}", "10", "200", "GeV/c"),
 
     ),    
 		    
@@ -163,11 +163,35 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
        EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
        UnbinnedVariables = cms.vstring("InvariantMass"),
        BinnedVariables = cms.PSet(
-       Activity = cms.vdouble(0,5,10,20,40,60,80,100,1600 ),
+       Pt = cms.vdouble( 10,15,20,25,30,40,50,70,200 ),
+       Activity = cms.vdouble(0,10,20,40,60,1600 ),
+      ),
+      BinToPDFmap = cms.vstring("gaussPlusCubic")
+    ),
+      MuIsoPt = cms.PSet(
+       EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
+       UnbinnedVariables = cms.vstring("InvariantMass"),
+       BinnedVariables = cms.PSet(
        Pt = cms.vdouble( 10,15,20,25,30,40,50,60,70,90,110,1900 ),
       ),
       BinToPDFmap = cms.vstring("gaussPlusCubic")
     ),
+      MuIsoActivity = cms.PSet(
+       EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
+       UnbinnedVariables = cms.vstring("InvariantMass"),
+       BinnedVariables = cms.PSet(
+       Activity = cms.vdouble( 0,5,10,20,40,60,80,100,1600 ),
+      ),
+      BinToPDFmap = cms.vstring("gaussPlusCubic")
+    ),
+      #MuIsoPt = cms.PSet(
+       #EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
+       #UnbinnedVariables = cms.vstring("InvariantMass"),
+       #BinnedVariables = cms.PSet(
+       #Pt = cms.vdouble( 10,15,20,25,30,40,50,60,70,90,110,1900 ),
+      #),
+      #BinToPDFmap = cms.vstring("gaussPlusCubic")
+    #),
         #the name of the parameter set becomes the name of the directory
 #    MuId = cms.PSet(
 #         EfficiencyCategoryAndState = cms.vstring("MuIsoPass","pass"),
