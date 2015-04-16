@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <map>
 #include <cassert>
 #include <cmath>
 #include <iostream>
@@ -183,10 +184,10 @@ private:
    double JetResolution_Ptrel(const double&, const double&, const int&);
    double JetResolution_Eta2(const double&, const double&);
    double JetResolution_Phi2(const double&, const double&);
-   double JetResolutionHist_Pt_Smear(const double&, const double&, const int&,const double&, const int&);
+   double JetResolutionHist_Pt_Smear(const double&, const double&, const int&,const double&, const int&, const bool);
    int GetIndex(const double&, const std::vector<double>*);
    void FillPredictions(const std::vector<pat::Jet>&, const int&, const double&);
-   void FillPredictions_gen(const std::vector<reco::GenJet>&, const int&, const double&);
+   void FillPredictions_gen(const std::vector<reco::GenJet>&, const int&, const double&, std::map <const reco::GenJet*, bool>& );
    double calcHT(const std::vector<pat::Jet>&);
    double calcHT_gen(const std::vector<reco::GenJet>&);
    math::PtEtaPhiMLorentzVector calcMHT(const std::vector<pat::Jet>&);
@@ -194,7 +195,7 @@ private:
    int calcNJets(const std::vector<pat::Jet>&);
    int calcNJets_gen(const std::vector<reco::GenJet>&);
    int calcNBJets(const std::vector<pat::Jet>&);
-   int calcNBJets_gen(const std::vector<reco::GenJet>&);
+   int calcNBJets_gen(const std::vector<reco::GenJet>&, std::map <const reco::GenJet*, bool>&);
    bool calcMinDeltaPhi(const std::vector<pat::Jet>&, math::PtEtaPhiMLorentzVector&);
    bool calcMinDeltaPhi_gen(const std::vector<reco::GenJet>&, math::PtEtaPhiMLorentzVector&);
    void FillLeadingJetPredictions(const std::vector<pat::Jet>&); 
@@ -280,6 +281,9 @@ private:
    Float_t DeltaPhi1_pred;
    Float_t DeltaPhi2_pred;
    Float_t DeltaPhi3_pred;
+   
+   std::map <const reco::GenJet*, bool> genJet_btag;
+   
 };
 
 #endif

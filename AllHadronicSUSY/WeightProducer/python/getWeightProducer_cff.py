@@ -218,7 +218,7 @@ def getWeightProducer(fileName):
 
    # backgrounds
 
-   if "QCD_HT-250To500_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
+   if "QCD_HT_250To500_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
       weightProducer.XS         = cms.double(6.705e+5)
@@ -236,7 +236,7 @@ def getWeightProducer(fileName):
       applyWeight = True
       weightProducer.weight = cms.double(-1.)
 
-   if "QCD_HT-1000ToInf_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
+   if "QCD_HT_1000ToInf_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
       weightProducer.XS         = cms.double(769.7)

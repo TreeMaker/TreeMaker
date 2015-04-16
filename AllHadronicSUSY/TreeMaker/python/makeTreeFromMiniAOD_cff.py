@@ -234,7 +234,7 @@ applybaseline=False):
     from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
     process.MET = metdouble.clone(
     METTag  = cms.InputTag("slimmedMETs"),
-    JetTag  = cms.InputTag('HTJets'),
+    JetTag  = cms.InputTag('HTJets')
     )
     process.Baseline += process.MET
     VarsDouble.extend(['MET:minDeltaPhiN','MET:DeltaPhiN1','MET:DeltaPhiN2','MET:DeltaPhiN3','MET:Pt(METPt)','MET:Phi(METPhi)'])
@@ -245,7 +245,8 @@ applybaseline=False):
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     METTag  = cms.InputTag("slimmedMETs"),
     )
-    process.LostLepton += process.JetsProperties
+    process.Baseline += process.JetsProperties
+    #process.LostLepton += process.JetsProperties
     from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
     process.GenLeptons = genLeptonRecoCand.clone(
     PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),

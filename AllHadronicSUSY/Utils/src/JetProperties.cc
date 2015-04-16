@@ -117,7 +117,9 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	produces<std::vector<int> > (string12).setBranchAlias(string12);
 	const std::string string13("bDiscriminator");
 	produces<std::vector<double> > (string13).setBranchAlias(string13);
-	
+
+	produces<std::vector<int> > ("flavor");
+
 }
 
 
@@ -156,6 +158,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<double> > muonEnergyFraction(new std::vector<double>);
 	std::auto_ptr< std::vector<int> > muonMultiplicity(new std::vector<int>);
 	std::auto_ptr< std::vector<double> > bDiscriminator(new std::vector<double>);
+	std::auto_ptr< std::vector<int> > flavor(new std::vector<int>);
 	using namespace edm;
 	using namespace reco;
 	using namespace pat;
@@ -180,6 +183,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			muonEnergyFraction->push_back( Jets->at(i).muonEnergyFraction() );
 			muonMultiplicity->push_back( Jets->at(i).muonMultiplicity() );
 			bDiscriminator->push_back( Jets->at(i).bDiscriminator(btagname_) );
+			flavor->push_back( Jets->at(i).partonFlavour() );
 		}
 	}
 	const std::string string00("");
@@ -213,7 +217,9 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(muonMultiplicity,string12);
 	const std::string string13("bDiscriminator");
 	iEvent.put(bDiscriminator,string13);
-	
+
+	iEvent.put(flavor,"flavor");
+
 }
 
 // ------------ method called once each job just before starting event loop  ------------

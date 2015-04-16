@@ -171,6 +171,13 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    NJets_baseline_withoutDeltaPhi_pred_raw = new TH2F("NJets_baseline_withoutDeltaPhi_pred", "NJets baseline", 15, 0, 15, Ntries, 0.5, Ntries + 0.5);
    NJets_presel_pred_raw = new TH2F("NJets_presel_pred_raw", "NJets presel", 15, 0, 15, Ntries, 0.5, Ntries + 0.5);
    
+   // NBJets
+   NBJets_baseline_withoutMHT_pred_raw = new TH2F("NBJets_baseline_withoutMHT_pred", "NBJets baseline", 15, 0, 15, Ntries, 0.5, Ntries + 0.5);
+   NBJets_baseline_pred_raw = new TH2F("NBJets_baseline_pred", "NBJets baseline", 15, 0, 15, Ntries, 0.5, Ntries + 0.5);
+   NBJets_baseline_withoutDeltaPhi_withoutMHT_pred_raw = new TH2F("NBJets_baseline_withoutDeltaPhi_withoutMHT_pred", "NBJets baseline", 15, 0, 15, Ntries, 0.5, Ntries + 0.5);
+   NBJets_baseline_withoutDeltaPhi_pred_raw = new TH2F("NBJets_baseline_withoutDeltaPhi_pred", "NBJets baseline", 15, 0, 15, Ntries, 0.5, Ntries + 0.5);
+   NBJets_presel_pred_raw = new TH2F("NBJets_presel_pred_raw", "NBJets presel", 15, 0, 15, Ntries, 0.5, Ntries + 0.5);
+   
    // ------------------------------------------------------------------------------ //
    
    // define selection histograms
@@ -203,7 +210,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    MHT_JetBin3_HTinclusive_sel = new TH1F("MHT_JetBin3_HTinclusive_sel", "MHT_JetBin3_HTinclusive_sel", NbinsMHT, MHTmin, MHTmax);
    MHT_JetBin4_HTinclusive_sel = new TH1F("MHT_JetBin4_HTinclusive_sel", "MHT_JetBin4_HTinclusive_sel", NbinsMHT, MHTmin, MHTmax);
    
-   //baseline
+   // baseline
    HT_baseline_sel = new TH1F("HT_baseline_sel", "HT baseline", NbinsHT, HTmin, HTmax);
    MHT_baseline_sel = new TH1F("MHT_baseline_sel", "MHT baseline", NbinsMHT, MHTmin, MHTmax);
    
@@ -304,6 +311,13 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    NJets_baseline_withoutDeltaPhi_sel = new TH1F("NJets_baseline_withoutDeltaPhi_sel", "NJets baseline", 15, 0, 15);
    NJets_presel_sel = new TH1F("NJets_presel_sel", "NJets presel", 15, 0, 15);
    
+   // NBJets
+   NBJets_baseline_withoutMHT_sel = new TH1F("NBJets_baseline_withoutMHT_sel", "NBJets baseline", 15, 0, 15);
+   NBJets_baseline_sel = new TH1F("NBJets_baseline_sel", "NBJets baseline", 15, 0, 15);
+   NBJets_baseline_withoutDeltaPhi_withoutMHT_sel = new TH1F("NBJets_baseline_withoutDeltaPhi_withoutMHT_sel", "NBJets baseline", 15, 0, 15);
+   NBJets_baseline_withoutDeltaPhi_sel = new TH1F("NBJets_baseline_withoutDeltaPhi_sel", "NBJets baseline", 15, 0, 15);
+   NBJets_presel_sel = new TH1F("NBJets_presel_sel", "NBJets presel", 15, 0, 15);
+   
    // ------------------------------------------------------------------------------ //
    
    // get tree with predictions
@@ -348,7 +362,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    QCDPrediction.SetBranchAddress("DeltaPhi3",&DeltaPhi3);
    
    cout << "After: SetBranchAddress (prediction)" << endl;
-
+   
    int Prediction_entries = 0;
    float smear_rep = 0;
    
@@ -363,8 +377,8 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
       // select reasonable event weights
       if( weight < 30000. ) {
          
-         // apply same HT cut as on selection
-         if( HT > 500. ) {
+         // apply same HT and MHT and NJets cut as on selection
+         if( HT > 350. && MHT > 0. && NJets >= 2 && vtxN > 0) {
             
             // ------------------------------------------------------------- //
             // fill preselection histos
@@ -374,6 +388,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                HT_presel_pred_raw->Fill(HT, NSmear, weight);
                MHT_presel_pred_raw->Fill(MHT, NSmear, weight);
                NJets_presel_pred_raw->Fill(NJets, NSmear, weight);
+               NBJets_presel_pred_raw->Fill(BTags, NSmear, weight);
                Jet1Pt_presel_pred_raw->Fill(Jet1Pt, NSmear, weight);
                Jet2Pt_presel_pred_raw->Fill(Jet2Pt, NSmear, weight);
                Jet3Pt_presel_pred_raw->Fill(Jet3Pt, NSmear, weight);
@@ -392,6 +407,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
             if( HT > 500. ) {
                if( NJets > 2 ) {
                   NJets_baseline_withoutDeltaPhi_withoutMHT_pred_raw->Fill(NJets, NSmear, weight);
+                  NBJets_baseline_withoutDeltaPhi_withoutMHT_pred_raw->Fill(BTags, NSmear, weight);
                }
                if( NJets == 2 ) {
                   MHT_JetBin1_baseline_withoutDeltaPhi_pred_raw->Fill(MHT, NSmear, weight);
@@ -410,6 +426,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                if( MHT > 200. ) {
                   if( NJets > 2 ) {
                      NJets_baseline_withoutDeltaPhi_pred_raw->Fill(NJets, NSmear, weight);
+                     NBJets_baseline_withoutDeltaPhi_pred_raw->Fill(BTags, NSmear, weight);
                   }
                   // jet bin 1
                   if( NJets == 2 ) {
@@ -500,8 +517,10 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                   if( HT > 500. ) {
                      MHT_baseline_pred_raw->Fill(MHT, NSmear, weight);
                      NJets_baseline_withoutMHT_pred_raw->Fill(NJets, NSmear, weight);
+                     NBJets_baseline_withoutMHT_pred_raw->Fill(BTags, NSmear, weight);
                      if( MHT > 200. ) {
                         NJets_baseline_pred_raw->Fill(NJets, NSmear, weight);
+                        NBJets_baseline_pred_raw->Fill(BTags, NSmear, weight);
                      }
                   }
                   if( MHT > 200. ) {
@@ -602,6 +621,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    
    EvtNum_RA2 = 0;
    vtxN_RA2 = 0;
+   NLeptons_RA2 = 0;
    NJets_RA2 = 0;
    BTags_RA2 = 0;
    weight_RA2 = 0;
@@ -610,8 +630,9 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi3_RA2 = 0;
    
    cout << "Before: SetBranchAddress (expectation)" << endl;
-
+   
    RA2PreSelection.SetBranchAddress("NVtx",&vtxN_RA2);
+   RA2PreSelection.SetBranchAddress("GoodLeptons",&NLeptons_RA2);
    RA2PreSelection.SetBranchAddress("NJets",&NJets_RA2);
    RA2PreSelection.SetBranchAddress("BTags",&BTags_RA2);
    RA2PreSelection.SetBranchAddress("Weight",&weight_RA2);
@@ -629,7 +650,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    RA2PreSelection.SetBranchAddress("DeltaPhi3",&DeltaPhi3_RA2);
    
    cout << "After: SetBranchAddress (expectation)" << endl;
-
+   
    // loop over entries and fill selection histos
    Int_t nentries2 = RA2PreSelection.GetEntries();
    //Int_t nentries2 = 500000;
@@ -644,6 +665,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
          cout << "Event: " << EvtNum_RA2 << endl;
          cout << "Weight: " << weight_RA2 << endl;
          cout << "NVtx: " << vtxN_RA2 << endl;
+         cout << "NLeptons: " << NLeptons_RA2 << endl;
          cout << "HT: " << HT_RA2 << endl;
          cout << "MHT: " << MHT_RA2 << endl;
          cout << "NJets: " << NJets_RA2 << endl;
@@ -653,7 +675,9 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
       // select reasonable event weights
       if( weight_RA2 < 30000. ) {
          
-         if( NJets_RA2 >= 2 ) {
+         // Do same HT, MHT and NJets cuts as on prediction
+         
+         if( HT_RA2 > 350. && MHT_RA2 > 0. && NJets_RA2 >= 2 && NLeptons_RA2 == 0 && vtxN_RA2 > 0) {
             
             // ------------------------------------------------------------- //
             // fill preselection histos
@@ -663,6 +687,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                HT_presel_sel->Fill(HT_RA2, weight_RA2);
                MHT_presel_sel->Fill(MHT_RA2, weight_RA2);
                NJets_presel_sel->Fill(NJets_RA2, weight_RA2);
+               NBJets_presel_sel->Fill(BTags_RA2, weight_RA2);
                Jet1Pt_presel_sel->Fill(Jet1Pt_RA2, weight_RA2);
                Jet2Pt_presel_sel->Fill(Jet2Pt_RA2, weight_RA2);
                Jet3Pt_presel_sel->Fill(Jet3Pt_RA2, weight_RA2);
@@ -681,6 +706,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
             if( HT_RA2 > 500. ) {
                if( NJets_RA2 > 2 ) {
                   NJets_baseline_withoutDeltaPhi_withoutMHT_sel->Fill(NJets_RA2, weight_RA2);
+                  NBJets_baseline_withoutDeltaPhi_withoutMHT_sel->Fill(BTags_RA2, weight_RA2);
                }
                if( NJets_RA2 == 2 ) {
                   MHT_JetBin1_baseline_withoutDeltaPhi_sel->Fill(MHT_RA2, weight_RA2);
@@ -699,6 +725,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                if( MHT_RA2 > 200. ) {
                   if( NJets_RA2 > 2 ) {
                      NJets_baseline_withoutDeltaPhi_sel->Fill(NJets_RA2, weight_RA2);
+                     NBJets_baseline_withoutDeltaPhi_sel->Fill(BTags_RA2, weight_RA2);
                   }
                   // jet bin 1
                   if( NJets_RA2 == 2 ) {
@@ -788,8 +815,10 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                   if( HT_RA2 > 500. ) {
                      MHT_baseline_sel->Fill(MHT_RA2, weight_RA2);
                      NJets_baseline_withoutMHT_sel->Fill(NJets_RA2, weight_RA2);
+                     NBJets_baseline_withoutMHT_sel->Fill(BTags_RA2, weight_RA2);
                      if( MHT_RA2 > 200. ) {
                         NJets_baseline_sel->Fill(NJets_RA2, weight_RA2);
+                        NBJets_baseline_sel->Fill(BTags_RA2, weight_RA2);
                      }
                   }
                   if( MHT_RA2 > 200. ) {
@@ -864,6 +893,8 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                   }
                }
             }
+         } else {
+            //cout << "HT_RA2: " << HT_RA2 << ", MHT_RA2: " << MHT_RA2 << ", NJets_RA2: " << NJets_RA2 << ", NLeptons_RA2: " << NLeptons_RA2 << endl;
          }
       }
    }
@@ -991,6 +1022,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    HT_presel_pred = CalcPrediction(HT_presel_pred_raw);
    MHT_presel_pred = CalcPrediction(MHT_presel_pred_raw);
    NJets_presel_pred = CalcPrediction(NJets_presel_pred_raw);
+   NBJets_presel_pred = CalcPrediction(NBJets_presel_pred_raw);
    Jet1Pt_presel_pred = CalcPrediction(Jet1Pt_presel_pred_raw);
    Jet2Pt_presel_pred = CalcPrediction(Jet2Pt_presel_pred_raw);
    Jet3Pt_presel_pred = CalcPrediction(Jet3Pt_presel_pred_raw);
@@ -1104,6 +1136,12 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    NJets_baseline_pred = CalcPrediction( NJets_baseline_pred_raw);
    NJets_baseline_withoutDeltaPhi_withoutMHT_pred = CalcPrediction(NJets_baseline_withoutDeltaPhi_withoutMHT_pred_raw);
    NJets_baseline_withoutDeltaPhi_pred = CalcPrediction(NJets_baseline_withoutDeltaPhi_pred_raw);
+   
+   NBJets_baseline_withoutMHT_pred = CalcPrediction( NBJets_baseline_withoutMHT_pred_raw);
+   NBJets_baseline_pred = CalcPrediction( NBJets_baseline_pred_raw);
+   NBJets_baseline_withoutDeltaPhi_withoutMHT_pred = CalcPrediction(NBJets_baseline_withoutDeltaPhi_withoutMHT_pred_raw);
+   NBJets_baseline_withoutDeltaPhi_pred = CalcPrediction(NBJets_baseline_withoutDeltaPhi_pred_raw);
+   
    //----------------------------------------------------------//
    
    //----------------------------------------------------------//
@@ -1115,6 +1153,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    HT_presel_pred->Write();
    MHT_presel_pred->Write();
    NJets_presel_pred->Write();
+   NBJets_presel_pred->Write();
    Jet1Pt_presel_pred->Write();
    Jet2Pt_presel_pred->Write();
    Jet3Pt_presel_pred->Write();
@@ -1135,6 +1174,11 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    NJets_baseline_pred->Write();
    NJets_baseline_withoutDeltaPhi_withoutMHT_pred->Write();
    NJets_baseline_withoutDeltaPhi_pred ->Write();
+   
+   NBJets_baseline_withoutMHT_pred->Write();
+   NBJets_baseline_pred->Write();
+   NBJets_baseline_withoutDeltaPhi_withoutMHT_pred->Write();
+   NBJets_baseline_withoutDeltaPhi_pred ->Write();
    
    HT_baseline_pred->Write();
    MHT_baseline_pred->Write();
@@ -1230,6 +1274,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    HT_presel_sel->Write();
    MHT_presel_sel->Write();
    NJets_presel_sel->Write();
+   NBJets_presel_sel->Write();
    Jet1Pt_presel_sel->Write();
    Jet2Pt_presel_sel->Write();
    Jet3Pt_presel_sel->Write();
@@ -1244,10 +1289,16 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet1Eta_deltaPhi_sel->Write();
    Jet2Eta_deltaPhi_sel->Write();
    Jet3Eta_deltaPhi_sel->Write();
+   
    NJets_baseline_withoutMHT_sel->Write();
    NJets_baseline_sel->Write();
    NJets_baseline_withoutDeltaPhi_withoutMHT_sel->Write();
    NJets_baseline_withoutDeltaPhi_sel ->Write();
+   
+   NBJets_baseline_withoutMHT_sel->Write();
+   NBJets_baseline_sel->Write();
+   NBJets_baseline_withoutDeltaPhi_withoutMHT_sel->Write();
+   NBJets_baseline_withoutDeltaPhi_sel ->Write();
    
    HT_baseline_sel->Write();
    MHT_baseline_sel->Write();
@@ -1513,6 +1564,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if ( type == "HT_presel") return HT_presel_sel;
    if ( type == "MHT_presel") return MHT_presel_sel;
    if ( type == "NJets_presel") return NJets_presel_sel;
+   if ( type == "NBJets_presel") return NBJets_presel_sel;
    if ( type == "Jet1Pt_presel") return Jet1Pt_presel_sel;
    if ( type == "Jet2Pt_presel") return Jet2Pt_presel_sel;
    if ( type == "Jet3Pt_presel") return Jet3Pt_presel_sel;
@@ -1623,9 +1675,14 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "DeltaPhi3_JetBin4_baseline_withoutDeltaPhi") return DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_sel;
    
    if ( type == "NJets_baseline_withoutMHT") return NJets_baseline_withoutMHT_sel;
-   if ( type == "NJets_baseline")         return NJets_baseline_sel;
+   if ( type == "NJets_baseline") return NJets_baseline_sel;
    if ( type == "NJets_baseline_withoutDeltaPhi_withoutMHT") return NJets_baseline_withoutDeltaPhi_withoutMHT_sel;
    if ( type == "NJets_baseline_withoutDeltaPhi") return NJets_baseline_withoutDeltaPhi_sel;
+   
+   if ( type == "NBJets_baseline_withoutMHT") return NBJets_baseline_withoutMHT_sel;
+   if ( type == "NBJets_baseline") return NBJets_baseline_sel;
+   if ( type == "NBJets_baseline_withoutDeltaPhi_withoutMHT") return NBJets_baseline_withoutDeltaPhi_withoutMHT_sel;
+   if ( type == "NBJets_baseline_withoutDeltaPhi") return NBJets_baseline_withoutDeltaPhi_sel;
    
    else { cout << "Error: No valid hist type" << endl;
       return dummy;
@@ -1640,6 +1697,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if ( type == "HT_presel") return HT_presel_pred;
    if ( type == "MHT_presel") return MHT_presel_pred;
    if ( type == "NJets_presel") return NJets_presel_pred;
+   if ( type == "NBJets_presel") return NBJets_presel_pred;
    if ( type == "Jet1Pt_presel") return Jet1Pt_presel_pred;
    if ( type == "Jet2Pt_presel") return Jet2Pt_presel_pred;
    if ( type == "Jet3Pt_presel") return Jet3Pt_presel_pred;
@@ -1753,6 +1811,11 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if ( type == "NJets_baseline") return NJets_baseline_pred;
    if ( type == "NJets_baseline_withoutDeltaPhi_withoutMHT") return NJets_baseline_withoutDeltaPhi_withoutMHT_pred;
    if ( type == "NJets_baseline_withoutDeltaPhi") return NJets_baseline_withoutDeltaPhi_pred;
+   
+   if ( type == "NBJets_baseline_withoutMHT") return NBJets_baseline_withoutMHT_pred;
+   if ( type == "NBJets_baseline") return NBJets_baseline_pred;
+   if ( type == "NBJets_baseline_withoutDeltaPhi_withoutMHT") return NBJets_baseline_withoutDeltaPhi_withoutMHT_pred;
+   if ( type == "NBJets_baseline_withoutDeltaPhi") return NBJets_baseline_withoutDeltaPhi_pred;
    
    else { cout << "Error: No valid hist type" << endl;
       return dummy;
