@@ -13,7 +13,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 #InputFileName = "/scratch/hh/dust/naf/cms/user/draeger/results/Z-MC.root"
-InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe2.root"
+InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe.root"
 
 OutputFilePrefix = "efficiency-mc-"
 
@@ -25,10 +25,10 @@ isMC = True
 
 #specifies the binning of parameters
 EfficiencyBins = cms.PSet(
-    HT = cms.vdouble(0, 2000 ),
-    NJets = cms.vdouble( 3,20 ), 
-    Activity = cms.vdouble(0,1600),
-    Pt = cms.vdouble(0,200),
+HT = cms.vdouble(0, 2000 ),
+NJets = cms.vdouble( 3,20 ), 
+Pt = cms.vdouble(0,200),
+Activity = cms.vdouble(0,1600),
 )
 ## for super clusters
 
@@ -58,7 +58,7 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     InputFileNames = cms.vstring(InputFileName),
     InputDirectoryName = cms.string("MuIso"),
     InputTreeName = cms.string("TagAndProbeMuIso"),
-    OutputFileName = cms.string("MuIsoMC2.root"),
+    OutputFileName = cms.string("MuIsoMC_DeltaPhi4Cut_lowerHTNJetsCut.root"),
                                                  
     #numbrer of CPUs to use for fitting
     NumCPU = cms.uint32(12),
@@ -70,8 +70,8 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
         InvariantMass = cms.vstring("Tag-Probe Mass", "60.0", "120.0", "GeV/c^{2}"),
         HT = cms.vstring("H_{T}", "0","2000", "GeV/c"),
         NJets = cms.vstring("NJets", "2", "22", ""),
-        Activity = cms.vstring("Activity", "0", "1600", "GeV/c"),
         Pt = cms.vstring("p_{T}", "10", "200", "GeV/c"),
+        Activity = cms.vstring("Activity", "0", "1600", "GeV/c"),
 
     ),    
 		    
