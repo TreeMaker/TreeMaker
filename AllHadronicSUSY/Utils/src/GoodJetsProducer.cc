@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/EDFilter.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -39,7 +39,7 @@
 // class declaration
 //
 
-class GoodJetsProducer : public edm::EDProducer {
+class GoodJetsProducer : public edm::EDFilter {
 public:
    explicit GoodJetsProducer(const edm::ParameterSet&);
    ~GoodJetsProducer();
@@ -47,9 +47,9 @@ public:
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
-   virtual void beginJob() ;
-   virtual void produce(edm::Event&, const edm::EventSetup&);
-   virtual void endJob() ;
+   virtual void beginJob() override;
+   virtual bool filter(edm::Event&, const edm::EventSetup&) override;
+   virtual void endJob() override;
    
    virtual void beginRun(edm::Run&, edm::EventSetup const&);
    virtual void endRun(edm::Run&, edm::EventSetup const&);
@@ -58,6 +58,7 @@ private:
    edm::InputTag JetTag_;
    double maxEta_;
    double maxMuFraction_, minNConstituents_, maxNeutralFraction_, maxPhotonFraction_, minChargedMultiplicity_, minChargedFraction_, maxChargedEMFraction_;
+   double jetPtFilter_;
    
    // ----------member data ---------------------------
 };
@@ -86,6 +87,7 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    minChargedMultiplicity_ = iConfig.getParameter <double> ("minChargedMultiplicity");
    minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
    maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
+   jetPtFilter_ = iConfig.getParameter <double> ("jetPtFilter");
    produces<std::vector<Jet> >();
 }
 
@@ -104,8 +106,8 @@ GoodJetsProducer::~GoodJetsProducer()
 //
 
 // ------------ method called to produce the data  ------------
-void
-GoodJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+bool
+GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
@@ -122,14 +124,32 @@ GoodJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          float chgEMfrac=Jets->at(i).chargedEmEnergyFraction();
          float muFrac=Jets->at(i).muonEnergyFraction();
          unsigned int nconstit=Jets->at(i).nConstituents();
-         int chgmulti=Jets->at(i).chargedHadronMultiplicity();
-         if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>=minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)
-            prodJets->push_back(Jet(Jets->at(i)));
+         if (std::abs(Jets->at(i).eta()) < 2.4){
+            int chgmulti=Jets->at(i).chargedHadronMultiplicity();
+            if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_) {
+               prodJets->push_back(Jet(Jets->at(i)));
+            } else {
+               if (Jets->at(i).pt() > jetPtFilter_) {
+                  std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
+                  return false;
+               }
+            }
+         } else {
+            if (neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ ) {
+               prodJets->push_back(Jet(Jets->at(i)));
+            } else {
+               if (Jets->at(i).pt() > jetPtFilter_) {
+                  std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
+                  return false;
+               }
+            }
+         }
       }
    }
    // put in the event
    const std::string string1("");
    iEvent.put(prodJets );
+   return true;
    
 }
 
