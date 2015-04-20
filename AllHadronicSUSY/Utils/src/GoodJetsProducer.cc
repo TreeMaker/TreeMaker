@@ -2,11 +2,11 @@
 //
 // Package:    GoodJetsProducer
 // Class:      GoodJetsProducer
-//
+// 
 /**\class GoodJetsProducer GoodJetsProducer.cc RA2Classic/GoodJetsProducer/src/GoodJetsProducer.cc
- *
+ * 
  * Description: [one line class summary]
- *
+ * 
  * Implementation:
  *     [Notes on implementation]
  */
@@ -41,11 +41,11 @@
 
 class GoodJetsProducer : public edm::EDFilter {
 public:
-   explicit GoodJetsProducer(const edm::ParameterSet&);
-   ~GoodJetsProducer();
-   
-   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-   
+	explicit GoodJetsProducer(const edm::ParameterSet&);
+	~GoodJetsProducer();
+	
+	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+	
 private:
    virtual void beginJob() override;
    virtual bool filter(edm::Event&, const edm::EventSetup&) override;
@@ -94,10 +94,10 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
 
 GoodJetsProducer::~GoodJetsProducer()
 {
-   
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-   
+	
+	// do anything here that needs to be done at desctruction time
+	// (e.g. close files, deallocate resources etc.)
+	
 }
 
 
@@ -154,36 +154,36 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void
+void 
 GoodJetsProducer::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void
+void 
 GoodJetsProducer::endJob() {
 }
 
 // ------------ method called when starting to processes a run  ------------
-void
+void 
 GoodJetsProducer::beginRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
-void
+void 
 GoodJetsProducer::endRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
-void
+void 
 GoodJetsProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
-void
+void 
 GoodJetsProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
@@ -191,11 +191,11 @@ GoodJetsProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup cons
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 GoodJetsProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-   //The following says we do not know what parameters are allowed so do no validation
-   // Please change this to state exactly what you do use, even if it is no parameters
-   edm::ParameterSetDescription desc;
-   desc.setUnknown();
-   descriptions.addDefault(desc);
+	//The following says we do not know what parameters are allowed so do no validation
+	// Please change this to state exactly what you do use, even if it is no parameters
+	edm::ParameterSetDescription desc;
+	desc.setUnknown();
+	descriptions.addDefault(desc);
 }
 
 //define this as a plug-in

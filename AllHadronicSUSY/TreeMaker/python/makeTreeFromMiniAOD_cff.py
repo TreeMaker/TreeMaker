@@ -151,21 +151,25 @@ applybaseline=False):
     	TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
       ProbePFCand = cms.InputTag('LeptonsNew:IdMuon'),
       ProbeTestPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
+      JetTag  = cms.InputTag('HTJets'),
       )
     process.MuonIdTagAndProbe = leptontagandprobeproducer.clone(
     	TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
     	ProbePFCand = cms.InputTag('slimmedMuons'),
     	ProbeTestPFCand = cms.InputTag('LeptonsNew:IdMuon'),
+    	JetTag  = cms.InputTag('HTJets'),
       )
     process.ElectronIsoTagAndProbe = leptontagandprobeproducer.clone(
     	TagPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
       ProbePFCand = cms.InputTag('LeptonsNew:IdElectron'),
       ProbeTestPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
+      JetTag  = cms.InputTag('HTJets'),
       )
     process.ElectronIdTagAndProbe = leptontagandprobeproducer.clone(
     	TagPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
     	ProbePFCand = cms.InputTag('slimmedElectrons'),
     	ProbeTestPFCand = cms.InputTag('LeptonsNew:IdElectron'),
+    	JetTag  = cms.InputTag('HTJets'),
       )
     process.Baseline += process.GoodJets
     from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
@@ -230,7 +234,7 @@ applybaseline=False):
     from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
     process.MET = metdouble.clone(
     METTag  = cms.InputTag("slimmedMETs"),
-    JetTag  = cms.InputTag('HTJets')
+    JetTag  = cms.InputTag('HTJets'),
     )
     process.Baseline += process.MET
     VarsDouble.extend(['MET:minDeltaPhiN','MET:DeltaPhiN1','MET:DeltaPhiN2','MET:DeltaPhiN3','MET:Pt(METPt)','MET:Phi(METPhi)'])
@@ -241,8 +245,7 @@ applybaseline=False):
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     METTag  = cms.InputTag("slimmedMETs"),
     )
-    process.Baseline += process.JetsProperties
-    #process.LostLepton += process.JetsProperties
+    process.LostLepton += process.JetsProperties
     from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
     process.GenLeptons = genLeptonRecoCand.clone(
     PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
@@ -265,13 +268,20 @@ applybaseline=False):
 			process.Baseline += process.SelectedPFCandidates
 			process.Baseline += process.MuonIsoTagAndProbe
 			RecoCandVector.extend(['MuonIsoTagAndProbe:Tag(TagIsoMuon)','MuonIsoTagAndProbe:Probe(ProbeIsoMuon)|MuonIsoTagAndProbe:InvariantMass(F_InvariantMass)|MuonIsoTagAndProbe:PassingOrFail(I_PassingOrFail)'])
+			VarsDouble.extend(['MuonIsoTagAndProbe:MinDeltaPhiN(MuIso_minDeltaPhiN)'])
 			process.Baseline += process.MuonIdTagAndProbe
 			RecoCandVector.extend(['MuonIdTagAndProbe:Tag(TagIDMuon)','MuonIdTagAndProbe:Probe(ProbeIDMuon)|MuonIdTagAndProbe:InvariantMass(F_InvariantMass)|MuonIdTagAndProbe:PassingOrFail(I_PassingOrFail)'])
+			VarsDouble.extend(['MuonIdTagAndProbe:MinDeltaPhiN(MuID_minDeltaPhiN)'])
 			process.Baseline += process.ElectronIsoTagAndProbe
 			RecoCandVector.extend(['ElectronIsoTagAndProbe:Tag(TagIsoElectron)','ElectronIsoTagAndProbe:Probe(ProbeIsoElectron)|ElectronIsoTagAndProbe:InvariantMass(F_InvariantMass)|ElectronIsoTagAndProbe:PassingOrFail(I_PassingOrFail)'])
+			VarsDouble.extend(['ElectronIsoTagAndProbe:MinDeltaPhiN(ElecIso_minDeltaPhiN)'])
 			process.Baseline += process.ElectronIdTagAndProbe
 			RecoCandVector.extend(['ElectronIdTagAndProbe:Tag(TagIDElectron)','ElectronIdTagAndProbe:Probe(ProbeIDElectron)|ElectronIdTagAndProbe:InvariantMass(F_InvariantMass)|ElectronIdTagAndProbe:PassingOrFail(I_PassingOrFail)'])
+			VarsDouble.extend(['ElectronIdTagAndProbe:MinDeltaPhiN(ElecID_minDeltaPhiN)'])
 			RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminator(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)'] ) # jet
+			RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] )
+			RecoCandVector.extend(['IsolatedTracks','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
+			
 
     #define sequences
     
@@ -310,7 +320,7 @@ applybaseline=False):
     process.WriteTree = cms.Path(
         process.Baseline *
         process.AdditionalSequence *
-   # 	process.dump *
+    	#process.dump *
     	process.TreeMaker2
 
         )
