@@ -137,14 +137,20 @@ applybaseline=False):
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
       JetTag= cms.InputTag('slimmedJets'),
-      maxJetEta								  = cms.double(99), #store all jets 
-      maxMuFraction								  = cms.double(200), ## effectively no cut if above 1
-      minNConstituents								  = cms.double(1),
-      maxNeutralFraction								  = cms.double(0.99),
-      maxPhotonFraction								  = cms.double(0.99),
-      minChargedMultiplicity								  = cms.double(0),
-      minChargedFraction								  = cms.double(0),
-      maxChargedEMFraction								  = cms.double(0.99),
+      maxJetEta = cms.double(5.0),
+      maxMuFraction = cms.double(2),
+      minNConstituents = cms.double(2),
+      maxNeutralFraction = cms.double(0.99),
+      maxPhotonFraction = cms.double(0.99),
+      minChargedMultiplicity = cms.double(0),
+      minChargedFraction = cms.double(0),
+      maxChargedEMFraction = cms.double(0.99),
+      jetPtFilter = cms.double(30),
+      ExcludeLepIsoTrackPhotons = cms.bool(True),
+      JetConeSize = cms.double(0.04),
+      MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'),
+      ElecTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
+      IsoTrackTag = cms.InputTag('IsolatedTracks'),
       )
     from AllHadronicSUSY.Utils.leptontagandprobeproducer_cfi import leptontagandprobeproducer
     process.MuonIsoTagAndProbe = leptontagandprobeproducer.clone(
@@ -318,8 +324,9 @@ applybaseline=False):
     	)
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     process.WriteTree = cms.Path(
-        process.Baseline *
         process.AdditionalSequence *
+        process.Baseline *
+        
     	#process.dump *
     	process.TreeMaker2
 
