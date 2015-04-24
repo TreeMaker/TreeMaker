@@ -51,6 +51,7 @@ applybaseline=False):
     RecoCandVector = cms.vstring() 
     VarsDouble = cms.vstring()
     VarsInt = cms.vstring()
+    VarsBool = cms.vstring()
     # baseline producers
     process.Baseline = cms.Sequence(
     )
@@ -92,7 +93,7 @@ applybaseline=False):
       isoCut              = cms.double(0.1),
       mTCut=cms.double(-1.),
       )
-    process.LostLepton += process.IsolatedTracks
+    process.Baseline += process.IsolatedTracks
     process.IsolatedTracksVeto = trackIsolationFilter.clone(
     doTrkIsoVeto= False,
     vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
@@ -136,6 +137,7 @@ applybaseline=False):
     VarsInt.extend(['LeptonsNewNoMiniIso(LeptonsNoMiniIsolation)'])
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
+      TagMode = cms.bool(True),
       JetTag= cms.InputTag('slimmedJets'),
       maxJetEta = cms.double(5.0),
       maxMuFraction = cms.double(2),
@@ -178,6 +180,7 @@ applybaseline=False):
     	JetTag  = cms.InputTag('HTJets'),
       )
     process.Baseline += process.GoodJets
+    VarsBool.extend(['GoodJets(JetID)'])
     from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
     process.HTJets = SubJetSelection.clone(
     JetTag  = cms.InputTag('GoodJets'),
@@ -310,6 +313,7 @@ applybaseline=False):
       RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
       RecoCandVector.extend(['LeptonsNewNoMiniIso:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewNoMiniIso:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] ) # gen information on leptons
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminator(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
+      RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
 
     if gammajets:
       print "Adding Gamma+Jet calculations to final path and tree"
@@ -321,12 +325,14 @@ applybaseline=False):
     	VarsRecoCand = RecoCandVector, 
     	VarsDouble  	  = VarsDouble,
     	VarsInt = VarsInt,
+    	VarsBool = VarsBool,
+
     	)
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     process.WriteTree = cms.Path(
-        process.AdditionalSequence *
-        process.Baseline *
         
+        process.Baseline *
+        process.AdditionalSequence *
     	#process.dump *
     	process.TreeMaker2
 

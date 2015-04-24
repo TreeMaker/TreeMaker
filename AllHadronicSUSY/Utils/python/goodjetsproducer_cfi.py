@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
 GoodJetsProducer = cms.EDFilter('GoodJetsProducer',
+				 TagMode = cms.bool(False),
                                  JetTag = cms.InputTag('slimmedJets'),
                                  maxJetEta = cms.double(5.0),
                                  maxMuFraction = cms.double(2),

@@ -64,7 +64,7 @@ private:
    double maxEta_;
    double maxMuFraction_, minNConstituents_, maxNeutralFraction_, maxPhotonFraction_, minChargedMultiplicity_, minChargedFraction_, maxChargedEMFraction_;
    double jetPtFilter_;
-   bool ExcludeLeptonIsoTrackPhotons_;
+   bool ExcludeLeptonIsoTrackPhotons_, TagMode_;
    double JetConeSize_;
    double deltaR(double eta1, double phi1, double eta2, double phi2);
    
@@ -86,6 +86,7 @@ private:
 using namespace pat;
 GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
 {
+   TagMode_ = iConfig.getParameter<bool> ("TagMode");
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
    maxEta_ = iConfig.getParameter <double> ("maxJetEta");
    maxMuFraction_ = iConfig.getParameter <double> ("maxMuFraction");
@@ -97,6 +98,7 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
    jetPtFilter_ = iConfig.getParameter <double> ("jetPtFilter");
    produces<std::vector<Jet> >();
+   produces<bool>();
    ExcludeLeptonIsoTrackPhotons_ = iConfig.getParameter <bool> ("ExcludeLepIsoTrackPhotons");
    MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
    ElecTag_ = iConfig.getParameter<edm::InputTag>("ElecTag");
@@ -134,6 +136,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.getByLabel(IsoTrackTag_, isoTrackHandle);
    if(ExcludeLeptonIsoTrackPhotons_ && !isoTrackHandle.isValid()) std::cout<<"Warning isotrack Tag not valid in GoodJetSelector: "<<IsoTrackTag_<<std::endl;
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
+   bool result=true;
    edm::Handle< edm::View<Jet> > Jets;
    iEvent.getByLabel(JetTag_,Jets);
    if(Jets.isValid())
@@ -175,7 +178,8 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             } else {
                if (Jets->at(i).pt() > jetPtFilter_) {
                   std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
-                  return false;
+                  if(!TagMode_)return false;
+		  result=false;
                }
             }
          } else {
@@ -184,7 +188,8 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             } else {
                if (Jets->at(i).pt() > jetPtFilter_) {
                   std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
-                  return false;
+		  if(!TagMode_)return false;
+		  result=false;
                }
             }
          }
@@ -193,6 +198,8 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // put in the event
    const std::string string1("");
    iEvent.put(prodJets );
+   std::auto_ptr<bool> passing(new bool(result));
+   iEvent.put(passing);
    return true;
    
 }
