@@ -3,7 +3,7 @@
 
 import FWCore.ParameterSet.Config as cms
 
-def makeTreeTreeFromMiniADO(process,
+def makeTreeFromMiniAOD(process,
 outFileName,
 reportEveryEvt=10,
 testFileName="",
