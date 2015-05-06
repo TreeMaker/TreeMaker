@@ -251,7 +251,7 @@ const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle *
 {
 	for(size_t i=0;i< particle->numberOfDaughters();i++)
 	{
-		if(abs(particle->daughter(i)->pdgId() )== 24) return BosonFound((reco::GenParticle*)particle->daughter(i));
+		if(abs(particle->daughter(i)->pdgId() )== 24 || abs(particle->daughter(i)->pdgId() ) == 23 ) return BosonFound((reco::GenParticle*)particle->daughter(i));
 	}
 	return particle;
 	

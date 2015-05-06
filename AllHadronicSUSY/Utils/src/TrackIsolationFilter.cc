@@ -131,6 +131,7 @@ int firstGoodVertexIdx = -1;
 for(int v=0; v<vtxSize;++v){
         if ( !(*vertices)[v].isFake() && (*vertices)[v].ndof()>=4. && (*vertices)[v].position().Rho()<=2.0 && fabs((*vertices)[v].position().Z())<=24.0) {
         firstGoodVertexIdx=v;
+// 				std::cout<<"GoodVertexIdV found: "<<firstGoodVertexIdx<<std::endl;
         break;
         }
 }  
@@ -141,8 +142,8 @@ for(int v=0; v<vtxSize;++v){
 
   std::auto_ptr<std::vector<reco::PFCandidate> > prod(new std::vector<reco::PFCandidate>());
   std::auto_ptr<std::vector<pat::PackedCandidate> > prodminiAOD(new std::vector<pat::PackedCandidate>());
-  if( vertices->size() > 0 && firstGoodVertexIdx>0) {
-
+   if( vertices->size() > 0 && firstGoodVertexIdx>=0) {
+// 	if( vertices->size() > 0) {
     /* for( PFCandidateCollection::const_iterator pf_it = pfCandidatesHandle->begin(); pf_it != pfCandidatesHandle->end(); pf_it++ ) {
 
         //-------------------------------------------------------------------------------------

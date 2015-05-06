@@ -495,14 +495,14 @@ TreeMaker::beginJob()
       {
 	nameInTree = SeparateString(nameInTree,":").second;
       }
-      nameInTree = FinalizeName(nameInTree);
+      nameInTree = FinalizeName(mainNameInTree+"_"+nameInTree);
       std::cout<<"Sub Typ: Tag: "<<tag<<", typ: "<<typ<< ", nameIn Tree: "<<nameInTree<<std::endl;
       if(typ==0)
       {
 	
 	RecoCandAdditionalBoolVariablesTags_[i].push_back(edm::InputTag(tag ) );
 	RecoCandAdditionalBoolVariables_[i].push_back(new UChar_t[10000]);
-	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalBoolVariables_.at(i).at(countBool), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/b").c_str());
+	tree_->Branch((nameInTree).c_str(), RecoCandAdditionalBoolVariables_.at(i).at(countBool), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/b").c_str());
 	// 				tree_->Branch((nameInTree).c_str(), RecoCandAdditionalBoolVariables_.at(i).at(countBool), (nameInTree+"["+mainNameInTree+"Num]/b").c_str());
 	countBool++;
       }
@@ -511,7 +511,7 @@ TreeMaker::beginJob()
 	
 	RecoCandAdditionalIntVariablesTags_[i].push_back(edm::InputTag(tag ) );
 	RecoCandAdditionalIntVariables_[i].push_back(new Int_t[10000]);
-	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalIntVariables_.at(i).at(countInt), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/I").c_str());
+	tree_->Branch((nameInTree).c_str(), RecoCandAdditionalIntVariables_.at(i).at(countInt), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/I").c_str());
 	// 				tree_->Branch((nameInTree).c_str(), RecoCandAdditionalIntVariables_.at(i).at(countInt), (nameInTree+"["+mainNameInTree+"Num]/I").c_str());
 	countInt++;
       }
@@ -520,7 +520,7 @@ TreeMaker::beginJob()
 	
 	RecoCandAdditionalFloatVariablesTags_[i].push_back(edm::InputTag(tag ) );
 	RecoCandAdditionalFloatVariables_[i].push_back(new Float_t[10000]);
-	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalFloatVariables_.at(i).at(countFloat), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/F").c_str());
+	tree_->Branch((nameInTree).c_str(), RecoCandAdditionalFloatVariables_.at(i).at(countFloat), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/F").c_str());
 	countFloat++;
       }
       if(typ>2)std::cout<<"Error typ is: "<<typ<<" which is not defined!!! check!"<<std::endl;
