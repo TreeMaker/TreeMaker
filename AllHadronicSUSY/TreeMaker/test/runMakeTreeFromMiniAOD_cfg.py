@@ -22,8 +22,8 @@ print "************************************************"
 import FWCore.ParameterSet.Config as cms
 process = cms.Process("RA2EventSelection")
 
-from AllHadronicSUSY.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeTreeFromMiniADO
-makeTreeTreeFromMiniADO(process,
+from AllHadronicSUSY.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
+makeTreeFromMiniAOD(process,
   outFileName="ReducedSelection",
   reportEveryEvt=5000,
   testFileName=dataSetName,
