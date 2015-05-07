@@ -44,6 +44,7 @@ CleanPATJetProducer::CleanPATJetProducer(const edm::ParameterSet& iConfig):
 {
   produces< std::vector< pat::Jet > >("");
   produces< std::vector< pat::Photon > >("bestPhoton");
+  produces< int >("NumPhotons");
 }
 
 
@@ -68,6 +69,7 @@ CleanPATJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   //initialize 'collection' to be saved in event
   std::auto_ptr< std::vector< pat::Jet > >  patJet4Vec( new std::vector< pat::Jet > () );
   std::auto_ptr< std::vector< pat::Photon > > purePhoton( new std::vector< pat::Photon > () );
+  std::auto_ptr< int > numPhoton( new int (0) );
 
   using namespace edm;
   Handle< View< pat::Photon> > photonCands;
@@ -180,6 +182,7 @@ CleanPATJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     // check if photons is a good photon
     if( passAcc && passID && passIso && iPhoton->pt() > 100.0){//pure photons
+      (*numPhoton)++;
       // make sure only the highest pt photon is used
       if(iPhoton->pt() > PhotonPt){ 
 	purePhoton->clear();
@@ -252,6 +255,7 @@ CleanPATJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   iEvent.put(purePhoton, "bestPhoton" ); 
   iEvent.put(patJet4Vec ); 
+  iEvent.put(numPhoton, "NumPhotons" ); 
 
 }
 

@@ -37,6 +37,7 @@
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "PhysicsTools/PatAlgos/plugins/PATJetProducer.h"
+#include <DataFormats/PatCandidates/interface/Photon.h>
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include <TVector2.h>
 //
@@ -60,7 +61,7 @@ private:
    virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag JetTag_;
-   edm::InputTag MuonTag_, ElecTag_, IsoTrackTag_;
+   edm::InputTag MuonTag_, ElecTag_, IsoTrackTag_, PhotonTag_;
    double maxEta_;
    double maxMuFraction_, minNConstituents_, maxNeutralFraction_, maxPhotonFraction_, minChargedMultiplicity_, minChargedFraction_, maxChargedEMFraction_;
    double jetPtFilter_;
@@ -103,6 +104,7 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
    ElecTag_ = iConfig.getParameter<edm::InputTag>("ElecTag");
    IsoTrackTag_ = iConfig.getParameter<edm::InputTag>("IsoTrackTag");
+   PhotonTag_ = iConfig.getParameter<edm::InputTag>("PhotonTag");
    JetConeSize_ = iConfig.getParameter <double> ("JetConeSize");
 }
 
@@ -129,12 +131,19 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<edm::View<pat::Muon> > muonHandle;
    iEvent.getByLabel(MuonTag_, muonHandle);
    if(ExcludeLeptonIsoTrackPhotons_ && !muonHandle.isValid()) std::cout<<"Warning Muon Tag not valid in GoodJetSelector: "<<MuonTag_<<std::endl;
+
    edm::Handle<edm::View<pat::Electron> > eleHandle;
    iEvent.getByLabel(ElecTag_, eleHandle);
    if(ExcludeLeptonIsoTrackPhotons_ && !eleHandle.isValid()) std::cout<<"Warning elec Tag not valid in GoodJetSelector: "<<ElecTag_<<std::endl;
+
    edm::Handle<edm::View<pat::PackedCandidate> > isoTrackHandle;
    iEvent.getByLabel(IsoTrackTag_, isoTrackHandle);
    if(ExcludeLeptonIsoTrackPhotons_ && !isoTrackHandle.isValid()) std::cout<<"Warning isotrack Tag not valid in GoodJetSelector: "<<IsoTrackTag_<<std::endl;
+
+   edm::Handle<edm::View<pat::Photon> > photonHandle;
+   iEvent.getByLabel(PhotonTag_, photonHandle);
+   if(ExcludeLeptonIsoTrackPhotons_ && !photonHandle.isValid()) std::cout<<"Warning Muon Tag not valid in GoodJetSelector: "<<PhotonTag_<<std::endl;
+
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
    bool result=true;
    edm::Handle< edm::View<Jet> > Jets;
@@ -165,6 +174,10 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 {
 	   if(std::abs(Jets->at(i).pt() - isoTrackHandle->at(e).pt() ) / isoTrackHandle->at(e).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),isoTrackHandle->at(e).eta(),isoTrackHandle->at(e).phi())<JetConeSize_ ) skip=true;
 	 }
+	 for(unsigned int p=0; p<photonHandle->size(); ++p)
+	 {
+	   if(std::abs(Jets->at(i).pt() - photonHandle->at(p).pt() ) / photonHandle->at(p).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),photonHandle->at(p).eta(),photonHandle->at(p).phi())<JetConeSize_ ) skip=true;
+	 }
 	 if(skip) 
 	 {
 	   prodJets->push_back(Jet(Jets->at(i)));
@@ -177,7 +190,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
                prodJets->push_back(Jet(Jets->at(i)));
             } else {
                if (Jets->at(i).pt() > jetPtFilter_) {
-                  std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
+		  //std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
                   if(!TagMode_)return false;
 		  result=false;
                }
@@ -187,7 +200,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
                prodJets->push_back(Jet(Jets->at(i)));
             } else {
                if (Jets->at(i).pt() > jetPtFilter_) {
-                  std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
+		  //std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
 		  if(!TagMode_)return false;
 		  result=false;
                }

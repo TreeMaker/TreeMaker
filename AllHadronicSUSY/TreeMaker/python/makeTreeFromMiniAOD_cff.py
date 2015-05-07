@@ -83,29 +83,64 @@ applybaseline=False):
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
-    process.IsolatedTracks = trackIsolationFilter.clone(
+    
+    process.electronPFCandidates = cms.EDFilter("CandPtrSelector",                                                    
+                                                src = cms.InputTag("packedPFCandidates"),
+                                                cut = cms.string("abs(pdgID_)==11")
+                                                )    
+    process.muonPFCandidates = cms.EDFilter("CandPtrSelector",                                                    
+                                            src = cms.InputTag("packedPFCandidates"),
+                                            cut = cms.string("abs(pdgID_)==13")
+                                            )    
+    process.pionPFCandidates = cms.EDFilter("CandPtrSelector",                                                    
+                                            src = cms.InputTag("packedPFCandidates"),
+                                            cut = cms.string("abs(pdgID_)==211")
+                                            )    
+
+    process.IsolatedElectronTracksVeto = trackIsolationFilter.clone(
       doTrkIsoVeto= False,
       vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
-      pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+      pfCandidatesTag = cms.InputTag("electronPFCandidates"),
+      dR_ConeSize         = cms.double(0.3),
+      dz_CutValue         = cms.double(0.05),
+      minPt_PFCandidate   = cms.double(5.0),
+      isoCut              = cms.double(0.2),
+      mTCut=cms.double(100.),
+      )
+
+    process.IsolatedMuonTracksVeto = trackIsolationFilter.clone(
+      doTrkIsoVeto= False,
+      vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+      pfCandidatesTag = cms.InputTag("muonPFCandidates"),
+      dR_ConeSize         = cms.double(0.3),
+      dz_CutValue         = cms.double(0.05),
+      minPt_PFCandidate   = cms.double(5.0),
+      isoCut              = cms.double(0.2),
+      mTCut=cms.double(100.),
+      )
+
+    process.IsolatedPionTracksVeto = trackIsolationFilter.clone(
+      doTrkIsoVeto= False,
+      vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+      pfCandidatesTag = cms.InputTag("pionPFCandidates"),
       dR_ConeSize         = cms.double(0.3),
       dz_CutValue         = cms.double(0.05),
       minPt_PFCandidate   = cms.double(10.0),
       isoCut              = cms.double(0.1),
-      mTCut=cms.double(-1.),
+      mTCut=cms.double(100.),
       )
-    process.Baseline += process.IsolatedTracks
-    process.IsolatedTracksVeto = trackIsolationFilter.clone(
-    doTrkIsoVeto= False,
-    vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
-    pfCandidatesTag = cms.InputTag("packedPFCandidates"),
-    dR_ConeSize         = cms.double(0.3),
-    dz_CutValue         = cms.double(0.05),
-    minPt_PFCandidate   = cms.double(15.0),
-    isoCut              = cms.double(0.1),
-    mTCut=cms.double(100.),
-    )
-    process.Baseline += process.IsolatedTracksVeto
-    VarsInt.extend(['IsolatedTracksVeto:isoTracks'])
+
+    process.Baseline += process.IsolatedElectronTracksVeto
+    process.Baseline += process.IsolatedMuonTracksVeto
+    process.Baseline += process.IsolatedPionTracksVeto
+
+    VarsInt.extend(['IsolatedElectronTracksVeto:isoElectronTracks'])
+    VarsInt.extend(['IsolatedMuonTracksVeto:isoMuonTracks'])
+    VarsInt.extend(['IsolatedPionTracksVeto:isoPionTracks'])
+
+    #done with isolated track vetos stuff
+    ########################################################
+    
     from AllHadronicSUSY.Utils.leptonproducer_cfi import leptonproducer
     process.LeptonsNew = leptonproducer.clone(
       MuonTag = cms.InputTag('slimmedMuons'),
@@ -135,6 +170,51 @@ applybaseline=False):
       )
     process.Baseline += process.LeptonsNewNoMiniIso
     VarsInt.extend(['LeptonsNewNoMiniIso(LeptonsNoMiniIsolation)'])
+
+    ####### good photons
+    process.goodPhotons = cms.EDProducer("CleanPATJetProducer",
+                                         photonCollection = cms.untracked.InputTag("slimmedPhotons"),
+                                         jetCollection = cms.untracked.string("slimmedJets"), 
+                                         rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
+                                         debug = cms.untracked.bool(False)
+                                         )
+    ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
+    #################################
+
+    ####### good jets -- the start of everything    
+
+    ####### JECs
+    # get the JECs
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+                               connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
+                               toGet = cms.VPSet(
+            cms.PSet(record = cms.string("JetCorrectionsRecord"),
+                     tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
+                     label= cms.untracked.string("AK4PFchs")
+                     )
+            )
+                               )
+    process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
+    
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+    process.patJetCorrFactorsReapplyJEC = process.patJetCorrFactorsUpdated.clone(
+        src = cms.InputTag("slimmedJets"),
+        levels = ['L1FastJet', 
+                  'L2Relative', 
+                  'L3Absolute'],
+        payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
+    
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+    process.patJetsReapplyJEC = process.patJetsUpdated.clone(
+        jetSource = cms.InputTag("slimmedJets"),
+        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        )
+    process.Baseline += process.jec
+    process.Baseline += process.patjetCorrFactorReapplyJEC
+
+    ############
+
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
       TagMode = cms.bool(True),
@@ -142,8 +222,8 @@ applybaseline=False):
       maxJetEta = cms.double(5.0),
       maxMuFraction = cms.double(2),
       minNConstituents = cms.double(2),
-      maxNeutralFraction = cms.double(0.99),
-      maxPhotonFraction = cms.double(0.99),
+      maxNeutralFraction = cms.double(0.90),
+      maxPhotonFraction = cms.double(0.95),
       minChargedMultiplicity = cms.double(0),
       minChargedFraction = cms.double(0),
       maxChargedEMFraction = cms.double(0.99),
@@ -153,7 +233,11 @@ applybaseline=False):
       MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'),
       ElecTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
       IsoTrackTag = cms.InputTag('IsolatedTracks'),
+      PhotonTag = cms.InputTag('goodPhotons','bestPhoton'),
       )
+    #### done with good jets
+    ###########################################
+
     from AllHadronicSUSY.Utils.leptontagandprobeproducer_cfi import leptontagandprobeproducer
     process.MuonIsoTagAndProbe = leptontagandprobeproducer.clone(
     	TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
@@ -254,7 +338,7 @@ applybaseline=False):
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     METTag  = cms.InputTag("slimmedMETs"),
     )
-    process.LostLepton += process.JetsProperties
+    process.Baseline += process.JetsProperties
     from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
     process.GenLeptons = genLeptonRecoCand.clone(
     PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
