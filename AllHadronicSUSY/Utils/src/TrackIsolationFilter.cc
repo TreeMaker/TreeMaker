@@ -76,6 +76,7 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
   minPt_            = iConfig.getParameter<double>          ("minPt_PFCandidate"); // store PFCandidates with pt above this cut                 (default 0   )
   isoCut_           = iConfig.getParameter<double>          ("isoCut"); // isolation cut value
   doTrkIsoVeto_     = iConfig.getParameter<bool>            ("doTrkIsoVeto");
+  pdgId_     = iConfig.getParameter<int>            ("pdgId");
   mTCut_=   iConfig.getParameter<double>   ("mTCut");
   maxEta_= iConfig.getParameter<double>("etaCut");
  // produces<std::vector<reco::PFCandidate> >(""); 
@@ -225,6 +226,10 @@ for(int v=0; v<vtxSize;++v){
       // miniAOD
       for(size_t i=0; i<pfCandidates->size();i++)
       {
+	//-------------------------------------------------------------------------------------
+	// only store PFCandidate values if PFCandidate.pdgId() == pdgId_
+	//-------------------------------------------------------------------------------------
+	if( abs( (*pfCandidates)[i].pdgId() ) != pdgId_ && pdgId_ != 0 ) continue;
 	//-------------------------------------------------------------------------------------
 	// only store PFCandidate values if pt > minPt
 	//-------------------------------------------------------------------------------------

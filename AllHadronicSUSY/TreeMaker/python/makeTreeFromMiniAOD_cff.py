@@ -84,49 +84,39 @@ applybaseline=False):
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
     
-    process.electronPFCandidates = cms.EDFilter("CandPtrSelector",                                                    
-                                                src = cms.InputTag("packedPFCandidates"),
-                                                cut = cms.string("abs(pdgID_)==11")
-                                                )    
-    process.muonPFCandidates = cms.EDFilter("CandPtrSelector",                                                    
-                                            src = cms.InputTag("packedPFCandidates"),
-                                            cut = cms.string("abs(pdgID_)==13")
-                                            )    
-    process.pionPFCandidates = cms.EDFilter("CandPtrSelector",                                                    
-                                            src = cms.InputTag("packedPFCandidates"),
-                                            cut = cms.string("abs(pdgID_)==211")
-                                            )    
-
     process.IsolatedElectronTracksVeto = trackIsolationFilter.clone(
       doTrkIsoVeto= False,
       vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
-      pfCandidatesTag = cms.InputTag("electronPFCandidates"),
+      pfCandidatesTag = cms.InputTag("packedPFCandidates"),
       dR_ConeSize         = cms.double(0.3),
       dz_CutValue         = cms.double(0.05),
       minPt_PFCandidate   = cms.double(5.0),
       isoCut              = cms.double(0.2),
+      pdgId               = cms.int32(11),
       mTCut=cms.double(100.),
       )
 
     process.IsolatedMuonTracksVeto = trackIsolationFilter.clone(
       doTrkIsoVeto= False,
       vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
-      pfCandidatesTag = cms.InputTag("muonPFCandidates"),
+      pfCandidatesTag = cms.InputTag("packedPFCandidates"),
       dR_ConeSize         = cms.double(0.3),
       dz_CutValue         = cms.double(0.05),
       minPt_PFCandidate   = cms.double(5.0),
-      isoCut              = cms.double(0.2),
+      isoCut              = cms.double(0.2), 
+      pdgId               = cms.int32(13),
       mTCut=cms.double(100.),
       )
 
     process.IsolatedPionTracksVeto = trackIsolationFilter.clone(
       doTrkIsoVeto= False,
       vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
-      pfCandidatesTag = cms.InputTag("pionPFCandidates"),
+      pfCandidatesTag = cms.InputTag("packedPFCandidates"),
       dR_ConeSize         = cms.double(0.3),
       dz_CutValue         = cms.double(0.05),
       minPt_PFCandidate   = cms.double(10.0),
       isoCut              = cms.double(0.1),
+      pdgId               = cms.int32(211),
       mTCut=cms.double(100.),
       )
 
@@ -134,9 +124,9 @@ applybaseline=False):
     process.Baseline += process.IsolatedMuonTracksVeto
     process.Baseline += process.IsolatedPionTracksVeto
 
-    VarsInt.extend(['IsolatedElectronTracksVeto:isoElectronTracks'])
-    VarsInt.extend(['IsolatedMuonTracksVeto:isoMuonTracks'])
-    VarsInt.extend(['IsolatedPionTracksVeto:isoPionTracks'])
+    VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronsTracks)'])
+    VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
+    VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
 
     #done with isolated track vetos stuff
     ########################################################
@@ -178,6 +168,7 @@ applybaseline=False):
                                          rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
                                          debug = cms.untracked.bool(False)
                                          )
+    process.Baseline += process.goodPhotons
     ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
     #################################
 
@@ -198,7 +189,7 @@ applybaseline=False):
     process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
     
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-    process.patJetCorrFactorsReapplyJEC = process.patJetCorrFactorsUpdated.clone(
+    process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
         src = cms.InputTag("slimmedJets"),
         levels = ['L1FastJet', 
                   'L2Relative', 
@@ -206,12 +197,13 @@ applybaseline=False):
         payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
     
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-    process.patJetsReapplyJEC = process.patJetsUpdated.clone(
+    process.patJetsReapplyJEC = patJetsUpdated.clone(
         jetSource = cms.InputTag("slimmedJets"),
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
         )
-    process.Baseline += process.jec
-    process.Baseline += process.patjetCorrFactorReapplyJEC
+
+    process.Baseline += process.patJetCorrFactorsReapplyJEC
+    process.Baseline += process.patJetsReapplyJEC
 
     ############
 
@@ -232,7 +224,9 @@ applybaseline=False):
       JetConeSize = cms.double(0.04),
       MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'),
       ElecTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
-      IsoTrackTag = cms.InputTag('IsolatedTracks'),
+      IsoElectronTrackTag = cms.InputTag('IsolatedElectronTracksVeto'),
+      IsoMuonTrackTag = cms.InputTag('IsolatedMuonTracksVeto'),
+      IsoPionTrackTag = cms.InputTag('IsolatedPionTracksVeto'),
       PhotonTag = cms.InputTag('goodPhotons','bestPhoton'),
       )
     #### done with good jets
