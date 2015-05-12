@@ -175,6 +175,8 @@ applybaseline=False):
 
     ####### JECs
     # get the JECs
+    # this requires the user to download the .db file from this twiki
+    # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
     from CondCore.DBCommon.CondDBSetup_cfi import *
     process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
                                connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
