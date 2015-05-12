@@ -124,7 +124,7 @@ applybaseline=False):
     process.Baseline += process.IsolatedMuonTracksVeto
     process.Baseline += process.IsolatedPionTracksVeto
 
-    VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronsTracks)'])
+    VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronTracks)'])
     VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
     VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
 
@@ -162,9 +162,8 @@ applybaseline=False):
     VarsInt.extend(['LeptonsNewNoMiniIso(LeptonsNoMiniIsolation)'])
 
     ####### good photons
-    process.goodPhotons = cms.EDProducer("CleanPATJetProducer",
+    process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
                                          photonCollection = cms.untracked.InputTag("slimmedPhotons"),
-                                         jetCollection = cms.untracked.string("slimmedJets"), 
                                          rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
                                          debug = cms.untracked.bool(False)
                                          )
@@ -202,8 +201,9 @@ applybaseline=False):
         jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
         )
 
-    process.Baseline += process.patJetCorrFactorsReapplyJEC
-    process.Baseline += process.patJetsReapplyJEC
+    ###### THIS IS JUST TEMPORARY, THESE SHOULD BE INCLUDED!!!!
+    #process.Baseline += process.patJetCorrFactorsReapplyJEC
+    #process.Baseline += process.patJetsReapplyJEC
 
     ############
 
