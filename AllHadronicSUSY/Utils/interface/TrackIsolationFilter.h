@@ -48,6 +48,7 @@ private:
   double isoCut_;
   double mTCut_;
   bool doTrkIsoVeto_;
+  int pdgId_;
 
   edm::InputTag pfCandidatesTag_;
   edm::InputTag vertexInputTag_;

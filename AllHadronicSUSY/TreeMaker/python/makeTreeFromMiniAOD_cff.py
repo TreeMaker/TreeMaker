@@ -3,7 +3,7 @@
 
 import FWCore.ParameterSet.Config as cms
 
-def makeTreeTreeFromMiniADO(process,
+def makeTreeFromMiniAOD(process,
 outFileName,
 reportEveryEvt=10,
 testFileName="",
@@ -83,7 +83,32 @@ applybaseline=False):
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
-    process.IsolatedTracks = trackIsolationFilter.clone(
+    
+    process.IsolatedElectronTracksVeto = trackIsolationFilter.clone(
+      doTrkIsoVeto= False,
+      vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+      pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+      dR_ConeSize         = cms.double(0.3),
+      dz_CutValue         = cms.double(0.05),
+      minPt_PFCandidate   = cms.double(5.0),
+      isoCut              = cms.double(0.2),
+      pdgId               = cms.int32(11),
+      mTCut=cms.double(100.),
+      )
+
+    process.IsolatedMuonTracksVeto = trackIsolationFilter.clone(
+      doTrkIsoVeto= False,
+      vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+      pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+      dR_ConeSize         = cms.double(0.3),
+      dz_CutValue         = cms.double(0.05),
+      minPt_PFCandidate   = cms.double(5.0),
+      isoCut              = cms.double(0.2), 
+      pdgId               = cms.int32(13),
+      mTCut=cms.double(100.),
+      )
+
+    process.IsolatedPionTracksVeto = trackIsolationFilter.clone(
       doTrkIsoVeto= False,
       vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
       pfCandidatesTag = cms.InputTag("packedPFCandidates"),
@@ -91,21 +116,21 @@ applybaseline=False):
       dz_CutValue         = cms.double(0.05),
       minPt_PFCandidate   = cms.double(10.0),
       isoCut              = cms.double(0.1),
-      mTCut=cms.double(-1.),
+      pdgId               = cms.int32(211),
+      mTCut=cms.double(100.),
       )
-    process.Baseline += process.IsolatedTracks
-    process.IsolatedTracksVeto = trackIsolationFilter.clone(
-    doTrkIsoVeto= False,
-    vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
-    pfCandidatesTag = cms.InputTag("packedPFCandidates"),
-    dR_ConeSize         = cms.double(0.3),
-    dz_CutValue         = cms.double(0.05),
-    minPt_PFCandidate   = cms.double(15.0),
-    isoCut              = cms.double(0.1),
-    mTCut=cms.double(100.),
-    )
-    process.Baseline += process.IsolatedTracksVeto
-    VarsInt.extend(['IsolatedTracksVeto:isoTracks'])
+
+    process.Baseline += process.IsolatedElectronTracksVeto
+    process.Baseline += process.IsolatedMuonTracksVeto
+    process.Baseline += process.IsolatedPionTracksVeto
+
+    VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronTracks)'])
+    VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
+    VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
+
+    #done with isolated track vetos stuff
+    ########################################################
+    
     from AllHadronicSUSY.Utils.leptonproducer_cfi import leptonproducer
     process.LeptonsNew = leptonproducer.clone(
       MuonTag = cms.InputTag('slimmedMuons'),
@@ -135,6 +160,55 @@ applybaseline=False):
       )
     process.Baseline += process.LeptonsNewNoMiniIso
     VarsInt.extend(['LeptonsNewNoMiniIso(LeptonsNoMiniIsolation)'])
+
+    ####### good photons
+    process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
+                                         photonCollection = cms.untracked.InputTag("slimmedPhotons"),
+                                         rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
+                                         debug = cms.untracked.bool(False)
+                                         )
+    process.Baseline += process.goodPhotons
+    ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
+    #################################
+
+    ####### good jets -- the start of everything    
+
+    ####### JECs
+    # get the JECs
+    # this requires the user to download the .db file from this twiki
+    # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+                               connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
+                               toGet = cms.VPSet(
+            cms.PSet(record = cms.string("JetCorrectionsRecord"),
+                     tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
+                     label= cms.untracked.string("AK4PFchs")
+                     )
+            )
+                               )
+    process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
+    
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+    process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+        src = cms.InputTag("slimmedJets"),
+        levels = ['L1FastJet', 
+                  'L2Relative', 
+                  'L3Absolute'],
+        payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
+    
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+    process.patJetsReapplyJEC = patJetsUpdated.clone(
+        jetSource = cms.InputTag("slimmedJets"),
+        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        )
+
+    ###### THIS IS JUST TEMPORARY, THESE SHOULD BE INCLUDED!!!!
+    #process.Baseline += process.patJetCorrFactorsReapplyJEC
+    #process.Baseline += process.patJetsReapplyJEC
+
+    ############
+
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
       TagMode = cms.bool(True),
@@ -142,8 +216,8 @@ applybaseline=False):
       maxJetEta = cms.double(5.0),
       maxMuFraction = cms.double(2),
       minNConstituents = cms.double(2),
-      maxNeutralFraction = cms.double(0.99),
-      maxPhotonFraction = cms.double(0.99),
+      maxNeutralFraction = cms.double(0.90),
+      maxPhotonFraction = cms.double(0.95),
       minChargedMultiplicity = cms.double(0),
       minChargedFraction = cms.double(0),
       maxChargedEMFraction = cms.double(0.99),
@@ -152,8 +226,14 @@ applybaseline=False):
       JetConeSize = cms.double(0.04),
       MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'),
       ElecTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
-      IsoTrackTag = cms.InputTag('IsolatedTracks'),
+      IsoElectronTrackTag = cms.InputTag('IsolatedElectronTracksVeto'),
+      IsoMuonTrackTag = cms.InputTag('IsolatedMuonTracksVeto'),
+      IsoPionTrackTag = cms.InputTag('IsolatedPionTracksVeto'),
+      PhotonTag = cms.InputTag('goodPhotons','bestPhoton'),
       )
+    #### done with good jets
+    ###########################################
+
     from AllHadronicSUSY.Utils.leptontagandprobeproducer_cfi import leptontagandprobeproducer
     process.MuonIsoTagAndProbe = leptontagandprobeproducer.clone(
     	TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
@@ -254,7 +334,7 @@ applybaseline=False):
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     METTag  = cms.InputTag("slimmedMETs"),
     )
-    process.LostLepton += process.JetsProperties
+    process.Baseline += process.JetsProperties
     from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
     process.GenLeptons = genLeptonRecoCand.clone(
     PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
@@ -287,7 +367,7 @@ applybaseline=False):
 			process.Baseline += process.ElectronIdTagAndProbe
 			RecoCandVector.extend(['ElectronIdTagAndProbe:Tag(TagIDElectron)','ElectronIdTagAndProbe:Probe(ProbeIDElectron)|ElectronIdTagAndProbe:InvariantMass(F_InvariantMass)|ElectronIdTagAndProbe:PassingOrFail(I_PassingOrFail)'])
 			VarsDouble.extend(['ElectronIdTagAndProbe:MinDeltaPhiN(ElecID_minDeltaPhiN)'])
-			RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminator(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)'] ) # jet
+			RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)'] ) # jet
 			RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] )
 			RecoCandVector.extend(['IsolatedTracks','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
 			
@@ -312,7 +392,7 @@ applybaseline=False):
       RecoCandVector.extend(['IsolatedTracks','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
       RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
       RecoCandVector.extend(['LeptonsNewNoMiniIso:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewNoMiniIso:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] ) # gen information on leptons
-      RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminator(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
+      RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
       RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
 
     if gammajets:
