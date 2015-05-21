@@ -35,9 +35,10 @@
 // constructors and destructor
 //
 TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
-: nMaxCandidates_(10000), tree_(0)
+: nMaxCandidates_(200), tree_(0)
 {
   // generell
+///The red names are the parameters that can be changed from the python config file.
   treeName_ = iConfig.getParameter<std::string>("TreeName");
   debug_ = iConfig.getParameter<bool> ("debug");
   // input tags for float variables eg HT MHT MET or what not
@@ -66,7 +67,23 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
   VectorStringVector_.clear();
   VectorTLorentzVector_.clear();
   nameCache_.clear();
-  
+ 
+  testVec = new std::vector<double>; // Ahmad
+  RecoCandPtVec.clear(); // Ahmad2
+  RecoCandEtaVec.clear(); // Ahmad2  
+  RecoCandPhiVec.clear(); // Ahmad2
+
+  // Ahmad2 <<< 
+  for(unsigned int ib=0; ib<varsRecoCandNames_.size(); ib++){
+    std::vector<double> dummyVec1;
+    std::vector<double> dummyVec2;
+    std::vector<double> dummyVec3;
+    RecoCandPtVec.push_back(dummyVec1);
+    RecoCandEtaVec.push_back(dummyVec2);
+    RecoCandPhiVec.push_back(dummyVec3);
+  }
+  // Ahmad2>>>
+   
 }
 
 
@@ -88,7 +105,6 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace reco;
   using namespace pat;
   setBranchVariablesToDefault();
-  
   // Event information
   edm::EventAuxiliary aux = iEvent.eventAuxiliary();
   runNum_       = aux.run();
@@ -146,21 +162,38 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
   if(debug_) std::cout<<"Point f"<<std::endl;
+
+  for(int i=0; i < 4; i++){testVec->push_back(56.65);}   // Ahmad
+
   for(unsigned int i = 0; i < varsRecoCandTags_.size(); ++i) 
   {
+
     edm::Handle< edm::View<reco::Candidate> > cands;
     iEvent.getByLabel(varsRecoCandTags_.at(i),cands);
+
+    //  For example: 
+    //  varsRecoCandTags_.at(i) = InputTag:  label = GenLeptons, instance = Electron
+    //  varsRecoCandTags_.at(i) = InputTag:  label = GenLeptons, instance = Muon
+    //  varsRecoCandTags_.at(i) = InputTag:  label = GenLeptons, instance = Tau
+    //  varsRecoCandTags_.at(i) = InputTag:  label = GenLeptons, instance = Boson
+
     if( cands.isValid() ) 
     {
       RecoCandN_[i] = (unsigned int)(cands->size());
       for(unsigned int ii=0; ii < cands->size();ii++)
       {
+        RecoCandPtVec[i].push_back((double) cands->at(ii).pt()); // Ahmad2
+        RecoCandEtaVec[i].push_back((double) cands->at(ii).eta()); // Ahmad2
+        RecoCandPhiVec[i].push_back((double) cands->at(ii).phi()); // Ahmad2
+
 	RecoCandPt_.at(i)[ii] = cands->at(ii).pt();
 	RecoCandEta_.at(i)[ii] = cands->at(ii).eta();
 	RecoCandPhi_.at(i)[ii] = cands->at(ii).phi();
 	RecoCandE_.at(i)[ii] = cands->at(ii).energy();
 	RecoCandLorentzVector_.at(i)[ii].SetXYZT(cands->at(ii).p4().X(),cands->at(ii).p4().Y(),cands->at(ii).p4().Z(),cands->at(ii).p4().T());
       }
+      
+
       for(unsigned int ii=0; ii< RecoCandAdditionalFloatVariablesTags_[i].size();ii++)
       {
 	edm::Handle<std::vector<double> > FloatVar;
@@ -315,6 +348,7 @@ TreeMaker::beginJob()
     std::cout<<"VarsIntNames: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
     tree_->Branch((TString)nameInTree,&(VarsInt_.at(i)),(TString)nameInTree+"/I");
   }
+
   // double variables
   VarsDouble_ = std::vector<Float_t>(VarsDoubleNames_.size(),1.);
   for(unsigned int i=0; i < VarsDoubleNames_.size();i++)
@@ -357,7 +391,7 @@ TreeMaker::beginJob()
     }
     nameInTree = FinalizeName(nameInTree);
     tree_->Branch((TString)nameInTree,&(VarsBool_.at(i)),(TString)nameInTree+"/b");
-    
+ 
   }
   //  TLorentzVector variables
   VarsTLorentzVector_ = std::vector<TLorentzVector>(VarsTLorentzVectorNames_.size(),TLorentzVector(0.,0.,0.,0.));
@@ -401,17 +435,21 @@ TreeMaker::beginJob()
     }
     nameInTree = FinalizeName(nameInTree);
     tree_->Branch((TString)nameInTree,(TString)nameInTree,&(VarsString_.at(i)));
+
     
   }
+
+  tree_->Branch("testVec", "std::vector<double>", &testVec, 32000, 0); // Ahmad
+
   // loop over input varsFloat string to extract optional names in tree
   RecoCandN_ = std::vector<UShort_t>(varsRecoCandNames_.size(),0);
   for(unsigned int i=0; i<varsRecoCandNames_.size();i++)
   {
-    RecoCandPt_.push_back (new Float_t[10000]);
-    RecoCandEta_.push_back(new Float_t[10000]);
-    RecoCandPhi_.push_back(new Float_t[10000]);
-    RecoCandE_.push_back  (new Float_t[10000]);
-    RecoCandLorentzVector_.push_back(new TLorentzVector[10000]);
+    RecoCandPt_.push_back (new Float_t[200]);
+    RecoCandEta_.push_back(new Float_t[200]);
+    RecoCandPhi_.push_back(new Float_t[200]);
+    RecoCandE_.push_back  (new Float_t[200]);
+    RecoCandLorentzVector_.push_back(new TLorentzVector[200]);
     
     std::string temp = varsRecoCandNames_[i];
     std::string nameInTree = "";
@@ -428,6 +466,24 @@ TreeMaker::beginJob()
     else nameInTree = temp;
     std::cout<<"RecoCand Tag: "<<temp<<std::endl;
     varsRecoCandTags_.push_back(edm::InputTag(temp));
+    // For example:
+   
+    // out of the following   [ std::cout << "edm::InputTag(\"hi:hey\") = " << edm::InputTag("hi:hey") << std::endl;]  is :
+    //  edm::InputTag("hi:hey") = InputTag:  label = hi, instance = hey
+
+    //  temp = GenLeptons:Muon
+    //  edm::InputTag(temp) = "InputTag:  label = GenLeptons, instance = Muon"
+
+    //  temp = GenLeptons:Electron
+    //  edm::InputTag(temp) = "InputTag:  label = GenLeptons, instance = Electron"
+
+    //  temp = GenLeptons:Tau
+    //  edm::InputTag(temp) = "InputTag:  label = GenLeptons, instance = Tau"
+
+    //  temp = GenLeptons:Boson
+    //  edm::InputTag(temp) = "InputTag:  label = GenLeptons, instance = Boson"
+
+
     std::cout<<"RecoCand stored name in tree: "<<nameInTree<<std::endl;
     temp=nameInTree;
     if(temp.find(':')<temp.size())
@@ -435,12 +491,18 @@ TreeMaker::beginJob()
       temp = SeparateString(temp,":").second;
     }
     temp = FinalizeName(temp);
+
+
+    tree_->Branch((temp+"PtVec").c_str(), "std::vector<double>", &RecoCandPtVec[i], 32000, 0);  // Ahmad2
+    tree_->Branch((temp+"EtaVec").c_str(), "std::vector<double>", &RecoCandEtaVec[i], 32000, 0);  // Ahmad2
+    tree_->Branch((temp+"PhiVec").c_str(), "std::vector<double>", &RecoCandPhiVec[i], 32000, 0);  // Ahmad2
+
     tree_->Branch((temp+"Num").c_str(),&(RecoCandN_.at(i)),(temp+"Num/s").c_str());
-    tree_->Branch((temp+"Pt").c_str(), RecoCandPt_.at(i), (temp+"Pt["+temp+"Num]/F").c_str());
-    tree_->Branch((temp+"Eta").c_str(),RecoCandEta_.at(i),(temp+"Eta["+temp+"Num]/F").c_str());
-    tree_->Branch((temp+"Phi").c_str(),RecoCandPhi_.at(i),(temp+"Phi["+temp+"Num]/F").c_str());
+//    tree_->Branch((temp+"Pt").c_str(), RecoCandPt_.at(i), (temp+"Pt["+temp+"Num]/F").c_str());  Ahmad2
+//    tree_->Branch((temp+"Eta").c_str(),RecoCandEta_.at(i),(temp+"Eta["+temp+"Num]/F").c_str()); Ahmad2
+//    tree_->Branch((temp+"Phi").c_str(),RecoCandPhi_.at(i),(temp+"Phi["+temp+"Num]/F").c_str()); Ahmad2
     tree_->Branch((temp+"E").c_str(),  RecoCandE_.at(i),  (temp+"E["+temp+"Num]/F").c_str());
-//     tree_->Branch((temp+"TLorentzVector").c_str(),  RecoCandLorentzVector_.at(i),  (temp+"TLorentzVector["+temp+"Num]/F").c_str());
+    tree_->Branch((temp+"TLorentzVector").c_str(),  RecoCandLorentzVector_.at(i),  (temp+"TLorentzVector["+temp+"Num]/F").c_str());
     std::string mainNameInTree=temp;
     temp = varsRecoCandNames_[i];
     unsigned int countBool=0;
@@ -495,14 +557,15 @@ TreeMaker::beginJob()
       {
 	nameInTree = SeparateString(nameInTree,":").second;
       }
-      nameInTree = FinalizeName(mainNameInTree+"_"+nameInTree);
+      nameInTree = FinalizeName(nameInTree);
       std::cout<<"Sub Typ: Tag: "<<tag<<", typ: "<<typ<< ", nameIn Tree: "<<nameInTree<<std::endl;
       if(typ==0)
       {
 	
 	RecoCandAdditionalBoolVariablesTags_[i].push_back(edm::InputTag(tag ) );
-	RecoCandAdditionalBoolVariables_[i].push_back(new UChar_t[10000]);
-	tree_->Branch((nameInTree).c_str(), RecoCandAdditionalBoolVariables_.at(i).at(countBool), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/b").c_str());
+	RecoCandAdditionalBoolVariables_[i].push_back(new UChar_t[200]);
+	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalBoolVariables_.at(i).at(countBool), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/b").c_str());
+
 	// 				tree_->Branch((nameInTree).c_str(), RecoCandAdditionalBoolVariables_.at(i).at(countBool), (nameInTree+"["+mainNameInTree+"Num]/b").c_str());
 	countBool++;
       }
@@ -510,17 +573,18 @@ TreeMaker::beginJob()
       {
 	
 	RecoCandAdditionalIntVariablesTags_[i].push_back(edm::InputTag(tag ) );
-	RecoCandAdditionalIntVariables_[i].push_back(new Int_t[10000]);
-	tree_->Branch((nameInTree).c_str(), RecoCandAdditionalIntVariables_.at(i).at(countInt), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/I").c_str());
+	RecoCandAdditionalIntVariables_[i].push_back(new Int_t[200]);
+	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalIntVariables_.at(i).at(countInt), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/I").c_str());
 	// 				tree_->Branch((nameInTree).c_str(), RecoCandAdditionalIntVariables_.at(i).at(countInt), (nameInTree+"["+mainNameInTree+"Num]/I").c_str());
+
 	countInt++;
       }
       if(typ==2)
       {
 	
 	RecoCandAdditionalFloatVariablesTags_[i].push_back(edm::InputTag(tag ) );
-	RecoCandAdditionalFloatVariables_[i].push_back(new Float_t[10000]);
-	tree_->Branch((nameInTree).c_str(), RecoCandAdditionalFloatVariables_.at(i).at(countFloat), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/F").c_str());
+	RecoCandAdditionalFloatVariables_[i].push_back(new Float_t[200]);
+	tree_->Branch((mainNameInTree+"_"+nameInTree).c_str(), RecoCandAdditionalFloatVariables_.at(i).at(countFloat), (mainNameInTree+"_"+nameInTree+"["+mainNameInTree+"Num]/F").c_str());
 	countFloat++;
       }
       if(typ>2)std::cout<<"Error typ is: "<<typ<<" which is not defined!!! check!"<<std::endl;
@@ -670,6 +734,9 @@ TreeMaker::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 void 
 TreeMaker::setBranchVariablesToDefault() 
 {
+
+  testVec->clear(); // Ahmad
+
   // event information
   if(debug_) std::cout<<"starting reset Variables"<<std::endl;
   runNum_=0;
@@ -713,6 +780,9 @@ TreeMaker::setBranchVariablesToDefault()
   
   for(unsigned int i = 0; i < varsRecoCandTags_.size(); ++i) 
   {
+    RecoCandPtVec[i].clear(); // Ahmad2
+    RecoCandEtaVec[i].clear(); // Ahmad2
+    RecoCandPhiVec[i].clear(); // Ahmad2
     RecoCandN_.at(i)=0;
     for(unsigned int ii=0; ii< nMaxCandidates_; ii++)
     {

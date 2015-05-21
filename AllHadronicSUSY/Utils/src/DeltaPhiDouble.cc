@@ -143,25 +143,24 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    float minDeltaPhi=99;
    if( DeltaPhiJets.isValid() ) {
       int count=0;
-      for (unsigned int i=0; i<DeltaPhiJets->size();i++)
+      for(unsigned int i=0; i<DeltaPhiJets->size();i++)
       {
-         if (count==0){
+         if(count==0){
             jet1pt = DeltaPhiJets->at(i).pt();
             jet1eta = DeltaPhiJets->at(i).eta();
             deltaphi1 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
          }
-         if (count==1){
+         if(count==1){
             jet2pt = DeltaPhiJets->at(i).pt();
             jet2eta = DeltaPhiJets->at(i).eta();
             deltaphi2 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
          }
-         if (count==2){
+         if(count==2){
             jet3pt = DeltaPhiJets->at(i).pt();
             jet3eta = DeltaPhiJets->at(i).eta();
             deltaphi3 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
          }
-         if (minDeltaPhi>std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi())))
-            minDeltaPhi=std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));;
+         if(minDeltaPhi>std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi())))minDeltaPhi=std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));;
          count++;
          if(count==3) break;
       }

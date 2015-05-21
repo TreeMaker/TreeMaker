@@ -45,88 +45,88 @@
 
 class LeptonProducer : public edm::EDProducer {
 public:
-   explicit LeptonProducer(const edm::ParameterSet&);
-   ~LeptonProducer();
-   
-   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-   
-   double getPFIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
-                         const reco::Candidate* ptcl,
-                         double r_iso_min, double r_iso_max, double kt_scale,
-                         bool use_pfweight, bool charged_only)
-   {
-      if (ptcl->pt()<5.) return 99999.;
-      double deadcone_nh(0.), deadcone_ch(0.), deadcone_ph(0.), deadcone_pu(0.);
-      if(ptcl->isElectron()) {
-         if (fabs(ptcl->eta())>1.479) {deadcone_ch = 0.015; deadcone_pu = 0.015; deadcone_ph = 0.08;}
-      } else if(ptcl->isMuon()) {
-         deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01;
-      } else {
-         //deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01; // maybe use muon cones??
-      }
-      double iso_nh(0.); double iso_ch(0.);
-      double iso_ph(0.); double iso_pu(0.);
-      double ptThresh(0.5);
-      if(ptcl->isElectron()) ptThresh = 0;
-      double r_iso = std::max(r_iso_min,std::min(r_iso_max, kt_scale/ptcl->pt()));
-      for (const pat::PackedCandidate &pfc : *pfcands) {
-         if (abs(pfc.pdgId())<7) continue;
-         double dr = deltaR(pfc, *ptcl);
-         if (dr > r_iso) continue;
-         ////////////////// NEUTRALS /////////////////////////
-         if (pfc.charge()==0){
-            if (pfc.pt()>ptThresh) {
-               double wpf(1.);
-               if (use_pfweight){
-                  double wpv(0.), wpu(0.);
-                  for (const pat::PackedCandidate &jpfc : *pfcands) {
-                     double jdr = deltaR(pfc, jpfc);
-                     if (pfc.charge()!=0 || jdr<0.00001) continue;
-                     double jpt = jpfc.pt();
-                     if (pfc.fromPV()>1) wpv *= jpt/jdr;
-                     else wpu *= jpt/jdr;
-                  }
-                  wpv = log(wpv);
-                  wpu = log(wpu);
-                  wpf = wpv/(wpv+wpu);
-               }
-               /////////// PHOTONS ////////////
-               if (abs(pfc.pdgId())==22) {
-                  if(dr < deadcone_ph) continue;
-                  iso_ph += wpf*pfc.pt();
-                  /////////// NEUTRAL HADRONS ////////////
-               } else if (abs(pfc.pdgId())==130) {
-                  if(dr < deadcone_nh) continue;
-                  iso_nh += wpf*pfc.pt();
-               }
-            }
-            ////////////////// CHARGED from PV /////////////////////////
-         } else if (pfc.fromPV()>1){
-            if (abs(pfc.pdgId())==211) {
-               if(dr < deadcone_ch) continue;
-               iso_ch += pfc.pt();
-            }
-            ////////////////// CHARGED from PU /////////////////////////
-         } else {
-            if (pfc.pt()>ptThresh){
-               if(dr < deadcone_pu) continue;
-               iso_pu += pfc.pt();
-            }
-         }
-      }
-      double iso(0.);
-      if (charged_only){
-         iso = iso_ch;
-      } else {
-         iso = iso_ph + iso_nh;
-         if (!use_pfweight) iso -= 0.5*iso_pu;
-         if (iso>0) iso += iso_ch;
-         else iso = iso_ch;
-      }
-      iso = iso/ptcl->pt();
-      return iso;
-   }
-   
+       explicit LeptonProducer(const edm::ParameterSet&);
+       ~LeptonProducer();
+       
+       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+       
+       double getPFIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
+                             const reco::Candidate* ptcl,
+                             double r_iso_min, double r_iso_max, double kt_scale,
+                             bool use_pfweight, bool charged_only)
+       {
+          if (ptcl->pt()<5.) return 99999.;
+          double deadcone_nh(0.), deadcone_ch(0.), deadcone_ph(0.), deadcone_pu(0.);
+          if(ptcl->isElectron()) {
+             if (fabs(ptcl->eta())>1.479) {deadcone_ch = 0.015; deadcone_pu = 0.015; deadcone_ph = 0.08;}
+          } else if(ptcl->isMuon()) {
+             deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01;
+          } else {
+             //deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01; // maybe use muon cones??
+          }
+          double iso_nh(0.); double iso_ch(0.);
+          double iso_ph(0.); double iso_pu(0.);
+          double ptThresh(0.5);
+          if(ptcl->isElectron()) ptThresh = 0;
+          double r_iso = std::max(r_iso_min,std::min(r_iso_max, kt_scale/ptcl->pt()));
+          for (const pat::PackedCandidate &pfc : *pfcands) {
+             if (abs(pfc.pdgId())<7) continue;
+             double dr = deltaR(pfc, *ptcl);
+             if (dr > r_iso) continue;
+             ////////////////// NEUTRALS /////////////////////////
+             if (pfc.charge()==0){
+                if (pfc.pt()>ptThresh) {
+                   double wpf(1.);
+                   if (use_pfweight){
+                      double wpv(0.), wpu(0.);
+                      for (const pat::PackedCandidate &jpfc : *pfcands) {
+                         double jdr = deltaR(pfc, jpfc);
+                         if (pfc.charge()!=0 || jdr<0.00001) continue;
+                         double jpt = jpfc.pt();
+                         if (pfc.fromPV()>1) wpv *= jpt/jdr;
+                         else wpu *= jpt/jdr;
+                      }
+                      wpv = log(wpv);
+                      wpu = log(wpu);
+                      wpf = wpv/(wpv+wpu);
+                   }
+                   /////////// PHOTONS ////////////
+                   if (abs(pfc.pdgId())==22) {
+                      if(dr < deadcone_ph) continue;
+                      iso_ph += wpf*pfc.pt();
+                      /////////// NEUTRAL HADRONS ////////////
+                   } else if (abs(pfc.pdgId())==130) {
+                      if(dr < deadcone_nh) continue;
+                      iso_nh += wpf*pfc.pt();
+                   }
+                }
+                ////////////////// CHARGED from PV /////////////////////////
+             } else if (pfc.fromPV()>1){
+                if (abs(pfc.pdgId())==211) {
+                   if(dr < deadcone_ch) continue;
+                   iso_ch += pfc.pt();
+                }
+                ////////////////// CHARGED from PU /////////////////////////
+             } else {
+                if (pfc.pt()>ptThresh){
+                   if(dr < deadcone_pu) continue;
+                   iso_pu += pfc.pt();
+                }
+             }
+          }
+          double iso(0.);
+          if (charged_only){
+             iso = iso_ch;
+          } else {
+             iso = iso_ph + iso_nh;
+             if (!use_pfweight) iso -= 0.5*iso_pu;
+             if (iso>0) iso += iso_ch;
+             else iso = iso_ch;
+          }
+          iso = iso/ptcl->pt();
+          return iso;
+       }
+       
 private:
    virtual void beginJob() ;
    virtual void produce(edm::Event&, const edm::EventSetup&);
@@ -175,14 +175,12 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
    produces<std::vector<pat::Muon> > (string1).setBranchAlias(string1);
    const std::string string2("IdIsoMuon");
    produces<std::vector<pat::Muon> > (string2).setBranchAlias(string2);
-   produces<std::vector<int> >("MuonCharge");
    //   const std::string string2b("IdIsoMuon_DeltaR");
    //   produces<std::vector<double> > (string2b).setBranchAlias(string2b);
    const std::string string3("IdElectron");
    produces<std::vector<pat::Electron> > (string3).setBranchAlias(string3);
    const std::string string4("IdIsoElectron");
    produces<std::vector<pat::Electron> > (string4).setBranchAlias(string4);
-   produces<std::vector<int> >("ElectronCharge");
    //   const std::string string4b("IdIsoElectron_DeltaR");
    //   produces<std::vector<double> > (string4b).setBranchAlias(string4b);
    
@@ -219,10 +217,6 @@ void
 LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-
-   std::auto_ptr<std::vector<int> > MuonCharge(new std::vector<int>());
-   std::auto_ptr<std::vector<int> > ElectronCharge(new std::vector<int>());
-
    int Leptons=0;
    edm::Handle<pat::PackedCandidateCollection> pfcands;
    iEvent.getByLabel("packedPFCandidates", pfcands);
@@ -251,7 +245,6 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             {
                Leptons++;
                isoMuons_.push_back(muonHandle->at(m));
-	       MuonCharge->push_back(muonHandle->at(m).charge());
             }
          }
       }
@@ -294,16 +287,15 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                {
                   // iso passed
                   isoElectrons_.push_back(eleHandle->at(e));
-                  Leptons++; 
-		  ElectronCharge->push_back(eleHandle->at(e).charge());
-                 
+                  Leptons++;
+                  
                }
                if (absiso<0.164369 && !useMiniIsolation_)
                {
                   // iso passed
                   isoElectrons_.push_back(eleHandle->at(e));
                   Leptons++;
-		  ElectronCharge->push_back(eleHandle->at(e).charge());                  
+                  
                }
             }
          }
@@ -317,7 +309,6 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   // iso passed
                   isoElectrons_.push_back(eleHandle->at(e));
                   Leptons++;
-		  ElectronCharge->push_back(eleHandle->at(e).charge());
                   
                }
                if (absiso<0.212604  && !useMiniIsolation_)
@@ -325,7 +316,6 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   // iso passed
                   isoElectrons_.push_back(eleHandle->at(e));
                   Leptons++;
-		  ElectronCharge->push_back(eleHandle->at(e).charge());
                   
                }
             }
@@ -343,15 +333,11 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(htp1,string1);
    std::auto_ptr<std::vector<pat::Muon> > htp2(new std::vector<pat::Muon>(isoMuons_));
    iEvent.put(htp2,string2);
-
    std::auto_ptr<std::vector<pat::Electron> > htp3(new std::vector<pat::Electron>(idElectrons_));
    iEvent.put(htp3,string3);
    std::auto_ptr<std::vector<pat::Electron> > htp4(new std::vector<pat::Electron>(isoElectrons_));
    iEvent.put(htp4,string4);
-
-   iEvent.put(ElectronCharge,"ElectronCharge");
-   iEvent.put(MuonCharge,"MuonCharge");
-
+   
 }
 
 // ------------ method called once each job just before starting event loop  ------------

@@ -86,6 +86,8 @@ GenLeptonRecoCand::GenLeptonRecoCand(const edm::ParameterSet& iConfig)
 	const std::string string3t("ElectronTauDecay");
 	const std::string string4("Tau");
 	const std::string string4t("TauHadronic");
+        const std::string string5("TauNu");
+        const std::string string6("TauNuMomPt");
 	produces<std::vector<reco::GenParticle> > (string1).setBranchAlias(string1);
 	produces<std::vector<int> > (string1t).setBranchAlias(string1t);
 	produces<std::vector<reco::GenParticle> > (string2).setBranchAlias(string2);
@@ -94,6 +96,8 @@ GenLeptonRecoCand::GenLeptonRecoCand(const edm::ParameterSet& iConfig)
 	produces<std::vector<int> > (string3t).setBranchAlias(string3t);
 	produces<std::vector<reco::GenParticle> > (string4).setBranchAlias(string4);
 	produces<std::vector<int> > (string4t).setBranchAlias(string4t);
+        produces<std::vector<reco::GenParticle> > (string5).setBranchAlias(string5);
+        produces<std::vector<double> > (string6).setBranchAlias(string6);
 	/* Examples
 	 *   produces<ExampleData2>();
 	 * 
@@ -134,6 +138,8 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<int> > selectedElectronTauDecay(new std::vector<int>);
 	std::auto_ptr< std::vector<reco::GenParticle> > selectedTau(new std::vector<reco::GenParticle>);
 	std::auto_ptr< std::vector<int> > selectedTauHadTronic(new std::vector<int>);
+        std::auto_ptr< std::vector<reco::GenParticle> > selectedTauNu(new std::vector<reco::GenParticle>);
+        std::auto_ptr< std::vector<double> > TauNuMomPt(new std::vector<double>);
 	Handle<edm::View<reco::GenParticle> > pruned;
 	iEvent.getByLabel(PrunedGenParticleTag_,pruned);
 	for(size_t i=0; i<pruned->size();i++)
@@ -177,12 +183,22 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 							selectedMuonTauDecay->push_back(1);
 							hadTauDecay=0;
 						}
+
+
 					}
 					selectedTauHadTronic->push_back(hadTauDecay);
 				}
 			}
 
 		}
+          
+
+          if( abs((*pruned)[i].pdgId() ) == 16 && abs( (*pruned)[i].mother()->pdgId() )==15 ){// Ahmad
+            TauNuMomPt->push_back((*pruned)[i].mother()->pt());
+            selectedTauNu->push_back(  (reco::GenParticle) (*pruned)[i] );
+          }
+
+
 	}
 	const std::string string1("Boson");
 	const std::string string1t("BosonPDGId");
@@ -192,6 +208,8 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	const std::string string3t("ElectronTauDecay");
 	const std::string string4("Tau");
 	const std::string string4t("TauHadronic");
+        const std::string string5("TauNu");
+        const std::string string6("TauNuMomPt");
 	iEvent.put(selectedBoson,string1);
 	iEvent.put(selectedBosonPDGId,string1t);
 	iEvent.put(selectedMuon,string2);
@@ -200,6 +218,8 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(selectedElectronTauDecay,string3t);
 	iEvent.put(selectedTau,string4);
 	iEvent.put(selectedTauHadTronic,string4t);
+        iEvent.put(selectedTauNu,string5);
+        iEvent.put(TauNuMomPt,string6);
 	
 }
 
