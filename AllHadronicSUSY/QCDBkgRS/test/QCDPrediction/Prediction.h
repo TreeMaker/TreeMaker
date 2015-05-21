@@ -48,10 +48,9 @@ private:
    // tree with selection
    TTree* RA2PreSelection; 
    Int_t EvtNum_RA2;
-   Int_t vtxN_RA2;
-   Int_t NLeptons_RA2;
-   Int_t NJets_RA2;
-   Int_t BTags_RA2;
+   UShort_t vtxN_RA2;
+   UShort_t NJets_RA2;
+   UShort_t BTags_RA2;
    Float_t weight_RA2;
    Float_t DeltaPhi1_RA2;
    Float_t DeltaPhi2_RA2;
@@ -66,7 +65,6 @@ private:
    TH2F* HT_presel_pred_raw;
    TH2F* MHT_presel_pred_raw;
    TH2F* NJets_presel_pred_raw;
-   TH2F* NBJets_presel_pred_raw;
    TH2F* Jet1Pt_presel_pred_raw;
    TH2F* Jet2Pt_presel_pred_raw;
    TH2F* Jet3Pt_presel_pred_raw;
@@ -93,12 +91,6 @@ private:
    TH2F* NJets_baseline_withoutDeltaPhi_withoutMHT_pred_raw;
    TH2F* NJets_baseline_withoutDeltaPhi_pred_raw;
 
-   // NBJets
-   TH2F* NBJets_baseline_withoutMHT_pred_raw;
-   TH2F* NBJets_baseline_pred_raw;
-   TH2F* NBJets_baseline_withoutDeltaPhi_withoutMHT_pred_raw;
-   TH2F* NBJets_baseline_withoutDeltaPhi_pred_raw;
-   
    // baseline
    TH2F* HT_baseline_pred_raw;
    TH2F* MHT_baseline_pred_raw;
@@ -211,7 +203,6 @@ private:
    TH1F* HT_presel_pred;
    TH1F* MHT_presel_pred;
    TH1F* NJets_presel_pred;
-   TH1F* NBJets_presel_pred;
    TH1F* Jet1Pt_presel_pred;
    TH1F* Jet2Pt_presel_pred;
    TH1F* Jet3Pt_presel_pred;
@@ -238,13 +229,7 @@ private:
    TH1F* NJets_baseline_withoutDeltaPhi_withoutMHT_pred;
    TH1F* NJets_baseline_withoutDeltaPhi_pred;
 
-   // NBJets
-   TH1F* NBJets_baseline_withoutMHT_pred;
-   TH1F* NBJets_baseline_pred;
-   TH1F* NBJets_baseline_withoutDeltaPhi_withoutMHT_pred;
-   TH1F* NBJets_baseline_withoutDeltaPhi_pred;
-
-   // baseline
+   // baseline 
    TH1F* HT_baseline_pred;
    TH1F* MHT_baseline_pred;
 
@@ -359,7 +344,6 @@ private:
    TH1F* HT_presel_sel;
    TH1F* MHT_presel_sel;
    TH1F* NJets_presel_sel;
-   TH1F* NBJets_presel_sel;
    TH1F* Jet1Pt_presel_sel;
    TH1F* Jet2Pt_presel_sel;
    TH1F* Jet3Pt_presel_sel;
@@ -385,12 +369,6 @@ private:
    TH1F* NJets_baseline_sel;
    TH1F* NJets_baseline_withoutDeltaPhi_withoutMHT_sel;
    TH1F* NJets_baseline_withoutDeltaPhi_sel;
-
-   // NJets
-   TH1F* NBJets_baseline_withoutMHT_sel;
-   TH1F* NBJets_baseline_sel;
-   TH1F* NBJets_baseline_withoutDeltaPhi_withoutMHT_sel;
-   TH1F* NBJets_baseline_withoutDeltaPhi_sel;
 
    // baseline
    TH1F* HT_baseline_sel;

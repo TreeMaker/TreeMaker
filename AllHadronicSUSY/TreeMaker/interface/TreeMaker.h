@@ -94,6 +94,10 @@ private:
   // any reco candidate plus addiation doubles
   std::vector<edm::InputTag> varsRecoCandTags_;
   std::vector<std::string> varsRecoCandNames_;
+  std::vector<double> * testVec; // Ahmad
+  std::vector<std::vector<double> > RecoCandPtVec ; // Ahmad2
+  std::vector<std::vector<double> > RecoCandEtaVec ; // Ahmad2
+  std::vector<std::vector<double> > RecoCandPhiVec ; // Ahmad2
   std::vector<UShort_t> RecoCandN_;
   std::vector<Float_t*> RecoCandPt_;
   std::vector<Float_t*> RecoCandEta_;
@@ -107,4 +111,5 @@ private:
   std::vector< std::vector<Int_t*> > RecoCandAdditionalIntVariables_;
   std::vector< std::vector<edm::InputTag> > RecoCandAdditionalFloatVariablesTags_;
   std::vector< std::vector<Float_t*> > RecoCandAdditionalFloatVariables_;
+
 };

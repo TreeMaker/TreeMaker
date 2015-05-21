@@ -115,16 +115,8 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	produces<std::vector<double> > (string11).setBranchAlias(string11);
 	const std::string string12("muonMultiplicity");
 	produces<std::vector<int> > (string12).setBranchAlias(string12);
-	const std::string string13("bDiscriminatorUser");
+	const std::string string13("bDiscriminator");
 	produces<std::vector<double> > (string13).setBranchAlias(string13);
-	const std::string string14("bDiscriminatorMVA");
-	produces<std::vector<double> > (string14).setBranchAlias(string14);
-	const std::string string15("bDiscriminatorSimpleCSV");
-	produces<std::vector<double> > (string15).setBranchAlias(string15);
-	const std::string string16("NumBhadrons");
-	produces<std::vector<int> > (string16).setBranchAlias(string16);
-	const std::string string17("NumChadrons");
-	produces<std::vector<int> > (string17).setBranchAlias(string17);
 
 	produces<std::vector<int> > ("flavor");
 
@@ -165,11 +157,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<int> > photonMultiplicity(new std::vector<int>);
 	std::auto_ptr< std::vector<double> > muonEnergyFraction(new std::vector<double>);
 	std::auto_ptr< std::vector<int> > muonMultiplicity(new std::vector<int>);
-	std::auto_ptr< std::vector<double> > bDiscriminatorUser(new std::vector<double>);
-	std::auto_ptr< std::vector<double> > bDiscriminatorMVA(new std::vector<double>);
-	std::auto_ptr< std::vector<double> > bDiscriminatorSimpleCSV(new std::vector<double>);
-	std::auto_ptr< std::vector<int> > NumBhadrons(new std::vector<int>);
-	std::auto_ptr< std::vector<int> > NumChadrons(new std::vector<int>);
+	std::auto_ptr< std::vector<double> > bDiscriminator(new std::vector<double>);
 	std::auto_ptr< std::vector<int> > flavor(new std::vector<int>);
 	using namespace edm;
 	using namespace reco;
@@ -194,11 +182,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			photonMultiplicity->push_back( Jets->at(i).photonMultiplicity() );
 			muonEnergyFraction->push_back( Jets->at(i).muonEnergyFraction() );
 			muonMultiplicity->push_back( Jets->at(i).muonMultiplicity() );
-			bDiscriminatorUser->push_back( Jets->at(i).bDiscriminator(btagname_) );
-			bDiscriminatorMVA->push_back( Jets->at(i).bDiscriminator("combinedMVABJetTags") );
-			bDiscriminatorSimpleCSV->push_back( Jets->at(i).bDiscriminator("combinedSecondaryVertexBJetTags") );
-			NumBhadrons->push_back( Jets->at(i).jetFlavourInfo().getbHadrons().size() );
-			NumChadrons->push_back( Jets->at(i).jetFlavourInfo().getcHadrons().size() );
+			bDiscriminator->push_back( Jets->at(i).bDiscriminator(btagname_) );
 			flavor->push_back( Jets->at(i).partonFlavour() );
 		}
 	}
@@ -231,16 +215,8 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(muonEnergyFraction,string11);
 	const std::string string12("muonMultiplicity");
 	iEvent.put(muonMultiplicity,string12);
-	const std::string string13("bDiscriminatorUser");
-	iEvent.put(bDiscriminatorUser,string13);
-	const std::string string14("bDiscriminatorMVA");
-	iEvent.put(bDiscriminatorMVA,string14);
-	const std::string string15("bDiscriminatorSimpleCSV");
-	iEvent.put(bDiscriminatorSimpleCSV,string15);
-	const std::string string16("NumBhadrons");
-	iEvent.put(NumBhadrons,string16);
-	const std::string string17("NumChadrons");
-	iEvent.put(NumChadrons,string17);
+	const std::string string13("bDiscriminator");
+	iEvent.put(bDiscriminator,string13);
 
 	iEvent.put(flavor,"flavor");
 

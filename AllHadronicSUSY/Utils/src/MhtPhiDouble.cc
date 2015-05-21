@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    MhtDouble
-// Class:      MhtDouble
+// Package:    MhtPhiDouble
+// Class:      MhtPhiDouble
 // 
-/**\class MhtDouble MhtDouble.cc RA2Classic/MhtDouble/src/MhtDouble.cc
+/**\class MhtPhiDouble MhtPhiDouble.cc RA2Classic/MhtPhiDouble/src/MhtPhiDouble.cc
 
  Description: [one line class summary]
 
@@ -35,10 +35,10 @@
 // class declaration
 //
 
-class MhtDouble : public edm::EDProducer {
+class MhtPhiDouble : public edm::EDProducer {
    public:
-      explicit MhtDouble(const edm::ParameterSet&);
-      ~MhtDouble();
+      explicit MhtPhiDouble(const edm::ParameterSet&);
+      ~MhtPhiDouble();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -69,7 +69,7 @@ class MhtDouble : public edm::EDProducer {
 //
 // constructors and destructor
 //
-MhtDouble::MhtDouble(const edm::ParameterSet& iConfig)
+MhtPhiDouble::MhtPhiDouble(const edm::ParameterSet& iConfig)
 {
    //register your produc
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
@@ -89,7 +89,7 @@ MhtDouble::MhtDouble(const edm::ParameterSet& iConfig)
 }
 
 
-MhtDouble::~MhtDouble()
+MhtPhiDouble::~MhtPhiDouble()
 {
  
    // do anything here that needs to be done at desctruction time
@@ -104,10 +104,10 @@ MhtDouble::~MhtDouble()
 
 // ------------ method called to produce the data  ------------
 void
-MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+MhtPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-	double mht_=0;
+	double mht_phi_=0;
   edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByLabel(JetTag_,Jets);
 	reco::MET::LorentzVector mhtLorentz(0,0,0,0);
@@ -118,49 +118,49 @@ MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
   }
   else std::cout<<"MHTDouble::Invlide Tag: "<<JetTag_.label()<<std::endl;
-  mht_ = mhtLorentz.pt();
-	std::auto_ptr<double> htp(new double(mht_));
+  mht_phi_ = mhtLorentz.phi();
+	std::auto_ptr<double> htp(new double(mht_phi_));
   iEvent.put(htp);
 }
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-MhtDouble::beginJob()
+MhtPhiDouble::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-MhtDouble::endJob() {
+MhtPhiDouble::endJob() {
 }
 
 // ------------ method called when starting to processes a run  ------------
 void 
-MhtDouble::beginRun(edm::Run&, edm::EventSetup const&)
+MhtPhiDouble::beginRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
 void 
-MhtDouble::endRun(edm::Run&, edm::EventSetup const&)
+MhtPhiDouble::endRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
 void 
-MhtDouble::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
+MhtPhiDouble::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
 void 
-MhtDouble::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
+MhtPhiDouble::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-MhtDouble::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+MhtPhiDouble::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -169,4 +169,4 @@ MhtDouble::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(MhtDouble);
+DEFINE_FWK_MODULE(MhtPhiDouble);
