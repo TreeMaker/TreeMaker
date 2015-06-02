@@ -8,12 +8,15 @@ lostlepton= parameters.value("lostlepton", False)
 gammajets= parameters.value("gammajets", False)
 tagandprobe= parameters.value("tagandprobe", False)
 applybaseline= parameters.value("applybaseline", False)
+doZinv=parameters.value("doZinv", True)
+
 print "***** SETUP ************************************"
 print " dataSetName : "+dataSetName
 print " global_tag : "+global_tag
 print " storing lostlepton variables: "+str(lostlepton)
 print " storing gammajets variables: "+str(gammajets)
 print " storing tag and probe variables: "+str(tagandprobe)
+print " storing Zinv variables: "+str(doZinv)
 print " Applying baseline selection filter: "+str(applybaseline)
 print "************************************************"
 
@@ -28,9 +31,11 @@ makeTreeFromMiniAOD(process,
   reportEveryEvt=5000,
   testFileName=dataSetName,
   Global_Tag=global_tag,
-  numProcessedEvt=1000,
+  numProcessedEvt=-1,
   lostlepton=lostlepton,
   gammajets=gammajets,
   tagandprobe=tagandprobe,
-  applybaseline=applybaseline
-  )
+  applybaseline=applybaseline,
+  doZinv=doZinv
+)
+

@@ -120,13 +120,13 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // to be updated
   // - - - - - - - - - - - - - - - - - - - - 
   effArea* effAreas = new effArea();
-  effAreas->addEffA( 0.0,   1.0,   0.012, 0.030, 0.148 );
-  effAreas->addEffA( 1.0,   1.479, 0.010, 0.057, 0.130 );
-  effAreas->addEffA( 1.479, 2.0,   0.014, 0.039, 0.112 );
-  effAreas->addEffA( 2.0,   2.2,   0.012, 0.015, 0.216 );
-  effAreas->addEffA( 2.2,   2.3,   0.016, 0.024, 0.262 );
-  effAreas->addEffA( 2.3,   2.4,   0.020, 0.039, 0.260 );
-  effAreas->addEffA( 2.4,   99.,   0.012, 0.072, 0.266 );
+  effAreas->addEffA( 0.0, 1.0, 0.0234, 0.0053, 0.078 );
+  effAreas->addEffA( 1.0, 1.479, 0.0189, 0.0130, 0.0629 );
+  effAreas->addEffA( 1.479, 2.0, 0.0171, 0.0057, 0.0264 );
+  effAreas->addEffA( 2.0, 2.2, 0.0129, 0.0070, 0.0462 );
+  effAreas->addEffA( 2.2, 2.3, 0.0110, 0.0152, 0.0740 );
+  effAreas->addEffA( 2.3, 2.4, 0.0074, 0.0232, 0.0924 );
+  effAreas->addEffA( 2.4, 99., 0.0035, 0.1709, 0.1484 );
 
   double bestPhotonPt = 0. ; 
     
@@ -187,14 +187,14 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // apply id cuts
     if(isBarrelPhoton){
   
-      if(iPhoton->hadTowOverEm() < 0.05 && iPhoton->hasPixelSeed()==false && iPhoton->sigmaIetaIeta() < 0.011){//id criterias barrel
+      if(iPhoton->hadTowOverEm() < 0.028 && iPhoton->hasPixelSeed()==false && iPhoton->sigmaIetaIeta() < 0.0107){//id criterias barrel
 	passID=true;
 
       }//id criterias
 
     } 
     else if(isEndcapPhoton){
-      if(iPhoton->hadTowOverEm() < 0.05 && iPhoton->hasPixelSeed()==false && iPhoton->sigmaIetaIeta() < 0.031){//id criteria endcap
+      if(iPhoton->hadTowOverEm() < 0.093 && iPhoton->hasPixelSeed()==false && iPhoton->sigmaIetaIeta() < 0.0272){//id criteria endcap
 	passID=true;
 
       }//id criterias endcap
@@ -206,13 +206,13 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
     // apply isolation cuts
     if(isBarrelPhoton){
-      if(chIso <0.7 && nuIso <  (0.4 + 0.04*(iPhoton->pt()))  && gamIso < ( 0.5 + 0.005*(iPhoton->pt())) ){
+      if(chIso <2.67 && nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){
 	passIso=true;      
       }
      
     }
     else if(isEndcapPhoton){
-      if(chIso <0.5 && nuIso <  (1.5 + 0.04*(iPhoton->pt()))  && gamIso < ( 1.0 + 0.005*(iPhoton->pt())) ){
+      if(chIso <1.79 && nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){
 	passIso=true;
       }
 
