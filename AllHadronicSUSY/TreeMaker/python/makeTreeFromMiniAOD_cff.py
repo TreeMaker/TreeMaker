@@ -3,7 +3,8 @@
 
 import FWCore.ParameterSet.Config as cms
 
-def makeTreeFromMiniAOD(process,
+def makeTreeFromMiniAOD(
+process,
 outFileName,
 reportEveryEvt=10,
 testFileName="",
@@ -12,7 +13,9 @@ numProcessedEvt=1000,
 lostlepton=False,
 gammajets=False,
 tagandprobe=False,
-applybaseline=False):
+applybaseline=False,
+doZinv=False
+):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
     process.GlobalTag.globaltag = Global_Tag
@@ -208,7 +211,6 @@ applybaseline=False):
     #process.Baseline += process.patJetsReapplyJEC
 
     ############
-
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
       TagMode = cms.bool(True),
@@ -409,11 +411,86 @@ applybaseline=False):
 
     	)
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
-    process.WriteTree = cms.Path(
-        
-        process.Baseline *
-        process.AdditionalSequence *
-    	#process.dump *
-    	process.TreeMaker2
 
-        )
+### begin Zinv stuff ###
+    if doZinv:   
+   
+      process.ZinvClean = cms.Sequence()
+
+      from AllHadronicSUSY.Utils.jetcleaner_cfi import JetCleaner
+      process.cleanTheJets = JetCleaner.clone(
+         JetTag  = cms.InputTag('GoodJets'),
+         ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
+         ElectronR = cms.double(0.4),
+         MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'),
+         MuonR = cms.double(0.4),
+         PhotonTag = cms.InputTag('goodPhotons', 'bestPhoton'),
+         PhotonR = cms.double(0.4)
+      )
+      process.ZinvClean += process.cleanTheJets
+
+      from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
+      process.HTJetsclean = SubJetSelection.clone(
+         JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
+         MinPt = cms.double(30),
+         MaxEta = cms.double(2.4),
+      )
+      process.ZinvClean += process.HTJetsclean
+
+      from AllHadronicSUSY.Utils.htdouble_cfi import htdouble
+      process.HTclean = htdouble.clone(
+         JetTag = cms.InputTag('HTJetsclean'),
+      )
+      process.ZinvClean += process.HTclean
+      VarsDouble.extend(['HTclean'])
+
+      from AllHadronicSUSY.Utils.njetint_cfi import njetint
+      process.NJetsclean = njetint.clone(
+         JetTag = cms.InputTag('HTJetsclean'),
+      )
+      process.ZinvClean += process.NJetsclean
+      VarsInt.extend(['NJetsclean'])
+
+      from AllHadronicSUSY.Utils.btagint_cfi import btagint
+      process.BTagsclean = btagint.clone(
+         JetTag = cms.InputTag('HTJetsclean'),
+         BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
+         BTagCutValue = cms.double(0.814)
+      )
+      process.ZinvClean += process.BTagsclean
+      VarsInt.extend(['BTagsclean'])
+
+      from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
+      process.MHTJetsclean = SubJetSelection.clone(
+         JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
+         MinPt = cms.double(30),
+         MaxEta = cms.double(5.0),
+      )
+      process.ZinvClean += process.MHTJetsclean
+
+      from AllHadronicSUSY.Utils.mhtdouble_cfi import mhtdouble
+      process.MHTclean = mhtdouble.clone(
+         JetTag = cms.InputTag('MHTJetsclean'),
+      )
+      process.ZinvClean += process.MHTclean
+      VarsDouble.extend(['MHTclean'])
+
+      from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
+      process.METclean = metdouble.clone(
+         METTag = cms.InputTag("slimmedMETs"),
+         JetTag = cms.InputTag('HTJetsclean'),
+         cleanTag = cms.untracked.VInputTag(cms.InputTag('LeptonsNew:IdIsoElectron'), cms.InputTag('LeptonsNew:IdIsoMuon'), cms.InputTag('goodPhotons', 'bestPhoton'))
+      )
+      process.ZinvClean += process.METclean
+      VarsDouble.extend(['METclean:minDeltaPhiN(minDeltaPhiNclean)', 'METclean:Pt(METPtclean)'])
+
+      process.AdditionalSequence += process.ZinvClean
+### end Zinv stuff ###
+
+    process.WriteTree = cms.Path(
+      process.Baseline *
+      process.AdditionalSequence *
+      #process.dump *
+    	process.TreeMaker2
+    )
+
