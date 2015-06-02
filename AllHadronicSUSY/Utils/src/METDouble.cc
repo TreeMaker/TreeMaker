@@ -59,8 +59,9 @@ private:
 	virtual void endRun(edm::Run&, edm::EventSetup const&);
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-        edm::InputTag metTag_, JetTag_, cleanTag_;
-        double MinJetPt_,MaxJetEta_;	
+   edm::InputTag metTag_, JetTag_;
+   std::vector<edm::InputTag> cleanTag_;
+   double MinJetPt_,MaxJetEta_;	
 	
 	// ----------member data ---------------------------
 };
@@ -82,14 +83,14 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
 	//register your product
 	metTag_   = iConfig.getParameter<edm::InputTag> ("METTag");
 	JetTag_   = iConfig.getParameter<edm::InputTag> ("JetTag");
-	cleanTag_ = iConfig.getUntrackedParameter<edm::InputTag> ("cleanTag",edm::InputTag(""));
+	cleanTag_ = iConfig.getUntrackedParameter<std::vector<edm::InputTag>>("cleanTag");
 	MinJetPt_ = iConfig.getUntrackedParameter<double> ("minJetPt",30.);
 	MaxJetEta_= iConfig.getUntrackedParameter<double> ("minJetEta",5.);
 
 	produces<double>("DeltaPhiN1");
-        produces<double>("DeltaPhiN2");
-        produces<double>("DeltaPhiN3");
-        produces<double>("minDeltaPhiN");	
+   produces<double>("DeltaPhiN2");
+   produces<double>("DeltaPhiN3");
+   produces<double>("minDeltaPhiN");	
 	produces<double>("Pt");
 	produces<double>("Phi");
 
@@ -119,10 +120,7 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.getByLabel(metTag_,MET); 
 	
 	edm::Handle< edm::View<pat::Jet> > Jets;
-        iEvent.getByLabel(JetTag_,Jets);
-	
-	edm::Handle< edm::View<reco::Candidate> > cleanCands;
-	iEvent.getByLabel(cleanTag_,cleanCands);
+   iEvent.getByLabel(JetTag_,Jets);
 	
 	double dpnhat[3];
 	unsigned int goodcount=0;
@@ -136,23 +134,25 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		metLorentz=MET->at(0).p4();
 
 	}else std::cout<<"METDouble::Invlide Tag: "<<metTag_.label()<<std::endl;
-	
-	// loop over all reco::candidates in cleanCands
-	// and remove from the MET four vector 
-	if( cleanCands.isValid() ){
-	 
-	  for( View< reco::Candidate >::const_iterator iCand = cleanCands->begin();
-	       iCand != cleanCands->end();
-	       ++iCand){
-	    
-	    metLorentz += iCand->p4();
 
-	  }// end loop over cleanCands
-
-	  metpt_ = metLorentz.Pt();
-	  metphi_ = metLorentz.Phi();
-	  
-	}
+   // remove particles from MET calculation	
+   // cleanTag_ is a vector of edm::InputTag
+   if (cleanTag_.size()) {
+      // loop over each edm::InputTag
+      for (std::vector<edm::InputTag>::const_iterator iC = cleanTag_.begin(); iC != cleanTag_.end(); ++iC) {
+         // get each collection the edm::InputTag corresponds to
+         edm::Handle<edm::View<reco::Candidate>> cleanCands;
+	      iEvent.getByLabel(*iC, cleanCands);
+         if (cleanCands.isValid()) {
+            // for each element in the collection add the p4 back in to the MET
+            for (View<reco::Candidate>::const_iterator iCand = cleanCands->begin(); iCand != cleanCands->end(); ++iCand) {
+               metLorentz += iCand->p4();
+            }
+         }
+      }
+      metpt_ = metLorentz.Pt();
+      metphi_ = metLorentz.Phi();
+   }
 	
 	std::auto_ptr<double> htp(new double(metpt_));
 	iEvent.put(htp,"Pt");
