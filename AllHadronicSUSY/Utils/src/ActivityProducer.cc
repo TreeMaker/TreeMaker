@@ -331,7 +331,120 @@ ActivityProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				}
 			}
 			passing.push_back(passingTemp);
-			std::cout<<"Electron photon has been matched"<<std::endl;
+// 			std::cout<<"Electron photon has been matched"<<std::endl;
+			if(passingTemp>1) std::cout<<"Warning 2 have been matched!!!"<<std::endl;
+		}
+		// 		std::cout<<"Amount of object: "<<object->size()<<" amount of activity variables in vector to be stored: "<<values.size()<<std::endl;
+		std::auto_ptr<ValueMap<float> > valMap2(new ValueMap<float>());
+		ValueMap<float>::Filler filler2(*valMap2);
+		filler2.insert(object, values.begin(), values.end());
+		filler2.fill();
+		iEvent.put(valMap2, "Activity");
+		std::auto_ptr<ValueMap<float> > valMap1(new ValueMap<float>());
+		ValueMap<float>::Filler filler1(*valMap1);
+		filler1.insert(object, passing.begin(), passing.end());
+		filler1.fill();
+		iEvent.put(valMap1, "Passing");
+		// 		const std::string string1("PassingProbes");
+		// 		if(probePassingCandidate_.size()<1)std::cout<<"No PassingCand filled"<<std::endl;
+		// 		std::auto_ptr<std::vector<pat::Muon> > htp1(new std::vector<pat::Muon>(probePassingCandidate_));
+		// 		iEvent.put(htp1,string1);
+		// 		std::cout<<"Event Dont!"<<std::endl;
+	}
+	// isolated track muon
+	else if(objectTyp_==3)
+	{
+		// 		edm::Handle<std::vector<pat::Muon> > object;
+		// 		iEvent.getByLabel(objectSource_, object);
+		edm::Handle<edm::View< pat::PackedCandidate> >object;
+		iEvent.getByLabel(objectSource_, object);
+		edm::Handle<std::vector<pat::PackedCandidate> > objectMatch;
+		iEvent.getByLabel(objectMatchSource_, objectMatch);
+		for(unsigned int i=0; i<object->size();i++)
+		{
+			
+			float activity=0;
+			for(unsigned int ii=0; ii<jets->size();ii++)
+			{
+				if( deltaR(object->at(i).eta(),object->at(i).phi(),jets->at(ii).eta(),jets->at(ii).phi()) < maxDeltaR_)
+				{
+					if(activityTyp_==0)
+					{
+						activity+= jets->at(ii).pt() * (jets->at(ii).chargedHadronEnergyFraction() + jets->at(ii).chargedEmEnergyFraction() );
+					}
+					else 
+						std::cout<<"ActivityProducer::Error activityTyp_: "<<activityTyp_<<" not defined please check input value!"<<std::endl;
+				}
+			}
+			values.push_back(activity);
+			// check if the probe object can be matched to an object from the objectMatchSource collection if so passing if not failing
+			float passingTemp=0;
+			for(unsigned int ii=0; ii< objectMatch->size();ii++)
+			{
+				if(deltaR(object->at(i).eta(),object->at(i).phi(),objectMatch->at(ii).eta(),objectMatch->at(ii).phi() ) < 0.07&& std::abs(object->at(i).pt() - objectMatch->at(ii).pt() )/objectMatch->at(ii).pt() < 0.4)
+				{
+					passingTemp++;
+					if(passingTemp>1.5) continue;
+					// 					probePassingCandidate_.push_back(object->at(i));
+				}
+			}
+			passing.push_back(passingTemp);
+			if(passingTemp>1) std::cout<<"Warning 2 have been matched!!!"<<std::endl;
+		}
+		// 		std::cout<<"Amount of object: "<<object->size()<<" amount of activity variables in vector to be stored: "<<values.size()<<std::endl;
+		std::auto_ptr<ValueMap<float> > valMap2(new ValueMap<float>());
+		ValueMap<float>::Filler filler2(*valMap2);
+		filler2.insert(object, values.begin(), values.end());
+		filler2.fill();
+		iEvent.put(valMap2, "Activity");
+		std::auto_ptr<ValueMap<float> > valMap1(new ValueMap<float>());
+		ValueMap<float>::Filler filler1(*valMap1);
+		filler1.insert(object, passing.begin(), passing.end());
+		filler1.fill();
+		iEvent.put(valMap1, "Passing");
+		// 		const std::string string1("PassingProbes");
+		// 		if(probePassingCandidate_.size()<1)std::cout<<"No PassingCand filled"<<std::endl;
+		// 		std::auto_ptr<std::vector<pat::Muon> > htp1(new std::vector<pat::Muon>(probePassingCandidate_));
+		// 		iEvent.put(htp1,string1);
+		// 		std::cout<<"Event Dont!"<<std::endl;
+	}
+	else if(objectTyp_==4)
+	{
+		// 		edm::Handle<std::vector<pat::Muon> > object;
+		// 		iEvent.getByLabel(objectSource_, object);
+		edm::Handle<edm::View< pat::PackedCandidate> >object;
+		iEvent.getByLabel(objectSource_, object);
+		edm::Handle<std::vector<pat::PackedCandidate> > objectMatch;
+		iEvent.getByLabel(objectMatchSource_, objectMatch);
+		for(unsigned int i=0; i<object->size();i++)
+		{
+			
+			float activity=0;
+			for(unsigned int ii=0; ii<jets->size();ii++)
+			{
+				if( deltaR(object->at(i).eta(),object->at(i).phi(),jets->at(ii).eta(),jets->at(ii).phi()) < maxDeltaR_)
+				{
+					if(activityTyp_==0)
+					{
+						activity+= jets->at(ii).pt() * (jets->at(ii).chargedHadronEnergyFraction() );
+					}
+					else 
+						std::cout<<"ActivityProducer::Error activityTyp_: "<<activityTyp_<<" not defined please check input value!"<<std::endl;
+				}
+			}
+			values.push_back(activity);
+			// check if the probe object can be matched to an object from the objectMatchSource collection if so passing if not failing
+			float passingTemp=0;
+			for(unsigned int ii=0; ii< objectMatch->size();ii++)
+			{
+				if(deltaR(object->at(i).eta(),object->at(i).phi(),objectMatch->at(ii).eta(),objectMatch->at(ii).phi() ) < 0.07&& std::abs(object->at(i).pt() - objectMatch->at(ii).pt() )/objectMatch->at(ii).pt() < 0.4)
+				{
+					passingTemp++;
+					if(passingTemp>1.5) continue;
+					// 					probePassingCandidate_.push_back(object->at(i));
+				}
+			}
+			passing.push_back(passingTemp);
 			if(passingTemp>1) std::cout<<"Warning 2 have been matched!!!"<<std::endl;
 		}
 		// 		std::cout<<"Amount of object: "<<object->size()<<" amount of activity variables in vector to be stored: "<<values.size()<<std::endl;
