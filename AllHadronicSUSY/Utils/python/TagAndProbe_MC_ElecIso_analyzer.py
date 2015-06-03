@@ -13,9 +13,9 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 
 
 #InputFileName = "/scratch/hh/dust/naf/cms/user/draeger/results/Z-MC.root"
-#InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe_HT200_NJets2_4_MinDeltaPhi-9999_activity0.root"
-#InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe_HT400_NJets3_4_MinDeltaPhi-9999_activity0DR1_Only1ProbeEachEvent.root"
-InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe/muIso/TagAndProbeEff_MuIso.root"
+InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe/elecIso/TagAndProbeEff_ElecIso.root"
+#InputFileName = "/afs/desy.de/user/a/adraeger/2015/TagAndProbe_HT400_NJets3_4_MinDeltaPhi-9999_activity0DR1_Only1ProbeEachEvent_TruthMatching.root"
+
 OutputFilePrefix = "efficiency-mc-"
 
 HLTDef = "probe_passingHLT"
@@ -54,22 +54,23 @@ EfficiencyBinningSpecification = cms.PSet(
 
 
 #### do the analyzing
-process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
+process.ElecIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     # IO parameters:
     InputFileNames = cms.vstring(InputFileName),
-    InputDirectoryName = cms.string("MuIso"),
-    InputTreeName = cms.string("TagAndProbeMuIso"),
-    OutputFileName = cms.string("MuIsoMC.root"),                                                 
+    InputDirectoryName = cms.string("ElecIso"),
+    InputTreeName = cms.string("TagAndProbeElecIso"),
+    OutputFileName = cms.string("ElecIso.root"),
+                                                 
     #numbrer of CPUs to use for fitting
-    NumCPU = cms.uint32(10),
+    NumCPU = cms.uint32(4),
     # specifies wether to save the RooWorkspace containing the data for each bin and
     # the pdf object with the initial and final state snapshots
     SaveWorkspace = cms.bool(False),
     floatShapeParameters = cms.bool(True),
     Variables = cms.PSet(
     InvariantMass = cms.vstring("Tag-Probe Mass", "60.0", "120.0", "GeV/c^{2}"),
-    #HT = cms.vstring("H_{T}", "0","2000", "GeV/c"),
-    #NJets = cms.vstring("NJets", "2", "22", ""),
+    HT = cms.vstring("H_{T}", "0","2000", "GeV/c"),
+    NJets = cms.vstring("NJets", "2", "22", ""),
     Pt = cms.vstring("p_{T}", "10", "200", "GeV/c"),
     Activity = cms.vstring("Activity", "0", "1600", "GeV/c"),
 
@@ -159,24 +160,26 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
       #),
       #BinToPDFmap = cms.vstring("gaussPlusCubic")
     #),
-      MuIsoActivityPt = cms.PSet(
+      ElecIsoActivityPt = cms.PSet(
        EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
        UnbinnedVariables = cms.vstring("InvariantMass"),
        BinnedVariables = cms.PSet(
+       #Pt = cms.vdouble( 10,20,30,45,70,200 ),
+       #Activity = cms.vdouble(0,40,60,150,1600 ),
        Pt = cms.vdouble( 10,20,25,30,40,50,200 ),
        Activity = cms.vdouble(0,20,40,60,150,1600 ),
       ),
       BinToPDFmap = cms.vstring("gaussPlusCubic")
     ),
-      MuIsoPt = cms.PSet(
-       EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
-       UnbinnedVariables = cms.vstring("InvariantMass"),
-       BinnedVariables = cms.PSet(
-       Pt = cms.vdouble( 10,15,20,25,30,40,50,60,70,90,110,1900 ),
-      ),
-      BinToPDFmap = cms.vstring("gaussPlusCubic")
-    ),
-      #MuIsoActivity = cms.PSet(
+      #ElecIsoPt = cms.PSet(
+       #EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
+       #UnbinnedVariables = cms.vstring("InvariantMass"),
+       #BinnedVariables = cms.PSet(
+       #Pt = cms.vdouble( 10,15,20,25,30,40,50,60,70,90,110,1900 ),
+      #),
+      #BinToPDFmap = cms.vstring("gaussPlusCubic")
+    #),
+      #ElecIsoActivity = cms.PSet(
        #EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
        #UnbinnedVariables = cms.vstring("InvariantMass"),
        #BinnedVariables = cms.PSet(
@@ -246,7 +249,7 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
 
 ### run the final pass 
 process.fit = cms.Path(
-		process.MuIso 
+		process.ElecIso 
 
   #  		process.CicSuperTightToHLT +
  #   		process.CicHyperTight1ToHLT ##+
