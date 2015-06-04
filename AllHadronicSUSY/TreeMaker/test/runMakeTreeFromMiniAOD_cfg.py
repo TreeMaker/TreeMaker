@@ -8,7 +8,7 @@ lostlepton= parameters.value("lostlepton", False)
 gammajets= parameters.value("gammajets", False)
 tagandprobe= parameters.value("tagandprobe", False)
 applybaseline= parameters.value("applybaseline", False)
-doZinv=parameters.value("doZinv", True)
+doZinv=parameters.value("doZinv", False)
 
 print "***** SETUP ************************************"
 print " dataSetName : "+dataSetName

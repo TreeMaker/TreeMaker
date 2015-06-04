@@ -9,7 +9,7 @@ outFileName,
 reportEveryEvt=10,
 testFileName="",
 Global_Tag="",
-numProcessedEvt=1000,
+numProcessedEvt=-1,
 lostlepton=False,
 gammajets=False,
 tagandprobe=False,
@@ -149,20 +149,20 @@ doZinv=False
       )
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
-    process.LeptonsNewNoMiniIso = leptonproducer.clone(
+    process.LeptonsNewTag = leptonproducer.clone(
       MuonTag = cms.InputTag('slimmedMuons'),
       ElectronTag = cms.InputTag('slimmedElectrons'),
       PrimaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices'),
-      minElecPt								  = cms.double(10),
+      minElecPt								  = cms.double(20),
       maxElecEta								  = cms.double(2.5),
-      minMuPt								  = cms.double(10),
+      minMuPt								  = cms.double(20),
       maxMuEta								  = cms.double(2.4),
       muIsoValue								  = cms.double(0.2),
-      elecIsoValue								  = cms.double(0.2), # only has an effect when used with miniIsolation
-      UseMiniIsolation = cms.bool(False),
+      elecIsoValue								  = cms.double(0.1), # only has an effect when used with miniIsolation
+      UseMiniIsolation = cms.bool(True),
       )
-    process.Baseline += process.LeptonsNewNoMiniIso
-    VarsInt.extend(['LeptonsNewNoMiniIso(LeptonsNoMiniIsolation)'])
+    process.Baseline += process.LeptonsNewTag
+    VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
 
     ####### good photons
     process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
@@ -180,31 +180,33 @@ doZinv=False
     # get the JECs
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
-    from CondCore.DBCommon.CondDBSetup_cfi import *
-    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-                               connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
-                               toGet = cms.VPSet(
-            cms.PSet(record = cms.string("JetCorrectionsRecord"),
-                     tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
-                     label= cms.untracked.string("AK4PFchs")
-                     )
-            )
-                               )
-    process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
+######
+    #from CondCore.DBCommon.CondDBSetup_cfi import *
+    #process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+                               #connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
+                               #toGet = cms.VPSet(
+            #cms.PSet(record = cms.string("JetCorrectionsRecord"),
+                     #tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
+                     #label= cms.untracked.string("AK4PFchs")
+                     #)
+            #)
+                               #)
+    #process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
     
-    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-    process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-        src = cms.InputTag("slimmedJets"),
-        levels = ['L1FastJet', 
-                  'L2Relative', 
-                  'L3Absolute'],
-        payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
+    #from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+    #process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+        #src = cms.InputTag("slimmedJets"),
+        #levels = ['L1FastJet', 
+                  #'L2Relative', 
+                  #'L3Absolute'],
+        #payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
     
-    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-    process.patJetsReapplyJEC = patJetsUpdated.clone(
-        jetSource = cms.InputTag("slimmedJets"),
-        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-        )
+    #from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+    #process.patJetsReapplyJEC = patJetsUpdated.clone(
+        #jetSource = cms.InputTag("slimmedJets"),
+        #jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        #)
+########
 
     ###### THIS IS JUST TEMPORARY, THESE SHOULD BE INCLUDED!!!!
     #process.Baseline += process.patJetCorrFactorsReapplyJEC
@@ -233,36 +235,341 @@ doZinv=False
       IsoPionTrackTag = cms.InputTag('IsolatedPionTracksVeto'),
       PhotonTag = cms.InputTag('goodPhotons','bestPhoton'),
       )
-    #### done with good jets
-    ###########################################
-
-    from AllHadronicSUSY.Utils.leptontagandprobeproducer_cfi import leptontagandprobeproducer
-    process.MuonIsoTagAndProbe = leptontagandprobeproducer.clone(
-    	TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
-      ProbePFCand = cms.InputTag('LeptonsNew:IdMuon'),
-      ProbeTestPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
-      JetTag  = cms.InputTag('HTJets'),
-      )
-    process.MuonIdTagAndProbe = leptontagandprobeproducer.clone(
-    	TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
-    	ProbePFCand = cms.InputTag('slimmedMuons'),
-    	ProbeTestPFCand = cms.InputTag('LeptonsNew:IdMuon'),
-    	JetTag  = cms.InputTag('HTJets'),
-      )
-    process.ElectronIsoTagAndProbe = leptontagandprobeproducer.clone(
-    	TagPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
-      ProbePFCand = cms.InputTag('LeptonsNew:IdElectron'),
-      ProbeTestPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
-      JetTag  = cms.InputTag('HTJets'),
-      )
-    process.ElectronIdTagAndProbe = leptontagandprobeproducer.clone(
-    	TagPFCand = cms.InputTag('LeptonsNew:IdIsoElectron'),
-    	ProbePFCand = cms.InputTag('slimmedElectrons'),
-    	ProbeTestPFCand = cms.InputTag('LeptonsNew:IdElectron'),
-    	JetTag  = cms.InputTag('HTJets'),
-      )
     process.Baseline += process.GoodJets
     VarsBool.extend(['GoodJets(JetID)'])
+    #### done with good jets
+    ###########################################
+    
+    ####### Tag And Probe
+    from AllHadronicSUSY.Utils.activityProducer_cfi import activityProducer
+    process.MuonIsoTag = activityProducer.clone(
+    objectSource   = cms.InputTag('LeptonsNew:IdMuon'), # probe source
+    objectMatchSource   = cms.InputTag('LeptonsNew:IdIsoMuon'), # to be matched to collection  (IDIsoMuons)
+    objectTyp = cms.int32(1),
+    activityTyp = cms.int32(0),
+    maxDeltaR = cms.double(1.0),
+    jetSrc = cms.InputTag('HTJets'),
+    )
+    process.tpPairs = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("LeptonsNewTag:IdIsoMuon@+ LeptonsNew:IdMuon@-"), # charge coniugate states are implied
+    cut   = cms.string("70.0 < mass < 130.0"),
+    )
+    process.muonIsoEffs = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    # pairs
+    tagProbePairs = cms.InputTag("tpPairs"),
+    arbitration   = cms.string("OneProbe"),
+    # variables to use
+    variables = cms.PSet(
+    ## methods of reco::Candidate
+    eta = cms.string("eta"),
+    pt  = cms.string("pt"),
+    #muonsMiniIso = cms.string("muonsMiniIso"),
+    #miniIso = cms.string("miniIso"),
+    ## a method of the reco::Muon object (thanks to the 3.4.X StringParser)
+    #nsegm = cms.string("numberOfMatches"), 
+    ## this one is an external variable
+    #drj = cms.InputTag("drToNearestJet"),
+    #nGV = cms.InputTag("goodVertices.size()"),
+    #miniIso = cms.InputTag("probeMuons","muonsMiniIso"),
+    #miniIso = cms.InputTag("probeMuons","miniIso"),
+    activity = cms.InputTag("MuonIsoTag","Activity"),
+    Passing = cms.InputTag("MuonIsoTag","Passing"),
+    ),
+    # choice of what defines a 'passing' probe
+    flags = cms.PSet(
+    ## one defined by an external collection of passing probes
+    #passingCal = cms.InputTag("probesPassingCal"), 
+    ## two defined by simple string cuts
+    #   passingGlb = cms.string("isGlobalMuon"),
+    passingIso = cms.InputTag("LeptonsNew:IdMuon"),
+    #passingIso2 = cms.InputTag("MuonIsoTag:PassingProbes"),
+    #passingGlb = cms.string("Passing<0.5"),
+    #passingIso = cms.InputTag("MuonIsoTag","Passing"),
+    #passingIso = cms.InputTag("probePassingIso"),
+    ),
+    # mc-truth info
+    isMC = cms.bool(False),
+    motherPdgId = cms.vint32(22,23),
+    #makeMCUnbiasTree = cms.bool(True),
+    #checkMotherInUnbiasEff = cms.bool(True),
+    #tagMatches = cms.InputTag("muMcMatch"),
+    #probeMatches  = cms.InputTag("muMcMatch"),
+    #allProbes     = cms.InputTag("probeMuons"),
+    )
+    # mu reco
+    process.MuonRecoTag = activityProducer.clone(
+    objectSource   = cms.InputTag('packedPFCandidates'), # probe source
+    objectMatchSource   = cms.InputTag('LeptonsNew:IdMuon'), # to be matched to collection  (IDIsoMuons)
+    objectTyp = cms.int32(11),
+    activityTyp = cms.int32(0),
+    maxDeltaR = cms.double(1.0),
+    jetSrc = cms.InputTag('HTJets'),
+    )
+    process.tpPairsMuReco = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("LeptonsNewTag:IdIsoMuon@+ packedPFCandidates@-"), # charge coniugate states are implied
+    cut   = cms.string("70.0 < mass < 130.0"),
+    )
+    process.muonRecoEffs = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    # pairs
+    tagProbePairs = cms.InputTag("tpPairsMuReco"),
+    arbitration   = cms.string("OneProbe"),
+    # variables to use
+    variables = cms.PSet(
+    ## methods of reco::Candidate
+    eta = cms.string("eta"),
+    pt  = cms.string("pt"),
+    #muonsMiniIso = cms.string("muonsMiniIso"),
+    #miniIso = cms.string("miniIso"),
+    ## a method of the reco::Muon object (thanks to the 3.4.X StringParser)
+    #nsegm = cms.string("numberOfMatches"), 
+    ## this one is an external variable
+    #drj = cms.InputTag("drToNearestJet"),
+    #nGV = cms.InputTag("goodVertices.size()"),
+    #miniIso = cms.InputTag("probeMuons","muonsMiniIso"),
+    #miniIso = cms.InputTag("probeMuons","miniIso"),
+    activity = cms.InputTag("MuonRecoTag","Activity"),
+    Passing = cms.InputTag("MuonRecoTag","Passing"),
+    ),
+    # choice of what defines a 'passing' probe
+    flags = cms.PSet(
+    ## one defined by an external collection of passing probes
+    #passingCal = cms.InputTag("probesPassingCal"), 
+    ## two defined by simple string cuts
+    #   passingGlb = cms.string("isGlobalMuon"),
+    passingIso = cms.InputTag("LeptonsNew:IdMuon"),
+    #passingGlb = cms.string("Passing<0.5"),
+    #passingIso = cms.InputTag("MuonIsoTag","Passing"),
+    #passingIso = cms.InputTag("probePassingIso"),
+    ),
+    # mc-truth info
+    isMC = cms.bool(False),
+    motherPdgId = cms.vint32(22,23),
+    #makeMCUnbiasTree = cms.bool(True),
+    #checkMotherInUnbiasEff = cms.bool(True),
+    #tagMatches = cms.InputTag("muMcMatch"),
+    #probeMatches  = cms.InputTag("muMcMatch"),
+    #allProbes     = cms.InputTag("probeMuons"),
+    )
+    
+    # elec iso
+    from AllHadronicSUSY.Utils.activityProducer_cfi import activityProducer
+    process.ElectronIsoTag = activityProducer.clone(
+    objectSource   = cms.InputTag('LeptonsNew:IdElectron'), # probe source
+    objectMatchSource   = cms.InputTag('LeptonsNew:IdIsoElectron'), # to be matched to collection  (IDIsoMuons)
+    objectTyp = cms.int32(2), ## change here for differnt lepton isotrack typ
+    activityTyp = cms.int32(0),
+    maxDeltaR = cms.double(1.0),
+    jetSrc = cms.InputTag('HTJets'),
+    )
+    process.tpPairsElecIso = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("LeptonsNewTag:IdIsoElectron@+ LeptonsNew:IdElectron@-"), # charge coniugate states are implied
+    cut   = cms.string("70.0 < mass < 130.0"),
+    )
+    process.elecIsoEffs = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    # pairs
+    tagProbePairs = cms.InputTag("tpPairsElecIso"),
+    arbitration   = cms.string("OneProbe"),
+    # variables to use
+    variables = cms.PSet(
+    ## methods of reco::Candidate
+    eta = cms.string("eta"),
+    pt  = cms.string("pt"),
+    #muonsMiniIso = cms.string("muonsMiniIso"),
+    #miniIso = cms.string("miniIso"),
+    ## a method of the reco::Muon object (thanks to the 3.4.X StringParser)
+    #nsegm = cms.string("numberOfMatches"), 
+    ## this one is an external variable
+    #drj = cms.InputTag("drToNearestJet"),
+    #nGV = cms.InputTag("goodVertices.size()"),
+    #miniIso = cms.InputTag("probeMuons","muonsMiniIso"),
+    #miniIso = cms.InputTag("probeMuons","miniIso"),
+    activity = cms.InputTag("ElectronIsoTag","Activity"),
+    Passing = cms.InputTag("ElectronIsoTag","Passing"),
+    ),
+    # choice of what defines a 'passing' probe
+    flags = cms.PSet(
+    ## one defined by an external collection of passing probes
+    #passingCal = cms.InputTag("probesPassingCal"), 
+    ## two defined by simple string cuts
+    #   passingGlb = cms.string("isGlobalMuon"),
+    passingIso = cms.InputTag("LeptonsNew:IdMuon"),
+    #passingGlb = cms.string("Passing<0.5"),
+    #passingIso = cms.InputTag("MuonIsoTag","Passing"),
+    #passingIso = cms.InputTag("probePassingIso"),
+    ),
+    # mc-truth info
+    isMC = cms.bool(False),
+    motherPdgId = cms.vint32(22,23),
+    #makeMCUnbiasTree = cms.bool(True),
+    #checkMotherInUnbiasEff = cms.bool(True),
+    #tagMatches = cms.InputTag("muMcMatch"),
+    #probeMatches  = cms.InputTag("muMcMatch"),
+    #allProbes     = cms.InputTag("probeMuons"),
+    )
+    # elec reco
+    process.ElectronRecoTag = activityProducer.clone(
+    objectSource   = cms.InputTag('slimmedPhotons'), # probe source
+    objectMatchSource   = cms.InputTag('LeptonsNew:IdElectron'), # to be matched to collection  (IDIsoMuons)
+    objectTyp = cms.int32(22),
+    activityTyp = cms.int32(0),
+    maxDeltaR = cms.double(1.0),
+    jetSrc = cms.InputTag('HTJets'),
+    )
+    process.tpPairsElecReco = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("LeptonsNewTag:IdIsoElectron@+ slimmedPhotons"), # charge coniugate states are implied
+    cut   = cms.string("70.0 < mass < 130.0"),
+    )
+    process.elecRecoEffs = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    # pairs
+    tagProbePairs = cms.InputTag("tpPairsElecReco"),
+    arbitration   = cms.string("OneProbe"),
+    # variables to use
+    variables = cms.PSet(
+    ## methods of reco::Candidate
+    eta = cms.string("eta"),
+    pt  = cms.string("pt"),
+    #muonsMiniIso = cms.string("muonsMiniIso"),
+    #miniIso = cms.string("miniIso"),
+    ## a method of the reco::Muon object (thanks to the 3.4.X StringParser)
+    #nsegm = cms.string("numberOfMatches"), 
+    ## this one is an external variable
+    #drj = cms.InputTag("drToNearestJet"),
+    #nGV = cms.InputTag("goodVertices.size()"),
+    #miniIso = cms.InputTag("probeMuons","muonsMiniIso"),
+    #miniIso = cms.InputTag("probeMuons","miniIso"),
+    activity = cms.InputTag("ElectronRecoTag","Activity"),
+    Passing = cms.InputTag("ElectronRecoTag","Passing"),
+    ),
+    # choice of what defines a 'passing' probe
+    flags = cms.PSet(
+    ## one defined by an external collection of passing probes
+    #passingCal = cms.InputTag("probesPassingCal"), 
+    ## two defined by simple string cuts
+    #   passingGlb = cms.string("isGlobalMuon"),
+    passingIso = cms.InputTag("LeptonsNew:IdMuon"),
+    #passingGlb = cms.string("Passing<0.5"),
+    #passingIso = cms.InputTag("MuonIsoTag","Passing"),
+    #passingIso = cms.InputTag("probePassingIso"),
+    ),
+    # mc-truth info
+    isMC = cms.bool(False),
+    motherPdgId = cms.vint32(22,23),
+    #makeMCUnbiasTree = cms.bool(True),
+    #checkMotherInUnbiasEff = cms.bool(True),
+    #tagMatches = cms.InputTag("muMcMatch"),
+    #probeMatches  = cms.InputTag("muMcMatch"),
+    #allProbes     = cms.InputTag("probeMuons"),
+    )
+    # isolated track muons
+    process.IsoTrackMuonTag = activityProducer.clone(
+    objectSource   = cms.InputTag('packedPFCandidates'), # probe source
+    objectMatchSource   = cms.InputTag('IsolatedMuonTracksVeto'), # to be matched to collection  (IDIsoMuons)
+    objectTyp = cms.int32(3),
+    activityTyp = cms.int32(0),
+    maxDeltaR = cms.double(1.0),
+    jetSrc = cms.InputTag('HTJets'),
+    )
+    process.tpPairsIsoTrackMu = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("LeptonsNewTag:IdIsoMuon@+ packedPFCandidates@-"), # charge coniugate states are implied
+    cut   = cms.string("70.0 < mass < 130.0"),
+    )
+    process.IsoTrackMuonIsoEffs = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    # pairs
+    tagProbePairs = cms.InputTag("tpPairsIsoTrackMu"),
+    arbitration   = cms.string("OneProbe"),
+    # variables to use
+    variables = cms.PSet(
+    ## methods of reco::Candidate
+    eta = cms.string("eta"),
+    pt  = cms.string("pt"),
+    #muonsMiniIso = cms.string("muonsMiniIso"),
+    #miniIso = cms.string("miniIso"),
+    ## a method of the reco::Muon object (thanks to the 3.4.X StringParser)
+    #nsegm = cms.string("numberOfMatches"), 
+    ## this one is an external variable
+    #drj = cms.InputTag("drToNearestJet"),
+    #nGV = cms.InputTag("goodVertices.size()"),
+    #miniIso = cms.InputTag("probeMuons","muonsMiniIso"),
+    #miniIso = cms.InputTag("probeMuons","miniIso"),
+    activity = cms.InputTag("IsoTrackMuonTag","Activity"),
+    Passing = cms.InputTag("IsoTrackMuonTag","Passing"),
+    ),
+    # choice of what defines a 'passing' probe
+    flags = cms.PSet(
+    ## one defined by an external collection of passing probes
+    #passingCal = cms.InputTag("probesPassingCal"), 
+    ## two defined by simple string cuts
+    #   passingGlb = cms.string("isGlobalMuon"),
+    passingIso = cms.InputTag("LeptonsNew:IdMuon"),
+    #passingIso2 = cms.InputTag("MuonIsoTag:PassingProbes"),
+    #passingGlb = cms.string("Passing<0.5"),
+    #passingIso = cms.InputTag("MuonIsoTag","Passing"),
+    #passingIso = cms.InputTag("probePassingIso"),
+    ),
+    # mc-truth info
+    isMC = cms.bool(False),
+    motherPdgId = cms.vint32(22,23),
+    #makeMCUnbiasTree = cms.bool(True),
+    #checkMotherInUnbiasEff = cms.bool(True),
+    #tagMatches = cms.InputTag("muMcMatch"),
+    #probeMatches  = cms.InputTag("muMcMatch"),
+    #allProbes     = cms.InputTag("probeMuons"),
+    )
+    # isolated track electrons
+    process.IsoTrackElecTag = activityProducer.clone(
+    objectSource   = cms.InputTag('packedPFCandidates'), # probe source
+    objectMatchSource   = cms.InputTag('IsolatedElectronTracksVeto'), # to be matched to collection  (IDIsoMuons)
+    objectTyp = cms.int32(4),
+    activityTyp = cms.int32(0),
+    maxDeltaR = cms.double(1.0),
+    jetSrc = cms.InputTag('HTJets'),
+    )
+    process.tpPairsIsoTrackElec = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("LeptonsNewTag:IdIsoElectron@+ packedPFCandidates@-"), # charge coniugate states are implied
+    cut   = cms.string("70.0 < mass < 130.0"),
+    )
+    process.IsoTrackElecIsoEffs = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    # pairs
+    tagProbePairs = cms.InputTag("tpPairsIsoTrackElec"),
+    arbitration   = cms.string("OneProbe"),
+    # variables to use
+    variables = cms.PSet(
+    ## methods of reco::Candidate
+    eta = cms.string("eta"),
+    pt  = cms.string("pt"),
+    #muonsMiniIso = cms.string("muonsMiniIso"),
+    #miniIso = cms.string("miniIso"),
+    ## a method of the reco::Muon object (thanks to the 3.4.X StringParser)
+    #nsegm = cms.string("numberOfMatches"), 
+    ## this one is an external variable
+    #drj = cms.InputTag("drToNearestJet"),
+    #nGV = cms.InputTag("goodVertices.size()"),
+    #miniIso = cms.InputTag("probeMuons","muonsMiniIso"),
+    #miniIso = cms.InputTag("probeMuons","miniIso"),
+    activity = cms.InputTag("IsoTrackElecTag","Activity"),
+    Passing = cms.InputTag("IsoTrackElecTag","Passing"),
+    ),
+    # choice of what defines a 'passing' probe
+    flags = cms.PSet(
+    ## one defined by an external collection of passing probes
+    #passingCal = cms.InputTag("probesPassingCal"), 
+    ## two defined by simple string cuts
+    #   passingGlb = cms.string("isGlobalMuon"),
+    passingIso = cms.InputTag("LeptonsNew:IdMuon"),
+    #passingIso2 = cms.InputTag("MuonIsoTag:PassingProbes"),
+    #passingGlb = cms.string("Passing<0.5"),
+    #passingIso = cms.InputTag("MuonIsoTag","Passing"),
+    #passingIso = cms.InputTag("probePassingIso"),
+    ),
+    # mc-truth info
+    isMC = cms.bool(False),
+    motherPdgId = cms.vint32(22,23),
+    #makeMCUnbiasTree = cms.bool(True),
+    #checkMotherInUnbiasEff = cms.bool(True),
+    #tagMatches = cms.InputTag("muMcMatch"),
+    #probeMatches  = cms.InputTag("muMcMatch"),
+    #allProbes     = cms.InputTag("probeMuons"),
+    )
     from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
     process.HTJets = SubJetSelection.clone(
     JetTag  = cms.InputTag('GoodJets'),
@@ -352,27 +659,7 @@ doZinv=False
     #gamma+jet producers
 
 
-    #tag and probe
-    if tagandprobe:
-			process.Baseline += process.GenLeptons
-			process.Baseline += process.JetsProperties
-			process.Baseline += process.SelectedPFCandidates
-			process.Baseline += process.MuonIsoTagAndProbe
-			RecoCandVector.extend(['MuonIsoTagAndProbe:Tag(TagIsoMuon)','MuonIsoTagAndProbe:Probe(ProbeIsoMuon)|MuonIsoTagAndProbe:InvariantMass(F_InvariantMass)|MuonIsoTagAndProbe:PassingOrFail(I_PassingOrFail)'])
-			VarsDouble.extend(['MuonIsoTagAndProbe:MinDeltaPhiN(MuIso_minDeltaPhiN)'])
-			process.Baseline += process.MuonIdTagAndProbe
-			RecoCandVector.extend(['MuonIdTagAndProbe:Tag(TagIDMuon)','MuonIdTagAndProbe:Probe(ProbeIDMuon)|MuonIdTagAndProbe:InvariantMass(F_InvariantMass)|MuonIdTagAndProbe:PassingOrFail(I_PassingOrFail)'])
-			VarsDouble.extend(['MuonIdTagAndProbe:MinDeltaPhiN(MuID_minDeltaPhiN)'])
-			process.Baseline += process.ElectronIsoTagAndProbe
-			RecoCandVector.extend(['ElectronIsoTagAndProbe:Tag(TagIsoElectron)','ElectronIsoTagAndProbe:Probe(ProbeIsoElectron)|ElectronIsoTagAndProbe:InvariantMass(F_InvariantMass)|ElectronIsoTagAndProbe:PassingOrFail(I_PassingOrFail)'])
-			VarsDouble.extend(['ElectronIsoTagAndProbe:MinDeltaPhiN(ElecIso_minDeltaPhiN)'])
-			process.Baseline += process.ElectronIdTagAndProbe
-			RecoCandVector.extend(['ElectronIdTagAndProbe:Tag(TagIDElectron)','ElectronIdTagAndProbe:Probe(ProbeIDElectron)|ElectronIdTagAndProbe:InvariantMass(F_InvariantMass)|ElectronIdTagAndProbe:PassingOrFail(I_PassingOrFail)'])
-			VarsDouble.extend(['ElectronIdTagAndProbe:MinDeltaPhiN(ElecID_minDeltaPhiN)'])
-			RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)'] ) # jet
-			RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] )
-			RecoCandVector.extend(['IsolatedTracks','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
-			
+
 
     #define sequences
     
@@ -391,9 +678,9 @@ doZinv=False
       process.AdditionalSequence += process.LostLepton 
     #  VarsRecoCand = cms.vstring('selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDMuons','IsolatedTracks','HTJets'),
    #   RecoCandVector.extend(['selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDElectrons','IsolatedTracks']),
-      RecoCandVector.extend(['IsolatedTracks','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
+      RecoCandVector.extend(['IsolatedElectronTracksVeto','IsolatedMuonTracksVeto','IsolatedPionTracksVeto','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
       RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
-      RecoCandVector.extend(['LeptonsNewNoMiniIso:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewNoMiniIso:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] ) # gen information on leptons
+      RecoCandVector.extend(['LeptonsNewTag:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewTag:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] ) # gen information on leptons
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
       RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
 
@@ -411,11 +698,43 @@ doZinv=False
 
     	)
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
+    #tag and probe
+    if tagandprobe:
+			process.Baseline += process.GenLeptons
+			process.Baseline += process.JetsProperties
+			process.Baseline += process.SelectedPFCandidates
+			process.Baseline += process.MuonIsoTag
+			process.Baseline += process.tpPairs
+			process.Baseline += process.muonIsoEffs
+			process.Baseline += process.MuonRecoTag
+			process.Baseline += process.tpPairsMuReco
+			process.Baseline += process.muonRecoEffs
+			process.Baseline += process.ElectronIsoTag
+			process.Baseline += process.tpPairsElecIso
+			process.Baseline += process.elecIsoEffs
+			process.Baseline += process.ElectronRecoTag
+			process.Baseline += process.tpPairsElecReco
+			process.Baseline += process.elecRecoEffs
+			process.Baseline += process.IsoTrackMuonTag
+			process.Baseline += process.tpPairsIsoTrackMu
+			process.Baseline += process.IsoTrackMuonIsoEffs
+			process.Baseline += process.IsoTrackElecTag
+			process.Baseline += process.tpPairsIsoTrackElec
+			process.Baseline += process.IsoTrackElecIsoEffs
 
 ### begin Zinv stuff ###
     if doZinv:   
    
       process.ZinvClean = cms.Sequence()
+
+      from AllHadronicSUSY.Utils.zproducer_cfi import ZProducer
+      process.maketheZs = ZProducer.clone(
+         ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
+         MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon')
+      )
+      process.ZinvClean += process.maketheZs
+      VarsInt.extend(['maketheZs:ZNum'])
+      process.TreeMaker2.VectorTLorentzVector.append("maketheZs:Zp4")
 
       from AllHadronicSUSY.Utils.jetcleaner_cfi import JetCleaner
       process.cleanTheJets = JetCleaner.clone(
