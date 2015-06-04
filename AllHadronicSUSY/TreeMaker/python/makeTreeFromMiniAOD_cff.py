@@ -77,12 +77,14 @@ doZinv=False
     print process.WeightProducer.PU
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
-    from AllHadronicSUSY.Utils.primaryverticies_cfi import primaryverticies
-    process.NVtx = primaryverticies.clone(
-    VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
+
+    from AllHadronicSUSY.Utils.primaryverticesint_cfi import primaryverticesint
+    process.NVtx = primaryverticesint.clone(
+      VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices')
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
