@@ -9,7 +9,7 @@ outFileName,
 reportEveryEvt=10,
 testFileName="",
 Global_Tag="",
-numProcessedEvt=1000,
+numProcessedEvt=-1,
 lostlepton=False,
 gammajets=False,
 tagandprobe=False,
@@ -726,6 +726,15 @@ doZinv=False
     if doZinv:   
    
       process.ZinvClean = cms.Sequence()
+
+      from AllHadronicSUSY.Utils.zproducer_cfi import ZProducer
+      process.maketheZs = ZProducer.clone(
+         ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
+         MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon')
+      )
+      process.ZinvClean += process.maketheZs
+      VarsInt.extend(['maketheZs:ZNum'])
+      process.TreeMaker2.VectorTLorentzVector.append("maketheZs:Zp4")
 
       from AllHadronicSUSY.Utils.jetcleaner_cfi import JetCleaner
       process.cleanTheJets = JetCleaner.clone(

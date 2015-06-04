@@ -7,12 +7,12 @@
 <use name="CommonTools/Utils"/>
 <use name="CondFormats/JetMETObjects"/>
 <use name="JetMETCorrections/Objects"/>
-<use   name="CondFormats/DataRecord"/>
-<use   name="CommonTools/UtilAlgos"/>
-<use   name="PhysicsTools/PatUtils"/>
-<use   name="DataFormats/Candidate"/>
-<use   name="Geometry/CaloGeometry"/>
-<use   name="RecoParticleFlow/PFProducer"/>
-
+<use name="CondFormats/DataRecord"/>
+<use name="CommonTools/UtilAlgos"/>
+<use name="PhysicsTools/PatUtils"/>
+<use name="DataFormats/Candidate"/>
+<use name="Geometry/CaloGeometry"/>
+<use name="RecoParticleFlow/PFProducer"/>
+<use name="rootmath"/>
 <use name="root"/>
-<flags   EDM_PLUGIN="1"/>
+
