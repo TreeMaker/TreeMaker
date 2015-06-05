@@ -3,4 +3,5 @@
   <class name="std::vector<std::vector<TLorentzVector> >"/>
   <class name="edm::Wrapper<std::vector<TLorentzVector> >"/>
   <class name="edm::Wrapper<std::vector<std::vector<TLorentzVector> > >"/>
+  <class name="PrimaryVerticesInt"/>
 </lcgdict>
