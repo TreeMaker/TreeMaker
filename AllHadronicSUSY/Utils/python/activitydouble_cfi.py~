@@ -1,0 +1,6 @@
+import FWCore.ParameterSet.Config as cms
+
+leptontagandprobeproducer = cms.EDProducer('LeptonTagAndProbeProducer',
+TagPFCand = cms.InputTag('LeptonsNew:IdIsoMuon'),
+Method = cms.int(0),
+)

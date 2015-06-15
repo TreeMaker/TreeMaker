@@ -1,0 +1,4 @@
+PU uncertainty NJet = 2: 0.0391703 +- 0.0048266
+PU uncertainty NJet = 3-5: 0.029096 +- 0.00328606
+PU uncertainty NJet = 6-7: -0.0784476 +- 0.018764
+PU uncertainty NJet >= 8: 0.334332 +- 0.276696
