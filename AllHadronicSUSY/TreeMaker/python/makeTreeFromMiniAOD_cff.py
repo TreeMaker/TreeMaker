@@ -245,7 +245,7 @@ doZinv=False
 
     #Filter Flag test
     
-    from AllHadronicSUSY.Utils.filterflagsproducer_cfi import FilterFlagsProducer
+    from AllHadronicSUSY.Utils.triggerflagsproducer_cfi import TriggerFlagsProducer
     filterNameslist = cms.vstring()
     filterNameslist.extend(['Flag_trackingFailureFilter','Flag_goodVertices','Flag_CSCTightHaloFilter',
                        'Flag_trkPOGFilters','Flag_trkPOG_logErrorTooManyClusters',
@@ -262,7 +262,7 @@ doZinv=False
                        'trkPOGtoomanystripclus53X', 'hcalLaserEventFilter']
     for tag in SNlist:
       statusNameslist.extend([tag])
-    process.FilterFlags = FilterFlagsProducer.clone(
+    process.FilterFlags = TriggerFlagsProducer.clone(
       bits = cms.InputTag("TriggerResults","","PAT"), 
       filterNames = filterNameslist, 
       statusNames = statusNameslist,
@@ -283,7 +283,7 @@ doZinv=False
                              'Ele15IsoVVVLPFHT400PFMET70']
     for tag in TBNlist:
       triggerBitNameslist.extend([tag])
-    process.TriggerFlags = FilterFlagsProducer.clone(
+    process.TriggerFlags = TriggerFlagsProducer.clone(
       bits = cms.InputTag("TriggerResults","","HLT"), 
       filterNames = triggerNameslist, 
       statusNames = triggerBitNameslist,

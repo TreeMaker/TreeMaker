@@ -19,10 +19,10 @@
 #include "DataFormats/Common/interface/TriggerResults.h"
 
 
-class FilterFlagsProducer : public edm::EDProducer {
+class TriggerFlagsProducer : public edm::EDProducer {
    public:
-      explicit FilterFlagsProducer(const edm::ParameterSet&);
-      ~FilterFlagsProducer() {}
+      explicit TriggerFlagsProducer(const edm::ParameterSet&);
+      ~TriggerFlagsProducer() {}
 
    private:
       virtual void produce(edm::Event&, const edm::EventSetup&);
@@ -35,7 +35,7 @@ class FilterFlagsProducer : public edm::EDProducer {
 };
 
 
-FilterFlagsProducer::FilterFlagsProducer(const edm::ParameterSet& iConfig):
+TriggerFlagsProducer::TriggerFlagsProducer(const edm::ParameterSet& iConfig):
     triggerBits_(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("bits")))
 
 {
@@ -74,7 +74,7 @@ FilterFlagsProducer::FilterFlagsProducer(const edm::ParameterSet& iConfig):
 
 }
 
-void FilterFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void TriggerFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //We will use the convention from the MiniAODTriggerAnalyzer, where True means the event passed the filter
 //False is the event failed the filter, or the filter wasn't run
 {
@@ -107,4 +107,4 @@ void FilterFlagsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(FilterFlagsProducer);
+DEFINE_FWK_MODULE(TriggerFlagsProducer);
