@@ -2,6 +2,7 @@
 #
 
 import FWCore.ParameterSet.Config as cms
+import FWCore.Utilities.FileUtils as FileUtils
 
 def makeTreeFromMiniAOD(
 process,
@@ -37,6 +38,10 @@ doZinv=False
     process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(numProcessedEvt)
         )
+
+    mylist = FileUtils.loadListFromFile ('dataset.txt') 
+    testFileName = cms.untracked.vstring( *mylist)
+
     process.source = cms.Source("PoolSource",
 
         fileNames = cms.untracked.vstring(testFileName)
@@ -77,12 +82,14 @@ doZinv=False
     print process.WeightProducer.PU
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
-    from AllHadronicSUSY.Utils.primaryverticies_cfi import primaryverticies
-    process.NVtx = primaryverticies.clone(
-    VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
+
+    from AllHadronicSUSY.Utils.primaryverticesint_cfi import primaryverticesint
+    process.NVtx = primaryverticesint.clone(
+      VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices')
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
@@ -180,37 +187,35 @@ doZinv=False
     # get the JECs
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
-######
-    #from CondCore.DBCommon.CondDBSetup_cfi import *
-    #process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-                               #connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
-                               #toGet = cms.VPSet(
-            #cms.PSet(record = cms.string("JetCorrectionsRecord"),
-                     #tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
-                     #label= cms.untracked.string("AK4PFchs")
-                     #)
-            #)
-                               #)
-    #process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
+    ######
+    from CondCore.DBCommon.CondDBSetup_cfi import *
+    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+                               connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
+                               toGet = cms.VPSet(
+            cms.PSet(record = cms.string("JetCorrectionsRecord"),
+                     tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
+                     label= cms.untracked.string("AK4PFchs")
+                     )
+            )
+                               )
+    process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
     
-    #from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-    #process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-        #src = cms.InputTag("slimmedJets"),
-        #levels = ['L1FastJet', 
-                  #'L2Relative', 
-                  #'L3Absolute'],
-        #payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+    process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+        src = cms.InputTag("slimmedJets"),
+        levels = ['L1FastJet', 
+                  'L2Relative', 
+                  'L3Absolute'],
+        payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
     
-    #from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-    #process.patJetsReapplyJEC = patJetsUpdated.clone(
-        #jetSource = cms.InputTag("slimmedJets"),
-        #jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-        #)
-########
-
-    ###### THIS IS JUST TEMPORARY, THESE SHOULD BE INCLUDED!!!!
-    #process.Baseline += process.patJetCorrFactorsReapplyJEC
-    #process.Baseline += process.patJetsReapplyJEC
+    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+    process.patJetsReapplyJEC = patJetsUpdated.clone(
+        jetSource = cms.InputTag("slimmedJets"),
+        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        )
+    ########
+    process.Baseline += process.patJetCorrFactorsReapplyJEC
+    process.Baseline += process.patJetsReapplyJEC
 
     ############
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
@@ -237,6 +242,57 @@ doZinv=False
       )
     process.Baseline += process.GoodJets
     VarsBool.extend(['GoodJets(JetID)'])
+
+    #Filter Flag test
+    
+    from AllHadronicSUSY.Utils.triggerflagsproducer_cfi import TriggerFlagsProducer
+    filterNameslist = cms.vstring()
+    filterNameslist.extend(['Flag_trackingFailureFilter','Flag_goodVertices','Flag_CSCTightHaloFilter',
+                       'Flag_trkPOGFilters','Flag_trkPOG_logErrorTooManyClusters',
+                       'Flag_EcalDeadCellTriggerPrimitiveFilter','Flag_ecalLaserCorrFilter',
+                       'Flag_trkPOG_manystripclus53X','Flag_eeBadScFilter',
+                       'Flag_METFilters','Flag_HBHENoiseFilter',
+                       'Flag_trkPOG_toomanystripclus53X','Flag_hcalLaserEventFilter'])
+    statusNameslist = cms.vstring()
+    SNlist = ['trackingFailureFilter', 'goodVertices', 'CSCTightHaloFilter',
+                       'trkPOGFilters', 'trkPOGlogErrorTooManyClusters',
+                       'EcalDeadCellTriggerPrimitiveFilter', 'ecalLaserCorrFilter',
+                       'trkPOGmanystripclus53X', 'eeBadScFilter',
+                       'METFilters', 'HBHENoiseFilter',
+                       'trkPOGtoomanystripclus53X', 'hcalLaserEventFilter']
+    for tag in SNlist:
+      statusNameslist.extend([tag])
+    process.FilterFlags = TriggerFlagsProducer.clone(
+      bits = cms.InputTag("TriggerResults","","PAT"), 
+      filterNames = filterNameslist, 
+      statusNames = statusNameslist,
+      )
+    process.Baseline += process.FilterFlags
+    for tag in SNlist:
+        VarsBool.extend(['FilterFlags:' + tag])
+
+    #Trigger Flag test
+    
+    triggerNameslist = cms.vstring()
+    triggerNameslist.extend(['HLT_PFHT350_PFMET120_NoiseCleaned_v1','HLT_PFMET170_NoiseCleaned_v1',
+                             'HLT_PFHT900_v1','HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v1',
+                             'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v1'])
+    triggerBitNameslist = cms.vstring()
+    TBNlist = ['PFHT350PFMET120NoiseCleaned','PFMET170NoiseCleaned',
+                             'PFHT900','Mu15IsoVVVLPFHT400PFMET70',
+                             'Ele15IsoVVVLPFHT400PFMET70']
+    for tag in TBNlist:
+      triggerBitNameslist.extend([tag])
+    process.TriggerFlags = TriggerFlagsProducer.clone(
+      bits = cms.InputTag("TriggerResults","","HLT"), 
+      filterNames = triggerNameslist, 
+      statusNames = triggerBitNameslist,
+      )
+    process.Baseline += process.TriggerFlags
+    for tag in TBNlist:
+        VarsBool.extend(['TriggerFlags:' + tag])
+
+
     #### done with good jets
     ###########################################
     
