@@ -2,6 +2,7 @@
 #
 
 import FWCore.ParameterSet.Config as cms
+import FWCore.Utilities.FileUtils as FileUtils
 
 def makeTreeFromMiniAOD(
 process,
@@ -37,6 +38,10 @@ doZinv=False
     process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(numProcessedEvt)
         )
+
+    mylist = FileUtils.loadListFromFile ('dataset.txt') 
+    testFileName = cms.untracked.vstring( *mylist)
+
     process.source = cms.Source("PoolSource",
 
         fileNames = cms.untracked.vstring(testFileName)
@@ -237,6 +242,57 @@ doZinv=False
       )
     process.Baseline += process.GoodJets
     VarsBool.extend(['GoodJets(JetID)'])
+
+    #Filter Flag test
+    
+    from AllHadronicSUSY.Utils.filterflagsproducer_cfi import FilterFlagsProducer
+    filterNameslist = cms.vstring()
+    filterNameslist.extend(['Flag_trackingFailureFilter','Flag_goodVertices','Flag_CSCTightHaloFilter',
+                       'Flag_trkPOGFilters','Flag_trkPOG_logErrorTooManyClusters',
+                       'Flag_EcalDeadCellTriggerPrimitiveFilter','Flag_ecalLaserCorrFilter',
+                       'Flag_trkPOG_manystripclus53X','Flag_eeBadScFilter',
+                       'Flag_METFilters','Flag_HBHENoiseFilter',
+                       'Flag_trkPOG_toomanystripclus53X','Flag_hcalLaserEventFilter'])
+    statusNameslist = cms.vstring()
+    SNlist = ['trackingFailureFilter', 'goodVertices', 'CSCTightHaloFilter',
+                       'trkPOGFilters', 'trkPOGlogErrorTooManyClusters',
+                       'EcalDeadCellTriggerPrimitiveFilter', 'ecalLaserCorrFilter',
+                       'trkPOGmanystripclus53X', 'eeBadScFilter',
+                       'METFilters', 'HBHENoiseFilter',
+                       'trkPOGtoomanystripclus53X', 'hcalLaserEventFilter']
+    for tag in SNlist:
+      statusNameslist.extend([tag])
+    process.FilterFlags = FilterFlagsProducer.clone(
+      bits = cms.InputTag("TriggerResults","","PAT"), 
+      filterNames = filterNameslist, 
+      statusNames = statusNameslist,
+      )
+    process.Baseline += process.FilterFlags
+    for tag in SNlist:
+        VarsBool.extend(['FilterFlags:' + tag])
+
+    #Trigger Flag test
+    
+    triggerNameslist = cms.vstring()
+    triggerNameslist.extend(['HLT_PFHT350_PFMET120_NoiseCleaned_v1','HLT_PFMET170_NoiseCleaned_v1',
+                             'HLT_PFHT900_v1','HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v1',
+                             'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v1'])
+    triggerBitNameslist = cms.vstring()
+    TBNlist = ['PFHT350PFMET120NoiseCleaned','PFMET170NoiseCleaned',
+                             'PFHT900','Mu15IsoVVVLPFHT400PFMET70',
+                             'Ele15IsoVVVLPFHT400PFMET70']
+    for tag in TBNlist:
+      triggerBitNameslist.extend([tag])
+    process.TriggerFlags = FilterFlagsProducer.clone(
+      bits = cms.InputTag("TriggerResults","","HLT"), 
+      filterNames = triggerNameslist, 
+      statusNames = triggerBitNameslist,
+      )
+    process.Baseline += process.TriggerFlags
+    for tag in TBNlist:
+        VarsBool.extend(['TriggerFlags:' + tag])
+
+
     #### done with good jets
     ###########################################
     
