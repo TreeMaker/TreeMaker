@@ -207,7 +207,7 @@ LeptonTagAndProbeProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 				
 				double probeEta = ProbeCands->at(i).eta();
 				double probePhi = ProbeCands->at(i).phi();
-				if( std::abs(ProbeCands->at(i).pt() - TagCands->at(tagIndex).pt() )/TagCands->at(tagIndex).pt() < 0.001 && deltaR(probeEta,probePhi,tagEta,tagPhi)<0.01 )
+				if( std::abs(ProbeCands->at(i).pt() - TagCands->at(tagIndex).pt() )/TagCands->at(tagIndex).pt() < 0.5 && deltaR(probeEta,probePhi,tagEta,tagPhi)<0.03 )
 				{
 					if(tagInProbeIndex!=-1)std::cout<<"Warning more than one match found!!"<<std::endl;
 					tagInProbeIndex=i;
@@ -236,8 +236,8 @@ LeptonTagAndProbeProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 					{
 						double TagEta = ProbeTestCands->at(ii).eta();
 						double TagPhi = ProbeTestCands->at(ii).phi();
-						if( std::abs(ProbeTestCands->at(ii).pt() - TagCands->at(tagIndex).pt() )/TagCands->at(tagIndex).pt() < 0.001 && deltaR(TagEta,TagPhi,tagEta,tagPhi)<0.01 ) continue;
-						if( std::abs(ProbeCands->at(i).pt() - ProbeTestCands->at(ii).pt() )/ProbeTestCands->at(ii).pt() < 0.001 && deltaR(probeEta,probePhi,TagEta,TagPhi)<0.01 )
+						if( std::abs(ProbeTestCands->at(ii).pt() - TagCands->at(tagIndex).pt() )/TagCands->at(tagIndex).pt() < 0.5 && deltaR(TagEta,TagPhi,tagEta,tagPhi)<0.03 ) continue;
+						if( std::abs(ProbeCands->at(i).pt() - ProbeTestCands->at(ii).pt() )/ProbeTestCands->at(ii).pt() < 0.5 && deltaR(probeEta,probePhi,TagEta,TagPhi)<0.03 )
 						{
 							matched++;
 						}

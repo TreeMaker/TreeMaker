@@ -380,7 +380,7 @@ def getWeightProducer(fileName):
       applyWeight = True
       weightProducer.weight = cms.double(-1.)
 
-   if "ZJetsToNuNu_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
+   if "ZJetsToNuNu_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v2" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
       weightProducer.XS         = cms.double(11.99)

@@ -42,8 +42,10 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   rhoCollection(iConfig.getUntrackedParameter<edm::InputTag>("rhoCollection")),
   debug(iConfig.getUntrackedParameter<bool>("debug",true))
 {
-  produces< std::vector< TLorentzVector > >(""); 
-  produces< std::vector< double > >("isEB").setBranchAlias( photonCollection.label()+"isEB" );; 
+  produces< std::vector< pat::Photon > >(""); 
+  produces< std::vector< pat::Photon > >("bestPhoton"); 
+  produces< int >("NumPhotons");
+  produces< std::vector< double > >("isEB");
   produces< std::vector< double > >("genMatched"); 
   produces< std::vector< double > >("hadTowOverEM"); 
   produces< std::vector< double > >("sigmaIetaIeta"); 
@@ -77,8 +79,11 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   using namespace edm;
 
-  std::auto_ptr< std::vector< TLorentzVector > > photon ( new std::vector< TLorentzVector > () );
-  
+  std::auto_ptr< std::vector< pat::Photon > > photons ( new std::vector< pat::Photon >() );
+  std::auto_ptr< std::vector< pat::Photon > > bestPhoton ( new std::vector< pat::Photon >() );
+
+  std::auto_ptr< int > NumPhotons ( new int(0) );
+
   std::auto_ptr< std::vector< double > > photon_isEB( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_genMatched( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_hadTowOverEM( new std::vector< double > () );
@@ -106,15 +111,25 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   if( debug ) std::cout << "got photon collection" << std::endl;
 
-  effArea* effAreas = new effArea();
-  effAreas->addEffA( 0.0,   1.0,   0.012, 0.030, 0.148 );
-  effAreas->addEffA( 1.0,   1.479, 0.010, 0.057, 0.130 );
-  effAreas->addEffA( 1.479, 2.0,   0.014, 0.039, 0.112 );
-  effAreas->addEffA( 2.0,   2.2,   0.012, 0.015, 0.216 );
-  effAreas->addEffA( 2.2,   2.3,   0.016, 0.024, 0.262 );
-  effAreas->addEffA( 2.3,   2.4,   0.020, 0.039, 0.260 );
-  effAreas->addEffA( 2.4,   99.,   0.012, 0.072, 0.266 );
 
+  // - - - - - - - - - - - - - - - - - - - - 
+  // Initializing effective area to be used 
+  // for rho corrections to the photon isolation
+  // variables.  -- currently these are taken from
+  // the 2012 EGamma PAG recommendations and need 
+  // to be updated
+  // - - - - - - - - - - - - - - - - - - - - 
+  effArea* effAreas = new effArea();
+  effAreas->addEffA( 0.0, 1.0, 0.0234, 0.0053, 0.078 );
+  effAreas->addEffA( 1.0, 1.479, 0.0189, 0.0130, 0.0629 );
+  effAreas->addEffA( 1.479, 2.0, 0.0171, 0.0057, 0.0264 );
+  effAreas->addEffA( 2.0, 2.2, 0.0129, 0.0070, 0.0462 );
+  effAreas->addEffA( 2.2, 2.3, 0.0110, 0.0152, 0.0740 );
+  effAreas->addEffA( 2.3, 2.4, 0.0074, 0.0232, 0.0924 );
+  effAreas->addEffA( 2.4, 99., 0.0035, 0.1709, 0.1484 );
+
+  double bestPhotonPt = 0. ; 
+    
   for( View< pat::Photon >::const_iterator iPhoton = photonCands->begin();
         iPhoton != photonCands->end();
         ++iPhoton){
@@ -124,13 +139,6 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       std::cout << "photon eta: " << iPhoton->eta() << std::endl;
       std::cout << "photon phi: " << iPhoton->phi() << std::endl;
     }
-
-    TLorentzVector temp;
-    temp.SetPtEtaPhiE(iPhoton->pt(),
-		      iPhoton->eta(),
-		      iPhoton->phi(),
-		      iPhoton->energy());
-    photon->push_back( temp );
 
     photon_isEB->push_back( iPhoton->isEB() );
     photon_genMatched->push_back( iPhoton->genPhoton() != NULL );
@@ -151,9 +159,88 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
     photon_hasPixelSeed->push_back( iPhoton->hasPixelSeed() );
 
-  }
+    // apply photon selection -- all good photons and the leading pt photon will be saved
+    bool isBarrelPhoton=false;
+    bool isEndcapPhoton=false;
+    bool passID=false;
+    bool passIso=false;
+    bool passAcc=false;
 
-  iEvent.put(photon); 
+    double PhEta=iPhoton->eta();
+
+    if(fabs(PhEta) < 1.4442  ){
+      isBarrelPhoton=true;
+    }
+    else if(fabs(PhEta)>1.566 && fabs(PhEta)<2.5){
+      isEndcapPhoton=true;
+    }
+    else {
+      isBarrelPhoton=false;
+      isEndcapPhoton=false;
+
+    }
+
+    if(isBarrelPhoton || isEndcapPhoton){
+      passAcc=true;
+    }
+    
+    // apply id cuts
+    if(isBarrelPhoton){
+  
+      if(iPhoton->hadTowOverEm() < 0.028 && iPhoton->hasPixelSeed()==false && iPhoton->sigmaIetaIeta() < 0.0107){//id criterias barrel
+	passID=true;
+
+      }//id criterias
+
+    } 
+    else if(isEndcapPhoton){
+      if(iPhoton->hadTowOverEm() < 0.093 && iPhoton->hasPixelSeed()==false && iPhoton->sigmaIetaIeta() < 0.0272){//id criteria endcap
+	passID=true;
+
+      }//id criterias endcap
+
+    }
+    else {
+      passID=false;
+    }
+ 
+    // apply isolation cuts
+    if(isBarrelPhoton){
+      if(chIso <2.67 && nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){
+	passIso=true;      
+      }
+     
+    }
+    else if(isEndcapPhoton){
+      if(chIso <1.79 && nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){
+	passIso=true;
+      }
+
+    }
+    else{
+      passIso=false;
+    }
+
+    // check if photons is a good photon
+    if( passAcc && passID && passIso && iPhoton->pt() > 100.0){//pure photons
+      (*NumPhotons)++;
+      photons->push_back( *iPhoton );
+      // make sure only the highest pt photon is used
+      if(iPhoton->pt() > bestPhotonPt){ 
+
+	bestPhoton->clear();
+	bestPhoton->push_back( *iPhoton );
+	bestPhotonPt=iPhoton->pt();
+
+      }// done with best photon
+    
+    }//pure photons    
+
+  }// end loop over candidate photons
+
+  iEvent.put(photons); 
+  iEvent.put(bestPhoton, "bestPhoton" ); 
+  iEvent.put(NumPhotons, "NumPhotons" ); 
   iEvent.put(photon_isEB , "isEB" );
   iEvent.put(photon_genMatched , "genMatched" );
   iEvent.put(photon_hadTowOverEM , "hadTowOverEM" );

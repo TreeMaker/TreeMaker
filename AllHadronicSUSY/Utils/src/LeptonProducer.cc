@@ -175,12 +175,14 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
    produces<std::vector<pat::Muon> > (string1).setBranchAlias(string1);
    const std::string string2("IdIsoMuon");
    produces<std::vector<pat::Muon> > (string2).setBranchAlias(string2);
+   produces<std::vector<int> >("MuonCharge");
    //   const std::string string2b("IdIsoMuon_DeltaR");
    //   produces<std::vector<double> > (string2b).setBranchAlias(string2b);
    const std::string string3("IdElectron");
    produces<std::vector<pat::Electron> > (string3).setBranchAlias(string3);
    const std::string string4("IdIsoElectron");
    produces<std::vector<pat::Electron> > (string4).setBranchAlias(string4);
+   produces<std::vector<int> >("ElectronCharge");
    //   const std::string string4b("IdIsoElectron_DeltaR");
    //   produces<std::vector<double> > (string4b).setBranchAlias(string4b);
    
@@ -217,6 +219,10 @@ void
 LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
+
+   std::auto_ptr<std::vector<int> > MuonCharge(new std::vector<int>());
+   std::auto_ptr<std::vector<int> > ElectronCharge(new std::vector<int>());
+
    int Leptons=0;
    edm::Handle<pat::PackedCandidateCollection> pfcands;
    iEvent.getByLabel("packedPFCandidates", pfcands);
@@ -245,6 +251,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             {
                Leptons++;
                isoMuons_.push_back(muonHandle->at(m));
+	       MuonCharge->push_back(muonHandle->at(m).charge());
             }
          }
       }
@@ -287,15 +294,16 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                {
                   // iso passed
                   isoElectrons_.push_back(eleHandle->at(e));
-                  Leptons++;
-                  
+                  Leptons++; 
+		  ElectronCharge->push_back(eleHandle->at(e).charge());
+                 
                }
                if (absiso<0.164369 && !useMiniIsolation_)
                {
                   // iso passed
                   isoElectrons_.push_back(eleHandle->at(e));
                   Leptons++;
-                  
+		  ElectronCharge->push_back(eleHandle->at(e).charge());                  
                }
             }
          }
@@ -309,6 +317,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   // iso passed
                   isoElectrons_.push_back(eleHandle->at(e));
                   Leptons++;
+		  ElectronCharge->push_back(eleHandle->at(e).charge());
                   
                }
                if (absiso<0.212604  && !useMiniIsolation_)
@@ -316,6 +325,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   // iso passed
                   isoElectrons_.push_back(eleHandle->at(e));
                   Leptons++;
+		  ElectronCharge->push_back(eleHandle->at(e).charge());
                   
                }
             }
@@ -333,11 +343,15 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(htp1,string1);
    std::auto_ptr<std::vector<pat::Muon> > htp2(new std::vector<pat::Muon>(isoMuons_));
    iEvent.put(htp2,string2);
+
    std::auto_ptr<std::vector<pat::Electron> > htp3(new std::vector<pat::Electron>(idElectrons_));
    iEvent.put(htp3,string3);
    std::auto_ptr<std::vector<pat::Electron> > htp4(new std::vector<pat::Electron>(isoElectrons_));
    iEvent.put(htp4,string4);
-   
+
+   iEvent.put(ElectronCharge,"ElectronCharge");
+   iEvent.put(MuonCharge,"MuonCharge");
+
 }
 
 // ------------ method called once each job just before starting event loop  ------------
