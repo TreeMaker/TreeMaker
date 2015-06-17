@@ -7,9 +7,9 @@ parameters = CommandLineParams()
 
 runOnMC = parameters.value("is_mc",True)
 dataSetName = parameters.value("data_set","/QCD_HT-500To1000_13TeV-madgraph/Phys14DR-PU20bx25_PHYS14_25_V1-v1/MINIAODSIM")
-testFileName = parameters.value("test_file_name","/store/mc/Phys14DR/QCD_Pt-15to3000_Tune4C_Flat_13TeV_pythia8/MINIAODSIM/PU20bx25_trkalmb_PHYS14_25_V1-v1/00000/1020E374-B26B-E411-8F91-E0CB4E29C513.root")
+testFileName = parameters.value("test_file_name","/store/mc/Phys14DR/QCD_HT-500To1000_13TeV-madgraph/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/481A6155-916F-E411-BA52-00266CFFCAF0.root")
 globalTag = parameters.value("global_tag","PHYS14_25_V1")+"::All"
-lumi = parameters.value("lumi",4.0)
+lumi = parameters.value("lumi",10000.0)
 doPUReweighting = parameters.value("pu_reweighting",False)
 mcResoJetTag = parameters.value("jet_tag","GoodJets")
 mcResoLeptonTag = parameters.value("lepton_tag","GoodLeptons")

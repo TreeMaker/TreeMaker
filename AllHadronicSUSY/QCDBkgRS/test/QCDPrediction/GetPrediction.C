@@ -42,11 +42,11 @@ TCanvas* DrawComparison(TH1F* prediction, TH1F* selection, TString Title, TStrin
       RatioTitle = "(Pred-Data)/Data";
    }
    else {
-      //titlePrediction = "Data-driven Pred. from MC";
-      titlePrediction = "Smeared Generator Jets";
+      titlePrediction = "Data-driven Pred. from MC";
+      //titlePrediction = "Smeared Generator Jets";
       titleSelection = "MC Expectation";
-      //RatioTitle = "(Pred-MC)/MC";
-      RatioTitle = "(Gen-MC)/MC";
+      RatioTitle = "(Pred-MC)/MC";
+      //RatioTitle = "(Gen-MC)/MC";
    }
    
    static Int_t c_LightBrown   = TColor::GetColor( "#D9D9CC" );
@@ -220,9 +220,9 @@ int main()
    TChain* selection = new TChain("RA2TreeMaker/PreSelection");
    
    // open files for MC --- madgraph QCD ---- //
-   //ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_withRBcorr_pt10.txt");
+   ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_withRBcorr_pt10.txt");
    //ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_withoutRBcorr_pt10.txt");
-   ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_GenSmear.txt");
+   //ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_GenSmear.txt");
    //ifstream myfile1 ("filelists_phys14/test.txt");
    if (myfile1.is_open()) {
       while( myfile1.good() ) {
@@ -251,8 +251,8 @@ int main()
    //else LumiTitle = "CMS work in progress, #sqrt{s} = 13 TeV";
    
    //TString postfix = "_withoutRBcorr_pt10";
-   //TString postfix = "_withRBcorr_pt10";
-   TString postfix = "_GenSmear_fineBins_wideRange_eventVeto_TruthNoiseFilter_netJetID";
+   TString postfix = "_newMatching035_withRBcorr_pt10";
+   //TString postfix = "_GenSmear_fineBins_wideRange_eventVeto_newMatching035";
    //TString postfix = "_test";
    
    vector<TString> xTitle_presel;
@@ -264,6 +264,7 @@ int main()
    xTitle_presel.push_back("Jet2 p_{T} (GeV)");
    xTitle_presel.push_back("Jet1 #eta");
    xTitle_presel.push_back("Jet2 #eta");
+   xTitle_presel.push_back("min#Delta#phi N");
    
    vector<TString> xTitle_deltaPhi;
    xTitle_deltaPhi.push_back("H_{T} (GeV)");
@@ -294,6 +295,7 @@ int main()
    xTitle_baseline_Bin1.push_back("Jet2 #eta");
    xTitle_baseline_Bin1.push_back("#Delta#phi 1");
    xTitle_baseline_Bin1.push_back("#Delta#phi 2");
+   xTitle_baseline_Bin1.push_back("min#Delta#phi N");
    
    vector<TString> xTitle_baseline_Bin2;
    xTitle_baseline_Bin2.push_back("Jet1 p_{T} (GeV)");
@@ -305,6 +307,7 @@ int main()
    xTitle_baseline_Bin2.push_back("#Delta#phi 1");
    xTitle_baseline_Bin2.push_back("#Delta#phi 2");
    xTitle_baseline_Bin2.push_back("#Delta#phi 3");
+   xTitle_baseline_Bin2.push_back("min#Delta#phi N");
    
    vector<TString> xTitle_baseline_Bin3;
    xTitle_baseline_Bin3.push_back("Jet1 p_{T} (GeV)");
@@ -316,6 +319,7 @@ int main()
    xTitle_baseline_Bin3.push_back("#Delta#phi 1");
    xTitle_baseline_Bin3.push_back("#Delta#phi 2");
    xTitle_baseline_Bin3.push_back("#Delta#phi 3");
+   xTitle_baseline_Bin3.push_back("min#Delta#phi N");
    
    vector<TString> xTitle_baseline_Bin4;
    xTitle_baseline_Bin4.push_back("Jet1 p_{T} (GeV)");
@@ -327,6 +331,7 @@ int main()
    xTitle_baseline_Bin4.push_back("#Delta#phi 1");
    xTitle_baseline_Bin4.push_back("#Delta#phi 2");
    xTitle_baseline_Bin4.push_back("#Delta#phi 3");
+   xTitle_baseline_Bin4.push_back("min#Delta#phi N");
    
    vector<TString> xTitle_baseline_withoutDeltaPhi_Bin1;
    xTitle_baseline_withoutDeltaPhi_Bin1.push_back("Jet1 p_{T} (GeV)");
@@ -335,6 +340,7 @@ int main()
    xTitle_baseline_withoutDeltaPhi_Bin1.push_back("Jet2 #eta");
    xTitle_baseline_withoutDeltaPhi_Bin1.push_back("#Delta#phi 1");
    xTitle_baseline_withoutDeltaPhi_Bin1.push_back("#Delta#phi 2");
+   xTitle_baseline_withoutDeltaPhi_Bin1.push_back("min#Delta#phi N");
    
    vector<TString> xTitle_baseline_withoutDeltaPhi_Bin2;
    xTitle_baseline_withoutDeltaPhi_Bin2.push_back("Jet1 p_{T} (GeV)");
@@ -346,6 +352,7 @@ int main()
    xTitle_baseline_withoutDeltaPhi_Bin2.push_back("#Delta#phi 1");
    xTitle_baseline_withoutDeltaPhi_Bin2.push_back("#Delta#phi 2");
    xTitle_baseline_withoutDeltaPhi_Bin2.push_back("#Delta#phi 3");
+   xTitle_baseline_withoutDeltaPhi_Bin2.push_back("min#Delta#phi N");
    
    vector<TString> xTitle_baseline_withoutDeltaPhi_Bin3;
    xTitle_baseline_withoutDeltaPhi_Bin3.push_back("Jet1 p_{T} (GeV)");
@@ -357,6 +364,7 @@ int main()
    xTitle_baseline_withoutDeltaPhi_Bin3.push_back("#Delta#phi 1");
    xTitle_baseline_withoutDeltaPhi_Bin3.push_back("#Delta#phi 2");
    xTitle_baseline_withoutDeltaPhi_Bin3.push_back("#Delta#phi 3");
+   xTitle_baseline_withoutDeltaPhi_Bin3.push_back("min#Delta#phi N");
    
    vector<TString> xTitle_baseline_withoutDeltaPhi_Bin4;
    xTitle_baseline_withoutDeltaPhi_Bin4.push_back("Jet1 p_{T} (GeV)");
@@ -368,6 +376,7 @@ int main()
    xTitle_baseline_withoutDeltaPhi_Bin4.push_back("#Delta#phi 1");
    xTitle_baseline_withoutDeltaPhi_Bin4.push_back("#Delta#phi 2");
    xTitle_baseline_withoutDeltaPhi_Bin4.push_back("#Delta#phi 3");
+   xTitle_baseline_withoutDeltaPhi_Bin4.push_back("min#Delta#phi N");
    
    vector<TString> hist_type_presel;
    hist_type_presel.push_back("HT_presel");
@@ -378,6 +387,7 @@ int main()
    hist_type_presel.push_back("Jet2Pt_presel");
    hist_type_presel.push_back("Jet1Eta_presel");
    hist_type_presel.push_back("Jet2Eta_presel");
+   hist_type_presel.push_back("minDeltaPhiN_presel");
    
    vector<TString> hist_type_deltaPhi;
    hist_type_deltaPhi.push_back("HT_deltaPhi");
@@ -394,6 +404,7 @@ int main()
    hist_type_baseline_Bin1.push_back("Jet2Eta_JetBin1_baseline");
    hist_type_baseline_Bin1.push_back("DeltaPhi1_JetBin1_baseline");
    hist_type_baseline_Bin1.push_back("DeltaPhi2_JetBin1_baseline");
+   hist_type_baseline_Bin1.push_back("minDeltaPhiN_JetBin1_baseline");
    
    vector<TString> hist_type_baseline_Bin2;
    hist_type_baseline_Bin2.push_back("Jet1Pt_JetBin2_baseline");
@@ -405,6 +416,7 @@ int main()
    hist_type_baseline_Bin2.push_back("DeltaPhi1_JetBin2_baseline");
    hist_type_baseline_Bin2.push_back("DeltaPhi2_JetBin2_baseline");
    hist_type_baseline_Bin2.push_back("DeltaPhi3_JetBin2_baseline");
+   hist_type_baseline_Bin2.push_back("minDeltaPhiN_JetBin2_baseline");
    
    vector<TString> hist_type_baseline_Bin3;
    hist_type_baseline_Bin3.push_back("Jet1Pt_JetBin3_baseline");
@@ -416,6 +428,7 @@ int main()
    hist_type_baseline_Bin3.push_back("DeltaPhi1_JetBin3_baseline");
    hist_type_baseline_Bin3.push_back("DeltaPhi2_JetBin3_baseline");
    hist_type_baseline_Bin3.push_back("DeltaPhi3_JetBin3_baseline");
+   hist_type_baseline_Bin3.push_back("minDeltaPhiN_JetBin3_baseline");
    
    vector<TString> hist_type_baseline_Bin4;
    hist_type_baseline_Bin4.push_back("Jet1Pt_JetBin4_baseline");
@@ -427,6 +440,7 @@ int main()
    hist_type_baseline_Bin4.push_back("DeltaPhi1_JetBin4_baseline");
    hist_type_baseline_Bin4.push_back("DeltaPhi2_JetBin4_baseline");
    hist_type_baseline_Bin4.push_back("DeltaPhi3_JetBin4_baseline");
+   hist_type_baseline_Bin4.push_back("minDeltaPhiN_JetBin4_baseline");
    
    vector<TString> hist_type_baseline_withoutDeltaPhi_Bin1;
    hist_type_baseline_withoutDeltaPhi_Bin1.push_back("Jet1Pt_JetBin1_baseline_withoutDeltaPhi");
@@ -435,6 +449,7 @@ int main()
    hist_type_baseline_withoutDeltaPhi_Bin1.push_back("Jet2Eta_JetBin1_baseline_withoutDeltaPhi");
    hist_type_baseline_withoutDeltaPhi_Bin1.push_back("DeltaPhi1_JetBin1_baseline_withoutDeltaPhi");
    hist_type_baseline_withoutDeltaPhi_Bin1.push_back("DeltaPhi2_JetBin1_baseline_withoutDeltaPhi");
+   hist_type_baseline_withoutDeltaPhi_Bin1.push_back("minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi");
    
    vector<TString> hist_type_baseline_withoutDeltaPhi_Bin2;
    hist_type_baseline_withoutDeltaPhi_Bin2.push_back("Jet1Pt_JetBin2_baseline_withoutDeltaPhi");
@@ -446,6 +461,7 @@ int main()
    hist_type_baseline_withoutDeltaPhi_Bin2.push_back("DeltaPhi1_JetBin2_baseline_withoutDeltaPhi");
    hist_type_baseline_withoutDeltaPhi_Bin2.push_back("DeltaPhi2_JetBin2_baseline_withoutDeltaPhi");
    hist_type_baseline_withoutDeltaPhi_Bin2.push_back("DeltaPhi3_JetBin2_baseline_withoutDeltaPhi");
+   hist_type_baseline_withoutDeltaPhi_Bin2.push_back("minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi");
    
    vector<TString> hist_type_baseline_withoutDeltaPhi_Bin3;
    hist_type_baseline_withoutDeltaPhi_Bin3.push_back("Jet1Pt_JetBin3_baseline_withoutDeltaPhi");
@@ -457,6 +473,7 @@ int main()
    hist_type_baseline_withoutDeltaPhi_Bin3.push_back("DeltaPhi1_JetBin3_baseline_withoutDeltaPhi");
    hist_type_baseline_withoutDeltaPhi_Bin3.push_back("DeltaPhi2_JetBin3_baseline_withoutDeltaPhi");
    hist_type_baseline_withoutDeltaPhi_Bin3.push_back("DeltaPhi3_JetBin3_baseline_withoutDeltaPhi");
+   hist_type_baseline_withoutDeltaPhi_Bin3.push_back("minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi");
    
    vector<TString> hist_type_baseline_withoutDeltaPhi_Bin4;
    hist_type_baseline_withoutDeltaPhi_Bin4.push_back("Jet1Pt_JetBin4_baseline_withoutDeltaPhi");
@@ -468,6 +485,7 @@ int main()
    hist_type_baseline_withoutDeltaPhi_Bin4.push_back("DeltaPhi1_JetBin4_baseline_withoutDeltaPhi");
    hist_type_baseline_withoutDeltaPhi_Bin4.push_back("DeltaPhi2_JetBin4_baseline_withoutDeltaPhi");
    hist_type_baseline_withoutDeltaPhi_Bin4.push_back("DeltaPhi3_JetBin4_baseline_withoutDeltaPhi");
+   hist_type_baseline_withoutDeltaPhi_Bin4.push_back("minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi");
    
    // --------------------------------------------------------------------------------------------- //
    // plots for preselection (2 jets)

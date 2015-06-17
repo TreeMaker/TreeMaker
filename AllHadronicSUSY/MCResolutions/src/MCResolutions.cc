@@ -218,24 +218,28 @@ void MCResolutions::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       
       //// First look if there is no significant GenJet near the tested GenJet
       double dRgenjet = 999.;
-      double PtdRmin = 0;
+      //double PtdRmin = 0;
       for (edm::View<reco::GenJet>::const_iterator kt = Jets_gen-> begin(); kt != Jets_gen->end(); ++kt) {
          if (&(*it) != &(*kt))
             continue;
          double dR = deltaR(*it, *kt);
-         if (dR < dRgenjet) {
+         if (dR < dRgenjet && (kt->pt() / it->pt()) < _relPtVeto) {
             dRgenjet = dR;
-            PtdRmin = kt->pt();
+            //PtdRmin = kt->pt();
          }
       }
-      if (dRgenjet < _deltaRMatchVeto && PtdRmin / it->pt() < _relPtVeto)
+      if (dRgenjet < _deltaRMatchVeto)
          continue;
       const pat::Jet* matchedJet = 0;
       const pat::Jet* nearestJet = 0;
+      math::PtEtaPhiMLorentzVector allJetsInCone(0., 0., 0., 0.);
       double dRmatched = 999.;
       double dRnearest = 999.;
       for (edm::View<pat::Jet>::const_iterator jt = Jets_rec-> begin(); jt != Jets_rec->end(); ++jt) {
          double dR = deltaR(*it, *jt);
+         if (dR < 0.35) {
+            allJetsInCone+=jt->p4();
+         }
          if (dR < dRmatched) {
             nearestJet = matchedJet;
             dRnearest = dRmatched;
@@ -248,9 +252,10 @@ void MCResolutions::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       }
       
       //// look if there is no further significant CaloJet near the genJet
-      if (dRmatched < _deltaRMatch && (nearestJet == 0 || dRnearest > _deltaRMatchVeto || (nearestJet->pt()
-                                                                                           < _absPtVeto && nearestJet->pt() / matchedJet->pt() < _relPtVeto))) {
+      if (dRmatched < _deltaRMatch && (nearestJet == 0 || dRnearest > _deltaRMatchVeto || (nearestJet->pt() < _absPtVeto && nearestJet->pt() / matchedJet->pt() < _relPtVeto))) {
+      //if (dRmatched < _deltaRMatch) {
          double res = matchedJet->pt() / it->pt();
+         //double res = allJetsInCone.pt() / it->pt();
          h_tot_JetAll_JetResPt_Pt.at(EtaBin(it->eta())).at(PtBin(it->pt()))->Fill(res, weight);
          if (isDiJet && JetNo < 3) {
             h_tot_DiJet_JetResPt_Pt.at(EtaBin(it->eta())).at(PtBin(it->pt()))->Fill(res, weight);
