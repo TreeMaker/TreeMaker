@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
 
-primaryverticies = cms.EDProducer('PrimaryVerticiesInt',
+primaryverticies = cms.EDProducer('PrimaryVericiesInt',
 VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
 )

@@ -218,15 +218,6 @@ def getWeightProducer(fileName):
 
    # backgrounds
 
-   if "QCD_Pt-15TTo7000_TuneZ2star-Flat_13TeV" in fileName and "RunIISpring15DR74-Asympt25ns_MCRUN2_74_V9" in fileName:
-      mcVersion = "Spring15"
-      weightProducer.Method     = cms.string("PtHat")
-      weightProducer.XS         = cms.double(7.7e+9)
-      weightProducer.NumberEvts = cms.double(9755422)
-      print "QCD_Pt-15TTo7000_TuneZ2star-Flat_13TeV : '"+fileName+"'"
-      applyWeight = True
-      weightProducer.weight = cms.double(-1.)
-
    if "QCD_HT_250To500_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")

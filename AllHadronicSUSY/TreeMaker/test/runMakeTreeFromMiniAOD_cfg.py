@@ -9,6 +9,7 @@ gammajets= parameters.value("gammajets", False)
 tagandprobe= parameters.value("tagandprobe", False)
 applybaseline= parameters.value("applybaseline", False)
 doZinv=parameters.value("doZinv", False)
+gridcontrol=parameters.value("gridcontrol", False)
 
 print "***** SETUP ************************************"
 print " dataSetName : "+dataSetName

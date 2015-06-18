@@ -59,10 +59,10 @@ process.ElecIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     InputFileNames = cms.vstring(InputFileName),
     InputDirectoryName = cms.string("ElecIso"),
     InputTreeName = cms.string("TagAndProbeElecIso"),
-    OutputFileName = cms.string("ElecIso.root"),
+    OutputFileName = cms.string("ElecIsoMC_TagAndProbe.root"),
                                                  
     #numbrer of CPUs to use for fitting
-    NumCPU = cms.uint32(4),
+    NumCPU = cms.uint32(12),
     # specifies wether to save the RooWorkspace containing the data for each bin and
     # the pdf object with the initial and final state snapshots
     SaveWorkspace = cms.bool(False),

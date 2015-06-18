@@ -8,4 +8,6 @@ objectTyp = cms.int32(0), # 1 muon 11 muon with starting from probe track, 2 ele
 activityTyp = cms.int32(0),
 maxDeltaR = cms.double(1.0),
 jetSrc = cms.InputTag('slimmedJets'),
+TagObjectForMTWComputation = cms.InputTag(''),
+METTag = cms.InputTag('slimmedMETs'), 
 )

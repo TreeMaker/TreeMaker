@@ -7,5 +7,6 @@ namespace {
     std::vector<pat::Jet> vpj;
     std::vector<std::vector<TLorentzVector> > vvlv;
     std::vector<std::vector<pat::Jet> > vvpj;
+    edm::Wrapper<std::vector<TLorentzVector> > wvlv;
   };
 }

@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    PrimaryVerticiesInt
-// Class:      PrimaryVerticiesInt
+// Package:    PrimaryVericiesInt
+// Class:      PrimaryVericiesInt
 // 
-/**\class PrimaryVerticiesInt PrimaryVerticiesInt.cc RA2Classic/PrimaryVerticiesInt/src/PrimaryVerticiesInt.cc
+/**\class PrimaryVericiesInt PrimaryVericiesInt.cc RA2Classic/PrimaryVericiesInt/src/PrimaryVericiesInt.cc
  * 
  * Description: [one line class summary]
  * 
@@ -39,10 +39,10 @@
 // class declaration
 //
 
-class PrimaryVerticiesInt : public edm::EDProducer {
+class PrimaryVericiesInt : public edm::EDProducer {
 public:
-	explicit PrimaryVerticiesInt(const edm::ParameterSet&);
-	~PrimaryVerticiesInt();
+	explicit PrimaryVericiesInt(const edm::ParameterSet&);
+	~PrimaryVericiesInt();
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
@@ -73,7 +73,7 @@ private:
 //
 // constructors and destructor
 //
-PrimaryVerticiesInt::PrimaryVerticiesInt(const edm::ParameterSet& iConfig)
+PrimaryVericiesInt::PrimaryVericiesInt(const edm::ParameterSet& iConfig)
 {
 	//register your produc
 	vertexCollectionTag_ = iConfig.getParameter<edm::InputTag>("VertexCollection");
@@ -93,7 +93,7 @@ PrimaryVerticiesInt::PrimaryVerticiesInt(const edm::ParameterSet& iConfig)
 }
 
 
-PrimaryVerticiesInt::~PrimaryVerticiesInt()
+PrimaryVericiesInt::~PrimaryVericiesInt()
 {
 	
 	// do anything here that needs to be done at desctruction time
@@ -108,7 +108,7 @@ PrimaryVerticiesInt::~PrimaryVerticiesInt()
 
 // ------------ method called to produce the data  ------------
 void
-PrimaryVerticiesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+PrimaryVericiesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
 	int nVertices=0;
@@ -125,42 +125,42 @@ PrimaryVerticiesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-PrimaryVerticiesInt::beginJob()
+PrimaryVericiesInt::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-PrimaryVerticiesInt::endJob() {
+PrimaryVericiesInt::endJob() {
 }
 
 // ------------ method called when starting to processes a run  ------------
 void 
-PrimaryVerticiesInt::beginRun(edm::Run&, edm::EventSetup const&)
+PrimaryVericiesInt::beginRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
 void 
-PrimaryVerticiesInt::endRun(edm::Run&, edm::EventSetup const&)
+PrimaryVericiesInt::endRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
 void 
-PrimaryVerticiesInt::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
+PrimaryVericiesInt::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
 void 
-PrimaryVerticiesInt::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
+PrimaryVericiesInt::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-PrimaryVerticiesInt::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+PrimaryVericiesInt::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 	//The following says we do not know what parameters are allowed so do no validation
 	// Please change this to state exactly what you do use, even if it is no parameters
 	edm::ParameterSetDescription desc;
@@ -169,4 +169,4 @@ PrimaryVerticiesInt::fillDescriptions(edm::ConfigurationDescriptions& descriptio
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(PrimaryVerticiesInt);
+DEFINE_FWK_MODULE(PrimaryVericiesInt);

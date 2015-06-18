@@ -59,9 +59,9 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     InputFileNames = cms.vstring(InputFileName),
     InputDirectoryName = cms.string("MuIso"),
     InputTreeName = cms.string("TagAndProbeMuIso"),
-    OutputFileName = cms.string("MuIsoMC.root"),                                                 
+    OutputFileName = cms.string("MuIsoMC_TagAndProbe.root"),                                                 
     #numbrer of CPUs to use for fitting
-    NumCPU = cms.uint32(10),
+    NumCPU = cms.uint32(12),
     # specifies wether to save the RooWorkspace containing the data for each bin and
     # the pdf object with the initial and final state snapshots
     SaveWorkspace = cms.bool(False),

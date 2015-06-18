@@ -58,10 +58,10 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     InputFileNames = cms.vstring(InputFileName),
     InputDirectoryName = cms.string("MuReco"),
     InputTreeName = cms.string("TagAndProbeMuReco"),
-    OutputFileName = cms.string("MuRecoMC.root"),
+    OutputFileName = cms.string("MuRecoMC_TagAndProbe.root"),
                                                  
     #numbrer of CPUs to use for fitting
-    NumCPU = cms.uint32(12),
+    NumCPU = cms.uint32(24),
     # specifies wether to save the RooWorkspace containing the data for each bin and
     # the pdf object with the initial and final state snapshots
     SaveWorkspace = cms.bool(False),
@@ -168,22 +168,22 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
       ),
       BinToPDFmap = cms.vstring("gaussPlusCubic")
     ),
-      MuRecoPt = cms.PSet(
-       EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
-       UnbinnedVariables = cms.vstring("InvariantMass"),
-       BinnedVariables = cms.PSet(
-       Pt = cms.vdouble( 10,15,20,25,30,40,50,60,70,90,110,1900 ),
-      ),
-      BinToPDFmap = cms.vstring("gaussPlusCubic")
-    ),
-      MuRecoActivity = cms.PSet(
-       EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
-       UnbinnedVariables = cms.vstring("InvariantMass"),
-       BinnedVariables = cms.PSet(
-       Activity = cms.vdouble( 0,5,10,20,40,60,80,100,1600 ),
-      ),
-      BinToPDFmap = cms.vstring("gaussPlusCubic")
-    ),
+      #MuRecoPt = cms.PSet(
+       #EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
+       #UnbinnedVariables = cms.vstring("InvariantMass"),
+       #BinnedVariables = cms.PSet(
+       #Pt = cms.vdouble( 10,15,20,25,30,40,50,60,70,90,110,1900 ),
+      #),
+      #BinToPDFmap = cms.vstring("gaussPlusCubic")
+    #),
+      #MuRecoActivity = cms.PSet(
+       #EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
+       #UnbinnedVariables = cms.vstring("InvariantMass"),
+       #BinnedVariables = cms.PSet(
+       #Activity = cms.vdouble( 0,5,10,20,40,60,80,100,1600 ),
+      #),
+      #BinToPDFmap = cms.vstring("gaussPlusCubic")
+    #),
         #the name of the parameter set becomes the name of the directory
 #    MuId = cms.PSet(
 #         EfficiencyCategoryAndState = cms.vstring("MuIsoPass","pass"),

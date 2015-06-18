@@ -80,11 +80,9 @@ DeltaPhiDouble::DeltaPhiDouble(const edm::ParameterSet& iConfig)
    produces<double>("Jet1Pt");
    produces<double>("Jet2Pt");
    produces<double>("Jet3Pt");
-   produces<double>("Jet4Pt");
    produces<double>("Jet1Eta");
    produces<double>("Jet2Eta");
    produces<double>("Jet3Eta");
-   produces<double>("Jet4Eta");
    produces<double>("DeltaPhi1");
    produces<double>("DeltaPhi2");
    produces<double>("DeltaPhi3");
@@ -124,11 +122,9 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    double jet1pt=0;
    double jet2pt=0;
    double jet3pt=0;
-   double jet4pt=0;
    double jet1eta=0;
    double jet2eta=0;
    double jet3eta=0;
-   double jet4eta=0;
    double deltaphi1=10;
    double deltaphi2=10;
    double deltaphi3=10;
@@ -164,14 +160,10 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             jet3eta = DeltaPhiJets->at(i).eta();
             deltaphi3 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
          }
-         if (count==3){
-            jet4pt = DeltaPhiJets->at(i).pt();
-            jet4eta = DeltaPhiJets->at(i).eta();
-         }
          if (minDeltaPhi>std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi())))
             minDeltaPhi=std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));;
          count++;
-         if(count==4) break;
+         if(count==3) break;
       }
    }
    else std::cout<<"DeltaPhiDouble::Invlide DeltaPhiJets Jet Tag: "<<DeltaPhiJetTag_.label()<<std::endl;
@@ -194,10 +186,6 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(htp3b,"Jet3Eta");
    std::auto_ptr<double> htp3c(new double(deltaphi3));
    iEvent.put(htp3c,"DeltaPhi3");
-   std::auto_ptr<double> htp4a(new double(jet4pt));
-   iEvent.put(htp4a,"Jet4Pt");
-   std::auto_ptr<double> htp4b(new double(jet4eta));
-   iEvent.put(htp4b,"Jet4Eta");
    std::auto_ptr<double> htp4c(new double(minDeltaPhi));
    iEvent.put(htp4c,"minDeltaPhi");
 }

@@ -58,7 +58,7 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
     InputFileNames = cms.vstring(InputFileName),
     InputDirectoryName = cms.string("ElecReco"),
     InputTreeName = cms.string("TagAndProbeElecReco"),
-    OutputFileName = cms.string("ElecReco.root"),
+    OutputFileName = cms.string("ElecRecoMC_TagAndProbe.root"),
                                                  
     #numbrer of CPUs to use for fitting
     NumCPU = cms.uint32(12),
@@ -168,22 +168,22 @@ process.MuIso= cms.EDAnalyzer("TagProbeFitTreeAnalyzer",
       ),
       BinToPDFmap = cms.vstring("gaussPlusCubic")
     ),
-      ElecRecoPt = cms.PSet(
-       EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
-       UnbinnedVariables = cms.vstring("InvariantMass"),
-       BinnedVariables = cms.PSet(
-       Pt = cms.vdouble( 10,15,20,25,30,40,50,60,70,90,110,1900 ),
-      ),
-      BinToPDFmap = cms.vstring("gaussPlusCubic")
-    ),
-      ElecRecoActivity = cms.PSet(
-       EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
-       UnbinnedVariables = cms.vstring("InvariantMass"),
-       BinnedVariables = cms.PSet(
-       Activity = cms.vdouble( 0,5,10,20,40,60,80,100,1600 ),
-      ),
-      BinToPDFmap = cms.vstring("gaussPlusCubic")
-    ),
+      #ElecRecoPt = cms.PSet(
+       #EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
+       #UnbinnedVariables = cms.vstring("InvariantMass"),
+       #BinnedVariables = cms.PSet(
+       #Pt = cms.vdouble( 10,15,20,25,30,40,50,60,70,90,110,1900 ),
+      #),
+      #BinToPDFmap = cms.vstring("gaussPlusCubic")
+    #),
+      #ElecRecoActivity = cms.PSet(
+       #EfficiencyCategoryAndState = cms.vstring("Pass","pass"),
+       #UnbinnedVariables = cms.vstring("InvariantMass"),
+       #BinnedVariables = cms.PSet(
+       #Activity = cms.vdouble( 0,5,10,20,40,60,80,100,1600 ),
+      #),
+      #BinToPDFmap = cms.vstring("gaussPlusCubic")
+    #),
         #the name of the parameter set becomes the name of the directory
 #    MuId = cms.PSet(
 #         EfficiencyCategoryAndState = cms.vstring("MuIsoPass","pass"),
