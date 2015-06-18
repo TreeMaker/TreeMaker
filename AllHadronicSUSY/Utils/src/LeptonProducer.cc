@@ -272,7 +272,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 									Leptons++;
 									isoMuons_.push_back(muonHandle->at(m));
 									muIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi()));
-									std::cout<<"muIDIsoMTW: "<<MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi())<<"\n";
+// 									std::cout<<"muIDIsoMTW: "<<MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi())<<"\n";
 									MuonCharge->push_back(muonHandle->at(m).charge());
 								}
 								}
