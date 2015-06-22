@@ -220,9 +220,8 @@ int main()
    TChain* selection = new TChain("RA2TreeMaker/PreSelection");
    
    // open files for MC --- madgraph QCD ---- //
-   ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_withRBcorr_pt10.txt");
-   //ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_withoutRBcorr_pt10.txt");
-   //ifstream myfile1 ("filelists_phys14/filelist_madgraph_phys14_GenSmear.txt");
+   ifstream myfile1 ("filelists_phys14/filelist_pythia.txt");
+   //ifstream myfile1 ("filelists_phys14/filelist_madgraph.txt");
    //ifstream myfile1 ("filelists_phys14/test.txt");
    if (myfile1.is_open()) {
       while( myfile1.good() ) {
@@ -247,12 +246,13 @@ int main()
    
    TString LumiTitle;
    if( isData ) LumiTitle = "CMS preliminary, L = x.yz fb^{  -1}, #sqrt{s} = 13 TeV";
-   else LumiTitle = "CMS Simulation, #sqrt{s} = 13 TeV";
+   else LumiTitle = "CMS Simulation, L = 10 fb^{  -1}, #sqrt{s} = 13 TeV";
    //else LumiTitle = "CMS work in progress, #sqrt{s} = 13 TeV";
    
-   //TString postfix = "_withoutRBcorr_pt10";
-   TString postfix = "_newMatching035_withRBcorr_pt10";
-   //TString postfix = "_GenSmear_fineBins_wideRange_eventVeto_newMatching035";
+   TString postfix = "_Pythia_withRBcorr_pt10";
+   //TString postfix = "_newMatching035_withRBcorr_pt10";
+   //TString postfix = "_MG_GenSmear_fineBins_wideRange_newMatching035";
+   //TString postfix = "_Pythia_GenSmear_fineBins_wideRange_newMatching035";
    //TString postfix = "_test";
    
    vector<TString> xTitle_presel;

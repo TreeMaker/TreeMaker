@@ -422,6 +422,7 @@ void QCDBkgRS::SmearingJets(const std::vector<pat::Jet> &Jets_reb, std::vector<p
       double w = weight_;
       if (cleverPrescaleTreating_ == true && weight_ > 1) {
          Ntries2 = (int) weight_;
+         if (Ntries2 > 100) Ntries2 = 100;
          w = weight_ / Ntries2;
       }
       for (int j = 1; j <= Ntries2; ++j) {
@@ -462,7 +463,7 @@ void QCDBkgRS::SmearingJets(const std::vector<pat::Jet> &Jets_reb, std::vector<p
                   PredictionTree->Fill();
                }
             } else {
-               if( HT_pred > 500. && MHT_pred > 50.){
+               if( HT_pred > 500. && MHT_pred > 200.){
                   PredictionTree->Fill();
                }
             }
@@ -515,6 +516,7 @@ void QCDBkgRS::SmearingGenJets(edm::View<reco::GenJet>* Jets_gen, std::vector<re
       double w = weight_;
       if (cleverPrescaleTreating_ == true && weight_ > 1) {
          Ntries2 = (int) weight_;
+         if (Ntries2 > 100) Ntries2 = 100;
          w = weight_ / Ntries2;
       }
       for (int j = 1; j <= Ntries2; ++j) {
@@ -556,7 +558,7 @@ void QCDBkgRS::SmearingGenJets(edm::View<reco::GenJet>* Jets_gen, std::vector<re
             FillPredictions_gen(GenJets_smeared, i, w, genJet2_btag);
  
             // save only events with HT > 500 && MHT > 50. GeV for data
-            if( HT_pred > 500. && MHT_pred > 50.){
+            if( HT_pred > 500. && MHT_pred > 200.){
                PredictionTree->Fill();
             }
             

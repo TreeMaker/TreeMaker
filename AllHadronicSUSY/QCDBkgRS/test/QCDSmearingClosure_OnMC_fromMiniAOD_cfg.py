@@ -70,7 +70,7 @@ process.load("AllHadronicSUSY.QCDBkgRS.qcdbkgrs_cfi")
 # Rebalancing and Smearing configuration
 ###############################################################################
 print "*** R+S Configuration **************************************************"
-process.QCDfromSmearing.SmearingFile = '/afs/desy.de/user/c/csander/xxl-af-cms/CMSSW_7_2_3_patch1/src/AllHadronicSUSY/MCResolutions/data/QCD_13TeV_madgraph_PHYS14_fineBins_wideRange_eventVeto_newMatching035.root'
+process.QCDfromSmearing.SmearingFile = '/afs/desy.de/user/c/csander/xxl-af-cms/CMSSW_7_2_3_patch1/src/AllHadronicSUSY/MCResolutions/data/QCD_13TeV_all_PHYS14_fineBins_wideRange_newMatching035.root'
 process.QCDfromSmearing.jetCollection = InputJetTag
 process.QCDfromSmearing.leptonTag = InputLeptonTag
 process.QCDfromSmearing.uncertaintyName = ''
@@ -86,10 +86,10 @@ process.QCDfromSmearing.InputHisto3p_HF = 'h_b_JetAll_ResponsePt'
 process.QCDfromSmearing.InputHisto1_NoHF = 'h_nob_JetAll_ResponsePt'
 process.QCDfromSmearing.InputHisto2_NoHF = 'h_nob_JetAll_ResponsePt'
 process.QCDfromSmearing.InputHisto3p_NoHF = 'h_nob_JetAll_ResponsePt'
-process.QCDfromSmearing.RebalanceCorrectionFile = '/nfs/dust/cms/user/csander/RA2/AdditionalInputFiles_13TeV/RebalanceCorrectionFactors_madgraph_phys14_withoutPUReweighting_pt10.root'
+process.QCDfromSmearing.RebalanceCorrectionFile = '/nfs/dust/cms/user/csander/RA2/AdditionalInputFiles_13TeV/RebalanceCorrectionFactors_pythia_phys14_withoutPUReweighting_pt10.root'
 process.QCDfromSmearing.NRebin = 1
 process.QCDfromSmearing.NJets = 2
-process.QCDfromSmearing.SmearCollection = 'Gen'
+process.QCDfromSmearing.SmearCollection = 'Reco'
 process.QCDfromSmearing.PtBinEdges_scaling = cms.vdouble(0., 7000.)
 process.QCDfromSmearing.EtaBinEdges_scaling = cms.vdouble(0.0, 5.0)
 process.QCDfromSmearing.AdditionalSmearing = cms.vdouble(1.0)
@@ -131,50 +131,99 @@ process.Baseline += process.NVtx
 VarsInt.extend(['NVtx'])
 
 ## --- isotrack producer -----------------------------------------------
-print "*** isotrack producer **************************************************"
 from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
-process.IsolatedTracksVeto = trackIsolationFilter.clone(
-                                                        doTrkIsoVeto= True,
-                                                        vertexInputTag     = cms.InputTag("offlineSlimmedPrimaryVertices"),
-                                                        pfCandidatesTag    = cms.InputTag("packedPFCandidates"),
-                                                        dR_ConeSize        = cms.double(0.3),
-                                                        dz_CutValue        = cms.double(0.05),
-                                                        minPt_PFCandidate  = cms.double(15.0),
-                                                        isoCut             = cms.double(0.1),
-                                                        mTCut              = cms.double(100.),
-)
-process.Baseline += process.IsolatedTracksVeto
+process.IsolatedElectronTracksVeto = trackIsolationFilter.clone(
+                                                                doTrkIsoVeto= True,
+                                                                vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                                                                pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+                                                                dR_ConeSize = cms.double(0.3),
+                                                                dz_CutValue = cms.double(0.05),
+                                                                minPt_PFCandidate = cms.double(5.0),
+                                                                isoCut = cms.double(0.2),
+                                                                pdgId = cms.int32(11),
+                                                                mTCut = cms.double(100.),
+                                                                )
 
-## --- god jets producer -----------------------------------------------
-print "*** good jets producer **************************************************"
-from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
-process.GoodJets = GoodJetsProducer.clone(
-                                          JetTag                  = cms.InputTag('slimmedJets'),
-                                          maxJetEta               = cms.double(5.0),
-                                          maxMuFraction           = cms.double(2),
-                                          minNConstituents        = cms.double(2),
-                                          maxNeutralFraction      = cms.double(0.99),
-                                          maxPhotonFraction       = cms.double(0.99),
-                                          minChargedMultiplicity  = cms.double(0),
-                                          minChargedFraction      = cms.double(0),
-                                          maxChargedEMFraction    = cms.double(0.99),
-                                          )
-process.Baseline += process.GoodJets
+process.IsolatedMuonTracksVeto = trackIsolationFilter.clone(
+                                                            doTrkIsoVeto= True,
+                                                            vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                                                            pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+                                                            dR_ConeSize = cms.double(0.3),
+                                                            dz_CutValue = cms.double(0.05),
+                                                            minPt_PFCandidate = cms.double(5.0),
+                                                            isoCut = cms.double(0.2),
+                                                            pdgId = cms.int32(13),
+                                                            mTCut = cms.double(100.),
+                                                            )
+
+process.IsolatedPionTracksVeto = trackIsolationFilter.clone(
+                                                            doTrkIsoVeto= True,
+                                                            vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                                                            pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+                                                            dR_ConeSize = cms.double(0.3),
+                                                            dz_CutValue = cms.double(0.05),
+                                                            minPt_PFCandidate = cms.double(10.0),
+                                                            isoCut = cms.double(0.1),
+                                                            pdgId = cms.int32(211),
+                                                            mTCut = cms.double(100.),
+                                                            )
+process.Baseline += process.IsolatedElectronTracksVeto
+process.Baseline += process.IsolatedMuonTracksVeto
+process.Baseline += process.IsolatedPionTracksVeto
+
+## --- good photon producer -----------------------------------------------
+process.GoodPhotons = cms.EDProducer("PhotonIDisoProducer",
+                                     photonCollection = cms.untracked.InputTag("slimmedPhotons"),
+                                     rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
+                                     debug = cms.untracked.bool(False)
+                                     )
+process.Baseline += process.GoodPhotons
 
 ## --- good leptons producer -------------------------------------------
 print "*** good leptons producer **************************************************"
 from AllHadronicSUSY.Utils.leptonproducer_cfi import leptonproducer
 process.GoodLeptons = leptonproducer.clone(
-                                           MuonTag        = cms.InputTag('slimmedMuons'),
-                                           ElectronTag    = cms.InputTag('slimmedElectrons'),
-                                           PrimaryVertex  = cms.InputTag('offlineSlimmedPrimaryVertices'),
-                                           minElecPt      = cms.double(10),
-                                           maxElecEta     = cms.double(2.5),
-                                           minMuPt        = cms.double(10),
-                                           maxMuEta       = cms.double(2.4),
-)
+                                           MuonTag = cms.InputTag('slimmedMuons'),
+                                           ElectronTag = cms.InputTag('slimmedElectrons'),
+                                           PrimaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices'),
+                                           minElecPt = cms.double(10),
+                                           maxElecEta = cms.double(2.5),
+                                           minMuPt = cms.double(10),
+                                           maxMuEta = cms.double(2.4),
+                                           UseMiniIsolation = cms.bool(True),
+                                           muIsoValue = cms.double(0.2),
+                                           elecIsoValue = cms.double(0.1), # only has an effect when used with miniIsolation
+                                           METTag = cms.InputTag('slimmedMETs'),
+                                           )
 process.Baseline += process.GoodLeptons
 VarsInt.extend(['GoodLeptons'])
+
+## --- god jets producer -----------------------------------------------
+print "*** good jets producer **************************************************"
+from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
+process.GoodJets = GoodJetsProducer.clone(
+                                          TagMode = cms.bool(False),
+                                          JetTag= cms.InputTag('slimmedJets'),
+                                          #JetTag= cms.InputTag('patJetsReapplyJEC'),
+                                          maxJetEta = cms.double(5.0),
+                                          maxMuFraction = cms.double(2),
+                                          minNConstituents = cms.double(2),
+                                          maxNeutralFraction = cms.double(0.90),
+                                          maxPhotonFraction = cms.double(0.95),
+                                          minChargedMultiplicity = cms.double(0),
+                                          minChargedFraction = cms.double(0),
+                                          maxChargedEMFraction = cms.double(0.99),
+                                          jetPtFilter = cms.double(30),
+                                          ExcludeLepIsoTrackPhotons = cms.bool(True),
+                                          JetConeSize = cms.double(0.04),
+                                          MuonTag = cms.InputTag('GoodLeptons:IdIsoMuon'),
+                                          ElecTag = cms.InputTag('GoodLeptons:IdIsoElectron'),
+                                          IsoElectronTrackTag = cms.InputTag('IsolatedElectronTracksVeto'),
+                                          IsoMuonTrackTag = cms.InputTag('IsolatedMuonTracksVeto'),
+                                          IsoPionTrackTag = cms.InputTag('IsolatedPionTracksVeto'),
+                                          PhotonTag = cms.InputTag('GoodPhotons','bestPhoton'),
+                                          )
+process.Baseline += process.GoodJets
 
 ## --- HT jets producer ------------------------------------------------
 print "*** HT jets producer **************************************************"
@@ -341,11 +390,11 @@ process.prediction = cms.Path(
                               #* process.dump
 )
 
-#process.predictionCoreUP = cms.Path(
-#                              process.Baseline *
-#                              process.WeightProducer *
-#                              process.QCDfromSmearingCoreUP
-#                              )
+process.predictionCoreUP = cms.Path(
+                              process.Baseline *
+                              process.WeightProducer *
+                              process.QCDfromSmearingCoreUP
+                              )
 
 #process.predictionCoreDN = cms.Path(
 #                                    process.Baseline *
@@ -353,11 +402,11 @@ process.prediction = cms.Path(
 #                                    process.QCDfromSmearingCoreDN
 #                                    )
 
-#process.predictionTailUP = cms.Path(
-#                                    process.Baseline *
-#                                    process.WeightProducer *
-#                                    process.QCDfromSmearingTailUP
-#                                    )
+process.predictionTailUP = cms.Path(
+                                    process.Baseline *
+                                    process.WeightProducer *
+                                    process.QCDfromSmearingTailUP
+                                    )
 
 #process.predictionTailDN = cms.Path(
 #                                    process.Baseline *

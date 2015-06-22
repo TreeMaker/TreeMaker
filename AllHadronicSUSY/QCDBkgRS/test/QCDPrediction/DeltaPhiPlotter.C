@@ -49,7 +49,7 @@ void DeltaPhiPlotter()
 
    string root_file;
 
-   ifstream myfile ("filelists_phys14/filelist_madgraph_phys14_GenSmear.txt");
+   ifstream myfile ("filelists_phys14/filelist_madgraph.txt");
    if (myfile.is_open()) {
       while( myfile.good() ) {
          getline (myfile,root_file);

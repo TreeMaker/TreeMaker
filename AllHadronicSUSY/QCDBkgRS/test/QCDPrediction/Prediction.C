@@ -403,7 +403,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
       if( weight < 30000. ) {
          
          // apply same HT and MHT and NJets cut as on selection
-         if( HT > 350. && MHT > 0. && NJets >= 2 && vtxN >= 0) {
+         if( HT > 500. && MHT > 50. && NJets >= 2 && vtxN >= 0) {
             
             // ------------------------------------------------------------- //
             // fill preselection histos
@@ -715,7 +715,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
          
          // Do same HT, MHT and NJets cuts as on prediction
          
-         if( HT_RA2 > 350. && MHT_RA2 > 0. && NJets_RA2 >= 2 && NLeptons_RA2 == 0 && vtxN_RA2 >= 0) {
+         if( HT_RA2 > 500. && MHT_RA2 > 50. && NJets_RA2 >= 2 && NLeptons_RA2 == 0 && vtxN_RA2 >= 0) {
             
             // ------------------------------------------------------------- //
             // fill preselection histos

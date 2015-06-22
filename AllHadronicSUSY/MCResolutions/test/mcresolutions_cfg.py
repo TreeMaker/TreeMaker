@@ -54,42 +54,89 @@ process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
 
 ## --- isotrack producer -----------------------------------------------
 from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
-process.IsolatedTracksVeto = trackIsolationFilter.clone(
-                                                        doTrkIsoVeto= True,
-                                                        vertexInputTag     = cms.InputTag("offlineSlimmedPrimaryVertices"),
-                                                        pfCandidatesTag    = cms.InputTag("packedPFCandidates"),
-                                                        dR_ConeSize        = cms.double(0.3),
-                                                        dz_CutValue        = cms.double(0.05),
-                                                        minPt_PFCandidate  = cms.double(15.0),
-                                                        isoCut             = cms.double(0.1),
-                                                        mTCut              = cms.double(100.),
-                                                        )
-
-## --- god jets producer -----------------------------------------------
-from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
-process.GoodJets = GoodJetsProducer.clone(
-                                          JetTag                  = cms.InputTag('slimmedJets'),
-                                          maxJetEta               = cms.double(5.0),
-                                          maxMuFraction           = cms.double(2),
-                                          minNConstituents        = cms.double(2),
-                                          maxNeutralFraction      = cms.double(0.99),
-                                          maxPhotonFraction       = cms.double(0.99),
-                                          minChargedMultiplicity  = cms.double(0),
-                                          minChargedFraction      = cms.double(0),
-                                          maxChargedEMFraction    = cms.double(0.99),
-                                          )
+process.IsolatedElectronTracksVeto = trackIsolationFilter.clone(
+                                                                doTrkIsoVeto= True,
+                                                                vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                                                                pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+                                                                dR_ConeSize = cms.double(0.3),
+                                                                dz_CutValue = cms.double(0.05),
+                                                                minPt_PFCandidate = cms.double(5.0),
+                                                                isoCut = cms.double(0.2),
+                                                                pdgId = cms.int32(11),
+                                                                mTCut = cms.double(100.),
+                                                                )
+   
+process.IsolatedMuonTracksVeto = trackIsolationFilter.clone(
+                                                            doTrkIsoVeto= True,
+                                                            vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                                                            pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+                                                            dR_ConeSize = cms.double(0.3),
+                                                            dz_CutValue = cms.double(0.05),
+                                                            minPt_PFCandidate = cms.double(5.0),
+                                                            isoCut = cms.double(0.2),
+                                                            pdgId = cms.int32(13),
+                                                            mTCut = cms.double(100.),
+                                                            )
+      
+process.IsolatedPionTracksVeto = trackIsolationFilter.clone(
+                                                            doTrkIsoVeto= True,
+                                                            vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                                                            pfCandidatesTag = cms.InputTag("packedPFCandidates"),
+                                                            dR_ConeSize = cms.double(0.3),
+                                                            dz_CutValue = cms.double(0.05),
+                                                            minPt_PFCandidate = cms.double(10.0),
+                                                            isoCut = cms.double(0.1),
+                                                            pdgId = cms.int32(211),
+                                                            mTCut = cms.double(100.),
+                                                            )
 
 ## --- good leptons producer -------------------------------------------
 from AllHadronicSUSY.Utils.leptonproducer_cfi import leptonproducer
 process.GoodLeptons = leptonproducer.clone(
-                                           MuonTag        = cms.InputTag('slimmedMuons'),
-                                           ElectronTag    = cms.InputTag('slimmedElectrons'),
-                                           PrimaryVertex  = cms.InputTag('offlineSlimmedPrimaryVertices'),
-                                           minElecPt      = cms.double(10),
-                                           maxElecEta     = cms.double(2.5),
-                                           minMuPt        = cms.double(10),
-                                           maxMuEta       = cms.double(2.4),
+                                           MuonTag = cms.InputTag('slimmedMuons'),
+                                           ElectronTag = cms.InputTag('slimmedElectrons'),
+                                           PrimaryVertex = cms.InputTag('offlineSlimmedPrimaryVertices'),
+                                           minElecPt = cms.double(10),
+                                           maxElecEta = cms.double(2.5),
+                                           minMuPt = cms.double(10),
+                                           maxMuEta = cms.double(2.4),
+                                           UseMiniIsolation = cms.bool(True),
+                                           muIsoValue = cms.double(0.2),
+                                           elecIsoValue = cms.double(0.1), # only has an effect when used with miniIsolation
+                                           METTag = cms.InputTag('slimmedMETs'),
                                            )
+
+## --- good photon producer -----------------------------------------------
+process.GoodPhotons = cms.EDProducer("PhotonIDisoProducer",
+                                     photonCollection = cms.untracked.InputTag("slimmedPhotons"),
+                                     rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
+                                     debug = cms.untracked.bool(False)
+                                     )
+
+## --- good jets producer -----------------------------------------------
+from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
+process.GoodJets = GoodJetsProducer.clone(
+                                          TagMode = cms.bool(False),
+                                          JetTag= cms.InputTag('slimmedJets'),
+                                          #JetTag= cms.InputTag('patJetsReapplyJEC'),
+                                          maxJetEta = cms.double(5.0),
+                                          maxMuFraction = cms.double(2),
+                                          minNConstituents = cms.double(2),
+                                          maxNeutralFraction = cms.double(0.90),
+                                          maxPhotonFraction = cms.double(0.95),
+                                          minChargedMultiplicity = cms.double(0),
+                                          minChargedFraction = cms.double(0),
+                                          maxChargedEMFraction = cms.double(0.99),
+                                          jetPtFilter = cms.double(30),
+                                          ExcludeLepIsoTrackPhotons = cms.bool(True),
+                                          JetConeSize = cms.double(0.04),
+                                          MuonTag = cms.InputTag('GoodLeptons:IdIsoMuon'),
+                                          ElecTag = cms.InputTag('GoodLeptons:IdIsoElectron'),
+                                          IsoElectronTrackTag = cms.InputTag('IsolatedElectronTracksVeto'),
+                                          IsoMuonTrackTag = cms.InputTag('IsolatedMuonTracksVeto'),
+                                          IsoPionTrackTag = cms.InputTag('IsolatedPionTracksVeto'),
+                                          PhotonTag = cms.InputTag('GoodPhotons','bestPhoton'),
+)
 
 ## --- MET filters -----------------------------------------------------
 ## We don't use "import *" because the cff contains some modules for which the C++ class doesn't exist
@@ -137,9 +184,12 @@ process.MCReso.leptonTag = mcResoLeptonTag
 process.dump   = cms.EDAnalyzer("EventContentAnalyzer")
 
 process.p = cms.Path(
-                     process.IsolatedTracksVeto *
-                     process.GoodJets *
+                     process.IsolatedElectronTracksVeto *
+                     process.IsolatedMuonTracksVeto *
+                     process.IsolatedPionTracksVeto *
                      process.GoodLeptons *
+                     process.GoodPhotons *
+                     process.GoodJets *
                      process.WeightProducer *
                      #process.dump *
                      process.MCReso

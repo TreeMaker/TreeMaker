@@ -217,6 +217,8 @@ def getWeightProducer(fileName):
       weightProducer.weight = cms.double(-1.)
 
    # backgrounds
+   
+   # QCD MG
 
    if "QCD_HT_250To500_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
       mcVersion = "Phys14DR"
@@ -245,6 +247,143 @@ def getWeightProducer(fileName):
       applyWeight = True
       weightProducer.weight = cms.double(-1.)
 
+   # QCD Pythia
+
+   if "QCD_Pt-15to30_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(1837410000)
+      weightProducer.NumberEvts = cms.double(1986539)
+      print "QCD_Pt-15to30-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-30to50_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(140932000)
+      weightProducer.NumberEvts = cms.double(1988880)
+      print "QCD_Pt-30to50-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-50to80_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(19204300)
+      weightProducer.NumberEvts = cms.double(2000338)
+      print "QCD_Pt-50to80-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-80to120_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(2762530)
+      weightProducer.NumberEvts = cms.double(2000340)
+      print "QCD_Pt-80to120-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-120to170_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(471100)
+      weightProducer.NumberEvts = cms.double(2001453)
+      print "QCD_Pt-120to170-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-170to300_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(117276)
+      weightProducer.NumberEvts = cms.double(2000704)
+      print "QCD_Pt-120to170-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-300to470_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(7823)
+      weightProducer.NumberEvts = cms.double(1986177)
+      print "QCD_Pt-300to470-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-470to600_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(648.2)
+      weightProducer.NumberEvts = cms.double(2001071)
+      print "QCD_Pt-470to600-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-600to800_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(186.9)
+      weightProducer.NumberEvts = cms.double(1997744)
+      print "QCD_Pt-600to800-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-800to1000_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(32.293)
+      weightProducer.NumberEvts = cms.double(1000065)
+      print "QCD_Pt-800to1000-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-1000to1400_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(9.4183)
+      weightProducer.NumberEvts = cms.double(500550)
+      print "QCD_Pt-1000to1400-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-1400to1800_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(0.84265)
+      weightProducer.NumberEvts = cms.double(199627)
+      print "QCD_Pt-1400to1800-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-1800to2400_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(0.114943)
+      weightProducer.NumberEvts = cms.double(200079)
+      print "QCD_Pt-1800to2400-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+
+   if "QCD_Pt-2400to3200_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(0.00682981)
+      weightProducer.NumberEvts = cms.double(200453)
+      print "QCD_Pt-2400to3200-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+   
+   if "QCD_Pt-3200_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
+      mcVersion = "Phys14DR"
+      weightProducer.Method     = cms.string("Constant")
+      weightProducer.XS         = cms.double(0.000165445)
+      weightProducer.NumberEvts = cms.double(200200)
+      print "QCD_Pt-3200-pythia : '"+fileName+"'"
+      applyWeight = True
+      weightProducer.weight = cms.double(-1.)
+   
    if "TBarToLeptons_t-channel_Tune4C_CSA14_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
