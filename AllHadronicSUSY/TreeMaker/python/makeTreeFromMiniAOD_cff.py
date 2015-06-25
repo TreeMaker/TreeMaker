@@ -242,6 +242,55 @@ doZinv=False
     #### done with good jets
     ###########################################
 
+    # When the miniAOD file is created, the results of several different
+    # MET filters are save in a TriggerResults object for the PAT process
+    # Look at /PhysicsTools/PatAlgos/python/slimming/metFilterPaths_cff.py
+    # for the available filter flags
+
+    # The decision was made to include the filter decision flags
+    # as individual branches in the tree  
+
+    from AllHadronicSUSY.Utils.filterdecisionproducer_cfi import filterDecisionProducer
+    process.METFilters = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('PAT'),
+        filterName  =   cms.string("Flag_METFilters"),
+        )
+    process.Baseline += process.METFilters
+    VarsInt.extend(['METFilters'])
+
+    process.CSCTightHaloFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('PAT'),
+        filterName  =   cms.string("Flag_CSCTightHaloFilter"),
+        )
+    process.Baseline += process.CSCTightHaloFilter 
+    VarsInt.extend(['CSCTightHaloFilter'])
+
+    process.HBHENoiseFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('PAT'),
+        filterName  =   cms.string("Flag_HBHENoiseFilter"),
+        )
+    process.Baseline += process.HBHENoiseFilter 
+    VarsInt.extend(['HBHENoiseFilter'])
+
+    process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('PAT'),
+        filterName  =   cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
+        )
+    process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter 
+    VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+
+    # The trigger results are saved to the tree as a vector
+    # Two vectors are saved, one with the names of the triggers
+    # the other with the trigger results, the indexing of these two vectors
+    # must match
 
     from AllHadronicSUSY.Utils.triggerproducer_cfi import triggerProducer
     process.TriggerProducer = triggerProducer.clone(
@@ -729,8 +778,8 @@ doZinv=False
     	VarsDouble  	  = VarsDouble,
     	VarsInt = VarsInt,
     	VarsBool = VarsBool,
-	VectorString = VectorString
-	VectorString = VectorString
+	VectorString = VectorString,
+	VectorInt = VectorInt
     	)
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     #tag and probe
