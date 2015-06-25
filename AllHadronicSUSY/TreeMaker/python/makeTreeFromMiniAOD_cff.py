@@ -55,6 +55,8 @@ doZinv=False
     VarsDouble = cms.vstring()
     VarsInt = cms.vstring()
     VarsBool = cms.vstring()
+    VectorString = cms.vstring()
+    VectorInt = cms.vstring()
     # baseline producers
     process.Baseline = cms.Sequence(
     )
@@ -239,6 +241,38 @@ doZinv=False
     VarsBool.extend(['GoodJets(JetID)'])
     #### done with good jets
     ###########################################
+
+
+    from AllHadronicSUSY.Utils.triggerproducer_cfi import triggerProducer
+    process.TriggerProducer = triggerProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('HLT'),
+        triggerNameList  =   cms.string(#space-delimited list of trigger names
+            'HLT_PFHT350_PFMET100_NoiseCleaned_v1 '\
+            'HLT_PFMET170_NoiseCleaned_v1 '\
+            'HLT_PFMET170_NoiseCleaned_v2 '\
+            'HLT_PFHT350_v1 '\
+            'HLT_PFHT800_v1 '\
+            'HLT_PFHT900_v1 '\
+            'HLT_Ele27_eta2p1_WP85_Gsf_v1 '\
+            'HLT_IsoMu20_eta2p1_IterTrk02_v1 '\
+            'HLT_PFHT350_PFMET120_NoiseCleaned_v1 '\
+            'HLT_Mu15_IsoVVVL_PFHT350_PFMET70_v1 '\
+            'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v1 '\
+            'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v1 '\
+            'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v1 '\
+            'HLT_Photon90_CaloIdL_HT500_v2 '\
+            'HLT_Photon90_CaloIdL_HT600_v1 '\
+            'HLT_DoubleEle8_CaloIdM_Mass8_PFHT300_v2 '\
+            'HLT_DoubelMu8_Mass8_PFHT300_v2 '
+            ),
+        )
+    process.Baseline += process.TriggerProducer
+    VectorInt.extend(['TriggerProducer:PassTrigger'])
+    VectorString.extend(['TriggerProducer:TriggerNames'])
+    
+
     
     ####### Tag And Probe
     from AllHadronicSUSY.Utils.activityProducer_cfi import activityProducer
@@ -695,7 +729,8 @@ doZinv=False
     	VarsDouble  	  = VarsDouble,
     	VarsInt = VarsInt,
     	VarsBool = VarsBool,
-
+	VectorString = VectorString
+	VectorString = VectorString
     	)
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     #tag and probe
