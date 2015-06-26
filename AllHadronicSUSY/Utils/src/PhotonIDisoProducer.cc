@@ -5,11 +5,12 @@
 // 
 /*
 
- Description: Takes as cfg input a jet collection 
- and clusters the jets into large-R anti-kt jets.
- A collection of 4-vectors corresponding to these 
- jets is saved to the event.
-
+  Description: Takes as cfg input a photon collection
+  recomputes sigmaIetaIeta, applies loose EGamma WP cuts,
+  fills 4-vector information for the best photon, ID & ISO
+  variables for all photons, and counts the number of good
+  photons.
+  
 */
 //
 // Original Author:  Andrew Whitbeck
@@ -29,7 +30,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include "..//interface/PhotonIDisoProducer.h"
+#include "../interface/PhotonIDisoProducer.h"
 #include "effArea.cc"
 
 #include "TLorentzVector.h"
@@ -39,9 +40,18 @@
 
 PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   photonCollection(iConfig.getUntrackedParameter<edm::InputTag>("photonCollection")),
+  electronCollection(iConfig.getUntrackedParameter<edm::InputTag>("electronCollection")),
+  conversionCollection(iConfig.getUntrackedParameter<edm::InputTag>("conversionCollection")),
+  beamspotCollection(iConfig.getUntrackedParameter<edm::InputTag>("beamspotCollection")),
+  ecalRecHitsInputTag_EE_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EE")),
+  ecalRecHitsInputTag_EB_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EB")),
   rhoCollection(iConfig.getUntrackedParameter<edm::InputTag>("rhoCollection")),
   debug(iConfig.getUntrackedParameter<bool>("debug",true))
 {
+
+  ecalRecHitsInputTag_EE_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EE_);
+  ecalRecHitsInputTag_EB_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EB_);
+
   produces< std::vector< pat::Photon > >(""); 
   produces< std::vector< pat::Photon > >("bestPhoton"); 
   produces< int >("NumPhotons");
@@ -56,6 +66,8 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   produces< std::vector< double > >("pfNeutralIsoRhoCorr"); 
   produces< std::vector< double > >("pfGammaIsoRhoCorr"); 
   produces< std::vector< double > >("hasPixelSeed"); 
+  produces< std::vector< double > >("passElectronVeto"); 
+
 }
 
 
@@ -95,6 +107,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr< std::vector< double > > photon_pfChargedIsoRhoCorr( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_pfNeutralIsoRhoCorr( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_hasPixelSeed( new std::vector< double > () );
+  std::auto_ptr< std::vector< double > > photon_passElectronVeto( new std::vector< double > () );
 
   if( debug ){
     std::cout << "new events" << std::endl;
@@ -104,6 +117,12 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   Handle< View< pat::Photon> > photonCands;
   iEvent.getByLabel( photonCollection ,photonCands);
+  Handle<pat::ElectronCollection> electrons;
+  iEvent.getByLabel(electronCollection, electrons);
+  Handle<vector<reco::Conversion> > conversions;
+  iEvent.getByLabel(conversionCollection,conversions);
+  Handle<reco::BeamSpot> beamSpot;
+  iEvent.getByLabel(beamspotCollection,beamSpot);
 
   edm::Handle< double > rho_;
   iEvent.getByLabel(rhoCollection,rho_);
@@ -115,9 +134,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // - - - - - - - - - - - - - - - - - - - - 
   // Initializing effective area to be used 
   // for rho corrections to the photon isolation
-  // variables.  -- currently these are taken from
-  // the 2012 EGamma PAG recommendations and need 
-  // to be updated
+  // variables. 
   // - - - - - - - - - - - - - - - - - - - - 
   effArea* effAreas = new effArea();
   effAreas->addEffA( 0.0, 1.0, 0.0234, 0.0053, 0.078 );
@@ -129,7 +146,10 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   effAreas->addEffA( 2.4, 99., 0.0035, 0.1709, 0.1484 );
 
   double bestPhotonPt = 0. ; 
-    
+
+  /// setup cluster tools
+  noZS::EcalClusterLazyTools* clusterTools_ = new noZS::EcalClusterLazyTools(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
+        
   for( View< pat::Photon >::const_iterator iPhoton = photonCands->begin();
         iPhoton != photonCands->end();
         ++iPhoton){
@@ -143,7 +163,10 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     photon_isEB->push_back( iPhoton->isEB() );
     photon_genMatched->push_back( iPhoton->genPhoton() != NULL );
     photon_hadTowOverEM->push_back( iPhoton->hadTowOverEm() ) ;
-    photon_sigmaIetaIeta->push_back( iPhoton->sigmaIetaIeta() ) ;
+
+    std::vector<float> vCov = clusterTools_->localCovariances( *(iPhoton->superCluster()->seed()) ); 
+    const float sieie = (isnan(vCov[0]) ? 0. : sqrt(vCov[0])); 
+    photon_sigmaIetaIeta->push_back( sieie );
     
     photon_pfChargedIso->push_back(      iPhoton->chargedHadronIso() );
     photon_pfGammaIso->push_back(        iPhoton->photonIso() );
@@ -158,6 +181,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     photon_pfNeutralIsoRhoCorr->push_back( nuIso );
 
     photon_hasPixelSeed->push_back( iPhoton->hasPixelSeed() );
+    photon_passElectronVeto->push_back( !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) );
 
     // apply photon selection -- all good photons and the leading pt photon will be saved
     bool isBarrelPhoton=false;
@@ -187,14 +211,14 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // apply id cuts
     if(isBarrelPhoton){
   
-      if(iPhoton->hadTowOverEm() < 0.028 && iPhoton->hasPixelSeed()==false && iPhoton->sigmaIetaIeta() < 0.0107){//id criterias barrel
+      if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && iPhoton->sigmaIetaIeta() < 0.0107){//id criterias barrel
 	passID=true;
 
       }//id criterias
 
     } 
     else if(isEndcapPhoton){
-      if(iPhoton->hadTowOverEm() < 0.093 && iPhoton->hasPixelSeed()==false && iPhoton->sigmaIetaIeta() < 0.0272){//id criteria endcap
+      if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && iPhoton->sigmaIetaIeta() < 0.0272){//id criteria endcap
 	passID=true;
 
       }//id criterias endcap
@@ -252,9 +276,29 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(photon_pfNeutralIsoRhoCorr , "pfNeutralIsoRhoCorr" );
   iEvent.put(photon_pfGammaIsoRhoCorr , "pfGammaIsoRhoCorr" );
   iEvent.put(photon_hasPixelSeed , "hasPixelSeed" );
+  iEvent.put(photon_passElectronVeto , "passElectronVeto" );
  
 }
 
+// copied from https://github.com/RazorCMS/SUSYBSMAnalysis-RazorTuplizer/blob/6072ffb43bbeb3f6b34cf8a96426c7f104c5b902/plugins/RazorAux.cc#L127
+//check if a given SuperCluster matches to at least one GsfElectron having zero expected inner hits
+//and not matching any conversion in the collection passing the quality cuts
+bool PhotonIDisoProducer::hasMatchedPromptElectron(const reco::SuperClusterRef &sc, const edm::Handle<std::vector<pat::Electron> > &eleCol,
+						   const edm::Handle<reco::ConversionCollection> &convCol, const math::XYZPoint &beamspot,
+						   float lxyMin, float probMin, unsigned int nHitsBeforeVtxMax) {
+
+  if (sc.isNull()) return false;
+  for (std::vector<pat::Electron>::const_iterator it = eleCol->begin(); it!=eleCol->end(); ++it) {
+    //match electron to supercluster
+    if (it->superCluster()!=sc) continue;
+    //check expected inner hits
+    if (it->gsfTrack()->hitPattern().numberOfHits(reco::HitPattern::MISSING_INNER_HITS) > 0) continue;
+    //check if electron is matching to a conversion
+    if (ConversionTools::hasMatchedConversion(*it,convCol,beamspot,lxyMin,probMin,nHitsBeforeVtxMax)) continue;
+    return true;
+  }
+  return false;
+}
 
 // ------------ method called once each job just before starting event loop  ------------
 void 

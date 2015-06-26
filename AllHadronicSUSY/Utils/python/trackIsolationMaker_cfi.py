@@ -10,7 +10,7 @@ trackIsolationFilter = cms.EDFilter("TrackIsolationFilter",
                                      isoCut              = cms.double(0.1),
                                      doTrkIsoVeto        = cms.bool(True),
                                      pdgId               = cms.int32(0),
-				     etaCut=cms.double(2.4),
+				     etaCut=cms.double(2.5),
 				     mTCut=cms.double(100.),
 )
 

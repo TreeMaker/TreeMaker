@@ -1,5 +1,13 @@
 #include <DataFormats/ParticleFlowCandidate/interface/PFCandidate.h>
 #include <DataFormats/PatCandidates/interface/Photon.h>
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
+#include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/EgammaCandidates/interface/Conversion.h>
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include <DataFormats/BeamSpot/interface/BeamSpot.h>
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
+
 #include "FWCore/Utilities/interface/InputTag.h"
 
 #include <vector>
@@ -23,7 +31,9 @@ private:
   virtual void endRun(edm::Run const&, edm::EventSetup const&);
   virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-  
+    bool hasMatchedPromptElectron(const reco::SuperClusterRef &sc, const edm::Handle<std::vector<pat::Electron> > &eleCol,
+				const edm::Handle<reco::ConversionCollection> &convCol, const math::XYZPoint &beamspot,
+				float lxyMin=2.0, float probMin=1e-6, unsigned int nHitsBeforeVtxMax=0);
   // ----------member data ---------------------------
 
 
@@ -31,6 +41,13 @@ private:
   // --------------- members ---------------------
   
   edm::InputTag photonCollection; 
+  edm::InputTag electronCollection; 
+  edm::InputTag conversionCollection; 
+  edm::InputTag beamspotCollection; 
+  edm::InputTag ecalRecHitsInputTag_EE_;
+  edm::InputTag ecalRecHitsInputTag_EB_;
+  edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EE_Token_;
+  edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EB_Token_;
   edm::InputTag rhoCollection;    
   bool        debug;
 
