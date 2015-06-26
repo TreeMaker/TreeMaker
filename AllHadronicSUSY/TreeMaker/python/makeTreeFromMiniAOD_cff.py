@@ -11,7 +11,6 @@ testFileName="",
 Global_Tag="",
 numProcessedEvt=1000,
 lostlepton=False,
-gammajets=False,
 tagandprobe=False,
 applybaseline=False,
 doZinv=False,
@@ -71,10 +70,18 @@ doZinv=False,
     process.LostLepton = cms.Sequence(
       
     )
-    #gamma+jet variables
-    process.GammaJet = cms.Sequence(
-      
-    )
+
+    # configure treemaker
+    from AllHadronicSUSY.TreeMaker.treeMaker import TreeMaker
+    process.TreeMaker2 = TreeMaker.clone(
+    	TreeName          = cms.string("PreSelection"),
+    	VarsRecoCand = RecoCandVector, 
+    	VarsDouble  	  = VarsDouble,
+    	VarsInt = VarsInt,
+    	VarsBool = VarsBool,
+
+    	)
+
     # basic producers
     ## --- Setup WeightProducer -------------------------------------------
     from AllHadronicSUSY.WeightProducer.getWeightProducer_cff import getWeightProducer
@@ -177,10 +184,18 @@ doZinv=False,
     ####### good photons
     process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
                                          photonCollection = cms.untracked.InputTag("slimmedPhotons"),
+                                         electronCollection = cms.untracked.InputTag("slimmedElectrons"),
+                                         conversionCollection = cms.untracked.InputTag("reducedEgamma","reducedConversions","PAT"),
+                                         beamspotCollection = cms.untracked.InputTag("offlineBeamSpot","","RECO"),
+                                         ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
+                                         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
                                          rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
                                          debug = cms.untracked.bool(False)
                                          )
     process.Baseline += process.goodPhotons
+
+    process.TreeMaker2.VectorTLorentzVector.append("bestPhoton4Vec(bestPhoton)")
+    process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotons(NumPhotons)")
     ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
     #################################
 
@@ -739,10 +754,6 @@ doZinv=False,
     MaxEta								  = cms.double(5.0),
     )
     process.LostLepton += process.SelectedPFCandidates
-    #gamma+jet producers
-
-
-
 
     #define sequences
     
@@ -768,19 +779,6 @@ doZinv=False,
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
       RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
 
-    if gammajets:
-      print "Adding Gamma+Jet calculations to final path and tree"
-      process.AdditionalSequence += process.GammaJet 
-    # configure treemaker
-    from AllHadronicSUSY.TreeMaker.treeMaker import TreeMaker
-    process.TreeMaker2 = TreeMaker.clone(
-    	TreeName          = cms.string("PreSelection"),
-    	VarsRecoCand = RecoCandVector, 
-    	VarsDouble  	  = VarsDouble,
-    	VarsInt = VarsInt,
-    	VarsBool = VarsBool,
-
-    	)
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     #tag and probe
     if tagandprobe:
@@ -813,7 +811,32 @@ doZinv=False,
 
 ### begin Zinv stuff ###
     if doZinv:   
-   
+      
+      ##### add branches for photon studies
+      process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:hadTowOverEM(photon_hadTowOverEM)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:hasPixelSeed(photon_hasPixelSeed)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:pfChargedIso(photon_pfChargedIso)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:pfChargedIsoRhoCorr(photon_pfChargedIsoRhoCorr)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:pfGammaIso(photon_pfGammaIso)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:pfGammaIsoRhoCorr(photon_pfGammaIsoRhoCorr)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIso(photon_pfNeutralIso)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIsoRhoCorr(photon_pfNeutralIsoRhoCorr)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:sigmaIetaIeta(photon_sigmaIetaIeta)")
+
+      process.slimmedPhotons4Vec = cms.EDProducer("fourVectorProducer",
+                                                  particleCollection = cms.untracked.InputTag("slimmedPhotons"),
+                                                  debug = cms.untracked.bool(False)
+                                                  )
+      
+      process.TreeMaker2.VectorTLorentzVector.append("slimmedPhotons4Vec(photonCands)")
+      
+      process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
+                                              particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
+                                              debug = cms.untracked.bool(False)
+                                              )
+
       process.ZinvClean = cms.Sequence()
 
       from AllHadronicSUSY.Utils.jetcleaner_cfi import JetCleaner
@@ -884,6 +907,9 @@ doZinv=False,
       VarsDouble.extend(['METclean:minDeltaPhiN(minDeltaPhiNclean)', 'METclean:Pt(METPtclean)'])
 
       process.AdditionalSequence += process.ZinvClean
+      process.AdditionalSequence += process.slimmedPhotons4Vec 
+      process.AdditionalSequence += process.bestPhoton4Vec
+
 ### end Zinv stuff ###
 
     process.WriteTree = cms.Path(

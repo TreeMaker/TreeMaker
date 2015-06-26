@@ -674,7 +674,7 @@ ActivityProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		filler1.insert(object, passing.begin(), passing.end());
 		filler1.fill();
 		iEvent.put(valMap1, "Passing");
-		std::cout<<"point reached"<<std::endl;
+		//std::cout<<"point reached"<<std::endl;
 		std::auto_ptr<ValueMap<float> > valMap5(new ValueMap<float>());
 		ValueMap<float>::Filler filler5(*valMap5);
 		filler5.insert(object, tagObjectSize.begin(), tagObjectSize.end());
