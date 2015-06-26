@@ -154,8 +154,8 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     double gamIso = effAreas->rhoCorrectedIso( pfGam , iPhoton->photonIso()        , iPhoton->eta() , rho ); 
 
     photon_pfChargedIsoRhoCorr->push_back( chIso  );
-    photon_pfGammaIsoRhoCorr->push_back(   nuIso  );
-    photon_pfNeutralIsoRhoCorr->push_back( gamIso );
+    photon_pfGammaIsoRhoCorr->push_back(   gamIso  );
+    photon_pfNeutralIsoRhoCorr->push_back( nuIso );
 
     photon_hasPixelSeed->push_back( iPhoton->hasPixelSeed() );
 
