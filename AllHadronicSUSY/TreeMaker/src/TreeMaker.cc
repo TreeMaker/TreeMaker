@@ -101,7 +101,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if( var.isValid() ) {
       VarsInt_.at(i) = *var;
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VarsIntTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th int variable : "<<VarsIntTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point b"<<std::endl;
@@ -111,7 +111,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if( var.isValid() ) {
       VarsDouble_.at(i) = *var;
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VarsDoubleTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th double variable : "<<VarsDoubleTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point c"<<std::endl;
@@ -122,7 +122,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if( *var ) VarsBool_.at(i) = 1;
       else VarsBool_.at(i) = 0;
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VarsBoolTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th bool variable : "<<VarsBoolTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point d"<<std::endl;
@@ -132,7 +132,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if( var.isValid() ) {
       VarsString_.at(i) = *var;
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VarsStringTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th string variable : "<<VarsStringTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point e"<<std::endl;
@@ -142,7 +142,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if( var.isValid() ) {
       VarsTLorentzVector_.at(i) = *var;
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VarsTLorentzVectorTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th TLorentzVector variable : "<<VarsTLorentzVectorTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point f"<<std::endl;
@@ -219,7 +219,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	VectorDoubleVector_.at(i).push_back(var->at(j));
       }
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VectorDoubleTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th vector<double> variable : "<<VectorDoubleTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point h"<<std::endl;
@@ -231,7 +231,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	VectorIntVector_.at(i).push_back(var->at(j));
       }
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VectorIntTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th vector<int> variable : "<<VectorIntTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point i"<<std::endl;
@@ -244,7 +244,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	else VectorBoolVector_.at(i).push_back(0);
       }
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VectorBoolTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th vector<bool> variable : "<<VectorBoolTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point j"<<std::endl;
@@ -256,7 +256,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	VectorStringVector_.at(i).push_back(var->at(j));
       }
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VectorStringTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th vector<string> variable : "<<VectorStringTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"Point k"<<std::endl;
@@ -268,7 +268,7 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	VectorTLorentzVector_.at(i).push_back(var->at(j));
       }
     }else{
-      std::cout<<"WARNING ... "<<i<<"th variable : "<<VectorTLorentzVectorTags_[i].label()<<" is NOT valid?!"<<std::endl;
+      std::cout<<"WARNING ... "<<i<<"th vector<TLorentzVector> variable : "<<VectorTLorentzVectorTags_[i].label()<<" is NOT valid?!"<<std::endl;
     }
   }
   if(debug_) std::cout<<"filling tree "<<std::endl;

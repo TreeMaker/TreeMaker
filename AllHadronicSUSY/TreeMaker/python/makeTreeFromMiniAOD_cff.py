@@ -71,17 +71,6 @@ doZinv=False,
       
     )
 
-    # configure treemaker
-    from AllHadronicSUSY.TreeMaker.treeMaker import TreeMaker
-    process.TreeMaker2 = TreeMaker.clone(
-    	TreeName          = cms.string("PreSelection"),
-    	VarsRecoCand = RecoCandVector, 
-    	VarsDouble  	  = VarsDouble,
-    	VarsInt = VarsInt,
-    	VarsBool = VarsBool,
-
-    	)
-
     # basic producers
     ## --- Setup WeightProducer -------------------------------------------
     from AllHadronicSUSY.WeightProducer.getWeightProducer_cff import getWeightProducer
@@ -193,9 +182,6 @@ doZinv=False,
                                          debug = cms.untracked.bool(False)
                                          )
     process.Baseline += process.goodPhotons
-
-    process.TreeMaker2.VectorTLorentzVector.append("bestPhoton4Vec(bestPhoton)")
-    process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotons(NumPhotons)")
     ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
     #################################
 
@@ -779,6 +765,17 @@ doZinv=False,
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
       RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
 
+    # configure treemaker
+    from AllHadronicSUSY.TreeMaker.treeMaker import TreeMaker
+    process.TreeMaker2 = TreeMaker.clone(
+    	TreeName          = cms.string("PreSelection"),
+    	VarsRecoCand = RecoCandVector, 
+    	VarsDouble  	  = VarsDouble,
+    	VarsInt = VarsInt,
+    	VarsBool = VarsBool,
+
+    	)
+
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     #tag and probe
     if tagandprobe:
@@ -810,6 +807,17 @@ doZinv=False,
 			RecoCandVector.extend(['slimmedPhotons'])
 
 ### begin Zinv stuff ###
+    
+    process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
+                                            particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
+                                            debug = cms.untracked.bool(False)
+                                            )
+    
+    process.TreeMaker2.VectorTLorentzVector.append("bestPhoton4Vec(bestPhoton)")
+    process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotons(NumPhotons)")
+
+    process.AdditionalSequence += process.bestPhoton4Vec
+
     if doZinv:   
       
       ##### add branches for photon studies
@@ -832,10 +840,18 @@ doZinv=False,
       
       process.TreeMaker2.VectorTLorentzVector.append("slimmedPhotons4Vec(photonCands)")
       
-      process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
-                                              particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
-                                              debug = cms.untracked.bool(False)
-                                              )
+      ###############
+      # gen stuff
+      ###############
+
+      process.genParticles = cms.EDProducer("genParticlesProducer",
+                                            genCollection = cms.untracked.InputTag("prunedGenParticles"),
+                                            debug = cms.untracked.bool(False)
+                                            )
+      
+      process.TreeMaker2.VectorTLorentzVector.append("genParticles(genParticles)")
+      process.TreeMaker2.VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
+      #process.TreeMaker2.VectorInt.append("genParticles:parent(genParticles_parent)")
 
       process.ZinvClean = cms.Sequence()
 
@@ -908,7 +924,7 @@ doZinv=False,
 
       process.AdditionalSequence += process.ZinvClean
       process.AdditionalSequence += process.slimmedPhotons4Vec 
-      process.AdditionalSequence += process.bestPhoton4Vec
+      process.AdditionalSequence += process.genParticles
 
 ### end Zinv stuff ###
 
