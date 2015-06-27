@@ -817,6 +817,7 @@ doZinv=False,
       process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
       process.TreeMaker2.VectorDouble.append("goodPhotons:hadTowOverEM(photon_hadTowOverEM)")
       process.TreeMaker2.VectorDouble.append("goodPhotons:hasPixelSeed(photon_hasPixelSeed)")
+      process.TreeMaker2.VectorDouble.append("goodPhotons:passElectronVeto(photon_passElectronVeto)")
       process.TreeMaker2.VectorDouble.append("goodPhotons:pfChargedIso(photon_pfChargedIso)")
       process.TreeMaker2.VectorDouble.append("goodPhotons:pfChargedIsoRhoCorr(photon_pfChargedIsoRhoCorr)")
       process.TreeMaker2.VectorDouble.append("goodPhotons:pfGammaIso(photon_pfGammaIso)")
@@ -890,6 +891,14 @@ doZinv=False,
       )
       process.ZinvClean += process.MHTJetsclean
 
+      process.DeltaPhiClean = deltaphidouble.clone(
+          DeltaPhiJets  = cms.InputTag('HTJetsclean'),
+          MHTJets  = cms.InputTag("MHTJetsclean"),
+          )
+      process.ZinvClean += process.DeltaPhiClean
+      VarsDouble.extend(['DeltaPhiClean:DeltaPhi1(DeltaPhi1clean)','DeltaPhiClean:DeltaPhi2(DeltaPhi2clean)','DeltaPhiClean:DeltaPhi3(DeltaPhi3clean)',])
+      
+      from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
       from AllHadronicSUSY.Utils.mhtdouble_cfi import mhtdouble
       process.MHTclean = mhtdouble.clone(
          JetTag = cms.InputTag('MHTJetsclean'),
