@@ -185,34 +185,34 @@ doZinv=False
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
     ######
-    from CondCore.DBCommon.CondDBSetup_cfi import *
-    process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-                               connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
-                               toGet = cms.VPSet(
-            cms.PSet(record = cms.string("JetCorrectionsRecord"),
-                     tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
-                     label= cms.untracked.string("AK4PFchs")
-                     )
-            )
-                               )
-    process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
+    #from CondCore.DBCommon.CondDBSetup_cfi import *
+    #process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+    #                           connect = cms.string('sqlite_file:PHYS14_V4_MC.db'),
+    #                           toGet = cms.VPSet(
+    #        cms.PSet(record = cms.string("JetCorrectionsRecord"),
+    #                 tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
+    #                 label= cms.untracked.string("AK4PFchs")
+    #                 )
+    #        )
+    #                           )
+    #process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
     
-    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-    process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-        src = cms.InputTag("slimmedJets"),
-        levels = ['L1FastJet', 
-                  'L2Relative', 
-                  'L3Absolute'],
-        payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
+    #from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+    #process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+    #    src = cms.InputTag("slimmedJets"),
+    #    levels = ['L1FastJet', 
+    #              'L2Relative', 
+    #              'L3Absolute'],
+    #    payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
     
-    from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-    process.patJetsReapplyJEC = patJetsUpdated.clone(
-        jetSource = cms.InputTag("slimmedJets"),
-        jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-        )
+    #from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+    #process.patJetsReapplyJEC = patJetsUpdated.clone(
+    #    jetSource = cms.InputTag("slimmedJets"),
+    #    jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+    #    )
     ########
-    process.Baseline += process.patJetCorrFactorsReapplyJEC
-    process.Baseline += process.patJetsReapplyJEC
+    #process.Baseline += process.patJetCorrFactorsReapplyJEC
+    #process.Baseline += process.patJetsReapplyJEC
 
     ############
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
@@ -311,8 +311,10 @@ doZinv=False
             'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v1 '\
             'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v1 '\
             'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v1 '\
-            'HLT_Photon90_CaloIdL_HT500_v2 '\
-            'HLT_Photon90_CaloIdL_HT600_v1 '\
+            'HLT_Photon90_v1 '\
+            'HLT_Photon75_v1 '\
+            'HLT_Photon90_CaloIdL_PFHT500_v1 '\
+            'HLT_Photon90_CaloIdL_PFHT600_v1 '\
             'HLT_DoubleEle8_CaloIdM_Mass8_PFHT300_v2 '\
             'HLT_DoubelMu8_Mass8_PFHT300_v2 '
             ),
