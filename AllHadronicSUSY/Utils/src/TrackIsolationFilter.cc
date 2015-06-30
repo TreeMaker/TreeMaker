@@ -84,6 +84,8 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
   produces<vector<float> >("pfcandstrkiso").setBranchAlias("pfcands_trkiso");
   produces<vector<float> >("pfcandsdzpv"  ).setBranchAlias("pfcands_dzpv");
   produces<vector<float> >("pfcandspt"    ).setBranchAlias("pfcands_pt");
+  const std::string string1("MT");
+  produces<std::vector<double> > (string1).setBranchAlias(string1);
   produces<vector<int>   >("pfcandschg"   ).setBranchAlias("pfcands_chg");
   produces<int>("isoTracks").setBranchAlias("isoTracks");
 
@@ -100,6 +102,7 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
   auto_ptr<vector<float> >  pfcands_trkiso(new vector<float>);
   auto_ptr<vector<float> >  pfcands_dzpv  (new vector<float>);
   auto_ptr<vector<float> >  pfcands_pt    (new vector<float>);
+  std::auto_ptr< std::vector<double> > mt_(new std::vector<double>);
   auto_ptr<vector<int>   >  pfcands_chg   (new vector<int>  );
 
   edm::Handle< edm::View<pat::MET> > MET;
@@ -241,6 +244,7 @@ for(int v=0; v<vtxSize;++v){
 	double dphiMET=fabs((*pfCandidates)[i].phi()-metLorentz.phi());
         double mT=sqrt(2 *metLorentz.pt() * (*pfCandidates)[i].pt() * (1 - cos(dphiMET)));
         if(mTCut_>0.01 && mT>mTCut_)continue;
+	mt_->push_back(mT);
 	pfcands_pt->push_back((*pfCandidates)[i].pt());
 	pfcands_chg->push_back((*pfCandidates)[i].charge());
 	//----------------------------------------------------------------------------
@@ -300,6 +304,8 @@ for(int v=0; v<vtxSize;++v){
   iEvent.put(pfcands_trkiso,"pfcandstrkiso");
   iEvent.put(pfcands_dzpv  ,"pfcandsdzpv"  );
   iEvent.put(pfcands_pt    ,"pfcandspt"    );
+  const std::string string0("MT");
+  iEvent.put(mt_,string0);
   iEvent.put(pfcands_chg   ,"pfcandschg"   );
 
   iEvent.put(prodminiAOD); 

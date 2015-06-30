@@ -100,10 +100,11 @@ doZinv=False,
       vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
       pfCandidatesTag = cms.InputTag("packedPFCandidates"),
       dR_ConeSize         = cms.double(0.3),
-      dz_CutValue         = cms.double(0.05),
+      dz_CutValue         = cms.double(0.1),
       minPt_PFCandidate   = cms.double(5.0),
       isoCut              = cms.double(0.2),
       pdgId               = cms.int32(11),
+      etaCut=cms.double(2.5),
       mTCut=mtcut,
       )
 
@@ -112,10 +113,11 @@ doZinv=False,
       vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
       pfCandidatesTag = cms.InputTag("packedPFCandidates"),
       dR_ConeSize         = cms.double(0.3),
-      dz_CutValue         = cms.double(0.05),
+      dz_CutValue         = cms.double(0.1),
       minPt_PFCandidate   = cms.double(5.0),
       isoCut              = cms.double(0.2), 
       pdgId               = cms.int32(13),
+      etaCut=cms.double(2.5),
       mTCut=mtcut,
       )
 
@@ -124,10 +126,11 @@ doZinv=False,
       vertexInputTag = cms.InputTag("offlineSlimmedPrimaryVertices"),
       pfCandidatesTag = cms.InputTag("packedPFCandidates"),
       dR_ConeSize         = cms.double(0.3),
-      dz_CutValue         = cms.double(0.05),
+      dz_CutValue         = cms.double(0.1),
       minPt_PFCandidate   = cms.double(10.0),
       isoCut              = cms.double(0.1),
       pdgId               = cms.int32(211),
+      etaCut=cms.double(2.5),
       mTCut=mtcut,
       )
 
@@ -281,6 +284,12 @@ doZinv=False,
     MaxEta								  = cms.double(2.4),
     SelectpdgIDTyp							  = cms.int32(13), 
     )
+    process.SelectedPFPionCandidates = SelectPFCandidates.clone(
+    PackedPFCandidatesTag               = cms.InputTag('packedPFCandidates'),
+    MinPt                                                                 = cms.double(10),
+    MaxEta                                                                = cms.double(2.4),
+    SelectpdgIDTyp                                                        = cms.int32(211), 
+    )
     from AllHadronicSUSY.Utils.activityProducer_cfi import activityProducer
     process.MuonIsoTag = activityProducer.clone(
     objectSource   = cms.InputTag('LeptonsNew:IdMuon'), # probe source
@@ -319,6 +328,11 @@ doZinv=False,
     Passing = cms.InputTag("MuonIsoTag","Passing"),
     Pt = cms.InputTag("MuonIsoTag","Pt"),
     Eta = cms.InputTag("MuonIsoTag","Eta"),
+    MTW = cms.InputTag("MuonIsoTag","MTW"),
+    MTWClean = cms.InputTag("MuonIsoTag","MTWClean"),
+    RecomputedMET = cms.InputTag("MuonIsoTag","RecomputedMET"),
+    TagObjectsNum = cms.InputTag("MuonIsoTag","TagObjectsNum"),
+    Weight = cms.InputTag("MuonIsoTag","Weight"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
@@ -381,6 +395,11 @@ doZinv=False,
     Passing = cms.InputTag("MuonRecoTag","Passing"),
     Pt = cms.InputTag("MuonRecoTag","Pt"),
     Eta = cms.InputTag("MuonRecoTag","Eta"),
+    MTW = cms.InputTag("MuonRecoTag","MTW"),
+    MTWClean = cms.InputTag("MuonRecoTag","MTWClean"),
+    RecomputedMET = cms.InputTag("MuonRecoTag","RecomputedMET"),
+    TagObjectsNum = cms.InputTag("MuonRecoTag","TagObjectsNum"),
+    Weight = cms.InputTag("MuonRecoTag","Weight"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
@@ -412,7 +431,7 @@ doZinv=False,
     activityTyp = cms.int32(0),
     maxDeltaR = cms.double(1.0),
     jetSrc = cms.InputTag('HTJets'),
-    TagObjectForMTWComputation = cms.InputTag('LeptonsNew:IdIsoMuon'),
+    TagObjectForMTWComputation = cms.InputTag('LeptonsNew:IdIsoElectron'),
     )
     process.tpPairsElecIso = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("LeptonsNewTag:IdIsoElectron@+ LeptonsNew:IdElectron@-"), # charge coniugate states are implied
@@ -442,6 +461,11 @@ doZinv=False,
     Passing = cms.InputTag("ElectronIsoTag","Passing"),
     Pt = cms.InputTag("ElectronIsoTag","Pt"),
     Eta = cms.InputTag("ElectronIsoTag","Eta"),
+    MTW = cms.InputTag("ElectronIsoTag","MTW"),
+    MTWClean = cms.InputTag("ElectronIsoTag","MTWClean"),
+    RecomputedMET = cms.InputTag("ElectronIsoTag","RecomputedMET"),
+    TagObjectsNum = cms.InputTag("ElectronIsoTag","TagObjectsNum"),
+    Weight = cms.InputTag("ElectronIsoTag","Weight"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
@@ -471,7 +495,7 @@ doZinv=False,
     activityTyp = cms.int32(0),
     maxDeltaR = cms.double(1.0),
     jetSrc = cms.InputTag('HTJets'),
-    TagObjectForMTWComputation = cms.InputTag('LeptonsNew:IdIsoMuon'),
+    TagObjectForMTWComputation = cms.InputTag('LeptonsNew:IdIsoElectron'),
     )
     process.tpPairsElecReco = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("LeptonsNewTag:IdIsoElectron@+ slimmedPhotons"), # charge coniugate states are implied
@@ -501,6 +525,11 @@ doZinv=False,
     Passing = cms.InputTag("ElectronRecoTag","Passing"),
     Pt = cms.InputTag("ElectronRecoTag","Pt"),
     Eta = cms.InputTag("ElectronRecoTag","Eta"),
+    MTW = cms.InputTag("ElectronRecoTag","MTW"),
+    MTWClean = cms.InputTag("ElectronRecoTag","MTWClean"),
+    RecomputedMET = cms.InputTag("ElectronRecoTag","RecomputedMET"),
+    TagObjectsNum = cms.InputTag("ElectronRecoTag","TagObjectsNum"),
+    Weight = cms.InputTag("ElectronRecoTag","Weight"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
@@ -564,8 +593,10 @@ doZinv=False,
     Pt = cms.InputTag("IsoTrackMuonTag","Pt"),
     Eta = cms.InputTag("IsoTrackMuonTag","Eta"),
     MTW = cms.InputTag("IsoTrackMuonTag","MTW"),
+    MTWClean = cms.InputTag("IsoTrackMuonTag","MTWClean"),
     RecomputedMET = cms.InputTag("IsoTrackMuonTag","RecomputedMET"),
     TagObjectsNum = cms.InputTag("IsoTrackMuonTag","TagObjectsNum"),
+    Weight = cms.InputTag("IsoTrackMuonTag","Weight"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
@@ -630,8 +661,77 @@ doZinv=False,
     Pt = cms.InputTag("IsoTrackElecTag","Pt"),
     Eta = cms.InputTag("IsoTrackElecTag","Eta"),
     MTW = cms.InputTag("IsoTrackElecTag","MTW"),
+    MTWClean = cms.InputTag("IsoTrackElecTag","MTWClean"),
     RecomputedMET = cms.InputTag("IsoTrackElecTag","RecomputedMET"),
     TagObjectsNum = cms.InputTag("IsoTrackElecTag","TagObjectsNum"),
+    Weight = cms.InputTag("IsoTrackElecTag","Weight"),
+    ),
+    # choice of what defines a 'passing' probe
+    flags = cms.PSet(
+    ## one defined by an external collection of passing probes
+    #passingCal = cms.InputTag("probesPassingCal"), 
+    ## two defined by simple string cuts
+    #   passingGlb = cms.string("isGlobalMuon"),
+    passingIso = cms.InputTag("LeptonsNew:IdMuon"),
+    #passingIso2 = cms.InputTag("MuonIsoTag:PassingProbes"),
+    #passingGlb = cms.string("Passing<0.5"),
+    #passingIso = cms.InputTag("MuonIsoTag","Passing"),
+    #passingIso = cms.InputTag("probePassingIso"),
+    ),
+    # mc-truth info
+    isMC = cms.bool(False),
+    motherPdgId = cms.vint32(22,23),
+    #makeMCUnbiasTree = cms.bool(True),
+    #checkMotherInUnbiasEff = cms.bool(True),
+    #tagMatches = cms.InputTag("muMcMatch"),
+    #probeMatches  = cms.InputTag("muMcMatch"),
+    #allProbes     = cms.InputTag("probeMuons"),
+    )
+    # isolated track pion
+    process.IsoTrackPionTag = activityProducer.clone(
+    objectSource   = cms.InputTag('SelectedPFPionCandidates'), # probe source
+    #objectSource   = cms.InputTag('SelectedPFCandidatesProbeCands5'), # probe source
+    objectMatchSource   = cms.InputTag('IsolatedPionTracksVeto'), # to be matched to collection  (IDIsoMuons)
+    objectTyp = cms.int32(5),
+    activityTyp = cms.int32(0),
+    maxDeltaR = cms.double(1.0),
+    jetSrc = cms.InputTag('HTJets'),
+    TagObjectForMTWComputation = cms.InputTag('IsolatedPionTracksVeto'),
+    METTag = cms.InputTag('slimmedMETs'), 
+    )
+    process.tpPairsIsoTrackPion = cms.EDProducer("CandViewShallowCloneCombiner",
+    decay = cms.string("IsolatedPionTracksVeto@+ SelectedPFPionCandidates@-"), # charge coniugate states are implied
+    #decay = cms.string("LeptonsNewTag:IdIsoElectron@+ SelectedPFCandidatesProbeCands5@-"), # charge coniugate states are implied
+    cut   = cms.string("60.0 < mass < 130.0"),
+    )
+    process.IsoTrackPionIsoEffs = cms.EDAnalyzer("TagProbeFitTreeProducer",
+    # pairs
+    tagProbePairs = cms.InputTag("tpPairsIsoTrackPion"),
+    #arbitration   = cms.string("OneProbe"),
+    arbitration   = cms.string("None"),
+    massForArbitration = cms.double(91),
+    # variables to use
+    variables = cms.PSet(
+    ## methods of reco::Candidate
+    eta = cms.string("eta"),
+    pt  = cms.string("pt"),
+    #muonsMiniIso = cms.string("muonsMiniIso"),
+    #miniIso = cms.string("miniIso"),
+    ## a method of the reco::Muon object (thanks to the 3.4.X StringParser)
+    #nsegm = cms.string("numberOfMatches"), 
+    ## this one is an external variable
+    #drj = cms.InputTag("drToNearestJet"),
+    #nGV = cms.InputTag("goodVertices.size()"),
+    #miniIso = cms.InputTag("probeMuons","muonsMiniIso"),
+    #miniIso = cms.InputTag("probeMuons","miniIso"),
+    activity = cms.InputTag("IsoTrackPionTag","Activity"),
+    Passing = cms.InputTag("IsoTrackPionTag","Passing"),
+    Pt = cms.InputTag("IsoTrackPionTag","Pt"),
+    Eta = cms.InputTag("IsoTrackPionTag","Eta"),
+    MTW = cms.InputTag("IsoTrackPionTag","MTW"),
+    RecomputedMET = cms.InputTag("IsoTrackPionTag","RecomputedMET"),
+    TagObjectsNum = cms.InputTag("IsoTrackPionTag","TagObjectsNum"),
+     Weight = cms.InputTag("IsoTrackPionTag","Weight"),
     ),
     # choice of what defines a 'passing' probe
     flags = cms.PSet(
@@ -698,9 +798,9 @@ doZinv=False,
     JetTag  = cms.InputTag('MHTJets'),
     )
     process.Baseline += process.MHT
-    VarsDouble.extend(['MHT'])
+    VarsDouble.extend(['MHT:Pt(MHT)','MHT:Phi(MHT_Phi)'])
     process.MHTFilter = DoubleFilter.clone(
-    DoubleTag          = cms.InputTag('MHT'),
+    DoubleTag          = cms.InputTag('MHT:Pt'),
     CutValue	= cms.double('200'),
     )
     if applybaseline:
@@ -759,14 +859,18 @@ doZinv=False,
     if lostlepton:
       print "Adding LostLepton calculations to final path and tree"
       process.AdditionalSequence += process.LostLepton 
+      process.AdditionalSequence += process.SelectedPFElecCandidates
+      process.AdditionalSequence += process.SelectedPFMuCandidates
+      process.AdditionalSequence += process.SelectedPFPionCandidates
     #  VarsRecoCand = cms.vstring('selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDMuons','IsolatedTracks','HTJets'),
    #   RecoCandVector.extend(['selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDElectrons','IsolatedTracks']),
-      RecoCandVector.extend(['IsolatedElectronTracksVeto','IsolatedMuonTracksVeto','IsolatedPionTracksVeto','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)|LeptonsNew:MuIDIsoMTW(F_MTW)','LeptonsNew:IdMuon(selectedIDMuons)|LeptonsNew:MuIDMTW(F_MTW)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)|LeptonsNew:ElecIDIsoMTW(F_MTW)','LeptonsNew:IdElectron(selectedIDElectrons)|LeptonsNew:ElecIDMTW(F_MTW)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
+      RecoCandVector.extend(['IsolatedElectronTracksVeto|IsolatedElectronTracksVeto:MT(F_MT)','IsolatedMuonTracksVeto|IsolatedMuonTracksVeto:MT(F_MT)','IsolatedPionTracksVeto|IsolatedPionTracksVeto:MT(F_MT)','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)|LeptonsNew:MuIDIsoMTW(F_MTW)','LeptonsNew:IdMuon(selectedIDMuons)|LeptonsNew:MuIDMTW(F_MTW)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)|LeptonsNew:ElecIDIsoMTW(F_MTW)','LeptonsNew:IdElectron(selectedIDElectrons)|LeptonsNew:ElecIDMTW(F_MTW)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
       RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
       RecoCandVector.extend(['GenLeptons:TauDecayCands(TauDecayCands)|GenLeptons:TauDecayCandspdgID(I_pdgID)'])
       RecoCandVector.extend(['LeptonsNewTag:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewTag:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] ) # gen information on leptons
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
       RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
+      RecoCandVector.extend(['SelectedPFElecCandidates','SelectedPFMuCandidates','SelectedPFPionCandidates'])
 
     if gammajets:
       print "Adding Gamma+Jet calculations to final path and tree"
@@ -788,6 +892,7 @@ doZinv=False,
 			process.Baseline += process.SelectedPFCandidatesProbeCands10
 			process.Baseline += process.SelectedPFElecCandidates
 			process.Baseline += process.SelectedPFMuCandidates
+			process.Baseline += process.SelectedPFPionCandidates
 			process.Baseline += process.GenLeptons
 			process.Baseline += process.JetsProperties
 			process.Baseline += process.SelectedPFCandidates
@@ -809,6 +914,9 @@ doZinv=False,
 			process.Baseline += process.IsoTrackElecTag
 			process.Baseline += process.tpPairsIsoTrackElec
 			process.Baseline += process.IsoTrackElecIsoEffs
+			process.Baseline += process.IsoTrackPionTag
+                        process.Baseline += process.tpPairsIsoTrackPion
+                        process.Baseline += process.IsoTrackPionIsoEffs
 			RecoCandVector.extend(['slimmedPhotons'])
 
 			### begin Zinv stuff ###
@@ -898,7 +1006,7 @@ doZinv=False,
     process.WriteTree = cms.Path(
       process.Baseline *
       process.AdditionalSequence *
- #     process.dump *
+     # process.dump *
     	process.TreeMaker2
     )
 

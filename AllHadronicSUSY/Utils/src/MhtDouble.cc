@@ -74,7 +74,8 @@ MhtDouble::MhtDouble(const edm::ParameterSet& iConfig)
    //register your produc
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 
-	 produces<double>("");
+	 produces<double>("Pt");
+	 produces<double>("Phi");
 /* Examples
    produces<ExampleData2>();
 
@@ -107,7 +108,6 @@ void
 MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-	double mht_=0;
   edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByLabel(JetTag_,Jets);
 	reco::MET::LorentzVector mhtLorentz(0,0,0,0);
@@ -118,9 +118,10 @@ MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
   }
   else std::cout<<"MHTDouble::Invlide Tag: "<<JetTag_.label()<<std::endl;
-  mht_ = mhtLorentz.pt();
-	std::auto_ptr<double> htp(new double(mht_));
-  iEvent.put(htp);
+	std::auto_ptr<double > Pt(new double(mhtLorentz.pt()));
+	std::auto_ptr<double > Phi(new double(mhtLorentz.phi()));
+	iEvent.put(Pt,"Pt");
+	iEvent.put(Phi,"Phi");
  
 }
 

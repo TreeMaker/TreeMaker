@@ -10,4 +10,5 @@ maxDeltaR = cms.double(1.0),
 jetSrc = cms.InputTag('slimmedJets'),
 TagObjectForMTWComputation = cms.InputTag(''),
 METTag = cms.InputTag('slimmedMETs'), 
+WeightTag = cms.InputTag('WeightProducer:weight'), 
 )
