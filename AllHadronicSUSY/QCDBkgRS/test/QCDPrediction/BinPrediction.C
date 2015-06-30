@@ -123,6 +123,28 @@ BinPrediction::BinPrediction(TChain& QCDPrediction, TChain& RA2PreSelection, TSt
    RA2bBin SB71("Njet9+-Nb3+-MHT2-HT23", Ntries, 9, 99, 3, 9, 500., 750., 1200., 9999., true);
    RA2bBin SB72("Njet9+-Nb3+-MHT2-HT123", Ntries, 9, 99, 3, 9, 750., 9999., 800., 9999., true);
    
+   RA2bBin SB1a("Njet456-MHT1-HT1", Ntries, 4, 6, 0, 99, 200., 500., 500., 800., true);
+   RA2bBin SB2a("Njet456-MHT1-HT2", Ntries, 4, 6, 0, 99, 200., 500., 800., 1200., true);
+   RA2bBin SB3a("Njet456-MHT1-HT3", Ntries, 4, 6, 0, 99, 200., 500., 1200., 9999., true);
+   RA2bBin SB4a("Njet456-MHT2-HT1", Ntries, 4, 6, 0, 99, 500., 750., 500., 1200., true);
+   RA2bBin SB5a("Njet456-MHT2-HT23", Ntries, 4, 6, 0, 99, 500., 750., 1200., 9999., true);
+   RA2bBin SB6a("Njet456-MHT2-HT123", Ntries, 4, 6, 0, 99, 750., 9999., 800., 9999., true);
+   
+   RA2bBin SB7a("Njet78-MHT1-HT1", Ntries, 7, 8, 0, 99, 200., 500., 500., 800., true);
+   RA2bBin SB8a("Njet78-MHT1-HT2", Ntries, 7, 8, 0, 99, 200., 500., 800., 1200., true);
+   RA2bBin SB9a("Njet78-MHT1-HT3", Ntries, 7, 8, 0, 99, 200., 500., 1200., 9999., true);
+   RA2bBin SB10a("Njet78-MHT2-HT1", Ntries, 7, 8, 0, 99, 500., 750., 500., 1200., true);
+   RA2bBin SB11a("Njet78-MHT2-HT23", Ntries, 7, 8, 0, 99, 500., 750., 1200., 9999., true);
+   RA2bBin SB12a("Njet78-MHT2-HT123", Ntries, 7, 8, 0, 99, 750., 9999., 800., 9999., true);
+   
+   RA2bBin SB13a("Njet9+-MHT1-HT1", Ntries, 9, 99, 0, 99, 200., 500., 500., 800., true);
+   RA2bBin SB14a("Njet9+-MHT1-HT2", Ntries, 9, 99, 0, 99, 200., 500., 800., 1200., true);
+   RA2bBin SB15a("Njet9+-MHT1-HT3", Ntries, 9, 99, 0, 99, 200., 500., 1200., 9999., true);
+   RA2bBin SB16a("Njet9+-MHT2-HT1", Ntries, 9, 99, 0, 99, 500., 750., 500., 1200., true);
+   RA2bBin SB17a("Njet9+-MHT2-HT23", Ntries, 9, 99, 0, 99, 500., 750., 1200., 9999., true);
+   RA2bBin SB18a("Njet9+-MHT2-HT123", Ntries, 9, 99, 0, 99, 750., 9999., 800., 9999., true);
+   
+   
    SB.push_back(&SB1);
    SB.push_back(&SB2);
    SB.push_back(&SB3);
@@ -195,6 +217,26 @@ BinPrediction::BinPrediction(TChain& QCDPrediction, TChain& RA2PreSelection, TSt
    SB.push_back(&SB70);
    SB.push_back(&SB71);
    SB.push_back(&SB72);
+   
+   SB.push_back(&SB1a);
+   SB.push_back(&SB2a);
+   SB.push_back(&SB3a);
+   SB.push_back(&SB4a);
+   SB.push_back(&SB5a);
+   SB.push_back(&SB6a);
+   SB.push_back(&SB7a);
+   SB.push_back(&SB8a);
+   SB.push_back(&SB9a);
+   SB.push_back(&SB10a);
+   SB.push_back(&SB11a);
+   SB.push_back(&SB12a);
+   SB.push_back(&SB13a);
+   SB.push_back(&SB14a);
+   SB.push_back(&SB15a);
+   SB.push_back(&SB16a);
+   SB.push_back(&SB17a);
+   SB.push_back(&SB18a);
+
    
    // ------------------------------------------------------------------------------ //
    
@@ -272,7 +314,7 @@ BinPrediction::BinPrediction(TChain& QCDPrediction, TChain& RA2PreSelection, TSt
                //cout << ", BTags: " << BTags;
                //cout << ", MDP: " << mdp;
                //cout << ", weight: " << weight << endl;
-               break;
+               //break;
             };
          }
          
