@@ -126,11 +126,11 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 
   edm::Handle<edm::View<reco::Vertex> > vertices;
   iEvent.getByLabel(vertexInputTag_, vertices);
-  reco::Vertex::Point vtxpos = (vertices->size() > 0 ? (*vertices)[0].position() : reco::Vertex::Point());
+  //reco::Vertex::Point vtxpos = (vertices->size() > 0 ? (*vertices)[0].position() : reco::Vertex::Point());
 int firstGoodVertexIdx = -1;
   vtxSize = vertices->size();
 for(int v=0; v<vtxSize;++v){
-        if ( !(*vertices)[v].isFake() && (*vertices)[v].ndof()>=4. && (*vertices)[v].position().Rho()<=2.0 && fabs((*vertices)[v].position().Z())<=24.0) {
+        if ( !(*vertices)[v].isFake() && (*vertices)[v].ndof()>4. && (*vertices)[v].position().Rho()<2.0 && fabs((*vertices)[v].position().Z())<24.0) {
         firstGoodVertexIdx=v;
 // 				std::cout<<"GoodVertexIdV found: "<<firstGoodVertexIdx<<std::endl;
         break;
@@ -268,12 +268,12 @@ for(int v=0; v<vtxSize;++v){
 	    //}
 	    // check if this workes fine!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	    
-	      dz_other = (*pfCandidates)[ii].dz(vtxpos);
+	      dz_other = (*pfCandidates)[ii].dz();
 	    if( fabs(dz_other) > dzcut_ ) continue;
 	    trkiso += (*pfCandidates)[ii].pt();
 	  }
 	  float dz_it = 100; //
-	  dz_it = (*pfCandidates)[i].dz(vtxpos);
+	  dz_it = (*pfCandidates)[i].dz();
 	  pfcands_trkiso->push_back(trkiso);
 	  pfcands_dzpv->push_back(dz_it);
 	  if( trkiso/(*pfCandidates)[i].pt() > isoCut_ ) continue;
