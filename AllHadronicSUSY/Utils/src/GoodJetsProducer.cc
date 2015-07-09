@@ -214,7 +214,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
                }
             }
          } else {
-            if (neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ ) {
+            if (nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ ) {
                prodJets->push_back(Jet(Jets->at(i)));
             } else {
                if (Jets->at(i).pt() > jetPtFilter_) {
