@@ -319,31 +319,21 @@ doZinv=False,
         process.options.allowUnscheduled = cms.untracked.bool(True) # in case we forgot something :)
 
 
-        from AllHadronicSUSY.Utils.alljetsproducer_cfi import AllJetsProducer  # Ahmad  # this save the jets without considering jet Id. But, also saves jetId in a vector of 
+        from AllHadronicSUSY.Utils.alljetsproducer_cfi import AllJetsProducer 
+        # this save the jets without considering jet Id. But, also saves jetId in a vector.
 
-        # Tight Jet ID # Ahmad
         process.AllJetsPlusLowPt = AllJetsProducer.clone(
         JetTag= cms.InputTag('slimmedJets'),
         reclusJetTag= cms.InputTag('patJetsAK4PFCHS'),
-        maxJetEta = cms.double(99), #store all jets
-        maxMuFraction = cms.double(200), ## effectively no cut if above 1
-        minNConstituents = cms.double(-1),       ## effectively no cut
+        maxJetEta = cms.double(5.0), 
+        maxMuFraction = cms.double(2), 
+        minNConstituents = cms.double(2),       
         maxNeutralFraction = cms.double(0.90),
         maxPhotonFraction = cms.double(0.95),
-        minChargedMultiplicity = cms.double(-1), ## effectively no cut
-        minChargedFraction = cms.double(-1),     ## effectively no cut
-        maxChargedEMFraction = cms.double(10.0), ## effectively no cut
+        minChargedMultiplicity = cms.double(0), 
+        minChargedFraction = cms.double(0),     
+        maxChargedEMFraction = cms.double(0.99), 
         )
-    #    # Loose Jet ID 
-    #      maxJetEta                                                           = cms.double(99), #store all jets
-    #      maxMuFraction                                                               = cms.double(200), ## effectively no cut if above 1
-    #      minNConstituents                                                            = cms.double(1),
-    #      maxNeutralFraction                                                                  = cms.double(0.99),
-    #      maxPhotonFraction                                                           = cms.double(0.99),
-    #      minChargedMultiplicity                                                              = cms.double(0),
-    #      minChargedFraction                                                                  = cms.double(0),
-    #      maxChargedEMFraction                                                                = cms.double(0.99),
-    #      )
     #################
     # end of had tau
     #################
