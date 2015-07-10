@@ -87,6 +87,7 @@ debugtracks=False,
         VectorTLorentzVector = VectorTLorentzVector,
         VectorDouble = VectorDouble,
         VectorInt = VectorInt,
+        VectorString = VectorString,
     	)
 
     # basic producers
