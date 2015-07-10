@@ -159,7 +159,6 @@ ActivityProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
 	}
 
-
 	//object
 
 	

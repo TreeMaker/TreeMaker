@@ -1,5 +1,7 @@
+#include <vector>
 #include "TLorentzVector.h"
 #include <DataFormats/PatCandidates/interface/Jet.h>
+#include "DataFormats/Common/interface/Wrapper.h"
 
 namespace {
   struct dictionary {
@@ -8,5 +10,6 @@ namespace {
     std::vector<std::vector<TLorentzVector> > vvlv;
     std::vector<std::vector<pat::Jet> > vvpj;
     edm::Wrapper<std::vector<TLorentzVector> > wvlv;
+    edm::Wrapper<std::vector<std::vector<TLorentzVector> > > wvvlv;
   };
 }
