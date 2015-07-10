@@ -159,7 +159,6 @@ ActivityProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  
 	}
 
-
 	//object
 
 	
@@ -419,7 +418,7 @@ ActivityProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                 ValueMap<float>::Filler filler9(*valMap9);
                 filler9.insert(object, Weight_.begin(), Weight_.end());
                 filler9.fill();
-                iEvent.put(valMap9, "Weight");
+                iEvent.put(valMap9, "Weight"); =======
 // 		const std::string string1("PassingProbes");
 // 		if(probePassingCandidate_.size()<1)std::cout<<"No PassingCand filled"<<std::endl;
 // 		std::auto_ptr<std::vector<pat::Muon> > htp1(new std::vector<pat::Muon>(probePassingCandidate_));

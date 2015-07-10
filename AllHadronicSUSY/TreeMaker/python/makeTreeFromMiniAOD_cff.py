@@ -11,10 +11,10 @@ testFileName="",
 Global_Tag="",
 numProcessedEvt=1000,
 lostlepton=False,
-gammajets=False,
 tagandprobe=False,
 applybaseline=False,
 doZinv=False,
+debugtracks=False,
 ):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -63,6 +63,9 @@ doZinv=False,
     VarsDouble = cms.vstring()
     VarsInt = cms.vstring()
     VarsBool = cms.vstring()
+    VectorTLorentzVector = cms.vstring()
+    VectorDouble = cms.vstring()
+    VectorInt = cms.vstring()
     # baseline producers
     process.Baseline = cms.Sequence(
     )
@@ -71,10 +74,20 @@ doZinv=False,
     process.LostLepton = cms.Sequence(
       
     )
-    #gamma+jet variables
-    process.GammaJet = cms.Sequence(
-      
-    )
+
+    # configure treemaker
+    from AllHadronicSUSY.TreeMaker.treeMaker import TreeMaker
+    process.TreeMaker2 = TreeMaker.clone(
+    	TreeName          = cms.string("PreSelection"),
+    	VarsRecoCand = RecoCandVector, 
+    	VarsDouble  	  = VarsDouble,
+    	VarsInt = VarsInt,
+    	VarsBool = VarsBool,
+        VectorTLorentzVector = VectorTLorentzVector,
+        VectorDouble = VectorDouble,
+        VectorInt = VectorInt,
+    	)
+
     # basic producers
     ## --- Setup WeightProducer -------------------------------------------
     from AllHadronicSUSY.WeightProducer.getWeightProducer_cff import getWeightProducer
@@ -91,6 +104,20 @@ doZinv=False,
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+
+    ###############
+    # gen stuff
+    ###############
+    
+    process.genParticles = cms.EDProducer("genParticlesProducer",
+                                          genCollection = cms.untracked.InputTag("prunedGenParticles"),
+                                          debug = cms.untracked.bool(False)
+                                          )
+    
+    VectorTLorentzVector.append("genParticles(genParticles)")
+    VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
+    #VectorInt.append("genParticles:parent(genParticles_parent)")
+    
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
@@ -104,7 +131,6 @@ doZinv=False,
       minPt_PFCandidate   = cms.double(5.0),
       isoCut              = cms.double(0.2),
       pdgId               = cms.int32(11),
-      etaCut=cms.double(2.5),
       mTCut=mtcut,
       )
 
@@ -117,7 +143,6 @@ doZinv=False,
       minPt_PFCandidate   = cms.double(5.0),
       isoCut              = cms.double(0.2), 
       pdgId               = cms.int32(13),
-      etaCut=cms.double(2.5),
       mTCut=mtcut,
       )
 
@@ -130,7 +155,6 @@ doZinv=False,
       minPt_PFCandidate   = cms.double(10.0),
       isoCut              = cms.double(0.1),
       pdgId               = cms.int32(211),
-      etaCut=cms.double(2.5),
       mTCut=mtcut,
       )
 
@@ -142,6 +166,19 @@ doZinv=False,
     VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
     VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
 
+    #NB: this increases the runtime and size of ntuples by 10x
+    #do not turn on unless you really want to save all the isotrack quantities!!!
+    if debugtracks:
+        #just store the full set of isotrack quantities once
+        process.IsolatedPionTracksVeto.debug = cms.bool(True)
+        VarsBool.extend(['IsolatedPionTracksVeto:GoodVtx(GoodVtx)'])
+        VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(pfcands)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(pfcands_trkiso)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(pfcands_dzpv)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsmT(pfcands_mT)'])
+        VectorInt.extend(['IsolatedPionTracksVeto:pfcandschg(pfcands_chg)'])
+        VectorInt.extend(['IsolatedPionTracksVeto:pfcandsid(pfcands_id)'])
+    
     #done with isolated track vetos stuff
     ########################################################
     
@@ -180,10 +217,18 @@ doZinv=False,
     ####### good photons
     process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
                                          photonCollection = cms.untracked.InputTag("slimmedPhotons"),
+                                         electronCollection = cms.untracked.InputTag("slimmedElectrons"),
+                                         conversionCollection = cms.untracked.InputTag("reducedEgamma","reducedConversions","PAT"),
+                                         beamspotCollection = cms.untracked.InputTag("offlineBeamSpot","","RECO"),
+                                         ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
+                                         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
                                          rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
                                          debug = cms.untracked.bool(False)
                                          )
     process.Baseline += process.goodPhotons
+
+    process.TreeMaker2.VectorTLorentzVector.append("bestPhoton4Vec(bestPhoton)")
+    process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotons(NumPhotons)")
     ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
     #################################
 
@@ -805,7 +850,7 @@ doZinv=False,
     )
     if applybaseline:
 			process.Baseline += process.HTFilter
-			process.Baseline += process.MHTFilter
+			#process.Baseline += process.MHTFilter
     from AllHadronicSUSY.Utils.deltaphidouble_cfi import deltaphidouble
     process.DeltaPhi = deltaphidouble.clone(
     DeltaPhiJets  = cms.InputTag('HTJets'),
@@ -839,18 +884,11 @@ doZinv=False,
     MaxEta								  = cms.double(5.0),
     )
     process.LostLepton += process.SelectedPFCandidates
-    #gamma+jet producers
-
-
-
 
     #define sequences
     
     #baseline RA2/b variables default shared variables
     RecoCandVector.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
-
-
-
 
     ## --- Final paths ----------------------------------------------------
 
@@ -872,141 +910,164 @@ doZinv=False,
       RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
       RecoCandVector.extend(['SelectedPFElecCandidates','SelectedPFMuCandidates','SelectedPFPionCandidates'])
 
-    if gammajets:
-      print "Adding Gamma+Jet calculations to final path and tree"
-      process.AdditionalSequence += process.GammaJet 
-    # configure treemaker
-    from AllHadronicSUSY.TreeMaker.treeMaker import TreeMaker
-    process.TreeMaker2 = TreeMaker.clone(
-    	TreeName          = cms.string("PreSelection"),
-    	VarsRecoCand = RecoCandVector, 
-    	VarsDouble  	  = VarsDouble,
-    	VarsInt = VarsInt,
-    	VarsBool = VarsBool,
-
-    	)
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     #tag and probe
     if tagandprobe:
-			process.Baseline += process.SelectedPFCandidatesProbeCands5
-			process.Baseline += process.SelectedPFCandidatesProbeCands10
-			process.Baseline += process.SelectedPFElecCandidates
-			process.Baseline += process.SelectedPFMuCandidates
-			process.Baseline += process.SelectedPFPionCandidates
-			process.Baseline += process.GenLeptons
-			process.Baseline += process.JetsProperties
-			process.Baseline += process.SelectedPFCandidates
-			process.Baseline += process.MuonIsoTag
-			process.Baseline += process.tpPairs
-			process.Baseline += process.muonIsoEffs
-			process.Baseline += process.MuonRecoTag
-			process.Baseline += process.tpPairsMuReco
-			process.Baseline += process.muonRecoEffs
-			process.Baseline += process.ElectronIsoTag
-			process.Baseline += process.tpPairsElecIso
-			process.Baseline += process.elecIsoEffs
-			process.Baseline += process.ElectronRecoTag
-			process.Baseline += process.tpPairsElecReco
-			process.Baseline += process.elecRecoEffs
-			process.Baseline += process.IsoTrackMuonTag
-			process.Baseline += process.tpPairsIsoTrackMu
-			process.Baseline += process.IsoTrackMuonIsoEffs
-			process.Baseline += process.IsoTrackElecTag
-			process.Baseline += process.tpPairsIsoTrackElec
-			process.Baseline += process.IsoTrackElecIsoEffs
-			process.Baseline += process.IsoTrackPionTag
-                        process.Baseline += process.tpPairsIsoTrackPion
-                        process.Baseline += process.IsoTrackPionIsoEffs
-			RecoCandVector.extend(['slimmedPhotons'])
+        process.Baseline += process.SelectedPFCandidatesProbeCands5
+        process.Baseline += process.SelectedPFCandidatesProbeCands10
+        process.Baseline += process.SelectedPFElecCandidates
+        process.Baseline += process.SelectedPFMuCandidates
+        process.Baseline += process.SelectedPFPionCandidates
+        process.Baseline += process.GenLeptons
+        process.Baseline += process.JetsProperties
+        process.Baseline += process.SelectedPFCandidates
+        process.Baseline += process.MuonIsoTag
+        process.Baseline += process.tpPairs
+        process.Baseline += process.muonIsoEffs
+        process.Baseline += process.MuonRecoTag
+        process.Baseline += process.tpPairsMuReco
+        process.Baseline += process.muonRecoEffs
+        process.Baseline += process.ElectronIsoTag
+        process.Baseline += process.tpPairsElecIso
+        process.Baseline += process.elecIsoEffs
+        process.Baseline += process.ElectronRecoTag
+        process.Baseline += process.tpPairsElecReco
+        process.Baseline += process.elecRecoEffs
+        process.Baseline += process.IsoTrackMuonTag
+        process.Baseline += process.tpPairsIsoTrackMu
+        process.Baseline += process.IsoTrackMuonIsoEffs
+        process.Baseline += process.IsoTrackElecTag
+        process.Baseline += process.tpPairsIsoTrackElec
+        process.Baseline += process.IsoTrackElecIsoEffs
+        process.Baseline += process.IsoTrackPionTag
+                    process.Baseline += process.tpPairsIsoTrackPion
+                    process.Baseline += process.IsoTrackPionIsoEffs
+        RecoCandVector.extend(['slimmedPhotons'])
 
-			### begin Zinv stuff ###
+	### begin Zinv stuff ###
     if doZinv:   
-			
-			process.ZinvClean = cms.Sequence()
-			
-			from AllHadronicSUSY.Utils.zproducer_cfi import ZProducer
-			process.maketheZs = ZProducer.clone(
-			ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
-			MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon')
-			)
-			process.ZinvClean += process.maketheZs
-			VarsInt.extend(['maketheZs:ZNum'])
-			process.TreeMaker2.VectorTLorentzVector.append("maketheZs:Zp4")
-			
-			from AllHadronicSUSY.Utils.jetcleaner_cfi import JetCleaner
-			process.cleanTheJets = JetCleaner.clone(
-			JetTag  = cms.InputTag('GoodJets'),
-			ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
-			ElectronR = cms.double(0.4),
-			MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'),
-			MuonR = cms.double(0.4),
-			PhotonTag = cms.InputTag('goodPhotons', 'bestPhoton'),
-			PhotonR = cms.double(0.4)
-			)
-			process.ZinvClean += process.cleanTheJets
-			
-			from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
-			process.HTJetsclean = SubJetSelection.clone(
-			JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
-			MinPt = cms.double(30),
-			MaxEta = cms.double(2.4),
-			)
-			process.ZinvClean += process.HTJetsclean
-			
-			from AllHadronicSUSY.Utils.htdouble_cfi import htdouble
-			process.HTclean = htdouble.clone(
-			JetTag = cms.InputTag('HTJetsclean'),
-			)
-			process.ZinvClean += process.HTclean
-			VarsDouble.extend(['HTclean'])
-			
-			from AllHadronicSUSY.Utils.njetint_cfi import njetint
-			process.NJetsclean = njetint.clone(
-			JetTag = cms.InputTag('HTJetsclean'),
-			)
-			process.ZinvClean += process.NJetsclean
-			VarsInt.extend(['NJetsclean'])
-			
-			from AllHadronicSUSY.Utils.btagint_cfi import btagint
-			process.BTagsclean = btagint.clone(
-			JetTag = cms.InputTag('HTJetsclean'),
-			BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
-			BTagCutValue = cms.double(0.814)
-			)
-			process.ZinvClean += process.BTagsclean
-			VarsInt.extend(['BTagsclean'])
-			
-			from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
-			process.MHTJetsclean = SubJetSelection.clone(
-			JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
-			MinPt = cms.double(30),
-			MaxEta = cms.double(5.0),
-			)
-			process.ZinvClean += process.MHTJetsclean
-			
-			from AllHadronicSUSY.Utils.mhtdouble_cfi import mhtdouble
-			process.MHTclean = mhtdouble.clone(
-			JetTag = cms.InputTag('MHTJetsclean'),
-			)
-			process.ZinvClean += process.MHTclean
-			VarsDouble.extend(['MHTclean'])
-			
-			from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
-			process.METclean = metdouble.clone(
-			METTag = cms.InputTag("slimmedMETs"),
-			JetTag = cms.InputTag('HTJetsclean'),
-			cleanTag = cms.untracked.VInputTag(cms.InputTag('LeptonsNew:IdIsoElectron'), cms.InputTag('LeptonsNew:IdIsoMuon'), cms.InputTag('goodPhotons', 'bestPhoton'))
-			)
-			process.ZinvClean += process.METclean
-			VarsDouble.extend(['METclean:minDeltaPhiN(minDeltaPhiNclean)', 'METclean:Pt(METPtclean)'])
-			
-			process.AdditionalSequence += process.ZinvClean
-			### end Zinv stuff ###
+        ##### add branches for photon studies
+        process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:hadTowOverEM(photon_hadTowOverEM)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:hasPixelSeed(photon_hasPixelSeed)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:passElectronVeto(photon_passElectronVeto)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:pfChargedIso(photon_pfChargedIso)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:pfChargedIsoRhoCorr(photon_pfChargedIsoRhoCorr)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:pfGammaIso(photon_pfGammaIso)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:pfGammaIsoRhoCorr(photon_pfGammaIsoRhoCorr)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIso(photon_pfNeutralIso)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIsoRhoCorr(photon_pfNeutralIsoRhoCorr)")
+        process.TreeMaker2.VectorDouble.append("goodPhotons:sigmaIetaIeta(photon_sigmaIetaIeta)")
+
+        process.slimmedPhotons4Vec = cms.EDProducer("fourVectorProducer",
+                                                    particleCollection = cms.untracked.InputTag("slimmedPhotons"),
+                                                    debug = cms.untracked.bool(False)
+                                                    )
+        
+        process.TreeMaker2.VectorTLorentzVector.append("slimmedPhotons4Vec(photonCands)")
+        
+        process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
+                                                particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
+                                                debug = cms.untracked.bool(False)
+                                                )
+
+        process.ZinvClean = cms.Sequence()
+
+        from AllHadronicSUSY.Utils.zproducer_cfi import ZProducer
+        process.maketheZs = ZProducer.clone(
+        ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
+        MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon')
+        )
+        process.ZinvClean += process.maketheZs
+        VarsInt.extend(['maketheZs:ZNum'])
+        VectorTLorentzVector.append("maketheZs:Zp4")
+        
+        from AllHadronicSUSY.Utils.jetcleaner_cfi import JetCleaner
+        process.cleanTheJets = JetCleaner.clone(
+           JetTag  = cms.InputTag('GoodJets'),
+           ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
+           ElectronR = cms.double(0.4),
+           MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'),
+           MuonR = cms.double(0.4),
+           PhotonTag = cms.InputTag('goodPhotons', 'bestPhoton'),
+           PhotonR = cms.double(0.4)
+        )
+        process.ZinvClean += process.cleanTheJets
+
+        from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
+        process.HTJetsclean = SubJetSelection.clone(
+           JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
+           MinPt = cms.double(30),
+           MaxEta = cms.double(2.4),
+        )
+        process.ZinvClean += process.HTJetsclean
+
+        from AllHadronicSUSY.Utils.htdouble_cfi import htdouble
+        process.HTclean = htdouble.clone(
+           JetTag = cms.InputTag('HTJetsclean'),
+        )
+        process.ZinvClean += process.HTclean
+        VarsDouble.extend(['HTclean'])
+
+        from AllHadronicSUSY.Utils.njetint_cfi import njetint
+        process.NJetsclean = njetint.clone(
+           JetTag = cms.InputTag('HTJetsclean'),
+        )
+        process.ZinvClean += process.NJetsclean
+        VarsInt.extend(['NJetsclean'])
+
+        from AllHadronicSUSY.Utils.btagint_cfi import btagint
+        process.BTagsclean = btagint.clone(
+           JetTag = cms.InputTag('HTJetsclean'),
+           BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
+           BTagCutValue = cms.double(0.814)
+        )
+        process.ZinvClean += process.BTagsclean
+        VarsInt.extend(['BTagsclean'])
+
+        from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
+        process.MHTJetsclean = SubJetSelection.clone(
+           JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
+           MinPt = cms.double(30),
+           MaxEta = cms.double(5.0),
+        )
+        process.ZinvClean += process.MHTJetsclean
+
+        process.DeltaPhiClean = deltaphidouble.clone(
+            DeltaPhiJets  = cms.InputTag('HTJetsclean'),
+            MHTJets  = cms.InputTag("MHTJetsclean"),
+            )
+        process.ZinvClean += process.DeltaPhiClean
+        VarsDouble.extend(['DeltaPhiClean:DeltaPhi1(DeltaPhi1clean)','DeltaPhiClean:DeltaPhi2(DeltaPhi2clean)','DeltaPhiClean:DeltaPhi3(DeltaPhi3clean)',])
+        
+        from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
+        from AllHadronicSUSY.Utils.mhtdouble_cfi import mhtdouble
+        process.MHTclean = mhtdouble.clone(
+           JetTag = cms.InputTag('MHTJetsclean'),
+        )
+        process.ZinvClean += process.MHTclean
+        VarsDouble.extend(['MHTclean'])
+
+        from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
+        process.METclean = metdouble.clone(
+           METTag = cms.InputTag("slimmedMETs"),
+           JetTag = cms.InputTag('HTJetsclean'),
+           cleanTag = cms.untracked.VInputTag(cms.InputTag('LeptonsNew:IdIsoElectron'), cms.InputTag('LeptonsNew:IdIsoMuon'), cms.InputTag('goodPhotons', 'bestPhoton'))
+        )
+        process.ZinvClean += process.METclean
+        VarsDouble.extend(['METclean:minDeltaPhiN(minDeltaPhiNclean)', 'METclean:Pt(METPtclean)'])
+
+        process.AdditionalSequence += process.ZinvClean
+        process.AdditionalSequence += process.slimmedPhotons4Vec 
+        process.AdditionalSequence += process.bestPhoton4Vec
+
+    ### end Zinv stuff ###
 
     process.WriteTree = cms.Path(
-      process.Baseline *
-      process.AdditionalSequence *
-     # process.dump *
-    	process.TreeMaker2
+        process.Baseline *
+        process.AdditionalSequence *
+#        process.dump *
+        process.TreeMaker2
     )
 
