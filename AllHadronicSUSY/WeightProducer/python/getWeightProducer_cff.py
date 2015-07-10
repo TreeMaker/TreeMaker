@@ -53,7 +53,7 @@ def getWeightProducer(fileName):
    if "WJetsToLNu_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v2" in fileName:
       mcVersion = "Spring14miniaod"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(1817.0)
+      weightProducer.XS         = cms.double(2235.0)
       weightProducer.NumberEvts = cms.double(5229141)
       print "WJetsToLNu_HT-100to200_Tune4C_13TeV : '"+fileName+"'"
       applyWeight = True
@@ -62,7 +62,7 @@ def getWeightProducer(fileName):
    if "WJetsToLNu_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v1" in fileName:
       mcVersion = "Spring14miniaod"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(471.6)
+      weightProducer.XS         = cms.double(580.1)
       weightProducer.NumberEvts = cms.double(4933933)
       print "WJetsToLNu_HT-200to400_Tune4C_13TeV : '"+fileName+"'"
       applyWeight = True
@@ -71,7 +71,7 @@ def getWeightProducer(fileName):
    if "WJetsToLNu_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v1" in fileName:
       mcVersion = "Spring14miniaod"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(55.61)
+      weightProducer.XS         = cms.double(68.40)
       weightProducer.NumberEvts = cms.double(4642823)
       print "WJetsToLNu_HT-400to600 : '"+fileName+"'"
       applyWeight = True
@@ -80,7 +80,7 @@ def getWeightProducer(fileName):
    if "WJetsToLNu_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v1" in fileName:
       mcVersion = "Spring14miniaod"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(18.81)
+      weightProducer.XS         = cms.double(23.14)
       weightProducer.NumberEvts = cms.double(4634811)
       print "WJetsToLNu_HT-600toInf : '"+fileName+"'"
       applyWeight = True
@@ -459,7 +459,7 @@ def getWeightProducer(fileName):
    if "WJetsToLNu_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(1817.0)
+      weightProducer.XS         = cms.double(2235.0)
       weightProducer.NumberEvts = cms.double(5262265)
       print "WJetsToLNu_HT-100to200_Tune4C_13TeV Phys14DR: '"+fileName+"'"
       applyWeight = True
@@ -468,7 +468,7 @@ def getWeightProducer(fileName):
    if "WJetsToLNu_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(471.6)
+      weightProducer.XS         = cms.double(580.1)
       weightProducer.NumberEvts = cms.double(4936077)
       print "WJetsToLNu_HT-200to400_Tune4C_13TeV Phys14DR: '"+fileName+"'"
       applyWeight = True
@@ -477,7 +477,7 @@ def getWeightProducer(fileName):
    if "WJetsToLNu_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(55.61)
+      weightProducer.XS         = cms.double(68.40)
       weightProducer.NumberEvts = cms.double(4640594)
       print "WJetsToLNu_HT-400to600_Tune4C_13TeV Phys14DR: '"+fileName+"'"
       applyWeight = True
@@ -486,7 +486,7 @@ def getWeightProducer(fileName):
    if "WJetsToLNu_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(18.81)
+      weightProducer.XS         = cms.double(23.14)
       weightProducer.NumberEvts = cms.double(4581841)
       print "WJetsToLNu_HT-600toInf_Tune4C_13TeV Phys14DR: '"+fileName+"'"
       applyWeight = True
@@ -495,7 +495,7 @@ def getWeightProducer(fileName):
    if "ZJetsToNuNu_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(372.6)
+      weightProducer.XS         = cms.double(473.2)
       weightProducer.NumberEvts = cms.double(4986424)
       print "ZJetsToNuNu_HT-100to200_Tune4C_13TeV '"+fileName+"'"
       applyWeight = True
@@ -504,7 +504,7 @@ def getWeightProducer(fileName):
    if "ZJetsToNuNu_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(100.8)
+      weightProducer.XS         = cms.double(128.0)
       weightProducer.NumberEvts = cms.double(4546470)
       print "ZJetsToNuNu_HT-200to400_Tune4C_13TeV '"+fileName+"'"
       applyWeight = True
@@ -513,7 +513,7 @@ def getWeightProducer(fileName):
    if "ZJetsToNuNu_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v2" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(11.99)
+      weightProducer.XS         = cms.double(15.23)
       weightProducer.NumberEvts = cms.double(4433784)
       #print "ZJetsToNuNu_HT-400to600_Tune4C_13TeV: UPDATE NUMBER OF EVENTS NOT YET AVAILABLE '"+fileName+"'"
       applyWeight = True
@@ -522,7 +522,7 @@ def getWeightProducer(fileName):
    if "ZJetsToNuNu_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(4.113)
+      weightProducer.XS         = cms.double(5.224)
       weightProducer.NumberEvts = cms.double(4463806)
       print "ZJetsToNuNu_HT-600toInf_Tune4C_13TeV '"+fileName+"'"
       applyWeight = True
@@ -531,7 +531,7 @@ def getWeightProducer(fileName):
    if "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(194.3)
+      weightProducer.XS         = cms.double(246.8)
       weightProducer.NumberEvts = cms.double(4054159)
       print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
       applyWeight = True
@@ -540,7 +540,7 @@ def getWeightProducer(fileName):
    if "DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(52.24)
+      weightProducer.XS         = cms.double(66.34)
       weightProducer.NumberEvts = cms.double(4666496)
       print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
       applyWeight = True
@@ -549,7 +549,7 @@ def getWeightProducer(fileName):
    if "DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(6.546)
+      weightProducer.XS         = cms.double(8.313)
       weightProducer.NumberEvts = cms.double(4931372)
       print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
       applyWeight = True
@@ -558,7 +558,7 @@ def getWeightProducer(fileName):
    if "DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
       mcVersion = "Phys14DR"
       weightProducer.Method     = cms.string("Constant")
-      weightProducer.XS         = cms.double(2.179)
+      weightProducer.XS         = cms.double(2.767)
       weightProducer.NumberEvts = cms.double(4493574)
       print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
       applyWeight = True
