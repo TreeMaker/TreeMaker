@@ -14,6 +14,7 @@ lostlepton=False,
 tagandprobe=False,
 applybaseline=False,
 doZinv=False,
+debugtracks=False,
 ):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -62,6 +63,9 @@ doZinv=False,
     VarsDouble = cms.vstring()
     VarsInt = cms.vstring()
     VarsBool = cms.vstring()
+    VectorTLorentzVector = cms.vstring()
+    VectorDouble = cms.vstring()
+    VectorInt = cms.vstring()
     # baseline producers
     process.Baseline = cms.Sequence(
     )
@@ -79,7 +83,9 @@ doZinv=False,
     	VarsDouble  	  = VarsDouble,
     	VarsInt = VarsInt,
     	VarsBool = VarsBool,
-
+        VectorTLorentzVector = VectorTLorentzVector,
+        VectorDouble = VectorDouble,
+        VectorInt = VectorInt,
     	)
 
     # basic producers
@@ -146,6 +152,19 @@ doZinv=False,
     VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
     VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
 
+    #NB: this increases the runtime and size of ntuples by 10x
+    #do not turn on unless you really want to save all the isotrack quantities!!!
+    if debugtracks:
+        #just store the full set of isotrack quantities once
+        process.IsolatedPionTracksVeto.debug = cms.bool(True)
+        VarsBool.extend(['IsolatedPionTracksVeto:GoodVtx(GoodVtx)'])
+        VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(pfcands)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(pfcands_trkiso)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(pfcands_dzpv)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsmT(pfcands_mT)'])
+        VectorInt.extend(['IsolatedPionTracksVeto:pfcandschg(pfcands_chg)'])
+        VectorInt.extend(['IsolatedPionTracksVeto:pfcandsid(pfcands_id)'])
+    
     #done with isolated track vetos stuff
     ########################################################
     
