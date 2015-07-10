@@ -940,8 +940,8 @@ debugtracks=False,
         process.Baseline += process.tpPairsIsoTrackElec
         process.Baseline += process.IsoTrackElecIsoEffs
         process.Baseline += process.IsoTrackPionTag
-                    process.Baseline += process.tpPairsIsoTrackPion
-                    process.Baseline += process.IsoTrackPionIsoEffs
+        process.Baseline += process.tpPairsIsoTrackPion
+        process.Baseline += process.IsoTrackPionIsoEffs
         RecoCandVector.extend(['slimmedPhotons'])
 
 	### begin Zinv stuff ###
