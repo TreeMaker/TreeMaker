@@ -65,6 +65,7 @@ debugtracks=False,
     VarsBool = cms.vstring()
     VectorTLorentzVector = cms.vstring()
     VectorDouble = cms.vstring()
+    VectorString = cms.vstring()
     VectorInt = cms.vstring()
     # baseline producers
     process.Baseline = cms.Sequence(
@@ -304,6 +305,88 @@ debugtracks=False,
     VarsBool.extend(['GoodJets(JetID)'])
     #### done with good jets
     ###########################################
+
+    # When the miniAOD file is created, the results of several different
+    # MET filters are save in a TriggerResults object for the PAT process
+    # Look at /PhysicsTools/PatAlgos/python/slimming/metFilterPaths_cff.py
+    # for the available filter flags
+
+    # The decision was made to include the filter decision flags
+    # as individual branches in the tree
+
+    from AllHadronicSUSY.Utils.filterdecisionproducer_cfi import filterDecisionProducer
+    process.METFilters = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('PAT'),
+        filterName  =   cms.string("Flag_METFilters"),
+        )
+    process.Baseline += process.METFilters
+    VarsInt.extend(['METFilters'])
+
+    process.CSCTightHaloFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('PAT'),
+        filterName  =   cms.string("Flag_CSCTightHaloFilter"),
+        )
+    process.Baseline += process.CSCTightHaloFilter
+    VarsInt.extend(['CSCTightHaloFilter'])
+
+    process.HBHENoiseFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('PAT'),
+        filterName  =   cms.string("Flag_HBHENoiseFilter"),
+        )
+    process.Baseline += process.HBHENoiseFilter
+    VarsInt.extend(['HBHENoiseFilter'])
+
+    process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('PAT'),
+        filterName  =   cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
+        )
+    process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
+    VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+
+    # The trigger results are saved to the tree as a vector
+    # Two vectors are saved, one with the names of the triggers
+    # the other with the trigger results, the indexing of these two vectors
+    # must match
+
+    from AllHadronicSUSY.Utils.triggerproducer_cfi import triggerProducer
+    process.TriggerProducer = triggerProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string('HLT'),
+        triggerNameList  =   cms.string(#space-delimited list of trigger names
+            'HLT_PFHT350_PFMET100_NoiseCleaned_v1 '\
+            'HLT_PFMET170_NoiseCleaned_v1 '\
+            'HLT_PFMET170_NoiseCleaned_v2 '\
+            'HLT_PFHT350_v1 '\
+            'HLT_PFHT800_v1 '\
+            'HLT_PFHT900_v1 '\
+            'HLT_Ele27_eta2p1_WP85_Gsf_v1 '\
+            'HLT_IsoMu20_eta2p1_IterTrk02_v1 '\
+            'HLT_PFHT350_PFMET120_NoiseCleaned_v1 '\
+            'HLT_Mu15_IsoVVVL_PFHT350_PFMET70_v1 '\
+            'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v1 '\
+            'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v1 '\
+            'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v1 '\
+            'HLT_Photon90_CaloIdL_HT500_v2 '\
+            'HLT_Photon90_CaloIdL_HT600_v1 '\
+            'HLT_DoubleEle8_CaloIdM_Mass8_PFHT300_v2 '\
+            'HLT_DoubelMu8_Mass8_PFHT300_v2 '
+            ),
+        )
+    process.Baseline += process.TriggerProducer
+    VectorInt.extend(['TriggerProducer:PassTrigger'])
+    VectorString.extend(['TriggerProducer:TriggerNames'])
+
+
+
     
     ####### Tag And Probe
     from AllHadronicSUSY.Utils.selectpfcandidates_cfi import SelectPFCandidates
