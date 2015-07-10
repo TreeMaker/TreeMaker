@@ -104,6 +104,20 @@ debugtracks=False,
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+
+    ###############
+    # gen stuff
+    ###############
+    
+    process.genParticles = cms.EDProducer("genParticlesProducer",
+                                          genCollection = cms.untracked.InputTag("prunedGenParticles"),
+                                          debug = cms.untracked.bool(False)
+                                          )
+    
+    VectorTLorentzVector.append("genParticles(genParticles)")
+    VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
+    #VectorInt.append("genParticles:parent(genParticles_parent)")
+    
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
