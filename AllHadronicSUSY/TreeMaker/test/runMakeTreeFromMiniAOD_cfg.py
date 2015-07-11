@@ -6,6 +6,7 @@ dataSetName = parameters.value("dataset","/store/mc/Phys14DR/DYJetsToLL_M-50_HT-
 global_tag = parameters.value("global_tag","PHYS14_25_V2::All")
 lostlepton= parameters.value("lostlepton", False)
 tagandprobe= parameters.value("tagandprobe", False)
+tauhad= parameters.value("tauhad", True)
 applybaseline= parameters.value("applybaseline", False)
 doZinv=parameters.value("doZinv", False)
 gridcontrol=parameters.value("gridcontrol", False)
@@ -37,6 +38,7 @@ makeTreeFromMiniAOD(process,
   testFileName=dataSetName,
   Global_Tag=global_tag,
   numProcessedEvt=numevents,
+  tauhad=tauhad,
   lostlepton=lostlepton,
   tagandprobe=tagandprobe,
   applybaseline=applybaseline,
