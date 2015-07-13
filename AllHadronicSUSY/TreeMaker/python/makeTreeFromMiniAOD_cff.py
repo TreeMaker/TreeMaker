@@ -379,7 +379,9 @@ debugtracks=False,
             'HLT_Photon90_CaloIdL_HT500_v2 '\
             'HLT_Photon90_CaloIdL_HT600_v1 '\
             'HLT_DoubleEle8_CaloIdM_Mass8_PFHT300_v2 '\
-            'HLT_DoubelMu8_Mass8_PFHT300_v2 '
+            'HLT_DoubleMu8_Mass8_PFHT300_v2 '\
+            'HLT_Ele27_eta2p1_WPLoose_Gsf_v1 '\
+            'HLT_IsoMu17_eta2p1_v2 '
             ),
         )
     process.Baseline += process.TriggerProducer
