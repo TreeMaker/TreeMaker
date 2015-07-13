@@ -15,6 +15,8 @@ tagandprobe=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
+geninfo=True,
+filtertag="PAT"
 ):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -33,12 +35,13 @@ debugtracks=False,
     process.MessageLogger.cerr = cms.untracked.PSet(
         placeholder = cms.untracked.bool(True)
         )
-    process.MessageLogger.cout = cms.untracked.PSet(
-        INFO = cms.untracked.PSet(reportEvery = cms.untracked.int32(reportEveryEvt))
-        )
+    #process.MessageLogger.cout = cms.untracked.PSet(
+    #    INFO = cms.untracked.PSet(reportEvery = cms.untracked.int32(reportEveryEvt))
+    #    )
     process.options = cms.untracked.PSet(
         wantSummary = cms.untracked.bool(True)
         ) 
+    process.MessageLogger.suppressInfo = cms.untracked.vstring('HcalGeometry')
 
 
     ## --- Files to process ------------------------------------------------
@@ -111,15 +114,18 @@ debugtracks=False,
     # gen stuff
     ###############
     
-    process.genParticles = cms.EDProducer("genParticlesProducer",
-                                          genCollection = cms.untracked.InputTag("prunedGenParticles"),
-                                          debug = cms.untracked.bool(False)
-                                          )
+    if geninfo :
+        process.genParticles = cms.EDProducer("genParticlesProducer",
+                                              genCollection = cms.untracked.InputTag("prunedGenParticles"),
+                                              debug = cms.untracked.bool(False)
+                                              )
     
-    VectorTLorentzVector.append("genParticles(genParticles)")
-    VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
-    #VectorInt.append("genParticles:parent(genParticles_parent)")
+        VectorTLorentzVector.append("genParticles(genParticles)")
+        VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
+        #VectorInt.append("genParticles:parent(genParticles_parent)")
     
+        process.Baseline += process.genParticles
+
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
@@ -227,7 +233,14 @@ debugtracks=False,
                                          rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
                                          debug = cms.untracked.bool(False)
                                          )
+
+    process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
+                                            particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
+                                            debug = cms.untracked.bool(False)
+                                            )
+
     process.Baseline += process.goodPhotons
+    process.Baseline += process.bestPhoton4Vec
 
     process.TreeMaker2.VectorTLorentzVector.append("bestPhoton4Vec(bestPhoton)")
     process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotons(NumPhotons)")
@@ -319,7 +332,7 @@ debugtracks=False,
     process.METFilters = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('PAT'),
+        trigTagArg3  = cms.string(filtertag),
         filterName  =   cms.string("Flag_METFilters"),
         )
     process.Baseline += process.METFilters
@@ -328,7 +341,7 @@ debugtracks=False,
     process.CSCTightHaloFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('PAT'),
+        trigTagArg3  = cms.string(filtertag),
         filterName  =   cms.string("Flag_CSCTightHaloFilter"),
         )
     process.Baseline += process.CSCTightHaloFilter
@@ -337,7 +350,7 @@ debugtracks=False,
     process.HBHENoiseFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('PAT'),
+        trigTagArg3  = cms.string(filtertag),
         filterName  =   cms.string("Flag_HBHENoiseFilter"),
         )
     process.Baseline += process.HBHENoiseFilter
@@ -346,7 +359,7 @@ debugtracks=False,
     process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('PAT'),
+        trigTagArg3  = cms.string(filtertag),
         filterName  =   cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
     process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
@@ -959,11 +972,13 @@ debugtracks=False,
     METTag  = cms.InputTag("slimmedMETs"),
     )
     process.Baseline += process.JetsProperties
-    from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
-    process.GenLeptons = genLeptonRecoCand.clone(
-    PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
-    )
-    process.LostLepton += process.GenLeptons
+    if geninfo : 
+        from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
+        process.GenLeptons = genLeptonRecoCand.clone(
+            PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
+            )
+        process.LostLepton += process.GenLeptons
+
     process.SelectedPFCandidates = SelectPFCandidates.clone(
     PackedPFCandidatesTag               = cms.InputTag('packedPFCandidates'),
     MinPt								  = cms.double(4),
@@ -974,7 +989,8 @@ debugtracks=False,
     #define sequences
     
     #baseline RA2/b variables default shared variables
-    RecoCandVector.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
+    if geninfo :
+        RecoCandVector.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
 
     ## --- Final paths ----------------------------------------------------
 
@@ -989,8 +1005,9 @@ debugtracks=False,
     #  VarsRecoCand = cms.vstring('selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDMuons','IsolatedTracks','HTJets'),
    #   RecoCandVector.extend(['selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDElectrons','IsolatedTracks']),
       RecoCandVector.extend(['IsolatedElectronTracksVeto|IsolatedElectronTracksVeto:MT(F_MT)','IsolatedMuonTracksVeto|IsolatedMuonTracksVeto:MT(F_MT)','IsolatedPionTracksVeto|IsolatedPionTracksVeto:MT(F_MT)','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)|LeptonsNew:MuIDIsoMTW(F_MTW)','LeptonsNew:IdMuon(selectedIDMuons)|LeptonsNew:MuIDMTW(F_MTW)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)|LeptonsNew:ElecIDIsoMTW(F_MTW)','LeptonsNew:IdElectron(selectedIDElectrons)|LeptonsNew:ElecIDMTW(F_MTW)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
-      RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
-      RecoCandVector.extend(['GenLeptons:TauDecayCands(TauDecayCands)|GenLeptons:TauDecayCandspdgID(I_pdgID)'])
+      if geninfo :
+          RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)' ,'GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
+          RecoCandVector.extend(['GenLeptons:TauDecayCands(TauDecayCands)|GenLeptons:TauDecayCandspdgID(I_pdgID)'])
       RecoCandVector.extend(['LeptonsNewTag:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewTag:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] ) # gen information on leptons
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
       RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
@@ -1004,7 +1021,8 @@ debugtracks=False,
         process.Baseline += process.SelectedPFElecCandidates
         process.Baseline += process.SelectedPFMuCandidates
         process.Baseline += process.SelectedPFPionCandidates
-        process.Baseline += process.GenLeptons
+        if geninfo : 
+            process.Baseline += process.GenLeptons
         process.Baseline += process.JetsProperties
         process.Baseline += process.SelectedPFCandidates
         process.Baseline += process.MuonIsoTag
@@ -1053,11 +1071,6 @@ debugtracks=False,
         
         process.TreeMaker2.VectorTLorentzVector.append("slimmedPhotons4Vec(photonCands)")
         
-        process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
-                                                particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
-                                                debug = cms.untracked.bool(False)
-                                                )
-
         process.ZinvClean = cms.Sequence()
 
         from AllHadronicSUSY.Utils.zproducer_cfi import ZProducer
@@ -1133,7 +1146,7 @@ debugtracks=False,
            JetTag = cms.InputTag('MHTJetsclean'),
         )
         process.ZinvClean += process.MHTclean
-        VarsDouble.extend(['MHTclean'])
+        VarsDouble.extend(['MHTclean:Pt(MHTclean)'])
 
         from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
         process.METclean = metdouble.clone(
@@ -1146,7 +1159,6 @@ debugtracks=False,
 
         process.AdditionalSequence += process.ZinvClean
         process.AdditionalSequence += process.slimmedPhotons4Vec 
-        process.AdditionalSequence += process.bestPhoton4Vec
 
     ### end Zinv stuff ###
 
