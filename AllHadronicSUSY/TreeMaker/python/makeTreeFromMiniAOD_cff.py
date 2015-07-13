@@ -15,7 +15,8 @@ tagandprobe=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
-geninfo=True
+geninfo=True,
+filtertag="PAT"
 ):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -34,6 +35,7 @@ geninfo=True
     process.MessageLogger.cerr = cms.untracked.PSet(
         placeholder = cms.untracked.bool(True)
         )
+    process.MessageLogger.suppressInfo = cms.untracked.vstring('HcalGeometry')
     process.MessageLogger.cout = cms.untracked.PSet(
         INFO = cms.untracked.PSet(reportEvery = cms.untracked.int32(reportEveryEvt))
         )
@@ -122,6 +124,8 @@ geninfo=True
         VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
         #VectorInt.append("genParticles:parent(genParticles_parent)")
     
+        process.Baseline += process.genParticles
+
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
@@ -328,7 +332,7 @@ geninfo=True
     process.METFilters = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('RECO'),
+        trigTagArg3  = cms.string(filtertag),
         filterName  =   cms.string("Flag_METFilters"),
         )
     process.Baseline += process.METFilters
@@ -337,7 +341,7 @@ geninfo=True
     process.CSCTightHaloFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('RECO'),
+        trigTagArg3  = cms.string(filtertag),
         filterName  =   cms.string("Flag_CSCTightHaloFilter"),
         )
     process.Baseline += process.CSCTightHaloFilter
@@ -346,7 +350,7 @@ geninfo=True
     process.HBHENoiseFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('RECO'),
+        trigTagArg3  = cms.string(filtertag),
         filterName  =   cms.string("Flag_HBHENoiseFilter"),
         )
     process.Baseline += process.HBHENoiseFilter
@@ -355,7 +359,7 @@ geninfo=True
     process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('RECO'),
+        trigTagArg3  = cms.string(filtertag),
         filterName  =   cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
     process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter

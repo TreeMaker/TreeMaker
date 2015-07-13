@@ -2,7 +2,8 @@
 from AllHadronicSUSY.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
 #dataSetName = parameters.value("dataset","file:/pnfs/desy.de/cms/tier2/store/mc/Phys14DR/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/F452BBD7-BE76-E411-B1D7-002590DB928E.root")
-dataSetName = parameters.value("dataset","/store/data/Run2015B/DoubleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/12284DB9-4227-E511-A438-02163E013674.root")
+#dataSetName = parameters.value("dataset","/store/data/Run2015B/DoubleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/12284DB9-4227-E511-A438-02163E013674.root")
+dataSetName = parameters.value("dataset","/store/mc/Phys14DR/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/04860BAA-B673-E411-8B20-002481E0D50C.root")
 global_tag = parameters.value("global_tag","PHYS14_25_V2::All")
 lostlepton= parameters.value("lostlepton", False)
 tagandprobe= parameters.value("tagandprobe", False)
@@ -11,6 +12,7 @@ doZinv=parameters.value("doZinv", False)
 gridcontrol=parameters.value("gridcontrol", False)
 numevents=parameters.value("numevents",-1)
 geninfo=parameters.value("geninfo",True)
+filtertag=parameters.value("filtertag","PAT")
 
 print "***** SETUP ************************************"
 print " dataSetName : "+dataSetName
@@ -20,6 +22,7 @@ print " storing tag and probe variables: "+str(tagandprobe)
 print " storing Zinv variables: "+str(doZinv)
 print " Applying baseline selection filter: "+str(applybaseline)
 print " Including gen-level information: "+str(geninfo)
+print " Instance name of filter information: "+filtertag
 print "************************************************"
 
 # The process needs to be defined AFTER reading sys.argv,
@@ -43,6 +46,7 @@ makeTreeFromMiniAOD(process,
   tagandprobe=tagandprobe,
   applybaseline=applybaseline,
   doZinv=doZinv,
-  geninfo=geninfo
+  geninfo=geninfo,
+  filtertag=filtertag
 )
 
