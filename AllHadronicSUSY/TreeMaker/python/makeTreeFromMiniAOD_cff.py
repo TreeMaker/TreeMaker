@@ -15,6 +15,7 @@ tagandprobe=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
+geninfo=True
 ):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -111,14 +112,15 @@ debugtracks=False,
     # gen stuff
     ###############
     
-    process.genParticles = cms.EDProducer("genParticlesProducer",
-                                          genCollection = cms.untracked.InputTag("prunedGenParticles"),
-                                          debug = cms.untracked.bool(False)
-                                          )
+    if geninfo :
+        process.genParticles = cms.EDProducer("genParticlesProducer",
+                                              genCollection = cms.untracked.InputTag("prunedGenParticles"),
+                                              debug = cms.untracked.bool(False)
+                                              )
     
-    VectorTLorentzVector.append("genParticles(genParticles)")
-    VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
-    #VectorInt.append("genParticles:parent(genParticles_parent)")
+        VectorTLorentzVector.append("genParticles(genParticles)")
+        VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
+        #VectorInt.append("genParticles:parent(genParticles_parent)")
     
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -227,7 +229,14 @@ debugtracks=False,
                                          rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
                                          debug = cms.untracked.bool(False)
                                          )
+
+    process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
+                                            particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
+                                            debug = cms.untracked.bool(False)
+                                            )
+
     process.Baseline += process.goodPhotons
+    process.Baseline += process.bestPhoton4Vec
 
     process.TreeMaker2.VectorTLorentzVector.append("bestPhoton4Vec(bestPhoton)")
     process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotons(NumPhotons)")
@@ -319,7 +328,7 @@ debugtracks=False,
     process.METFilters = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('PAT'),
+        trigTagArg3  = cms.string('RECO'),
         filterName  =   cms.string("Flag_METFilters"),
         )
     process.Baseline += process.METFilters
@@ -328,7 +337,7 @@ debugtracks=False,
     process.CSCTightHaloFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('PAT'),
+        trigTagArg3  = cms.string('RECO'),
         filterName  =   cms.string("Flag_CSCTightHaloFilter"),
         )
     process.Baseline += process.CSCTightHaloFilter
@@ -337,7 +346,7 @@ debugtracks=False,
     process.HBHENoiseFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('PAT'),
+        trigTagArg3  = cms.string('RECO'),
         filterName  =   cms.string("Flag_HBHENoiseFilter"),
         )
     process.Baseline += process.HBHENoiseFilter
@@ -346,7 +355,7 @@ debugtracks=False,
     process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string('PAT'),
+        trigTagArg3  = cms.string('RECO'),
         filterName  =   cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
     process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
@@ -1053,11 +1062,6 @@ debugtracks=False,
         
         process.TreeMaker2.VectorTLorentzVector.append("slimmedPhotons4Vec(photonCands)")
         
-        process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
-                                                particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
-                                                debug = cms.untracked.bool(False)
-                                                )
-
         process.ZinvClean = cms.Sequence()
 
         from AllHadronicSUSY.Utils.zproducer_cfi import ZProducer
@@ -1146,7 +1150,6 @@ debugtracks=False,
 
         process.AdditionalSequence += process.ZinvClean
         process.AdditionalSequence += process.slimmedPhotons4Vec 
-        process.AdditionalSequence += process.bestPhoton4Vec
 
     ### end Zinv stuff ###
 
