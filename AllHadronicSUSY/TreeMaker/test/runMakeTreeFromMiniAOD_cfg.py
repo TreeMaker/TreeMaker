@@ -4,13 +4,13 @@ parameters = CommandLineParams()
 #dataSetName = parameters.value("dataset","file:/pnfs/desy.de/cms/tier2/store/mc/Phys14DR/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/F452BBD7-BE76-E411-B1D7-002590DB928E.root")
 dataSetName = parameters.value("dataset","/store/data/Run2015B/DoubleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/12284DB9-4227-E511-A438-02163E013674.root")
 global_tag = parameters.value("global_tag","PHYS14_25_V2::All")
-lostlepton= parameters.value("lostlepton", False)
+lostlepton= parameters.value("lostlepton", True)
 tagandprobe= parameters.value("tagandprobe", False)
 applybaseline= parameters.value("applybaseline", False)
-doZinv=parameters.value("doZinv", False)
+doZinv=parameters.value("doZinv", True)
 gridcontrol=parameters.value("gridcontrol", False)
 numevents=parameters.value("numevents",-1)
-geninfo=parameters.value("geninfo",True)
+geninfo=parameters.value("geninfo",False)
 
 print "***** SETUP ************************************"
 print " dataSetName : "+dataSetName

@@ -968,11 +968,13 @@ geninfo=True
     METTag  = cms.InputTag("slimmedMETs"),
     )
     process.Baseline += process.JetsProperties
-    from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
-    process.GenLeptons = genLeptonRecoCand.clone(
-    PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
-    )
-    process.LostLepton += process.GenLeptons
+    if geninfo : 
+        from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
+        process.GenLeptons = genLeptonRecoCand.clone(
+            PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
+            )
+        process.LostLepton += process.GenLeptons
+
     process.SelectedPFCandidates = SelectPFCandidates.clone(
     PackedPFCandidatesTag               = cms.InputTag('packedPFCandidates'),
     MinPt								  = cms.double(4),
@@ -1137,7 +1139,7 @@ geninfo=True
            JetTag = cms.InputTag('MHTJetsclean'),
         )
         process.ZinvClean += process.MHTclean
-        VarsDouble.extend(['MHTclean'])
+        VarsDouble.extend(['MHTclean:Pt(MHTclean)'])
 
         from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
         process.METclean = metdouble.clone(
