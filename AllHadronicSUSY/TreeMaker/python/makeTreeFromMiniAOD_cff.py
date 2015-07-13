@@ -16,7 +16,8 @@ applybaseline=False,
 doZinv=False,
 debugtracks=False,
 geninfo=True,
-filtertag="PAT"
+filtertag="PAT",
+jsonfile=""
 ):
 
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
@@ -45,17 +46,15 @@ filtertag="PAT"
 
 
     ## --- Files to process ------------------------------------------------
+    import FWCore.PythonUtilities.LumiList as LumiList
     process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(numProcessedEvt)
         )
     process.source = cms.Source("PoolSource",
-
         fileNames = cms.untracked.vstring(testFileName)
- #       fileNames = cms.untracked.vstring(
- #		'file:/nfs/dust/cms/user/csander/LHE/workdir/simulation_test/T1qqqqHV/output_66.root'
-#		)
-        )
-        
+    )
+    if len(jsonfile)>0: process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
+
     ## --- Output file -----------------------------------------------------
     process.TFileService = cms.Service(
         "TFileService",

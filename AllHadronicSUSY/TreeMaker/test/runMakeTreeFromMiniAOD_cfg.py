@@ -13,6 +13,7 @@ gridcontrol=parameters.value("gridcontrol", False)
 numevents=parameters.value("numevents",-1)
 geninfo=parameters.value("geninfo",False)
 filtertag=parameters.value("filtertag","RECO")
+jsonfile=parameters.value("jsonfile","")
 
 print "***** SETUP ************************************"
 print " dataSetName : "+dataSetName
@@ -23,6 +24,7 @@ print " storing Zinv variables: "+str(doZinv)
 print " Applying baseline selection filter: "+str(applybaseline)
 print " Including gen-level information: "+str(geninfo)
 print " Instance name of filter information: "+filtertag
+if len(jsonfile)>0: print " JSON file applied: "+jsonfile
 print "************************************************"
 
 # The process needs to be defined AFTER reading sys.argv,
@@ -47,6 +49,7 @@ makeTreeFromMiniAOD(process,
   applybaseline=applybaseline,
   doZinv=doZinv,
   geninfo=geninfo,
-  filtertag=filtertag
+  filtertag=filtertag,
+  jsonfile=jsonfile
 )
 
