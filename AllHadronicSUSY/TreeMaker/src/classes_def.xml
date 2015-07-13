@@ -1,5 +1,0 @@
-<lcgdict>
-  <class name="std::vector<TLorentzVector>"/>
-  <class name="std::vector<std::vector<TLorentzVector> >"/>
-</lcgdict>
-

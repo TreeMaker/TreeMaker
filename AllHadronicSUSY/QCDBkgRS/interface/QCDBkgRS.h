@@ -190,8 +190,8 @@ private:
    void FillPredictions_gen(const std::vector<reco::GenJet>&, const int&, const double&, std::map <const reco::GenJet*, bool>& );
    double calcHT(const std::vector<pat::Jet>&);
    double calcHT_gen(const std::vector<reco::GenJet>&);
-   math::PtEtaPhiMLorentzVector calcMHT(const std::vector<pat::Jet>&);
-   math::PtEtaPhiMLorentzVector calcMHT_gen(const std::vector<reco::GenJet>&);
+   math::PtEtaPhiMLorentzVector calcMHT(const std::vector<pat::Jet>&, double);
+   math::PtEtaPhiMLorentzVector calcMHT_gen(const std::vector<reco::GenJet>&, double);
    int calcNJets(const std::vector<pat::Jet>&);
    int calcNJets_gen(const std::vector<reco::GenJet>&);
    int calcNBJets(const std::vector<pat::Jet>&);
@@ -217,6 +217,11 @@ private:
    TH2F* h_RebJetRes_Eta;
    TH2F* h_SmearedJetRes_Pt;
    TH2F* h_SmearedJetRes_Eta;
+   
+   TH2F *h_DeltaPhiRecoGenJet1_GenHT_LowMHT, *h_DeltaPhiRecoGenJet2_GenHT_LowMHT, *h_DeltaPhiRecoGenJet3_GenHT_LowMHT;
+   TH2F *h_DeltaPhiRecoGenJet1_GenHT_HighMHT, *h_DeltaPhiRecoGenJet2_GenHT_HighMHT, *h_DeltaPhiRecoGenJet3_GenHT_HighMHT;
+   TH2F *h_AddRelJetActivity07GenJet1_GenHT_LowMHT, *h_AddRelJetActivity07GenJet2_GenHT_LowMHT, *h_AddRelJetActivity07GenJet3_GenHT_LowMHT;
+   TH2F *h_AddRelJetActivity07GenJet1_GenHT_HighMHT, *h_AddRelJetActivity07GenJet2_GenHT_HighMHT, *h_AddRelJetActivity07GenJet3_GenHT_HighMHT;
 
    TH2F* h_RebCorrection_vsReco;  
    TH1F* h_RebCorrectionFactor;
@@ -275,12 +280,15 @@ private:
    Float_t Jet1Pt_pred;
    Float_t Jet2Pt_pred;
    Float_t Jet3Pt_pred;
+   Float_t Jet4Pt_pred;
    Float_t Jet1Eta_pred;
    Float_t Jet2Eta_pred;
    Float_t Jet3Eta_pred;
+   Float_t Jet4Eta_pred;
    Float_t DeltaPhi1_pred;
    Float_t DeltaPhi2_pred;
    Float_t DeltaPhi3_pred;
+   Float_t DeltaPhiMinN_pred;
    
    std::map <const reco::GenJet*, bool> genJet_btag;
    

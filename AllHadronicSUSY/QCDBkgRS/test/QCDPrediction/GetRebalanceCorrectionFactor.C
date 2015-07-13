@@ -35,14 +35,14 @@ void GetRebalanceCorrectionFactor()
    TString pt = "pt10";
    double x_min = 10.;
 
-   TString outfile = "RebalanceCorrectionFactor/RebalanceCorrectionFactors_madgraph_phys14_withoutPUReweighting_" + pt;
+   TString outfile = "RebalanceCorrectionFactor/RebalanceCorrectionFactors_pythia_phys14_withoutPUReweighting_" + pt;
 
    TH2F* RebCorrection_vsReco = new TH2F("RebCorrection_vsReco", "Jet pt", 1000, 0., 1000., 100, 0., 3.);
    
    string root_file;
 
    // madgraph
-   ifstream myfile ("filelists_phys14/filelist_madgraph_phys14_v1.txt");
+   ifstream myfile ("filelists_phys14/filelist_pythia.txt");
    if (myfile.is_open()) {
       while( myfile.good() ) {
          getline (myfile,root_file);
@@ -84,12 +84,14 @@ void GetRebalanceCorrectionFactor()
    // ---------------------------------------------------- //
 
    TCanvas *c = new TCanvas("c", "", CanvasPlot[2], CanvasPlot[3]);
+   correction_vsReco->SetMinimum(0.8);
+   correction_vsReco->SetMaximum(1.2);
    correction_vsReco->SetAxisRange(x_min, correction_vsReco->GetXaxis()->GetXmax());
    correction_vsReco->SetXTitle("reco jet p_{T} [GeV]");
    correction_vsReco->SetYTitle("reb jet p_{T} / gen jet p_{T} ");
    correction_vsReco->Draw();
 
-   TPaveText* pt1 = CMSLabelMC("4.0");
+   TPaveText* pt1 = CMSLabelMC("10.0");
    pt1->Draw();
 
    c->Print(outfile + "_vsReco.ps");  

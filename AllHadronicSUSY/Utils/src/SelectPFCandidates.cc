@@ -56,6 +56,7 @@ private:
   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag packedPFCandidatesTag_;
   double minPT_, maxEta_;
+  int selectpdgIDTyp_;
   
   
   
@@ -80,6 +81,7 @@ SelectPFCandidates::SelectPFCandidates(const edm::ParameterSet& iConfig)
   packedPFCandidatesTag_ 				= 	iConfig.getParameter<edm::InputTag >("PackedPFCandidatesTag");	
   minPT_ = iConfig.getParameter<double> ("MinPt");
   maxEta_ = iConfig.getParameter<double> ("MaxEta");
+  selectpdgIDTyp_= iConfig.getParameter<int> ("SelectpdgIDTyp");
   produces<std::vector<pat::PackedCandidate> >("");
 	const std::string string1t("Charge");
 	produces<std::vector<int> > (string1t).setBranchAlias(string1t);
@@ -129,6 +131,7 @@ SelectPFCandidates::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   {
     if((*packed)[i].pt() > minPT_ && abs((*packed)[i].eta() )<maxEta_)
     {
+      if(selectpdgIDTyp_!=0 && selectpdgIDTyp_!=std::abs((*packed)[i].pdgId ())) continue;
       selectedFPCandidates->push_back((*packed)[i]);
 			selectedPFCandCharge->push_back((*packed)[i].charge());
 			if((*packed)[i].isJet() ) selectedPFCandTyp->push_back(0);

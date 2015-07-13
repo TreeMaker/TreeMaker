@@ -92,6 +92,7 @@ void SmearFunction::CalculateSmearFunctions() {
          
          for (unsigned int i_flav = 0; i_flav < 2; ++i_flav) { // loop over jet flavor
             for (unsigned int i_jet = 0; i_jet < 3; ++i_jet) { // loop over jet rank
+               //cout << "i_Pt: " << i_Pt <<  " i_eta: " << i_eta <<  " i_flav: " << i_flav <<  " i_jet: " << i_jet << endl;
                smearFunc.at(i_flav).at(i_jet).at(i_eta).at(i_Pt)->Rebin(NRebin_);
                if (probExtreme_ > 0) {
                   double p = probExtreme_ * smearFunc.at(i_flav).at(i_jet).at(i_eta).at(i_Pt)->Integral();
@@ -245,6 +246,7 @@ void SmearFunction::CalculateSmearFunctions() {
       for (unsigned int i_jet = 0; i_jet < 3; ++i_jet) {
          for (unsigned int i_Pt = 0; i_Pt < PtBinEdges_.size() - 1; ++i_Pt) {
             for (unsigned int i_eta = 0; i_eta < EtaBinEdges_.size() - 1; ++i_eta) {
+               //cout << "i_Pt: " << i_Pt <<  " i_eta: " << i_eta <<  " i_flav: " << i_flav <<  " i_jet: " << i_jet << endl;
                char hname[100];
                sprintf(hname, "SmearedAndScaledResolution_Pt%i_Eta%i_Jet%i_JetFlavor%i", i_Pt, i_eta, i_jet + 1, i_flav);
                smearFunc_scaled.at(i_flav).at(i_jet).at(i_eta).at(i_Pt) = fs->make<TH1F> (hname, hname,

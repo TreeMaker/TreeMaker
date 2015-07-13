@@ -422,6 +422,7 @@ void QCDBkgRS::SmearingJets(const std::vector<pat::Jet> &Jets_reb, std::vector<p
       double w = weight_;
       if (cleverPrescaleTreating_ == true && weight_ > 1) {
          Ntries2 = (int) weight_;
+         if (Ntries2 > 100) Ntries2 = 100;
          w = weight_ / Ntries2;
       }
       for (int j = 1; j <= Ntries2; ++j) {
@@ -461,8 +462,11 @@ void QCDBkgRS::SmearingJets(const std::vector<pat::Jet> &Jets_reb, std::vector<p
                if( MHT_pred > 100. ){
                   PredictionTree->Fill();
                }
+            } else {
+               if( HT_pred > 500. && MHT_pred > 200.){
+                  PredictionTree->Fill();
+               }
             }
-            else PredictionTree->Fill();
             
             // clean variables in tree
             weight = 0.;
@@ -474,12 +478,15 @@ void QCDBkgRS::SmearingJets(const std::vector<pat::Jet> &Jets_reb, std::vector<p
             Jet1Pt_pred = 0.;
             Jet2Pt_pred = 0.;
             Jet3Pt_pred = 0.;
+            Jet4Pt_pred = 0.;
             Jet1Eta_pred = 0.;
             Jet2Eta_pred = 0.;
             Jet3Eta_pred = 0.;
+            Jet4Eta_pred = 0.;
             DeltaPhi1_pred = 0.;
             DeltaPhi2_pred = 0.;
             DeltaPhi3_pred = 0.;
+            DeltaPhiMinN_pred = 0.;
          }
       }
    }
@@ -505,60 +512,76 @@ void QCDBkgRS::SmearingGenJets(edm::View<reco::GenJet>* Jets_gen, std::vector<re
    }
    
    for (int i = 1; i <= Ntries_; ++i) {
-      
-      GenJets_smeared.clear();
-      std::map <const reco::GenJet*, bool> genJet2_btag;
-      
-      int i_jet = 0;
-      
-      for (edm::View<reco::GenJet>::const_iterator it = Jets_gen->begin(); it != Jets_gen->end(); ++it) {
-         
-         if (it->pt() > smearedJetPt_) {
-            double newPt = 0;
-            bool btag = genJet_btag[&(*it)];
-            newPt = it->pt() * JetResolutionHist_Pt_Smear(it->pt(), it->eta(), i_jet, HT, NJets_gen, btag);
-            //double newEta = rand_->Gaus(it->eta(), TMath::Sqrt(JetResolution_Eta2(it->energy(), it->eta())));
-            //double newPhi = rand_->Gaus(it->phi(), TMath::Sqrt(JetResolution_Phi2(it->energy(), it->eta())));
-            double newEta = it->eta();
-            double newPhi = it->phi();
-            reco::GenJet::PolarLorentzVector newP4(newPt, newEta, newPhi, it->mass());
-            reco::GenJet smearedJet(*it);
-            smearedJet.setP4(newP4);
-            GenJets_smeared.push_back(smearedJet);
-            dPx -= newP4.Px() - it->px();
-            dPy -= newP4.Py() - it->py();
-            genJet2_btag[&(GenJets_smeared.back())] = btag;
-            ++i_jet;
-         } else {
-            reco::GenJet smearedJet(*it);
-            GenJets_smeared.push_back(smearedJet);
-         }
+      int Ntries2 = 1;
+      double w = weight_;
+      if (cleverPrescaleTreating_ == true && weight_ > 1) {
+         Ntries2 = (int) weight_;
+         if (Ntries2 > 100) Ntries2 = 100;
+         w = weight_ / Ntries2;
       }
-      GreaterByPt<reco::Candidate> ptComparator_;
-      std::sort(GenJets_smeared.begin(), GenJets_smeared.end(), ptComparator_);
-      
-      //Fill HT and MHT prediction histos for i-th iteration of smearing
-      int NJets = calcNJets_gen(GenJets_smeared);
-      if (NJets >= NJets_) {
-         FillPredictions_gen(GenJets_smeared, i, weight_, genJet2_btag);
-         PredictionTree->Fill();
+      for (int j = 1; j <= Ntries2; ++j) {
          
-         // clean variables in tree
-         weight = 0.;
-         Ntries_pred = 0.;
-         Njets_pred = 0;
-         BTags_pred = 0;
-         HT_pred = 0.;
-         MHT_pred = 0.;
-         Jet1Pt_pred = 0.;
-         Jet2Pt_pred = 0.;
-         Jet3Pt_pred = 0.;
-         Jet1Eta_pred = 0.;
-         Jet2Eta_pred = 0.;
-         Jet3Eta_pred = 0.;
-         DeltaPhi1_pred = 0.;
-         DeltaPhi2_pred = 0.;
-         DeltaPhi3_pred = 0.;
+         GenJets_smeared.clear();
+         std::map <const reco::GenJet*, bool> genJet2_btag;
+         
+         int i_jet = 0;
+         
+         for (edm::View<reco::GenJet>::const_iterator it = Jets_gen->begin(); it != Jets_gen->end(); ++it) {
+            
+            if (it->pt() > smearedJetPt_) {
+               double newPt = 0;
+               bool btag = genJet_btag[&(*it)];
+               newPt = it->pt() * JetResolutionHist_Pt_Smear(it->pt(), it->eta(), i_jet, HT, NJets_gen, btag);
+               //double newEta = rand_->Gaus(it->eta(), TMath::Sqrt(JetResolution_Eta2(it->energy(), it->eta())));
+               //double newPhi = rand_->Gaus(it->phi(), TMath::Sqrt(JetResolution_Phi2(it->energy(), it->eta())));
+               double newEta = it->eta();
+               double newPhi = it->phi();
+               reco::GenJet::PolarLorentzVector newP4(newPt, newEta, newPhi, it->mass());
+               reco::GenJet smearedJet(*it);
+               smearedJet.setP4(newP4);
+               GenJets_smeared.push_back(smearedJet);
+               dPx -= newP4.Px() - it->px();
+               dPy -= newP4.Py() - it->py();
+               genJet2_btag[&(GenJets_smeared.back())] = btag;
+               ++i_jet;
+            } else {
+               reco::GenJet smearedJet(*it);
+               GenJets_smeared.push_back(smearedJet);
+            }
+         }
+         GreaterByPt<reco::Candidate> ptComparator_;
+         std::sort(GenJets_smeared.begin(), GenJets_smeared.end(), ptComparator_);
+         
+         //Fill HT and MHT prediction histos for i-th iteration of smearing
+         int NJets = calcNJets_gen(GenJets_smeared);
+         if (NJets >= NJets_) {
+            FillPredictions_gen(GenJets_smeared, i, w, genJet2_btag);
+ 
+            // save only events with HT > 500 && MHT > 50. GeV for data
+            if( HT_pred > 500. && MHT_pred > 200.){
+               PredictionTree->Fill();
+            }
+            
+            // clean variables in tree
+            weight = 0.;
+            Ntries_pred = 0.;
+            Njets_pred = 0;
+            BTags_pred = 0;
+            HT_pred = 0.;
+            MHT_pred = 0.;
+            Jet1Pt_pred = 0.;
+            Jet2Pt_pred = 0.;
+            Jet3Pt_pred = 0.;
+            Jet4Pt_pred = 0.;
+            Jet1Eta_pred = 0.;
+            Jet2Eta_pred = 0.;
+            Jet3Eta_pred = 0.;
+            Jet4Eta_pred = 0.;
+            DeltaPhi1_pred = 0.;
+            DeltaPhi2_pred = 0.;
+            DeltaPhi3_pred = 0.;
+            DeltaPhiMinN_pred = 0.;
+         }
       }
    }
    
@@ -622,10 +645,10 @@ bool QCDBkgRS::calcMinDeltaPhi(const std::vector<pat::Jet>& Jets_smeared, math::
 //--------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------
-math::PtEtaPhiMLorentzVector QCDBkgRS::calcMHT(const std::vector<pat::Jet>& Jets_smeared) {
+math::PtEtaPhiMLorentzVector QCDBkgRS::calcMHT(const std::vector<pat::Jet>& Jets_smeared, double ptcut) {
    math::PtEtaPhiMLorentzVector MHT(0, 0, 0, 0);
    for (vector<pat::Jet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
-      if (it->pt() > JetsMHTPt_ && std::abs(it->eta()) < JetsMHTEta_) {
+      if (it->pt() > ptcut && std::abs(it->eta()) < JetsMHTEta_) {
          MHT -= it->p4();
       }
    }
@@ -651,13 +674,21 @@ void QCDBkgRS::FillLeadingJetPredictions(const std::vector<pat::Jet>& Jets_smear
          if( NJets == 3 ) {
             Jet3Pt_pred = it->pt();
             Jet3Eta_pred = it->eta();
+         }
+         if( NJets == 4 ) {
+            Jet4Pt_pred = it->pt();
+            Jet4Eta_pred = it->eta();
             break;
          }
       }
    }
-   if( NJets == 2 ) {
+   if( NJets < 3 ) {
       Jet3Pt_pred = -1.;
       Jet3Eta_pred = 9999.;
+   }
+   if( NJets < 4 ) {
+      Jet4Pt_pred = -1.;
+      Jet4Eta_pred = 9999.;
    }
    
    return;
@@ -666,23 +697,49 @@ void QCDBkgRS::FillLeadingJetPredictions(const std::vector<pat::Jet>& Jets_smear
 
 //--------------------------------------------------------------------------
 void QCDBkgRS::FillDeltaPhiPredictions(const std::vector<pat::Jet>& Jets_smeared, math::PtEtaPhiMLorentzVector& vMHT) {
+   
    int NJets = 0;
+   double dpnhat_min = 9999;
+   
    for (vector<pat::Jet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
+      
       if (it->pt() > JetsHTPt_ && std::abs(it->eta()) < JetsHTEta_) {
          ++NJets;
          
+         double deltaT = 0.0;
+         float jres = 0.1;
+         double sum = 0.0;
+         double dphi = 0.0;
+         double dpnhat = 0;
+         
+         if (NJets < 4) {
+            dphi = std::abs(deltaPhi(vMHT, *it));
+            for (vector<pat::Jet>::const_iterator jt = Jets_smeared.begin(); jt != Jets_smeared.end(); ++jt) {
+               if (&(*it) == &(*jt)) continue;
+               sum += (jt->px()*it->py()-it->px()*jt->py()) * (jt->px()*it->py()-it->px()*jt->py());
+            }
+            deltaT = jres*sqrt(sum)/it->pt();
+         }
+         
+         if (deltaT/vMHT.pt() >= 1.0) dpnhat = dphi/(TMath::Pi()/2.0);
+         else dpnhat=dphi/asin(deltaT/vMHT.pt());
+         if (dpnhat < dpnhat_min) dpnhat_min = dpnhat;
+         
          if( NJets == 1 ) {
-            DeltaPhi1_pred = std::abs(deltaPhi(vMHT, *it));
+            DeltaPhi1_pred = dphi;
          }
          if( NJets == 2 ) {
-            DeltaPhi2_pred = std::abs(deltaPhi(vMHT, *it));
+            DeltaPhi2_pred = dphi;
          }
          if( NJets == 3 ) {
-            DeltaPhi3_pred = std::abs(deltaPhi(vMHT, *it));
+            DeltaPhi3_pred = dphi;
             break;
          }
       }
    }
+   
+   DeltaPhiMinN_pred = dpnhat_min;
+   
    if( NJets == 2 ) {
       DeltaPhi3_pred = 9999.;
    }
@@ -749,10 +806,10 @@ bool QCDBkgRS::calcMinDeltaPhi_gen(const std::vector<reco::GenJet>& Jets_smeared
 //--------------------------------------------------------------------------
 
 //--------------------------------------------------------------------------
-math::PtEtaPhiMLorentzVector QCDBkgRS::calcMHT_gen(const std::vector<reco::GenJet>& Jets_smeared) {
+math::PtEtaPhiMLorentzVector QCDBkgRS::calcMHT_gen(const std::vector<reco::GenJet>& Jets_smeared, double ptcut) {
    math::PtEtaPhiMLorentzVector MHT(0, 0, 0, 0);
    for (vector<reco::GenJet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
-      if (it->pt() > JetsMHTPt_ && std::abs(it->eta()) < JetsMHTEta_) {
+      if (it->pt() > ptcut && std::abs(it->eta()) < JetsMHTEta_) {
          MHT -= it->p4();
       }
    }
@@ -779,13 +836,21 @@ void QCDBkgRS::FillLeadingJetPredictions_gen(const std::vector<reco::GenJet>& Je
          if( NJets == 3 ) {
             Jet3Pt_pred = it->pt();
             Jet3Eta_pred = it->eta();
+         }
+         if( NJets == 4 ) {
+            Jet4Pt_pred = it->pt();
+            Jet4Eta_pred = it->eta();
             break;
          }
       }
    }
-   if( NJets == 2 ) {
+   if( NJets < 3 ) {
       Jet3Pt_pred = -1.;
       Jet3Eta_pred = 9999.;
+   }
+   if( NJets < 4 ) {
+      Jet4Pt_pred = -1.;
+      Jet4Eta_pred = 9999.;
    }
    
    return;
@@ -794,31 +859,57 @@ void QCDBkgRS::FillLeadingJetPredictions_gen(const std::vector<reco::GenJet>& Je
 
 //--------------------------------------------------------------------------
 void QCDBkgRS::FillDeltaPhiPredictions_gen(const std::vector<reco::GenJet>& Jets_smeared, math::PtEtaPhiMLorentzVector& vMHT) {
+   
    int NJets = 0;
+   double dpnhat_min = 9999;
+   
    for (vector<reco::GenJet>::const_iterator it = Jets_smeared.begin(); it != Jets_smeared.end(); ++it) {
+      
       if (it->pt() > JetsHTPt_ && std::abs(it->eta()) < JetsHTEta_) {
          ++NJets;
          
+         double deltaT = 0.0;
+         float jres = 0.1;
+         double sum = 0.0;
+         double dphi = 0;
+         double dpnhat = 0;
+         
+         if (NJets < 4) {
+            dphi = std::abs(deltaPhi(vMHT, *it));
+            for (vector<reco::GenJet>::const_iterator jt = Jets_smeared.begin(); jt != Jets_smeared.end(); ++jt) {
+               if (&(*it) == &(*jt)) continue;
+               sum += (jt->px()*it->py()-it->px()*jt->py()) * (jt->px()*it->py()-it->px()*jt->py());
+            }
+            deltaT = jres*sqrt(sum)/it->pt();
+         }
+         
+         if (deltaT/vMHT.pt() >= 1.0) dpnhat = dphi/(TMath::Pi()/2.0);
+         else dpnhat=dphi/asin(deltaT/vMHT.pt());
+         if (dpnhat < dpnhat_min) dpnhat_min = dpnhat;
+         
          if( NJets == 1 ) {
-            DeltaPhi1_pred = std::abs(deltaPhi(vMHT, *it));
+            DeltaPhi1_pred = dphi;
          }
          if( NJets == 2 ) {
-            DeltaPhi2_pred = std::abs(deltaPhi(vMHT, *it));
+            DeltaPhi2_pred = dphi;
          }
          if( NJets == 3 ) {
-            DeltaPhi3_pred = std::abs(deltaPhi(vMHT, *it));
+            DeltaPhi3_pred = dphi;
             break;
          }
       }
    }
+   
+   DeltaPhiMinN_pred = dpnhat_min;
+   
    if( NJets == 2 ) {
       DeltaPhi3_pred = 9999.;
    }
    
-   
    return;
 }
 //--------------------------------------------------------------------------
+
 
 //--------------------------------------------------------------------------
 void QCDBkgRS::FillPredictions(const std::vector<pat::Jet>& Jets_smeared, const int& i, const double& w) {
@@ -826,7 +917,8 @@ void QCDBkgRS::FillPredictions(const std::vector<pat::Jet>& Jets_smeared, const 
    int NJets = calcNJets(Jets_smeared);
    int NBJets = calcNBJets(Jets_smeared);
    double HT = calcHT(Jets_smeared);
-   math::PtEtaPhiMLorentzVector vMHT = calcMHT(Jets_smeared);
+   math::PtEtaPhiMLorentzVector vMHT = calcMHT(Jets_smeared, JetsMHTPt_);
+   math::PtEtaPhiMLorentzVector vMET = calcMHT(Jets_smeared, 30.);
    double MHT = vMHT.pt();
    //   bool minDeltaPhi = calcMinDeltaPhi(Jets_smeared, vMHT);
    
@@ -836,7 +928,7 @@ void QCDBkgRS::FillPredictions(const std::vector<pat::Jet>& Jets_smeared, const 
    BTags_pred = NBJets;
    HT_pred = HT;
    MHT_pred = MHT;
-   FillDeltaPhiPredictions(Jets_smeared, vMHT);
+   FillDeltaPhiPredictions(Jets_smeared, vMET);
    FillLeadingJetPredictions(Jets_smeared);
    
    return;
@@ -850,7 +942,8 @@ void QCDBkgRS::FillPredictions_gen(const std::vector<reco::GenJet>& Jets_smeared
    int NJets = calcNJets_gen(Jets_smeared);
    int NBJets = calcNBJets_gen(Jets_smeared, b_map);
    double HT = calcHT_gen(Jets_smeared);
-   math::PtEtaPhiMLorentzVector vMHT = calcMHT_gen(Jets_smeared);
+   math::PtEtaPhiMLorentzVector vMHT = calcMHT_gen(Jets_smeared, JetsMHTPt_);
+   math::PtEtaPhiMLorentzVector vMET = calcMHT_gen(Jets_smeared, 30.);
    double MHT = vMHT.pt();
    //  bool minDeltaPhi = calcMinDeltaPhi_gen(Jets_smeared, vMHT);
    
@@ -860,7 +953,7 @@ void QCDBkgRS::FillPredictions_gen(const std::vector<reco::GenJet>& Jets_smeared
    BTags_pred = NBJets;
    HT_pred = HT;
    MHT_pred = MHT;
-   FillDeltaPhiPredictions_gen(Jets_smeared, vMHT);
+   FillDeltaPhiPredictions_gen(Jets_smeared, vMET);
    FillLeadingJetPredictions_gen(Jets_smeared);
    
    return;
@@ -1175,21 +1268,53 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
    // ------------------------------------------------------------------------ //
    // plots for matched/not-matched reco - gen jets
    if (gj_present) {
+      int NNN = 0;
       for (edm::View<reco::GenJet>::const_iterator it = Jets_gen.begin(); it != Jets_gen.end(); ++it) {
          double dRmin = 100;
          const reco::Jet* matchedJet = 0;
+         double addActivity = 0;
          for (edm::View<pat::Jet>::const_iterator jt = Jets_rec.begin(); jt != Jets_rec.end(); ++jt) {
             double dR = deltaR(*jt, *it);
+            if (dR < 0.7) {
+               addActivity += jt->pt();
+            }
             if (dR < dRmin) {
                dRmin = dR;
                matchedJet = &(*jt);
             }
          }
+         addActivity -= matchedJet->pt();
          if (controlPlots_ && weight_ < 30000) {
-            if (dRmin < 0.15) {
+            if (dRmin < 0.5) {
                // pt spectrum of all matched reco jets
                h_RecJetMatched_Pt->Fill(matchedJet->pt(), weight_);
-               
+               if (vMHThigh_rec.pt() > 100.){
+                  if( NNN == 0 ) {
+                     h_DeltaPhiRecoGenJet1_GenHT_HighMHT->Fill(dRmin, HT_gen, weight_);
+                     h_AddRelJetActivity07GenJet1_GenHT_HighMHT->Fill(addActivity/matchedJet->pt(), HT_gen, weight_);
+                  }
+                  if( NNN == 1 ){
+                     h_DeltaPhiRecoGenJet2_GenHT_HighMHT->Fill(dRmin, HT_gen, weight_);
+                     h_AddRelJetActivity07GenJet2_GenHT_HighMHT->Fill(addActivity/matchedJet->pt(), HT_gen, weight_);
+                  }
+                  if( NNN == 2 ){
+                     h_DeltaPhiRecoGenJet3_GenHT_HighMHT->Fill(dRmin, HT_gen, weight_);
+                     h_AddRelJetActivity07GenJet3_GenHT_HighMHT->Fill(addActivity/matchedJet->pt(), HT_gen, weight_);
+                  }
+               } else {
+                  if( NNN == 0 ) {
+                     h_DeltaPhiRecoGenJet1_GenHT_LowMHT->Fill(dRmin, HT_gen, weight_);
+                     h_AddRelJetActivity07GenJet1_GenHT_LowMHT->Fill(addActivity/matchedJet->pt(), HT_gen, weight_);
+                  }
+                  if( NNN == 1 ){
+                     h_DeltaPhiRecoGenJet2_GenHT_LowMHT->Fill(dRmin, HT_gen, weight_);
+                     h_AddRelJetActivity07GenJet2_GenHT_LowMHT->Fill(addActivity/matchedJet->pt(), HT_gen, weight_);
+                  }
+                  if( NNN == 2 ){
+                     h_DeltaPhiRecoGenJet3_GenHT_LowMHT->Fill(dRmin, HT_gen, weight_);
+                     h_AddRelJetActivity07GenJet3_GenHT_LowMHT->Fill(addActivity/matchedJet->pt(), HT_gen, weight_);
+                  }
+               }
                // pt spectrum of matched reco jets in NJet bins
                if( NJets_gen == 2 ) {
                   h_RecJetMatched_JetBin1_Pt->Fill(matchedJet->pt(), weight_);
@@ -1212,7 +1337,7 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
             }
             else if (matchedJet != 0) {
                // pt spectrum of not-matched reco jets
-                h_RecJetNotMatched_Pt->Fill(matchedJet->pt(), weight_);
+               h_RecJetNotMatched_Pt->Fill(matchedJet->pt(), weight_);
                
                // pt spectrum of not-matched reco jets in NJet bins
                if( NJets_gen == 2 ) {
@@ -1224,11 +1349,12 @@ void QCDBkgRS::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
                if( NJets_gen == 6 ||  NJets_gen == 7){
                   h_RecJetNotMatched_JetBin3_Pt->Fill(matchedJet->pt(), weight_);
                }
-                if( NJets_gen >= 8){
+               if( NJets_gen >= 8){
                   h_RecJetNotMatched_JetBin4_Pt->Fill(matchedJet->pt(), weight_);
                }
             }
          }
+         ++NNN;
       }
    }
    // ------------------------------------------------------------------------ //
@@ -1572,6 +1698,34 @@ void QCDBkgRS::beginJob()
       h_SeedEvents_HT_NJet8 = fs->make<TH2F> ("SeedEvents_HT_NJet8", "Seed Events", NbinsHT_, HTmin_, HTmax_, 60, 0, 60 );
       h_SeedEvents_HT_NJet8->Sumw2();
       
+      h_DeltaPhiRecoGenJet1_GenHT_LowMHT = fs->make<TH2F> ("h_DeltaPhiRecoGenJet1_GenHT_LowMHT", "h_DeltaPhiRecoGenJet1_GenHT_LowMHT", 100, 0, 0.5, 80, 0, 4000 );
+      h_DeltaPhiRecoGenJet1_GenHT_LowMHT->Sumw2();
+      h_DeltaPhiRecoGenJet2_GenHT_LowMHT = fs->make<TH2F> ("h_DeltaPhiRecoGenJet2_GenHT_LowMHT", "h_DeltaPhiRecoGenJet2_GenHT_LowMHT", 100, 0, 0.5, 80, 0, 4000 );
+      h_DeltaPhiRecoGenJet2_GenHT_LowMHT->Sumw2();
+      h_DeltaPhiRecoGenJet3_GenHT_LowMHT = fs->make<TH2F> ("h_DeltaPhiRecoGenJet3_GenHT_LowMHT", "h_DeltaPhiRecoGenJet3_GenHT_LowMHT", 100, 0, 0.5, 80, 0, 4000 );
+      h_DeltaPhiRecoGenJet3_GenHT_LowMHT->Sumw2();
+      
+      h_DeltaPhiRecoGenJet1_GenHT_HighMHT = fs->make<TH2F> ("h_DeltaPhiRecoGenJet1_GenHT_HighMHT", "h_DeltaPhiRecoGenJet1_GenHT_HighMHT", 100, 0, 0.5, 80, 0, 4000 );
+      h_DeltaPhiRecoGenJet1_GenHT_HighMHT->Sumw2();
+      h_DeltaPhiRecoGenJet2_GenHT_HighMHT = fs->make<TH2F> ("h_DeltaPhiRecoGenJet2_GenHT_HighMHT", "h_DeltaPhiRecoGenJet2_GenHT_HighMHT", 100, 0, 0.5, 80, 0, 4000 );
+      h_DeltaPhiRecoGenJet2_GenHT_HighMHT->Sumw2();
+      h_DeltaPhiRecoGenJet3_GenHT_HighMHT = fs->make<TH2F> ("h_DeltaPhiRecoGenJet3_GenHT_HighMHT", "h_DeltaPhiRecoGenJet3_GenHT_HighMHT", 100, 0, 0.5, 80, 0, 4000 );
+      h_DeltaPhiRecoGenJet3_GenHT_HighMHT->Sumw2();
+      
+      h_AddRelJetActivity07GenJet1_GenHT_LowMHT = fs->make<TH2F> ("h_AddRelJetActivity07GenJet1_GenHT_LowMHT", "h_AddRelJetActivity07GenJet1_GenHT_LowMHT", 100, 0, 1., 80, 0, 4000 );
+      h_AddRelJetActivity07GenJet1_GenHT_LowMHT->Sumw2();
+      h_AddRelJetActivity07GenJet2_GenHT_LowMHT = fs->make<TH2F> ("h_AddRelJetActivity07GenJet2_GenHT_LowMHT", "h_AddRelJetActivity07GenJet2_GenHT_LowMHT", 100, 0, 1., 80, 0, 4000 );
+      h_AddRelJetActivity07GenJet2_GenHT_LowMHT->Sumw2();
+      h_AddRelJetActivity07GenJet3_GenHT_LowMHT = fs->make<TH2F> ("h_AddRelJetActivity07GenJet3_GenHT_LowMHT", "h_AddRelJetActivity07GenJet3_GenHT_LowMHT", 100, 0, 1., 80, 0, 4000 );
+      h_AddRelJetActivity07GenJet3_GenHT_LowMHT->Sumw2();
+      
+      h_AddRelJetActivity07GenJet1_GenHT_HighMHT = fs->make<TH2F> ("h_AddRelJetActivity07GenJet1_GenHT_HighMHT", "h_AddRelJetActivity07GenJet1_GenHT_HighMHT", 100, 0, 1., 80, 0, 4000 );
+      h_AddRelJetActivity07GenJet1_GenHT_HighMHT->Sumw2();
+      h_AddRelJetActivity07GenJet2_GenHT_HighMHT = fs->make<TH2F> ("h_AddRelJetActivity07GenJet2_GenHT_HighMHT", "h_AddRelJetActivity07GenJet2_GenHT_HighMHT", 100, 0, 1., 80, 0, 4000 );
+      h_AddRelJetActivity07GenJet2_GenHT_HighMHT->Sumw2();
+      h_AddRelJetActivity07GenJet3_GenHT_HighMHT = fs->make<TH2F> ("h_AddRelJetActivity07GenJet3_GenHT_HighMHT", "h_AddRelJetActivity07GenJet3_GenHT_HighMHT", 100, 0, 1., 80, 0, 4000 );
+      h_AddRelJetActivity07GenJet3_GenHT_HighMHT->Sumw2();
+      
       h_nJets_gen = fs->make<TH1F> ("NJets_gen", "NJets", 15, 0., 15);
       h_nJets_gen->Sumw2();
       h_nJets_reco = fs->make<TH1F> ("NJets_reco", "NJets", 15, 0., 15);
@@ -1625,6 +1779,7 @@ void QCDBkgRS::beginJob()
       h_RebJetRes_Pt->Sumw2();
       h_RebJetRes_Eta = fs->make<TH2F> ("RebJetRes_Eta", "RebJetRes_Eta", 100, -5., 5., 100, 0., 3.);
       h_RebJetRes_Eta->Sumw2();
+      
       h_SmearedJetRes_Pt = fs->make<TH2F> ("SmearedJetRes_Pt", "SmearedJetRes_Pt", 100, 0., 1000., 100, 0., 3.);
       h_SmearedJetRes_Pt->Sumw2();
       h_SmearedJetRes_Eta = fs->make<TH2F> ("SmearedJetRes_Eta", "SmearedJetRes_Eta", 100, -5., 5., 100, 0., 3.);
@@ -1749,12 +1904,15 @@ void QCDBkgRS::beginJob()
    PredictionTree->Branch("Jet1Pt", &Jet1Pt_pred);
    PredictionTree->Branch("Jet2Pt", &Jet2Pt_pred);
    PredictionTree->Branch("Jet3Pt", &Jet3Pt_pred);
+   PredictionTree->Branch("Jet4Pt", &Jet4Pt_pred);
    PredictionTree->Branch("Jet1Eta", &Jet1Eta_pred);
    PredictionTree->Branch("Jet2Eta", &Jet2Eta_pred);
    PredictionTree->Branch("Jet3Eta", &Jet3Eta_pred);
+   PredictionTree->Branch("Jet4Eta", &Jet4Eta_pred);
    PredictionTree->Branch("DeltaPhi1", &DeltaPhi1_pred);
    PredictionTree->Branch("DeltaPhi2", &DeltaPhi2_pred);
    PredictionTree->Branch("DeltaPhi3", &DeltaPhi3_pred);
+   PredictionTree->Branch("minDeltaPhiN", &DeltaPhiMinN_pred);
    
 }
 //--------------------------------------------------------------------------

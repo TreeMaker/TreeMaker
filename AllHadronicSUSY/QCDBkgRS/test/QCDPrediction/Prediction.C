@@ -52,6 +52,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_presel_pred_raw = new TH2F("presel_DeltaPhi1_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_presel_pred_raw = new TH2F("presel_DeltaPhi2_prediction", "DeltaPhi2", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi3_presel_pred_raw = new TH2F("presel_DeltaPhi3_prediction", "DeltaPhi3", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_presel_pred_raw = new TH2F("presel_minDeltaPhiN_prediction", "minDeltaPhiN", 100, 0., 25., Ntries, 0.5, Ntries + 0.5);
    
    // preselection + delta Phi
    HT_deltaPhi_pred_raw = new TH2F("deltaPhi_HT_prediction", "deltaPhi_HT_prediction", NbinsHT, HTmin, HTmax, Ntries, 0.5, Ntries + 0.5);
@@ -80,6 +81,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_pred_raw = new TH2F("baseline_Jet2_Eta_JetBin1_prediction", "Jet2_Eta", NbinsJetEta, JetEtamin, JetEtamax, Ntries, 0.5, Ntries + 0.5);
    DeltaPhi1_JetBin1_baseline_pred_raw = new TH2F("baseline_DeltaPhi1_JetBin1_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_JetBin1_baseline_pred_raw = new TH2F("baseline_DeltaPhi2_JetBin1_prediction", "DeltaPhi2", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_JetBin1_baseline_pred_raw = new TH2F("baseline_minDeltaPhiN_JetBin1_prediction", "minDeltaPhiN", 100, 0., 25., Ntries, 0.5, Ntries + 0.5);
    
    // baseline jet bin 2
    Jet1Pt_JetBin2_baseline_pred_raw = new TH2F("baseline_Jet1_Pt_JetBin2_prediction", "Jet1_Pt", NbinsJetPt, JetPtmin, JetPtmax, Ntries, 0.5, Ntries + 0.5);
@@ -91,6 +93,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_pred_raw = new TH2F("baseline_DeltaPhi1_JetBin2_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_JetBin2_baseline_pred_raw = new TH2F("baseline_DeltaPhi2_JetBin2_prediction", "DeltaPhi2", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi3_JetBin2_baseline_pred_raw = new TH2F("baseline_DeltaPhi3_JetBin2_prediction", "DeltaPhi3", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_JetBin2_baseline_pred_raw = new TH2F("baseline_minDeltaPhiN_JetBin2_prediction", "minDeltaPhiN", 100, 0., 25., Ntries, 0.5, Ntries + 0.5);
    
    // baseline jet bin 3
    Jet1Pt_JetBin3_baseline_pred_raw = new TH2F("baseline_Jet1_Pt_JetBin3_prediction", "Jet1_Pt", NbinsJetPt, JetPtmin, JetPtmax, Ntries, 0.5, Ntries + 0.5);
@@ -102,6 +105,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_pred_raw = new TH2F("baseline_DeltaPhi1_JetBin3_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_JetBin3_baseline_pred_raw = new TH2F("baseline_DeltaPhi2_JetBin3_prediction", "DeltaPhi2", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi3_JetBin3_baseline_pred_raw = new TH2F("baseline_DeltaPhi3_JetBin3_prediction", "DeltaPhi3", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_JetBin3_baseline_pred_raw = new TH2F("baseline_minDeltaPhiN_JetBin3_prediction", "minDeltaPhiN", 100, 0., 25., Ntries, 0.5, Ntries + 0.5);
    
    // baseline jet bin 4
    Jet1Pt_JetBin4_baseline_pred_raw = new TH2F("baseline_Jet1_Pt_JetBin4_prediction", "Jet1_Pt", NbinsJetPt, JetPtmin, JetPtmax, Ntries, 0.5, Ntries + 0.5);
@@ -113,6 +117,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_pred_raw = new TH2F("baseline_DeltaPhi1_JetBin4_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_JetBin4_baseline_pred_raw = new TH2F("baseline_DeltaPhi2_JetBin4_prediction", "DeltaPhi2", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi3_JetBin4_baseline_pred_raw = new TH2F("baseline_DeltaPhi3_JetBin4_prediction", "DeltaPhi3", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_JetBin4_baseline_pred_raw = new TH2F("baseline_minDeltaPhiN_JetBin4_prediction", "minDeltaPhiN", 100, 0., 25., Ntries, 0.5, Ntries + 0.5);
    
    
    // baseline without delta Phi jet bin 1
@@ -124,6 +129,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_Jet2_Eta_JetBin1_prediction", "Jet2_Eta", NbinsJetEta, JetEtamin, JetEtamax, Ntries, 0.5, Ntries + 0.5);
    DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi1_JetBin1_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi2_JetBin1_prediction", "DeltaPhi2", 100,  0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_minDeltaPhiN_JetBin1_prediction", "minDeltaPhiN", 100,  0., 25., Ntries, 0.5, Ntries + 0.5);
    
    // baseline without delta Phi jet bin 2
    HT_JetBin2_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_HT_JetBin2_prediction", "HT_prediction", NbinsHT, HTmin, HTmax, Ntries, 0.5, Ntries + 0.5);
@@ -137,6 +143,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi1_JetBin2_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi2_JetBin2_prediction", "DeltaPhi2", 100,  0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi3_JetBin2_prediction", "DeltaPhi3", 100,  0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_minDeltaPhiN_JetBin2_prediction", "minDeltaPhiN", 100,  0., 25., Ntries, 0.5, Ntries + 0.5);
    
    // baseline without delta Phi jet bin 3
    HT_JetBin3_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_HT_JetBin3_prediction", "HT_prediction", NbinsHT, HTmin, HTmax, Ntries, 0.5, Ntries + 0.5);
@@ -150,6 +157,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi1_JetBin3_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi2_JetBin3_prediction", "DeltaPhi2", 100,  0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi3_JetBin3_prediction", "DeltaPhi3", 100,  0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_minDeltaPhiN_JetBin3_prediction", "minDeltaPhiN", 100,  0., 25., Ntries, 0.5, Ntries + 0.5);
    
    // baseline without delta Phi jet bin 4
    HT_JetBin4_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_HT_JetBin4_prediction", "HT_prediction", NbinsHT, HTmin, HTmax, Ntries, 0.5, Ntries + 0.5);
@@ -163,6 +171,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi1_JetBin4_prediction", "DeltaPhi1", 100, 0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi2_JetBin4_prediction", "DeltaPhi2", 100,  0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
    DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_DeltaPhi3_JetBin4_prediction", "DeltaPhi3", 100,  0., TMath::Pi(), Ntries, 0.5, Ntries + 0.5);
+   minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_pred_raw = new TH2F("baseline_withoutDeltaPhi_minDeltaPhiN_JetBin4_prediction", "minDeltaPhiN", 100,  0., 25., Ntries, 0.5, Ntries + 0.5);
    
    // NJets
    NJets_baseline_withoutMHT_pred_raw = new TH2F("NJets_baseline_withoutMHT_pred", "NJets baseline", 15, 0, 15, Ntries, 0.5, Ntries + 0.5);
@@ -193,6 +202,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_presel_sel = new TH1F("presel_DeltaPhi1_selection", "DeltaPhi1", 100, 0., TMath::Pi());
    DeltaPhi2_presel_sel = new TH1F("presel_DeltaPhi2_selection", "DeltaPhi2", 100, 0., TMath::Pi());
    DeltaPhi3_presel_sel = new TH1F("presel_DeltaPhi3_selection", "DeltaPhi3", 100, 0., TMath::Pi());
+   minDeltaPhiN_presel_sel = new TH1F("presel_minDeltaPhiN_selection", "minDeltaPhiN", 100, 0., 25.);
    
    // preselection + delta Phi
    HT_deltaPhi_sel = new TH1F("deltaPhi_HT_selection", "deltaPhi_HT_selection", NbinsHT, HTmin, HTmax);
@@ -221,6 +231,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_sel = new TH1F("baseline_Jet2_Eta_JetBin1_selection", "Jet2_Eta", NbinsJetEta, JetEtamin, JetEtamax);
    DeltaPhi1_JetBin1_baseline_sel = new TH1F("baseline_DeltaPhi1_JetBin1_selection", "DeltaPhi1", 100, 0., TMath::Pi());
    DeltaPhi2_JetBin1_baseline_sel = new TH1F("baseline_DeltaPhi2_JetBin1_selection", "DeltaPhi2", 100, 0., TMath::Pi());
+   minDeltaPhiN_JetBin1_baseline_sel = new TH1F("baseline_minDeltaPhiN_JetBin1_selection", "minDeltaPhiN", 100, 0., 25.);
    
    // baseline jet bin 2
    Jet1Pt_JetBin2_baseline_sel = new TH1F("baseline_Jet1_Pt_JetBin2_selection", "Jet1_Pt", NbinsJetPt,JetPtmin, JetPtmax);
@@ -232,6 +243,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_sel = new TH1F("baseline_DeltaPhi1_JetBin2_selection", "DeltaPhi1", 100,0., TMath::Pi());
    DeltaPhi2_JetBin2_baseline_sel = new TH1F("baseline_DeltaPhi2_JetBin2_selection", "DeltaPhi2", 100,0., TMath::Pi());
    DeltaPhi3_JetBin2_baseline_sel = new TH1F("baseline_DeltaPhi3_JetBin2_selection", "DeltaPhi3", 100,0., TMath::Pi());
+   minDeltaPhiN_JetBin2_baseline_sel = new TH1F("baseline_minDeltaPhiN_JetBin2_selection", "minDeltaPhiN", 100, 0., 25.);
    
    // baseline jet bin 3
    Jet1Pt_JetBin3_baseline_sel = new TH1F("baseline_Jet1_Pt_JetBin3_selection", "Jet1_Pt", NbinsJetPt,JetPtmin, JetPtmax);
@@ -243,6 +255,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_sel = new TH1F("baseline_DeltaPhi1_JetBin3_selection", "DeltaPhi1", 100,0., TMath::Pi());
    DeltaPhi2_JetBin3_baseline_sel = new TH1F("baseline_DeltaPhi2_JetBin3_selection", "DeltaPhi2", 100,0., TMath::Pi());
    DeltaPhi3_JetBin3_baseline_sel = new TH1F("baseline_DeltaPhi3_JetBin3_selection", "DeltaPhi3", 100,0., TMath::Pi());
+   minDeltaPhiN_JetBin3_baseline_sel = new TH1F("baseline_minDeltaPhiN_JetBin3_selection", "minDeltaPhiN", 100,0., 25.);
    
    // baseline jet bin 4
    Jet1Pt_JetBin4_baseline_sel = new TH1F("baseline_Jet1_Pt_JetBin4_selection", "Jet1_Pt", NbinsJetPt,JetPtmin, JetPtmax);
@@ -254,6 +267,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_sel = new TH1F("baseline_DeltaPhi1_JetBin4_selection", "DeltaPhi1", 100,0., TMath::Pi());
    DeltaPhi2_JetBin4_baseline_sel = new TH1F("baseline_DeltaPhi2_JetBin4_selection", "DeltaPhi2", 100,0., TMath::Pi());
    DeltaPhi3_JetBin4_baseline_sel = new TH1F("baseline_DeltaPhi3_JetBin4_selection", "DeltaPhi3", 100,0., TMath::Pi());
+   minDeltaPhiN_JetBin4_baseline_sel = new TH1F("baseline_minDeltaPhiN_JetBin4_selection", "minDeltaPhiN", 100,0., 25.);
    
    // baseline without delta Phi jet bin 1
    HT_JetBin1_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_HT_JetBin1_selection", "HT_selection", NbinsHT, HTmin, HTmax);
@@ -264,6 +278,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_Jet2_Eta_JetBin1_selection", "Jet2_Eta", NbinsJetEta, JetEtamin, JetEtamax);
    DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi1_JetBin1_selection", "DeltaPhi1", 100, 0., TMath::Pi());
    DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi2_JetBin1_selection", "DeltaPhi2", 100, 0., TMath::Pi());
+   minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_minDeltaPhiN_JetBin1_selection", "minDeltaPhiN", 100, 0., 25.);
    
    // baseline without delta Phi jet bin 2
    HT_JetBin2_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_HT_JetBin2_selection", "HT_selection", NbinsHT, HTmin, HTmax);
@@ -277,6 +292,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi1_JetBin2_selection", "DeltaPhi1", 100, 0., TMath::Pi());
    DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi2_JetBin2_selection", "DeltaPhi2", 100, 0., TMath::Pi());
    DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi3_JetBin2_selection", "DeltaPhi3", 100, 0., TMath::Pi());
+   minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_minDeltaPhiN_JetBin2_selection", "minDeltaPhiN", 100, 0., 25.);
    
    // baseline without delta Phi jet bin 3
    HT_JetBin3_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_HT_JetBin3_selection", "HT_selection", NbinsHT, HTmin, HTmax);
@@ -290,6 +306,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi1_JetBin3_selection", "DeltaPhi1", 100, 0., TMath::Pi());
    DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi2_JetBin3_selection", "DeltaPhi2", 100, 0., TMath::Pi());
    DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi3_JetBin3_selection", "DeltaPhi3", 100, 0., TMath::Pi());
+   minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_minDeltaPhiN_JetBin3_selection", "minDeltaPhiN", 100, 0., 25.);
    
    // baseline without delta Phi jet bin 4
    HT_JetBin4_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_HT_JetBin4_selection", "HT_selection", NbinsHT, HTmin, HTmax);
@@ -303,6 +320,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi1_JetBin4_selection", "DeltaPhi1", 100, 0., TMath::Pi());
    DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi2_JetBin4_selection", "DeltaPhi2", 100, 0., TMath::Pi());
    DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_DeltaPhi3_JetBin4_selection", "DeltaPhi3", 100, 0., TMath::Pi());
+   minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_sel = new TH1F("baseline_withoutDeltaPhi_minDeltaPhiN_JetBin4_selection", "minDeltaPhiN", 100, 0., 25.);
    
    // NJets
    NJets_baseline_withoutMHT_sel = new TH1F("NJets_baseline_withoutMHT_sel", "NJets baseline", 15, 0, 15);
@@ -324,22 +342,26 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    cout << "entries prediction tree:" << QCDPrediction.GetEntries() << endl;
    
    // variables from prediction tree
-   Float_t HT_seed = 0;
-   Float_t HT = 0;
-   Float_t MHT = 0;
-   Float_t Jet1Pt = 0;
-   Float_t Jet2Pt = 0;
-   Float_t Jet3Pt = 0;
-   Float_t Jet1Eta = 0;
-   Float_t Jet2Eta = 0;
-   Float_t Jet3Eta = 0;
-   
+   vtxN = 0;
    NJets = 0;
+   BTags = 0;
    NSmear = 0;
    weight = 0;
+   HT = 0;
+   MHT = 0;
+   HT_seed = 0;
+   Jet1Pt = 0;
+   Jet2Pt = 0;
+   Jet3Pt = 0;
+   Jet4Pt = 0;
+   Jet1Eta = 0;
+   Jet2Eta = 0;
+   Jet3Eta = 0;
+   Jet4Eta = 0;
    DeltaPhi1 = 0;
    DeltaPhi2 = 0;
    DeltaPhi3 = 0;
+   minDeltaPhiN = 0;
    
    cout << "Before: SetBranchAddress (prediction)" << endl;
    
@@ -354,12 +376,15 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    QCDPrediction.SetBranchAddress("Jet1Pt",&Jet1Pt);
    QCDPrediction.SetBranchAddress("Jet2Pt",&Jet2Pt);
    QCDPrediction.SetBranchAddress("Jet3Pt",&Jet3Pt);
+   QCDPrediction.SetBranchAddress("Jet4Pt",&Jet4Pt);
    QCDPrediction.SetBranchAddress("Jet1Eta",&Jet1Eta);
    QCDPrediction.SetBranchAddress("Jet2Eta",&Jet2Eta);
    QCDPrediction.SetBranchAddress("Jet3Eta",&Jet3Eta);
+   QCDPrediction.SetBranchAddress("Jet4Eta",&Jet4Eta);
    QCDPrediction.SetBranchAddress("DeltaPhi1",&DeltaPhi1);
    QCDPrediction.SetBranchAddress("DeltaPhi2",&DeltaPhi2);
    QCDPrediction.SetBranchAddress("DeltaPhi3",&DeltaPhi3);
+   QCDPrediction.SetBranchAddress("minDeltaPhiN",&minDeltaPhiN);
    
    cout << "After: SetBranchAddress (prediction)" << endl;
    
@@ -378,7 +403,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
       if( weight < 30000. ) {
          
          // apply same HT and MHT and NJets cut as on selection
-         if( HT > 350. && MHT > 0. && NJets >= 2 && vtxN >= 0) {
+         if( HT > 500. && MHT > 50. && NJets >= 2 && vtxN >= 0) {
             
             // ------------------------------------------------------------- //
             // fill preselection histos
@@ -398,6 +423,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                DeltaPhi1_presel_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                DeltaPhi2_presel_pred_raw->Fill(DeltaPhi2, NSmear, weight);
                DeltaPhi3_presel_pred_raw->Fill(DeltaPhi3, NSmear, weight);
+               minDeltaPhiN_presel_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
             }
             
             // ------------------------------------------------------------- //
@@ -436,6 +462,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      Jet2Eta_JetBin1_baseline_withoutDeltaPhi_pred_raw->Fill(Jet2Eta, NSmear, weight);
                      DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                      DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi2, NSmear, weight);
+                     minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
                   }
                   // jet bin 2
                   else if( NJets == 3 || NJets == 4 ||  NJets == 5 ) {
@@ -448,6 +475,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                      DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi2, NSmear, weight);
                      DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi3, NSmear, weight);
+                     minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
                   }
                   // jet bin 3
                   else if( NJets == 6  ||  NJets == 7 ) {
@@ -460,7 +488,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                      DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi2, NSmear, weight);
                      DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi3, NSmear, weight);
-                     
+                     minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
                   }
                   // jet bin 4
                   else if( NJets >= 8 ) {
@@ -473,6 +501,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                      DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi2, NSmear, weight);
                      DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_pred_raw->Fill(DeltaPhi3, NSmear, weight);
+                     minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
                   }
                }
             }
@@ -542,6 +571,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      Jet2Eta_JetBin1_baseline_pred_raw->Fill(Jet2Eta, NSmear, weight);
                      DeltaPhi1_JetBin1_baseline_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                      DeltaPhi2_JetBin1_baseline_pred_raw->Fill(DeltaPhi2, NSmear, weight);
+                     minDeltaPhiN_JetBin1_baseline_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
                   }
                   
                }
@@ -559,6 +589,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin2_baseline_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                      DeltaPhi2_JetBin2_baseline_pred_raw->Fill(DeltaPhi2, NSmear, weight);
                      DeltaPhi3_JetBin2_baseline_pred_raw->Fill(DeltaPhi3, NSmear, weight);
+                     minDeltaPhiN_JetBin2_baseline_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
                   }
                   
                }
@@ -576,6 +607,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin3_baseline_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                      DeltaPhi2_JetBin3_baseline_pred_raw->Fill(DeltaPhi2, NSmear, weight);
                      DeltaPhi3_JetBin3_baseline_pred_raw->Fill(DeltaPhi3, NSmear, weight);
+                     minDeltaPhiN_JetBin3_baseline_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
                   }
                   
                }
@@ -593,6 +625,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin4_baseline_pred_raw->Fill(DeltaPhi1, NSmear, weight);
                      DeltaPhi2_JetBin4_baseline_pred_raw->Fill(DeltaPhi2, NSmear, weight);
                      DeltaPhi3_JetBin4_baseline_pred_raw->Fill(DeltaPhi3, NSmear, weight);
+                     minDeltaPhiN_JetBin4_baseline_pred_raw->Fill(minDeltaPhiN, NSmear, weight);
                   }
                }
                
@@ -610,24 +643,26 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    cout << "entries selection tree:" << RA2PreSelection.GetEntries() << endl;
    
    // variables from selection tree
-   Float_t HT_RA2 = 0;
-   Float_t MHT_RA2 = 0;
-   Float_t Jet1Pt_RA2 = 0;
-   Float_t Jet2Pt_RA2 = 0;
-   Float_t Jet3Pt_RA2 = 0;
-   Float_t Jet1Eta_RA2 = 0;
-   Float_t Jet2Eta_RA2 = 0;
-   Float_t Jet3Eta_RA2 = 0;
-   
-   EvtNum_RA2 = 0;
    vtxN_RA2 = 0;
    NLeptons_RA2 = 0;
    NJets_RA2 = 0;
    BTags_RA2 = 0;
    weight_RA2 = 0;
+   EvtNum_RA2 = 0;
+   HT_RA2 = 0;
+   MHT_RA2 = 0;
+   Jet1Pt_RA2 = 0;
+   Jet2Pt_RA2 = 0;
+   Jet3Pt_RA2 = 0;
+   Jet4Pt_RA2 = 0;
+   Jet1Eta_RA2 = 0;
+   Jet2Eta_RA2 = 0;
+   Jet3Eta_RA2 = 0;
+   Jet4Eta_RA2 = 0;
    DeltaPhi1_RA2 = 0;
    DeltaPhi2_RA2 = 0;
    DeltaPhi3_RA2 = 0;
+   minDeltaPhiN_RA2 = 0;
    
    cout << "Before: SetBranchAddress (expectation)" << endl;
    
@@ -642,12 +677,15 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    RA2PreSelection.SetBranchAddress("Jet1Pt",&Jet1Pt_RA2);
    RA2PreSelection.SetBranchAddress("Jet2Pt",&Jet2Pt_RA2);
    RA2PreSelection.SetBranchAddress("Jet3Pt",&Jet3Pt_RA2);
+   RA2PreSelection.SetBranchAddress("Jet4Pt",&Jet4Pt_RA2);
    RA2PreSelection.SetBranchAddress("Jet1Eta",&Jet1Eta_RA2);
    RA2PreSelection.SetBranchAddress("Jet2Eta",&Jet2Eta_RA2);
    RA2PreSelection.SetBranchAddress("Jet3Eta",&Jet3Eta_RA2);
+   RA2PreSelection.SetBranchAddress("Jet4Eta",&Jet4Eta_RA2);
    RA2PreSelection.SetBranchAddress("DeltaPhi1",&DeltaPhi1_RA2);
    RA2PreSelection.SetBranchAddress("DeltaPhi2",&DeltaPhi2_RA2);
    RA2PreSelection.SetBranchAddress("DeltaPhi3",&DeltaPhi3_RA2);
+   RA2PreSelection.SetBranchAddress("minDeltaPhiN",&minDeltaPhiN_RA2);
    
    cout << "After: SetBranchAddress (expectation)" << endl;
    
@@ -677,7 +715,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
          
          // Do same HT, MHT and NJets cuts as on prediction
          
-         if( HT_RA2 > 350. && MHT_RA2 > 0. && NJets_RA2 >= 2 && NLeptons_RA2 == 0 && vtxN_RA2 >= 0) {
+         if( HT_RA2 > 500. && MHT_RA2 > 50. && NJets_RA2 >= 2 && NLeptons_RA2 == 0 && vtxN_RA2 >= 0) {
             
             // ------------------------------------------------------------- //
             // fill preselection histos
@@ -697,6 +735,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                DeltaPhi1_presel_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                DeltaPhi2_presel_sel->Fill(DeltaPhi2_RA2, weight_RA2);
                DeltaPhi3_presel_sel->Fill(DeltaPhi3_RA2, weight_RA2);
+               minDeltaPhiN_presel_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
             }
             
             // ------------------------------------------------------------- //
@@ -735,6 +774,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      Jet2Eta_JetBin1_baseline_withoutDeltaPhi_sel->Fill(Jet2Eta_RA2, weight_RA2);
                      DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                      DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi2_RA2, weight_RA2);
+                     minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
                   }
                   // jet bin 2
                   else if( NJets_RA2 == 3 || NJets_RA2 == 4 ||  NJets_RA2 == 5 ) {
@@ -747,6 +787,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                      DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi2_RA2, weight_RA2);
                      DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi3_RA2, weight_RA2);
+                     minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
                   }
                   // jet bin 3
                   else if( NJets_RA2 == 6  ||  NJets_RA2 == 7 ) {
@@ -759,7 +800,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                      DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi2_RA2, weight_RA2);
                      DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi3_RA2, weight_RA2);
-                     
+                     minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
                   }
                   // jet bin 4
                   else if( NJets_RA2 >= 8 ) {
@@ -772,6 +813,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                      DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi2_RA2, weight_RA2);
                      DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_sel->Fill(DeltaPhi3_RA2, weight_RA2);
+                     minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
                   }
                }
             }
@@ -840,6 +882,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      Jet2Eta_JetBin1_baseline_sel->Fill(Jet2Eta_RA2, weight_RA2);
                      DeltaPhi1_JetBin1_baseline_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                      DeltaPhi2_JetBin1_baseline_sel->Fill(DeltaPhi2_RA2, weight_RA2);
+                     minDeltaPhiN_JetBin1_baseline_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
                   }
                   
                }
@@ -857,6 +900,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin2_baseline_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                      DeltaPhi2_JetBin2_baseline_sel->Fill(DeltaPhi2_RA2, weight_RA2);
                      DeltaPhi3_JetBin2_baseline_sel->Fill(DeltaPhi3_RA2, weight_RA2);
+                     minDeltaPhiN_JetBin2_baseline_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
                   }
                   
                }
@@ -874,6 +918,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin3_baseline_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                      DeltaPhi2_JetBin3_baseline_sel->Fill(DeltaPhi2_RA2, weight_RA2);
                      DeltaPhi3_JetBin3_baseline_sel->Fill(DeltaPhi3_RA2, weight_RA2);
+                     minDeltaPhiN_JetBin3_baseline_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
                   }
                }
                // jet bin 4
@@ -890,6 +935,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
                      DeltaPhi1_JetBin4_baseline_sel->Fill(DeltaPhi1_RA2, weight_RA2);
                      DeltaPhi2_JetBin4_baseline_sel->Fill(DeltaPhi2_RA2, weight_RA2);
                      DeltaPhi3_JetBin4_baseline_sel->Fill(DeltaPhi3_RA2, weight_RA2);
+                     minDeltaPhiN_JetBin4_baseline_sel->Fill(minDeltaPhiN_RA2, weight_RA2);
                   }
                }
             }
@@ -915,6 +961,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(DeltaPhi1_presel_pred_raw, DeltaPhi1_presel_sel , 5);
    DoRebinning(DeltaPhi2_presel_pred_raw, DeltaPhi2_presel_sel , 5);
    DoRebinning(DeltaPhi3_presel_pred_raw, DeltaPhi3_presel_sel , 5);
+   DoRebinning(minDeltaPhiN_presel_pred_raw, minDeltaPhiN_presel_sel , 5);
    
    DoRebinning(HT_deltaPhi_pred_raw, HT_deltaPhi_sel , -1);
    DoRebinning(MHT_deltaPhi_pred_raw, MHT_deltaPhi_sel , -2);
@@ -939,6 +986,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(Jet2Eta_JetBin1_baseline_pred_raw, Jet2Eta_JetBin1_baseline_sel, 2);
    DoRebinning(DeltaPhi1_JetBin1_baseline_pred_raw, DeltaPhi1_JetBin1_baseline_sel, 5);
    DoRebinning(DeltaPhi2_JetBin1_baseline_pred_raw, DeltaPhi2_JetBin1_baseline_sel, 5);
+   DoRebinning(minDeltaPhiN_JetBin1_baseline_pred_raw, minDeltaPhiN_JetBin1_baseline_sel, 5);
    
    DoRebinning(Jet1Pt_JetBin2_baseline_pred_raw, Jet1Pt_JetBin2_baseline_sel, 10);
    DoRebinning(Jet2Pt_JetBin2_baseline_pred_raw, Jet2Pt_JetBin2_baseline_sel, 10);
@@ -949,6 +997,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(DeltaPhi1_JetBin2_baseline_pred_raw, DeltaPhi1_JetBin2_baseline_sel, 5);
    DoRebinning(DeltaPhi2_JetBin2_baseline_pred_raw, DeltaPhi2_JetBin2_baseline_sel, 5);
    DoRebinning(DeltaPhi3_JetBin2_baseline_pred_raw, DeltaPhi3_JetBin2_baseline_sel, 5);
+   DoRebinning(minDeltaPhiN_JetBin2_baseline_pred_raw, minDeltaPhiN_JetBin2_baseline_sel, 5);
    
    DoRebinning(Jet1Pt_JetBin3_baseline_pred_raw, Jet1Pt_JetBin3_baseline_sel, 10);
    DoRebinning(Jet2Pt_JetBin3_baseline_pred_raw, Jet2Pt_JetBin3_baseline_sel, 10);
@@ -959,6 +1008,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(DeltaPhi1_JetBin3_baseline_pred_raw, DeltaPhi1_JetBin3_baseline_sel, 5);
    DoRebinning(DeltaPhi2_JetBin3_baseline_pred_raw, DeltaPhi2_JetBin3_baseline_sel, 5);
    DoRebinning(DeltaPhi3_JetBin3_baseline_pred_raw, DeltaPhi3_JetBin3_baseline_sel, 5);
+   DoRebinning(minDeltaPhiN_JetBin3_baseline_pred_raw, minDeltaPhiN_JetBin3_baseline_sel, 5);
    
    DoRebinning(Jet1Pt_JetBin4_baseline_pred_raw, Jet1Pt_JetBin4_baseline_sel, 10);
    DoRebinning(Jet2Pt_JetBin4_baseline_pred_raw, Jet2Pt_JetBin4_baseline_sel, 10);
@@ -969,6 +1019,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(DeltaPhi1_JetBin4_baseline_pred_raw, DeltaPhi1_JetBin4_baseline_sel, 5);
    DoRebinning(DeltaPhi2_JetBin4_baseline_pred_raw, DeltaPhi2_JetBin4_baseline_sel, 5);
    DoRebinning(DeltaPhi3_JetBin4_baseline_pred_raw, DeltaPhi3_JetBin4_baseline_sel, 5);
+   DoRebinning(minDeltaPhiN_JetBin4_baseline_pred_raw, minDeltaPhiN_JetBin4_baseline_sel, 5);
    
    DoRebinning(HT_JetBin1_baseline_withoutDeltaPhi_pred_raw, HT_JetBin1_baseline_withoutDeltaPhi_sel, -1);
    DoRebinning(MHT_JetBin1_baseline_withoutDeltaPhi_pred_raw, MHT_JetBin1_baseline_withoutDeltaPhi_sel, -2);
@@ -978,6 +1029,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(Jet2Eta_JetBin1_baseline_withoutDeltaPhi_pred_raw, Jet2Eta_JetBin1_baseline_withoutDeltaPhi_sel, 2);
    DoRebinning(DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_pred_raw, DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_sel, 5);
    DoRebinning(DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_pred_raw, DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_sel, 5);
+   DoRebinning(minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_pred_raw, minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_sel, 5);
    
    DoRebinning(HT_JetBin2_baseline_withoutDeltaPhi_pred_raw, HT_JetBin2_baseline_withoutDeltaPhi_sel, -1);
    DoRebinning(MHT_JetBin2_baseline_withoutDeltaPhi_pred_raw, MHT_JetBin2_baseline_withoutDeltaPhi_sel, -2);
@@ -990,6 +1042,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_pred_raw, DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_sel, 5);
    DoRebinning(DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_pred_raw, DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_sel, 5);
    DoRebinning(DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_pred_raw, DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_sel, 5);
+   DoRebinning(minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_pred_raw, minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_sel, 5);
    
    DoRebinning(HT_JetBin3_baseline_withoutDeltaPhi_pred_raw, HT_JetBin3_baseline_withoutDeltaPhi_sel, -1);
    DoRebinning(MHT_JetBin3_baseline_withoutDeltaPhi_pred_raw, MHT_JetBin3_baseline_withoutDeltaPhi_sel, -2);
@@ -1002,6 +1055,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_pred_raw, DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_sel, 5);
    DoRebinning(DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_pred_raw, DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_sel, 5);
    DoRebinning(DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_pred_raw, DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_sel, 5);
+   DoRebinning(minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_pred_raw, minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_sel, 5);
    
    DoRebinning(HT_JetBin4_baseline_withoutDeltaPhi_pred_raw, HT_JetBin4_baseline_withoutDeltaPhi_sel, -1);
    DoRebinning(MHT_JetBin4_baseline_withoutDeltaPhi_pred_raw, MHT_JetBin4_baseline_withoutDeltaPhi_sel, -2);
@@ -1014,6 +1068,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DoRebinning(DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_pred_raw, DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_sel, 5);
    DoRebinning(DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_pred_raw, DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_sel, 5);
    DoRebinning(DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_pred_raw, DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_sel, 5);
+   DoRebinning(minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_pred_raw, minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_sel, 5);
    
    //----------------------------------------------------------//
    
@@ -1032,6 +1087,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_presel_pred = CalcPrediction(DeltaPhi1_presel_pred_raw);
    DeltaPhi2_presel_pred = CalcPrediction(DeltaPhi2_presel_pred_raw);
    DeltaPhi3_presel_pred = CalcPrediction(DeltaPhi3_presel_pred_raw);
+   minDeltaPhiN_presel_pred = CalcPrediction(minDeltaPhiN_presel_pred_raw);
    
    HT_deltaPhi_pred = CalcPrediction(HT_deltaPhi_pred_raw);
    MHT_deltaPhi_pred = CalcPrediction(MHT_deltaPhi_pred_raw);
@@ -1056,6 +1112,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_pred = CalcPrediction(Jet2Eta_JetBin1_baseline_pred_raw);
    DeltaPhi1_JetBin1_baseline_pred = CalcPrediction(DeltaPhi1_JetBin1_baseline_pred_raw);
    DeltaPhi2_JetBin1_baseline_pred = CalcPrediction(DeltaPhi2_JetBin1_baseline_pred_raw);
+   minDeltaPhiN_JetBin1_baseline_pred = CalcPrediction(minDeltaPhiN_JetBin1_baseline_pred_raw);
    
    Jet1Pt_JetBin2_baseline_pred = CalcPrediction(Jet1Pt_JetBin2_baseline_pred_raw);
    Jet2Pt_JetBin2_baseline_pred = CalcPrediction(Jet2Pt_JetBin2_baseline_pred_raw);
@@ -1066,6 +1123,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_pred = CalcPrediction(DeltaPhi1_JetBin2_baseline_pred_raw);
    DeltaPhi2_JetBin2_baseline_pred = CalcPrediction(DeltaPhi2_JetBin2_baseline_pred_raw);
    DeltaPhi3_JetBin2_baseline_pred = CalcPrediction(DeltaPhi3_JetBin2_baseline_pred_raw);
+   minDeltaPhiN_JetBin2_baseline_pred = CalcPrediction(minDeltaPhiN_JetBin2_baseline_pred_raw);
    
    Jet1Pt_JetBin3_baseline_pred = CalcPrediction(Jet1Pt_JetBin3_baseline_pred_raw);
    Jet2Pt_JetBin3_baseline_pred = CalcPrediction(Jet2Pt_JetBin3_baseline_pred_raw);
@@ -1076,6 +1134,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_pred = CalcPrediction(DeltaPhi1_JetBin3_baseline_pred_raw);
    DeltaPhi2_JetBin3_baseline_pred = CalcPrediction(DeltaPhi2_JetBin3_baseline_pred_raw);
    DeltaPhi3_JetBin3_baseline_pred = CalcPrediction(DeltaPhi3_JetBin3_baseline_pred_raw);
+   minDeltaPhiN_JetBin3_baseline_pred = CalcPrediction(minDeltaPhiN_JetBin3_baseline_pred_raw);
    
    Jet1Pt_JetBin4_baseline_pred = CalcPrediction(Jet1Pt_JetBin4_baseline_pred_raw);
    Jet2Pt_JetBin4_baseline_pred = CalcPrediction(Jet2Pt_JetBin4_baseline_pred_raw);
@@ -1086,6 +1145,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_pred = CalcPrediction(DeltaPhi1_JetBin4_baseline_pred_raw);
    DeltaPhi2_JetBin4_baseline_pred = CalcPrediction(DeltaPhi2_JetBin4_baseline_pred_raw);
    DeltaPhi3_JetBin4_baseline_pred = CalcPrediction(DeltaPhi3_JetBin4_baseline_pred_raw);
+   minDeltaPhiN_JetBin4_baseline_pred = CalcPrediction(minDeltaPhiN_JetBin4_baseline_pred_raw);
    
    HT_JetBin1_baseline_withoutDeltaPhi_pred = CalcPrediction(HT_JetBin1_baseline_withoutDeltaPhi_pred_raw);
    MHT_JetBin1_baseline_withoutDeltaPhi_pred = CalcPrediction(MHT_JetBin1_baseline_withoutDeltaPhi_pred_raw);
@@ -1095,6 +1155,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_withoutDeltaPhi_pred = CalcPrediction(Jet2Eta_JetBin1_baseline_withoutDeltaPhi_pred_raw);
    DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_pred_raw);
    DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_pred_raw);
+   minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_pred = CalcPrediction(minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_pred_raw);
    
    HT_JetBin2_baseline_withoutDeltaPhi_pred = CalcPrediction(HT_JetBin2_baseline_withoutDeltaPhi_pred_raw);
    MHT_JetBin2_baseline_withoutDeltaPhi_pred = CalcPrediction(MHT_JetBin2_baseline_withoutDeltaPhi_pred_raw);
@@ -1107,6 +1168,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_pred_raw);
    DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_pred_raw);
    DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_pred_raw);
+   minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_pred = CalcPrediction(minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_pred_raw);
    
    HT_JetBin3_baseline_withoutDeltaPhi_pred = CalcPrediction(HT_JetBin3_baseline_withoutDeltaPhi_pred_raw);
    MHT_JetBin3_baseline_withoutDeltaPhi_pred = CalcPrediction(MHT_JetBin3_baseline_withoutDeltaPhi_pred_raw);
@@ -1119,6 +1181,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_pred_raw);
    DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_pred_raw);
    DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_pred_raw);
+   minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_pred = CalcPrediction(minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_pred_raw);
    
    HT_JetBin4_baseline_withoutDeltaPhi_pred = CalcPrediction(HT_JetBin4_baseline_withoutDeltaPhi_pred_raw);
    MHT_JetBin4_baseline_withoutDeltaPhi_pred = CalcPrediction(MHT_JetBin4_baseline_withoutDeltaPhi_pred_raw);
@@ -1131,6 +1194,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_pred_raw);
    DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_pred_raw);
    DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_pred = CalcPrediction(DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_pred_raw);
+   minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_pred = CalcPrediction(minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_pred_raw);
    
    NJets_baseline_withoutMHT_pred = CalcPrediction( NJets_baseline_withoutMHT_pred_raw);
    NJets_baseline_pred = CalcPrediction( NJets_baseline_pred_raw);
@@ -1193,6 +1257,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_pred->Write();
    DeltaPhi1_JetBin1_baseline_pred->Write();
    DeltaPhi2_JetBin1_baseline_pred->Write();
+   minDeltaPhiN_JetBin1_baseline_pred->Write();
    
    Jet1Pt_JetBin2_baseline_pred->Write();
    Jet2Pt_JetBin2_baseline_pred->Write();
@@ -1203,6 +1268,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_pred->Write();
    DeltaPhi2_JetBin2_baseline_pred->Write();
    DeltaPhi3_JetBin2_baseline_pred->Write();
+   minDeltaPhiN_JetBin2_baseline_pred->Write();
    
    Jet1Pt_JetBin3_baseline_pred->Write();
    Jet2Pt_JetBin3_baseline_pred->Write();
@@ -1213,6 +1279,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_pred->Write();
    DeltaPhi2_JetBin3_baseline_pred->Write();
    DeltaPhi3_JetBin3_baseline_pred->Write();
+   minDeltaPhiN_JetBin3_baseline_pred->Write();
    
    Jet1Pt_JetBin4_baseline_pred->Write();
    Jet2Pt_JetBin4_baseline_pred->Write();
@@ -1223,6 +1290,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_pred->Write();
    DeltaPhi2_JetBin4_baseline_pred->Write();
    DeltaPhi3_JetBin4_baseline_pred->Write();
+   minDeltaPhiN_JetBin4_baseline_pred->Write();
    
    HT_JetBin1_baseline_withoutDeltaPhi_pred->Write();
    MHT_JetBin1_baseline_withoutDeltaPhi_pred->Write();
@@ -1232,6 +1300,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_withoutDeltaPhi_pred->Write();
    DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_pred->Write();
    DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_pred->Write();
+   minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_pred->Write();
    
    HT_JetBin2_baseline_withoutDeltaPhi_pred->Write();
    MHT_JetBin2_baseline_withoutDeltaPhi_pred->Write();
@@ -1244,6 +1313,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_pred->Write();
    DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_pred->Write();
    DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_pred->Write();
+   minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_pred->Write();
    
    HT_JetBin3_baseline_withoutDeltaPhi_pred->Write();
    MHT_JetBin3_baseline_withoutDeltaPhi_pred->Write();
@@ -1256,6 +1326,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_pred->Write();
    DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_pred->Write();
    DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_pred->Write();
+   minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_pred->Write();
    
    HT_JetBin4_baseline_withoutDeltaPhi_pred->Write();
    MHT_JetBin4_baseline_withoutDeltaPhi_pred->Write();
@@ -1268,6 +1339,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_pred->Write();
    DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_pred->Write();
    DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_pred->Write();
+   minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_pred->Write();
    
    // Save histograms: expectation
    
@@ -1313,6 +1385,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_sel->Write();
    DeltaPhi1_JetBin1_baseline_sel->Write();
    DeltaPhi2_JetBin1_baseline_sel->Write();
+   minDeltaPhiN_JetBin1_baseline_sel->Write();
    
    Jet1Pt_JetBin2_baseline_sel->Write();
    Jet2Pt_JetBin2_baseline_sel->Write();
@@ -1323,6 +1396,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_sel->Write();
    DeltaPhi2_JetBin2_baseline_sel->Write();
    DeltaPhi3_JetBin2_baseline_sel->Write();
+   minDeltaPhiN_JetBin2_baseline_sel->Write();
    
    Jet1Pt_JetBin3_baseline_sel->Write();
    Jet2Pt_JetBin3_baseline_sel->Write();
@@ -1333,6 +1407,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_sel->Write();
    DeltaPhi2_JetBin3_baseline_sel->Write();
    DeltaPhi3_JetBin3_baseline_sel->Write();
+   minDeltaPhiN_JetBin3_baseline_sel->Write();
    
    Jet1Pt_JetBin4_baseline_sel->Write();
    Jet2Pt_JetBin4_baseline_sel->Write();
@@ -1343,6 +1418,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_sel->Write();
    DeltaPhi2_JetBin4_baseline_sel->Write();
    DeltaPhi3_JetBin4_baseline_sel->Write();
+   minDeltaPhiN_JetBin4_baseline_sel->Write();
    
    HT_JetBin1_baseline_withoutDeltaPhi_sel->Write();
    MHT_JetBin1_baseline_withoutDeltaPhi_sel->Write();
@@ -1352,6 +1428,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    Jet2Eta_JetBin1_baseline_withoutDeltaPhi_sel->Write();
    DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_sel->Write();
    DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_sel->Write();
+   minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_sel->Write();
    
    HT_JetBin2_baseline_withoutDeltaPhi_sel->Write();
    MHT_JetBin2_baseline_withoutDeltaPhi_sel->Write();
@@ -1364,6 +1441,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_sel->Write();
    DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_sel->Write();
    DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_sel->Write();
+   minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_sel->Write();
    
    HT_JetBin3_baseline_withoutDeltaPhi_sel->Write();
    MHT_JetBin3_baseline_withoutDeltaPhi_sel->Write();
@@ -1376,6 +1454,7 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_sel->Write();
    DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_sel->Write();
    DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_sel->Write();
+   minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_sel->Write();
    
    HT_JetBin4_baseline_withoutDeltaPhi_sel->Write();
    MHT_JetBin4_baseline_withoutDeltaPhi_sel->Write();
@@ -1388,9 +1467,10 @@ Prediction::Prediction(TChain& QCDPrediction, TChain& RA2PreSelection)
    DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_sel->Write();
    DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_sel->Write();
    DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_sel->Write();
+   minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_sel->Write();
    
    prediction_histos->Write();
-   //----------------------------------------------------------//
+   
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
@@ -1406,6 +1486,7 @@ bool Prediction::DeltaPhiCut_prediction()
          DeltaPhi2 < 0.5 ||
          DeltaPhi3 < 0.3 ) deltaPhiCut = false;
    }
+   //   if (minDeltaPhiN < 6) deltaPhiCut = false;
    
    return deltaPhiCut;
 }
@@ -1424,6 +1505,7 @@ bool Prediction::DeltaPhiCut_selection()
          DeltaPhi2_RA2 < 0.5 ||
          DeltaPhi3_RA2 < 0.3 ) deltaPhiCut = false;
    }
+   //   if (minDeltaPhiN_RA2 < 6) deltaPhiCut = false;
    
    return deltaPhiCut;
 }
@@ -1441,26 +1523,25 @@ void Prediction::DoRebinning(TH2F* prediction_raw, TH1F* selection_raw, int Nbin
       
       // MHT binning
       if (Nbins == -2) {
-         vbins[1]  = 0.;
-         vbins[2]  = 10.;
-         vbins[3]  = 20.;
-         vbins[4]  = 30.;
-         vbins[5]  = 40.;
-         vbins[6]  = 50.;
-         vbins[7]  = 60.;
-         vbins[8]  = 70.;
-         vbins[9]  = 80.;
-         vbins[10] = 90.;
-         vbins[11] = 100.;
-         vbins[12] = 110.;
-         vbins[13] = 120.;
-         vbins[14] = 150.;
-         vbins[15] = 200.;
-         vbins[16] = 350.;
-         vbins[17] = 500.;
-         vbins[18] = 600.;
-         vbins[19] = 700.;
-         vbins[20] = 800.;
+         nbins = 17;
+         vbins[0]  = 0.;
+         vbins[1]  = 10.;
+         vbins[2]  = 20.;
+         vbins[3]  = 30.;
+         vbins[4]  = 40.;
+         vbins[5]  = 50.;
+         vbins[6]  = 60.;
+         vbins[7]  = 70.;
+         vbins[8]  = 80.;
+         vbins[9] = 90.;
+         vbins[10] = 100.;
+         vbins[11] = 120.;
+         vbins[12] = 150.;
+         vbins[13] = 200.;
+         vbins[14] = 300.;
+         vbins[15] = 500.;
+         vbins[16] = 800.;
+         vbins[17] = 1500.;
       }
       
       TH2F* temp = (TH2F*) prediction_raw->Clone();
@@ -1574,6 +1655,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if ( type == "DeltaPhi1_presel") return DeltaPhi1_presel_sel;
    if ( type == "DeltaPhi2_presel") return DeltaPhi2_presel_sel;
    if ( type == "DeltaPhi3_presel") return DeltaPhi3_presel_sel;
+   if ( type == "minDeltaPhiN_presel") return minDeltaPhiN_presel_sel;
    
    if ( type == "HT_deltaPhi") return HT_deltaPhi_sel;
    if ( type == "MHT_deltaPhi") return MHT_deltaPhi_sel;
@@ -1598,6 +1680,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "Jet2Eta_JetBin1_baseline" ) return Jet2Eta_JetBin1_baseline_sel;
    if( type == "DeltaPhi1_JetBin1_baseline") return DeltaPhi1_JetBin1_baseline_sel;
    if( type == "DeltaPhi2_JetBin1_baseline") return DeltaPhi2_JetBin1_baseline_sel;
+   if( type == "minDeltaPhiN_JetBin1_baseline") return minDeltaPhiN_JetBin1_baseline_sel;
    
    if( type == "Jet1Pt_JetBin2_baseline" ) return Jet1Pt_JetBin2_baseline_sel;
    if( type == "Jet2Pt_JetBin2_baseline" ) return Jet2Pt_JetBin2_baseline_sel;
@@ -1608,6 +1691,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin2_baseline") return DeltaPhi1_JetBin2_baseline_sel;
    if( type == "DeltaPhi2_JetBin2_baseline") return DeltaPhi2_JetBin2_baseline_sel;
    if( type == "DeltaPhi3_JetBin2_baseline") return DeltaPhi3_JetBin2_baseline_sel;
+   if( type == "minDeltaPhiN_JetBin2_baseline") return minDeltaPhiN_JetBin2_baseline_sel;
    
    if( type == "Jet1Pt_JetBin3_baseline" ) return Jet1Pt_JetBin3_baseline_sel;
    if( type == "Jet2Pt_JetBin3_baseline" ) return Jet2Pt_JetBin3_baseline_sel;
@@ -1618,6 +1702,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin3_baseline") return DeltaPhi1_JetBin3_baseline_sel;
    if( type == "DeltaPhi2_JetBin3_baseline") return DeltaPhi2_JetBin3_baseline_sel;
    if( type == "DeltaPhi3_JetBin3_baseline") return DeltaPhi3_JetBin3_baseline_sel;
+   if( type == "minDeltaPhiN_JetBin3_baseline") return minDeltaPhiN_JetBin3_baseline_sel;
    
    if( type == "Jet1Pt_JetBin4_baseline" ) return Jet1Pt_JetBin4_baseline_sel;
    if( type == "Jet2Pt_JetBin4_baseline" ) return Jet2Pt_JetBin4_baseline_sel;
@@ -1628,6 +1713,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin4_baseline") return DeltaPhi1_JetBin4_baseline_sel;
    if( type == "DeltaPhi2_JetBin4_baseline") return DeltaPhi2_JetBin4_baseline_sel;
    if( type == "DeltaPhi3_JetBin4_baseline") return DeltaPhi3_JetBin4_baseline_sel;
+   if( type == "minDeltaPhiN_JetBin4_baseline") return minDeltaPhiN_JetBin4_baseline_sel;
    
    if( type == "HT_JetBin1_baseline_withoutDeltaPhi") return HT_JetBin1_baseline_withoutDeltaPhi_sel;
    if( type == "MHT_JetBin1_baseline_withoutDeltaPhi") return MHT_JetBin1_baseline_withoutDeltaPhi_sel;
@@ -1637,6 +1723,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "Jet2Eta_JetBin1_baseline_withoutDeltaPhi" ) return Jet2Eta_JetBin1_baseline_withoutDeltaPhi_sel;
    if( type == "DeltaPhi1_JetBin1_baseline_withoutDeltaPhi") return DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_sel;
    if( type == "DeltaPhi2_JetBin1_baseline_withoutDeltaPhi") return DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_sel;
+   if( type == "minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi") return minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_sel;
    
    if( type == "HT_JetBin2_baseline_withoutDeltaPhi") return HT_JetBin2_baseline_withoutDeltaPhi_sel;
    if( type == "MHT_JetBin2_baseline_withoutDeltaPhi") return MHT_JetBin2_baseline_withoutDeltaPhi_sel;
@@ -1649,6 +1736,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin2_baseline_withoutDeltaPhi") return DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_sel;
    if( type == "DeltaPhi2_JetBin2_baseline_withoutDeltaPhi") return DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_sel;
    if( type == "DeltaPhi3_JetBin2_baseline_withoutDeltaPhi") return DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_sel;
+   if( type == "minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi") return minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_sel;
    
    if( type == "HT_JetBin3_baseline_withoutDeltaPhi") return HT_JetBin3_baseline_withoutDeltaPhi_sel;
    if( type == "MHT_JetBin3_baseline_withoutDeltaPhi") return MHT_JetBin3_baseline_withoutDeltaPhi_sel;
@@ -1661,6 +1749,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin3_baseline_withoutDeltaPhi") return DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_sel;
    if( type == "DeltaPhi2_JetBin3_baseline_withoutDeltaPhi") return DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_sel;
    if( type == "DeltaPhi3_JetBin3_baseline_withoutDeltaPhi") return DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_sel;
+   if( type == "minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi") return minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_sel;
    
    if( type == "HT_JetBin4_baseline_withoutDeltaPhi") return HT_JetBin4_baseline_withoutDeltaPhi_sel;
    if( type == "MHT_JetBin4_baseline_withoutDeltaPhi") return MHT_JetBin4_baseline_withoutDeltaPhi_sel;
@@ -1673,6 +1762,7 @@ TH1F* Prediction::GetSelectionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin4_baseline_withoutDeltaPhi") return DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_sel;
    if( type == "DeltaPhi2_JetBin4_baseline_withoutDeltaPhi") return DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_sel;
    if( type == "DeltaPhi3_JetBin4_baseline_withoutDeltaPhi") return DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_sel;
+   if( type == "minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi") return minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_sel;
    
    if ( type == "NJets_baseline_withoutMHT") return NJets_baseline_withoutMHT_sel;
    if ( type == "NJets_baseline") return NJets_baseline_sel;
@@ -1707,6 +1797,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if ( type == "DeltaPhi1_presel") return DeltaPhi1_presel_pred;
    if ( type == "DeltaPhi2_presel") return DeltaPhi2_presel_pred;
    if ( type == "DeltaPhi3_presel") return DeltaPhi3_presel_pred;
+   if ( type == "minDeltaPhiN_presel") return minDeltaPhiN_presel_pred;
    
    if ( type == "HT_deltaPhi") return HT_deltaPhi_pred;
    if ( type == "MHT_deltaPhi") return MHT_deltaPhi_pred;
@@ -1731,6 +1822,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if( type == "Jet2Eta_JetBin1_baseline" ) return Jet2Eta_JetBin1_baseline_pred;
    if( type == "DeltaPhi1_JetBin1_baseline") return DeltaPhi1_JetBin1_baseline_pred;
    if( type == "DeltaPhi2_JetBin1_baseline") return DeltaPhi2_JetBin1_baseline_pred;
+   if( type == "minDeltaPhiN_JetBin1_baseline") return minDeltaPhiN_JetBin1_baseline_pred;
    
    if( type == "Jet1Pt_JetBin2_baseline" ) return Jet1Pt_JetBin2_baseline_pred;
    if( type == "Jet2Pt_JetBin2_baseline" ) return Jet2Pt_JetBin2_baseline_pred;
@@ -1741,6 +1833,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin2_baseline") return DeltaPhi1_JetBin2_baseline_pred;
    if( type == "DeltaPhi2_JetBin2_baseline") return DeltaPhi2_JetBin2_baseline_pred;
    if( type == "DeltaPhi3_JetBin2_baseline") return DeltaPhi3_JetBin2_baseline_pred;
+   if( type == "minDeltaPhiN_JetBin2_baseline") return minDeltaPhiN_JetBin2_baseline_pred;
    
    if( type == "Jet1Pt_JetBin3_baseline" ) return Jet1Pt_JetBin3_baseline_pred;
    if( type == "Jet2Pt_JetBin3_baseline" ) return Jet2Pt_JetBin3_baseline_pred;
@@ -1751,6 +1844,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin3_baseline") return DeltaPhi1_JetBin3_baseline_pred;
    if( type == "DeltaPhi2_JetBin3_baseline") return DeltaPhi2_JetBin3_baseline_pred;
    if( type == "DeltaPhi3_JetBin3_baseline") return DeltaPhi3_JetBin3_baseline_pred;
+   if( type == "minDeltaPhiN_JetBin3_baseline") return minDeltaPhiN_JetBin3_baseline_pred;
    
    if( type == "Jet1Pt_JetBin4_baseline" ) return Jet1Pt_JetBin4_baseline_pred;
    if( type == "Jet2Pt_JetBin4_baseline" ) return Jet2Pt_JetBin4_baseline_pred;
@@ -1761,6 +1855,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin4_baseline") return DeltaPhi1_JetBin4_baseline_pred;
    if( type == "DeltaPhi2_JetBin4_baseline") return DeltaPhi2_JetBin4_baseline_pred;
    if( type == "DeltaPhi3_JetBin4_baseline") return DeltaPhi3_JetBin4_baseline_pred;
+   if( type == "minDeltaPhiN_JetBin4_baseline") return minDeltaPhiN_JetBin4_baseline_pred;
    
    if( type == "HT_JetBin1_baseline_withoutDeltaPhi") return HT_JetBin1_baseline_withoutDeltaPhi_pred;
    if( type == "MHT_JetBin1_baseline_withoutDeltaPhi") return MHT_JetBin1_baseline_withoutDeltaPhi_pred;
@@ -1770,6 +1865,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if( type == "Jet2Eta_JetBin1_baseline_withoutDeltaPhi" ) return Jet2Eta_JetBin1_baseline_withoutDeltaPhi_pred;
    if( type == "DeltaPhi1_JetBin1_baseline_withoutDeltaPhi") return DeltaPhi1_JetBin1_baseline_withoutDeltaPhi_pred;
    if( type == "DeltaPhi2_JetBin1_baseline_withoutDeltaPhi") return DeltaPhi2_JetBin1_baseline_withoutDeltaPhi_pred;
+   if( type == "minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi") return minDeltaPhiN_JetBin1_baseline_withoutDeltaPhi_pred;
    
    if( type == "HT_JetBin2_baseline_withoutDeltaPhi") return HT_JetBin2_baseline_withoutDeltaPhi_pred;
    if( type == "MHT_JetBin2_baseline_withoutDeltaPhi") return MHT_JetBin2_baseline_withoutDeltaPhi_pred;
@@ -1782,6 +1878,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin2_baseline_withoutDeltaPhi") return DeltaPhi1_JetBin2_baseline_withoutDeltaPhi_pred;
    if( type == "DeltaPhi2_JetBin2_baseline_withoutDeltaPhi") return DeltaPhi2_JetBin2_baseline_withoutDeltaPhi_pred;
    if( type == "DeltaPhi3_JetBin2_baseline_withoutDeltaPhi") return DeltaPhi3_JetBin2_baseline_withoutDeltaPhi_pred;
+   if( type == "minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi") return minDeltaPhiN_JetBin2_baseline_withoutDeltaPhi_pred;
    
    if( type == "HT_JetBin3_baseline_withoutDeltaPhi") return HT_JetBin3_baseline_withoutDeltaPhi_pred;
    if( type == "MHT_JetBin3_baseline_withoutDeltaPhi") return MHT_JetBin3_baseline_withoutDeltaPhi_pred;
@@ -1794,6 +1891,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin3_baseline_withoutDeltaPhi") return DeltaPhi1_JetBin3_baseline_withoutDeltaPhi_pred;
    if( type == "DeltaPhi2_JetBin3_baseline_withoutDeltaPhi") return DeltaPhi2_JetBin3_baseline_withoutDeltaPhi_pred;
    if( type == "DeltaPhi3_JetBin3_baseline_withoutDeltaPhi") return DeltaPhi3_JetBin3_baseline_withoutDeltaPhi_pred;
+   if( type == "minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi") return minDeltaPhiN_JetBin3_baseline_withoutDeltaPhi_pred;
    
    if( type == "HT_JetBin4_baseline_withoutDeltaPhi") return HT_JetBin4_baseline_withoutDeltaPhi_pred;
    if( type == "MHT_JetBin4_baseline_withoutDeltaPhi") return MHT_JetBin4_baseline_withoutDeltaPhi_pred;
@@ -1806,6 +1904,7 @@ TH1F* Prediction::GetPredictionHisto(TString type) {
    if( type == "DeltaPhi1_JetBin4_baseline_withoutDeltaPhi") return DeltaPhi1_JetBin4_baseline_withoutDeltaPhi_pred;
    if( type == "DeltaPhi2_JetBin4_baseline_withoutDeltaPhi") return DeltaPhi2_JetBin4_baseline_withoutDeltaPhi_pred;
    if( type == "DeltaPhi3_JetBin4_baseline_withoutDeltaPhi") return DeltaPhi3_JetBin4_baseline_withoutDeltaPhi_pred;
+   if( type == "minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi") return minDeltaPhiN_JetBin4_baseline_withoutDeltaPhi_pred;
    
    if ( type == "NJets_baseline_withoutMHT") return NJets_baseline_withoutMHT_pred;
    if ( type == "NJets_baseline") return NJets_baseline_pred;

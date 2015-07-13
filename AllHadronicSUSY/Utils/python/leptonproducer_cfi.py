@@ -11,4 +11,5 @@ maxMuEta								  = cms.double(2.4),
 muIsoValue								  = cms.double(0.2),
 elecIsoValue								  = cms.double(0.2), # only has an effect with useMiniIsolation
 UseMiniIsolation = cms.bool(False),
+METTag = cms.InputTag('slimmedMETs'), 
 )

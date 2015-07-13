@@ -12,10 +12,10 @@ MCResolutions = cms.EDAnalyzer('MCResolutions',
 	deltaPhiDiJet		= cms.double(2.7),
 	absCut3rdJet		= cms.double(30.),
 	relCut3rdJet		= cms.double(0.2),
-	deltaRMatch			= cms.double(0.1),
+	deltaRMatch			= cms.double(0.25),
 	deltaRMatchVeto	= cms.double(0.7),
-	absPtVeto			= cms.double(30.),
-	relPtVeto			= cms.double(0.05),
+	absPtVeto			= cms.double(20.),
+	relPtVeto			= cms.double(0.01),
 	GenJetPtCut			= cms.double(0.),
    fileName				= cms.string('MCJetResolution.root')
 )
