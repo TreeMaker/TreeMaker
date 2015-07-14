@@ -23,6 +23,14 @@ jsonfile=""
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
     process.GlobalTag.globaltag = Global_Tag
     
+    #CMSSW version sniffing
+    CMSSWVER = os.getenv("CMSSW_VERSION")
+    CMSSWVER_parts = CMSSWVER.split("_")
+    is74X = False
+    if int(CMSSWVER_parts[1])==7 and int(CMSSWVER_parts[2])>=4:
+        is74X = True
+        print "Configuring for 74X"
+
     # define if mt cut should be applied and the value (less than 0 means no cut)
     mtcut = cms.double(100)
     if tagandprobe:
@@ -919,6 +927,7 @@ jsonfile=""
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     BTagCutValue					= cms.double(0.814)
     )
+    if is74X: process.BTags.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.Baseline += process.BTags
     VarsInt.extend(['BTags'])
     from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
@@ -962,6 +971,7 @@ jsonfile=""
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     METTag  = cms.InputTag("slimmedMETs"),
     )
+    if is74X: process.JetsProperties.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.Baseline += process.JetsProperties
     if geninfo : 
         from AllHadronicSUSY.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
@@ -1113,6 +1123,8 @@ jsonfile=""
            BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
            BTagCutValue = cms.double(0.814)
         )
+        if is74X: process.BTagsclean.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+
         process.ZinvClean += process.BTagsclean
         VarsInt.extend(['BTagsclean'])
 
