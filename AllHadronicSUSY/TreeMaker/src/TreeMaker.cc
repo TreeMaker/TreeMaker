@@ -41,7 +41,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
   treeName_ = iConfig.getParameter<std::string>("TreeName");
   debug_ = iConfig.getParameter<bool> ("debug");
   // input tags for float variables eg HT MHT MET or what not
-  VarsTLorentzVectorNames_= iConfig.getParameter< std::vector<std::string> >  ("VarsTLoretzVector");
+  VarsTLorentzVectorNames_= iConfig.getParameter< std::vector<std::string> >  ("VarsTLorentzVector");
   VarsStringNames_= iConfig.getParameter< std::vector<std::string> >  ("VarsString");
   VarsDoubleNames_= iConfig.getParameter< std::vector<std::string> >  ("VarsDouble");
   VarsIntNames_= iConfig.getParameter< std::vector<std::string> >  ("VarsInt");
