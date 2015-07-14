@@ -123,8 +123,8 @@ process.Baseline = cms.Sequence(
 
 ## --- NVertex producer -----------------------------------------------
 print "*** NVertex producer **************************************************"
-from AllHadronicSUSY.Utils.primaryverticies_cfi import primaryverticies
-process.NVtx = primaryverticies.clone(
+from AllHadronicSUSY.Utils.primaryvertices_cfi import primaryvertices
+process.NVtx = primaryvertices.clone(
                                       VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
                                       )
 process.Baseline += process.NVtx
