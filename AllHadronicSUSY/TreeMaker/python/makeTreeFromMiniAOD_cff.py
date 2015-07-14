@@ -16,7 +16,7 @@ applybaseline=False,
 doZinv=False,
 debugtracks=False,
 geninfo=True,
-filtertag="PAT",
+tagname="PAT",
 jsonfile=""
 ):
 
@@ -225,7 +225,7 @@ jsonfile=""
     process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
                                          photonCollection = cms.untracked.InputTag("slimmedPhotons"),
                                          electronCollection = cms.untracked.InputTag("slimmedElectrons"),
-                                         conversionCollection = cms.untracked.InputTag("reducedEgamma","reducedConversions",filtertag),
+                                         conversionCollection = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
                                          beamspotCollection = cms.untracked.InputTag("offlineBeamSpot","","RECO"),
                                          ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
                                          ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
@@ -331,7 +331,7 @@ jsonfile=""
     process.METFilters = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(filtertag),
+        trigTagArg3  = cms.string(''),
         filterName  =   cms.string("Flag_METFilters"),
         )
     process.Baseline += process.METFilters
@@ -340,7 +340,7 @@ jsonfile=""
     process.CSCTightHaloFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(filtertag),
+        trigTagArg3  = cms.string(''),
         filterName  =   cms.string("Flag_CSCTightHaloFilter"),
         )
     process.Baseline += process.CSCTightHaloFilter
@@ -349,7 +349,7 @@ jsonfile=""
     process.HBHENoiseFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(filtertag),
+        trigTagArg3  = cms.string(''),
         filterName  =   cms.string("Flag_HBHENoiseFilter"),
         )
     process.Baseline += process.HBHENoiseFilter
@@ -358,7 +358,7 @@ jsonfile=""
     process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(filtertag),
+        trigTagArg3  = cms.string(''),
         filterName  =   cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
     process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
@@ -368,6 +368,8 @@ jsonfile=""
     # Two vectors are saved, one with the names of the triggers
     # the other with the trigger results, the indexing of these two vectors
     # must match
+    # If the version number of the input trigger name is omitted,
+    # any matching trigger will be included (default behavior)
 
     from AllHadronicSUSY.Utils.triggerproducer_cfi import triggerProducer
     process.TriggerProducer = triggerProducer.clone(
@@ -375,25 +377,25 @@ jsonfile=""
         trigTagArg2  = cms.string(''),
         trigTagArg3  = cms.string('HLT'),
         triggerNameList  =   cms.string(#space-delimited list of trigger names
-            'HLT_PFHT350_PFMET100_NoiseCleaned_v1 '\
-            'HLT_PFMET170_NoiseCleaned_v1 '\
-            'HLT_PFMET170_NoiseCleaned_v2 '\
-            'HLT_PFHT350_v1 '\
-            'HLT_PFHT800_v1 '\
-            'HLT_PFHT900_v1 '\
-            'HLT_Ele27_eta2p1_WP85_Gsf_v1 '\
-            'HLT_IsoMu20_eta2p1_IterTrk02_v1 '\
-            'HLT_PFHT350_PFMET120_NoiseCleaned_v1 '\
-            'HLT_Mu15_IsoVVVL_PFHT350_PFMET70_v1 '\
-            'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v1 '\
-            'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v1 '\
-            'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v1 '\
-            'HLT_Photon90_CaloIdL_HT500_v2 '\
-            'HLT_Photon90_CaloIdL_HT600_v1 '\
-            'HLT_DoubleEle8_CaloIdM_Mass8_PFHT300_v2 '\
-            'HLT_DoubleMu8_Mass8_PFHT300_v2 '\
-            'HLT_Ele27_eta2p1_WPLoose_Gsf_v1 '\
-            'HLT_IsoMu17_eta2p1_v2 '
+            'HLT_PFHT350_PFMET100_NoiseCleaned_v '\
+            'HLT_PFMET170_NoiseCleaned_v '\
+            'HLT_PFMET170_NoiseCleaned_v '\
+            'HLT_PFHT350_v '\
+            'HLT_PFHT800_v '\
+            'HLT_PFHT900_v '\
+            'HLT_Ele27_eta2p1_WP85_Gsf_v '\
+            'HLT_IsoMu20_eta2p1_IterTrk02_v '\
+            'HLT_PFHT350_PFMET120_NoiseCleaned_v '\
+            'HLT_Mu15_IsoVVVL_PFHT350_PFMET70_v '\
+            'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v '\
+            'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v '\
+            'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v '\
+            'HLT_Photon90_CaloIdL_HT500_v '\
+            'HLT_Photon90_CaloIdL_HT600_v '\
+            'HLT_DoubleEle8_CaloIdM_Mass8_PFHT300_v '\
+            'HLT_DoubleMu8_Mass8_PFHT300_v '\
+            'HLT_Ele27_eta2p1_WPLoose_Gsf_v '\
+            'HLT_IsoMu17_eta2p1_v '
             ),
         )
     process.Baseline += process.TriggerProducer
