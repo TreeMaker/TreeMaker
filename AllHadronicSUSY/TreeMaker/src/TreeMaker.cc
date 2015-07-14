@@ -305,14 +305,14 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VarsIntNames: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VarsIntNames: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VarsIntTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
       nameInTree = SeparateString(nameInTree,":").second;
     }
     nameInTree = FinalizeName(nameInTree);
-    std::cout<<"VarsIntNames: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VarsIntNames: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     tree_->Branch((TString)nameInTree,&(VarsInt_.at(i)),(TString)nameInTree+"/I");
   }
   // double variables
@@ -327,7 +327,7 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VarsDoubleNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VarsDoubleNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VarsDoubleTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
@@ -349,7 +349,7 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VarsBoolNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VarsBoolNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VarsBoolTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
@@ -371,7 +371,7 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VarsTLorentzVectorNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VarsTLorentzVectorNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VarsTLorentzVectorTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
@@ -393,7 +393,7 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VarsStringNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VarsStringNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VarsStringTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
@@ -545,7 +545,7 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VectorIntNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VectorIntNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VectorIntTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
@@ -576,7 +576,7 @@ TreeMaker::beginJob()
       nameInTree = SeparateString(nameInTree,":").second;
     }
     nameInTree = FinalizeName(nameInTree);
-    std::cout<<"VectorDoubleNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VectorDoubleNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     tree_->Branch((TString)nameInTree, "std::vector<double>", &(VectorDoubleVector_.at(i)), 32000, 0);
   }
   for(unsigned int i=0; i< VectorBoolNames_.size();i++)
@@ -594,7 +594,7 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VectorBoolNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VectorBoolNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VectorBoolTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
@@ -618,7 +618,7 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VectorStringNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VectorStringNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VectorStringTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
@@ -642,7 +642,7 @@ TreeMaker::beginJob()
       tag = SeparateString(tempFull,"(").first;
       nameInTree = SeparateString(SeparateString(tempFull,"(").second,")").first;
     }
-    std::cout<<"VectorTLorentzVectorNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" originial full name: "<<tempFull<<std::endl;
+    std::cout<<"VectorTLorentzVectorNames_: tag:"<<tag<<" nameInTree: "<<nameInTree<<" original full name: "<<tempFull<<std::endl;
     VectorTLorentzVectorTags_.push_back(edm::InputTag(tag));
     if(nameInTree.find(':')<nameInTree.size())
     {
