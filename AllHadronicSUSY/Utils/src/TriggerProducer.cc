@@ -92,13 +92,28 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<int> > passTrigVec(new std::vector<int>());
   std::auto_ptr<std::vector<std::string> > trigNamesVec(new std::vector<std::string>());
 
-  int passesTrigger;
+  //int passesTrigger;
   edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
   trigResults = trigResults;
   iEvent.getByLabel(trigResultsTag_,trigResults);
   const edm::TriggerNames& trigNames = iEvent.triggerNames(*trigResults); 
 
-  for(unsigned int i = 0; i < parsedTrigNamesVec.size(); i++)
+  //Find the matching triggers
+
+  std::string testTriggerName;
+  for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
+    testTriggerName = trigNames.triggerName(trigIndex);
+    for(unsigned int parsedIndex = 0; parsedIndex < parsedTrigNamesVec.size(); parsedIndex++){
+      if(testTriggerName.find(parsedTrigNamesVec.at(parsedIndex)) != std::string::npos){
+	  trigNamesVec->push_back(testTriggerName.c_str());
+	  passTrigVec->push_back(trigResults->accept(trigIndex));
+	  //std::cout << "Matched: " << testTriggerName << std::endl;
+	  //break; //We only match one trigger to each trigger name fragment passed
+      }
+    }
+  }
+      /*
+ for(unsigned int i = 0; i < parsedTrigNamesVec.size(); i++)
     {
       passesTrigger = -1;
       trigNamesVec->push_back(parsedTrigNamesVec.at(i).c_str());
@@ -108,7 +123,7 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 	  passTrigVec->push_back(passesTrigger);
     }
-
+      */
   // for (int iHLT = 0 ; iHLT<static_cast<int>(trigResults->size()); ++iHLT) 
   // {	
   //   //std::cout << "tname="<< trigNames.triggerName(iHLT)<< std::endl;

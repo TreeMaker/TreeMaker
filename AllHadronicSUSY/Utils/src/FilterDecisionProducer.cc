@@ -86,8 +86,19 @@ FilterDecisionProducer::FilterDecisionProducer(const edm::ParameterSet& iConfig)
   trigTagArg1_ = iConfig.getParameter <std::string> ("trigTagArg1");
   trigTagArg2_ = iConfig.getParameter <std::string> ("trigTagArg2");
   trigTagArg3_ = iConfig.getParameter <std::string> ("trigTagArg3");
-  trigResultsTag_ = edm::InputTag(trigTagArg1_,trigTagArg2_,trigTagArg3_);
+  // We we make the producer a little smarter. There are four cases we look at
+  // 1) trigTagArg1_ and trigTagArg3_ are set, if this is the case we create the label bases on all three arguments
+  // 2) trigTagArg3_ is not set, in this case we create the label based only on  trigTagArg1_
+  // 3) Neither trigTagArg1_ or TrigTagArg3_ are set, in this case we default to searching for "TriggerResults"
+  // 4) trigTag1_ is not set, but trigTagArg3_ is set, we look for "TriggerResults" in the process defined by trigTagArg3_
 
+  if(trigTagArg1_.empty()) trigTagArg1_ = "TriggerResults";
+  
+  if(trigTagArg3_.empty()){
+    trigResultsTag_ = edm::InputTag(trigTagArg1_);
+  } else {
+    trigResultsTag_ = edm::InputTag(trigTagArg1_,trigTagArg2_,trigTagArg3_);
+  }
 
   produces<int>("");
 
