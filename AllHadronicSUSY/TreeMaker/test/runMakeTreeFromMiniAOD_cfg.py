@@ -18,8 +18,8 @@ filtertag=parameters.value("filtertag","RECO")
 jsonfile=parameters.value("jsonfile","")
 
 print "***** SETUP ************************************"
-print " outFileName : "+outFileName
-print " dataSetName : "+dataSetName
+print " outfile : "+outFileName
+print " dataset : "+dataSetName
 print " global_tag : "+global_tag
 print " storing lostlepton variables: "+str(lostlepton)
 print " storing tag and probe variables: "+str(tagandprobe)
