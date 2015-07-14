@@ -6,7 +6,7 @@ dataSetName = parameters.value("dataset","/store/data/Run2015B/DoubleMuon/MINIAO
 #Phys14 MC: use CMSSW_7_2_3_patch1
 #dataSetName = parameters.value("dataset","/store/mc/Phys14DR/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/04860BAA-B673-E411-8B20-002481E0D50C.root")
 outFileName=parameters.value("outfile","ReducedSelection")
-global_tag = parameters.value("global_tag","PHYS14_25_V2::All")
+global_tag = parameters.value("global_tag","GR_P_V56::All")
 lostlepton= parameters.value("lostlepton", False)
 tagandprobe= parameters.value("tagandprobe", False)
 applybaseline= parameters.value("applybaseline", False)
@@ -14,7 +14,7 @@ doZinv=parameters.value("doZinv", False)
 gridcontrol=parameters.value("gridcontrol", False)
 numevents=parameters.value("numevents",-1)
 geninfo=parameters.value("geninfo",False)
-filtertag=parameters.value("filtertag","RECO")
+tagname=parameters.value("tagname","RECO")
 jsonfile=parameters.value("jsonfile","")
 
 print "***** SETUP ************************************"
@@ -26,7 +26,7 @@ print " storing tag and probe variables: "+str(tagandprobe)
 print " storing Zinv variables: "+str(doZinv)
 print " Applying baseline selection filter: "+str(applybaseline)
 print " Including gen-level information: "+str(geninfo)
-print " Instance name of filter information: "+filtertag
+print " Instance name of tag information: "+tagname
 if len(jsonfile)>0: print " JSON file applied: "+jsonfile
 print "************************************************"
 
@@ -52,7 +52,7 @@ makeTreeFromMiniAOD(process,
   applybaseline=applybaseline,
   doZinv=doZinv,
   geninfo=geninfo,
-  filtertag=filtertag,
+  tagname=tagname,
   jsonfile=jsonfile
 )
 

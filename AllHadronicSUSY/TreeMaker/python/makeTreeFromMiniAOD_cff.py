@@ -16,7 +16,7 @@ applybaseline=False,
 doZinv=False,
 debugtracks=False,
 geninfo=True,
-filtertag="PAT",
+tagname="PAT",
 jsonfile=""
 ):
 
@@ -225,7 +225,7 @@ jsonfile=""
     process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
                                          photonCollection = cms.untracked.InputTag("slimmedPhotons"),
                                          electronCollection = cms.untracked.InputTag("slimmedElectrons"),
-                                         conversionCollection = cms.untracked.InputTag("reducedEgamma","reducedConversions",filtertag),
+                                         conversionCollection = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
                                          beamspotCollection = cms.untracked.InputTag("offlineBeamSpot","","RECO"),
                                          ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
                                          ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
@@ -331,7 +331,7 @@ jsonfile=""
     process.METFilters = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(filtertag),
+        trigTagArg3  = cms.string(''),
         filterName  =   cms.string("Flag_METFilters"),
         )
     process.Baseline += process.METFilters
@@ -340,7 +340,7 @@ jsonfile=""
     process.CSCTightHaloFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(filtertag),
+        trigTagArg3  = cms.string(''),
         filterName  =   cms.string("Flag_CSCTightHaloFilter"),
         )
     process.Baseline += process.CSCTightHaloFilter
@@ -349,7 +349,7 @@ jsonfile=""
     process.HBHENoiseFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(filtertag),
+        trigTagArg3  = cms.string(''),
         filterName  =   cms.string("Flag_HBHENoiseFilter"),
         )
     process.Baseline += process.HBHENoiseFilter
@@ -358,7 +358,7 @@ jsonfile=""
     process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(filtertag),
+        trigTagArg3  = cms.string(''),
         filterName  =   cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
     process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
