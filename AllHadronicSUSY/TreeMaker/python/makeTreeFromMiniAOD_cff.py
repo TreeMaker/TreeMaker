@@ -30,20 +30,12 @@ jsonfile=""
       print "Doing tagandprobe"
     print "Calulation with mtcut: "+ str(mtcut)
 
-
     ## --- Log output ------------------------------------------------------
     process.load("FWCore.MessageService.MessageLogger_cfi")
-    process.MessageLogger.cerr = cms.untracked.PSet(
-        placeholder = cms.untracked.bool(True)
-        )
-    #process.MessageLogger.cout = cms.untracked.PSet(
-    #    INFO = cms.untracked.PSet(reportEvery = cms.untracked.int32(reportEveryEvt))
-    #    )
+    process.MessageLogger.cerr.FwkReport.reportEvery = reportEveryEvt
     process.options = cms.untracked.PSet(
         wantSummary = cms.untracked.bool(True)
-        ) 
-    process.MessageLogger.suppressInfo = cms.untracked.vstring('HcalGeometry')
-
+        )
 
     ## --- Files to process ------------------------------------------------
     import FWCore.PythonUtilities.LumiList as LumiList
