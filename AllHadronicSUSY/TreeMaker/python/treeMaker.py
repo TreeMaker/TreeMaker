@@ -11,7 +11,7 @@ debug = cms.bool(False),
 # selectedIDIsoMuons would be the tag of the reco candiate 
 # (selectedIDIsoMuonsName ) optoinal naming in the tree if not defined tag name will be used
 # separated with | addition variables int float or bool defined by: TagName(typ) always needed optional TagName(typ_NameInTree) 
-VarsTLoretzVector = cms.vstring(),
+VarsTLorentzVector = cms.vstring(),
 VarsString = cms.vstring(),
 VarsDouble = cms.vstring(),
 VarsInt = cms.vstring(),
