@@ -32,8 +32,8 @@ ZProducer::ZProducer(const edm::ParameterSet& iConfig)
 
 void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   pat::CompositeCandidateCollection ZCandidates;
-   std::vector<TLorentzVector> Zp4;
+   std::auto_ptr<std::vector<TLorentzVector>> Zp4(new std::vector<TLorentzVector>());
+   std::auto_ptr<pat::CompositeCandidateCollection> ZCandidates(new pat::CompositeCandidateCollection());
 
    // make candidates from electrons
    edm::Handle<std::vector<pat::Electron>> electronHandle;
@@ -43,13 +43,13 @@ void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (iL1->charge() > 0) {
          for (std::vector<pat::Electron>::const_iterator iL2 = electrons->begin(); iL2 != electrons->end(); ++iL2) {
             if (iL2->charge() < 0) {
-               pat::CompositeCandidate * theZ = new pat::CompositeCandidate();
-               theZ->setP4(iL1->p4()+ iL2->p4());
-               theZ->addDaughter(*iL1, "positive daughter");
-               theZ->addDaughter(*iL2, "negative daughter");
-               ZCandidates.push_back(*theZ);
-               TLorentzVector * p4temp = new TLorentzVector(theZ->px(), theZ->py(), theZ->pz(), theZ->energy());
-               Zp4.push_back(*p4temp);
+               pat::CompositeCandidate theZ;
+               theZ.setP4(iL1->p4()+ iL2->p4());
+               theZ.addDaughter(*iL1, "positive daughter");
+               theZ.addDaughter(*iL2, "negative daughter");
+               ZCandidates->push_back(theZ);
+               TLorentzVector p4temp(theZ.px(), theZ.py(), theZ.pz(), theZ.energy());
+               Zp4->push_back(p4temp);
             }
          }
       }
@@ -63,29 +63,29 @@ void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (iL1->charge() > 0) {
          for (std::vector<pat::Muon>::const_iterator iL2 = muons->begin(); iL2 != muons->end(); ++iL2) {
             if (iL2->charge() < 0) {
-               pat::CompositeCandidate * theZ = new pat::CompositeCandidate();
-               theZ->setP4(iL1->p4()+iL2->p4());
-               theZ->addDaughter(*iL1, "positive daughter");
-               theZ->addDaughter(*iL2, "negative daughter");
-               ZCandidates.push_back(*theZ);
-               TLorentzVector * p4temp = new TLorentzVector(theZ->px(), theZ->py(), theZ->pz(), theZ->energy());
-               Zp4.push_back(*p4temp);
+               pat::CompositeCandidate theZ;
+               theZ.setP4(iL1->p4()+iL2->p4());
+               theZ.addDaughter(*iL1, "positive daughter");
+               theZ.addDaughter(*iL2, "negative daughter");
+               ZCandidates->push_back(theZ);
+               TLorentzVector p4temp(theZ.px(), theZ.py(), theZ.pz(), theZ.energy());
+               Zp4->push_back(p4temp);
             }
          }
       }
    }
 
    // add the number of Z candidates to the event
-   std::auto_ptr<int> item0(new int(ZCandidates.size()));
+   std::auto_ptr<int> item0(new int(ZCandidates->size()));
 	iEvent.put(item0, std::string("ZNum"));
 
    // add the TLorentzVectors to the event
-   std::auto_ptr<std::vector<TLorentzVector>> item1(new std::vector<TLorentzVector>(Zp4));
-	iEvent.put(item1, std::string("Zp4"));
+   
+	iEvent.put(Zp4, std::string("Zp4"));
 
    // add the Z candidates to the event
-   std::auto_ptr<pat::CompositeCandidateCollection> item2(new pat::CompositeCandidateCollection(ZCandidates));
-   iEvent.put(item2, std::string("ZCandidates"));
+   
+   iEvent.put(ZCandidates, std::string("ZCandidates"));
 }
 
 //define this as a plug-in

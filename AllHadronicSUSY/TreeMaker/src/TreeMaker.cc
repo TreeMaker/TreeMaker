@@ -656,6 +656,26 @@ TreeMaker::beginJob()
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 TreeMaker::endJob() {
+	//memory management
+  for(unsigned int i=0; i<varsRecoCandNames_.size();i++)
+  {
+    delete[] RecoCandPt_.at(i);
+    delete[] RecoCandEta_.at(i);
+    delete[] RecoCandPhi_.at(i);
+    delete[] RecoCandE_.at(i);
+    delete[] RecoCandLorentzVector_.at(i);
+	
+    for(unsigned int j=0; j<RecoCandAdditionalBoolVariables_.at(i).size();j++){
+      delete[] RecoCandAdditionalBoolVariables_.at(i).at(j);
+    }
+	for(unsigned int j=0; j<RecoCandAdditionalIntVariables_.at(i).size();j++){
+      delete[] RecoCandAdditionalIntVariables_.at(i).at(j);
+    }
+	for(unsigned int j=0; j<RecoCandAdditionalFloatVariables_.at(i).size();j++){
+      delete[] RecoCandAdditionalFloatVariables_.at(i).at(j);
+    }
+  }	
+
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
