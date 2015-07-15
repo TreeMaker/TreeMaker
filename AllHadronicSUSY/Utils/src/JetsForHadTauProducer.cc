@@ -187,6 +187,10 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
              std::cout<<"  jet_pt : "<<Jets->at(matchedIdx).pt()<<"    jet_eta : "<<Jets->at(matchedIdx).eta()<<"    jet_phi : "<<Jets->at(matchedIdx).phi()<<std::endl;
           }else{
              int cntgenMatch = 0;
+	     //
+	     // Check gen leptons
+	     //
+	     if (pruned.isValid()) { // this matching check is done only if pruned particle collection exists
              for(unsigned int ig=0; ig<pruned->size(); ig++){
                // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
                if(  abs((*pruned)[ig].pdgId())==11 || abs((*pruned)[ig].pdgId())==13 || abs((*pruned)[ig].pdgId())==15  ){
@@ -210,14 +214,32 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
                   }
                 }
              }
-/*
+	     }
+	     //
+	     // Check reco muons
+	     //
+	     if (muon.isValid()){
              for(unsigned int ig=0; ig<muon->size(); ig++){
                // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
                 TLorentzVector muLVec; muLVec.SetPtEtaPhiE((*muon)[ig].pt(),(*muon)[ig].eta(),(*muon)[ig].phi(),(*muon)[ig].energy());
                 double perdeltaR = perLVec.DeltaR(muLVec);
                 if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
              }
-*/             
+	     }
+	     //
+	     // Check reco electrons
+	     //
+	     if (electron.isValid()){
+             for(unsigned int ig=0; ig<electron->size(); ig++){
+               // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
+                TLorentzVector muLVec; muLVec.SetPtEtaPhiE((*electron)[ig].pt(),(*electron)[ig].eta(),(*electron)[ig].phi(),(*electron)[ig].energy());
+                double perdeltaR = perLVec.DeltaR(muLVec);
+                if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
+             }
+	     }
+	     //
+	     //
+	     //
              if( otjet_pt>0 && otjet_pt < 14000 &&  cntgenMatch ){
               finalJets.push_back(reclusJets->at(io));          
              }
