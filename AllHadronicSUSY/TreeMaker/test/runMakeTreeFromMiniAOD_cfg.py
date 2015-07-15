@@ -9,6 +9,7 @@ outFileName=parameters.value("outfile","ReducedSelection")
 global_tag = parameters.value("global_tag","GR_P_V56::All")
 lostlepton= parameters.value("lostlepton", False)
 tagandprobe= parameters.value("tagandprobe", False)
+hadtau= parameters.value("hadtau", False)
 applybaseline= parameters.value("applybaseline", False)
 doZinv=parameters.value("doZinv", False)
 gridcontrol=parameters.value("gridcontrol", False)
@@ -47,6 +48,7 @@ makeTreeFromMiniAOD(process,
   testFileName=dataSetName,
   Global_Tag=global_tag,
   numProcessedEvt=numevents,
+  hadtau=hadtau,
   lostlepton=lostlepton,
   tagandprobe=tagandprobe,
   applybaseline=applybaseline,
