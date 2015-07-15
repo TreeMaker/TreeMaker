@@ -32,6 +32,8 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 
+#include <TLorentzVector.h>
+
 //
 // class declaration
 //
@@ -146,9 +148,9 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<reco::GenParticle> > selectedTauDecayCands(new std::vector<reco::GenParticle>);
 	std::auto_ptr< std::vector<int> > selectedTauDecayCandspdgID(new std::vector<int>);
         std::auto_ptr< std::vector<reco::GenParticle> > selectedTauNu(new std::vector<reco::GenParticle>);
-        std::auto_ptr< std::vector<double> > TauNuMomPt(new std::vector<double>);
 	Handle<edm::View<reco::GenParticle> > pruned;
 	iEvent.getByLabel(PrunedGenParticleTag_,pruned);
+
 	for(size_t i=0; i<pruned->size();i++)
 	{
 		if( (abs((*pruned)[i].pdgId() ) == 24 || abs((*pruned)[i].pdgId() ) == 23 ) && (*pruned)[i].status()==22) // needs to be checked if this workes for Z 23 as well
@@ -172,14 +174,43 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				if(abs(FinalBoson->daughter(ii)->pdgId())== 15) 
 				{
 					selectedTau->push_back(*((reco::GenParticle*) FinalBoson->daughter(ii) ));
-					for(size_t iii=0; iii<FinalBoson->daughter(ii)->numberOfDaughters();iii++)
-					{
-					  selectedTauDecayCands->push_back(*((reco::GenParticle*) FinalBoson->daughter(ii)->daughter(iii) ));
-					  selectedTauDecayCandspdgID->push_back(FinalBoson->daughter(ii)->daughter(iii)->pdgId());
-					}
 
 // 					selectedTauHadTronic->push_back(0);
 					const reco::GenParticle * FinalTauDecay = TauFound((reco::GenParticle*)FinalBoson->daughter(ii));
+
+					for(size_t iii=0; iii<FinalTauDecay->numberOfDaughters();iii++)
+					{
+					  // daughters of "final" taus before decaying
+					  if (FinalTauDecay->daughter(iii)->status()==1 
+					      || FinalTauDecay->daughter(iii)->pdgId()==111 ){                 // Stable particle or pi0
+					    selectedTauDecayCands->push_back(*((reco::GenParticle*) FinalTauDecay->daughter(iii) ));
+					    selectedTauDecayCandspdgID->push_back(FinalTauDecay->daughter(iii)->pdgId());
+					    if (abs(FinalTauDecay->daughter(iii)->pdgId())==16) 
+					      selectedTauNu->push_back( *((reco::GenParticle*) FinalTauDecay->daughter(iii)) );
+					  } else {                                                             // Neither stable particle nor pi0 (e.g. rho+-, a+-, K*+-, W+-)
+					    for(size_t iiii=0; iiii<FinalTauDecay->daughter(iii)->numberOfDaughters();iiii++){
+					      // granddaughters of "final" taus before decaying
+					      if (FinalTauDecay->daughter(iii)->daughter(iiii)->status()==1 
+						  || FinalTauDecay->daughter(iii)->daughter(iiii)->pdgId()==111){ // Stable particle or pi0
+						selectedTauDecayCands->push_back(*((reco::GenParticle*) FinalTauDecay->daughter(iii)->daughter(iiii) ));
+						selectedTauDecayCandspdgID->push_back(FinalTauDecay->daughter(iii)->daughter(iiii)->pdgId());
+					      } else {                                                            // Neither stable particle nor pi0 (e.g. eta, K0S)
+						for(size_t iiiii=0; iiiii<FinalTauDecay->daughter(iii)->daughter(iiii)->numberOfDaughters();iiiii++){
+						  // greatgranddaughters of "final" taus before decaying
+						  selectedTauDecayCands->push_back(*((reco::GenParticle*) FinalTauDecay->daughter(iii)->daughter(iiii)->daughter(iiiii) ));
+						  selectedTauDecayCandspdgID->push_back(FinalTauDecay->daughter(iii)->daughter(iiii)->daughter(iiiii)->pdgId());
+						  if (FinalTauDecay->daughter(iii)->daughter(iiii)->daughter(iiiii)->status()!=1 
+						      && FinalTauDecay->daughter(iii)->daughter(iiii)->daughter(iiiii)->pdgId()!=111){ // Stable particle or pi0
+						    printf("WARNING: This is a tau's greatgranddaughter, but it's still neither stable nor pi0/eta/K0S. pdgId=%d. stauts=%d\n",
+							   FinalTauDecay->daughter(iii)->daughter(iiii)->daughter(iiiii)->pdgId(),
+							   FinalTauDecay->daughter(iii)->daughter(iiii)->daughter(iiiii)->status());						    
+						  }
+						}
+					      }
+					    }
+					  }
+					}
+
 					int hadTauDecay=1;
 					for(size_t iii=0; iii<FinalTauDecay->numberOfDaughters();iii++)
 					{
@@ -205,14 +236,11 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			}
 
 		}
-
-          if( abs((*pruned)[i].pdgId() ) == 16 && abs( (*pruned)[i].mother()->pdgId() )==15 ){
-            TauNuMomPt->push_back((*pruned)[i].mother()->pt());
-            selectedTauNu->push_back(  (reco::GenParticle) (*pruned)[i] );
-          }
-
-
+	  
 	}
+
+	if (selectedTauNu->size()!=selectedTau->size()) printf("WARNING: number of tau neutrino stored and number of taus do not matched %6d %6d\n",int(selectedTauNu->size()),int(selectedTau->size()));
+
 	const std::string string1("Boson");
 	const std::string string1t("BosonPDGId");
 	const std::string string2("Muon");
@@ -224,7 +252,6 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	const std::string string4tt("TauDecayCands");
 	const std::string string4tt2("TauDecayCandspdgID");
         const std::string string5("TauNu");
-        const std::string string6("TauNuMomPt");
 	iEvent.put(selectedBoson,string1);
 	iEvent.put(selectedBosonPDGId,string1t);
 	iEvent.put(selectedMuon,string2);
@@ -236,8 +263,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(selectedTauDecayCands,string4tt);
 	iEvent.put(selectedTauDecayCandspdgID,string4tt2);
         iEvent.put(selectedTauNu,string5);
-        iEvent.put(TauNuMomPt,string6);
-	
+	  
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -288,7 +314,7 @@ const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle *
 {
 	for(size_t i=0;i< particle->numberOfDaughters();i++)
 	{
-		if(abs(particle->daughter(i)->pdgId() )== 24 || abs(particle->daughter(i)->pdgId() ) == 23 ) return BosonFound((reco::GenParticle*)particle->daughter(i));
+	  if(abs(particle->daughter(i)->pdgId() )== 24 || abs(particle->daughter(i)->pdgId() ) == 23 ) return BosonFound((reco::GenParticle*)particle->daughter(i));
 	}
 	return particle;
 	
@@ -298,7 +324,7 @@ const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * p
 {
 	for(size_t i=0;i< particle->numberOfDaughters();i++)
 	{
-		if(abs(particle->daughter(i)->pdgId() )== 24 || abs(particle->daughter(i)->pdgId() )== 15) return TauFound((reco::GenParticle*)particle->daughter(i));
+	  if(abs(particle->daughter(i)->pdgId()) == 15) return TauFound((reco::GenParticle*)particle->daughter(i));
 	}
 	return particle;
 	

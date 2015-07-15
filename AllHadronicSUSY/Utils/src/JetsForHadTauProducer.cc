@@ -57,6 +57,9 @@ private:
 	virtual void endRun(edm::Run&, edm::EventSetup const&);
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+
+        const reco::GenParticle* TauFound(const reco::GenParticle * particle);
+
 	edm::InputTag JetTag_;
         edm::InputTag reclusJetTag_;
 	double maxEta_;
@@ -193,11 +196,12 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
                
                   // Sometimes the nutrinos of tau are so energetic that gen. tau and it hadronic daughter are 
                   // in two different directions. We would like to store those type of jets as well.
-                  if(abs((*pruned)[ig].pdgId())==15){
-                    for(unsigned int igg=0; igg<(*pruned)[ig].numberOfDaughters(); igg++){
-                      if( abs( (*pruned)[ig].daughter(igg)->pdgId() )==16 ){
-                        TLorentzVector genNuLVec,TauMinusNuLVec;
-                        genNuLVec.SetPtEtaPhiE((*pruned)[ig].daughter(igg)->pt(),(*pruned)[ig].daughter(igg)->eta(),(*pruned)[ig].daughter(igg)->phi(),(*pruned)[ig].daughter(igg)->energy());
+                  if(abs((*pruned)[ig].pdgId())==15){		    
+		    const reco::GenParticle * FinalTauDecay = TauFound(&(*pruned)[ig]);
+		    TLorentzVector genNuLVec,TauMinusNuLVec;
+                    for(unsigned int igg=0; igg<FinalTauDecay->numberOfDaughters(); igg++){
+                      if( abs( FinalTauDecay->daughter(igg)->pdgId() )==16 ){
+                        genNuLVec.SetPtEtaPhiE(FinalTauDecay->daughter(igg)->pt(),FinalTauDecay->daughter(igg)->eta(),FinalTauDecay->daughter(igg)->phi(),FinalTauDecay->daughter(igg)->energy());
                         TauMinusNuLVec = genLVec - genNuLVec;
                         perdeltaR = perLVec.DeltaR(TauMinusNuLVec);
                         if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
@@ -219,13 +223,9 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
              }
           }
        }
-
-
- 
     }
 
 //.................................////.................................//
-
 
     for(unsigned int i=0; i<finalJets.size();i++)
     {
@@ -245,7 +245,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       else if(muFrac<maxMuFraction_ && std::abs(finalJets.at(i).eta())>=2.4 && nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_)prodJetsFlag->push_back(1);
       else prodJetsFlag->push_back(0);
       prodJets->push_back(Jet(finalJets.at(i)) );
-     // 	std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
+      // 	std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
       // 	<<"nconstit>minNConstituents_"<<nconstit<<" > "<<minNConstituents_<<std::endl
       // 	<<"neufrac<maxNeutralFraction_"<<neufrac<<" < "<<maxNeutralFraction_<<std::endl
       // 	<<"phofrac<maxPhotonFraction_"<<phofrac<<" < "<<maxPhotonFraction_<<std::endl
@@ -253,7 +253,6 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       // 	<<"chgfrac>minChargedFraction_"<<chgfrac<<" > "<<minChargedFraction_<<std::endl
       // 	<<"chgEMfrac<maxChargedEMFraction_"<<chgEMfrac<<" < "<<maxChargedEMFraction_<<std::endl
       // 	<<std::endl<<std::endl<<std::endl;
-      
     }
   }
   // put in the event
@@ -261,6 +260,9 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   const std::string string1("Jet");
   iEvent.put(prodJetsFlag,string1t);
   iEvent.put(prodJets,string1);
+  
+  if(!finalJets.empty())
+    finalJets.clear();
   
 }
 
@@ -307,6 +309,16 @@ JetsForHadTauProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
 	edm::ParameterSetDescription desc;
 	desc.setUnknown();
 	descriptions.addDefault(desc);
+}
+
+const reco::GenParticle* JetsForHadTauProducer::TauFound(const reco::GenParticle * particle)
+{
+        for(size_t i=0;i< particle->numberOfDaughters();i++)
+        {
+          if(abs(particle->daughter(i)->pdgId()) == 15) return TauFound((reco::GenParticle*)particle->daughter(i));
+        }
+        return particle;
+        
 }
 
 //define this as a plug-in
