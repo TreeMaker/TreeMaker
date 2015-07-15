@@ -376,26 +376,26 @@ jsonfile=""
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
         trigTagArg3  = cms.string('HLT'),
-        triggerNameList  =   cms.string(#space-delimited list of trigger names
-            'HLT_PFHT350_PFMET100_NoiseCleaned_v '\
-            'HLT_PFMET170_NoiseCleaned_v '\
-            'HLT_PFMET170_NoiseCleaned_v '\
-            'HLT_PFHT350_v '\
-            'HLT_PFHT800_v '\
-            'HLT_PFHT900_v '\
-            'HLT_Ele27_eta2p1_WP85_Gsf_v '\
-            'HLT_IsoMu20_eta2p1_IterTrk02_v '\
-            'HLT_PFHT350_PFMET120_NoiseCleaned_v '\
-            'HLT_Mu15_IsoVVVL_PFHT350_PFMET70_v '\
-            'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v '\
-            'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v '\
-            'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v '\
-            'HLT_Photon90_CaloIdL_HT500_v '\
-            'HLT_Photon90_CaloIdL_HT600_v '\
-            'HLT_DoubleEle8_CaloIdM_Mass8_PFHT300_v '\
-            'HLT_DoubleMu8_Mass8_PFHT300_v '\
-            'HLT_Ele27_eta2p1_WPLoose_Gsf_v '\
-            'HLT_IsoMu17_eta2p1_v '
+        triggerNameList  =   cms.vstring(#list of trigger names
+            'HLT_PFHT350_PFMET100_NoiseCleaned_v',
+            'HLT_PFMET170_NoiseCleaned_v',
+            'HLT_PFMET170_NoiseCleaned_v',
+            'HLT_PFHT350_v',
+            'HLT_PFHT800_v',
+            'HLT_PFHT900_v',
+            'HLT_Ele27_eta2p1_WP85_Gsf_v',
+            'HLT_IsoMu20_eta2p1_IterTrk02_v',
+            'HLT_PFHT350_PFMET120_NoiseCleaned_v',
+            'HLT_Mu15_IsoVVVL_PFHT350_PFMET70_v',
+            'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v',
+            'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v',
+            'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v',
+            'HLT_Photon90_CaloIdL_HT500_v',
+            'HLT_Photon90_CaloIdL_HT600_v',
+            'HLT_DoubleEle8_CaloIdM_Mass8_PFHT300_v',
+            'HLT_DoubleMu8_Mass8_PFHT300_v',
+            'HLT_Ele27_eta2p1_WPLoose_Gsf_v',
+            'HLT_IsoMu17_eta2p1_v',
             ),
         )
     process.Baseline += process.TriggerProducer

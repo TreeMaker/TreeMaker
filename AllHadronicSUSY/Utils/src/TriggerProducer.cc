@@ -48,7 +48,6 @@ private:
   std::string trigTagArg1_;
   std::string trigTagArg2_;
   std::string trigTagArg3_;
-  std::string triggerNameList_;
   std::vector<std::string> parsedTrigNamesVec;
 	
   // ----------member data ---------------------------
@@ -67,7 +66,7 @@ private:
 //
 TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
 {
-  triggerNameList_ = iConfig.getParameter <std::string> ("triggerNameList");
+  parsedTrigNamesVec = iConfig.getParameter <std::vector<std::string> > ("triggerNameList");
   trigTagArg1_ = iConfig.getParameter <std::string> ("trigTagArg1");
   trigTagArg2_ = iConfig.getParameter <std::string> ("trigTagArg2");
   trigTagArg3_ = iConfig.getParameter <std::string> ("trigTagArg3");
@@ -112,25 +111,7 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     }
   }
-      /*
- for(unsigned int i = 0; i < parsedTrigNamesVec.size(); i++)
-    {
-      passesTrigger = -1;
-      trigNamesVec->push_back(parsedTrigNamesVec.at(i).c_str());
-      if((trigNames.triggerIndex(parsedTrigNamesVec.at(i)) < trigResults->size())) 
-	{
-	  passesTrigger=trigResults->accept(trigNames.triggerIndex(parsedTrigNamesVec.at(i).c_str()));
-	}
-	  passTrigVec->push_back(passesTrigger);
-    }
-      */
-  // for (int iHLT = 0 ; iHLT<static_cast<int>(trigResults->size()); ++iHLT) 
-  // {	
-  //   //std::cout << "tname="<< trigNames.triggerName(iHLT)<< std::endl;
-  //   //std::cout << "tndex="<< trigNames.triggerIndex(trigNames.triggerName(iHLT)) << std::endl;
-  //   passesTrigger=trigResults->accept(iHLT);
-  //   passTrigVec->push_back(passesTrigger);
-  // }
+
   iEvent.put(passTrigVec,"PassTrigger");
   iEvent.put(trigNamesVec,"TriggerNames");	
 }
@@ -141,13 +122,8 @@ void
 TriggerProducer::beginJob()
 {
   std::cout << "will store trigger information for..." << std::endl;
-  std::stringstream ss(triggerNameList_);
-  std::istream_iterator<std::string> begin(ss);
-  std::istream_iterator<std::string> end;
-  std::vector<std::string> vstrings(begin, end);
-  std::copy(vstrings.begin(), vstrings.end(), std::ostream_iterator<std::string>(std::cout, "\n"));
-  for(unsigned int i = 0; i< vstrings.size(); i++)
-    parsedTrigNamesVec.push_back(vstrings.at(i));
+  for(unsigned int i = 0; i< parsedTrigNamesVec.size(); i++)
+    std::cout << parsedTrigNamesVec.at(i) << std::endl;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
