@@ -245,6 +245,8 @@ LeptonTagAndProbeProducer::produce(edm::Event& iEvent, const edm::EventSetup& iS
 					passing_->push_back(matched );
 				}
 			}
+			
+			delete random;
 		}
 	}
 

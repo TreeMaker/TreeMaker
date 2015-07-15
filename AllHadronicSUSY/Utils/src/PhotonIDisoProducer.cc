@@ -136,19 +136,19 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // for rho corrections to the photon isolation
   // variables. 
   // - - - - - - - - - - - - - - - - - - - - 
-  effArea* effAreas = new effArea();
-  effAreas->addEffA( 0.0, 1.0, 0.0234, 0.0053, 0.078 );
-  effAreas->addEffA( 1.0, 1.479, 0.0189, 0.0130, 0.0629 );
-  effAreas->addEffA( 1.479, 2.0, 0.0171, 0.0057, 0.0264 );
-  effAreas->addEffA( 2.0, 2.2, 0.0129, 0.0070, 0.0462 );
-  effAreas->addEffA( 2.2, 2.3, 0.0110, 0.0152, 0.0740 );
-  effAreas->addEffA( 2.3, 2.4, 0.0074, 0.0232, 0.0924 );
-  effAreas->addEffA( 2.4, 99., 0.0035, 0.1709, 0.1484 );
+  effArea effAreas;
+  effAreas.addEffA( 0.0, 1.0, 0.0234, 0.0053, 0.078 );
+  effAreas.addEffA( 1.0, 1.479, 0.0189, 0.0130, 0.0629 );
+  effAreas.addEffA( 1.479, 2.0, 0.0171, 0.0057, 0.0264 );
+  effAreas.addEffA( 2.0, 2.2, 0.0129, 0.0070, 0.0462 );
+  effAreas.addEffA( 2.2, 2.3, 0.0110, 0.0152, 0.0740 );
+  effAreas.addEffA( 2.3, 2.4, 0.0074, 0.0232, 0.0924 );
+  effAreas.addEffA( 2.4, 99., 0.0035, 0.1709, 0.1484 );
 
   double bestPhotonPt = 0. ; 
 
   /// setup cluster tools
-  noZS::EcalClusterLazyTools* clusterTools_ = new noZS::EcalClusterLazyTools(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
+  noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
         
   for( View< pat::Photon >::const_iterator iPhoton = photonCands->begin();
         iPhoton != photonCands->end();
@@ -164,7 +164,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     photon_genMatched->push_back( iPhoton->genPhoton() != NULL );
     photon_hadTowOverEM->push_back( iPhoton->hadTowOverEm() ) ;
 
-    std::vector<float> vCov = clusterTools_->localCovariances( *(iPhoton->superCluster()->seed()) ); 
+    std::vector<float> vCov = clusterTools_.localCovariances( *(iPhoton->superCluster()->seed()) ); 
     const float sieie = (isnan(vCov[0]) ? 0. : sqrt(vCov[0])); 
     photon_sigmaIetaIeta->push_back( sieie );
     
@@ -172,9 +172,9 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     photon_pfGammaIso->push_back(        iPhoton->photonIso() );
     photon_pfNeutralIso->push_back(      iPhoton->neutralHadronIso() );
 
-    double chIso = effAreas->rhoCorrectedIso(  pfCh  , iPhoton->chargedHadronIso() , iPhoton->eta() , rho ); 
-    double nuIso = effAreas->rhoCorrectedIso(  pfNu  , iPhoton->neutralHadronIso() , iPhoton->eta() , rho ); 
-    double gamIso = effAreas->rhoCorrectedIso( pfGam , iPhoton->photonIso()        , iPhoton->eta() , rho ); 
+    double chIso = effAreas.rhoCorrectedIso(  pfCh  , iPhoton->chargedHadronIso() , iPhoton->eta() , rho ); 
+    double nuIso = effAreas.rhoCorrectedIso(  pfNu  , iPhoton->neutralHadronIso() , iPhoton->eta() , rho ); 
+    double gamIso = effAreas.rhoCorrectedIso( pfGam , iPhoton->photonIso()        , iPhoton->eta() , rho ); 
 
     photon_pfChargedIsoRhoCorr->push_back( chIso  );
     photon_pfGammaIsoRhoCorr->push_back(   gamIso  );
