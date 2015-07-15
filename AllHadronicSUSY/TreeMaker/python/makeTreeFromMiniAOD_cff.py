@@ -412,7 +412,7 @@ jsonfile=""
     #########
     # had tau
     #########
-    if hadtau and geninfo:
+    if hadtau:
         process.load("RecoJets.JetProducers.ak4PFJets_cfi")
         from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
 
