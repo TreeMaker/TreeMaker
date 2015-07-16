@@ -449,7 +449,6 @@ jsonfile=""
 
         #recreate tracks and pv for btagging
         process.load('PhysicsTools.PatAlgos.slimming.unpackedTracksAndVertices_cfi')
-        process.load("PhysicsTools.PatAlgos.patSequences_cff")
         process.options.allowUnscheduled = cms.untracked.bool(True) # in case we forgot something :)
 
         from AllHadronicSUSY.Utils.jetsforhadtauproducer_cfi import JetsForHadTauProducer 
