@@ -431,6 +431,7 @@ jsonfile=""
            postfix = "",
            labelName = 'AK4PFCHS',
            jetSource = cms.InputTag('ak4PFJetsCHS'),
+           #trackSource = cms.InputTag('unpackedTracksAndVertices'),
            pvSource = cms.InputTag('unpackedTracksAndVertices'),
            svSource = cms.InputTag('unpackedTracksAndVertices','secondary'),
            #   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
