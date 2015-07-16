@@ -418,8 +418,8 @@ jsonfile=""
 
         #do projections
         process.pfCHS = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV"))
-
-        process.ak4PFJetsCHS = process.ak4PFJets.clone(src = 'pfCHS', doAreaFastjet = True) # no idea while doArea is false by default, but it's True in RECO so we have to set it
+        process.ak4PFJetsCHS = process.ak4PFJets.clone(src = 'pfCHS', doAreaFastjet = True) # no idea while doArea is false by default, 
+                                                                                            # but it's True in RECO so we have to set it
 
         if geninfo:       
             process.load("RecoJets.JetProducers.ak4GenJets_cfi")
@@ -434,45 +434,54 @@ jsonfile=""
            trackSource = cms.InputTag('unpackedTracksAndVertices'),
            pvSource = cms.InputTag('unpackedTracksAndVertices'),
            svSource = cms.InputTag('unpackedTracksAndVertices','secondary'),
-        #   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
+           #   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
            jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
-        #   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+           #   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
            btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],
            genJetCollection = cms.InputTag('ak4GenJets'),
            algo = 'AK', rParam = 0.4
         )
-
-        #adjust MC matching
-        if geninfo:
-            process.patJetGenJetMatchAK4PFCHS.matched = "ak4GenJets"
-            process.patJetPartonMatchAK4PFCHS.matched = "prunedGenParticles"
-            process.patJetPartons.particles = "prunedGenParticles"
-            process.patJetPartons.skipFirstN = cms.uint32(0) # do not skip first 6 particles, we already pruned some!
-            process.patJetPartons.acceptNoDaughters = cms.bool(True) # as we drop intermediate stuff, we need to accept quarks with no siblings
+        process.patJetsAK4PFCHS.getJetMCFlavour = False
+        process.patJetsAK4PFCHS.addGenPartonMatch = False
+        process.patJetsAK4PFCHS.addGenJetMatch = False
 
         #adjust PV used for Jet Corrections
         process.patJetCorrFactorsAK4PFCHS.primaryVertices = "offlineSlimmedPrimaryVertices"
 
         #recreate tracks and pv for btagging
         process.load('PhysicsTools.PatAlgos.slimming.unpackedTracksAndVertices_cfi')
-
         process.options.allowUnscheduled = cms.untracked.bool(True) # in case we forgot something :)
 
         from AllHadronicSUSY.Utils.jetsforhadtauproducer_cfi import JetsForHadTauProducer 
         # this save the jets without considering jet Id. But, also saves jetId in a vector.
 
         process.JetsForHadTau = JetsForHadTauProducer.clone(
-        JetTag= cms.InputTag('slimmedJets'),
-        reclusJetTag= cms.InputTag('patJetsAK4PFCHS'),
-        maxJetEta = cms.double(5.0), 
-        maxMuFraction = cms.double(2), 
-        minNConstituents = cms.double(2),       
-        maxNeutralFraction = cms.double(0.90),
-        maxPhotonFraction = cms.double(0.95),
-        minChargedMultiplicity = cms.double(0), 
-        minChargedFraction = cms.double(0),     
-        maxChargedEMFraction = cms.double(0.99), 
+            JetTag= cms.InputTag('slimmedJets'),
+            reclusJetTag= cms.InputTag('patJetsAK4PFCHS'),
+            maxJetEta = cms.double(5.0), 
+            maxMuFraction = cms.double(2), 
+            minNConstituents = cms.double(2),       
+            maxNeutralFraction = cms.double(0.90),
+            maxPhotonFraction = cms.double(0.95),
+            minChargedMultiplicity = cms.double(0), 
+            minChargedFraction = cms.double(0),     
+            maxChargedEMFraction = cms.double(0.99), 
+            MCflag = cms.bool(False)
         )
+
+        #adjust MC matching
+        if geninfo:
+            process.patJetsAK4PFCHS.getJetMCFlavour = True
+            process.patJetsAK4PFCHS.addGenPartonMatch = True
+            process.patJetsAK4PFCHS.addGenJetMatch = True
+            process.patJetGenJetMatchAK4PFCHS.matched = "ak4GenJets"
+            process.patJetPartonMatchAK4PFCHS.matched = "prunedGenParticles"
+            process.patJetPartons.particles = "prunedGenParticles"
+            process.patJetPartons.skipFirstN = cms.uint32(0) # do not skip first 6 particles, we already pruned some!
+            process.patJetPartons.acceptNoDaughters = cms.bool(True) # as we drop intermediate stuff, we need to accept quarks with no siblings
+
+            process.JetsForHadTau.MCflag = True
+
     #################
     # end of had tau
     #################

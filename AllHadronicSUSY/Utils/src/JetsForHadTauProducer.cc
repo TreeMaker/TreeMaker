@@ -68,6 +68,7 @@ private:
         double jetPtCut_miniAOD_, genMatch_dR_;
         double relPt_for_xCheck_, dR_for_xCheck_;
         bool debug_;	
+        bool MCflag_;
 	// ----------member data ---------------------------
 };
 
@@ -105,6 +106,7 @@ JetsForHadTauProducer::JetsForHadTauProducer(const edm::ParameterSet& iConfig)
         genMatch_dR_ = iConfig.getParameter<double>("genMatch_dR");
         dR_for_xCheck_ = iConfig.getParameter<double>("dR_for_xCheck");
         relPt_for_xCheck_ = iConfig.getParameter<double>("relPt_for_xCheck");
+        MCflag_ = iConfig.getParameter<bool>("MCflag");
         debug_ = iConfig.getParameter<bool>("debug");
         
 	produces<std::vector<Jet> >();	
@@ -140,14 +142,14 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 
   iEvent.getByLabel(JetTag_,Jets);
   iEvent.getByLabel(reclusJetTag_,reclusJets);
-  iEvent.getByLabel("prunedGenParticles",pruned);
   iEvent.getByLabel("slimmedMuons", muon);
   iEvent.getByLabel("slimmedElectrons", electron);
+  if (MCflag_) iEvent.getByLabel("prunedGenParticles",pruned);
 
   // finalJets should be equal to slimmedJets when pt>10. 
   // We just want to add low pT reclustered Jets to it. 
   std::vector<pat::Jet> finalJets = (*Jets); 
-  
+
   if(Jets.isValid() && reclusJets.isValid() )
   {
 
@@ -190,6 +192,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	     //
 	     // Check gen leptons
 	     //
+	     if (MCflag_){
 	     if (pruned.isValid()) { // this matching check is done only if pruned particle collection exists
              for(unsigned int ig=0; ig<pruned->size(); ig++){
                // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
@@ -214,7 +217,8 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
                   }
                 }
              }
-	     }
+	     } // pruned.isValid()
+	     } // MC flag
 	     //
 	     // Check reco muons
 	     //
@@ -253,9 +257,9 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
     {
       //if(std::abs(finalJets.at(i).eta())>maxEta_)
       //{
-	//prodJets->push_back(Jet(finalJets.at(i)) );
-	//continue;
-     // }
+      //prodJets->push_back(Jet(finalJets.at(i)) );
+      //continue;
+      // }
       float neufrac=finalJets.at(i).neutralHadronEnergyFraction();//gives raw energy in the denominator
       float phofrac=finalJets.at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
       float chgfrac=finalJets.at(i).chargedHadronEnergyFraction();
@@ -282,6 +286,8 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   const std::string string1("Jet");
   iEvent.put(prodJetsFlag,string1t);
   iEvent.put(prodJets,string1);
+
+  finalJets.clear(); 
   
   if(!finalJets.empty())
     finalJets.clear();
