@@ -69,6 +69,7 @@ private:
         double relPt_for_xCheck_, dR_for_xCheck_;
         bool debug_;	
         bool MCflag_;
+        bool useReclusteredJets_;
 	// ----------member data ---------------------------
 };
 
@@ -107,6 +108,7 @@ JetsForHadTauProducer::JetsForHadTauProducer(const edm::ParameterSet& iConfig)
         dR_for_xCheck_ = iConfig.getParameter<double>("dR_for_xCheck");
         relPt_for_xCheck_ = iConfig.getParameter<double>("relPt_for_xCheck");
         MCflag_ = iConfig.getParameter<bool>("MCflag");
+        useReclusteredJets_ = iConfig.getParameter<bool>("useReclusteredJets");
         debug_ = iConfig.getParameter<bool>("debug");
         
 	produces<std::vector<Jet> >();	
@@ -141,7 +143,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<edm::View<pat::Electron> > electron;  
 
   iEvent.getByLabel(JetTag_,Jets);
-  iEvent.getByLabel(reclusJetTag_,reclusJets);
+  if (useReclusteredJets_) iEvent.getByLabel(reclusJetTag_,reclusJets);
   iEvent.getByLabel("slimmedMuons", muon);
   iEvent.getByLabel("slimmedElectrons", electron);
   if (MCflag_) iEvent.getByLabel("prunedGenParticles",pruned);
@@ -150,6 +152,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   // We just want to add low pT reclustered Jets to it. 
   std::vector<pat::Jet> finalJets = (*Jets); 
 
+  if (useReclusteredJets_){
   if(Jets.isValid() && reclusJets.isValid() )
   {
 
@@ -248,8 +251,10 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
               finalJets.push_back(reclusJets->at(io));          
              }
           }
-       }
-    }
+       } // above or below jetPtCut_miniAOD_
+    } // reclusJets loop
+  } // Jets.isValid() and reclusJets.isValid()
+  } // useReclusteredJets_
 
 //.................................////.................................//
 
@@ -280,7 +285,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       // 	<<"chgEMfrac<maxChargedEMFraction_"<<chgEMfrac<<" < "<<maxChargedEMFraction_<<std::endl
       // 	<<std::endl<<std::endl<<std::endl;
     }
-  }
+
   // put in the event
   const std::string string1t("JetFlag");
   const std::string string1("Jet");

@@ -431,7 +431,6 @@ jsonfile=""
            postfix = "",
            labelName = 'AK4PFCHS',
            jetSource = cms.InputTag('ak4PFJetsCHS'),
-           trackSource = cms.InputTag('unpackedTracksAndVertices'),
            pvSource = cms.InputTag('unpackedTracksAndVertices'),
            svSource = cms.InputTag('unpackedTracksAndVertices','secondary'),
            #   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
@@ -450,6 +449,7 @@ jsonfile=""
 
         #recreate tracks and pv for btagging
         process.load('PhysicsTools.PatAlgos.slimming.unpackedTracksAndVertices_cfi')
+        process.load("PhysicsTools.PatAlgos.patSequences_cff")
         process.options.allowUnscheduled = cms.untracked.bool(True) # in case we forgot something :)
 
         from AllHadronicSUSY.Utils.jetsforhadtauproducer_cfi import JetsForHadTauProducer 
@@ -466,7 +466,8 @@ jsonfile=""
             minChargedMultiplicity = cms.double(0), 
             minChargedFraction = cms.double(0),     
             maxChargedEMFraction = cms.double(0.99), 
-            MCflag = cms.bool(False)
+            MCflag = cms.bool(False),
+            useReclusteredJets = cms.bool(False)
         )
 
         #adjust MC matching
@@ -480,7 +481,8 @@ jsonfile=""
             process.patJetPartons.skipFirstN = cms.uint32(0) # do not skip first 6 particles, we already pruned some!
             process.patJetPartons.acceptNoDaughters = cms.bool(True) # as we drop intermediate stuff, we need to accept quarks with no siblings
 
-            process.JetsForHadTau.MCflag = True
+            process.JetsForHadTau.MCflag = cms.bool(True)
+            process.JetsForHadTau.useRecsluteredJets = cms.bool(True)
 
     #################
     # end of had tau
