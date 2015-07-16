@@ -153,6 +153,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   std::vector<pat::Jet> finalJets = (*Jets); 
 
   if (useReclusteredJets_){
+  if (debug_) std::cout << "Jets and reculsJets isValid:" << Jets.isValid() << " " << reclusJets.isValid() << std::endl;
   if(Jets.isValid() && reclusJets.isValid() )
   {
 
@@ -160,6 +161,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
     
     // Check which ones to keep
     int cntJetPassPtCut = 0;
+    if (debug_) std::cout << "Jets and reculsJets size:" << Jets->size() << " " << reclusJets->size() << std::endl;
     for(unsigned int io=0; io < reclusJets->size(); io++){
        const double otjet_pt = reclusJets->at(io).pt(), otjet_eta = reclusJets->at(io).eta(), otjet_phi = reclusJets->at(io).phi();
        TLorentzVector perLVec; perLVec.SetPtEtaPhiE(otjet_pt, otjet_eta, otjet_phi, reclusJets->at(io).energy());

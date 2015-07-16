@@ -426,21 +426,37 @@ jsonfile=""
             process.ak4GenJets = process.ak4GenJets.clone(src = 'packedGenParticles', rParam = 0.4)
 
         from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
-        addJetCollection(
-           process,
-           postfix = "",
-           labelName = 'AK4PFCHS',
-           jetSource = cms.InputTag('ak4PFJetsCHS'),
-           #trackSource = cms.InputTag('unpackedTracksAndVertices'),
-           pvSource = cms.InputTag('unpackedTracksAndVertices'),
-           svSource = cms.InputTag('unpackedTracksAndVertices','secondary'),
-           #   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
-           jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
-           #   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
-           btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],
-           genJetCollection = cms.InputTag('ak4GenJets'),
-           algo = 'AK', rParam = 0.4
-        )
+        if is74X:
+            addJetCollection(
+                process,
+                postfix = "",
+                labelName = 'AK4PFCHS',
+                jetSource = cms.InputTag('ak4PFJetsCHS'),
+                pfCandidates = cms.InputTag('packedPFCandidates'),
+                pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+                svSource = cms.InputTag('slimmedSecondaryVertices'),
+                jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
+                #   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+                btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],
+                genJetCollection = cms.InputTag('ak4GenJets'),
+                algo = 'AK', rParam = 0.4,
+                )
+        else:
+            addJetCollection(
+                process,
+                postfix = "",
+                labelName = 'AK4PFCHS',
+                jetSource = cms.InputTag('ak4PFJetsCHS'),
+                pfCandidates = cms.InputTag('packedPFCandidates'),
+                trackSource = cms.InputTag('unpackedTracksAndVertices'),
+                pvSource = cms.InputTag('unpackedTracksAndVertices'),
+                svSource = cms.InputTag('unpackedTracksAndVertices','secondary'),
+                jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
+                #   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
+                btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],
+                genJetCollection = cms.InputTag('ak4GenJets'),
+                algo = 'AK', rParam = 0.4,
+                )
         process.patJetsAK4PFCHS.getJetMCFlavour = False
         process.patJetsAK4PFCHS.addGenPartonMatch = False
         process.patJetsAK4PFCHS.addGenJetMatch = False
