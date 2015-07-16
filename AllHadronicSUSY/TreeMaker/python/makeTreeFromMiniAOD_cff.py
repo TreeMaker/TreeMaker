@@ -71,13 +71,10 @@ jsonfile=""
     VectorString = cms.vstring()
     VectorInt = cms.vstring()
     # baseline producers
-    process.Baseline = cms.Sequence(
-    )
+    process.Baseline = cms.Sequence()
     #special sequences
     #lost-lepton variables
-    process.LostLepton = cms.Sequence(
-      
-    )
+    process.LostLepton = cms.Sequence()
 
     # configure treemaker
     from AllHadronicSUSY.TreeMaker.treeMaker import TreeMaker
@@ -233,17 +230,11 @@ jsonfile=""
                                          rhoCollection = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
                                          debug = cms.untracked.bool(False)
                                          )
-
-    process.bestPhoton4Vec = cms.EDProducer("fourVectorProducer",
-                                            particleCollection = cms.untracked.InputTag("goodPhotons","bestPhoton"),
-                                            debug = cms.untracked.bool(False)
-                                            )
-
     process.Baseline += process.goodPhotons
-    process.Baseline += process.bestPhoton4Vec
 
-    process.TreeMaker2.VectorTLorentzVector.append("bestPhoton4Vec(bestPhoton)")
-    process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotons(NumPhotons)")
+    RecoCandVector.append("goodPhotons:bestPhoton")
+    VarsInt.append("goodPhotons:NumPhotons")
+   
     ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
     #################################
 
@@ -1097,21 +1088,26 @@ jsonfile=""
     # put together final sequence with optional producers
     process.AdditionalSequence = cms.Sequence()
     if lostlepton:
-      print "Adding LostLepton calculations to final path and tree"
-      process.AdditionalSequence += process.LostLepton 
-      process.AdditionalSequence += process.SelectedPFElecCandidates
-      process.AdditionalSequence += process.SelectedPFMuCandidates
-      process.AdditionalSequence += process.SelectedPFPionCandidates
-    #  VarsRecoCand = cms.vstring('selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDMuons','IsolatedTracks','HTJets'),
-   #   RecoCandVector.extend(['selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDElectrons','IsolatedTracks']),
-      RecoCandVector.extend(['IsolatedElectronTracksVeto|IsolatedElectronTracksVeto:MT(F_MT)','IsolatedMuonTracksVeto|IsolatedMuonTracksVeto:MT(F_MT)','IsolatedPionTracksVeto|IsolatedPionTracksVeto:MT(F_MT)','LeptonsNew:IdIsoMuon(selectedIDIsoMuons)|LeptonsNew:MuIDIsoMTW(F_MTW)','LeptonsNew:IdMuon(selectedIDMuons)|LeptonsNew:MuIDMTW(F_MTW)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)|LeptonsNew:ElecIDIsoMTW(F_MTW)','LeptonsNew:IdElectron(selectedIDElectrons)|LeptonsNew:ElecIDMTW(F_MTW)','SelectedPFCandidates|SelectedPFCandidates:Charge(I_Charge)|SelectedPFCandidates:Typ(I_Typ)']),
-      if geninfo :
-          RecoCandVector.extend(['GenLeptons:Boson(GenBoson)|GenLeptons:BosonPDGId(I_GenBosonPDGId)','GenLeptons:Muon(GenMu)|GenLeptons:MuonTauDecay(I_GenMuFromTau)','GenLeptons:Electron(GenElec)|GenLeptons:ElectronTauDecay(I_GenElecFromTau)','GenLeptons:Tau(GenTau)|GenLeptons:TauHadronic(I_GenTauHad)'] ) # gen information on leptons
-          RecoCandVector.extend(['GenLeptons:TauDecayCands(TauDecayCands)|GenLeptons:TauDecayCandspdgID(I_pdgID)','GenLeptons:TauNu(GenTauNu)'])
-      RecoCandVector.extend(['LeptonsNewTag:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewTag:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] ) # gen information on leptons
-      RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
-      RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
-      RecoCandVector.extend(['SelectedPFElecCandidates','SelectedPFMuCandidates','SelectedPFPionCandidates'])
+        print "Adding LostLepton calculations to final path and tree"
+        process.AdditionalSequence += process.LostLepton 
+        process.AdditionalSequence += process.SelectedPFElecCandidates
+        process.AdditionalSequence += process.SelectedPFMuCandidates
+        process.AdditionalSequence += process.SelectedPFPionCandidates
+        #VarsRecoCand = cms.vstring('selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDMuons','IsolatedTracks','HTJets'),
+        #RecoCandVector.extend(['selectedIDIsoMuons','selectedIDMuons','selectedIDIsoElectrons','selectedIDElectrons','IsolatedTracks']),
+        RecoCandVector.extend(['IsolatedElectronTracksVeto','IsolatedMuonTracksVeto','IsolatedPionTracksVeto'])
+        RecoCandVector.extend(['LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)','LeptonsNew:IdElectron(selectedIDElectrons)','SelectedPFCandidates'])
+        VectorDouble.extend(['LeptonsNew:MuIDIsoMTW(selectedIDIsoMuons_MTW)','LeptonsNew:MuIDMTW(selectedIDMuons_MTW)','LeptonsNew:ElecIDIsoMTW(selectedIDIsoElectrons_MTW)','LeptonsNew:ElecIDMTW(selectedIDElectrons_MTW)'])
+        VectorInt.extend(['SelectedPFCandidates:Charge(SelectedPFCandidates_Charge)','SelectedPFCandidates:Typ(SelectedPFCandidates_Typ)'])
+        if geninfo: # gen information on leptons
+            RecoCandVector.extend(['GenLeptons:Boson(GenBoson)','GenLeptons:TauDecayCands(TauDecayCands)','GenLeptons:TauNu(GenTauNu)'])
+            VectorInt.extend(['GenLeptons:BosonPDGId(GenBoson_GenBosonPDGId)','GenLeptons:MuonTauDecay(GenMu_GenMuFromTau)','GenLeptons:ElectronTauDecay(GenElec_GenElecFromTau)','GenLeptons:TauHadronic(GenTau_GenTauHad)','GenLeptons:TauDecayCandspdgID(TauDecayCands_pdgID)'])
+        # jet information on various variables
+        RecoCandVector.extend(['LeptonsNewTag:IdIsoMuon(selectedIDIsoMuonsNoMiniIso)','LeptonsNewTag:IdIsoElectron(selectedIDIsoElectronsNoMiniIso)'] )
+        VectorDouble.extend(['JetsProperties:bDiscriminatorUser(Jets_bDiscriminator)','JetsProperties:chargedEmEnergyFraction(Jets_chargedEmEnergyFraction)','JetsProperties:chargedHadronEnergyFraction(Jets_chargedHadronEnergyFraction)','JetsProperties:jetArea(Jets_jetArea)','JetsProperties:muonEnergyFraction(Jets_muonEnergyFraction)','JetsProperties:neutralEmEnergyFraction(Jets_neutralEmEnergyFraction)','JetsProperties:photonEnergyFraction(Jets_photonEnergyFraction)'])
+        VectorInt.extend(['JetsProperties:chargedHadronMultiplicity(Jets_chargedHadronMultiplicity)','JetsProperties:electronMultiplicity(Jets_electronMultiplicity)','JetsProperties:muonMultiplicity(Jets_muonMultiplicity)','JetsProperties:neutralHadronMultiplicity(Jets_neutralHadronMultiplicity)','JetsProperties:photonMultiplicity(Jets_photonMultiplicity)'])
+        RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
+        RecoCandVector.extend(['SelectedPFElecCandidates','SelectedPFMuCandidates','SelectedPFPionCandidates'])
 
     if hadtau: 
         process.AdditionalSequence += process.JetsForHadTau
@@ -1155,25 +1151,20 @@ jsonfile=""
 	### begin Zinv stuff ###
     if doZinv:   
         ##### add branches for photon studies
-        process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:hadTowOverEM(photon_hadTowOverEM)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:hasPixelSeed(photon_hasPixelSeed)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:passElectronVeto(photon_passElectronVeto)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:pfChargedIso(photon_pfChargedIso)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:pfChargedIsoRhoCorr(photon_pfChargedIsoRhoCorr)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:pfGammaIso(photon_pfGammaIso)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:pfGammaIsoRhoCorr(photon_pfGammaIsoRhoCorr)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIso(photon_pfNeutralIso)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIsoRhoCorr(photon_pfNeutralIsoRhoCorr)")
-        process.TreeMaker2.VectorDouble.append("goodPhotons:sigmaIetaIeta(photon_sigmaIetaIeta)")
+        VectorDouble.append("goodPhotons:isEB(photon_isEB)")
+        VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
+        VectorDouble.append("goodPhotons:hadTowOverEM(photon_hadTowOverEM)")
+        VectorDouble.append("goodPhotons:hasPixelSeed(photon_hasPixelSeed)")
+        VectorDouble.append("goodPhotons:passElectronVeto(photon_passElectronVeto)")
+        VectorDouble.append("goodPhotons:pfChargedIso(photon_pfChargedIso)")
+        VectorDouble.append("goodPhotons:pfChargedIsoRhoCorr(photon_pfChargedIsoRhoCorr)")
+        VectorDouble.append("goodPhotons:pfGammaIso(photon_pfGammaIso)")
+        VectorDouble.append("goodPhotons:pfGammaIsoRhoCorr(photon_pfGammaIsoRhoCorr)")
+        VectorDouble.append("goodPhotons:pfNeutralIso(photon_pfNeutralIso)")
+        VectorDouble.append("goodPhotons:pfNeutralIsoRhoCorr(photon_pfNeutralIsoRhoCorr)")
+        VectorDouble.append("goodPhotons:sigmaIetaIeta(photon_sigmaIetaIeta)")
 
-        process.slimmedPhotons4Vec = cms.EDProducer("fourVectorProducer",
-                                                    particleCollection = cms.untracked.InputTag("slimmedPhotons"),
-                                                    debug = cms.untracked.bool(False)
-                                                    )
-        
-        process.TreeMaker2.VectorTLorentzVector.append("slimmedPhotons4Vec(photonCands)")
+        RecoCandVector.append("slimmedPhotons(photonCands)")
         
         process.ZinvClean = cms.Sequence()
 
@@ -1264,7 +1255,6 @@ jsonfile=""
         VarsDouble.extend(['METclean:minDeltaPhiN(minDeltaPhiNclean)', 'METclean:Pt(METPtclean)'])
 
         process.AdditionalSequence += process.ZinvClean
-        process.AdditionalSequence += process.slimmedPhotons4Vec 
 
     ### end Zinv stuff ###
 
