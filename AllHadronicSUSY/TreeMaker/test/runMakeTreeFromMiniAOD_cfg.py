@@ -23,6 +23,7 @@ print " outfile : "+outFileName
 print " dataset : "+dataSetName
 print " global_tag : "+global_tag
 print " storing lostlepton variables: "+str(lostlepton)
+print " storing hadtau variables: "+str(hadtau)
 print " storing tag and probe variables: "+str(tagandprobe)
 print " storing Zinv variables: "+str(doZinv)
 print " Applying baseline selection filter: "+str(applybaseline)
