@@ -408,7 +408,7 @@ jsonfile=""
     #########
     if hadtau:
         process.load("RecoJets.JetProducers.ak4PFJets_cfi")
-        from JetMETCorrections.Configuration.JetCorrectionServices_cff import *
+        from JetMETCorrections.Configuration.JetCorrectionServices_cff import ak4PFCHSL1FastL2L3,ak4PFCHSL1Fastjet,ak4PFCHSL2Relative,ak4PFCHSL3Absolute
 
         #do projections
         process.pfCHS = cms.EDFilter("CandPtrSelector", src = cms.InputTag("packedPFCandidates"), cut = cms.string("fromPV"))
