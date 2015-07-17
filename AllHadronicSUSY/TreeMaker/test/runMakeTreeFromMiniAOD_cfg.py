@@ -9,6 +9,7 @@ outFileName=parameters.value("outfile","ReducedSelection")
 global_tag = parameters.value("global_tag","GR_P_V56::All")
 lostlepton= parameters.value("lostlepton", False)
 tagandprobe= parameters.value("tagandprobe", False)
+hadtau= parameters.value("hadtau", False)
 applybaseline= parameters.value("applybaseline", False)
 doZinv=parameters.value("doZinv", False)
 gridcontrol=parameters.value("gridcontrol", False)
@@ -22,6 +23,7 @@ print " outfile : "+outFileName
 print " dataset : "+dataSetName
 print " global_tag : "+global_tag
 print " storing lostlepton variables: "+str(lostlepton)
+print " storing hadtau variables: "+str(hadtau)
 print " storing tag and probe variables: "+str(tagandprobe)
 print " storing Zinv variables: "+str(doZinv)
 print " Applying baseline selection filter: "+str(applybaseline)
@@ -36,9 +38,9 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("RA2EventSelection")
 
 ## configure geometry & conditions
-process.load("Configuration.StandardSequences.Geometry_cff")
-process.load("Configuration.StandardSequences.MagneticField_cff")
-process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
+process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
+process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
 from AllHadronicSUSY.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
 makeTreeFromMiniAOD(process,
@@ -47,6 +49,7 @@ makeTreeFromMiniAOD(process,
   testFileName=dataSetName,
   Global_Tag=global_tag,
   numProcessedEvt=numevents,
+  hadtau=hadtau,
   lostlepton=lostlepton,
   tagandprobe=tagandprobe,
   applybaseline=applybaseline,
