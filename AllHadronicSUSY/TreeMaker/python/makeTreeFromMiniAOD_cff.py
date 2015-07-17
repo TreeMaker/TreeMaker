@@ -32,12 +32,6 @@ jsonfile=""
         is74X = True
         print "Configuring for 74X"
 
-    if hadtau:
-        process.load("PhysicsTools.PatAlgos.producersLayer1.patCandidates_cff")   
-        process.load("Configuration.EventContent.EventContent_cff")   
-        process.load('Configuration.StandardSequences.Geometry_cff')   
-        process.load('Configuration.StandardSequences.MagneticField_38T_cff')   
-
     # define if mt cut should be applied and the value (less than 0 means no cut)
     mtcut = cms.double(100)
     if tagandprobe:
@@ -421,7 +415,7 @@ jsonfile=""
         process.ak4PFJetsCHS = process.ak4PFJets.clone(src = 'pfCHS', doAreaFastjet = True) # no idea while doArea is false by default, 
                                                                                             # but it's True in RECO so we have to set it
 
-        if geninfo:       
+        if geninfo:
             process.load("RecoJets.JetProducers.ak4GenJets_cfi")
             process.ak4GenJets = process.ak4GenJets.clone(src = 'packedGenParticles', rParam = 0.4)
 
@@ -433,13 +427,16 @@ jsonfile=""
                 labelName = 'AK4PFCHS',
                 jetSource = cms.InputTag('ak4PFJetsCHS'),
                 pfCandidates = cms.InputTag('packedPFCandidates'),
-                pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
-                svSource = cms.InputTag('slimmedSecondaryVertices'),
-                jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
+                pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),  # 74x
+                svSource = cms.InputTag('slimmedSecondaryVertices'),       # 74x
+                muSource = cms.InputTag('slimmedMuons'),
+                elSource = cms.InputTag('slimmedElectrons'),
+                jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'Type-2'),
                 #   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
-                btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],
+                btagDiscriminators = [ 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ],  # 74x
                 genJetCollection = cms.InputTag('ak4GenJets'),
-                algo = 'AK', rParam = 0.4,
+                genParticles = cms.InputTag('prunedGenParticles'),
+                algo = 'AK', rParam = 0.4
                 )
         else:
             addJetCollection(
@@ -448,19 +445,31 @@ jsonfile=""
                 labelName = 'AK4PFCHS',
                 jetSource = cms.InputTag('ak4PFJetsCHS'),
                 pfCandidates = cms.InputTag('packedPFCandidates'),
-                trackSource = cms.InputTag('unpackedTracksAndVertices'),
-                pvSource = cms.InputTag('unpackedTracksAndVertices'),
-                svSource = cms.InputTag('unpackedTracksAndVertices','secondary'),
+                trackSource = cms.InputTag('unpackedTracksAndVertices'),           # 72x
+                pvSource = cms.InputTag('unpackedTracksAndVertices'),              # 72x
+                svSource = cms.InputTag('unpackedTracksAndVertices','secondary'),  # 72x
                 jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
                 #   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
-                btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],
+                btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],  # 72x
                 genJetCollection = cms.InputTag('ak4GenJets'),
-                algo = 'AK', rParam = 0.4,
+                algo = 'AK', rParam = 0.4
                 )
+        # end of if is74X:
+
+        #adjust MC matching
         process.patJetsAK4PFCHS.getJetMCFlavour = False
         process.patJetsAK4PFCHS.addGenPartonMatch = False
         process.patJetsAK4PFCHS.addGenJetMatch = False
-
+        if geninfo:
+            process.patJetsAK4PFCHS.getJetMCFlavour = True
+            process.patJetsAK4PFCHS.addGenPartonMatch = True
+            process.patJetsAK4PFCHS.addGenJetMatch = True
+            process.patJetGenJetMatchAK4PFCHS.matched = "ak4GenJets"
+            process.patJetPartonMatchAK4PFCHS.matched = "prunedGenParticles"
+            process.patJetPartons.particles = "prunedGenParticles"
+            process.patJetPartons.skipFirstN = cms.uint32(0) # do not skip first 6 particles, we already pruned some!
+            process.patJetPartons.acceptNoDaughters = cms.bool(True) # as we drop intermediate stuff, we need to accept quarks with no siblings
+            
         #adjust PV used for Jet Corrections
         process.patJetCorrFactorsAK4PFCHS.primaryVertices = "offlineSlimmedPrimaryVertices"
 
@@ -482,23 +491,11 @@ jsonfile=""
             minChargedMultiplicity = cms.double(0), 
             minChargedFraction = cms.double(0),     
             maxChargedEMFraction = cms.double(0.99), 
-            MCflag = cms.bool(False),
-            useReclusteredJets = cms.bool(False)
+            MCflag = cms.bool(False)
         )
 
-        #adjust MC matching
         if geninfo:
-            process.patJetsAK4PFCHS.getJetMCFlavour = True
-            process.patJetsAK4PFCHS.addGenPartonMatch = True
-            process.patJetsAK4PFCHS.addGenJetMatch = True
-            process.patJetGenJetMatchAK4PFCHS.matched = "ak4GenJets"
-            process.patJetPartonMatchAK4PFCHS.matched = "prunedGenParticles"
-            process.patJetPartons.particles = "prunedGenParticles"
-            process.patJetPartons.skipFirstN = cms.uint32(0) # do not skip first 6 particles, we already pruned some!
-            process.patJetPartons.acceptNoDaughters = cms.bool(True) # as we drop intermediate stuff, we need to accept quarks with no siblings
-
             process.JetsForHadTau.MCflag = cms.bool(True)
-            process.JetsForHadTau.useRecsluteredJets = cms.bool(True)
 
     #################
     # end of had tau
