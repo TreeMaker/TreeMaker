@@ -53,6 +53,7 @@ private:
   string treeName;
   TTree* tree;	
   bool debug;
+  bool doLorentz;
   vector<string> VarTypeNames;
   vector<TreeTypes> VarTypes;
   vector<vector<string> > VarNames;
@@ -209,11 +210,12 @@ template<>
 void TreeObject<vector<TLorentzVector> >::SetDefault() { value.clear(); }
 
 //derived version of vector<TLorentzVector> for RecoCand
+//with switch for vector<double> pt, eta, phi, energy instead
 class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 	public:
 		//constructor
 		TreeRecoCand() : TreeObject<vector<TLorentzVector> >() {}
-		TreeRecoCand(string tempFull_, TTree* tree_) : TreeObject<vector<TLorentzVector> >(tempFull_,tree_) {}
+		TreeRecoCand(string tempFull_, TTree* tree_, bool doLorentz_=true) : TreeObject<vector<TLorentzVector> >(tempFull_,tree_), doLorentz(doLorentz_) {}
 		//destructor
 		virtual ~TreeRecoCand() {}
 		
@@ -223,13 +225,54 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 			edm::Handle< edm::View<reco::Candidate> > cands;
 			iEvent.getByLabel(tag,cands);
 			if( cands.isValid() ) {
-				value.reserve(cands->size());
-				for(auto iPart = cands->begin(); iPart != cands->end(); ++iPart){
-					value.emplace_back(iPart->px(), iPart->py(), iPart->pz(), iPart->energy());
+				if(doLorentz){
+					value.reserve(cands->size());
+					for(auto iPart = cands->begin(); iPart != cands->end(); ++iPart){
+						value.emplace_back(iPart->px(), iPart->py(), iPart->pz(), iPart->energy());
+					}
+				}
+				else{
+					pt.reserve(cands->size());
+					eta.reserve(cands->size());
+					phi.reserve(cands->size());
+					energy.reserve(cands->size());
+					for(auto iPart = cands->begin(); iPart != cands->end(); ++iPart){
+						pt.emplace_back(iPart->pt());
+						eta.emplace_back(iPart->eta());
+						phi.emplace_back(iPart->phi());
+						energy.emplace_back(iPart->energy());
+					}
 				}
 			}
 			else {
 				cout << "WARNING ... " << tagName << " is NOT valid?!" << endl;
 			}
 		}
+		virtual void AddBranch() {
+			if(doLorentz){
+				tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0);
+			}
+			else {
+				tree->Branch((nameInTree+"Pt").c_str(),"vector<double>",&pt,32000,0);
+				tree->Branch((nameInTree+"Eta").c_str(),"vector<double>",&eta,32000,0);
+				tree->Branch((nameInTree+"Phi").c_str(),"vector<double>",&phi,32000,0);
+				tree->Branch((nameInTree+"E").c_str(),"vector<double>",&energy,32000,0);
+			}
+		}
+		virtual void SetDefault() {
+			if(doLorentz){
+				value.clear();
+			}
+			else{
+				pt.clear();
+				eta.clear();
+				phi.clear();
+				energy.clear();
+			}
+		}
+	
+	protected:
+		//member variables
+		bool doLorentz;
+		vector<double> pt, eta, phi, energy;
 };

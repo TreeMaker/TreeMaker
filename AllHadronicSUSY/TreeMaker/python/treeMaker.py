@@ -6,6 +6,9 @@ TreeMaker = cms.EDProducer(
 TreeName          = cms.string('RA2Tree'),
 ## might help if something isn't working, will produce couts
 debug = cms.bool(False),
+#default: output RecoCands as vector<TLorentzVector>
+#switches to vector<double> pt, eta, phi, energy if false
+doLorentz = cms.bool(True),
 # list of reco candidate objects: for each reco cand collection, the TLorentzVector will be stored in a vector.
 VarsBool = cms.vstring(),
 VarsInt = cms.vstring(),

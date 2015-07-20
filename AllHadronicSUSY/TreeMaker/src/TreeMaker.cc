@@ -34,6 +34,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 	// general parameters
 	treeName = iConfig.getParameter<string>("TreeName");
 	debug = iConfig.getParameter<bool> ("debug");
+	doLorentz = iConfig.getParameter<bool> ("doLorentz");
 	//loop over all var type names
 	VarNames.reserve(VarTypeNames.size());
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
@@ -103,7 +104,7 @@ TreeMaker::beginJob()
 				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double> >(VarNames[v][t],tree); break;
 				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string> >(VarNames[v][t],tree); break;
 				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector> >(VarNames[v][t],tree); break;
-				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarNames[v][t],tree); break;
+				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarNames[v][t],tree,doLorentz); break;
 			}
 			//if a known type was found, initialize and store the object
 			if(tmp) {
