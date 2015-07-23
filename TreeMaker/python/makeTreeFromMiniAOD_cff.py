@@ -68,7 +68,7 @@ applyjec=False,
         fileName = cms.string(outfile+".root")
     )
     # branches for treemaker
-    RecoCandVector       = cms.vstring() 
+    VectorRecoCand       = cms.vstring() 
     VarsDouble           = cms.vstring()
     VarsInt              = cms.vstring()
     VarsBool             = cms.vstring()
@@ -84,7 +84,7 @@ applyjec=False,
     from TreeMaker.TreeMaker.treeMaker import TreeMaker
     process.TreeMaker2 = TreeMaker.clone(
         TreeName             = cms.string("PreSelection"),
-        VarsRecoCand         = RecoCandVector, 
+        VectorRecoCand       = VectorRecoCand, 
         VarsDouble           = VarsDouble,
         VarsInt              = VarsInt,
         VarsBool             = VarsBool,
@@ -217,7 +217,7 @@ applyjec=False,
     )
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
-    RecoCandVector.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
+    VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
     VectorInt.extend(['LeptonsNew:MuonCharge(MuonCharge)','LeptonsNew:ElectronCharge(ElectronCharge)'])
 
     process.LeptonsNewTag = leptonproducer.clone(
@@ -251,7 +251,7 @@ applyjec=False,
     )
     process.Baseline += process.goodPhotons
     # good photon tag is InputTag('goodPhotons','bestPhoton')
-    RecoCandVector.append("goodPhotons:bestPhoton")
+    VectorRecoCand.append("goodPhotons:bestPhoton")
     VarsInt.append("goodPhotons:NumPhotons")
     
     ## ----------------------------------------------------------------------------------------------

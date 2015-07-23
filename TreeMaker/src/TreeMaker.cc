@@ -28,7 +28,7 @@ using namespace pat;
 //
 TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 : tree(0),
-  VarTypeNames{"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VarsRecoCand"},
+  VarTypeNames{"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorRecoCand"},
   VarTypes{t_bool,t_int,t_double,t_string,t_lorentz,t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_recocand}
 {
 	// general parameters

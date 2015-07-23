@@ -94,7 +94,7 @@ def doHadTauBkg(process,is74X,geninfo):
         process.JetsForHadTau.MCflag = cms.bool(True)
         
     process.AdditionalSequence += process.JetsForHadTau
-    process.TreeMaker2.VarsRecoCand.extend(['JetsForHadTau:Jet(slimJet)'])
+    process.TreeMaker2.VectorRecoCand.extend(['JetsForHadTau:Jet(slimJet)'])
     process.TreeMaker2.VectorInt.extend(['JetsForHadTau:JetFlag(slimJet_slimJetID)'])
     
     return process

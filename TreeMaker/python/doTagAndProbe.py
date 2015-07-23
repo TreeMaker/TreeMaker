@@ -516,6 +516,6 @@ def doTagAndProbe(process,geninfo):
     process.Baseline += process.IsoTrackPionTag
     process.Baseline += process.tpPairsIsoTrackPion
     process.Baseline += process.IsoTrackPionIsoEffs
-    process.TreeMaker2.VarsRecoCand.extend(['slimmedPhotons'])
+    process.TreeMaker2.VectorRecoCand.extend(['slimmedPhotons'])
 
     return process
