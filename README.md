@@ -25,22 +25,22 @@ cmsRun runMakeTreeFromMiniAOD_cfg.py global_tag=GR_P_V56::All geninfo=False tagn
 
 To run on Spring15 MC:
 ```
-cmsRun runMakeTreeFromMiniAOD_cfg.py global_tag=MCRUN2_74_V9::All geninfo=True tagname="PAT" dataset="/store/mc/..."
+cmsRun runMakeTreeFromMiniAOD_cfg.py globaltag=MCRUN2_74_V9::All geninfo=True tagname="PAT" dataset="/store/mc/..."
 ```
 
 If the user instead wants to process Phys14 MC, the CMSSW version `CMSSW_7_2_3_patch1` should be used for the installation:
 ```
-cmsRun runMakeTreeFromMiniAOD_cfg.py global_tag=PHYS14_25_V2::All geninfo=True tagname="PAT" dataset="/store/mc/..."
+cmsRun runMakeTreeFromMiniAOD_cfg.py globaltag=PHYS14_25_V2::All geninfo=True tagname="PAT" dataset="/store/mc/..."
 ```
 
 ## Options
 
 Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/python/makeTreeFromMiniAOD_cff.py)
-* `outFileName`: name of the ROOT output file that will be created by the TFileService.
-* `reportEveryEvt`: frequency of CMSSW log output (default=10)
-* `testFileName`: name of the miniAOD input file
-* `Global_Tag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
-* `numProcessedEvt`: number of input events to process, -1 processes all events (default=1000)
+* `outfile`: name of the ROOT output file that will be created by the TFileService.
+* `reportfreq`: frequency of CMSSW log output (default=10)
+* `dataset`: name of the miniAOD input file(s)
+* `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
+* `numevents`: number of input events to process, -1 processes all events (default=1000)
 * `tagname`: tag name for collections that can have different tags for data or MC (default="PAT")
 * `geninfo`: switch to enable use of generator information, should only be used for MC (default=True)
 * `jsonfile`: name of JSON file to apply to data

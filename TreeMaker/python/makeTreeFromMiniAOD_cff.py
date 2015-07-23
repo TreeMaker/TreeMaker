@@ -5,11 +5,11 @@ import FWCore.ParameterSet.Config as cms
 import sys,os
 def makeTreeFromMiniAOD(
 process,
-outFileName,
-reportEveryEvt=10,
-testFileName="",
-Global_Tag="",
-numProcessedEvt=1000,
+outfile,
+reportfreq=10,
+dataset="",
+globaltag="",
+numevents=1000,
 lostlepton=False,
 hadtau=False,
 tagandprobe=False,
@@ -29,7 +29,7 @@ applyjec=False,
     ## ----------------------------------------------------------------------------------------------
     
     process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
-    process.GlobalTag.globaltag = Global_Tag
+    process.GlobalTag.globaltag = globaltag
 
     # CMSSW version sniffing
     CMSSWVER = os.getenv("CMSSW_VERSION")
@@ -48,7 +48,7 @@ applyjec=False,
 
     # log output
     process.load("FWCore.MessageService.MessageLogger_cfi")
-    process.MessageLogger.cerr.FwkReport.reportEvery = reportEveryEvt
+    process.MessageLogger.cerr.FwkReport.reportEvery = reportfreq
     process.options = cms.untracked.PSet(
         wantSummary = cms.untracked.bool(True)
     )
@@ -56,16 +56,16 @@ applyjec=False,
     # files to process
     import FWCore.PythonUtilities.LumiList as LumiList
     process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(numProcessedEvt)
+        input = cms.untracked.int32(numevents)
     )
     process.source = cms.Source("PoolSource",
-        fileNames = cms.untracked.vstring(testFileName)
+        fileNames = cms.untracked.vstring(dataset)
     )
     if len(jsonfile)>0: process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
 
     # output file
     process.TFileService = cms.Service("TFileService",
-        fileName = cms.string(outFileName+".root")
+        fileName = cms.string(outfile+".root")
     )
     # branches for treemaker
     RecoCandVector       = cms.vstring() 
@@ -104,7 +104,7 @@ applyjec=False,
     ## WeightProducer
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
-    process.WeightProducer = getWeightProducer(testFileName)
+    process.WeightProducer = getWeightProducer(dataset)
     process.WeightProducer.Lumi                       = cms.double(4000)
     process.WeightProducer.PU                         = cms.int32(0) # PU S10 3 for S10 2 for S7
     process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
@@ -218,6 +218,7 @@ applyjec=False,
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
     RecoCandVector.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
+    VectorInt.extend(['LeptonsNew:MuonCharge(MuonCharge)','LeptonsNew:ElectronCharge(ElectronCharge)'])
 
     process.LeptonsNewTag = leptonproducer.clone(
         MuonTag          = cms.InputTag('slimmedMuons'),
@@ -577,4 +578,6 @@ applyjec=False,
 #        process.dump *
         process.TreeMaker2
     )
+    
+    return process
 
