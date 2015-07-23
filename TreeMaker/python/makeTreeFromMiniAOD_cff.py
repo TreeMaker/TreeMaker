@@ -44,7 +44,7 @@ applyjec=False,
     if tagandprobe:
         mtcut=-100
         print "Doing tagandprobe"
-    print "Calulation with mtcut: "+ str(mtcut)
+    print "Calculation with mtcut: "+ str(mtcut)
 
     # log output
     process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -521,6 +521,19 @@ applyjec=False,
     VarsDouble.extend(['MET:minDeltaPhiN','MET:DeltaPhiN1','MET:DeltaPhiN2','MET:DeltaPhiN3','MET:Pt(METPt)','MET:Phi(METPhi)'])
 
     ## ----------------------------------------------------------------------------------------------
+    ## Jet properties
+    ## ----------------------------------------------------------------------------------------------
+    
+    from TreeMaker.Utils.jetproperties_cfi import jetproperties
+    process.JetsProperties = jetproperties.clone(
+        JetTag       = cms.InputTag('HTJets'),
+        BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
+        METTag       = cms.InputTag("slimmedMETs"),
+    )
+    if is74X: process.JetsProperties.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    process.Baseline += process.JetsProperties
+    
+    ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Optional producers (background estimations, control regions)
     ## ----------------------------------------------------------------------------------------------
@@ -541,7 +554,7 @@ applyjec=False,
     ## ----------------------------------------------------------------------------------------------
     if lostlepton or tagandprobe:
         from TreeMaker.TreeMaker.doProcessesForLLTP import doProcessesForLLTP
-        process = doProcessesForLLTP(process,is74X,geninfo)
+        process = doProcessesForLLTP(process,geninfo)
     
     ## ----------------------------------------------------------------------------------------------
     ## Tag And Probe

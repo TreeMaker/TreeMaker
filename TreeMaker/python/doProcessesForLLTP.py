@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def doProcessesForLLTP(process,is74X,geninfo):
+def doProcessesForLLTP(process,geninfo):
     from TreeMaker.Utils.selectpfcandidates_cfi import SelectPFCandidates
     process.SelectedPFCandidatesProbeCands5 = SelectPFCandidates.clone(
         PackedPFCandidatesTag = cms.InputTag('packedPFCandidates'),
@@ -41,13 +41,5 @@ def doProcessesForLLTP(process,is74X,geninfo):
         process.GenLeptons = genLeptonRecoCand.clone(
             PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
         )
-
-    from TreeMaker.Utils.jetproperties_cfi import jetproperties
-    process.JetsProperties = jetproperties.clone(
-        JetTag       = cms.InputTag('HTJets'),
-        BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
-        METTag       = cms.InputTag("slimmedMETs"),
-    )
-    if is74X: process.JetsProperties.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
 
     return process
