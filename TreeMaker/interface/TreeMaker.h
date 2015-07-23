@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 #include <sstream>
+#include <algorithm>
 
 using namespace std;
 
@@ -41,31 +42,31 @@ class TreeObjectBase;
 //
 
 class TreeMaker : public edm::EDProducer {
-public:
-  explicit TreeMaker(const edm::ParameterSet&);
-  ~TreeMaker();
-  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-private:
-  virtual void beginJob() override;
-  virtual void produce(edm::Event&, const edm::EventSetup&) override;
-  virtual void endJob() override;
-  // ----------member data ---------------------------
-  string treeName;
-  TTree* tree;	
-  bool debug;
-  bool doLorentz;
-  vector<string> VarTypeNames;
-  vector<TreeTypes> VarTypes;
-  vector<vector<string> > VarNames;
-  map<string,unsigned> nameCache;
-  // general event information
-  UInt_t runNum;
-  UInt_t lumiBlockNum;
-  UInt_t evtNum;
-  vector<TreeObjectBase*> variables;
+	public:
+		explicit TreeMaker(const edm::ParameterSet&);
+		~TreeMaker();
+		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+
+	private:
+		virtual void beginJob() override;
+		virtual void produce(edm::Event&, const edm::EventSetup&) override;
+		virtual void endJob() override;
+		// ----------member data ---------------------------
+		string treeName;
+		TTree* tree;	
+		bool debug, doLorentz, sortBranches;
+		vector<string> VarTypeNames;
+		vector<TreeTypes> VarTypes;
+		vector<vector<string> > VarNames;
+		map<string,unsigned> nameCache;
+		// general event information
+		UInt_t runNum;
+		UInt_t lumiBlockNum;
+		UInt_t evtNum;
+		vector<TreeObjectBase*> variables;
 };
 
-//helper classes
+//base class for tree objects
 class TreeObjectBase {
 	public:
 		//constructor
@@ -74,6 +75,7 @@ class TreeObjectBase {
 		//destructor
 		virtual ~TreeObjectBase() {}
 		//functions
+		virtual string GetNameInTree() { return nameInTree; }
 		virtual void Initialize(map<string,unsigned>& nameCache) {}
 		virtual void AddBranch() {}
 		virtual void SetDefault() {}
@@ -103,6 +105,20 @@ class TreeObjectBase {
 		edm::InputTag tag;
 };
 
+//comparator (case-insensitive sort)
+class TreeObjectComp {
+	public:
+		bool operator() (TreeObjectBase* b1, TreeObjectBase* b2){
+			string s1 = b1->GetNameInTree();
+			transform(s1.begin(),s1.end(),s1.begin(),::tolower);
+			string s2 = b2->GetNameInTree();
+			transform(s2.begin(),s2.end(),s2.begin(),::tolower);
+			
+			return s1 < s2;
+		}
+};
+
+//class template for tree objects
 template <class T>
 class TreeObject : public TreeObjectBase {
 	public:
@@ -141,9 +157,6 @@ class TreeObject : public TreeObjectBase {
 			
 			//finalize name to avoid duplicates
 			FinalizeName(nameCache);
-			
-			//add branch to tree
-			AddBranch();
 		}
 		virtual void FillTree(edm::Event& iEvent){
 			SetDefault();

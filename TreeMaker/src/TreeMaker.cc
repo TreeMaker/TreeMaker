@@ -33,8 +33,9 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 {
 	// general parameters
 	treeName = iConfig.getParameter<string>("TreeName");
-	debug = iConfig.getParameter<bool> ("debug");
-	doLorentz = iConfig.getParameter<bool> ("doLorentz");
+	debug = iConfig.getParameter<bool>("debug");
+	doLorentz = iConfig.getParameter<bool>("doLorentz");
+	sortBranches = iConfig.getParameter<bool>("sortBranches");
 	//loop over all var type names
 	VarNames.reserve(VarTypeNames.size());
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
@@ -112,6 +113,14 @@ TreeMaker::beginJob()
 				variables.push_back(tmp);
 			}
 		}
+	}
+	
+	//sort TreeObjects (if desired)
+	if(sortBranches) sort(variables.begin(),variables.end(),TreeObjectComp());
+	
+	//add branches to tree
+	for(unsigned t = 0; t < variables.size(); ++t){
+		variables[t]->AddBranch();
 	}
 }
 
