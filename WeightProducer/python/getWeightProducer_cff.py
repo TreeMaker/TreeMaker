@@ -7,8 +7,16 @@
 #    from RA2Classic.WeightProducer.getWeightProducer_cff import getWeightProducer
 #    process.WeightProducer = getWeightProducer(process.source.fileNames[0])
 
-
 import FWCore.ParameterSet.Config as cms
+
+class MCSample:
+    def __init__(self, name, production, mcVersion, Method, XS, NumberEvts):
+        self.name = name
+        self.production = production
+        self.mcVersion = mcVersion
+        self.Method = Method
+        self.XS = XS
+        self.NumberEvts = NumberEvts
 
 def getWeightProducer(fileName):
 
@@ -27,542 +35,87 @@ def getWeightProducer(fileName):
     weightProducer.FileNamePUDataDistribution = cms.string("NONE")
     weightProducer.PU = cms.int32(0)
 
-    # 13 TeV miniAOD samples - CSA14
-
-    # backgrounds
+    # list of samples
+    samples = [
+        # 13 TeV miniAOD samples - CSA14
+        # backgrounds
+        MCSample("TTJets_MSDecaysCKM_central_Tune4C_13TeV", "PU40bx25_POSTLS170_V5-v2", "Spring14miniaod", "Constant", 745.16, 25478151),
+        MCSample("TTJets_MSDecaysCKM_central_Tune4C_13TeV", "PU20bx25_POSTLS170_V5-v2", "Spring14miniaod", "Constant", 818.8, 25474122),
+        MCSample("WJetsToLNu_HT-100to200_Tune4C_13TeV", "PU20bx25_POSTLS170_V5-v2", "Spring14miniaod", "Constant", 2235.0, 5229141),
+        MCSample("WJetsToLNu_HT-200to400_Tune4C_13TeV", "PU20bx25_POSTLS170_V5-v1", "Spring14miniaod", "Constant", 580.1, 4933933),
+        MCSample("WJetsToLNu_HT-400to600_Tune4C_13TeV", "PU20bx25_POSTLS170_V5-v1", "Spring14miniaod", "Constant", 68.40, 4642823),
+        MCSample("WJetsToLNu_HT-600toInf_Tune4C_13TeV", "PU20bx25_POSTLS170_V5-v1", "Spring14miniaod", "Constant", 23.14, 4634811),
+        MCSample("QCD_Pt-470to600_Tune4C_13TeV_pythia8", "PU20bx25_POSTLS170_V5-v1", "Spring14miniaod", "Constant", 587.1, 2907137),
+        #signal
+        MCSample("SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola", "PU_S14_POSTLS170_V6AN1", "Spring14dr", "Constant", 0.0856418, 100322),
+        MCSample("SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola", "PU_S14_POSTLS170_V6AN1", "Spring14dr", "Constant", 0.0141903, 105679),
+        MCSample("SMS-T1bbbb_2J_mGl-1000_mLSP-900_Tune4C_13TeV-madgraph-tauola", "PU_S14_POSTLS170_V6AN1", "Spring14dr", "Constant", 0.325388, 97584),
+        MCSample("SMS-T1bbbb_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola", "PU_S14_POSTLS170_V6AN1", "Spring14dr", "Constant", 0.0141903, 105964),
+        MCSample("SMS-T1qqqq_2J_mGl-1000_mLSP-800_Tune4C_13TeV-madgraph-tauola", "PU_S14_POSTLS170_V6AN1", "Spring14dr", "Constant", 0.325388, 97513),
+        MCSample("SMS-T1qqqq_2J_mGl-1400_mLSP-100_Tune4C_13TeV-madgraph-tauola", "PU_S14_POSTLS170_V6AN1", "Spring14dr", "Constant", 0.0252977, 103943),
+        MCSample("TTJets_MSDecaysCKM_central_Tune4C_13TeV", "PU40bx25_POSTLS170_V5-v2", "Spring14miniaod", "Constant", 745.16, 25478151),
+        # 13 TeV miniAOD samples - PHYS14
+        # signal
+        MCSample("SMS-T1qqqq_2J_mGl-1400_mLSP-100_Tune4C_13TeV-madgraph-tauola", "PU20bx25_tsg_PHYS14", "Phys14DR", "Constant",  0.0252977 , 102891),
+        MCSample("SMS-T1qqqq_2J_mGl-1000_mLSP-800_Tune4C_13TeV-madgraph-tauola", "PU20bx25_tsg_PHYS14", "Phys14DR", "Constant",  0.325388 , 96681),
+        MCSample("SMS-T1bbbb_2J_mGl-1000_mLSP-900_Tune4C_13TeV-madgraph-tauola", "PU20bx25_tsg_PHYS14", "Phys14DR", "Constant", 0.325388, 97584),
+        MCSample("SMS-T1bbbb_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola", "PU20bx25_tsg_PHYS14", "Phys14DR", "Constant", 0.0141903, 105964),
+        MCSample("SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola", "PU20bx25_tsg_PHYS14", "Phys14DR", "Constant", 0.0856418, 100322),
+        MCSample("SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola", "PU20bx25_tsg_PHYS14", "Phys14DR", "Constant", 0.0141903, 105679),
+        # backgrounds
+        # QCD MG
+        MCSample("QCD_HT_250To500_13TeV-madgraph", "PU20bx25_PHYS14_25_V1", "Phys14DR", "Constant", 6.705e+5, 2668172),
+        MCSample("QCD_HT-500To1000_13TeV-madgraph", "PU20bx25_PHYS14_25_V1", "Phys14DR", "Constant", 2.674e+4, 4063345),
+        MCSample("QCD_HT_1000ToInf_13TeV-madgraph", "PU20bx25_PHYS14_25_V1", "Phys14DR", "Constant", 769.7, 1464453),
+        # QCD Pythia
+        MCSample("QCD_Pt-15to30_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 1837410000, 1986539),
+        MCSample("QCD_Pt-30to50_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 161500000, 1988880),
+        MCSample("QCD_Pt-50to80_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 22110000, 2000338),
+        MCSample("QCD_Pt-80to120_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 3000114, 2000340),
+        MCSample("QCD_Pt-120to170_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 493200, 2001453),
+        MCSample("QCD_Pt-170to300_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 120300, 2000704),
+        MCSample("QCD_Pt-300to470_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 7475, 1986177),
+        MCSample("QCD_Pt-470to600_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 587.1, 2001071),
+        MCSample("QCD_Pt-600to800_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 167, 1997744),
+        MCSample("QCD_Pt-800to1000_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 28.25, 1000065),
+        MCSample("QCD_Pt-1000to1400_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 8.195, 500550),
+        MCSample("QCD_Pt-1400to1800_Tune4C_13TeV", "PU20bx25_trkalmb_castor_PHYS14_25_V1", "Phys14DR", "Constant", 0.7346, 199627),
+        MCSample("QCD_Pt-1800to2400_Tune4C_13TeV", "PU20bx25_trkalmb_PHYS14_25_V1", "Phys14DR", "Constant", 0.102, 200079),
+        MCSample("QCD_Pt-2400to3200_Tune4C_13TeV", "PU20bx25_trkalmb_PHYS14_25_V1", "Phys14DR", "Constant", 0.0064, 200453),
+        MCSample("QCD_Pt-3200_Tune4C_13TeV", "PU20bx25_trkalmb_PHYS14_25_V1", "Phys14DR", "Constant", 0.000163, 200200),
+        MCSample("TBarToLeptons_t-channel_Tune4C_CSA14_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 61.6, 1999800),
+        MCSample("TBarToLeptons_s-channel-CSA14_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 1.0, 250000),
+        MCSample("TToLeptons_t-channel-CSA14_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 103.4, 3991000),
+        MCSample("TToLeptons_s-channel-CSA14_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 2.0, 500000),
+        MCSample("TTZJets_Tune4C_13TeV-madgraph-tauola", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 2.232, 249275),
+        MCSample("TTWJets_Tune4C_13TeV-madgraph-tauola", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 1.152, 246521),
+        MCSample("T_tW-channel-DR_Tune4C_13TeV-CSA14", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 35.0, 986100),
+        MCSample("TTJets_MSDecaysCKM_central_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 806.1, 25446993),
+        MCSample("WJetsToLNu_HT-100to200_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 2235.0, 5262265),
+        MCSample("WJetsToLNu_HT-200to400_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 580.1, 4936077),
+        MCSample("WJetsToLNu_HT-400to600_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 68.40, 4640594),
+        MCSample("WJetsToLNu_HT-600toInf_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 23.14, 4581841),
+        MCSample("ZJetsToNuNu_HT-100to200_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 473.2, 4986424),
+        MCSample("ZJetsToNuNu_HT-200to400_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 128.0, 4546470),
+        MCSample("ZJetsToNuNu_HT-400to600_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v2", "Phys14DR", "Constant", 15.23, 4433784),
+        MCSample("ZJetsToNuNu_HT-600toInf_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 5.224, 4463806),
+        MCSample("DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 246.8, 4054159),
+        MCSample("DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 66.34, 4666496),
+        MCSample("DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 8.313, 4931372),
+        MCSample("DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 2.767, 4493574)
+    ]
     
-    if "TTJets_MSDecaysCKM_central_Tune4C_13TeV" in fileName and "PU40bx25_POSTLS170_V5-v2" in fileName:
-        mcVersion = "Spring14miniaod"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(745.16)
-        weightProducer.NumberEvts = cms.double(25478151)
-        print "TTJets_MSDecaysCKM_central_Tune4C_13TeV_PU50x25_V5_v2 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "TTJets_MSDecaysCKM_central_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v2" in fileName:
-        mcVersion = "Spring14miniaod"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(818.8)
-        weightProducer.NumberEvts = cms.double(25474122)
-        print "TTJets_MSDecaysCKM_central_Tune4C_13TeV_PU20bx250_V5-v2 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-          
-    elif "WJetsToLNu_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v2" in fileName:
-        mcVersion = "Spring14miniaod"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(2235.0)
-        weightProducer.NumberEvts = cms.double(5229141)
-        print "WJetsToLNu_HT-100to200_Tune4C_13TeV : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-	
-    elif "WJetsToLNu_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v1" in fileName:
-        mcVersion = "Spring14miniaod"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(580.1)
-        weightProducer.NumberEvts = cms.double(4933933)
-        print "WJetsToLNu_HT-200to400_Tune4C_13TeV : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-          
-    elif "WJetsToLNu_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v1" in fileName:
-        mcVersion = "Spring14miniaod"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(68.40)
-        weightProducer.NumberEvts = cms.double(4642823)
-        print "WJetsToLNu_HT-400to600 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "WJetsToLNu_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_POSTLS170_V5-v1" in fileName:
-        mcVersion = "Spring14miniaod"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(23.14)
-        weightProducer.NumberEvts = cms.double(4634811)
-        print "WJetsToLNu_HT-600toInf : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-470to600_Tune4C_13TeV_pythia8" in fileName and "PU20bx25_POSTLS170_V5-v1" in fileName:
-        mcVersion = "Spring14miniaod"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(587.1)
-        weightProducer.NumberEvts = cms.double(2907137)
-        print "QCD_Pt-470to600_Tune4C_13TeV_pythia8 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    #signal
-
-    elif "SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola" in fileName and "PU_S14_POSTLS170_V6AN1" in fileName:
-        mcVersion = "Spring14dr"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.0856418)
-        weightProducer.NumberEvts = cms.double(100322)
-        print "SMS-T1tttt_2J_mGl-1200_mLSP-800 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU_S14_POSTLS170_V6AN1" in fileName:
-        mcVersion = "Spring14dr"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.0141903)
-        weightProducer.NumberEvts = cms.double(105679)
-        print "SMS-T1tttt_2J_mGl-1500_mLSP-100 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1bbbb_2J_mGl-1000_mLSP-900_Tune4C_13TeV-madgraph-tauola" in fileName and "PU_S14_POSTLS170_V6AN1" in fileName:
-        mcVersion = "Spring14dr"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.325388)
-        weightProducer.NumberEvts = cms.double(97584)
-        print "T1bbbb_2J_mGl-1000_mLSP-900 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1bbbb_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU_S14_POSTLS170_V6AN1" in fileName:
-        mcVersion = "Spring14dr"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.0141903)
-        weightProducer.NumberEvts = cms.double(105964)
-        print "SMS-T1bbbb_2J_mGl-1500_mLSP-100 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1qqqq_2J_mGl-1000_mLSP-800_Tune4C_13TeV-madgraph-tauola" in fileName and "PU_S14_POSTLS170_V6AN1" in fileName:
-        mcVersion = "Spring14dr"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.325388)
-        weightProducer.NumberEvts = cms.double(97513)
-        print "SMS-T1qqqq_2J_mGl-1000_mLSP-800 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1qqqq_2J_mGl-1400_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU_S14_POSTLS170_V6AN1" in fileName:
-        mcVersion = "Spring14dr"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.0252977)
-        weightProducer.NumberEvts = cms.double(103943)
-        print "SMS-T1qqqq_2J_mGl-1400_mLSP-100 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "TTJets_MSDecaysCKM_central_Tune4C_13TeV" in fileName and "PU40bx25_POSTLS170_V5-v2" in fileName:
-        mcVersion = "Spring14miniaod"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(745.16)
-        weightProducer.NumberEvts = cms.double(25478151)
-        print "TTJets_MSDecaysCKM_central_Tune4C_13TeV_PU50x25_V5_v2 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    # 13 TeV miniAOD samples - PHYS14
-
-    # signal
-    elif "SMS-T1qqqq_2J_mGl-1400_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double( 0.0252977 )
-        weightProducer.NumberEvts = cms.double(102891)
-        print "SMS-T1qqqq_2J_mGl-1400_mLSP-100 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1qqqq_2J_mGl-1000_mLSP-800_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double( 0.325388 )
-        weightProducer.NumberEvts = cms.double(96681)
-        print "SMS-T1qqqq_2J_mGl-1000_mLSP-800 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1bbbb_2J_mGl-1000_mLSP-900_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.325388)
-        weightProducer.NumberEvts = cms.double(97584)
-        print "T1bbbb_2J_mGl-1000_mLSP-900 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1bbbb_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.0141903)
-        weightProducer.NumberEvts = cms.double(105964)
-        print "SMS-T1bbbb_2J_mGl-1500_mLSP-100 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1tttt_2J_mGl-1200_mLSP-800_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.0856418)
-        weightProducer.NumberEvts = cms.double(100322)
-        print "SMS-T1tttt_2J_mGl-1200_mLSP-800 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "SMS-T1tttt_2J_mGl-1500_mLSP-100_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_tsg_PHYS14" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.0141903)
-        weightProducer.NumberEvts = cms.double(105679)
-        print "SMS-T1tttt_2J_mGl-1500_mLSP-100 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    # backgrounds
-   
-    # QCD MG
-
-    elif "QCD_HT_250To500_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(6.705e+5)
-        weightProducer.NumberEvts = cms.double(2668172)
-        print "QCD_HT-250To500_13TeV-madgraph : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_HT-500To1000_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(2.674e+4)
-        weightProducer.NumberEvts = cms.double(4063345)
-        print "QCD_HT-500To1000_13TeV-madgraph : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_HT_1000ToInf_13TeV-madgraph" in fileName and "PU20bx25_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(769.7)
-        weightProducer.NumberEvts = cms.double(1464453)
-        print "QCD_HT-1000ToInf_13TeV-madgraph : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-   # QCD Pythia
-
-    elif "QCD_Pt-15to30_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(1837410000)
-        weightProducer.NumberEvts = cms.double(1986539)
-        print "QCD_Pt-15to30-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-30to50_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(161500000)
-        weightProducer.NumberEvts = cms.double(1988880)
-        print "QCD_Pt-30to50-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-50to80_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(22110000)
-        weightProducer.NumberEvts = cms.double(2000338)
-        print "QCD_Pt-50to80-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-80to120_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(3000114)
-        weightProducer.NumberEvts = cms.double(2000340)
-        print "QCD_Pt-80to120-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-120to170_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(493200)
-        weightProducer.NumberEvts = cms.double(2001453)
-        print "QCD_Pt-120to170-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-170to300_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(120300)
-        weightProducer.NumberEvts = cms.double(2000704)
-        print "QCD_Pt-120to170-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-300to470_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(7475)
-        weightProducer.NumberEvts = cms.double(1986177)
-        print "QCD_Pt-300to470-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-470to600_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(587.1)
-        weightProducer.NumberEvts = cms.double(2001071)
-        print "QCD_Pt-470to600-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-600to800_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(167)
-        weightProducer.NumberEvts = cms.double(1997744)
-        print "QCD_Pt-600to800-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-800to1000_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(28.25)
-        weightProducer.NumberEvts = cms.double(1000065)
-        print "QCD_Pt-800to1000-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-1000to1400_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(8.195)
-        weightProducer.NumberEvts = cms.double(500550)
-        print "QCD_Pt-1000to1400-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-1400to1800_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_castor_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.7346)
-        weightProducer.NumberEvts = cms.double(199627)
-        print "QCD_Pt-1400to1800-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-1800to2400_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.102)
-        weightProducer.NumberEvts = cms.double(200079)
-        print "QCD_Pt-1800to2400-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "QCD_Pt-2400to3200_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.0064)
-        weightProducer.NumberEvts = cms.double(200453)
-        print "QCD_Pt-2400to3200-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-   
-    elif "QCD_Pt-3200_Tune4C_13TeV" in fileName and "PU20bx25_trkalmb_PHYS14_25_V1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(0.000163)
-        weightProducer.NumberEvts = cms.double(200200)
-        print "QCD_Pt-3200-pythia : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-   
-    elif "TBarToLeptons_t-channel_Tune4C_CSA14_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(61.6)
-        weightProducer.NumberEvts = cms.double(1999800)
-        print "TBarToLeptons_t-channel_Tune4C_CSA14_13TeV : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "TBarToLeptons_s-channel-CSA14_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(1.0)
-        weightProducer.NumberEvts = cms.double(250000)
-        print "TBarToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "TToLeptons_t-channel-CSA14_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(103.4)
-        weightProducer.NumberEvts = cms.double(3991000)
-        print "TToLeptons_t-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "TToLeptons_s-channel-CSA14_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(2.0)
-        weightProducer.NumberEvts = cms.double(500000)
-        print "TToLeptons_s-channel-CSA14_Tune4C_13TeV : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "TTZJets_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(2.232)
-        weightProducer.NumberEvts = cms.double(249275)
-        print "TTJets_MSDecaysCKM_central_Tune4C_13TeV_PU50x25_V5_v2 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "TTWJets_Tune4C_13TeV-madgraph-tauola" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(1.152)
-        weightProducer.NumberEvts = cms.double(246521)
-        print "TTWJets_Tune4C_13TeV-madgraph-tauola : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "T_tW-channel-DR_Tune4C_13TeV-CSA14" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(35.0)
-        weightProducer.NumberEvts = cms.double(986100)
-        print "T_tW-channel-DR_Tune4C_13TeV-CSA14 : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "TTJets_MSDecaysCKM_central_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(806.1)
-        weightProducer.NumberEvts = cms.double(25446993)
-        print "TTJets_MSDecaysCKM_central_Tune4C_13TeV : '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "WJetsToLNu_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(2235.0)
-        weightProducer.NumberEvts = cms.double(5262265)
-        print "WJetsToLNu_HT-100to200_Tune4C_13TeV Phys14DR: '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "WJetsToLNu_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(580.1)
-        weightProducer.NumberEvts = cms.double(4936077)
-        print "WJetsToLNu_HT-200to400_Tune4C_13TeV Phys14DR: '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "WJetsToLNu_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(68.40)
-        weightProducer.NumberEvts = cms.double(4640594)
-        print "WJetsToLNu_HT-400to600_Tune4C_13TeV Phys14DR: '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "WJetsToLNu_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(23.14)
-        weightProducer.NumberEvts = cms.double(4581841)
-        print "WJetsToLNu_HT-600toInf_Tune4C_13TeV Phys14DR: '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "ZJetsToNuNu_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(473.2)
-        weightProducer.NumberEvts = cms.double(4986424)
-        print "ZJetsToNuNu_HT-100to200_Tune4C_13TeV '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-				
-    elif "ZJetsToNuNu_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(128.0)
-        weightProducer.NumberEvts = cms.double(4546470)
-        print "ZJetsToNuNu_HT-200to400_Tune4C_13TeV '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "ZJetsToNuNu_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v2" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(15.23)
-        weightProducer.NumberEvts = cms.double(4433784)
-        #print "ZJetsToNuNu_HT-400to600_Tune4C_13TeV: UPDATE NUMBER OF EVENTS NOT YET AVAILABLE '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-
-    elif "ZJetsToNuNu_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(5.224)
-        weightProducer.NumberEvts = cms.double(4463806)
-        print "ZJetsToNuNu_HT-600toInf_Tune4C_13TeV '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-        
-    elif "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(246.8)
-        weightProducer.NumberEvts = cms.double(4054159)
-        print "DYJetsToLL_M-50_HT-100to200_Tune4C_13TeV '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-        
-    elif "DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(66.34)
-        weightProducer.NumberEvts = cms.double(4666496)
-        print "DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-        
-    elif "DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(8.313)
-        weightProducer.NumberEvts = cms.double(4931372)
-        print "DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
-        
-    elif "DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV" in fileName and "PU20bx25_PHYS14_25_V1-v1" in fileName:
-        mcVersion = "Phys14DR"
-        weightProducer.Method     = cms.string("Constant")
-        weightProducer.XS         = cms.double(2.767)
-        weightProducer.NumberEvts = cms.double(4493574)
-        print "DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV '"+fileName+"'"
-        applyWeight = True
-        weightProducer.weight = cms.double(-1.)
+    # loop over all samples until we find a match
+    for sample in samples:
+        if sample.name in fileName and sample.production in fileName:
+            mcVersion = sample.mcVersion
+            weightProducer.Method     = cms.string(sample.Method)
+            weightProducer.XS         = cms.double(sample.XS)
+            weightProducer.NumberEvts = cms.double(sample.NumberEvts)
+            print sample.name+", "+sample.production+" : '"+fileName+"'"
+            applyWeight = True
+            weightProducer.weight = cms.double(-1.)
+            break
 
     ## --- PU Reweighting and Lumi ------------------------------------------------
 
