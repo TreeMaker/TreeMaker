@@ -76,6 +76,7 @@ applyjec=False,
     VectorDouble         = cms.vstring()
     VectorString         = cms.vstring()
     VectorInt            = cms.vstring()
+    VectorBool           = cms.vstring()
     
     # sequence for baseline producers
     process.Baseline = cms.Sequence()
@@ -92,6 +93,7 @@ applyjec=False,
         VectorDouble         = VectorDouble,
         VectorInt            = VectorInt,
         VectorString         = VectorString,
+        VectorBool           = VectorBool,
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -383,9 +385,10 @@ applyjec=False,
     ## ----------------------------------------------------------------------------------------------
 
     # The trigger results are saved to the tree as a vector
-    # Two vectors are saved:
+    # Three vectors are saved:
     # 1) names of the triggers
     # 2) trigger results
+    # 3) trigger prescales
     # the indexing of these two vectors must match
     # If the version number of the input trigger name is omitted,
     # any matching trigger will be included (default behavior)
@@ -395,6 +398,9 @@ applyjec=False,
         trigTagArg1     = cms.string('TriggerResults'),
         trigTagArg2     = cms.string(''),
         trigTagArg3     = cms.string('HLT'),
+        prescaleTagArg1  = cms.string('patTrigger'),
+        prescaleTagArg2  = cms.string(''),
+        prescaleTagArg3  = cms.string(''),
         triggerNameList = cms.vstring( # list of trigger names
             'HLT_PFHT350_PFMET100_NoiseCleaned_v',
             'HLT_PFMET170_NoiseCleaned_v',
@@ -420,7 +426,8 @@ applyjec=False,
         )
     )
     process.Baseline += process.TriggerProducer
-    VectorInt.extend(['TriggerProducer:PassTrigger'])
+    VectorBool.extend(['TriggerProducer:TriggerPass'])
+    VectorInt.extend(['TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
     ## ----------------------------------------------------------------------------------------------
