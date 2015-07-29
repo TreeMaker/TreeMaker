@@ -204,6 +204,14 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    //Option 3: weighting from lumi, xs, and num evts
    else if (_weightingMethod == "Constant") {
       resultWeight = _weightFactor;
+	  
+      //account for negative weights
+      edm::Handle<GenEventInfoProduct> genEvtInfoHandle;
+      iEvent.getByLabel("generator", genEvtInfoHandle);
+      if (genEvtInfoHandle.isValid()) {
+        double genweight_ = genEvtInfoHandle->weight();
+        if(genweight_ < 0) resultWeight *= -1;
+      }
    } else if (_weightingMethod == "PtHat") {
       // Get pthat
       double ptHat = 0.;
