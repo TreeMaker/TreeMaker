@@ -68,7 +68,9 @@ def doZinvBkg(process,is74X):
        BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
        BTagCutValue = cms.double(0.814)
     )
-    if is74X: process.BTagsclean.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    if is74X:
+        process.BTagsclean.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+        process.BTagsclean.BTagCutValue = cms.double(0.890)
 
     process.ZinvClean += process.BTagsclean
     process.TreeMaker2.VarsInt.extend(['BTagsclean'])
