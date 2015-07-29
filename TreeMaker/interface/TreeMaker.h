@@ -185,7 +185,7 @@ void TreeObject<bool>::AddBranch() { tree->Branch(nameInTree.c_str(),&value,(nam
 template<>
 void TreeObject<int>::AddBranch() { tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/I").c_str()); }
 template<>
-void TreeObject<double>::AddBranch() { tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/F").c_str()); }
+void TreeObject<double>::AddBranch() { tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/D").c_str()); }
 template<>
 void TreeObject<string>::AddBranch() { tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
