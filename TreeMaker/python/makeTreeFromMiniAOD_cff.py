@@ -526,13 +526,28 @@ applyjec=False,
     
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
     process.JetsProperties = jetproperties.clone(
-        JetTag       = cms.InputTag('HTJets'),
+        JetTag       = cms.InputTag('GoodJets'),
         BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
         METTag       = cms.InputTag("slimmedMETs"),
     )
     if is74X: process.JetsProperties.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.Baseline += process.JetsProperties
-    
+    process.TreeMaker2.VectorRecoCand.extend(['GoodJets(Jets)'])
+    process.TreeMaker2.VectorDouble.extend(['JetsProperties:bDiscriminatorUser(Jets_bDiscriminatorCSV)',
+                                            'JetsProperties:bDiscriminatorMVA(Jets_bDiscriminatorMVA)',
+                                            'JetsProperties:chargedEmEnergyFraction(Jets_chargedEmEnergyFraction)',
+                                            'JetsProperties:chargedHadronEnergyFraction(Jets_chargedHadronEnergyFraction)',
+                                            'JetsProperties:jetArea(Jets_jetArea)',
+                                            'JetsProperties:muonEnergyFraction(Jets_muonEnergyFraction)',
+                                            'JetsProperties:neutralEmEnergyFraction(Jets_neutralEmEnergyFraction)',
+                                            'JetsProperties:photonEnergyFraction(Jets_photonEnergyFraction)'])
+    process.TreeMaker2.VectorInt.extend(['JetsProperties:chargedHadronMultiplicity(Jets_chargedHadronMultiplicity)',
+                                         'JetsProperties:electronMultiplicity(Jets_electronMultiplicity)',
+                                         'JetsProperties:muonMultiplicity(Jets_muonMultiplicity)',
+                                         'JetsProperties:neutralHadronMultiplicity(Jets_neutralHadronMultiplicity)',
+                                         'JetsProperties:photonMultiplicity(Jets_photonMultiplicity)',
+                                         'JetsProperties:flavor(Jets_flavor)'])
+
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Optional producers (background estimations, control regions)
