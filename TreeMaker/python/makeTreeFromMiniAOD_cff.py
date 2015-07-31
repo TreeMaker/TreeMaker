@@ -423,6 +423,11 @@ applyjec=False,
             'HLT_Ele27_eta2p1_WP85_Gsf_v',
             'HLT_IsoMu20_eta2p1_IterTrk02_v',
             'HLT_DoubleMu8_Mass8_PFHT300_v',
+	    'HLT_Ele27_WP85_Gsf_v',
+	    'HLT_IsoMu20_eta2p1_v',
+	    'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v',
+	    'HLT_DoubleMu18NoFiltersNoVtx_v',
+	    'HLT_Mu20_v',
         )
     )
     process.Baseline += process.TriggerProducer
