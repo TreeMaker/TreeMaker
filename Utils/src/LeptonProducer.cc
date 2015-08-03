@@ -308,7 +308,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 								
 								if(aEle.isEB())
 								{
-									if(sieie< 0.011100 && fabs(dEtaIn)< 0.016315  && fabs(dPhiIn)< 0.252044 && hoe<0.345843 &&  ooemoop< 0.248070 && fabs(d0vtx)< 0.060279 && fabs(dzvtx)< 0.800538 && mhits<=2 && convVeto)
+									if(sieie< 0.011586 && fabs(dEtaIn)< 0.013625 && fabs(dPhiIn)< 0.230374 && hoe< 0.181130 && ooemoop< 0.295751 && fabs(d0vtx)< 0.094095 && fabs(dzvtx)< 0.713070 && mhits<=2 && convVeto)
 									{
 										// id passed
 										idElectrons_.push_back(eleHandle->at(e));
@@ -322,7 +322,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 											ElectronCharge->push_back(eleHandle->at(e).charge());
 											
 										}
-										if (absiso<0.164369 && !useMiniIsolation_)
+										if (absiso<0.158721 && !useMiniIsolation_)
 										{
 											// iso passed
 											isoElectrons_.push_back(eleHandle->at(e));
@@ -333,7 +333,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 									}
 								}
 								else{
-									if(sieie<  0.033987  && fabs(dEtaIn)<  0.010671   && fabs(dPhiIn)<  0.245263  && hoe< 0.134691  && ooemoop<  0.157160  && fabs(d0vtx)<  0.273097  && fabs(dzvtx)<  0.885860  && mhits<=3 && convVeto)
+									if(sieie< 0.031849 && fabs(dEtaIn)< 0.011932 && fabs(dPhiIn)< 0.255450 && hoe< 0.223870 && ooemoop< 0.155501 && fabs(d0vtx)< 0.342293 && fabs(dzvtx)< 0.953461 && mhits<=3 && convVeto)
 									{
 										// id passed
 										idElectrons_.push_back(eleHandle->at(e));
@@ -347,7 +347,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 											ElectronCharge->push_back(eleHandle->at(e).charge());
 											
 										}
-										if (absiso<0.212604  && !useMiniIsolation_)
+										if (absiso<0.177032  && !useMiniIsolation_)
 										{
 											// iso passed
 											isoElectrons_.push_back(eleHandle->at(e));
