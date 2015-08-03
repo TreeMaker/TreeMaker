@@ -1034,7 +1034,9 @@ jsonfile=""
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     BTagCutValue					= cms.double(0.814)
     )
-    if is74X: process.BTags.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    if is74X:
+        process.BTags.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+        process.BTags.BTagCutValue = cms.double(0.890)
     process.Baseline += process.BTags
     VarsInt.extend(['BTags'])
     from AllHadronicSUSY.Utils.subJetSelection_cfi import SubJetSelection
@@ -1233,7 +1235,9 @@ jsonfile=""
            BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
            BTagCutValue = cms.double(0.814)
         )
-        if is74X: process.BTagsclean.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+        if is74X:
+            process.BTags.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+            process.BTags.BTagCutValue = cms.double(0.890)
 
         process.ZinvClean += process.BTagsclean
         VarsInt.extend(['BTagsclean'])
