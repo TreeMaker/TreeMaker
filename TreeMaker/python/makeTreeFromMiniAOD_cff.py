@@ -389,7 +389,7 @@ applyjec=False,
     # 1) names of the triggers
     # 2) trigger results
     # 3) trigger prescales
-    # the indexing of these two vectors must match
+    # the indexing of these vectors must match
     # If the version number of the input trigger name is omitted,
     # any matching trigger will be included (default behavior)
 
@@ -423,11 +423,13 @@ applyjec=False,
             'HLT_Ele27_eta2p1_WP85_Gsf_v',
             'HLT_IsoMu20_eta2p1_IterTrk02_v',
             'HLT_DoubleMu8_Mass8_PFHT300_v',
-	    'HLT_Ele27_WP85_Gsf_v',
-	    'HLT_IsoMu20_eta2p1_v',
-	    'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v',
-	    'HLT_DoubleMu18NoFiltersNoVtx_v',
-	    'HLT_Mu20_v',
+            'HLT_Ele27_WP85_Gsf_v',
+            'HLT_IsoMu20_eta2p1_v',
+            'HLT_Ele17_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v',
+            'HLT_DoubleMu18NoFiltersNoVtx_v',
+            'HLT_Mu20_v',
+            'HLT_QuadJet45_TripleCSV0p5_v',
+            'HLT_DoubleJet90_Double30_TripleCSV0p5_v',
         )
     )
     process.Baseline += process.TriggerProducer
