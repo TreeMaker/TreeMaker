@@ -18,10 +18,12 @@ doZinv=False,
 debugtracks=False,
 geninfo=True,
 tagname="PAT",
-jsonfile=""
+jsonfile="",
+jecfile="",
+residual=False,
 ):
 
-    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
     process.GlobalTag.globaltag = Global_Tag
     
     #CMSSW version sniffing
@@ -100,7 +102,6 @@ jsonfile=""
     process.WeightProducer.Lumi                       = cms.double(4000)
     process.WeightProducer.PU                         = cms.int32(0) # PU S10 3 for S10 2 for S7
     process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
-    print process.WeightProducer.PU
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
     from AllHadronicSUSY.Utils.primaryvertices_cfi import primaryvertices
@@ -247,56 +248,59 @@ jsonfile=""
     ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
     #################################
 
-    ####### good jets -- the start of everything   
-    JECPatch = cms.string('sqlite_file:PHYS14_V4_MC.db')
-    #if gridcontrol: 
-    if os.getenv('GC_CONF'): 
-      JECPatch = cms.string('sqlite_file:../src/PHYS14_V4_MC.db')
-
-    ####### JECs
-    # get the JECs
+    ## ----------------------------------------------------------------------------------------------
+    ## JECs
+    ## ----------------------------------------------------------------------------------------------
+    
+    # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
-######
-    #from CondCore.DBCommon.CondDBSetup_cfi import *
-    #process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-                               ##connect = cms.string('sqlite_file:../src/PHYS14_V4_MC.db'),
-                               #connect = JECPatch,
-                               ##connect = cms.string('AllHadronicSUSY/TreeMaker/test/PHYS14_V4_MC.db'),
-                               #toGet = cms.VPSet(
-            #cms.PSet(record = cms.string("JetCorrectionsRecord"),
-                     #tag = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
-                     #label= cms.untracked.string("AK4PFchs")
-                     #)
-            #)
-                               #)
-    #process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
-    
-    #from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-    #process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-        #src = cms.InputTag("slimmedJets"),
-        #levels = ['L1FastJet', 
-                  #'L2Relative', 
-                  #'L3Absolute'],
-        #payload = 'AK4PFchs' ) # Make sure to choose the appropriate levels and payload here!
-    
-    #from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-    #process.patJetsReapplyJEC = patJetsUpdated.clone(
-        #jetSource = cms.InputTag("slimmedJets"),
-        #jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-        #)
-########
+    JetTag = cms.InputTag('slimmedJets')
+    if len(jecfile)>0:
+        JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
+        if os.getenv('GC_CONF'): 
+            JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
 
-    ###### THIS IS JUST TEMPORARY, THESE SHOULD BE INCLUDED!!!!
-    #process.Baseline += process.patJetCorrFactorsReapplyJEC
-    #process.Baseline += process.patJetsReapplyJEC
+        process.load("CondCore.DBCommon.CondDBCommon_cfi")
+        from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
+        process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+            connect = JECPatch,
+            toGet   = cms.VPSet(
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PFchs"),
+                    label  = cms.untracked.string("AK4PFchs")
+                )
+            )
+        )
+        process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
+        
+        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+        process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+            src     = cms.InputTag("slimmedJets"),
+            levels  = ['L1FastJet',
+                      'L2Relative',
+                      'L3Absolute'],
+            payload = 'AK4PFchs' # Make sure to choose the appropriate levels and payload here!
+        )
+        if residual: process.patJetCorrFactorsReapplyJEC.levels.append('L2L3Residual')
+        
+        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+        process.patJetsReapplyJEC = patJetsUpdated.clone(
+            jetSource = cms.InputTag("slimmedJets"),
+            jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        )
+        
+        process.Baseline += process.patJetCorrFactorsReapplyJEC
+        process.Baseline += process.patJetsReapplyJEC
+        
+        JetTag = cms.InputTag('patJetsReapplyJEC')
 
     ############
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
       TagMode = cms.bool(True),
-      JetTag= cms.InputTag('slimmedJets'),
-      #JetTag= cms.InputTag('patJetsReapplyJEC'),
+      JetTag = JetTag,
       maxJetEta = cms.double(5.0),
       maxMuFraction = cms.double(2),
       minNConstituents = cms.double(2),
@@ -490,7 +494,7 @@ jsonfile=""
         # this save the jets without considering jet Id. But, also saves jetId in a vector.
 
         process.JetsForHadTau = JetsForHadTauProducer.clone(
-            JetTag= cms.InputTag('slimmedJets'),
+            JetTag= JetTag,
             reclusJetTag= cms.InputTag('patJetsAK4PFCHS'),
             maxJetEta = cms.double(5.0), 
             maxMuFraction = cms.double(2), 
@@ -1076,7 +1080,7 @@ jsonfile=""
     #lost-lepton producers
     from AllHadronicSUSY.Utils.jetproperties_cfi import jetproperties
     process.JetsProperties = jetproperties.clone(
-    JetTag  = cms.InputTag('HTJets'),
+    JetTag  = cms.InputTag('GoodJets'),
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
     METTag  = cms.InputTag("slimmedMETs"),
     )
@@ -1121,6 +1125,8 @@ jsonfile=""
       RecoCandVector.extend(['JetsProperties(Jets)|JetsProperties:bDiscriminatorUser(F_bDiscriminator)|JetsProperties:chargedEmEnergyFraction(F_chargedEmEnergyFraction)|JetsProperties:chargedHadronEnergyFraction(F_chargedHadronEnergyFraction)|JetsProperties:chargedHadronMultiplicity(I_chargedHadronMultiplicity)|JetsProperties:electronMultiplicity(I_electronMultiplicity)|JetsProperties:jetArea(F_jetArea)|JetsProperties:muonEnergyFraction(F_muonEnergyFraction)|JetsProperties:muonMultiplicity(I_muonMultiplicity)|JetsProperties:neutralEmEnergyFraction(F_neutralEmEnergyFraction)|JetsProperties:neutralHadronMultiplicity(I_neutralHadronMultiplicity)|JetsProperties:photonEnergyFraction(F_photonEnergyFraction)|JetsProperties:photonMultiplicity(I)'] ) # jet information on various variables
       RecoCandVector.extend(['slimmedElectrons','slimmedMuons'])
       RecoCandVector.extend(['SelectedPFElecCandidates','SelectedPFMuCandidates','SelectedPFPionCandidates'])
+    else:
+      RecoCandVector.extend(['JetsProperties(Jets)'])
 
     if hadtau: 
         process.AdditionalSequence += process.JetsForHadTau
