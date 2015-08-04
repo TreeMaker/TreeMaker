@@ -318,6 +318,9 @@ residual=False,
       IsoMuonTrackTag = cms.InputTag('IsolatedMuonTracksVeto'),
       IsoPionTrackTag = cms.InputTag('IsolatedPionTracksVeto'),
       PhotonTag = cms.InputTag('goodPhotons','bestPhoton'),
+      ### TEMPORARY ###
+      VetoHF = cms.bool(True),
+      VetoEta = cms.double(3.0)
       )
     process.Baseline += process.GoodJets
     VarsBool.extend(['GoodJets(JetID)'])

@@ -68,6 +68,8 @@ private:
    bool ExcludeLeptonIsoTrackPhotons_, TagMode_;
    double JetConeSize_;
    double deltaR(double eta1, double phi1, double eta2, double phi2);
+   bool VetoHF_;
+   double VetoEta_;
    
    // ----------member data ---------------------------
 };
@@ -108,6 +110,8 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    IsoPionTrackTag_ = iConfig.getParameter<edm::InputTag>("IsoPionTrackTag");
    PhotonTag_ = iConfig.getParameter<edm::InputTag>("PhotonTag");
    JetConeSize_ = iConfig.getParameter <double> ("JetConeSize");
+   VetoHF_ = iConfig.getParameter<bool>("VetoHF");
+   VetoEta_ = iConfig.getParameter<double>("VetoEta");
 }
 
 
@@ -202,6 +206,16 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
                continue;
             }
          }
+		 
+         //veto HF jets if enabled, still apply jet ID to non-vetoed jets
+         if(VetoHF_){
+            if(std::abs(Jets->at(i).eta()) >= VetoEta_){
+                if(!TagMode_)return false;
+                result=false;
+                continue;
+            }
+         }
+		 
          if (std::abs(Jets->at(i).eta()) < 2.4){
             int chgmulti=Jets->at(i).chargedHadronMultiplicity();
             if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_) {
