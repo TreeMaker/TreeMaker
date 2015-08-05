@@ -68,6 +68,8 @@ private:
    bool ExcludeLeptonIsoTrackPhotons_, TagMode_;
    double JetConeSize_;
    double deltaR(double eta1, double phi1, double eta2, double phi2);
+   bool VetoHF_;
+   double VetoEta_;
    
    // ----------member data ---------------------------
 };
@@ -100,6 +102,7 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    jetPtFilter_ = iConfig.getParameter <double> ("jetPtFilter");
    produces<std::vector<Jet> >();
    produces<bool>();
+   produces<bool>("PassHFVeto");
    ExcludeLeptonIsoTrackPhotons_ = iConfig.getParameter <bool> ("ExcludeLepIsoTrackPhotons");
    MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
    ElecTag_ = iConfig.getParameter<edm::InputTag>("ElecTag");
@@ -108,6 +111,8 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    IsoPionTrackTag_ = iConfig.getParameter<edm::InputTag>("IsoPionTrackTag");
    PhotonTag_ = iConfig.getParameter<edm::InputTag>("PhotonTag");
    JetConeSize_ = iConfig.getParameter <double> ("JetConeSize");
+   VetoHF_ = iConfig.getParameter<bool>("VetoHF");
+   VetoEta_ = iConfig.getParameter<double>("VetoEta");
 }
 
 
@@ -156,6 +161,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
    bool result=true;
+   bool passHF=true;
    edm::Handle< edm::View<Jet> > Jets;
    iEvent.getByLabel(JetTag_,Jets);
    if(Jets.isValid())
@@ -202,6 +208,10 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
                continue;
             }
          }
+		 
+         //veto HF jets if enabled, still apply jet ID to all jets
+         if(VetoHF_ && std::abs(Jets->at(i).eta()) >= VetoEta_) passHF = false;
+		 
          if (std::abs(Jets->at(i).eta()) < 2.4){
             int chgmulti=Jets->at(i).chargedHadronMultiplicity();
             if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_) {
@@ -231,6 +241,8 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(prodJets );
    std::auto_ptr<bool> passing(new bool(result));
    iEvent.put(passing);
+   std::auto_ptr<bool> passingHF(new bool(passHF));
+   iEvent.put(passingHF,"PassHFVeto");
    return true;
    
 }
