@@ -324,6 +324,7 @@ residual=False,
       )
     process.Baseline += process.GoodJets
     VarsBool.extend(['GoodJets(JetID)'])
+    VarsBool.extend(['GoodJets:PassHFVeto'])
     #### done with good jets
     ###########################################
 
@@ -1050,7 +1051,7 @@ residual=False,
     process.MHTJets = SubJetSelection.clone(
     JetTag  = cms.InputTag('GoodJets'),
     MinPt								  = cms.double(30),
-    MaxEta								  = cms.double(5.0),
+    MaxEta								  = cms.double(3.0), ### TEMPORARY
     )
     process.Baseline += process.MHTJets
     from AllHadronicSUSY.Utils.mhtdouble_cfi import mhtdouble
@@ -1255,7 +1256,7 @@ residual=False,
         process.MHTJetsclean = SubJetSelection.clone(
            JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
            MinPt = cms.double(30),
-           MaxEta = cms.double(5.0),
+           MaxEta = cms.double(3.0), ### TEMPORARY
         )
         process.ZinvClean += process.MHTJetsclean
 
