@@ -98,7 +98,7 @@ residual=False,
     # basic producers
     ## --- Setup WeightProducer -------------------------------------------
     from AllHadronicSUSY.WeightProducer.getWeightProducer_cff import getWeightProducer
-    process.WeightProducer = getWeightProducer(testFileName)
+    process.WeightProducer = getWeightProducer(process.source.fileNames[0])
     process.WeightProducer.Lumi                       = cms.double(4000)
     process.WeightProducer.PU                         = cms.int32(0) # PU S10 3 for S10 2 for S7
     process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
