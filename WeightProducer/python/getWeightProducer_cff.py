@@ -103,6 +103,10 @@ def getWeightProducer(fileName):
         MCSample("DYJetsToLL_M-50_HT-200to400_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 66.34, 4666496),
         MCSample("DYJetsToLL_M-50_HT-400to600_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 8.313, 4931372),
         MCSample("DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 2.767, 4493574),
+        MCSample("GJets_HT-100to200_Tune4C_13TeV-madgraph-tauola", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 1534, 4734234),
+        MCSample("GJets_HT-200to400_Tune4C_13TeV-madgraph-tauola", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 489.9, 4533420),
+        MCSample("GJets_HT-400to600_Tune4C_13TeV-madgraph-tauola", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 62.05, 4560801),
+        MCSample("GJets_HT-600toInf_Tune4C_13TeV-madgraph-tauola", "PU20bx25_PHYS14_25_V1-v1", "Phys14DR", "Constant", 20.87, 4341179),        
         # 13 TeV miniAOD samples - Spring15
         # backgrounds
         # NB: amcatnlo samples have negative weight events, so NumberEvts = # positive - # negative
@@ -133,6 +137,17 @@ def getWeightProducer(fileName):
         MCSample("QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.114943, 193608),
         MCSample("QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.00682981, 194456),
         MCSample("QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.000165445, 192944),
+        MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 246.8, 2625679),
+        MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 66.34, 955972),
+        MCSample("DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 8.313, 1048047),
+        MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 2.767, 987977),
+        MCSample("ZJetsToNuNu_HT-200To400_13TeV-madgraph", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 128.0, 5032927),
+        MCSample("ZJetsToNuNu_HT-400To600_13TeV-madgraph", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 15.23, 1014139),
+        MCSample("ZJetsToNuNu_HT-600ToInf_13TeV-madgraph", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 5.224, 1015904),
+        MCSample("GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 1534, 5026005),
+        MCSample("GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 489.9, 10328623),
+        MCSample("GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 62.05, 2476770),
+        MCSample("GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 20.87, 2550765),
     ]
     
     # loop over all samples until we find a match
