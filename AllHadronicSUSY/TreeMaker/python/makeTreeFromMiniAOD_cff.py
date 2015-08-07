@@ -150,6 +150,11 @@ residual=False,
                     record = cms.string("JetCorrectionsRecord"),
                     tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PFchs"),
                     label  = cms.untracked.string("AK4PFchs")
+                ),
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PF"),
+                    label  = cms.untracked.string("AK4PF")
                 )
             )
         )
