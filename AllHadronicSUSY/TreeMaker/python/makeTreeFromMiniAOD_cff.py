@@ -45,6 +45,7 @@ residual=False,
     process.load("FWCore.MessageService.MessageLogger_cfi")
     process.MessageLogger.cerr.FwkReport.reportEvery = reportEveryEvt
     process.options = cms.untracked.PSet(
+        allowUnscheduled = cms.untracked.bool(True),
         wantSummary = cms.untracked.bool(True)
         )
 
@@ -135,7 +136,6 @@ residual=False,
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
     JetTag = cms.InputTag('slimmedJets')
-    METTag = cms.InputTag('slimmedMETs')
     if len(jecfile)>0:
         JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
         if os.getenv('GC_CONF'): 
@@ -181,7 +181,31 @@ residual=False,
         
         JetTag = cms.InputTag('patJetsReapplyJEC')
         
-    ## MET recipe goes here...
+    ## MET recipe goes here... only works in 74X or above
+    ## ref: https://github.com/cms-met/cmssw/blob/METCorUnc74X/PhysicsTools/PatAlgos/test/corMETFromMiniAOD.py
+    METTag = cms.InputTag('slimmedMETs')
+    if is74X:
+        # use only PF cands with |eta|<3 (no HF)
+        process.noHFCands = cms.EDFilter("CandPtrSelector",
+                                         src=cms.InputTag("packedPFCandidates"),
+                                         cut=cms.string("abs(pdgId)!=1 && abs(pdgId)!=2 && abs(eta)<3.0")
+                                         )
+        from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+        runMetCorAndUncFromMiniAOD(process,
+                           isData=not geninfo, # controls gen met
+                           pfCandColl=cms.InputTag("noHFCands"),
+                           postfix="NoHF"
+                           )
+        if not residual: #skip residuals for data if not used
+            process.patPFMetT1T2CorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT1T2SmearCorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT2CorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT2SmearCorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.shiftedPatJetEnDownNoHF.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+            process.shiftedPatJetEnUpNoHF.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+            
+        METTag = cms.InputTag('slimmedMETsNoHF')
+    
         
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
