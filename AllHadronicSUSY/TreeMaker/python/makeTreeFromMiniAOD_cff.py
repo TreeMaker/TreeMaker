@@ -254,13 +254,14 @@ residual=False,
     VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronTracks)'])
     VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
     VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
+    # used as a MET filter
+    VarsBool.extend(['IsolatedPionTracksVeto:GoodVtx(GoodVtx)']) 
 
     #NB: this increases the runtime and size of ntuples by 10x
     #do not turn on unless you really want to save all the isotrack quantities!!!
     if debugtracks:
         #just store the full set of isotrack quantities once
         process.IsolatedPionTracksVeto.debug = cms.bool(True)
-        VarsBool.extend(['IsolatedPionTracksVeto:GoodVtx(GoodVtx)'])
         VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(pfcands)'])
         VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(pfcands_trkiso)'])
         VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(pfcands_dzpv)'])
@@ -387,14 +388,19 @@ residual=False,
     process.Baseline += process.CSCTightHaloFilter
     VarsInt.extend(['CSCTightHaloFilter'])
 
-    process.HBHENoiseFilter = filterDecisionProducer.clone(
-        trigTagArg1  = cms.string('TriggerResults'),
-        trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(tagname),
-        filterName  =   cms.string("Flag_HBHENoiseFilter"),
-        )
-    process.Baseline += process.HBHENoiseFilter
-    VarsInt.extend(['HBHENoiseFilter'])
+    #process.HBHENoiseFilter = filterDecisionProducer.clone(
+    #    trigTagArg1  = cms.string('TriggerResults'),
+    #    trigTagArg2  = cms.string(''),
+    #    trigTagArg3  = cms.string(tagname),
+    #    filterName  =   cms.string("Flag_HBHENoiseFilter"),
+    #    )
+    #process.Baseline += process.HBHENoiseFilter
+    #VarsInt.extend(['HBHENoiseFilter'])
+    
+    #rerun HBHE noise filter manually
+    process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+    process.Baseline += process.HBHENoiseFilterResultProducer
+    VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
 
     process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
@@ -404,6 +410,15 @@ residual=False,
         )
     process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
     VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+    
+    process.eeBadScFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string(tagname),
+        filterName  =   cms.string("Flag_eeBadScFilter"),
+        )
+    process.Baseline += process.eeBadScFilter
+    VarsInt.extend(['eeBadScFilter'])
 
     # The trigger results are saved to the tree as a vector
     # Two vectors are saved, one with the names of the triggers
