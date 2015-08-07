@@ -45,6 +45,7 @@ residual=False,
     process.load("FWCore.MessageService.MessageLogger_cfi")
     process.MessageLogger.cerr.FwkReport.reportEvery = reportEveryEvt
     process.options = cms.untracked.PSet(
+        allowUnscheduled = cms.untracked.bool(True),
         wantSummary = cms.untracked.bool(True)
         )
 
@@ -127,6 +128,85 @@ residual=False,
     
         process.Baseline += process.genParticles
 
+    ## ----------------------------------------------------------------------------------------------
+    ## JECs
+    ## ----------------------------------------------------------------------------------------------
+    
+    # get the JECs (disabled by default)
+    # this requires the user to download the .db file from this twiki
+    # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
+    JetTag = cms.InputTag('slimmedJets')
+    if len(jecfile)>0:
+        JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
+        if os.getenv('GC_CONF'): 
+            JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
+
+        process.load("CondCore.DBCommon.CondDBCommon_cfi")
+        from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
+        process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+            connect = JECPatch,
+            toGet   = cms.VPSet(
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PFchs"),
+                    label  = cms.untracked.string("AK4PFchs")
+                ),
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PF"),
+                    label  = cms.untracked.string("AK4PF")
+                )
+            )
+        )
+        process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
+        
+        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+        process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+            src     = cms.InputTag("slimmedJets"),
+            levels  = ['L1FastJet',
+                      'L2Relative',
+                      'L3Absolute'],
+            payload = 'AK4PFchs' # Make sure to choose the appropriate levels and payload here!
+        )
+        if residual: process.patJetCorrFactorsReapplyJEC.levels.append('L2L3Residual')
+        
+        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+        process.patJetsReapplyJEC = patJetsUpdated.clone(
+            jetSource = cms.InputTag("slimmedJets"),
+            jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        )
+        
+        process.Baseline += process.patJetCorrFactorsReapplyJEC
+        process.Baseline += process.patJetsReapplyJEC
+        
+        JetTag = cms.InputTag('patJetsReapplyJEC')
+        
+    ## MET recipe goes here... only works in 74X or above
+    ## ref: https://github.com/cms-met/cmssw/blob/METCorUnc74X/PhysicsTools/PatAlgos/test/corMETFromMiniAOD.py
+    METTag = cms.InputTag('slimmedMETs')
+    if is74X:
+        # use only PF cands with |eta|<3 (no HF)
+        process.noHFCands = cms.EDFilter("CandPtrSelector",
+                                         src=cms.InputTag("packedPFCandidates"),
+                                         cut=cms.string("abs(pdgId)!=1 && abs(pdgId)!=2 && abs(eta)<3.0")
+                                         )
+        from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+        runMetCorAndUncFromMiniAOD(process,
+                           isData=not geninfo, # controls gen met
+                           pfCandColl=cms.InputTag("noHFCands"),
+                           postfix="NoHF"
+                           )
+        if not residual: #skip residuals for data if not used
+            process.patPFMetT1T2CorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT1T2SmearCorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT2CorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT2SmearCorrNoHF.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.shiftedPatJetEnDownNoHF.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+            process.shiftedPatJetEnUpNoHF.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+            
+        METTag = cms.InputTag('slimmedMETsNoHF')
+    
+        
     ## isotrack producer
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationFilter
     from AllHadronicSUSY.Utils.trackIsolationMaker_cfi import trackIsolationCounter
@@ -174,13 +254,14 @@ residual=False,
     VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronTracks)'])
     VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
     VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
+    # used as a MET filter
+    VarsBool.extend(['IsolatedPionTracksVeto:GoodVtx(GoodVtx)']) 
 
     #NB: this increases the runtime and size of ntuples by 10x
     #do not turn on unless you really want to save all the isotrack quantities!!!
     if debugtracks:
         #just store the full set of isotrack quantities once
         process.IsolatedPionTracksVeto.debug = cms.bool(True)
-        VarsBool.extend(['IsolatedPionTracksVeto:GoodVtx(GoodVtx)'])
         VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(pfcands)'])
         VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(pfcands_trkiso)'])
         VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(pfcands_dzpv)'])
@@ -203,7 +284,7 @@ residual=False,
       UseMiniIsolation = cms.bool(True),
       muIsoValue								  = cms.double(0.2),
       elecIsoValue								  = cms.double(0.1), # only has an effect when used with miniIsolation
-      METTag = cms.InputTag('slimmedMETs'), 
+      METTag = METTag, 
       )
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
@@ -218,7 +299,7 @@ residual=False,
       muIsoValue								  = cms.double(0.2),
       elecIsoValue								  = cms.double(0.1), # only has an effect when used with miniIsolation
       UseMiniIsolation = cms.bool(True),
-      METTag = cms.InputTag('slimmedMETs'), 
+      METTag = METTag, 
       )
     process.Baseline += process.LeptonsNewTag
     VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
@@ -248,54 +329,6 @@ residual=False,
     ######  done with photons -- good photon tag is InputTag('goodPhotons','bestPhoton')
     #################################
 
-    ## ----------------------------------------------------------------------------------------------
-    ## JECs
-    ## ----------------------------------------------------------------------------------------------
-    
-    # get the JECs (disabled by default)
-    # this requires the user to download the .db file from this twiki
-    # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
-    JetTag = cms.InputTag('slimmedJets')
-    if len(jecfile)>0:
-        JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
-        if os.getenv('GC_CONF'): 
-            JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
-
-        process.load("CondCore.DBCommon.CondDBCommon_cfi")
-        from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
-        process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-            connect = JECPatch,
-            toGet   = cms.VPSet(
-                cms.PSet(
-                    record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PFchs"),
-                    label  = cms.untracked.string("AK4PFchs")
-                )
-            )
-        )
-        process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
-        
-        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-        process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-            src     = cms.InputTag("slimmedJets"),
-            levels  = ['L1FastJet',
-                      'L2Relative',
-                      'L3Absolute'],
-            payload = 'AK4PFchs' # Make sure to choose the appropriate levels and payload here!
-        )
-        if residual: process.patJetCorrFactorsReapplyJEC.levels.append('L2L3Residual')
-        
-        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-        process.patJetsReapplyJEC = patJetsUpdated.clone(
-            jetSource = cms.InputTag("slimmedJets"),
-            jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-        )
-        
-        process.Baseline += process.patJetCorrFactorsReapplyJEC
-        process.Baseline += process.patJetsReapplyJEC
-        
-        JetTag = cms.InputTag('patJetsReapplyJEC')
-
     ############
     from AllHadronicSUSY.Utils.goodjetsproducer_cfi import GoodJetsProducer
     process.GoodJets = GoodJetsProducer.clone(
@@ -311,7 +344,7 @@ residual=False,
       maxChargedEMFraction = cms.double(0.99),
       jetPtFilter = cms.double(30),
       ExcludeLepIsoTrackPhotons = cms.bool(True),
-      JetConeSize = cms.double(0.04),
+      JetConeSize = cms.double(0.4),
       MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'),
       ElecTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
       IsoElectronTrackTag = cms.InputTag('IsolatedElectronTracksVeto'),
@@ -340,7 +373,7 @@ residual=False,
     process.METFilters = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(''),
+        trigTagArg3  = cms.string(tagname),
         filterName  =   cms.string("Flag_METFilters"),
         )
     process.Baseline += process.METFilters
@@ -349,29 +382,43 @@ residual=False,
     process.CSCTightHaloFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(''),
+        trigTagArg3  = cms.string(tagname),
         filterName  =   cms.string("Flag_CSCTightHaloFilter"),
         )
     process.Baseline += process.CSCTightHaloFilter
     VarsInt.extend(['CSCTightHaloFilter'])
 
-    process.HBHENoiseFilter = filterDecisionProducer.clone(
-        trigTagArg1  = cms.string('TriggerResults'),
-        trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(''),
-        filterName  =   cms.string("Flag_HBHENoiseFilter"),
-        )
-    process.Baseline += process.HBHENoiseFilter
-    VarsInt.extend(['HBHENoiseFilter'])
+    #process.HBHENoiseFilter = filterDecisionProducer.clone(
+    #    trigTagArg1  = cms.string('TriggerResults'),
+    #    trigTagArg2  = cms.string(''),
+    #    trigTagArg3  = cms.string(tagname),
+    #    filterName  =   cms.string("Flag_HBHENoiseFilter"),
+    #    )
+    #process.Baseline += process.HBHENoiseFilter
+    #VarsInt.extend(['HBHENoiseFilter'])
+    
+    #rerun HBHE noise filter manually
+    process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+    process.Baseline += process.HBHENoiseFilterResultProducer
+    VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
 
     process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
         trigTagArg1  = cms.string('TriggerResults'),
         trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(''),
+        trigTagArg3  = cms.string(tagname),
         filterName  =   cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
     process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
     VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+    
+    process.eeBadScFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string(tagname),
+        filterName  =   cms.string("Flag_eeBadScFilter"),
+        )
+    process.Baseline += process.eeBadScFilter
+    VarsInt.extend(['eeBadScFilter'])
 
     # The trigger results are saved to the tree as a vector
     # Two vectors are saved, one with the names of the triggers
@@ -825,7 +872,7 @@ residual=False,
     maxDeltaR = cms.double(1.0),
     jetSrc = cms.InputTag('HTJets'),
     TagObjectForMTWComputation = cms.InputTag('LeptonsNewTag:IdIsoMuon'),
-    METTag = cms.InputTag('slimmedMETs'), 
+    METTag = METTag, 
     )
     process.tpPairsIsoTrackMu = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("LeptonsNewTag:IdIsoMuon@+ SelectedPFMuCandidates@-"), # charge coniugate states are implied
@@ -893,7 +940,7 @@ residual=False,
     maxDeltaR = cms.double(1.0),
     jetSrc = cms.InputTag('HTJets'),
     TagObjectForMTWComputation = cms.InputTag('LeptonsNewTag:IdIsoElectron'),
-    METTag = cms.InputTag('slimmedMETs'), 
+    METTag = METTag, 
     )
     process.tpPairsIsoTrackElec = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("LeptonsNewTag:IdIsoElectron@+ SelectedPFElecCandidates@-"), # charge coniugate states are implied
@@ -961,7 +1008,7 @@ residual=False,
     maxDeltaR = cms.double(1.0),
     jetSrc = cms.InputTag('HTJets'),
     TagObjectForMTWComputation = cms.InputTag('IsolatedPionTracksVeto'),
-    METTag = cms.InputTag('slimmedMETs'), 
+    METTag = METTag, 
     )
     process.tpPairsIsoTrackPion = cms.EDProducer("CandViewShallowCloneCombiner",
     decay = cms.string("IsolatedPionTracksVeto@+ SelectedPFPionCandidates@-"), # charge coniugate states are implied
@@ -1082,7 +1129,7 @@ residual=False,
     VarsDouble.extend(['DeltaPhi:DeltaPhi1','DeltaPhi:DeltaPhi2','DeltaPhi:DeltaPhi3'])
     from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
     process.MET = metdouble.clone(
-    METTag  = cms.InputTag("slimmedMETs"),
+    METTag  = METTag,
     JetTag  = cms.InputTag('HTJets'),
     )
     process.Baseline += process.MET
@@ -1092,7 +1139,7 @@ residual=False,
     process.JetsProperties = jetproperties.clone(
     JetTag  = cms.InputTag('GoodJets'),
     BTagInputTag	        = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
-    METTag  = cms.InputTag("slimmedMETs"),
+    METTag  = METTag,
     )
     if is74X: process.JetsProperties.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.Baseline += process.JetsProperties
@@ -1283,7 +1330,7 @@ residual=False,
 
         from AllHadronicSUSY.Utils.metdouble_cfi import metdouble
         process.METclean = metdouble.clone(
-           METTag = cms.InputTag("slimmedMETs"),
+           METTag = METTag,
            JetTag = cms.InputTag('HTJetsclean'),
            cleanTag = cms.untracked.VInputTag(cms.InputTag('LeptonsNew:IdIsoElectron'), cms.InputTag('LeptonsNew:IdIsoMuon'), cms.InputTag('goodPhotons', 'bestPhoton'))
         )
