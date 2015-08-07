@@ -447,6 +447,10 @@ residual=False,
             'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v',
             'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v',
             'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v',
+            'HLT_Mu45_eta2p1_v',
+            'HLT_Mu50_eta2p1_v',
+            'HLT_Mu50_v',
+            'HLT_Mu55_v',            
 	    'HLT_Photon75_v',
             'HLT_Photon90_v',
             'HLT_Photon90_CaloIdL_PFHT500_v',
@@ -484,6 +488,8 @@ residual=False,
             process.ak4GenJets = process.ak4GenJets.clone(src = 'packedGenParticles', rParam = 0.4)
 
         from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
+        jetCorrectionLevels = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'Type-2')
+        if residual: jetCorrectionLevels = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual'], 'Type-2')
         if is74X:
             addJetCollection(
                 process,
@@ -495,7 +501,7 @@ residual=False,
                 svSource = cms.InputTag('slimmedSecondaryVertices'),       # 74x
                 muSource = cms.InputTag('slimmedMuons'),
                 elSource = cms.InputTag('slimmedElectrons'),
-                jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'Type-2'),
+                jetCorrections = jetCorrectionLevels, # ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'Type-2'),
                 #   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'None'),
                 btagDiscriminators = [ 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ],  # 74x
                 genJetCollection = cms.InputTag('ak4GenJets'),
