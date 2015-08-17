@@ -133,7 +133,7 @@ PrimaryVerticesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    if(checkFake_ && vitr->isFake())          continue;
 	    if(vitr->ndof() <= maxNdof_)              continue;
 	    if(fabs(vitr->z()) > maxZ_)               continue;
-	    if(fabs(vitr->position().Rho())>=maxRho_) continue;
+	    if(fabs(vitr->position().Rho())>maxRho_)  continue;
 	    nGoodVertices++;
 	  } //Good Vertices
 	  
