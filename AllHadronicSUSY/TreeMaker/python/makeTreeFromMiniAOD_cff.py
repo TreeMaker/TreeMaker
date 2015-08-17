@@ -111,6 +111,7 @@ residual=False,
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+    VarsInt.extend(['NVtx:nAllVertices'])
 
     ###############
     # gen stuff
@@ -399,6 +400,7 @@ residual=False,
     
     #rerun HBHE noise filter manually
     process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+    process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
     process.Baseline += process.HBHENoiseFilterResultProducer
     VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
 
@@ -447,6 +449,9 @@ residual=False,
             'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v',
             'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v',
             'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v',
+            'HLT_Mu15_IsoVVVL_BTagCSV0p72_PFHT400_v',
+            'HLT_Mu15_IsoVVVL_BTagCSV07_PFHT400_v',
+            'HLT_Mu15_IsoVVVL_PFHT600_v',
             'HLT_Mu45_eta2p1_v',
             'HLT_Mu50_eta2p1_v',
             'HLT_Mu50_v',
