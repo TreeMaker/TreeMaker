@@ -19,7 +19,8 @@ debugtracks=False,
 geninfo=True,
 tagname="PAT",
 jsonfile="",
-applyjec=False,
+jecfile="",
+residual=False,
 ):
 
     ## ----------------------------------------------------------------------------------------------
@@ -28,7 +29,7 @@ applyjec=False,
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     
-    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_cff")
+    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
     process.GlobalTag.globaltag = globaltag
 
     # CMSSW version sniffing
@@ -264,10 +265,10 @@ applyjec=False,
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
     JetTag = cms.InputTag('slimmedJets')
-    if applyjec:
-        JECPatch = cms.string('sqlite_file:PHYS14_V4_MC.db')
+    if len(jecfile)>0:
+        JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
         if os.getenv('GC_CONF'): 
-            JECPatch = cms.string('sqlite_file:../src/PHYS14_V4_MC.db')
+            JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
 
         process.load("CondCore.DBCommon.CondDBCommon_cfi")
         from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
@@ -276,7 +277,7 @@ applyjec=False,
             toGet   = cms.VPSet(
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_PHYS14_V4_MC_AK4PFchs"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PFchs"),
                     label  = cms.untracked.string("AK4PFchs")
                 )
             )
@@ -291,6 +292,7 @@ applyjec=False,
                       'L3Absolute'],
             payload = 'AK4PFchs' # Make sure to choose the appropriate levels and payload here!
         )
+        if residual: process.patJetCorrFactorsReapplyJEC.levels.append('L2L3Residual')
         
         from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
         process.patJetsReapplyJEC = patJetsUpdated.clone(
@@ -578,7 +580,7 @@ applyjec=False,
     ## ----------------------------------------------------------------------------------------------
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
-        process = doHadTauBkg(process,is74X,geninfo)
+        process = doHadTauBkg(process,is74X,geninfo,residual,JetTag)
     
     ## ----------------------------------------------------------------------------------------------
     ## Shared processes for lost lepton, tag and probe
