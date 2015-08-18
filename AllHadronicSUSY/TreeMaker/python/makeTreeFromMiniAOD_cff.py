@@ -105,12 +105,26 @@ residual=False,
     process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
+
+    ## vertex stuff
+    process.goodVertices = cms.EDFilter("VertexSelector",
+        src = cms.InputTag("offlineSlimmedPrimaryVertices"),
+        cut = cms.string("!isFake && ndof > 4 && abs(z) < 24 && position.Rho < 2"),
+        filter = cms.bool(False)
+    )
+    
     from AllHadronicSUSY.Utils.primaryvertices_cfi import primaryvertices
     process.NVtx = primaryvertices.clone(
-    VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    VertexCollection  = cms.InputTag('goodVertices'),
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+
+    process.nAllVertices = primaryvertices.clone(
+    VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    )
+    process.Baseline += process.nAllVertices
+    VarsInt.extend(['nAllVertices'])
 
     ###############
     # gen stuff
@@ -399,6 +413,7 @@ residual=False,
     
     #rerun HBHE noise filter manually
     process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+    process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
     process.Baseline += process.HBHENoiseFilterResultProducer
     VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
 
@@ -447,6 +462,9 @@ residual=False,
             'HLT_Ele15_IsoVVVL_PFHT350_PFMET70_v',
             'HLT_Mu15_IsoVVVL_PFHT400_PFMET70_v',
             'HLT_Ele15_IsoVVVL_PFHT400_PFMET70_v',
+            'HLT_Mu15_IsoVVVL_BTagCSV0p72_PFHT400_v',
+            'HLT_Mu15_IsoVVVL_BTagCSV07_PFHT400_v',
+            'HLT_Mu15_IsoVVVL_PFHT600_v',
             'HLT_Mu45_eta2p1_v',
             'HLT_Mu50_eta2p1_v',
             'HLT_Mu50_v',
