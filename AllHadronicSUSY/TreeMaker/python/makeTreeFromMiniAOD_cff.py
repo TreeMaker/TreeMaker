@@ -105,12 +105,26 @@ residual=False,
     process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
+
+    ## vertex stuff
+    process.goodVertices = cms.EDFilter("VertexSelector",
+        src = cms.InputTag("offlineSlimmedPrimaryVertices"),
+        cut = cms.string("!isFake && ndof > 4 && abs(z) < 24 && position.Rho < 2"),
+        filter = cms.bool(False)
+    )
+    
     from AllHadronicSUSY.Utils.primaryvertices_cfi import primaryvertices
     process.NVtx = primaryvertices.clone(
-    VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    VertexCollection  = cms.InputTag('goodVertices'),
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+
+    process.nAllVertices = primaryvertices.clone(
+    VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    )
+    process.Baseline += process.nAllVertices
+    VarsInt.extend(['nAllVertices'])
 
     ###############
     # gen stuff
