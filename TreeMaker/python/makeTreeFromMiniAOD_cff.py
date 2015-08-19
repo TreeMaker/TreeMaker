@@ -387,7 +387,7 @@ residual=False,
     process.METFilters = filterDecisionProducer.clone(
         trigTagArg1 = cms.string('TriggerResults'),
         trigTagArg2 = cms.string(''),
-        trigTagArg3 = cms.string(''),
+        trigTagArg3 = cms.string(tagname),
         filterName  = cms.string("Flag_METFilters"),
     )
     process.Baseline += process.METFilters
@@ -396,29 +396,44 @@ residual=False,
     process.CSCTightHaloFilter = filterDecisionProducer.clone(
         trigTagArg1 = cms.string('TriggerResults'),
         trigTagArg2 = cms.string(''),
-        trigTagArg3 = cms.string(''),
+        trigTagArg3 = cms.string(tagname),
         filterName  = cms.string("Flag_CSCTightHaloFilter"),
     )
     process.Baseline += process.CSCTightHaloFilter
     VarsInt.extend(['CSCTightHaloFilter'])
 
-    process.HBHENoiseFilter = filterDecisionProducer.clone(
-        trigTagArg1 = cms.string('TriggerResults'),
-        trigTagArg2 = cms.string(''),
-        trigTagArg3 = cms.string(''),
-        filterName  = cms.string("Flag_HBHENoiseFilter"),
-    )
-    process.Baseline += process.HBHENoiseFilter
-    VarsInt.extend(['HBHENoiseFilter'])
+    #process.HBHENoiseFilter = filterDecisionProducer.clone(
+    #    trigTagArg1 = cms.string('TriggerResults'),
+    #    trigTagArg2 = cms.string(''),
+    #    trigTagArg3 = cms.string(tagname),
+    #    filterName  = cms.string("Flag_HBHENoiseFilter"),
+    #)
+    #process.Baseline += process.HBHENoiseFilter
+    #VarsInt.extend(['HBHENoiseFilter'])
+    
+    #rerun HBHE noise filter manually
+    process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+    process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
+    process.Baseline += process.HBHENoiseFilterResultProducer
+    VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
 
     process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
         trigTagArg1 = cms.string('TriggerResults'),
         trigTagArg2 = cms.string(''),
-        trigTagArg3 = cms.string(''),
+        trigTagArg3 = cms.string(tagname),
         filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
     )
     process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
     VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+    
+    process.eeBadScFilter = filterDecisionProducer.clone(
+        trigTagArg1  = cms.string('TriggerResults'),
+        trigTagArg2  = cms.string(''),
+        trigTagArg3  = cms.string(tagname),
+        filterName  =   cms.string("Flag_eeBadScFilter"),
+        )
+    process.Baseline += process.eeBadScFilter
+    VarsInt.extend(['eeBadScFilter'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
