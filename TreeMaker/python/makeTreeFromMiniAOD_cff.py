@@ -118,12 +118,23 @@ residual=False,
     ## ----------------------------------------------------------------------------------------------
     ## PrimaryVertices
     ## ----------------------------------------------------------------------------------------------
+    process.goodVertices = cms.EDFilter("VertexSelector",
+        src = cms.InputTag("offlineSlimmedPrimaryVertices"),
+        cut = cms.string("!isFake && ndof > 4 && abs(z) < 24 && position.Rho < 2"),
+        filter = cms.bool(False)
+    )
     from TreeMaker.Utils.primaryvertices_cfi import primaryvertices
     process.NVtx = primaryvertices.clone(
-        VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
+        VertexCollection  = cms.InputTag('goodVertices'),
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+    # also store total number of vertices without quality checks
+    process.nAllVertices = primaryvertices.clone(
+        VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    )
+    process.Baseline += process.nAllVertices
+    VarsInt.extend(['nAllVertices'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenParticles
@@ -218,7 +229,7 @@ residual=False,
 
     process.IsolatedElectronTracksVeto = trackIsolationFilter.clone(
         doTrkIsoVeto        = False,
-        vertexInputTag      = cms.InputTag("offlineSlimmedPrimaryVertices"),
+        vertexInputTag      = cms.InputTag("goodVertices"),
         pfCandidatesTag     = cms.InputTag("packedPFCandidates"),
         dR_ConeSize         = cms.double(0.3),
         dz_CutValue         = cms.double(0.1),
@@ -231,7 +242,7 @@ residual=False,
 
     process.IsolatedMuonTracksVeto = trackIsolationFilter.clone(
         doTrkIsoVeto        = False,
-        vertexInputTag      = cms.InputTag("offlineSlimmedPrimaryVertices"),
+        vertexInputTag      = cms.InputTag("goodVertices"),
         pfCandidatesTag     = cms.InputTag("packedPFCandidates"),
         dR_ConeSize         = cms.double(0.3),
         dz_CutValue         = cms.double(0.1),
@@ -244,7 +255,7 @@ residual=False,
 
     process.IsolatedPionTracksVeto = trackIsolationFilter.clone(
         doTrkIsoVeto        = False,
-        vertexInputTag      = cms.InputTag("offlineSlimmedPrimaryVertices"),
+        vertexInputTag      = cms.InputTag("goodVertices"),
         pfCandidatesTag     = cms.InputTag("packedPFCandidates"),
         dR_ConeSize         = cms.double(0.3),
         dz_CutValue         = cms.double(0.1),
@@ -268,7 +279,6 @@ residual=False,
         #do not turn on unless you really want to save all the isotrack quantities!!!
         #just store the full set of isotrack quantities once
         process.IsolatedPionTracksVeto.debug = cms.bool(True)
-        VarsBool.extend(['IsolatedPionTracksVeto:GoodVtx(GoodVtx)'])
         VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(pfcands)'])
         VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(pfcands_trkiso)'])
         VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(pfcands_dzpv)'])

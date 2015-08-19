@@ -82,7 +82,6 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	debug_= iConfig.getParameter<bool>("debug");
 	
 	produces<std::vector<pat::PackedCandidate> >(""); 
-	produces<bool>("GoodVtx");
 	produces<vector<TLorentzVector> >("pfcands");
 	produces<vector<double> >("pfcandstrkiso").setBranchAlias("pfcands_trkiso");
 	produces<vector<double> >("pfcandsdzpv"  ).setBranchAlias("pfcands_dzpv");
@@ -132,19 +131,9 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByLabel(vertexInputTag_, vertices);
-	//reco::Vertex::Point vtxpos = (vertices->size() > 0 ? (*vertices)[0].position() : reco::Vertex::Point());
-	int firstGoodVertexIdx = -1;
 	vtxSize = vertices->size();
-	for(int v=0; v<vtxSize;++v){
-		if ( !(*vertices)[v].isFake() && (*vertices)[v].ndof()>4. && (*vertices)[v].position().Rho()<2.0 && fabs((*vertices)[v].position().Z())<24.0) {
-			firstGoodVertexIdx=v;
-			//std::cout<<"GoodVertexIdV found: "<<firstGoodVertexIdx<<std::endl;
-			break;
-		}
-	}
 	bool hasGoodVtx = false;
-	if(vertices->size() > 0 && firstGoodVertexIdx>=0) hasGoodVtx = true;
-	std::auto_ptr<bool> GoodVtx(new bool(hasGoodVtx));
+	if(vertices->size() > 0) hasGoodVtx = true;
 	
 	//-------------------------------------------------------------------------------------------------
 	// loop over PFCandidates and calculate the trackIsolation and dz w.r.t. 1st good PV for each one
@@ -264,7 +253,6 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	iEvent.put(pfcands_mT    ,"pfcandsmT"    );
 	iEvent.put(pfcands_chg   ,"pfcandschg"   );
 	iEvent.put(pfcands_id    ,"pfcandsid"    );
-	iEvent.put(GoodVtx       ,"GoodVtx"      );
 	
 	iEvent.put(prodminiAOD); 
 	return result;
