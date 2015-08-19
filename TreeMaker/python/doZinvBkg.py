@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def doZinvBkg(process,is74X):
+def doZinvBkg(process,is74X,METTag):
     ##### add branches for photon studies
     process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
@@ -101,7 +101,7 @@ def doZinvBkg(process,is74X):
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
     process.METclean = metdouble.clone(
-       METTag = cms.InputTag("slimmedMETs"),
+       METTag = METTag,
        JetTag = cms.InputTag('HTJetsclean'),
        cleanTag = cms.untracked.VInputTag(cms.InputTag('LeptonsNew:IdIsoElectron'), cms.InputTag('LeptonsNew:IdIsoMuon'), cms.InputTag('goodPhotons', 'bestPhoton'))
     )

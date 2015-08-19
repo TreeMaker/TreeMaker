@@ -6,7 +6,7 @@ dataset = parameters.value("dataset","/store/data/Run2015B/DoubleMuon/MINIAOD/Pr
 #Phys14 MC: use CMSSW_7_2_3_patch1
 #dataset = parameters.value("dataset","/store/mc/Phys14DR/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/04860BAA-B673-E411-8B20-002481E0D50C.root")
 outfile=parameters.value("outfile","test_run")
-globaltag = parameters.value("globaltag","GR_P_V56::All")
+globaltag = parameters.value("globaltag","74X_dataRun2_Prompt_v1")
 lostlepton= parameters.value("lostlepton", False)
 tagandprobe= parameters.value("tagandprobe", False)
 hadtau= parameters.value("hadtau", False)

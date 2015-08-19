@@ -51,6 +51,7 @@ residual=False,
     process.load("FWCore.MessageService.MessageLogger_cfi")
     process.MessageLogger.cerr.FwkReport.reportEvery = reportfreq
     process.options = cms.untracked.PSet(
+        allowUnscheduled = cms.untracked.bool(True),
         wantSummary = cms.untracked.bool(True)
     )
 
@@ -138,6 +139,78 @@ residual=False,
         #VectorInt.append("genParticles:parent(genParticles_parent)")
 
     ## ----------------------------------------------------------------------------------------------
+    ## JECs
+    ## ----------------------------------------------------------------------------------------------
+    
+    # get the JECs (disabled by default)
+    # this requires the user to download the .db file from this twiki
+    # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
+    JetTag = cms.InputTag('slimmedJets')
+    METTag = cms.InputTag('slimmedMETs')
+    if len(jecfile)>0:
+        JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
+        if os.getenv('GC_CONF'): 
+            JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
+
+        process.load("CondCore.DBCommon.CondDBCommon_cfi")
+        from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
+        process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
+            connect = JECPatch,
+            toGet   = cms.VPSet(
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PFchs"),
+                    label  = cms.untracked.string("AK4PFchs")
+                ),
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PF"),
+                    label  = cms.untracked.string("AK4PF")
+                )
+            )
+        )
+        process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
+        
+        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+        process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+            src     = cms.InputTag("slimmedJets"),
+            levels  = ['L1FastJet',
+                      'L2Relative',
+                      'L3Absolute'],
+            payload = 'AK4PFchs' # Make sure to choose the appropriate levels and payload here!
+        )
+        if residual: process.patJetCorrFactorsReapplyJEC.levels.append('L2L3Residual')
+        
+        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+        process.patJetsReapplyJEC = patJetsUpdated.clone(
+            jetSource = cms.InputTag("slimmedJets"),
+            jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+        )
+        
+        process.Baseline += process.patJetCorrFactorsReapplyJEC
+        process.Baseline += process.patJetsReapplyJEC
+        
+        JetTag = cms.InputTag('patJetsReapplyJEC')
+        
+        # update the MET to account for the new JECs
+        # ref: https://github.com/cms-met/cmssw/blob/METCorUnc74X/PhysicsTools/PatAlgos/test/corMETFromMiniAOD.py
+        
+        from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+        runMetCorAndUncFromMiniAOD(
+            process,
+            isData=not geninfo, # controls gen met
+        )
+        if not residual: #skip residuals for data if not used
+            process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+            process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+            
+        METTag = cms.InputTag('slimmedMETs','',process.name_())
+
+    ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -153,6 +226,7 @@ residual=False,
         isoCut              = cms.double(0.2),
         pdgId               = cms.int32(11),
         mTCut               = mtcut,
+        METTag              = METTag,
     )
 
     process.IsolatedMuonTracksVeto = trackIsolationFilter.clone(
@@ -165,6 +239,7 @@ residual=False,
         isoCut              = cms.double(0.2), 
         pdgId               = cms.int32(13),
         mTCut               = mtcut,
+        METTag              = METTag,
     )
 
     process.IsolatedPionTracksVeto = trackIsolationFilter.clone(
@@ -177,6 +252,7 @@ residual=False,
         isoCut              = cms.double(0.1),
         pdgId               = cms.int32(211),
         mTCut               = mtcut,
+        METTag              = METTag,
     )
 
     process.Baseline += process.IsolatedElectronTracksVeto
@@ -216,7 +292,7 @@ residual=False,
         UseMiniIsolation = cms.bool(True),
         muIsoValue       = cms.double(0.2),
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
-        METTag           = cms.InputTag('slimmedMETs'), 
+        METTag           = METTag, 
     )
     process.Baseline += process.LeptonsNew
     VarsInt.extend(['LeptonsNew(Leptons)'])
@@ -234,7 +310,7 @@ residual=False,
         UseMiniIsolation = cms.bool(True),
         muIsoValue       = cms.double(0.2),
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
-        METTag           = cms.InputTag('slimmedMETs'), 
+        METTag           = METTag, 
     )
     process.Baseline += process.LeptonsNewTag
     VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
@@ -256,54 +332,6 @@ residual=False,
     # good photon tag is InputTag('goodPhotons','bestPhoton')
     VectorRecoCand.append("goodPhotons:bestPhoton")
     VarsInt.append("goodPhotons:NumPhotons")
-    
-    ## ----------------------------------------------------------------------------------------------
-    ## JECs
-    ## ----------------------------------------------------------------------------------------------
-    
-    # get the JECs (disabled by default)
-    # this requires the user to download the .db file from this twiki
-    # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
-    JetTag = cms.InputTag('slimmedJets')
-    if len(jecfile)>0:
-        JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
-        if os.getenv('GC_CONF'): 
-            JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
-
-        process.load("CondCore.DBCommon.CondDBCommon_cfi")
-        from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
-        process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-            connect = JECPatch,
-            toGet   = cms.VPSet(
-                cms.PSet(
-                    record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PFchs"),
-                    label  = cms.untracked.string("AK4PFchs")
-                )
-            )
-        )
-        process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
-        
-        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-        process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-            src     = cms.InputTag("slimmedJets"),
-            levels  = ['L1FastJet',
-                      'L2Relative',
-                      'L3Absolute'],
-            payload = 'AK4PFchs' # Make sure to choose the appropriate levels and payload here!
-        )
-        if residual: process.patJetCorrFactorsReapplyJEC.levels.append('L2L3Residual')
-        
-        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-        process.patJetsReapplyJEC = patJetsUpdated.clone(
-            jetSource = cms.InputTag("slimmedJets"),
-            jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-        )
-        
-        process.Baseline += process.patJetCorrFactorsReapplyJEC
-        process.Baseline += process.patJetsReapplyJEC
-        
-        JetTag = cms.InputTag('patJetsReapplyJEC')
 
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
@@ -532,7 +560,7 @@ residual=False,
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.Utils.metdouble_cfi import metdouble
     process.MET = metdouble.clone(
-        METTag = cms.InputTag("slimmedMETs"),
+        METTag = METTag,
         JetTag = cms.InputTag('HTJets'),
     )
     process.Baseline += process.MET
@@ -546,7 +574,7 @@ residual=False,
     process.JetsProperties = jetproperties.clone(
         JetTag       = cms.InputTag('GoodJets'),
         BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
-        METTag       = cms.InputTag("slimmedMETs"),
+        METTag       = METTag,
     )
     if is74X: process.JetsProperties.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.Baseline += process.JetsProperties
@@ -594,7 +622,7 @@ residual=False,
     ## ----------------------------------------------------------------------------------------------
     if tagandprobe:
         from TreeMaker.TreeMaker.doTagAndProbe import doTagAndProbe
-        process = doTagAndProbe(process,geninfo)
+        process = doTagAndProbe(process,geninfo,METTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background
@@ -608,7 +636,7 @@ residual=False,
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,is74X)
+        process = doZinvBkg(process,is74X,METTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
