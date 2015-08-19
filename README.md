@@ -78,3 +78,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `lostlepton`: switch to enable the lost lepton background estimation processes (default=False)
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=False)
+
+Extra options in [runMakeTreeFromMiniAOD_cfg.py](./TreeMaker/test/runMakeTreeFromMiniAOD_cfg.py):
+* `era`: CMS detector era for the dataset (default=Run2_50ns)
+
