@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def doTagAndProbe(process,geninfo):
+def doTagAndProbe(process,geninfo,METTag):
     from TreeMaker.Utils.activityProducer_cfi import activityProducer
     process.MuonIsoTag = activityProducer.clone(
         objectSource               = cms.InputTag('LeptonsNew:IdMuon'), # probe source
@@ -284,7 +284,7 @@ def doTagAndProbe(process,geninfo):
         maxDeltaR                  = cms.double(1.0),
         jetSrc                     = cms.InputTag('HTJets'),
         TagObjectForMTWComputation = cms.InputTag('LeptonsNewTag:IdIsoMuon'),
-        METTag                     = cms.InputTag('slimmedMETs'), 
+        METTag                     = METTag, 
     )
 
     process.tpPairsIsoTrackMu = cms.EDProducer("CandViewShallowCloneCombiner",
@@ -355,7 +355,7 @@ def doTagAndProbe(process,geninfo):
         maxDeltaR                  = cms.double(1.0),
         jetSrc                     = cms.InputTag('HTJets'),
         TagObjectForMTWComputation = cms.InputTag('LeptonsNewTag:IdIsoElectron'),
-        METTag                     = cms.InputTag('slimmedMETs'), 
+        METTag                     = METTag, 
     )
 
     process.tpPairsIsoTrackElec = cms.EDProducer("CandViewShallowCloneCombiner",
@@ -426,7 +426,7 @@ def doTagAndProbe(process,geninfo):
         maxDeltaR                  = cms.double(1.0),
         jetSrc                     = cms.InputTag('HTJets'),
         TagObjectForMTWComputation = cms.InputTag('IsolatedPionTracksVeto'),
-        METTag                     = cms.InputTag('slimmedMETs'), 
+        METTag                     = METTag, 
     )
 
     process.tpPairsIsoTrackPion = cms.EDProducer("CandViewShallowCloneCombiner",

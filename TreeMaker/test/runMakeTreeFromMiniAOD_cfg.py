@@ -6,7 +6,7 @@ dataset = parameters.value("dataset","/store/data/Run2015B/DoubleMuon/MINIAOD/Pr
 #Phys14 MC: use CMSSW_7_2_3_patch1
 #dataset = parameters.value("dataset","/store/mc/Phys14DR/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/04860BAA-B673-E411-8B20-002481E0D50C.root")
 outfile=parameters.value("outfile","test_run")
-globaltag = parameters.value("globaltag","GR_P_V56::All")
+globaltag = parameters.value("globaltag","74X_dataRun2_Prompt_v1")
 lostlepton= parameters.value("lostlepton", False)
 tagandprobe= parameters.value("tagandprobe", False)
 hadtau= parameters.value("hadtau", False)
@@ -17,7 +17,9 @@ numevents=parameters.value("numevents",-1)
 geninfo=parameters.value("geninfo",False)
 tagname=parameters.value("tagname","RECO")
 jsonfile=parameters.value("jsonfile","")
-applyjec=parameters.value("applyjec",False)
+jecfile=parameters.value("jecfile","")
+residual=parameters.value("residual",False)
+era=parameters.value("era","Run2_50ns")
 
 print "***** SETUP ************************************"
 print " outfile : "+outfile
@@ -31,13 +33,19 @@ print " Applying baseline selection filter: "+str(applybaseline)
 print " Including gen-level information: "+str(geninfo)
 print " Instance name of tag information: "+tagname
 if len(jsonfile)>0: print " JSON file applied: "+jsonfile
-print " Applying new JECs: "+str(applyjec)
+if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual else "")
+print " era of this dataset: "+era
 print "************************************************"
 
 # The process needs to be defined AFTER reading sys.argv,
 # otherwise edmConfigHash fails
 import FWCore.ParameterSet.Config as cms
+from Configuration.StandardSequences.Eras import eras
 process = cms.Process("RA2EventSelection")
+if era=="Run2_25ns":
+    process = cms.Process("RA2EventSelection",eras.Run2_25ns)
+elif era=="Run2_50ns":
+    process = cms.Process("RA2EventSelection",eras.Run2_50ns)
 
 ## configure geometry & conditions
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
@@ -58,6 +66,7 @@ process = makeTreeFromMiniAOD(process,
   geninfo=geninfo,
   tagname=tagname,
   jsonfile=jsonfile,
-  applyjec=applyjec
+  jecfile=jecfile,
+  residual=residual
 )
 
