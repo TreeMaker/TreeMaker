@@ -10,7 +10,7 @@ reportfreq=10,
 dataset="",
 globaltag="",
 numevents=1000,
-lostlepton=False,
+lostlepton=True,
 hadtau=False,
 tagandprobe=False,
 applybaseline=False,
@@ -145,8 +145,9 @@ residual=False,
             debug = cms.untracked.bool(False)
         )
         process.Baseline += process.genParticles
-        VectorTLorentzVector.append("genParticles(genParticles)")
-        VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
+        ## JACK--removing this dump of gen particles--probably should be more selective within individual methods, producers, etc.
+        ## VectorTLorentzVector.append("genParticles(genParticles)")
+        ## VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
         #VectorInt.append("genParticles:parent(genParticles_parent)")
 
     ## ----------------------------------------------------------------------------------------------
@@ -641,7 +642,8 @@ residual=False,
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
         process = doHadTauBkg(process,is74X,geninfo,residual,JetTag)
-    
+
+    ## JACK-remove this from lost lepton routine 
     ## ----------------------------------------------------------------------------------------------
     ## Shared processes for lost lepton, tag and probe
     ## ----------------------------------------------------------------------------------------------
