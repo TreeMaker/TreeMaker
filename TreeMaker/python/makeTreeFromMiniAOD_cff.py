@@ -145,6 +145,7 @@ residual=False,
             debug = cms.untracked.bool(False)
         )
         process.Baseline += process.genParticles
+        ## JACK--do we really need to save all of these?
         VectorTLorentzVector.append("genParticles(genParticles)")
         VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
         #VectorInt.append("genParticles:parent(genParticles_parent)")
@@ -641,7 +642,7 @@ residual=False,
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
         process = doHadTauBkg(process,is74X,geninfo,residual,JetTag)
-    
+
     ## ----------------------------------------------------------------------------------------------
     ## Shared processes for lost lepton, tag and probe
     ## ----------------------------------------------------------------------------------------------
