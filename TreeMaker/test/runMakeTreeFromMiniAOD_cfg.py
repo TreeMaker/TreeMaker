@@ -20,6 +20,7 @@ jsonfile=parameters.value("jsonfile","")
 jecfile=parameters.value("jecfile","")
 residual=parameters.value("residual",False)
 era=parameters.value("era","Run2_50ns")
+QCD=parameters.value("QCD", False)
 
 print "***** SETUP ************************************"
 print " outfile : "+outfile
@@ -67,6 +68,7 @@ process = makeTreeFromMiniAOD(process,
   tagname=tagname,
   jsonfile=jsonfile,
   jecfile=jecfile,
-  residual=residual
+  residual=residual,
+  QCD=QCD
 )
 
