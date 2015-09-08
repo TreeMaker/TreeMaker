@@ -169,6 +169,8 @@ QCD=False,
     JetTag = cms.InputTag('slimmedJets')
     METTag = cms.InputTag('slimmedMETs')
     if len(jecfile)>0:
+        #get name of JECs without any directories
+        JECera = jecfile.split('/')[-1]
         JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
         if os.getenv('GC_CONF'): 
             JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
@@ -180,12 +182,12 @@ QCD=False,
             toGet   = cms.VPSet(
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PFchs"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK4PFchs"),
                     label  = cms.untracked.string("AK4PFchs")
                 ),
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_"+jecfile+"_AK4PF"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK4PF"),
                     label  = cms.untracked.string("AK4PF")
                 )
             )
