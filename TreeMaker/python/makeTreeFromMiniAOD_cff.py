@@ -681,8 +681,8 @@ QCD=False,
 
     if QCD:
 
-        from AllHadronicSUSY.TreeMaker.DeltaPhiQCD import DeltaPhiQCD
-        process = DeltaPhiQCD(process)
+        from TreeMaker.TreeMaker.DeltaPhiQCD import DeltaPhiQCD
+        process = DeltaPhiQCD(process, METTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

@@ -5,5 +5,6 @@ JetTagRecoJets = cms.InputTag('GoodJets'),
 JetTagGenJets = cms.InputTag('slimmedGenJets'),
 BTagInputTag = cms.InputTag('combinedInclusiveSecondaryVertexV2BJetTags'),
 GenParticleTag = cms.InputTag('prunedGenParticles'),
-GenMETTag  = cms.InputTag("slimmedMETs"),
+GenMETTag  = cms.InputTag('slimmedMETs')
 )
+
