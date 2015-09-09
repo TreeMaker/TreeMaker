@@ -69,12 +69,11 @@ to determine the integrated luminosity for the dataset.
 
 ## Info for New Samples
 
-The script [get_py.py](./Production/python/get_py.py) will automatically download the "_cff.py" python file containing the list of ROOT files for specified samples:
+The script [get_py.py](./Production/test/get_py.py) will automatically download the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (disabled with `py=False`).
+For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (disabled with `wp=False`).
 ```
-python get_py.py
+python get_py.py dict=dict.py py=True wp=True
 ```
-It can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py),
-if the cross section is specified (in the case of MC).
 
 To check for new samples, consult [production monitoring](https://dmytro.web.cern.ch/dmytro/cmsprodmon/requests.php?campaign=RunIISpring15DR74) or query DAS (in this case, for Spring15 MC):
 ```
