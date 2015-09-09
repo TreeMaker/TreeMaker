@@ -72,12 +72,38 @@ to determine the integrated luminosity for the dataset.
 The script [get_py.py](./Production/test/get_py.py) will automatically download the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (disabled with `py=False`).
 For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (disabled with `wp=False`).
 ```
-python get_py.py dict=dict.py py=True wp=True
+python get_py.py dict=dict.py
 ```
 
 To check for new samples, consult [production monitoring](https://dmytro.web.cern.ch/dmytro/cmsprodmon/requests.php?campaign=RunIISpring15DR74) or query DAS (in this case, for Spring15 MC):
 ```
 das_client.py --query="dataset=/*/RunIISpring15DR74-Asympt25ns*/MINIAODSIM" --limit=0 | & less
+```
+
+### Samples with Negative Weight Events
+
+Samples produced at NLO by amcatnlo have events with negative weights, which must be handled correctly. To get the effective number of events used to weight the sample, there is a multi-step process.
+
+Step 1: Get the "_cff.py" files, without generating WeightProducer lines (assuming samples are listed in `dictNLO.py`).
+```
+python get_py.py dict=dictNLO.py wp=False
+```
+
+Step 2: Run NeffFinder, a simple analyzer which calculates the effective number of events for a sample.
+The analyzer should be submitted as a Condor batch job for each sample due to the xrootd I/O bottleneck, which is prohibitive when running interactively (assuming samples are listed in `looperNeff.sh`).
+Be sure to sanity-check the results, as xrootd failures can cause jobs to terminate early.
+```
+cp -r condorSubNeff myNeff
+cd myNeff
+./looperNeff.sh
+(after jobs are finished)
+./getResults.sh
+./getFailures.sh
+```
+
+Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines.
+```
+python get_py.py dict=dictNLO.py py=False
 ```
 
 ## Options
