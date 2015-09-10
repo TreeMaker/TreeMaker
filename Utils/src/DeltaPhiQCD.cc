@@ -105,45 +105,11 @@ DeltaPhiQCD::DeltaPhiQCD ( const edm::ParameterSet& iConfig )
         produces < std::vector < int > > ( "NeutrinoPdg" ) ;
         produces < std::vector < int > > ( "NeutrinoMotherPdg" ) ;
 
-        produces < double > ( "RJetMinDeltaPhiStarEta5" ) ;
-        produces < double > ( "RJetMinDeltaPhiStarEta24" ) ;
 
-        produces < double > ( "RJetMinDeltaPhiStarIndexEta5" ) ;
-        produces < double > ( "RJetMinDeltaPhiStarIndexEta24" ) ;
-
-        produces < int >    ( "RJetMinDeltaPhiJetIndexEta5Njle5" ) ;
-        produces < double > ( "RJetMinDeltaPhiEta5Njle5" ) ;
-        produces < int >    ( "RJetMinDeltaPhiJetIndexEta5Njle4" ) ;
-        produces < double > ( "RJetMinDeltaPhiEta5Njle4" ) ;
-        produces < int >    ( "RJetMinDeltaPhiJetIndexEta5Njle3" ) ;
-        produces < double > ( "RJetMinDeltaPhiEta5Njle3" ) ;
-
-        produces < int >    ( "RJetMinDeltaPhiJetIndexEta24Njle5" ) ;
-        produces < double > ( "RJetMinDeltaPhiEta24Njle5" ) ;
-        produces < int >    ( "RJetMinDeltaPhiJetIndexEta24Njle4" ) ;
-        produces < double > ( "RJetMinDeltaPhiEta24Njle4" ) ;
-        produces < int >    ( "RJetMinDeltaPhiJetIndexEta24Njle3" ) ;
-        produces < double > ( "RJetMinDeltaPhiEta24Njle3" ) ;
-
-        produces < double > ( "GenMinDeltaPhiStarEta5" ) ;
-        produces < double > ( "GenMinDeltaPhiStarEta24" ) ;
-
-        produces < double > ( "GenMinDeltaPhiStarIndexEta5" ) ;
-        produces < double > ( "GenMinDeltaPhiStarIndexEta24" ) ;
-
-        produces < int >    ( "GenMinDeltaPhiJetIndexEta5Njle5" ) ;
-        produces < double > ( "GenMinDeltaPhiEta5Njle5" ) ;
-        produces < int >    ( "GenMinDeltaPhiJetIndexEta5Njle4" ) ;
-        produces < double > ( "GenMinDeltaPhiEta5Njle4" ) ;
-        produces < int >    ( "GenMinDeltaPhiJetIndexEta5Njle3" ) ;
-        produces < double > ( "GenMinDeltaPhiEta5Njle3" ) ;
-
-        produces < int >    ( "GenMinDeltaPhiJetIndexEta24Njle5" ) ;
-        produces < double > ( "GenMinDeltaPhiEta24Njle5" ) ;
-        produces < int >    ( "GenMinDeltaPhiJetIndexEta24Njle4" ) ;
-        produces < double > ( "GenMinDeltaPhiEta24Njle4" ) ;
-        produces < int >    ( "GenMinDeltaPhiJetIndexEta24Njle3" ) ;
-        produces < double > ( "GenMinDeltaPhiEta24Njle3" ) ;
+        produces < std::vector < double > >      ( "minDeltaPhiEta24" ) ;
+        produces < std::vector < std::string > > ( "minDeltaPhiEta24Names" ) ;
+        produces < std::vector < double > >      ( "minDeltaPhiEta5" ) ;
+        produces < std::vector < std::string > > ( "minDeltaPhiEta5Names" ) ;
 
 }
 
@@ -179,6 +145,9 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
         deltaphi_vector    .clear() ;
 
         edm::Handle < double > var ;
+
+        std::vector < double >  minDeltaphi5,minDeltaphi24;
+        std::vector < std::string >  minDeltaphi5Names, minDeltaphi24Names;
 
 //	edm::InputTag MHT_Pt("MHT","Pt");
 //	iEvent.getByLabel(MHT_Pt,var);
@@ -297,47 +266,42 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 	        else 
 			std::cout << "Warning Reco Tag not valid: " << JetTagRecoJets_.label() << std::endl ;
 
-		if ( etacut == 5   ) name = "RJetMinDeltaPhiStarEta5"  ;
-		if ( etacut == 2.4 ) name = "RJetMinDeltaPhiStarEta24" ;
-                std::auto_ptr < double > mindeltaphistar2 ( new double ( mindeltaphistar ) ) ;
-		iEvent.put ( mindeltaphistar2, name ) ;
+		if ( etacut == 5 ) 
+		{ 
 
-                if ( etacut == 5   ) name = "RJetMinDeltaPhiStarIndexEta5"  ;
-                if ( etacut == 2.4 ) name = "RJetMinDeltaPhiStarIndexEta24" ;
-                std::auto_ptr < double > mindeltaphistarindex2 ( new double ( mindeltaphistarindex ) );
-                iEvent.put ( mindeltaphistarindex2, name ) ;
+			minDeltaphi5Names.push_back ( "RJetMinDeltaPhiStarEta5"          ) ; minDeltaphi5.push_back ( mindeltaphistar      ) ;
+	                minDeltaphi5Names.push_back ( "RJetMinDeltaPhiStarIndexEta5"     ) ; minDeltaphi5.push_back ( mindeltaphistarindex ) ;
+	
+	                minDeltaphi5Names.push_back ( "RJetMinDeltaPhiEta5Njle3"         ) ; minDeltaphi5.push_back ( mindeltaphi3         ) ;
+	                minDeltaphi5Names.push_back ( "RJetMinDeltaPhiJetIndexEta5Njle3" ) ; minDeltaphi5.push_back ( mindeltaphi3jetindex ) ;
+	
+	                minDeltaphi5Names.push_back ( "RJetMinDeltaPhiEta5Njle4"         ) ; minDeltaphi5.push_back ( mindeltaphi4         ) ;
+	                minDeltaphi5Names.push_back ( "RJetMinDeltaPhiJetIndexEta5Njle4" ) ; minDeltaphi5.push_back ( mindeltaphi4jetindex ) ;
+	
+	                minDeltaphi5Names.push_back ( "RJetMinDeltaPhiEta5Njle5"         ) ; minDeltaphi5.push_back ( mindeltaphi5         ) ;
+	                minDeltaphi5Names.push_back ( "RJetMinDeltaPhiJetIndexEta5Njle5" ) ; minDeltaphi5.push_back ( mindeltaphi5jetindex ) ;
 
-		if ( etacut == 5   ) name = "RJetMinDeltaPhiEta5Njle3"  ;
-		if ( etacut == 2.4 ) name = "RJetMinDeltaPhiEta24Njle3" ;
-
-                std::auto_ptr < double > mindeltaphi32 ( new double ( mindeltaphi3 ) );
-                iEvent.put ( mindeltaphi32, name ) ;
-
-                if ( etacut == 5   ) name = "RJetMinDeltaPhiJetIndexEta5Njle3"  ;
-                if ( etacut == 2.4 ) name = "RJetMinDeltaPhiJetIndexEta24Njle3" ;
-                std::auto_ptr < int > mindeltaphi3jetindex2 ( new int ( mindeltaphi3jetindex ) );
-                iEvent.put ( mindeltaphi3jetindex2, name ) ;
-
-                if ( etacut == 5   ) name = "RJetMinDeltaPhiEta5Njle4"  ;
-                if ( etacut == 2.4 ) name = "RJetMinDeltaPhiEta24Njle4" ;
-                std::auto_ptr < double > mindeltaphi42 ( new double ( mindeltaphi4 ) ) ;
-                iEvent.put ( mindeltaphi42, name ) ;
-
-		if ( etacut == 5   ) name = "RJetMinDeltaPhiJetIndexEta5Njle4"  ;
-                if ( etacut == 2.4 ) name = "RJetMinDeltaPhiJetIndexEta24Njle4" ;
-                std::auto_ptr < int > mindeltaphi4jetindex2 ( new int ( mindeltaphi4jetindex ) ) ;
-                iEvent.put ( mindeltaphi4jetindex2, name ) ;
-
-                if ( etacut == 5   ) name = "RJetMinDeltaPhiEta5Njle5"  ;
-                if ( etacut == 2.4 ) name = "RJetMinDeltaPhiEta24Njle5" ;
-                std::auto_ptr < double > mindeltaphi52 ( new double ( mindeltaphi5 ) ) ;
-                iEvent.put ( mindeltaphi52, name ) ;
+		}
 
 
-                if ( etacut == 5   ) name = "RJetMinDeltaPhiJetIndexEta5Njle5"  ;
-                if ( etacut == 2.4 ) name = "RJetMinDeltaPhiJetIndexEta24Njle5" ;
-                std::auto_ptr < int > mindeltaphi5jetindex2 ( new int ( mindeltaphi5jetindex ) ) ;
-                iEvent.put ( mindeltaphi5jetindex2, name ) ;
+                if ( etacut == 2.4 ) 
+		{
+
+                        minDeltaphi24Names.push_back ( "RJetMinDeltaPhiStarEta24"          ) ; minDeltaphi24.push_back ( mindeltaphistar      ) ;
+                        minDeltaphi24Names.push_back ( "RJetMinDeltaPhiStarIndexEta24"     ) ; minDeltaphi24.push_back ( mindeltaphistarindex ) ;
+
+                        minDeltaphi24Names.push_back ( "RJetMinDeltaPhiEta24Njle3"         ) ; minDeltaphi24.push_back ( mindeltaphi3         ) ;
+                        minDeltaphi24Names.push_back ( "RJetMinDeltaPhiJetIndexEta24Njle3" ) ; minDeltaphi24.push_back ( mindeltaphi3jetindex ) ;
+
+                        minDeltaphi24Names.push_back ( "RJetMinDeltaPhiEta24Njle4"         ) ; minDeltaphi24.push_back ( mindeltaphi4         ) ;
+                        minDeltaphi24Names.push_back ( "RJetMinDeltaPhiJetIndexEta24Njle4" ) ; minDeltaphi24.push_back ( mindeltaphi4jetindex ) ;
+
+                        minDeltaphi24Names.push_back ( "RJetMinDeltaPhiEta24Njle5"         ) ; minDeltaphi24.push_back ( mindeltaphi5         ) ;
+                        minDeltaphi24Names.push_back ( "RJetMinDeltaPhiJetIndexEta24Njle5" ) ; minDeltaphi24.push_back ( mindeltaphi5jetindex ) ;
+
+		}
+
+
 	}//ii
 
 
@@ -363,7 +327,6 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
         std::vector < double >  Gencsv_vector ;
         std::vector < double >  Genpartonflavor_vector ;
         std::vector < double >  Gendeltaphi_vector ;
-
 
         GenJetVector          .clear() ;
         Gencsv_vector         .clear() ;
@@ -482,53 +445,54 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                 }
 
 
-                if ( genetacut == 5   ) genname = "GenMinDeltaPhiStarEta5"  ;
-                if ( genetacut == 2.4 ) genname = "GenMinDeltaPhiStarEta24" ;
-                std::auto_ptr < double > genmindeltaphistar2 ( new double ( genmindeltaphistar ) ) ;
-                iEvent.put ( genmindeltaphistar2, genname ) ;
+                if ( genetacut == 5 )
+                {
 
-                if ( genetacut == 5   ) genname = "GenMinDeltaPhiStarIndexEta5"  ;
-                if ( genetacut == 2.4 ) genname = "GenMinDeltaPhiStarIndexEta24" ;
-                std::auto_ptr < double > genmindeltaphistarindex2 ( new double ( genmindeltaphistarindex ) );
-                iEvent.put ( genmindeltaphistarindex2, genname );
+                        minDeltaphi5Names.push_back ( "GenMinDeltaPhiStarEta5"          ) ; minDeltaphi5.push_back ( genmindeltaphistar      ) ;
+                        minDeltaphi5Names.push_back ( "GenMinDeltaPhiStarIndexEta5"     ) ; minDeltaphi5.push_back ( genmindeltaphistarindex ) ;
 
-                if ( genetacut == 5   ) genname = "GenMinDeltaPhiEta5Njle3"  ;
-                if ( genetacut == 2.4 ) genname = "GenMinDeltaPhiEta24Njle3" ;
-                std::auto_ptr < double > genmindeltaphi32 ( new double ( genmindeltaphi3 ) ) ;
-                iEvent.put ( genmindeltaphi32, genname ) ;
+                        minDeltaphi5Names.push_back ( "GenMinDeltaPhiEta5Njle3"         ) ; minDeltaphi5.push_back ( genmindeltaphi3         ) ;
+                        minDeltaphi5Names.push_back ( "GenMinDeltaPhiJetIndexEta5Njle3" ) ; minDeltaphi5.push_back ( genmindeltaphi3jetindex ) ;
 
-                if ( genetacut == 5   ) genname = "GenMinDeltaPhiJetIndexEta5Njle3"  ;
-                if ( genetacut == 2.4 ) genname = "GenMinDeltaPhiJetIndexEta24Njle3" ;
-                std::auto_ptr < int > genmindeltaphi3jetindex2 ( new int ( genmindeltaphi3jetindex ) ); 
-                iEvent.put ( genmindeltaphi3jetindex2, genname );
- 
-                if ( genetacut == 5   ) genname = "GenMinDeltaPhiEta5Njle4"  ;
-                if ( genetacut == 2.4 ) genname = "GenMinDeltaPhiEta24Njle4" ;
-                std::auto_ptr < double > genmindeltaphi42 ( new double ( genmindeltaphi4 ) ) ;
-                iEvent.put ( genmindeltaphi42, genname ) ;
+                        minDeltaphi5Names.push_back ( "GenMinDeltaPhiEta5Njle4"         ) ; minDeltaphi5.push_back ( genmindeltaphi4         ) ;
+                        minDeltaphi5Names.push_back ( "GenMinDeltaPhiJetIndexEta5Njle4" ) ; minDeltaphi5.push_back ( genmindeltaphi4jetindex ) ;
 
-                if ( genetacut == 5   ) genname = "GenMinDeltaPhiJetIndexEta5Njle4"  ;
-                if ( genetacut == 2.4 ) genname = "GenMinDeltaPhiJetIndexEta24Njle4" ;
-                std::auto_ptr < int > genmindeltaphi4jetindex2 ( new int ( genmindeltaphi4jetindex ) ) ;
-                iEvent.put ( genmindeltaphi4jetindex2, genname );
+                        minDeltaphi5Names.push_back ( "GenMinDeltaPhiEta5Njle5"         ) ; minDeltaphi5.push_back ( genmindeltaphi5         ) ;
+                        minDeltaphi5Names.push_back ( "GenMinDeltaPhiJetIndexEta5Njle5" ) ; minDeltaphi5.push_back ( genmindeltaphi5jetindex ) ;
 
-                if ( genetacut == 5   ) genname = "GenMinDeltaPhiEta5Njle5"  ;
-                if ( genetacut == 2.4 ) genname = "GenMinDeltaPhiEta24Njle5" ;
-                std::auto_ptr < double > genmindeltaphi52 ( new double ( genmindeltaphi5 ) ) ;
-                iEvent.put ( genmindeltaphi52, genname );
-
-                if ( genetacut == 5   ) genname = "GenMinDeltaPhiJetIndexEta5Njle5"  ;
-                if ( genetacut == 2.4 ) genname = "GenMinDeltaPhiJetIndexEta24Njle5" ;
-                std::auto_ptr < int > genmindeltaphi5jetindex2 ( new int ( genmindeltaphi5jetindex ) ) ;
-                iEvent.put ( genmindeltaphi5jetindex2, genname );
+                }
 
 
-		}//ii
+                if ( genetacut == 2.4 )
+                {
 
+                        minDeltaphi24Names.push_back ( "GenMinDeltaPhiStarEta24"          ) ; minDeltaphi24.push_back ( genmindeltaphistar      ) ;
+                        minDeltaphi24Names.push_back ( "GenMinDeltaPhiStarIndexEta24"     ) ; minDeltaphi24.push_back ( genmindeltaphistarindex ) ;
 
+                        minDeltaphi24Names.push_back ( "GenMinDeltaPhiEta24Njle3"         ) ; minDeltaphi24.push_back ( genmindeltaphi3         ) ;
+                        minDeltaphi24Names.push_back ( "GenMinDeltaPhiJetIndexEta24Njle3" ) ; minDeltaphi24.push_back ( genmindeltaphi3jetindex ) ;
 
+                        minDeltaphi24Names.push_back ( "GenMinDeltaPhiEta24Njle4"         ) ; minDeltaphi24.push_back ( genmindeltaphi4         ) ;
+                        minDeltaphi24Names.push_back ( "GenMinDeltaPhiJetIndexEta24Njle4" ) ; minDeltaphi24.push_back ( genmindeltaphi4jetindex ) ;
 
+                        minDeltaphi24Names.push_back ( "GenMinDeltaPhiEta24Njle5"         ) ; minDeltaphi24.push_back ( genmindeltaphi5         ) ;
+                        minDeltaphi24Names.push_back ( "GenMinDeltaPhiJetIndexEta24Njle5" ) ; minDeltaphi24.push_back ( genmindeltaphi5jetindex ) ;
 
+                }
+
+	}//ii
+
+        std::auto_ptr < std::vector < double > > minDeltaphi24_2  ( new std::vector < double > ( minDeltaphi24 ) ) ;
+        iEvent.put ( minDeltaphi24_2      , "minDeltaPhiEta24"      ) ;
+
+        std::auto_ptr < std::vector < std::string > > minDeltaphi24Names_2  ( new std::vector < std::string > ( minDeltaphi24Names ) ) ;
+        iEvent.put ( minDeltaphi24Names_2 , "minDeltaPhiEta24Names" ) ;
+
+        std::auto_ptr < std::vector < double > > minDeltaphi5_2  ( new std::vector < double > ( minDeltaphi5 ) ) ;
+        iEvent.put ( minDeltaphi5_2       , "minDeltaPhiEta5"       ) ;
+
+        std::auto_ptr < std::vector < std::string > > minDeltaphi5Names_2  ( new std::vector < std::string > ( minDeltaphi5Names ) ) ;
+        iEvent.put ( minDeltaphi5Names_2  , "minDeltaPhiEta5Names"  ) ;
 
 
 

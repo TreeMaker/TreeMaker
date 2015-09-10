@@ -682,7 +682,7 @@ QCD=False,
     if QCD:
 
         from TreeMaker.TreeMaker.DeltaPhiQCD import DeltaPhiQCD
-        process = DeltaPhiQCD(process, METTag)
+        process = DeltaPhiQCD(process, METTag, is74X)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
