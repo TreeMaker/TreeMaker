@@ -11,11 +11,15 @@ echo "CMSSW on Condor"
 
 CMSSWVER=$1
 SAMPLE=$2
+NSTART=$3
+NFILES=$4
 
 echo ""
 echo "parameter set:"
 echo "CMSSWVER:   $CMSSWVER"
 echo "SAMPLE:     $SAMPLE"
+echo "NSTART:     $NSTART"
+echo "NFILES:     $NFILES"
 
 tar -xzf ${CMSSWVER}.tar.gz
 cd ${CMSSWVER}
@@ -26,7 +30,7 @@ eval `scramv1 runtime -sh`
 cd -
 
 # run CMSSW
-cmsRun nefffinder_cfg.py name=${SAMPLE} 2>&1
+cmsRun nefffinder_cfg.py name=${SAMPLE} nstart=${NSTART} nfiles=${NFILES} 2>&1
 
 
 

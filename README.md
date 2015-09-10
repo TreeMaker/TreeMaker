@@ -55,6 +55,13 @@ If you want to reuse an existing CMSSW tarball (no important changes have been m
 ./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction/ keep
 ```
 
+Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. The script [resubCondor.sh](./Production/test/condorSub/resubCondor.sh) can identify the failed jobs and prepare them for resubmission by checking the Condor logs.
+```
+./resubCondor.sh "YYYY-MM-DD HH:MM" myResub.sh
+./myResub.sh
+```
+The first parameter, if used, tells the script to look at only the jobs which finished after the specified starting date/time (default=beginning of time, "1970-01-01 00:00"). The second parameter, if used, specifies the name of the output resubmission script (default="resub.sh"). The existing JDL files are resubmitted by the resubmissiong script. If the script finds a failed job, it automatically checks to see if any newer instances of that job were successful (to account for multiple rounds of job submission from the same production folder).
+
 ## Calculate Integrated Luminosity
 
 Scripts are available to calculate the integrated luminosity from data ntuples (produced with TreeMaker):

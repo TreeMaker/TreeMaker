@@ -34,51 +34,40 @@ import FWCore.ParameterSet.Config as cms
 process = cms.Process("demo")
 process.load("TreeMaker.Production."+options.filesConfig+"_cff")
 
-# index is to count jobs for labeling input and output files
-index=0
 # to keep track of how many data files have been divied up
 fileListLen = len(process.source.fileNames)
 
 print "There are "+str(fileListLen)+" files in your sample"
 
 # calculate the number of jobs necessary
-nJobs = fileListLen / int( options.nFiles )
-if ( fileListLen % int( options.nFiles ) != 0 ) :
-    nJobs += 1
+if options.nFiles==-1:
+    nJobs = 1
+else:
+    nJobs = fileListLen / int( options.nFiles )
+    if ( fileListLen % int( options.nFiles ) != 0 ) :
+        nJobs += 1
 
 print "I will create "+str(nJobs)+" jobs for you!"
 
 # start loop over N jobs
 for iJob in range( nJobs ) :
-
-    # initialize list string
-    list = ""
-
-    # build string which is a list of files
-    # loop over options.nFiles
-    for iFile in range( int(options.nFiles) ) :
-
-        # protection against index going out of range of
-        # process.source.fileNames
-        if ( iFile+iJob*int( options.nFiles ) >= fileListLen ) :
-            break
-
-        if ( iFile == 0 ) :
-            list += process.source.fileNames[iFile+iJob*int( options.nFiles )]
-        else :
-            list += ','+process.source.fileNames[iFile+iJob*int( options.nFiles )]
+    # get starting file number
+    nstart = iJob*int(options.nFiles)
 
     # replace placeholders in template files
-    jobname = "jobExecCondor_"+options.filesConfig+"_"+str(iJob)+".jdl"
+    jobname = options.filesConfig
+    if nJobs>1: jobname = jobname+"_"+str(iJob)
     os.system("sed -e 's|CMSSWVER|'${CMSSW_VERSION}'|g' "\
                  +"-e 's~OUTDIR~"+options.outputDir+"~g' "\
-                 +"-e 's|SAMPLE|"+options.filesConfig+"_"+str(iJob)+"|g' "\
-                 +"-e 's|FILELIST|"+list+"|g' "\
+                 +"-e 's|JOBNAME|"+jobname+"|g' "\
+                 +"-e 's|SAMPLE|"+options.filesConfig+"|g' "\
+                 +"-e 's|NSTART|"+str(nstart)+"|g' "\
+                 +"-e 's|NFILES|"+str(options.nFiles)+"|g' "\
                  +"-e 's|SCENARIO|"+options.scenario+"|g' "\
-                 +"< jobExecCondor.jdl > "+jobname)
+                 +"< jobExecCondor.jdl > jobExecCondorNeff_"+jobname+".jdl")
 
     # submit jobs to condor, if -s was specified
     if ( options.submit ) :
-        os.system("condor_submit "+jobname)
+        os.system("condor_submit jobExecCondorNeff_"+jobname+".jdl")
     
 

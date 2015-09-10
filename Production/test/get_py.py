@@ -13,7 +13,8 @@ makewp = parameters.value("wp",True)
 #                               MC: ('sample' , [xsec])
 #MC w/ negative weights (amcatnlo): ('sample' , [xsec, neff])
 
-wfile = open("weights.txt",'w')
+if makewp:
+    wfile = open("weights.txt",'w')
 
 for f,x in dict.flist.iteritems():
     if makepy:

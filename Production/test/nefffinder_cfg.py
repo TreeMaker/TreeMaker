@@ -2,6 +2,8 @@
 from TreeMaker.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
 name = parameters.value("name","")
+nstart = parameters.value("nstart",0)
+nfiles = parameters.value("nfiles",-1)
 
 import FWCore.ParameterSet.Config as cms
 from Configuration.StandardSequences.Eras import eras
@@ -17,7 +19,13 @@ process.GlobalTag.globaltag = "74X_mcRun2_asymptotic_v2"
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 # this inputs the input files
-process.load("TreeMaker.Production."+name+"_cff")
+if nfiles==-1:
+    process.load("TreeMaker.Production."+name+"_cff")
+else:
+    readFiles = getattr(__import__("TreeMaker.Production."+name+"_cff",fromlist=["readFiles"]),"readFiles")
+    process.source = cms.Source("PoolSource",
+        fileNames = cms.untracked.vstring(readFiles[nstart:(nstart+nfiles)])
+    )
 
 process.demo = cms.EDAnalyzer('NeffFinder',
     name = cms.string(name)
