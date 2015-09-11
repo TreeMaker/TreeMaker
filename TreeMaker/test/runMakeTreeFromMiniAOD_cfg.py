@@ -1,25 +1,25 @@
 # Read parameters
 from TreeMaker.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
-dataset = parameters.value("dataset","/store/data/Run2015B/DoubleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/12284DB9-4227-E511-A438-02163E013674.root")
+dataset = parameters.value("dataset","file:TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_MINIAODSIM_Asympt25ns_MCRUN2_74_V9-v1.root")
 #dataset = parameters.value("dataset","/store/mc/RunIISpring15DR74/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/Asympt25ns_MCRUN2_74_V9-v1/00000/145F5185-1019-E511-9ACA-0025901ABD1A.root")
 #Phys14 MC: use CMSSW_7_2_3_patch1
 #dataset = parameters.value("dataset","/store/mc/Phys14DR/DYJetsToLL_M-50_HT-600toInf_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_PHYS14_25_V1-v1/00000/04860BAA-B673-E411-8B20-002481E0D50C.root")
 outfile=parameters.value("outfile","test_run")
 globaltag = parameters.value("globaltag","74X_dataRun2_Prompt_v1")
-lostlepton= parameters.value("lostlepton", False)
+lostlepton= parameters.value("lostlepton", True)
 tagandprobe= parameters.value("tagandprobe", False)
 hadtau= parameters.value("hadtau", False)
 applybaseline= parameters.value("applybaseline", False)
 doZinv=parameters.value("doZinv", False)
 gridcontrol=parameters.value("gridcontrol", False)
 numevents=parameters.value("numevents",-1)
-geninfo=parameters.value("geninfo",False)
-tagname=parameters.value("tagname","RECO")
+geninfo=parameters.value("geninfo",True)
+tagname=parameters.value("tagname","PAT")
 jsonfile=parameters.value("jsonfile","")
 jecfile=parameters.value("jecfile","")
 residual=parameters.value("residual",False)
-era=parameters.value("era","Run2_50ns")
+era=parameters.value("era","Run2_25ns")
 
 print "***** SETUP ************************************"
 print " outfile : "+outfile
