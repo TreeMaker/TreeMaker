@@ -109,9 +109,9 @@ cp -r condorSubNeff myNeff
 cd myNeff
 ./looperNeff.sh
 (after jobs are finished)
-./getResults.sh
 ./getFailures.sh
 ./removeFailures.sh
+./getResults.sh
 ```
 (The script [./removeFailures.sh](./Production/test/condorSubNeff/removeFailures.sh) renames the output files from the failed jobs so they do not get picked up by [./getResults.sh](./Production/test/condorSubNeff/getResults.sh).)
 
