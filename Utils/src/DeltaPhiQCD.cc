@@ -147,7 +147,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
       double recojetseta = -99. , recojetsphi = -99. , deltaphi = -99. ;
       double mindeltaphi3 = -9, mindeltaphi4 = -9, mindeltaphi5 = -9 ;
       double mindeltaphistar = -9, deltaphistar = -9 ;
-      double etacut, mhtphi ;
+      double etacut = 5, mhtphi ;
 
       int mindeltaphi3jetindex = -9, mindeltaphi4jetindex = -9, mindeltaphi5jetindex = -9, mindeltaphistarindex = -9 ;
 
@@ -159,20 +159,20 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
       edm::InputTag MHT_Phi ( "MHT" , "Phi" ) ;
       iEvent.getByLabel ( MHT_Phi , var ) ;
-      mhtphi = *var ;
+      if ( var.isValid() ) mhtphi = *var ;
+	else { std::cout << "Warning: Can not retrieve MHTPhi" << std::cout ; mhtphi = -9 ;}
 
       edm::Handle < edm::View < pat::Jet > > src ;
       iEvent.getByLabel ( JetTagRecoJets_ , src ) ;
 
 
-
+      if ( src.isValid() )
+      {
 
       for ( unsigned int ii = 0; ii < 2; ii++ )
       {
             if ( ii == 0 ) etacut = 5 ;
             if ( ii == 1 ) etacut = 2.4 ;
-            if ( src.isValid() )
-            {
 
             mindeltaphi3 = -9; mindeltaphi4 = -9; mindeltaphi5 = -9; mindeltaphi3jetindex = -9; mindeltaphi4jetindex = -9; mindeltaphi5jetindex = -9;
 
@@ -241,7 +241,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
             } //i
 
-            }//if vsrc.isValid
+      }//if vsrc.isValid
             else 
                   std::cout << "Warning Reco Tag not valid: " << JetTagRecoJets_.label() << std::endl ;
 
@@ -320,7 +320,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
       double genmindeltaphi3 = -9, genmindeltaphi4 = -9, genmindeltaphi5 = -9 ;
       double genmindeltaphistar = -9, gendeltaphistar = -9, gendeltaphi = -9 ;
-      double genetacut ;
+      double genetacut = 5 ;
       double genjetspt, genjetseta, genjetsphi, mindeltar ;
 
       reco::MET::LorentzVector genmhtLorentz    ( 0,0,0,0 ) ;
@@ -334,6 +334,8 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
       edm::Handle < edm::View < reco::GenJet > > gensrc ;
       iEvent.getByLabel( JetTagGenJets_,gensrc ) ;
+      if ( gensrc.isValid() )
+      {
 
       for ( unsigned int l = 0 ; l < gensrc -> size() ; l++ )
             if ( gensrc -> at(l).pt() >= 30 && gensrc -> at(l).eta() <= 5 && gensrc -> at(l).eta() >= -5 ) genmhtLorentz -= gensrc -> at(l).p4() ;
@@ -344,8 +346,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
             if ( ii == 0 ) genetacut = 5   ;
             if ( ii == 1 ) genetacut = 2.4 ;
-            if ( gensrc.isValid() )
-            {
+
             for ( int dumb = 0; dumb < 1000; dumb ++ ) matchfound [dumb] = 0 ;
             genmindeltaphi3 = -9; genmindeltaphi4 = -9; genmindeltaphi5 = -9 ; 
             genmindeltaphi3jetindex = -9; genmindeltaphi4jetindex = -9; genmindeltaphi5jetindex = -9;
@@ -393,9 +394,9 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
             if ( genetacut == 5 )
             {
-                  std::auto_ptr < double > genmhtpt2  (new double ( genmhtLorentz.pt()  ) ) ;
+                  std::auto_ptr < double > genmhtpt2  ( new double ( genmhtLorentz.pt()  ) ) ;
                   iEvent.put ( genmhtpt2 , "GenMHT" ) ;
-                  std::auto_ptr < double > genmhtphi2 (new double( genmhtLorentz.phi() ) ) ;
+                  std::auto_ptr < double > genmhtphi2 ( new double ( genmhtLorentz.phi() ) ) ;
                   iEvent.put ( genmhtphi2 , "GenMHTphi" ) ;
             }
 
@@ -407,10 +408,17 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                   gendeltaphistar = std::abs( reco::deltaPhi( gensrc -> at(k).phi(), genmhtLorentzstar.phi() ) ) ;
                   if ( std::abs( genmindeltaphistar ) > std::abs( gendeltaphistar ) ) { genmindeltaphistar = gendeltaphistar; genmindeltaphistarindex = k; }
             }//k
-            }//if vgensrc.isValid
+      }//if vgensrc.isValid
             else 
+            {
                   std::cout << "Warning Gen Tag not valid: " << JetTagGenJets_.label() << std::endl ;
-      
+
+                  std::auto_ptr < double > genmhtpt2  ( new double ( -9. ) ) ;
+                  iEvent.put ( genmhtpt2 , "GenMHT" ) ;
+                  std::auto_ptr < double > genmhtphi2 ( new double ( -9. ) ) ;
+                  iEvent.put ( genmhtphi2 , "GenMHTphi" ) ;
+
+            }
 
             if ( genetacut == 5 )
             {
@@ -514,8 +522,8 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             neutrino_eta          [i] = -9. ;
             neutrino_phi          [i] = -9. ;
             neutrino_energy       [i] = -9. ;
-            neutrino_pdgid        [i] = 0   ;
-            neutrino_mother_pdgid [i] = 0   ;
+            neutrino_pdgid        [i] =  0  ;
+            neutrino_mother_pdgid [i] =  0  ;
       }//i
 
       if ( genjets.isValid () )
@@ -568,14 +576,14 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
        }//i
 
 
-      std::auto_ptr < std::vector < TLorentzVector > > eutrino_LVector2  ( new std::vector < TLorentzVector > ( neutrino_LVector ) ) ;
-      std::auto_ptr < std::vector < int > > neutrino_pdgid_vector2  ( new std::vector < int > ( neutrino_pdgid_vector ) ) ;
-      std::auto_ptr < std::vector < int > > neutrino_mother_pdgid_vector2  ( new std::vector < int > ( neutrino_mother_pdgid_vector ) ) ;
+      std::auto_ptr < std::vector < TLorentzVector > > eutrino_LVector2               ( new std::vector < TLorentzVector > ( neutrino_LVector             ) ) ;
+      std::auto_ptr < std::vector < int            > > neutrino_pdgid_vector2         ( new std::vector < int            > ( neutrino_pdgid_vector        ) ) ;
+      std::auto_ptr < std::vector < int            > > neutrino_mother_pdgid_vector2  ( new std::vector < int            > ( neutrino_mother_pdgid_vector ) ) ;
 
 
-      iEvent.put ( eutrino_LVector2, "NeutrinoLorentzVector") ;
-      iEvent.put ( neutrino_pdgid_vector2, "NeutrinoPdg") ;
-      iEvent.put ( neutrino_mother_pdgid_vector2, "NeutrinoMotherPdg") ;
+      iEvent.put ( eutrino_LVector2             , "NeutrinoLorentzVector" ) ;
+      iEvent.put ( neutrino_pdgid_vector2       , "NeutrinoPdg"           ) ;
+      iEvent.put ( neutrino_mother_pdgid_vector2, "NeutrinoMotherPdg"     ) ;
 
 
 
