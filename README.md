@@ -40,6 +40,11 @@ Note that all of the background estimation processes are turned *ON* by default 
 
 ## Submit Production to Condor (@ LPC)
 
+To reduce the size of the CMSSW tarball sent to the Condor worker node, there are a few standard directories that can be marked as cached using the script [cache_all.sh](./Production/test/cache_all.sh):
+```
+./cache_all.sh
+```
+
 The [test/condorSub](./Production/test/condorSub/) directory contains all of the relevant scripts.
 If you copy this to another directory and run the [looper.sh](./Production/test/condorSub/looper.sh) script, it will submit one job per file to condor for all of the relevant samples. Example:
 ```
@@ -60,7 +65,7 @@ Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. The 
 ./resubCondor.sh "YYYY-MM-DD HH:MM" myResub.sh
 ./myResub.sh
 ```
-The first parameter, if used, tells the script to look at only the jobs which finished after the specified starting date/time (default=beginning of time, "1970-01-01 00:00"). The second parameter, if used, specifies the name of the output resubmission script (default="resub.sh"). The existing JDL files are resubmitted by the resubmissiong script. If the script finds a failed job, it automatically checks to see if any newer instances of that job were successful (to account for multiple rounds of job submission from the same production folder).
+The first parameter, if used, tells the script to look at only the jobs which finished after the specified starting date/time (default=beginning of time, "1970-01-01 00:00"). The second parameter, if used, specifies the name of the output resubmission script (default="resub.sh"). The existing JDL files are resubmitted by the resubmission script. If the script finds a failed job, it automatically checks to see if any newer instances of that job were successful (to account for multiple rounds of job submission from the same production folder).
 
 ## Calculate Integrated Luminosity
 
@@ -106,7 +111,9 @@ cd myNeff
 (after jobs are finished)
 ./getResults.sh
 ./getFailures.sh
+./removeFailures.sh
 ```
+(The script [./removeFailures.sh](./Production/test/condorSubNeff/removeFailures.sh) renames the output files from the failed jobs so they do not get picked up by [./getResults.sh](./Production/test/condorSubNeff/getResults.sh).)
 
 Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines.
 ```
