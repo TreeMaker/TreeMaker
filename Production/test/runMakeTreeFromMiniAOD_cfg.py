@@ -12,6 +12,7 @@ outfile=parameters.value("outfile","test_run")
 lostlepton=parameters.value("lostlepton", True)
 hadtau=parameters.value("hadtau", True)
 doZinv=parameters.value("doZinv", True)
+QCD=parameters.value("QCD", True)
 
 # other options off by default
 tagandprobe=parameters.value("tagandprobe", False)
@@ -87,6 +88,7 @@ process = makeTreeFromMiniAOD(process,
     numevents=numevents,
     hadtau=hadtau,
     lostlepton=lostlepton,
+    QCD=QCD,
     tagandprobe=tagandprobe,
     applybaseline=applybaseline,
     doZinv=doZinv,
