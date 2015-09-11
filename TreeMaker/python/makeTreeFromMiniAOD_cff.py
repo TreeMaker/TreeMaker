@@ -12,12 +12,12 @@ globaltag="",
 numevents=1000,
 lostlepton=False,
 hadtau=False,
-tagandprobe=True,
+tagandprobe=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
-geninfo=True,
-tagname="PAT",
+geninfo=False,
+tagname="RECO",
 jsonfile="",
 jecfile="",
 residual=False,
@@ -117,6 +117,13 @@ QCD=False,
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
 
     ## ----------------------------------------------------------------------------------------------
+    ## GenHT for stitching together MC samples
+    ## ----------------------------------------------------------------------------------------------
+    process.GenHT = cms.EDProducer('GenHTProducer')
+    process.Baseline += process.GenHT
+    VarsDouble.extend(['GenHT:genHT'])
+    
+    ## ----------------------------------------------------------------------------------------------
     ## PrimaryVertices
     ## ----------------------------------------------------------------------------------------------
     process.goodVertices = cms.EDFilter("VertexSelector",
@@ -150,11 +157,6 @@ QCD=False,
         VectorTLorentzVector.append("genParticles(genParticles)")
         VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
         #VectorInt.append("genParticles:parent(genParticles_parent)")
-        process.GenJets = cms.EDProducer('GenJetsProducer',
-                                         GenJetsTag = cms.InputTag('slimmedGenJets')
-                                         )
-        process.Baseline += process.GenJets
-        VarsDouble.extend(['GenJets:genHT'])
         
 
     ## ----------------------------------------------------------------------------------------------

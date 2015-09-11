@@ -93,9 +93,9 @@ def doLostLeptonBkg(process,geninfo):
     
     process.TreeMaker2.VectorRecoCand.extend(['IsolatedElectronTracksVeto','IsolatedMuonTracksVeto','IsolatedPionTracksVeto'])
     process.TreeMaker2.VectorDouble.extend(['IsolatedElectronTracksVeto:pfcandsmT(IsolatedElectronTracksVeto_MTW)','IsolatedMuonTracksVeto:pfcandsmT(IsolatedMuonTracksVeto_MTW)','IsolatedPionTracksVeto:pfcandsmT(IsolatedPionTracksVeto_MTW)'])
-    # may eventually save track isolation
+    # may eventually save track isolation, activity
     # process.TreeMaker2.VectorDouble.extend(['IsoElectronTrackMiniIso:MiniIso(IsolatedElectronTracksVeto_MiniIso)','IsoMuonTrackMiniIso:MiniIso(IsolatedMuonTracksVeto_MiniIso)','IsoPionTrackMiniIso:MiniIso(IsolatedPionTracksVeto_MiniIso)'])
-    process.TreeMaker2.VectorDouble.extend(['IsoElectronTrackMiniIso:MT2Activity(IsolatedElectronTracksVeto_MT2Activity)','IsoMuonTrackMiniIso:MT2Activity(IsolatedMuonTracksVeto_MT2Activity)','IsoPionTrackMiniIso:MT2Activity(IsolatedPionTracksVeto_MT2Activity)'])
+    # process.TreeMaker2.VectorDouble.extend(['IsoElectronTrackMiniIso:MT2Activity(IsolatedElectronTracksVeto_MT2Activity)','IsoMuonTrackMiniIso:MT2Activity(IsolatedMuonTracksVeto_MT2Activity)','IsoPionTrackMiniIso:MT2Activity(IsolatedPionTracksVeto_MT2Activity)'])
     process.TreeMaker2.VectorRecoCand.extend(['LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdElectron(selectedIDElectrons)'])
     process.TreeMaker2.VectorDouble.extend(['LeptonsNew:MuIDMTW(selectedIDMuons_MTW)','LeptonsNew:ElecIDMTW(selectedIDElectrons_MTW)'])
     process.TreeMaker2.VectorDouble.extend(['IDMuonMiniIso:MiniIso(selectedIDMuons_MiniIso)','IDElectronMiniIso:MiniIso(selectedIDElectrons_MiniIso)'])
@@ -108,7 +108,6 @@ def doLostLeptonBkg(process,geninfo):
     process.TreeMaker2.VectorDouble.extend(['IDIsoMuonMiniIso:MT2Activity(selectedIDIsoMuons_MT2Activity)','IDIsoElectronMiniIso:MT2Activity(selectedIDIsoElectrons_MT2Activity)'])
     if geninfo: # gen information on leptons
         process.TreeMaker2.VectorRecoCand.extend(['GenLeptons:Muon(GenMus)','GenLeptons:Electron(GenEls)','GenLeptons:Tau(GenTaus)'])
-        process.TreeMaker2.VectorDouble.extend(['GenMuonMiniIso:MiniIso(GenMu_MiniIso)','GenElectronMiniIso:MiniIso(GenElec_MiniIso)', 'GenTauMiniIso:MiniIso(GenTau_MiniIso)'])
         process.TreeMaker2.VectorDouble.extend(['GenMuonMiniIso:RA2Activity(GenMu_RA2Activity)','GenElectronMiniIso:RA2Activity(GenElec_RA2Activity)', 'GenTauMiniIso:RA2Activity(GenTau_RA2Activity)'])
         process.TreeMaker2.VectorDouble.extend(['GenMuonMiniIso:MT2Activity(GenMu_MT2Activity)','GenElectronMiniIso:MT2Activity(GenElec_MT2Activity)', 'GenTauMiniIso:MT2Activity(GenTau_MT2Activity)'])
         process.TreeMaker2.VectorRecoCand.extend(['GenLeptons:TauDecayCands(TauDecayCands)','GenLeptons:TauNu(GenTauNu)'])

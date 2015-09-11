@@ -11,9 +11,6 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
-#include "DataFormats/JetReco/interface/Jet.h"
-#include "DataFormats/JetReco/interface/GenJet.h"
-
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 
 #include "TVector2.h"
@@ -24,10 +21,10 @@
 
 
 
-class GenJetsProducer : public edm::EDProducer {
+class GenHTProducer : public edm::EDProducer {
 public:
-  explicit GenJetsProducer(const edm::ParameterSet&);
-  ~GenJetsProducer();
+  explicit GenHTProducer(const edm::ParameterSet&);
+  ~GenHTProducer();
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
@@ -47,20 +44,15 @@ private:
   // ----------member data ---------------------------
 };
 
-GenJetsProducer::GenJetsProducer(const edm::ParameterSet& iConfig)
+GenHTProducer::GenHTProducer(const edm::ParameterSet& iConfig)
 {
-  //register your producer
-  GenJetsTag_   		= 	iConfig.getParameter<edm::InputTag >("GenJetsTag");
 
   produces<double>("genHT");
-  const std::string s_GenJets("GenJets");
-  produces<std::vector<reco::GenJet> > (s_GenJets).setBranchAlias(s_GenJets);
-
   genHT_ = new double;
 
 }
 
-GenJetsProducer::~GenJetsProducer()
+GenHTProducer::~GenHTProducer()
 {
 	
   // do anything here that needs to be done at desctruction time
@@ -69,9 +61,9 @@ GenJetsProducer::~GenJetsProducer()
 	
 }
 
-void GenJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void GenHTProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  //  std::cout<<"Running GenJetsProducer"<<std::endl;
+  //  std::cout<<"Running GenHTProducer"<<std::endl;
  
   using namespace edm;
 
@@ -104,64 +96,46 @@ void GenJetsProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<double > genHT_(new double(genHT));
   iEvent.put(genHT_, "genHT");
   
-  // now get the gen jets
-  std::vector<reco::GenJet> GenJets_;
-    edm::Handle<edm::View<reco::GenJet> > GenJetsHandle;
-  iEvent.getByLabel(GenJetsTag_, GenJetsHandle);
-  if(GenJetsHandle.isValid())
-    {
-      for(unsigned int ijet=0; ijet<GenJetsHandle->size(); ++ijet)
-	{
-	  GenJets_.push_back(GenJetsHandle->at(ijet));
-	}
-    }
-
-  const std::string s_GenJets("GenJets");
-  std::auto_ptr<std::vector<reco::GenJet> > gjp(new std::vector<reco::GenJet>(GenJets_));
-  iEvent.put(gjp,s_GenJets);
- 
-  
-
 }
 
 // ------------ method called once each job just before starting event loop  ------------
 void
-GenJetsProducer::beginJob()
+GenHTProducer::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-GenJetsProducer::endJob() {
+GenHTProducer::endJob() {
 }
 
 // ------------ method called when starting to processes a run  ------------
 void 
-GenJetsProducer::beginRun(edm::Run&, edm::EventSetup const&)
+GenHTProducer::beginRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
 void 
-GenJetsProducer::endRun(edm::Run&, edm::EventSetup const&)
+GenHTProducer::endRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
 void 
-GenJetsProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
+GenHTProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
 void 
-GenJetsProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
+GenHTProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-GenJetsProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+GenHTProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   //The following says we do not know what parameters are allowed so do no validation
   // Please change this to state exactly what you do use, even if it is no parameters
   edm::ParameterSetDescription desc;
@@ -170,4 +144,4 @@ GenJetsProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) 
 }
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(GenJetsProducer);
+DEFINE_FWK_MODULE(GenHTProducer);
