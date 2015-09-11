@@ -20,7 +20,7 @@ jsonfile=parameters.value("jsonfile","")
 jecfile=parameters.value("jecfile","")
 residual=parameters.value("residual",False)
 era=parameters.value("era","Run2_50ns")
-QCD=parameters.value("QCD", True)
+QCD=parameters.value("QCD", False)
 
 print "***** SETUP ************************************"
 print " outfile : "+outfile
