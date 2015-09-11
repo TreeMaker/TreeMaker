@@ -12,7 +12,7 @@ globaltag="",
 numevents=1000,
 lostlepton=False,
 hadtau=False,
-tagandprobe=False,
+tagandprobe=True,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
@@ -149,6 +149,12 @@ residual=False,
         VectorTLorentzVector.append("genParticles(genParticles)")
         VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
         #VectorInt.append("genParticles:parent(genParticles_parent)")
+        process.GenJets = cms.EDProducer('GenJetsProducer',
+                                         GenJetsTag = cms.InputTag('slimmedGenJets')
+                                         )
+        process.Baseline += process.GenJets
+        VarsDouble.extend(['GenJets:genHT'])
+        
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
@@ -321,7 +327,7 @@ residual=False,
         UseMiniIsolation = cms.bool(True),
         muIsoValue       = cms.double(0.2),
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
-        METTag           = METTag, 
+        METTag           = METTag,
     )
     process.Baseline += process.LeptonsNewTag
     VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
