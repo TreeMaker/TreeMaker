@@ -44,16 +44,16 @@ public:
       
 private:
       virtual void beginJob () ;
-      virtual void produce(edm::Event&, const edm::EventSetup&);
+      virtual void produce ( edm::Event&, const edm::EventSetup& ) ;
       virtual void endJob () ;
       
       virtual void beginRun( edm::Run&, edm::EventSetup const& ) ;
       virtual void endRun( edm::Run&, edm::EventSetup const& ) ;
-      virtual void beginLuminosityBlock( edm::LuminosityBlock&, edm::EventSetup const& ) ;
-      virtual void endLuminosityBlock( edm::LuminosityBlock&, edm::EventSetup const& ) ;
+      virtual void beginLuminosityBlock ( edm::LuminosityBlock&, edm::EventSetup const& ) ;
+      virtual void endLuminosityBlock ( edm::LuminosityBlock&, edm::EventSetup const& ) ;
       edm::InputTag JetTagRecoJets_ ;
       edm::InputTag JetTagGenJets_ ;
-      std::string btagname_ ;      
+      std::string   btagname_ ;      
       edm::InputTag GenParticleTag_ ;
       edm::InputTag metTag_ ;
 
@@ -78,38 +78,38 @@ DeltaPhiQCD::DeltaPhiQCD ( const edm::ParameterSet& iConfig )
 
 
       //register your product
-      JetTagRecoJets_ = iConfig.getParameter<edm::InputTag> ( "JetTagRecoJets" ) ;
-      btagname_       = iConfig.getParameter<std::string>   ( "BTagInputTag"   ) ;
-      JetTagGenJets_  = iConfig.getParameter<edm::InputTag> ( "JetTagGenJets"  ) ;
-      GenParticleTag_ = iConfig.getParameter<edm::InputTag> ( "GenParticleTag" ) ;
-      metTag_       = iConfig.getParameter<edm::InputTag> ( "GenMETTag"      ) ;
+      JetTagRecoJets_ = iConfig.getParameter < edm::InputTag > ( "JetTagRecoJets" ) ;
+      btagname_       = iConfig.getParameter < std::string   > ( "BTagInputTag"   ) ;
+      JetTagGenJets_  = iConfig.getParameter < edm::InputTag > ( "JetTagGenJets"  ) ;
+      GenParticleTag_ = iConfig.getParameter < edm::InputTag > ( "GenParticleTag" ) ;
+      metTag_         = iConfig.getParameter < edm::InputTag > ( "GenMETTag"      ) ;
 
 
-      produces < std::vector <TLorentzVector> > ( "RJetLorentzVector" ) ;
-      produces < std::vector < double > > ( "RJetCSV" ) ;
-      produces < std::vector < double > > ( "RJetPartonFlavor" ) ;
-      produces < std::vector < double > > ( "RJetDeltaPhi" ) ;
+      produces < std::vector < TLorentzVector > > ( "RJetLorentzVector"     ) ;
+      produces < std::vector < TLorentzVector > > ( "GenLorentzVector"      ) ;
+      produces < std::vector < TLorentzVector > > ( "NeutrinoLorentzVector" ) ;
 
-      produces < double > ( "GenMHT" ) ;
+      produces < std::vector < double > > ( "GenDeltaPhi"          ) ;
+      produces < std::vector < double > > ( "RJetDeltaPhi"         ) ;
+      produces < std::vector < double > > ( "RJetMinDeltaPhiEta24" ) ;
+      produces < std::vector < double > > ( "RJetMinDeltaPhiEta5"  ) ;
+      produces < std::vector < double > > ( "GenMinDeltaPhiEta24"  ) ;
+      produces < std::vector < double > > ( "GenMinDeltaPhiEta5"   ) ;
+
+      produces < std::vector < std::string > > ( "minDeltaPhiNames" ) ;
+
+      produces < std::vector < int > > ( "NeutrinoPdg"               ) ;
+      produces < std::vector < int > > ( "NeutrinoMotherPdg"         ) ;
+      produces < std::vector < int > > ( "RJetMinDeltaPhiIndexEta24" ) ;
+      produces < std::vector < int > > ( "RJetMinDeltaPhiIndexEta5"  ) ;
+      produces < std::vector < int > > ( "GenMinDeltaPhiIndexEta24"  ) ;
+      produces < std::vector < int > > ( "GenMinDeltaPhiIndexEta5"   ) ;
+
+      produces < double > ( "GenMHT"    ) ;
       produces < double > ( "GenMHTphi" ) ;
-
-      produces < double > ( "GenMET" ) ;
+      produces < double > ( "GenMET"    ) ;
       produces < double > ( "GenMETphi" ) ;
 
-      produces < std::vector <TLorentzVector> > ( "GenJetLorentzVector" ) ;
-      produces < std::vector < double > > ( "GenJetCSV" ) ;
-      produces < std::vector < double > > ( "GenJetPartonFlavor" ) ;
-      produces < std::vector < double > > ( "GenJetDeltaPhi" ) ;
-
-      produces < std::vector < TLorentzVector > > ( "NeutrinoLorentzVector" ) ;
-      produces < std::vector < int > > ( "NeutrinoPdg" ) ;
-      produces < std::vector < int > > ( "NeutrinoMotherPdg" ) ;
-
-
-      produces < std::vector < double > >      ( "minDeltaPhiEta24" ) ;
-      produces < std::vector < std::string > > ( "minDeltaPhiEta24Names" ) ;
-      produces < std::vector < double > >      ( "minDeltaPhiEta5" ) ;
-      produces < std::vector < std::string > > ( "minDeltaPhiEta5Names" ) ;
 
 }
 
@@ -135,19 +135,26 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
       using namespace std;
 
       std::vector < TLorentzVector > JetVector;
-      std::vector < double >  csv_vector ;
-      std::vector < double >  partonflavor_vector ;
+ 
       std::vector < double >  deltaphi_vector ;
+      std::vector < double >  RJetminDeltaphi5, RJetminDeltaphi24 ;
 
-      JetVector        .clear() ;
-      csv_vector       .clear() ;
-      partonflavor_vector.clear() ;
-      deltaphi_vector    .clear() ;
+      std::vector < int >  RJetminDeltaphiIndex24,  RJetminDeltaphiIndex5;
+
+      std::vector < std::string > minDeltaphiNames ;
 
       edm::Handle < double > var ;
 
-      std::vector < double >  minDeltaphi5,minDeltaphi24;
-      std::vector < std::string >  minDeltaphi5Names, minDeltaphi24Names;
+
+      double savephi [8][2], saveeta [8][2] ;
+      double recojetspt = -99. , recojetseta = -99. , recojetsphi = -99. , deltaphi = -99. ;
+      double mindeltaphi3 = -9, mindeltaphi4 = -9, mindeltaphi5 = -9 ;
+      double mindeltaphistar = -9, deltaphistar = -9 ;
+      double etacut, mhtphi ;
+
+      int mindeltaphi3jetindex = -9, mindeltaphi4jetindex = -9, mindeltaphi5jetindex = -9, mindeltaphistarindex = -9 ;
+
+      reco::MET::LorentzVector mhtLorentzstar ( 0,0,0,0 ) ;
 
 //      edm::InputTag MHT_Pt("MHT","Pt");
 //      iEvent.getByLabel(MHT_Pt,var);
@@ -155,23 +162,12 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
       edm::InputTag MHT_Phi ( "MHT" , "Phi" ) ;
       iEvent.getByLabel ( MHT_Phi , var ) ;
-      double mhtphi = *var ;
-
-      double savephi [8][2], saveeta [8][2] ;
+      mhtphi = *var ;
 
       edm::Handle < edm::View < pat::Jet > > src ;
       iEvent.getByLabel ( JetTagRecoJets_ , src ) ;
-      double  recojetspt = -99. , recojetseta = -99. , recojetsphi = -99. , recojetscsv = -99. , deltaphi = -99. , partonflavor = 0. ;
 
-      std::string pt, eta , phi, btag, dphi, partonflavor_str ;
 
-      reco::MET::LorentzVector mhtLorentzstar ( 0,0,0,0 ) ;
-
-      double mindeltaphi3 = -9, mindeltaphi4 = -9, mindeltaphi5 = -9 ;
-      double mindeltaphistar = -9, deltaphistar = -9 ;
-      double etacut ;
-      int mindeltaphi3jetindex = -9, mindeltaphi4jetindex = -9, mindeltaphi5jetindex = -9, mindeltaphistarindex = -9 ; 
-      std::string name ;
 
 
       for ( unsigned int ii = 0; ii < 2; ii++ )
@@ -198,20 +194,17 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                         recojetspt  = src -> at(i).pt() ;
                         recojetsphi = src -> at(i).phi() ;
                         recojetseta = src -> at(i).eta() ;
-                        recojetscsv = src -> at(i).bDiscriminator(btagname_) ;
                         deltaphi = std::abs( reco::deltaPhi( src -> at(i).phi() , mhtphi ) ) ;
-                        partonflavor = src -> at(i).partonFlavour();
 
                         if (std::abs( mindeltaphi3 ) > std::abs( deltaphi ) && index < 3 ) { mindeltaphi3 = deltaphi; mindeltaphi3jetindex = index+1; }
                         if (std::abs( mindeltaphi4 ) > std::abs( deltaphi ) && index < 4 ) { mindeltaphi4 = deltaphi; mindeltaphi4jetindex = index+1; }
                         if (std::abs( mindeltaphi5 ) > std::abs( deltaphi ) && index < 5 ) { mindeltaphi5 = deltaphi; mindeltaphi5jetindex = index+1; }
+
                         if ( etacut == 5 ) 
                         {
                               TLorentzVector dumb_vector;
                               dumb_vector.SetPtEtaPhiE( recojetspt, recojetseta, recojetsphi, src -> at(i).energy() );
                               JetVector.push_back( dumb_vector ) ;
-                              csv_vector.push_back ( recojetscsv ) ;
-                              partonflavor_vector.push_back ( partonflavor ) ;
                               deltaphi_vector.push_back ( deltaphi ) ;
                         }
                         
@@ -221,9 +214,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                         recojetspt = -9 ;
                         recojetsphi = -9 ;
                         recojetseta = -9 ;
-                        recojetscsv = -9 ;
                         deltaphi = -9 ;
-                        partonflavor = -9 ;
 
                   }//else
 
@@ -237,14 +228,8 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             if ( etacut == 5 )
             {
 
-                  std::auto_ptr < std::vector < TLorentzVector >  > JetVector2  ( new std::vector < TLorentzVector > (JetVector) ) ;
+                  std::auto_ptr < std::vector < TLorentzVector > > JetVector2  ( new std::vector < TLorentzVector > ( JetVector ) ) ;
                   iEvent.put ( JetVector2 , "RJetLorentzVector" ) ;
-
-                  std::auto_ptr < std::vector < double > > csv_vector2 ( new std::vector < double > ( csv_vector ) ) ;
-                  iEvent.put ( csv_vector2 , "RJetCSV" ) ;
-
-                  std::auto_ptr < std::vector < double > > partonflavor_vector2  ( new std::vector < double > ( partonflavor_vector ) ) ;
-                  iEvent.put ( partonflavor_vector2 , "RJetPartonFlavor" ) ;
 
                   std::auto_ptr < std::vector < double > > deltaphi_vector2  ( new std::vector < double > ( deltaphi_vector ) ) ;
                   iEvent.put ( deltaphi_vector2 , "RJetDeltaPhi" ) ;
@@ -255,11 +240,14 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             mindeltaphistar = -9; mindeltaphistarindex = -9;
             for ( unsigned int i = 0; i < src -> size(); i++ )
             {
+
                   mhtLorentzstar.SetPxPyPzE ( 0,0,0,0 ) ;
                   for( unsigned int j = 0; j < src -> size(); j++ )
                         if ( src -> at(j).pt() >= 30 && src -> at(j).eta() <= etacut && src -> at(j).eta() >= (-1) * etacut && j != i) mhtLorentzstar -= src->at(j).p4();
                   deltaphistar = std::abs( reco::deltaPhi( src->at(i).phi(), mhtLorentzstar.phi() ) );
-                  if ( std::abs( mindeltaphistar ) > std::abs( deltaphistar ) ) { mindeltaphistar = deltaphistar; mindeltaphistarindex = i; }
+
+                  if ( std::abs ( mindeltaphistar ) > std::abs ( deltaphistar ) ) { mindeltaphistar = deltaphistar; mindeltaphistarindex = i; }
+
             } //i
 
             }//if vsrc.isValid
@@ -269,17 +257,15 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             if ( etacut == 5 ) 
             { 
 
-                  minDeltaphi5Names.push_back ( "RJetMinDeltaPhiStarEta5"        ) ; minDeltaphi5.push_back ( mindeltaphistar      ) ;
-                  minDeltaphi5Names.push_back ( "RJetMinDeltaPhiStarIndexEta5"     ) ; minDeltaphi5.push_back ( mindeltaphistarindex ) ;
-      
-                  minDeltaphi5Names.push_back ( "RJetMinDeltaPhiEta5Njle3"       ) ; minDeltaphi5.push_back ( mindeltaphi3       ) ;
-                  minDeltaphi5Names.push_back ( "RJetMinDeltaPhiJetIndexEta5Njle3" ) ; minDeltaphi5.push_back ( mindeltaphi3jetindex ) ;
-      
-                  minDeltaphi5Names.push_back ( "RJetMinDeltaPhiEta5Njle4"       ) ; minDeltaphi5.push_back ( mindeltaphi4       ) ;
-                  minDeltaphi5Names.push_back ( "RJetMinDeltaPhiJetIndexEta5Njle4" ) ; minDeltaphi5.push_back ( mindeltaphi4jetindex ) ;
-      
-                  minDeltaphi5Names.push_back ( "RJetMinDeltaPhiEta5Njle5"       ) ; minDeltaphi5.push_back ( mindeltaphi5       ) ;
-                  minDeltaphi5Names.push_back ( "RJetMinDeltaPhiJetIndexEta5Njle5" ) ; minDeltaphi5.push_back ( mindeltaphi5jetindex ) ;
+                  RJetminDeltaphi5     .push_back ( mindeltaphi3         ) ;
+                  RJetminDeltaphi5     .push_back ( mindeltaphi4         ) ;
+                  RJetminDeltaphi5     .push_back ( mindeltaphi5         ) ;
+                  RJetminDeltaphi5     .push_back ( mindeltaphistar      ) ;
+
+                  RJetminDeltaphiIndex5.push_back ( mindeltaphi3jetindex ) ;
+                  RJetminDeltaphiIndex5.push_back ( mindeltaphi4jetindex ) ;
+                  RJetminDeltaphiIndex5.push_back ( mindeltaphi5jetindex ) ;
+                  RJetminDeltaphiIndex5.push_back ( mindeltaphistarindex ) ;
 
             }
 
@@ -287,17 +273,15 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             if ( etacut == 2.4 ) 
             {
 
-                  minDeltaphi24Names.push_back ( "RJetMinDeltaPhiStarEta24"        ) ; minDeltaphi24.push_back ( mindeltaphistar      ) ;
-                  minDeltaphi24Names.push_back ( "RJetMinDeltaPhiStarIndexEta24"     ) ; minDeltaphi24.push_back ( mindeltaphistarindex ) ;
+                  RJetminDeltaphi24     .push_back ( mindeltaphi3         ) ;
+                  RJetminDeltaphi24     .push_back ( mindeltaphi4         ) ;
+                  RJetminDeltaphi24     .push_back ( mindeltaphi5         ) ;
+                  RJetminDeltaphi24     .push_back ( mindeltaphistar      ) ;
 
-                  minDeltaphi24Names.push_back ( "RJetMinDeltaPhiEta24Njle3"       ) ; minDeltaphi24.push_back ( mindeltaphi3       ) ;
-                  minDeltaphi24Names.push_back ( "RJetMinDeltaPhiJetIndexEta24Njle3" ) ; minDeltaphi24.push_back ( mindeltaphi3jetindex ) ;
-
-                  minDeltaphi24Names.push_back ( "RJetMinDeltaPhiEta24Njle4"       ) ; minDeltaphi24.push_back ( mindeltaphi4       ) ;
-                  minDeltaphi24Names.push_back ( "RJetMinDeltaPhiJetIndexEta24Njle4" ) ; minDeltaphi24.push_back ( mindeltaphi4jetindex ) ;
-
-                  minDeltaphi24Names.push_back ( "RJetMinDeltaPhiEta24Njle5"       ) ; minDeltaphi24.push_back ( mindeltaphi5       ) ;
-                  minDeltaphi24Names.push_back ( "RJetMinDeltaPhiJetIndexEta24Njle5" ) ; minDeltaphi24.push_back ( mindeltaphi5jetindex ) ;
+                  RJetminDeltaphiIndex24.push_back ( mindeltaphi3jetindex ) ;
+                  RJetminDeltaphiIndex24.push_back ( mindeltaphi4jetindex ) ;
+                  RJetminDeltaphiIndex24.push_back ( mindeltaphi5jetindex ) ;
+                  RJetminDeltaphiIndex24.push_back ( mindeltaphistarindex ) ;
 
             }
 
@@ -305,15 +289,28 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
       }//ii
 
 
+      minDeltaphiNames.push_back ( "Njle3"           ) ; 
+      minDeltaphiNames.push_back ( "Njle4"           ) ;
+      minDeltaphiNames.push_back ( "Njle5"           ) ;
+      minDeltaphiNames.push_back ( "minDeltaPhiStar" ) ;
 
 
+      std::auto_ptr < std::vector < double > > RJetminDeltaphi24_2      ( new std::vector < double > ( RJetminDeltaphi24      ) ) ;
+      iEvent.put ( RJetminDeltaphi24_2      , "RJetMinDeltaPhiEta24"      ) ;
+
+      std::auto_ptr < std::vector < double > > RJetminDeltaphi5_2       ( new std::vector < double > ( RJetminDeltaphi5       ) ) ;
+      iEvent.put ( RJetminDeltaphi5_2       , "RJetMinDeltaPhiEta5"       ) ;
+
+      std::auto_ptr < std::vector < int    > > RJetminDeltaphiIndex24_2 ( new std::vector < int    > ( RJetminDeltaphiIndex24 ) ) ;
+      iEvent.put ( RJetminDeltaphiIndex24_2 , "RJetMinDeltaPhiIndexEta24" ) ;
+
+      std::auto_ptr < std::vector < int    > > RJetminDeltaphiIndex5_2  ( new std::vector < int    > ( RJetminDeltaphiIndex5  ) ) ;
+      iEvent.put ( RJetminDeltaphiIndex5_2  , "RJetMinDeltaPhiIndexEta5"  ) ;
+
+      std::auto_ptr < std::vector < std::string > > minDeltaphiNames_2  ( new std::vector < std::string > ( minDeltaphiNames  ) ) ;
+      iEvent.put ( minDeltaphiNames_2       , "minDeltaPhiNames"          ) ;
 
 
-
-
-
-
-            
 
 
 
@@ -324,32 +321,28 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
 
       std::vector < TLorentzVector > GenJetVector ;
-      std::vector < double >  Gencsv_vector ;
-      std::vector < double >  Genpartonflavor_vector ;
+
       std::vector < double >  Gendeltaphi_vector ;
+      std::vector < double >  GenminDeltaphi5, GenminDeltaphi24 ;
 
-      GenJetVector        .clear() ;
-      Gencsv_vector       .clear() ;
-      Genpartonflavor_vector.clear() ;
-      Gendeltaphi_vector    .clear() ;
+      std::vector < int >  GenminDeltaphiIndex5, GenminDeltaphiIndex24 ;
 
-
+      double genmindeltaphi3 = -9, genmindeltaphi4 = -9, genmindeltaphi5 = -9 ;
+      double genmindeltaphistar = -9, gendeltaphistar = -9, gendeltaphi = -9 ;
+      double genetacut ;
+      double genjetspt, genjetseta, genjetsphi, mindeltar ;
 
       reco::MET::LorentzVector genmhtLorentz    ( 0,0,0,0 ) ;
       reco::MET::LorentzVector genmhtLorentzstar( 0,0,0,0 ) ;
 
       std::string genname ;
+
       unsigned int  matchfound [1000] ;
-      double genmindeltaphi3 = -9, genmindeltaphi4 = -9, genmindeltaphi5 = -9 ;
-      double genmindeltaphistar = -9, gendeltaphistar = -9 ;
-      double genetacut ;
+      int mindeltarindex ;
       int genmindeltaphi3jetindex = -9, genmindeltaphi4jetindex = -9, genmindeltaphi5jetindex = -9, genmindeltaphistarindex = -9 ;
 
-      double gendeltaphi = -9 ;
       edm::Handle < edm::View < reco::GenJet > > gensrc ;
       iEvent.getByLabel( JetTagGenJets_,gensrc ) ;
-      double  genjetspt, genjetseta, genjetsphi, mindeltar ;
-      int mindeltarindex ;
 
       for ( unsigned int l = 0 ; l < gensrc -> size() ; l++ )
             if ( gensrc -> at(l).pt() >= 30 && gensrc -> at(l).eta() <= 5 && gensrc -> at(l).eta() >= -5 ) genmhtLorentz -= gensrc -> at(l).p4() ;
@@ -431,16 +424,10 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             if ( genetacut == 5 )
             {
                   std::auto_ptr < std::vector < TLorentzVector >  > GenJetVector2   ( new std::vector < TLorentzVector > (GenJetVector) ) ;
-                  iEvent.put ( GenJetVector2 , "GenJetLorentzVector" ) ;
-
-                  std::auto_ptr < std::vector < double > > Gencsv_vector2         ( new std::vector < double > ( Gencsv_vector ) ) ;
-                  iEvent.put ( Gencsv_vector2 , "GenJetCSV" ) ;
-
-                  std::auto_ptr < std::vector < double > > Genpartonflavor_vector2  ( new std::vector < double > ( Genpartonflavor_vector ) ) ;
-                  iEvent.put ( Genpartonflavor_vector2 , "GenJetPartonFlavor" ) ;
+                  iEvent.put ( GenJetVector2 , "GenLorentzVector" ) ;
 
                   std::auto_ptr < std::vector < double > > Gendeltaphi_vector2      ( new std::vector < double > ( Gendeltaphi_vector ) ) ;
-                  iEvent.put ( Gendeltaphi_vector2 , "GenJetDeltaPhi" ) ;
+                  iEvent.put ( Gendeltaphi_vector2 , "GenDeltaPhi" ) ;
 
             }
 
@@ -448,17 +435,15 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             if ( genetacut == 5 )
             {
 
-                  minDeltaphi5Names.push_back ( "GenMinDeltaPhiStarEta5"        ) ; minDeltaphi5.push_back ( genmindeltaphistar      ) ;
-                  minDeltaphi5Names.push_back ( "GenMinDeltaPhiStarIndexEta5"     ) ; minDeltaphi5.push_back ( genmindeltaphistarindex ) ;
+                  GenminDeltaphi5     .push_back ( genmindeltaphi3         ) ;
+                  GenminDeltaphi5     .push_back ( genmindeltaphi4         ) ;
+                  GenminDeltaphi5     .push_back ( genmindeltaphi5         ) ;
+                  GenminDeltaphi5     .push_back ( genmindeltaphistar      ) ;
 
-                  minDeltaphi5Names.push_back ( "GenMinDeltaPhiEta5Njle3"       ) ; minDeltaphi5.push_back ( genmindeltaphi3       ) ;
-                  minDeltaphi5Names.push_back ( "GenMinDeltaPhiJetIndexEta5Njle3" ) ; minDeltaphi5.push_back ( genmindeltaphi3jetindex ) ;
-
-                  minDeltaphi5Names.push_back ( "GenMinDeltaPhiEta5Njle4"       ) ; minDeltaphi5.push_back ( genmindeltaphi4       ) ;
-                  minDeltaphi5Names.push_back ( "GenMinDeltaPhiJetIndexEta5Njle4" ) ; minDeltaphi5.push_back ( genmindeltaphi4jetindex ) ;
-
-                  minDeltaphi5Names.push_back ( "GenMinDeltaPhiEta5Njle5"       ) ; minDeltaphi5.push_back ( genmindeltaphi5       ) ;
-                  minDeltaphi5Names.push_back ( "GenMinDeltaPhiJetIndexEta5Njle5" ) ; minDeltaphi5.push_back ( genmindeltaphi5jetindex ) ;
+                  GenminDeltaphiIndex5.push_back ( genmindeltaphi3jetindex ) ;
+                  GenminDeltaphiIndex5.push_back ( genmindeltaphi4jetindex ) ;
+                  GenminDeltaphiIndex5.push_back ( genmindeltaphi5jetindex ) ;
+                  GenminDeltaphiIndex5.push_back ( genmindeltaphistarindex ) ;
 
             }
 
@@ -466,33 +451,56 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             if ( genetacut == 2.4 )
             {
 
-                  minDeltaphi24Names.push_back ( "GenMinDeltaPhiStarEta24"        ) ; minDeltaphi24.push_back ( genmindeltaphistar      ) ;
-                  minDeltaphi24Names.push_back ( "GenMinDeltaPhiStarIndexEta24"     ) ; minDeltaphi24.push_back ( genmindeltaphistarindex ) ;
+                  GenminDeltaphi5     .push_back ( genmindeltaphi3         ) ;
+                  GenminDeltaphi5     .push_back ( genmindeltaphi4         ) ;
+                  GenminDeltaphi5     .push_back ( genmindeltaphi5         ) ;
+                  GenminDeltaphi5     .push_back ( genmindeltaphistar      ) ;
 
-                  minDeltaphi24Names.push_back ( "GenMinDeltaPhiEta24Njle3"       ) ; minDeltaphi24.push_back ( genmindeltaphi3       ) ;
-                  minDeltaphi24Names.push_back ( "GenMinDeltaPhiJetIndexEta24Njle3" ) ; minDeltaphi24.push_back ( genmindeltaphi3jetindex ) ;
-
-                  minDeltaphi24Names.push_back ( "GenMinDeltaPhiEta24Njle4"       ) ; minDeltaphi24.push_back ( genmindeltaphi4       ) ;
-                  minDeltaphi24Names.push_back ( "GenMinDeltaPhiJetIndexEta24Njle4" ) ; minDeltaphi24.push_back ( genmindeltaphi4jetindex ) ;
-
-                  minDeltaphi24Names.push_back ( "GenMinDeltaPhiEta24Njle5"       ) ; minDeltaphi24.push_back ( genmindeltaphi5       ) ;
-                  minDeltaphi24Names.push_back ( "GenMinDeltaPhiJetIndexEta24Njle5" ) ; minDeltaphi24.push_back ( genmindeltaphi5jetindex ) ;
+                  GenminDeltaphiIndex5.push_back ( genmindeltaphi3jetindex ) ;
+                  GenminDeltaphiIndex5.push_back ( genmindeltaphi4jetindex ) ;
+                  GenminDeltaphiIndex5.push_back ( genmindeltaphi5jetindex ) ;
+                  GenminDeltaphiIndex5.push_back ( genmindeltaphistarindex ) ;
 
             }
 
       }//ii
 
-      std::auto_ptr < std::vector < double > > minDeltaphi24_2  ( new std::vector < double > ( minDeltaphi24 ) ) ;
-      iEvent.put ( minDeltaphi24_2      , "minDeltaPhiEta24"      ) ;
+      std::auto_ptr < std::vector < double > > GenminDeltaphi24_2      ( new std::vector < double > ( GenminDeltaphi24      ) ) ;
+      iEvent.put ( GenminDeltaphi24_2      , "GenMinDeltaPhiEta24"      ) ;
 
-      std::auto_ptr < std::vector < std::string > > minDeltaphi24Names_2  ( new std::vector < std::string > ( minDeltaphi24Names ) ) ;
-      iEvent.put ( minDeltaphi24Names_2 , "minDeltaPhiEta24Names" ) ;
+      std::auto_ptr < std::vector < double > > GenminDeltaphi5_2       ( new std::vector < double > ( GenminDeltaphi5       ) ) ;
+      iEvent.put ( GenminDeltaphi5_2       , "GenMinDeltaPhiEta5"       ) ;
 
-      std::auto_ptr < std::vector < double > > minDeltaphi5_2  ( new std::vector < double > ( minDeltaphi5 ) ) ;
-      iEvent.put ( minDeltaphi5_2       , "minDeltaPhiEta5"       ) ;
+      std::auto_ptr < std::vector < int    > > GenminDeltaphiIndex24_2 ( new std::vector < int    > ( GenminDeltaphiIndex24 ) ) ;
+      iEvent.put ( GenminDeltaphiIndex24_2 , "GenMinDeltaPhiIndexEta24" ) ;
 
-      std::auto_ptr < std::vector < std::string > > minDeltaphi5Names_2  ( new std::vector < std::string > ( minDeltaphi5Names ) ) ;
-      iEvent.put ( minDeltaphi5Names_2  , "minDeltaPhiEta5Names"  ) ;
+      std::auto_ptr < std::vector < int    > > GenminDeltaphiIndex5_2  ( new std::vector < int    > ( GenminDeltaphiIndex5  ) ) ;
+      iEvent.put ( GenminDeltaphiIndex5_2  , "GenMinDeltaPhiIndexEta5"  ) ;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -502,18 +510,20 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
       std::vector < int > neutrino_pdgid_vector, neutrino_mother_pdgid_vector ;
 
       edm::Handle < edm::View < reco::GenParticle > > genjets ;
-      iEvent.getByLabel ( GenParticleTag_,genjets ) ;
+      iEvent.getByLabel ( GenParticleTag_, genjets ) ;
 
       double neutrino_pt [6], neutrino_eta [6], neutrino_phi [6], neutrino_energy [6] ;
+
       int neutrino_pdgid [6], neutrino_mother_pdgid [6], place;
-          
+
+         
       for ( int i = 1; i < 5; i++ )
       {
-            neutrino_pt         [i] = -9. ;
-            neutrino_eta        [i] = -9. ;
-            neutrino_phi        [i] = -9. ;
+            neutrino_pt           [i] = -9. ;
+            neutrino_eta          [i] = -9. ;
+            neutrino_phi          [i] = -9. ;
             neutrino_energy       [i] = -9. ;
-            neutrino_pdgid      [i] = 0   ;
+            neutrino_pdgid        [i] = 0   ;
             neutrino_mother_pdgid [i] = 0   ;
       }//i
 
@@ -532,20 +542,21 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                         {
                               for ( int k = 4; k >= place; k-- )
                               {
-                                    neutrino_pt        [k + 1] = neutrino_pt        [k] ;
-                                    neutrino_eta       [k + 1] = neutrino_eta       [k] ;
-                                    neutrino_phi       [k + 1] = neutrino_phi       [k] ;
-                                    neutrino_energy      [k + 1] = neutrino_energy      [k] ;
-                                    neutrino_pdgid       [k + 1] = neutrino_pdgid       [k] ;
-                                    neutrino_mother_pdgid[k + 1] = neutrino_mother_pdgid[k] ;
+                                    neutrino_pt           [k + 1] = neutrino_pt           [k] ;
+                                    neutrino_eta          [k + 1] = neutrino_eta          [k] ;
+                                    neutrino_phi          [k + 1] = neutrino_phi          [k] ;
+                                    neutrino_energy       [k + 1] = neutrino_energy       [k] ;
+                                    neutrino_pdgid        [k + 1] = neutrino_pdgid        [k] ;
+                                    neutrino_mother_pdgid [k + 1] = neutrino_mother_pdgid [k] ;
                               }//k
 
-                              neutrino_pt         [place] = genjets -> at(i).pt();
-                              neutrino_eta        [place] = genjets -> at(i).eta();
-                              neutrino_phi        [place] = genjets -> at(i).phi();
+                              neutrino_pt           [place] = genjets -> at(i).pt();
+                              neutrino_eta          [place] = genjets -> at(i).eta();
+                              neutrino_phi          [place] = genjets -> at(i).phi();
                               neutrino_energy       [place] = genjets -> at(i).energy();
-                              neutrino_pdgid      [place] = genjets -> at(i).pdgId();
+                              neutrino_pdgid        [place] = genjets -> at(i).pdgId();
                               neutrino_mother_pdgid [place] = genjets -> at(i).mother()->pdgId();
+
                         }//place
                   }//if abs
             }//i
@@ -559,9 +570,10 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             TLorentzVector dumb_vector ;
             dumb_vector.SetPtEtaPhiE( neutrino_pt[i], neutrino_eta[i], neutrino_phi[i], neutrino_energy[i] ) ;
                   
-            neutrino_LVector.push_back ( dumb_vector ) ;
-            neutrino_pdgid_vector.push_back ( neutrino_pdgid[i] ) ;
-            neutrino_mother_pdgid_vector.push_back ( neutrino_mother_pdgid[i] ) ;
+            neutrino_LVector            .push_back ( dumb_vector               ) ;
+            neutrino_pdgid_vector       .push_back ( neutrino_pdgid [i]        ) ;
+            neutrino_mother_pdgid_vector.push_back ( neutrino_mother_pdgid [i] ) ;
+
        }//i
 
 
@@ -589,6 +601,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             const pat::MET patMET( MET -> at (0) ) ;
             if( patMET.genMET() )
             {
+
                   const reco::GenMET* genMET( patMET.genMET () ) ;
                   metLorentz = genMET -> p4   () ;
                   metpt_     = metLorentz.pt  ();
