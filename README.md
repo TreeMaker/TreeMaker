@@ -130,6 +130,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `lostlepton`: switch to enable the lost lepton background estimation processes (default=False)
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=False)
+* `QCD`: switch to enable the QCD LowDeltaPhi background estimation processes (default=False)
 * `tagandprobe`: switch to enable the tag and probe processes, disables MT cut on isolated tracks (default=False)
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
 * `applybaseline`: switch to apply the baseline HT selection (default=False)
