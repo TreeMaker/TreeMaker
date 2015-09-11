@@ -16,7 +16,6 @@ def DeltaPhiQCD(process, METTag, is74X):
       process.Baseline += process.DeltaPhiQCD
 
 
-      process.TreeMaker2.VectorTLorentzVector.extend ( [ 'DeltaPhiQCD:RJetLorentzVector' ] )
       process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:RJetDeltaPhi' ] )
 
       process.TreeMaker2.VectorTLorentzVector.extend ( [ 'DeltaPhiQCD:GenLorentzVector' ] )

@@ -85,7 +85,6 @@ DeltaPhiQCD::DeltaPhiQCD ( const edm::ParameterSet& iConfig )
       metTag_         = iConfig.getParameter < edm::InputTag > ( "GenMETTag"      ) ;
 
 
-      produces < std::vector < TLorentzVector > > ( "RJetLorentzVector"     ) ;
       produces < std::vector < TLorentzVector > > ( "GenLorentzVector"      ) ;
       produces < std::vector < TLorentzVector > > ( "NeutrinoLorentzVector" ) ;
 
@@ -134,8 +133,6 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
       using namespace edm;
       using namespace std;
 
-      std::vector < TLorentzVector > JetVector;
- 
       std::vector < double >  deltaphi_vector ;
       std::vector < double >  RJetminDeltaphi5, RJetminDeltaphi24 ;
 
@@ -147,7 +144,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
 
       double savephi [8][2], saveeta [8][2] ;
-      double recojetspt = -99. , recojetseta = -99. , recojetsphi = -99. , deltaphi = -99. ;
+      double recojetseta = -99. , recojetsphi = -99. , deltaphi = -99. ;
       double mindeltaphi3 = -9, mindeltaphi4 = -9, mindeltaphi5 = -9 ;
       double mindeltaphistar = -9, deltaphistar = -9 ;
       double etacut, mhtphi ;
@@ -191,7 +188,6 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
                   if ( i < src -> size() )
                   {
-                        recojetspt  = src -> at(i).pt() ;
                         recojetsphi = src -> at(i).phi() ;
                         recojetseta = src -> at(i).eta() ;
                         deltaphi = std::abs( reco::deltaPhi( src -> at(i).phi() , mhtphi ) ) ;
@@ -203,15 +199,13 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                         if ( etacut == 5 ) 
                         {
                               TLorentzVector dumb_vector;
-                              dumb_vector.SetPtEtaPhiE( recojetspt, recojetseta, recojetsphi, src -> at(i).energy() );
-                              JetVector.push_back( dumb_vector ) ;
                               deltaphi_vector.push_back ( deltaphi ) ;
                         }
                         
                   }//if i
                   else
                   {
-                        recojetspt = -9 ;
+
                         recojetsphi = -9 ;
                         recojetseta = -9 ;
                         deltaphi = -9 ;
@@ -227,9 +221,6 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
             if ( etacut == 5 )
             {
-
-                  std::auto_ptr < std::vector < TLorentzVector > > JetVector2  ( new std::vector < TLorentzVector > ( JetVector ) ) ;
-                  iEvent.put ( JetVector2 , "RJetLorentzVector" ) ;
 
                   std::auto_ptr < std::vector < double > > deltaphi_vector2  ( new std::vector < double > ( deltaphi_vector ) ) ;
                   iEvent.put ( deltaphi_vector2 , "RJetDeltaPhi" ) ;
