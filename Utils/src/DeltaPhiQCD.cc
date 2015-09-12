@@ -166,8 +166,6 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
       iEvent.getByLabel ( JetTagRecoJets_ , src ) ;
 
 
-      if ( src.isValid() )
-      {
 
       for ( unsigned int ii = 0; ii < 2; ii++ )
       {
@@ -176,6 +174,8 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
             mindeltaphi3 = -9; mindeltaphi4 = -9; mindeltaphi5 = -9; mindeltaphi3jetindex = -9; mindeltaphi4jetindex = -9; mindeltaphi5jetindex = -9;
 
+            if ( src.isValid() )
+            {
             unsigned int i = 0 ;
             for ( unsigned int index = 0; index < 8; ++index )
             {
@@ -241,7 +241,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
             } //i
 
-      }//if vsrc.isValid
+            }//if vsrc.isValid
             else 
                   std::cout << "Warning Reco Tag not valid: " << JetTagRecoJets_.label() << std::endl ;
 
@@ -334,11 +334,10 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
       edm::Handle < edm::View < reco::GenJet > > gensrc ;
       iEvent.getByLabel( JetTagGenJets_,gensrc ) ;
-      if ( gensrc.isValid() )
-      {
 
-      for ( unsigned int l = 0 ; l < gensrc -> size() ; l++ )
-            if ( gensrc -> at(l).pt() >= 30 && gensrc -> at(l).eta() <= 5 && gensrc -> at(l).eta() >= -5 ) genmhtLorentz -= gensrc -> at(l).p4() ;
+      if ( gensrc.isValid() )
+           for ( unsigned int l = 0 ; l < gensrc -> size() ; l++ )
+                 if ( gensrc -> at(l).pt() >= 30 && gensrc -> at(l).eta() <= 5 && gensrc -> at(l).eta() >= -5 ) genmhtLorentz -= gensrc -> at(l).p4() ;
 
 
       for ( unsigned int ii = 0; ii < 2; ii++ )
@@ -347,6 +346,8 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             if ( ii == 0 ) genetacut = 5   ;
             if ( ii == 1 ) genetacut = 2.4 ;
 
+            if ( gensrc.isValid() )
+            {
             for ( int dumb = 0; dumb < 1000; dumb ++ ) matchfound [dumb] = 0 ;
             genmindeltaphi3 = -9; genmindeltaphi4 = -9; genmindeltaphi5 = -9 ; 
             genmindeltaphi3jetindex = -9; genmindeltaphi4jetindex = -9; genmindeltaphi5jetindex = -9;
@@ -408,7 +409,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                   gendeltaphistar = std::abs( reco::deltaPhi( gensrc -> at(k).phi(), genmhtLorentzstar.phi() ) ) ;
                   if ( std::abs( genmindeltaphistar ) > std::abs( gendeltaphistar ) ) { genmindeltaphistar = gendeltaphistar; genmindeltaphistarindex = k; }
             }//k
-      }//if vgensrc.isValid
+            }//if vgensrc.isValid
             else 
             {
                   std::cout << "Warning Gen Tag not valid: " << JetTagGenJets_.label() << std::endl ;
