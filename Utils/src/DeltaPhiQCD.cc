@@ -147,7 +147,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
       double recojetseta = -99. , recojetsphi = -99. , deltaphi = -99. ;
       double mindeltaphi3 = -9, mindeltaphi4 = -9, mindeltaphi5 = -9 ;
       double mindeltaphistar = -9, deltaphistar = -9 ;
-      double etacut = 5, mhtphi ;
+      double etacut, mhtphi ;
 
       int mindeltaphi3jetindex = -9, mindeltaphi4jetindex = -9, mindeltaphi5jetindex = -9, mindeltaphistarindex = -9 ;
 
