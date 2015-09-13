@@ -101,7 +101,6 @@ def doLostLeptonBkg(process,geninfo):
     process.TreeMaker2.VectorDouble.extend(['IDMuonMiniIso:MiniIso(selectedIDMuons_MiniIso)','IDElectronMiniIso:MiniIso(selectedIDElectrons_MiniIso)'])
     process.TreeMaker2.VectorDouble.extend(['IDMuonMiniIso:RA2Activity(selectedIDMuons_RA2Activity)','IDElectronMiniIso:RA2Activity(selectedIDElectrons_RA2Activity)'])
     process.TreeMaker2.VectorDouble.extend(['IDMuonMiniIso:MT2Activity(selectedIDMuons_MT2Activity)','IDElectronMiniIso:MT2Activity(selectedIDElectrons_MT2Activity)'])
-    process.TreeMaker2.VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(selectedIDIsoMuons)','LeptonsNew:IdIsoElectron(selectedIDIsoElectrons)'])
     process.TreeMaker2.VectorDouble.extend(['LeptonsNew:MuIDIsoMTW(selectedIDIsoMuons_MTW)','LeptonsNew:ElecIDIsoMTW(selectedIDIsoElectrons_MTW)'])
     process.TreeMaker2.VectorDouble.extend(['PTWExtrapolation:MuPTW(selectedIDIsoMuons_PTW)','PTWExtrapolation:ElecPTW(selectedIDIsoElectrons_PTW)'])
     process.TreeMaker2.VectorDouble.extend(['IDIsoMuonMiniIso:RA2Activity(selectedIDIsoMuons_RA2Activity)','IDIsoElectronMiniIso:RA2Activity(selectedIDIsoElectrons_RA2Activity)'])
