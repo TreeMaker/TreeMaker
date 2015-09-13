@@ -40,6 +40,7 @@
 
 #include "TVector2.h"
 
+#include "TreeMaker/Utils/interface/get_isolation_activity.h"
 //
 // class declaration
 //
@@ -53,82 +54,6 @@ public:
 	
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   float MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi);
-  double getPFIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
-			const reco::Candidate* ptcl,
-			double r_iso_min, double r_iso_max, double kt_scale,
-			bool use_pfweight, bool charged_only)
-  {
-    if (ptcl->pt()<5.) return 99999.;
-    double deadcone_nh(0.), deadcone_ch(0.), deadcone_ph(0.), deadcone_pu(0.);
-    if(ptcl->isElectron()) {
-      if (fabs(ptcl->eta())>1.479) {deadcone_ch = 0.015; deadcone_pu = 0.015; deadcone_ph = 0.08;}
-    } else if(ptcl->isMuon()) {
-      deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01;
-    } else {
-      //deadcone_ch = 0.0001; deadcone_pu = 0.01; deadcone_ph = 0.01;deadcone_nh = 0.01; // maybe use muon cones??
-    }
-    double iso_nh(0.); double iso_ch(0.);
-    double iso_ph(0.); double iso_pu(0.);
-    double ptThresh(0.5);
-    if(ptcl->isElectron()) ptThresh = 0;
-    double r_iso = std::max(r_iso_min,std::min(r_iso_max, kt_scale/ptcl->pt()));
-    for (const pat::PackedCandidate &pfc : *pfcands) {
-      if (abs(pfc.pdgId())<7) continue;
-      double dr = deltaR(pfc, *ptcl);
-      if (dr > r_iso) continue;
-      ////////////////// NEUTRALS /////////////////////////
-      if (pfc.charge()==0){
-	if (pfc.pt()>ptThresh) {
-	  double wpf(1.);
-	  if (use_pfweight){
-	    double wpv(0.), wpu(0.);
-	    for (const pat::PackedCandidate &jpfc : *pfcands) {
-	      double jdr = deltaR(pfc, jpfc);
-	      if (pfc.charge()!=0 || jdr<0.00001) continue;
-	      double jpt = jpfc.pt();
-	      if (pfc.fromPV()>1) wpv *= jpt/jdr;
-	      else wpu *= jpt/jdr;
-	    }
-	    wpv = log(wpv);
-	    wpu = log(wpu);
-	    wpf = wpv/(wpv+wpu);
-	  }
-	  /////////// PHOTONS ////////////
-	  if (abs(pfc.pdgId())==22) {
-	    if(dr < deadcone_ph) continue;
-	    iso_ph += wpf*pfc.pt();
-	    /////////// NEUTRAL HADRONS ////////////
-	  } else if (abs(pfc.pdgId())==130) {
-	    if(dr < deadcone_nh) continue;
-	    iso_nh += wpf*pfc.pt();
-	  }
-	}
-	////////////////// CHARGED from PV /////////////////////////
-      } else if (pfc.fromPV()>1){
-	if (abs(pfc.pdgId())==211) {
-	  if(dr < deadcone_ch) continue;
-	  iso_ch += pfc.pt();
-	}
-	////////////////// CHARGED from PU /////////////////////////
-      } else {
-	if (pfc.pt()>ptThresh){
-	  if(dr < deadcone_pu) continue;
-	  iso_pu += pfc.pt();
-	}
-      }
-    }
-    double iso(0.);
-    if (charged_only){
-      iso = iso_ch;
-    } else {
-      iso = iso_ph + iso_nh;
-      if (!use_pfweight) iso -= 0.5*iso_pu;
-      if (iso>0) iso += iso_ch;
-      else iso = iso_ch;
-    }
-    iso = iso/ptcl->pt();
-    return iso;
-  }
   bool MuonID(const pat::Muon & muon, const reco::Vertex& vtx);
 	
 private:
@@ -194,6 +119,17 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
   produces<std::vector<double> >("MuIDIsoMTW");
   produces<std::vector<double> >("ElecIDMTW");
   produces<std::vector<double> >("ElecIDIsoMTW");
+  
+  // produces<std::vector<double> >("MuIDActRA2");
+  // produces<std::vector<double> >("MuIDIsoActRA2");
+  // produces<std::vector<double> >("MuIDActMT2");
+  // produces<std::vector<double> >("MuIDIsoActMT2");
+
+  // produces<std::vector<double> >("ElecIDActRA2");
+  // produces<std::vector<double> >("ElecIDIsoActRA2");
+  // produces<std::vector<double> >("ElecIDActMT2");
+  // produces<std::vector<double> >("ElecIDIsoActMT2");
+  
   produces<int>("");
   /* Examples
    *   produces<ExampleData2>();
@@ -223,8 +159,7 @@ LeptonProducer::~LeptonProducer()
 //
 
 // ------------ method called to produce the data  ------------
-void
-LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   //  std::cout<<"Running LeptonProducer"<<std::endl;
  
@@ -237,18 +172,32 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> > muIDIsoMTW(new std::vector<double>());
   std::auto_ptr<std::vector<double> > elecIDMTW(new std::vector<double>());
   std::auto_ptr<std::vector<double> > elecIDIsoMTW(new std::vector<double>());
+  // std::auto_ptr<std::vector<double> > muIDActRA2(new std::vector<double>());
+  // std::auto_ptr<std::vector<double> > muIDIsoActRA2(new std::vector<double>());
+  // std::auto_ptr<std::vector<double> > muIDActMT2(new std::vector<double>());
+  // std::auto_ptr<std::vector<double> > muIDIsoActMT2(new std::vector<double>());
+
+  // std::auto_ptr<std::vector<double> > elecIDActRA2(new std::vector<double>());
+  // std::auto_ptr<std::vector<double> > elecIDIsoActRA2(new std::vector<double>());
+  // std::auto_ptr<std::vector<double> > elecIDActMT2(new std::vector<double>());
+  // std::auto_ptr<std::vector<double> > elecIDIsoActMT2(new std::vector<double>());
+
   edm::Handle< edm::View<pat::MET> > MET;
   iEvent.getByLabel(metTag_,MET); 
   reco::MET::LorentzVector metLorentz(0,0,0,0);
   if(MET.isValid() )
     {
       metLorentz=MET->at(0).p4();
-    }
-  else std::cout<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label()<<std::endl;
+    } else std::cout<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label()<<std::endl;
+
 
   int Leptons=0;
   edm::Handle<pat::PackedCandidateCollection> pfcands;
   iEvent.getByLabel("packedPFCandidates", pfcands);
+
+  edm::Handle< double > rho_;
+  iEvent.getByLabel("fixedGridRhoFastjetAll", rho_);
+  double rho = *rho_;
 	
   std::vector<pat::Electron> isoElectrons_, idElectrons_;
   std::vector<pat::Muon> isoMuons_, idMuons_;
@@ -271,7 +220,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	      float NeuIso=muonHandle->at(m).pfIsolationR04().sumNeutralHadronEt+
 		muonHandle->at(m).pfIsolationR04().sumPhotonEt;
 	      float dBIsoMu= (ChgIso+std::max(0., NeuIso-0.5*ChgPU))/muonHandle->at(m).pt();
-	      if(useMiniIsolation_) dBIsoMu = getPFIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&muonHandle->at(m)), 0.05, 0.2, 10., false, false);
+	      if(useMiniIsolation_) dBIsoMu = SUSYIsolation::GetMiniIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&muonHandle->at(m)), "muon", rho);
 	      if(dBIsoMu<muIsoValue_)
 		{
 		  Leptons++;
@@ -309,7 +258,7 @@ LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  d0vtx = aEle.gsfTrack()->dxy(vtx.position());
 	  dzvtx = aEle.gsfTrack()->dz(vtx.position());
 	  absiso=absiso/aEle.pt();
-	  if(useMiniIsolation_) absiso = getPFIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&aEle), 0.05, 0.2, 10., false, false);
+	  if(useMiniIsolation_) absiso = SUSYIsolation::GetMiniIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&aEle), "electron", rho);
 								
 	  if(aEle.isEB())
 	    {

@@ -16,8 +16,8 @@ tagandprobe=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
-geninfo=True,
-tagname="PAT",
+geninfo=False,
+tagname="RECO",
 jsonfile="",
 jecfile="",
 residual=False,
@@ -117,6 +117,13 @@ QCD=False,
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
 
     ## ----------------------------------------------------------------------------------------------
+    ## GenHT for stitching together MC samples
+    ## ----------------------------------------------------------------------------------------------
+    process.GenHT = cms.EDProducer('GenHTProducer')
+    process.Baseline += process.GenHT
+    VarsDouble.extend(['GenHT:genHT'])
+    
+    ## ----------------------------------------------------------------------------------------------
     ## PrimaryVertices
     ## ----------------------------------------------------------------------------------------------
     process.goodVertices = cms.EDFilter("VertexSelector",
@@ -150,6 +157,7 @@ QCD=False,
         VectorTLorentzVector.append("genParticles(genParticles)")
         VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
         #VectorInt.append("genParticles:parent(genParticles_parent)")
+        
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
@@ -322,7 +330,7 @@ QCD=False,
         UseMiniIsolation = cms.bool(True),
         muIsoValue       = cms.double(0.2),
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
-        METTag           = METTag, 
+        METTag           = METTag,
     )
     process.Baseline += process.LeptonsNewTag
     VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
