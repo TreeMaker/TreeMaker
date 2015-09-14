@@ -171,11 +171,10 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
       {
             if ( ii == 0 ) etacut = 5 ;
             if ( ii == 1 ) etacut = 2.4 ;
-
-            mindeltaphi3 = -9; mindeltaphi4 = -9; mindeltaphi5 = -9; mindeltaphi3jetindex = -9; mindeltaphi4jetindex = -9; mindeltaphi5jetindex = -9;
-
             if ( src.isValid() )
             {
+            	
+            mindeltaphi3 = -9; mindeltaphi4 = -9; mindeltaphi5 = -9; mindeltaphi3jetindex = -9; mindeltaphi4jetindex = -9; mindeltaphi5jetindex = -9;
             unsigned int i = 0 ;
             for ( unsigned int index = 0; index < 8; ++index )
             {
