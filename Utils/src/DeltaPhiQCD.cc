@@ -319,7 +319,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
       double genmindeltaphi3 = -9, genmindeltaphi4 = -9, genmindeltaphi5 = -9 ;
       double genmindeltaphistar = -9, gendeltaphistar = -9, gendeltaphi = -9 ;
-      double genetacut = 5 ;
+      double genetacut ;
       double genjetspt, genjetseta, genjetsphi, mindeltar ;
 
       reco::MET::LorentzVector genmhtLorentz    ( 0,0,0,0 ) ;
