@@ -33,27 +33,40 @@ class CommandLineParams:
         """
         Parses the command-line arguments
 
-        Expects a comma-separated list of key-value pairs
+        Expects a space-separated list of key-value pairs
+        (multiple values for one key should be separated by commas)
 
-           <key1>=<value1>, <key2>=<value2>
+           <key1>=<value1> <key2>=<value2>
            
         No spaces allowed in either <key> or <value> or
         between <key>, '=', and <value>!
         """
         if hasattr(sys,"argv"):
-            for args in sys.argv:
-                arg = args.split(',')
-                for val in arg:
-                    val = val.split('=')
-                    if len(val)==2:
-                        if self.isBool(val[1]):
-                            self.params[val[0]] = self.toBool(val[1])
-                        elif self.isInt(val[1]):
-                            self.params[val[0]] = int(val[1])
-                        elif self.isFloat(val[1]):
-                            self.params[val[0]] = float(val[1])
-                        else:
-                            self.params[val[0]] = val[1]
+            for arg in sys.argv:
+                val = arg.split('=')
+                if len(val)==2:
+                    vlist = val[1].split(',')
+                    if len(vlist)==1:
+                        self.SetOrAppend(val[0],val[1],True)
+                    else:
+                        self.params[val[0]] = []
+                        for v in vlist:
+                            self.SetOrAppend(val[0],v,False)
+
+
+    def SetOrAppend(self,key,val,set):
+        if self.isBool(val):
+            if set: self.params[key] = self.toBool(val)
+            else:   self.params[key].append(self.toBool(val))
+        elif self.isInt(val):
+            if set: self.params[key] = int(val)
+            else:   self.params[key].append(int(val))
+        elif self.isFloat(val):
+            if set: self.params[key] = float(val)
+            else:   self.params[key].append(float(val))
+        else:
+            if set: self.params[key] = val
+            else:   self.params[key].append(val)
 
 
     def printParameters(self):

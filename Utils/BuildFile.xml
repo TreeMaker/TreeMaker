@@ -15,7 +15,7 @@
 <use   name="DataFormats/Candidate"/>
 <use   name="Geometry/CaloGeometry"/>
 <use   name="RecoParticleFlow/PFProducer"/>
-<use name="TreeMaker/Products"/>
+<use name="TreeMaker/Reflex"/>
 <use name="root"/>
 <use name="rootmath"/>
 <flags   EDM_PLUGIN="1"/>

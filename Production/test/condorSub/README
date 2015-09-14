@@ -1,0 +1,27 @@
+#to submit jobs:
+
+make sure that the jobExecCondor* files are configured to run/copy the desired config file.
+
+use generateSubmission.py to automatically generate bash scripts and condor configs for submission:
+
+Usage: generateSubmission.py [options]
+
+Options:
+  -h, --help            show this help message and exit
+  -n NFILES, --nFiles=NFILES
+                        number of files to process per job
+  -f FILESCONFIG, --filesConfig=FILESCONFIG
+                        which config file to retrieve the full file list from
+                        (leave off _cff.py)
+  -o OUPUTDIR, --outputDir=OUPUTDIR
+                        path to ouput directory that root files will be stored
+                        in
+  -s, --submit          submit jobs to condor once they are configured
+
+
+#to check queue
+condor_q <username>
+
+#to kill
+condor_rm <jobID>
+
