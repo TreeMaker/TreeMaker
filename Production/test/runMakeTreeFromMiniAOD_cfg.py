@@ -51,6 +51,7 @@ print " "
 print " storing lostlepton variables: "+str(lostlepton)
 print " storing hadtau variables: "+str(hadtau)
 print " storing Zinv variables: "+str(doZinv)
+print " storing QCD variables: "+str(QCD)
 print " "
 print " storing tag and probe variables: "+str(tagandprobe)
 print " storing track debugging variables: "+str(debugtracks)

@@ -605,10 +605,14 @@ QCD=False,
     from TreeMaker.Utils.metdouble_cfi import metdouble
     process.MET = metdouble.clone(
         METTag = METTag,
+        GenMETTag = cms.InputTag("slimmedMETs","","PAT"), #deliberately hardcoded
         JetTag = cms.InputTag('HTJets'),
+        geninfo = cms.untracked.bool(geninfo),
     )
     process.Baseline += process.MET
     VarsDouble.extend(['MET:minDeltaPhiN','MET:DeltaPhiN1','MET:DeltaPhiN2','MET:DeltaPhiN3','MET:Pt(METPt)','MET:Phi(METPhi)'])
+    if geninfo:
+        VarsDouble.extend(['MET:GenPt(GenMETPt)','MET:GenPhi(GenMETPhi)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties
@@ -689,7 +693,7 @@ QCD=False,
     ## ----------------------------------------------------------------------------------------------
     if QCD:
         from TreeMaker.TreeMaker.DeltaPhiQCD import DeltaPhiQCD
-        process = DeltaPhiQCD(process, METTag, is74X)
+        process = DeltaPhiQCD(process,is74X,geninfo)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
