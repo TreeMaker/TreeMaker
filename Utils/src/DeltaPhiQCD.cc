@@ -197,7 +197,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                 LorentzVector mhtLorentzstar2 = mhtLorentzstar + src->at(i).p4();
                 deltaphistar = std::abs( reco::deltaPhi( src->at(i).phi(), mhtLorentzstar2.phi() ) );
 
-                if ( std::abs ( mindeltaphistar ) > std::abs ( deltaphistar ) ) { mindeltaphistar = deltaphistar; mindeltaphistarindex = i; }
+                if ( std::abs ( mindeltaphistar ) > std::abs ( deltaphistar ) ) { mindeltaphistar = deltaphistar; mindeltaphistarindex = i + 1; }
 
             } //i
 
@@ -320,7 +320,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             {
                 LorentzVector genmhtLorentzstar2 = genmhtLorentzstar + gensrc->at(k).p4();
                 gendeltaphistar = std::abs( reco::deltaPhi( gensrc -> at(k).phi(), genmhtLorentzstar2.phi() ) ) ;
-                if ( std::abs( genmindeltaphistar ) > std::abs( gendeltaphistar ) ) { genmindeltaphistar = gendeltaphistar; genmindeltaphistarindex = k; }
+                if ( std::abs( genmindeltaphistar ) > std::abs( gendeltaphistar ) ) { genmindeltaphistar = gendeltaphistar; genmindeltaphistarindex = k + 1; }
             }//k
         }//if gensrc.isValid
 		else 
