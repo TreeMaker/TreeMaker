@@ -32,38 +32,6 @@ jsonfile=parameters.value("jsonfile",scenario.jsonfile)
 jecfile=parameters.value("jecfile",scenario.jecfile)
 residual=parameters.value("residual",scenario.residual)
 era=parameters.value("era",scenario.era)
-    
-# Load input files
-readFiles = cms.untracked.vstring()
-
-if inputFilesConfig!="" :
-    process.load("TreeMaker.Production."+inputFilesConfig+"_cff")
-    readFiles.extend( process.source.fileNames )
-
-if dataset!=[] :    
-    readFiles.extend( [dataset] )
-
-# print out settings
-print "***** SETUP ************************************"
-print " dataset: "+str(dataset)
-print " outfile: "+outfile
-print " "
-print " storing lostlepton variables: "+str(lostlepton)
-print " storing hadtau variables: "+str(hadtau)
-print " storing Zinv variables: "+str(doZinv)
-print " "
-print " storing tag and probe variables: "+str(tagandprobe)
-print " storing track debugging variables: "+str(debugtracks)
-print " Applying baseline selection filter: "+str(applybaseline)
-print " "
-if scenario.known: print " scenario: "+scenarioName
-print " global tag: "+globaltag
-print " Instance name of tag information: "+tagname
-print " Including gen-level information: "+str(geninfo)
-if len(jsonfile)>0: print " JSON file applied: "+jsonfile
-if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual else "")
-print " era of this dataset: "+era
-print "************************************************"
 
 # The process needs to be defined AFTER reading sys.argv,
 # otherwise edmConfigHash fails
@@ -78,6 +46,39 @@ elif era=="Run2_50ns":
 # configure geometry & conditions
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
+
+# Load input files
+readFiles = cms.untracked.vstring()
+
+if inputFilesConfig!="" :
+    process.load("TreeMaker.Production."+inputFilesConfig+"_cff")
+    readFiles.extend( process.source.fileNames )
+
+if dataset!=[] :    
+    readFiles.extend( [dataset] )
+
+# print out settings
+print "***** SETUP ************************************"
+print " dataset: "+str(readFiles)
+print " outfile: "+outfile
+print " "
+print " storing lostlepton variables: "+str(lostlepton)
+print " storing hadtau variables: "+str(hadtau)
+print " storing Zinv variables: "+str(doZinv)
+print " storing QCD variables: "+str(QCD)
+print " "
+print " storing tag and probe variables: "+str(tagandprobe)
+print " storing track debugging variables: "+str(debugtracks)
+print " Applying baseline selection filter: "+str(applybaseline)
+print " "
+if scenario.known: print " scenario: "+scenarioName
+print " global tag: "+globaltag
+print " Instance name of tag information: "+tagname
+print " Including gen-level information: "+str(geninfo)
+if len(jsonfile)>0: print " JSON file applied: "+jsonfile
+if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual else "")
+print " era of this dataset: "+era
+print "************************************************"
 
 from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
 process = makeTreeFromMiniAOD(process,

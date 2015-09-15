@@ -5,3 +5,9 @@ SubJetSelection = cms.EDProducer('SubJetSelection',
                                  MinPt = cms.double(30),
                                  MaxEta = cms.double(5.0),
 )
+
+SubGenJetSelection = cms.EDProducer('SubGenJetSelection',
+                                 JetTag = cms.InputTag('slimmedGenJets'),
+                                 MinPt = cms.double(30),
+                                 MaxEta = cms.double(5.0),
+)
