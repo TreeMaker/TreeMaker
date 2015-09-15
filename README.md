@@ -50,14 +50,14 @@ If you copy this to another directory and run the [looper.sh](./Production/test/
 ```
 cp -r condorSub myProduction
 cd myProduction
-./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction/
+./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction
 ```
 
 The jobs open the files over xrootd, so [looper.sh](./Production/test/condorSub/looper.sh) will check that you have a valid grid proxy. 
 It will also make a tarball of the current CMSSW working directory to send to the worker node. 
 If you want to reuse an existing CMSSW tarball (no important changes have been made since the last time you submitted jobs), there is an extra argument:
 ```
-./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction/ keep
+./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction keep
 ```
 
 Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. The script [resubCondor.sh](./Production/test/condorSub/resubCondor.sh) can identify the failed jobs and prepare them for resubmission by checking the Condor logs.
