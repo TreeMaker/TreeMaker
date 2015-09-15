@@ -5,7 +5,8 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
+#include "FWCore/Framework/interface/GetterOfProducts.h"
+#include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 
@@ -37,18 +38,15 @@ private:
   virtual void endRun(edm::Run&, edm::EventSetup const&);
   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  double * genHT_;
-  edm::InputTag LHEEventProducerTag_, GenJetsTag_;
-	
+  edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
 	
   // ----------member data ---------------------------
 };
 
-GenHTProducer::GenHTProducer(const edm::ParameterSet& iConfig)
+GenHTProducer::GenHTProducer(const edm::ParameterSet& iConfig) : getterOfProducts_(edm::ProcessMatch("*"), this)
 {
-
+  callWhenNewProductsRegistered(getterOfProducts_);
   produces<double>("genHT");
-  genHT_ = new double;
 
 }
 
@@ -57,7 +55,6 @@ GenHTProducer::~GenHTProducer()
 	
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
-  delete genHT_;
 	
 }
 
@@ -69,9 +66,11 @@ void GenHTProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   // first calculate genHT
   double genHT = 0.0;
+
+  std::vector<edm::Handle<LHEEventProduct> > handles;
+  getterOfProducts_.fillHandles(iEvent, handles);
   
-  edm::Handle<LHEEventProduct> evt;
-  iEvent.getByLabel( "externalLHEProducer", evt );
+  edm::Handle<LHEEventProduct> evt = handles[0];
   const lhef::HEPEUP hepeup_ = evt->hepeup();
   const int nup_ = hepeup_.NUP;
   const std::vector<int> idup_ = hepeup_.IDUP;
