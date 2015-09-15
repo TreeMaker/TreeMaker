@@ -119,9 +119,10 @@ QCD=False,
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples
     ## ----------------------------------------------------------------------------------------------
-    process.GenHT = cms.EDProducer('GenHTProducer')
-    process.Baseline += process.GenHT
-    VarsDouble.extend(['GenHT:genHT'])
+    if geninfo:
+        process.GenHT = cms.EDProducer('GenHTProducer')
+        process.Baseline += process.GenHT
+        VarsDouble.extend(['GenHT:genHT'])
     
     ## ----------------------------------------------------------------------------------------------
     ## PrimaryVertices

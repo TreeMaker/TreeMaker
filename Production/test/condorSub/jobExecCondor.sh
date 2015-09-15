@@ -12,15 +12,17 @@ echo "CMSSW on Condor"
 CMSSWVER=$1
 OUTDIR=$2
 SAMPLE=$3
-FILELIST=$4
-SCENARIO=$5
+NSTART=$4
+NFILES=$5
+SCENARIO=$6
 
 echo ""
 echo "parameter set:"
 echo "CMSSWVER:   $CMSSWVER"
 echo "OUTDIR:     $OUTDIR"
 echo "SAMPLE:     $SAMPLE"
-echo "FILELIST:   $FILELIST"
+echo "NSTART:     $NSTART"
+echo "NFILES:     $NFILES"
 echo "SCENARIO:   $SCENARIO"
 
 tar -xzf ${CMSSWVER}.tar.gz
@@ -32,7 +34,7 @@ eval `scramv1 runtime -sh`
 cd -
 
 # run CMSSW
-cmsRun runMakeTreeFromMiniAOD_cfg.py outfile=${SAMPLE} dataset=${FILELIST} scenario=${SCENARIO} 2>&1
+cmsRun runMakeTreeFromMiniAOD_cfg.py outfile=${SAMPLE} inputFilesConfig=${SAMPLE} nstart=${NSTART} nfiles=${NFILES} scenario=${SCENARIO} 2>&1
 
 # copy output to eos
 echo "xrdcp output for condor"
