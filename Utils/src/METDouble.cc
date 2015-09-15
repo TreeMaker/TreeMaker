@@ -37,6 +37,7 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
+#include "DataFormats/METReco/interface/MET.h"
 
 //
 // class declaration
@@ -59,9 +60,10 @@ private:
    virtual void endRun(edm::Run&, edm::EventSetup const&);
    virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-   edm::InputTag metTag_, JetTag_;
+   edm::InputTag metTag_, genMetTag_, JetTag_;
    std::vector<edm::InputTag> cleanTag_;
    double MinJetPt_,MaxJetEta_;
+   bool geninfo_;
    
    // ----------member data ---------------------------
 };
@@ -80,20 +82,23 @@ private:
 //
 METDouble::METDouble(const edm::ParameterSet& iConfig)
 {
-   //register your product
-   metTag_   = iConfig.getParameter<edm::InputTag> ("METTag");
-   JetTag_   = iConfig.getParameter<edm::InputTag> ("JetTag");
-   cleanTag_ = iConfig.getUntrackedParameter<std::vector<edm::InputTag>>("cleanTag");
-   MinJetPt_ = iConfig.getUntrackedParameter<double> ("minJetPt",30.);
-   MaxJetEta_= iConfig.getUntrackedParameter<double> ("minJetEta",5.);
+   metTag_    = iConfig.getParameter<edm::InputTag> ("METTag");
+   genMetTag_ = iConfig.getParameter<edm::InputTag> ("GenMETTag");
+   JetTag_    = iConfig.getParameter<edm::InputTag> ("JetTag");
+   cleanTag_  = iConfig.getUntrackedParameter<std::vector<edm::InputTag>>("cleanTag");
+   MinJetPt_  = iConfig.getUntrackedParameter<double> ("minJetPt",30.);
+   MaxJetEta_ = iConfig.getUntrackedParameter<double> ("minJetEta",5.);
+   geninfo_   = iConfig.getUntrackedParameter<bool>("geninfo",false);
    
+   //register your product
    produces<double>("DeltaPhiN1");
    produces<double>("DeltaPhiN2");
    produces<double>("DeltaPhiN3");
    produces<double>("minDeltaPhiN");
    produces<double>("Pt");
    produces<double>("Phi");
-   
+   produces<double>("GenPt");
+   produces<double>("GenPhi");
 }
 
 
@@ -115,9 +120,13 @@ void
 METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-   double metpt_=0, metphi_=0;;
+   double metpt_=0, metphi_=0;
+   double genmetpt_=0, genmetphi_=0;
    edm::Handle< edm::View<pat::MET> > MET;
    iEvent.getByLabel(metTag_,MET);
+
+   edm::Handle< edm::View<pat::MET> > GenMET;
+   iEvent.getByLabel(genMetTag_,GenMET);
    
    edm::Handle< edm::View<pat::Jet> > Jets;
    iEvent.getByLabel(JetTag_,Jets);
@@ -132,8 +141,18 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       metpt_=MET->at(0).pt();
       metphi_=MET->at(0).phi();
       metLorentz=MET->at(0).p4();
+
+   }
+   else std::cout<<"METDouble::Invalid Tag: "<<metTag_.label()<<std::endl;
+
+   if(GenMET.isValid()  && geninfo_ && GenMET->at(0).genMET()){
+      const reco::GenMET* theGenMET( GenMET->at(0).genMET () ) ;
+      genmetpt_     = theGenMET->pt  ();
+      genmetphi_    = theGenMET->phi ();
       
-   }else std::cout<<"METDouble::Invlide Tag: "<<metTag_.label()<<std::endl;
+   }
+   else if(geninfo_ && !GenMET.isValid()) std::cout<<"METDouble::Invalid Tag: "<<genMetTag_.label()<<std::endl;
+ 
    
    // remove particles from MET calculation
    // cleanTag_ is a vector of edm::InputTag
@@ -158,6 +177,14 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(htp,"Pt");
    std::auto_ptr<double> htp2(new double(metphi_));
    iEvent.put(htp2,"Phi");
+   
+   if(geninfo_){
+       std::auto_ptr<double> ghtp(new double(genmetpt_));
+       iEvent.put(ghtp,"GenPt");
+       std::auto_ptr<double> ghtp2(new double(genmetphi_));
+       iEvent.put(ghtp2,"GenPhi");
+   }
+
    if( Jets.isValid() ) {
       for(unsigned int i=0; i<Jets->size();i++){
          if(goodcount<3 && Jets->at(i).pt()>MinJetPt_ && fabs( Jets->at(i).eta() ) < MaxJetEta_ ){
@@ -189,7 +216,7 @@ METDouble::beginJob()
 {
 }
 
-// ------------ method called once each job just after ending the event loop  ------------
+// ------------ helper method to calculate DeltaT ------------
 double METDouble::DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets ){
    
    double deltaT=0;
@@ -207,6 +234,7 @@ double METDouble::DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets
    return deltaT;
 }
 
+// ------------ method called once each job just after ending the event loop  ------------
 void
 METDouble::endJob() {
 }
