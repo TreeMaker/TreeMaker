@@ -32,7 +32,21 @@ jsonfile=parameters.value("jsonfile",scenario.jsonfile)
 jecfile=parameters.value("jecfile",scenario.jecfile)
 residual=parameters.value("residual",scenario.residual)
 era=parameters.value("era",scenario.era)
-    
+
+# The process needs to be defined AFTER reading sys.argv,
+# otherwise edmConfigHash fails
+import FWCore.ParameterSet.Config as cms
+from Configuration.StandardSequences.Eras import eras
+process = cms.Process("RA2EventSelection")
+if era=="Run2_25ns":
+    process = cms.Process("RA2EventSelection",eras.Run2_25ns)
+elif era=="Run2_50ns":
+    process = cms.Process("RA2EventSelection",eras.Run2_50ns)
+
+# configure geometry & conditions
+process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
+process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
+
 # Load input files
 readFiles = cms.untracked.vstring()
 
@@ -45,7 +59,7 @@ if dataset!=[] :
 
 # print out settings
 print "***** SETUP ************************************"
-print " dataset: "+str(dataset)
+print " dataset: "+str(readFiles)
 print " outfile: "+outfile
 print " "
 print " storing lostlepton variables: "+str(lostlepton)
@@ -65,20 +79,6 @@ if len(jsonfile)>0: print " JSON file applied: "+jsonfile
 if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual else "")
 print " era of this dataset: "+era
 print "************************************************"
-
-# The process needs to be defined AFTER reading sys.argv,
-# otherwise edmConfigHash fails
-import FWCore.ParameterSet.Config as cms
-from Configuration.StandardSequences.Eras import eras
-process = cms.Process("RA2EventSelection")
-if era=="Run2_25ns":
-    process = cms.Process("RA2EventSelection",eras.Run2_25ns)
-elif era=="Run2_50ns":
-    process = cms.Process("RA2EventSelection",eras.Run2_50ns)
-
-# configure geometry & conditions
-process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
-process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 
 from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
 process = makeTreeFromMiniAOD(process,
