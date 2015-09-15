@@ -31,6 +31,7 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/Candidate/interface/CandidateFwd.h"
 //
 // class declaration
 //
@@ -108,7 +109,7 @@ void
 MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-  edm::Handle< edm::View<pat::Jet> > Jets;
+  edm::Handle< reco::CandidateView > Jets;
 	iEvent.getByLabel(JetTag_,Jets);
 	reco::MET::LorentzVector mhtLorentz(0,0,0,0);
 	if( Jets.isValid() ) {
@@ -117,7 +118,7 @@ MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		mhtLorentz -=Jets->at(i).p4();
 		}
   }
-  else std::cout<<"MHTDouble::Invlide Tag: "<<JetTag_.label()<<std::endl;
+  else std::cout<<"MHTDouble::Invalid Tag: "<<JetTag_.label()<<std::endl;
 	std::auto_ptr<double > Pt(new double(mhtLorentz.pt()));
 	std::auto_ptr<double > Phi(new double(mhtLorentz.phi()));
 	iEvent.put(Pt,"Pt");
