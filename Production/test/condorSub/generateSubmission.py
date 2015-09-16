@@ -65,10 +65,10 @@ for iJob in range( nJobs ) :
                  +"-e 's|NSTART|"+str(nstart)+"|g' "\
                  +"-e 's|NFILES|"+str(options.nFiles)+"|g' "\
                  +"-e 's|SCENARIO|"+options.scenario+"|g' "\
-                 +"< jobExecCondor.jdl > jobExecCondorNeff_"+jobname+".jdl")
+                 +"< jobExecCondor.jdl > jobExecCondor_"+jobname+".jdl")
 
     # submit jobs to condor, if -s was specified
     if ( options.submit ) :
-        os.system("condor_submit jobExecCondorNeff_"+jobname+".jdl")
+        os.system("condor_submit jobExecCondor_"+jobname+".jdl")
     
 

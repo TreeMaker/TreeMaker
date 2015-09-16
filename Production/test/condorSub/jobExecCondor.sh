@@ -38,14 +38,18 @@ cd -
 # run CMSSW
 cmsRun runMakeTreeFromMiniAOD_cfg.py outfile=${SAMPLE}_${NPART} inputFilesConfig=${SAMPLE} nstart=${NSTART} nfiles=${NFILES} scenario=${SCENARIO} 2>&1
 
-# copy output to eos
-echo "xrdcp output for condor"
-for FILE in *.root
-  do
-    echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
-    xrdcp -f ${FILE} ${OUTDIR}/${FILE}
-    rm ${FILE}
-  done
+CMSEXIT=$?
 
-
-
+if [[ $CMSEXIT -ne 0 ]]; then
+  echo "exit code $CMSEXIT, skipping xrdcp"
+  return $CMSEXIT
+else
+  # copy output to eos
+  echo "xrdcp output for condor"
+  for FILE in *.root
+    do
+      echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
+      xrdcp -f ${FILE} ${OUTDIR}/${FILE}
+      rm ${FILE}
+    done
+fi

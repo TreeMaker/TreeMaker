@@ -63,6 +63,11 @@ if inputFilesConfig!="" :
 if dataset!=[] :    
     readFiles.extend( [dataset] )
 
+#temporary redirector fix
+for f,val in enumerate(readFiles):
+    if readFiles[f][0:6]=="/store":
+        readFiles[f] = "root://cmsxrootd.fnal.gov/"+readFiles[f]
+    
 # print out settings
 print "***** SETUP ************************************"
 print " dataset: "+str(readFiles)
