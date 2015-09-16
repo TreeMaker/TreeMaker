@@ -61,6 +61,7 @@ for iJob in range( nJobs ) :
                  +"-e 's~OUTDIR~"+options.outputDir+"~g' "\
                  +"-e 's|JOBNAME|"+jobname+"|g' "\
                  +"-e 's|SAMPLE|"+options.filesConfig+"|g' "\
+                 +"-e 's|NPART|"+str(iJob)+"|g' "\
                  +"-e 's|NSTART|"+str(nstart)+"|g' "\
                  +"-e 's|NFILES|"+str(options.nFiles)+"|g' "\
                  +"-e 's|SCENARIO|"+options.scenario+"|g' "\

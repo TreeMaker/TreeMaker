@@ -11,5 +11,5 @@ Error = JOBNAME_$(Cluster).stderr
 Log = JOBNAME_$(Cluster).condor
 notification = Never
 x509userproxy = $ENV(X509_USER_PROXY)
-Arguments = CMSSWVER OUTDIR SAMPLE NSTART NFILES SCENARIO
+Arguments = CMSSWVER OUTDIR SAMPLE NPART NSTART NFILES SCENARIO
 Queue 1
