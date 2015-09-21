@@ -69,26 +69,28 @@ void GenHTProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::vector<edm::Handle<LHEEventProduct> > handles;
   getterOfProducts_.fillHandles(iEvent, handles);
-  
-  edm::Handle<LHEEventProduct> evt = handles[0];
-  const lhef::HEPEUP hepeup_ = evt->hepeup();
-  const int nup_ = hepeup_.NUP;
-  const std::vector<int> idup_ = hepeup_.IDUP;
-  const std::vector<lhef::HEPEUP::FiveVector> pup_ = hepeup_.PUP;
-  const std::vector<int> istup_ = hepeup_.ISTUP;
-  const std::vector<std::pair<int,int> > momup_ = hepeup_.MOTHUP;
 
-  for ( unsigned int icount = 0 ; icount < (unsigned int)nup_; icount++ ) {
-    int PID    = idup_[icount];
-    int status = istup_[icount];
-    int mom1id = abs(idup_[momup_[icount].first-1]);
-    int mom2id = abs(idup_[momup_[icount].second-1]);
-    double px = (pup_[icount])[0];
-    double py = (pup_[icount])[1];
-    double pt = sqrt(px*px+py*py);
+  if(!handles.empty()){
+    edm::Handle<LHEEventProduct> evt = handles[0];
+    const lhef::HEPEUP hepeup_ = evt->hepeup();
+    const int nup_ = hepeup_.NUP;
+    const std::vector<int> idup_ = hepeup_.IDUP;
+    const std::vector<lhef::HEPEUP::FiveVector> pup_ = hepeup_.PUP;
+    const std::vector<int> istup_ = hepeup_.ISTUP;
+    const std::vector<std::pair<int,int> > momup_ = hepeup_.MOTHUP;
 
-    if(status==1 && (abs(PID)<6 || abs(PID)==21) && mom1id!=6 && mom1id!=24 && mom2id!=6 && mom2id!=24) { // gen HT used to bin samples does not count top/W decay products
-      genHT += pt;
+    for ( unsigned int icount = 0 ; icount < (unsigned int)nup_; icount++ ) {
+      int PID    = idup_[icount];
+      int status = istup_[icount];
+      int mom1id = abs(idup_[momup_[icount].first-1]);
+      int mom2id = abs(idup_[momup_[icount].second-1]);
+      double px = (pup_[icount])[0];
+      double py = (pup_[icount])[1];
+      double pt = sqrt(px*px+py*py);
+
+      if(status==1 && (abs(PID)<6 || abs(PID)==21) && mom1id!=6 && mom1id!=24 && mom2id!=6 && mom2id!=24) { // gen HT used to bin samples does not count top/W decay products
+        genHT += pt;
+      }
     }
   }
 

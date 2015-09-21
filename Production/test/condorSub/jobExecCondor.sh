@@ -42,7 +42,7 @@ CMSEXIT=$?
 
 if [[ $CMSEXIT -ne 0 ]]; then
   echo "exit code $CMSEXIT, skipping xrdcp"
-  return $CMSEXIT
+  exit $CMSEXIT
 else
   # copy output to eos
   echo "xrdcp output for condor"
