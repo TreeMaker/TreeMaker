@@ -17,3 +17,4 @@ python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.ZZTo2
 python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8
 python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8
 python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8
+python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8
