@@ -587,7 +587,7 @@ QCD=False,
         MHTJets      = cms.InputTag("MHTJets"),
     )
     process.Baseline += process.DeltaPhi
-    VarsDouble.extend(['DeltaPhi:DeltaPhi1','DeltaPhi:DeltaPhi2','DeltaPhi:DeltaPhi3'],'DeltaPhi:DeltaPhi4')
+    VarsDouble.extend(['DeltaPhi:DeltaPhi1','DeltaPhi:DeltaPhi2','DeltaPhi:DeltaPhi3','DeltaPhi:DeltaPhi4'])
     
     ## ----------------------------------------------------------------------------------------------
     ## MET
