@@ -202,8 +202,8 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(htp4a,"Jet4Pt");
    std::auto_ptr<double> htp4b(new double(jet4eta));
    iEvent.put(htp4b,"Jet4Eta");
-   std::auto_ptr<double> htp4c(new double(deltaphi4));
-   iEvent.put(htp4c,"DeltaPhi4");   
+   std::auto_ptr<double> htp4d(new double(deltaphi4));
+   iEvent.put(htp4d,"DeltaPhi4");   
    std::auto_ptr<double> htp4c(new double(minDeltaPhi));
    iEvent.put(htp4c,"minDeltaPhi");
 }
