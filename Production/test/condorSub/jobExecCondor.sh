@@ -41,6 +41,7 @@ cmsRun runMakeTreeFromMiniAOD_cfg.py outfile=${SAMPLE}_${NPART} inputFilesConfig
 CMSEXIT=$?
 
 if [[ $CMSEXIT -ne 0 ]]; then
+  rm *.root
   echo "exit code $CMSEXIT, skipping xrdcp"
   exit $CMSEXIT
 else
