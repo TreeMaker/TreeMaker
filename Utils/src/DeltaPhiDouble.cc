@@ -88,6 +88,7 @@ DeltaPhiDouble::DeltaPhiDouble(const edm::ParameterSet& iConfig)
    produces<double>("DeltaPhi1");
    produces<double>("DeltaPhi2");
    produces<double>("DeltaPhi3");
+   produces<double>("DeltaPhi4");
    produces<double>("minDeltaPhi");
    /* Examples
     *   produces<ExampleData2>();
@@ -132,6 +133,7 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    double deltaphi1=10;
    double deltaphi2=10;
    double deltaphi3=10;
+   double deltaphi4=10;
    edm::Handle< edm::View<reco::Candidate> > MHTJets;
    iEvent.getByLabel(MHTJetTag_,MHTJets);
    reco::MET::LorentzVector mhtLorentz(0,0,0,0);
@@ -167,9 +169,11 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          if (count==3){
             jet4pt = DeltaPhiJets->at(i).pt();
             jet4eta = DeltaPhiJets->at(i).eta();
+            deltaphi4 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
          }
          if (minDeltaPhi>std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi())))
             minDeltaPhi=std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));;
+
          count++;
          if(count==4) break;
       }
@@ -198,6 +202,8 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(htp4a,"Jet4Pt");
    std::auto_ptr<double> htp4b(new double(jet4eta));
    iEvent.put(htp4b,"Jet4Eta");
+   std::auto_ptr<double> htp4d(new double(deltaphi4));
+   iEvent.put(htp4d,"DeltaPhi4");   
    std::auto_ptr<double> htp4c(new double(minDeltaPhi));
    iEvent.put(htp4c,"minDeltaPhi");
 }

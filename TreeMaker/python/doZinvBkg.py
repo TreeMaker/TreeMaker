@@ -89,7 +89,7 @@ def doZinvBkg(process,is74X,METTag):
         MHTJets  = cms.InputTag("MHTJetsclean"),
         )
     process.ZinvClean += process.DeltaPhiClean
-    process.TreeMaker2.VarsDouble.extend(['DeltaPhiClean:DeltaPhi1(DeltaPhi1clean)','DeltaPhiClean:DeltaPhi2(DeltaPhi2clean)','DeltaPhiClean:DeltaPhi3(DeltaPhi3clean)',])
+    process.TreeMaker2.VarsDouble.extend(['DeltaPhiClean:DeltaPhi1(DeltaPhi1clean)','DeltaPhiClean:DeltaPhi2(DeltaPhi2clean)','DeltaPhiClean:DeltaPhi3(DeltaPhi3clean)','DeltaPhiClean:DeltaPhi4(DeltaPhi4clean)'])
     
     from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
     from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
