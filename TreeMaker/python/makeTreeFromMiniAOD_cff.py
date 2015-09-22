@@ -22,7 +22,8 @@ jsonfile="",
 jecfile="",
 residual=False,
 QCD=False,
-doPDFs=False
+doPDFs=False,
+fastsim=False
 ):
 
     ## ----------------------------------------------------------------------------------------------
@@ -355,7 +356,7 @@ doPDFs=False
         photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
         electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
         conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
-        beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot","","RECO"),
+        beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
         ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
         rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
@@ -405,58 +406,60 @@ doPDFs=False
 
     # The decision was made to include the filter decision flags
     # as individual branches in the tree
-
-    from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
-    process.METFilters = filterDecisionProducer.clone(
-        trigTagArg1 = cms.string('TriggerResults'),
-        trigTagArg2 = cms.string(''),
-        trigTagArg3 = cms.string(tagname),
-        filterName  = cms.string("Flag_METFilters"),
-    )
-    process.Baseline += process.METFilters
-    VarsInt.extend(['METFilters'])
-
-    process.CSCTightHaloFilter = filterDecisionProducer.clone(
-        trigTagArg1 = cms.string('TriggerResults'),
-        trigTagArg2 = cms.string(''),
-        trigTagArg3 = cms.string(tagname),
-        filterName  = cms.string("Flag_CSCTightHaloFilter"),
-    )
-    process.Baseline += process.CSCTightHaloFilter
-    VarsInt.extend(['CSCTightHaloFilter'])
-
-    #process.HBHENoiseFilter = filterDecisionProducer.clone(
-    #    trigTagArg1 = cms.string('TriggerResults'),
-    #    trigTagArg2 = cms.string(''),
-    #    trigTagArg3 = cms.string(tagname),
-    #    filterName  = cms.string("Flag_HBHENoiseFilter"),
-    #)
-    #process.Baseline += process.HBHENoiseFilter
-    #VarsInt.extend(['HBHENoiseFilter'])
     
-    #rerun HBHE noise filter manually
-    process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
-    process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
-    process.Baseline += process.HBHENoiseFilterResultProducer
-    VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
+    if not fastsim: # MET filters are not run for fastsim samples
 
-    process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
-        trigTagArg1 = cms.string('TriggerResults'),
-        trigTagArg2 = cms.string(''),
-        trigTagArg3 = cms.string(tagname),
-        filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
-    )
-    process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
-    VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
-    
-    process.eeBadScFilter = filterDecisionProducer.clone(
-        trigTagArg1  = cms.string('TriggerResults'),
-        trigTagArg2  = cms.string(''),
-        trigTagArg3  = cms.string(tagname),
-        filterName  =   cms.string("Flag_eeBadScFilter"),
+        from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
+        process.METFilters = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(tagname),
+            filterName  = cms.string("Flag_METFilters"),
         )
-    process.Baseline += process.eeBadScFilter
-    VarsInt.extend(['eeBadScFilter'])
+        process.Baseline += process.METFilters
+        VarsInt.extend(['METFilters'])
+
+        process.CSCTightHaloFilter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(tagname),
+            filterName  = cms.string("Flag_CSCTightHaloFilter"),
+        )
+        process.Baseline += process.CSCTightHaloFilter
+        VarsInt.extend(['CSCTightHaloFilter'])
+
+        #process.HBHENoiseFilter = filterDecisionProducer.clone(
+        #    trigTagArg1 = cms.string('TriggerResults'),
+        #    trigTagArg2 = cms.string(''),
+        #    trigTagArg3 = cms.string(tagname),
+        #    filterName  = cms.string("Flag_HBHENoiseFilter"),
+        #)
+        #process.Baseline += process.HBHENoiseFilter
+        #VarsInt.extend(['HBHENoiseFilter'])
+        
+        #rerun HBHE noise filter manually
+        process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+        process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
+        process.Baseline += process.HBHENoiseFilterResultProducer
+        VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
+
+        process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(tagname),
+            filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
+        )
+        process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
+        VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+        
+        process.eeBadScFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(tagname),
+            filterName  =   cms.string("Flag_eeBadScFilter"),
+            )
+        process.Baseline += process.eeBadScFilter
+        VarsInt.extend(['eeBadScFilter'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
