@@ -22,6 +22,7 @@ jsonfile="",
 jecfile="",
 residual=False,
 QCD=False,
+doPDFs=False
 ):
 
     ## ----------------------------------------------------------------------------------------------
@@ -115,6 +116,15 @@ QCD=False,
     process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
+
+    ## ----------------------------------------------------------------------------------------------
+    ## PDF weights for PDF systematics
+    ## ----------------------------------------------------------------------------------------------
+    if doPDFs:
+        process.PDFWeights = cms.EDProducer('PDFWeightProducer')
+        process.Baseline += process.PDFWeights
+        VectorDouble.extend(['PDFWeights:PDFweights'])
+        VectorInt.extend(['PDFWeights:PDFids'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples

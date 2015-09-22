@@ -16,6 +16,9 @@ hadtau=parameters.value("hadtau", True)
 doZinv=parameters.value("doZinv", True)
 QCD=parameters.value("QCD", True)
 
+# compute the PDF weights
+doPDFs=parameters.value("doPDFs", False);
+
 # other options off by default
 tagandprobe=parameters.value("tagandprobe", False)
 debugtracks=parameters.value("debugtracks", False)
@@ -78,6 +81,8 @@ print " storing hadtau variables: "+str(hadtau)
 print " storing Zinv variables: "+str(doZinv)
 print " storing QCD variables: "+str(QCD)
 print " "
+print " storing PDF weights: "+str(doPDFs)
+print " "
 print " storing tag and probe variables: "+str(tagandprobe)
 print " storing track debugging variables: "+str(debugtracks)
 print " Applying baseline selection filter: "+str(applybaseline)
@@ -109,7 +114,8 @@ process = makeTreeFromMiniAOD(process,
     tagname=tagname,
     jsonfile=jsonfile,
     jecfile=jecfile,
-    residual=residual
+    residual=residual,
+    doPDFs=doPDFs
 )
 
 # final tweaks to process
