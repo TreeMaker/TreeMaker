@@ -170,6 +170,16 @@ fastsim=False
         VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
         #VectorInt.append("genParticles:parent(genParticles_parent)")
         
+        # mother and LSP masses for SUSY signal scans
+        # branches always added, but only have values for fastsim samples
+        from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
+        process.SusyScan = SusyScanProducer.clone(
+            shouldScan = cms.bool(fastsim),
+            debug = cms.bool(False)
+        )
+        process.Baseline += process.SusyScan
+        VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
+        
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
