@@ -20,3 +20,4 @@ KEEPTAR=$2
 ./looper_diboson.sh "$OUTPUTDIR" "$KEEPTAR"
 ./looper_singletop.sh "$OUTPUTDIR" "$KEEPTAR"
 ./looper_tthx.sh "$OUTPUTDIR" "$KEEPTAR"
+./looper_fastsim.sh "$OUTPUTDIR" "$KEEPTAR"
