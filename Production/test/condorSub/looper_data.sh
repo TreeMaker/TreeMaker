@@ -1,36 +1,58 @@
 #!/bin/bash
 
-if [ "$1" == 1 ]
-then 
-    exit
+if [ "$1" == 1 ]; then
+  echo "Need to specify output directory in argument 1"
+  exit
 fi
 
-outputDir=$1
+OUTPUTDIR=$1
 KEEPTAR=$2
 
 ./FScheck.sh "$KEEPTAR"
 
 #### Run2015B Prompt RECO
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015B -f Run2015B-PromptReco-v1.DoubleEG
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015B -f Run2015B-PromptReco-v1.DoubleMuon
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015B -f Run2015B-PromptReco-v1.HTMHT
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015B -f Run2015B-PromptReco-v1.SingleElectron
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015B -f Run2015B-PromptReco-v1.SingleMuon
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015B -f Run2015B-PromptReco-v1.SinglePhoton
+SCENARIO=2015B
+SAMPLES="
+Run2015B-PromptReco-v1.DoubleEG \
+Run2015B-PromptReco-v1.DoubleMuon \
+Run2015B-PromptReco-v1.HTMHT \
+Run2015B-PromptReco-v1.SingleElectron \
+Run2015B-PromptReco-v1.SingleMuon \
+Run2015B-PromptReco-v1.SinglePhoton
+"
+
+for SAMPLE in ${SAMPLES}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+done
 
 #### Run2015B July 17 reprocessing
-python generateSubmission.py -n 1 -s  -o $outputDir -c re2015B -f Run2015B-17Jul2015-v1.DoubleEG
-python generateSubmission.py -n 1 -s  -o $outputDir -c re2015B -f Run2015B-17Jul2015-v1.DoubleMuon
-python generateSubmission.py -n 1 -s  -o $outputDir -c re2015B -f Run2015B-17Jul2015-v1.EGamma
-python generateSubmission.py -n 1 -s  -o $outputDir -c re2015B -f Run2015B-17Jul2015-v1.HTMHT
-python generateSubmission.py -n 1 -s  -o $outputDir -c re2015B -f Run2015B-17Jul2015-v1.SingleElectron
-python generateSubmission.py -n 1 -s  -o $outputDir -c re2015B -f Run2015B-17Jul2015-v1.SingleMuon
-python generateSubmission.py -n 1 -s  -o $outputDir -c re2015B -f Run2015B-17Jul2015-v1.SinglePhoton
+SCENARIO=re2015B
+SAMPLES="
+Run2015B-17Jul2015-v1.DoubleEG \
+Run2015B-17Jul2015-v1.DoubleMuon \
+Run2015B-17Jul2015-v1.EGamma \
+Run2015B-17Jul2015-v1.HTMHT \
+Run2015B-17Jul2015-v1.SingleElectron \
+Run2015B-17Jul2015-v1.SingleMuon \
+Run2015B-17Jul2015-v1.SinglePhoton
+"
+
+for SAMPLE in ${SAMPLES}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+done
 
 #### Run2015C Prompt RECO
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015C -f Run2015C-PromptReco-v1.DoubleEG
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015C -f Run2015C-PromptReco-v1.DoubleMuon
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015C -f Run2015C-PromptReco-v1.HTMHT
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015C -f Run2015C-PromptReco-v1.SingleElectron
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015C -f Run2015C-PromptReco-v1.SingleMuon
-python generateSubmission.py -n 1 -s -o $outputDir -c 2015C -f Run2015C-PromptReco-v1.SinglePhoton
+SCENARIO=2015C
+SAMPLES="
+Run2015C-PromptReco-v1.DoubleEG \
+Run2015C-PromptReco-v1.DoubleMuon \
+Run2015C-PromptReco-v1.HTMHT \
+Run2015C-PromptReco-v1.SingleElectron \
+Run2015C-PromptReco-v1.SingleMuon \
+Run2015C-PromptReco-v1.SinglePhoton
+"
+
+for SAMPLE in ${SAMPLES}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+done
+

@@ -1,25 +1,27 @@
 #!/bin/bash
 
-if [ "$1" == 1 ]
-then 
-    exit
+if [ "$1" == 1 ]; then
+  echo "Need to specify output directory in argument 1"
+  exit
 fi
 
-outputDir=$1
+OUTPUTDIR=$1
 KEEPTAR=$2
 
 ./FScheck.sh "$KEEPTAR"
 
-#### squark
-#python generateSubmission.py -o $outputDir -c Phys14 -n 1 -s -f PHYS14.SMS-T2bb_2J_mStop-600_mLSP-580_Tune4C_13TeV-madgraph-tauola
-#python generateSubmission.py -o $outputDir -c Phys14 -n 1 -s -f PHYS14.SMS-T2bb_2J_mStop-900_mLSP-100_Tune4C_13TeV-madgraph-tauola
-#python generateSubmission.py -o $outputDir -c Phys14 -n 1 -s -f PHYS14.SMS-T2qq_2J_mStop-1200_mLSP-100_Tune4C_13TeV-madgraph-tauola
-#python generateSubmission.py -o $outputDir -c Phys14 -n 1 -s -f PHYS14.SMS-T2qq_2J_mStop-600_mLSP-550_Tune4C_13TeV-madgraph-tauola
+SCENARIO=Spring15
 
 #### Spring15 gluino
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.SMS-T1bbbb_mGluino-1000_mLSP-900_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.SMS-T1bbbb_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.SMS-T1qqqq_mGluino-1000_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.SMS-T1qqqq_mGluino-1400_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.SMS-T1tttt_mGluino-1200_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+SAMPLES="
+Spring15.SMS-T1bbbb_mGluino-1000_mLSP-900_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15.SMS-T1bbbb_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15.SMS-T1qqqq_mGluino-1000_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15.SMS-T1qqqq_mGluino-1400_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15.SMS-T1tttt_mGluino-1200_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15.SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+"
+
+for SAMPLE in ${SAMPLES}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+done
