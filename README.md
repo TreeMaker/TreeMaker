@@ -60,6 +60,8 @@ If you want to reuse an existing CMSSW tarball (no important changes have been m
 ./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction keep
 ```
 
+Because of the large number of events in the Spring15 MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
+
 Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. The script [resubCondor.sh](./Production/test/condorSub/resubCondor.sh) can identify the failed jobs and prepare them for resubmission by checking the Condor logs.
 ```
 ./resubCondor.sh "YYYY-MM-DD HH:MM" myResub.sh
@@ -74,7 +76,7 @@ Scripts are available to calculate the integrated luminosity from data ntuples (
 python lumiSummary.py
 ```
 
-The script [lumiSummary.py](./lumiSummary.py) loops over a list of data samples (by default, a list of Run2015B PromptReco samples) and creates a JSON
+The script [lumiSummary.py](./Production/test/lumiSummary.py) loops over a list of data samples (by default, a list of Run2015B PromptReco samples) and creates a JSON
 file for each sample consisting of the lumisections which were actually processed. (This script is based on
 the CRAB3 client job report scripts.) The resulting JSON file can be run through [brilcalc](http://cms-service-lumi.web.cern.ch/cms-service-lumi/brilwsdoc.html)
 to determine the integrated luminosity for the dataset.
@@ -102,7 +104,7 @@ python get_py.py dict=dictNLO.py wp=False
 ```
 
 Step 2: Run NeffFinder, a simple analyzer which calculates the effective number of events for a sample.
-The analyzer should be submitted as a Condor batch job for each sample due to the xrootd I/O bottleneck, which is prohibitive when running interactively (assuming samples are listed in `looperNeff.sh`).
+The analyzer should be submitted as a Condor batch job for each sample (assuming samples are listed in [looperNeff.sh](./Production/test/condorSubNeff/looperNeff.sh)), because the xrootd I/O bottleneck is prohibitive when running interactively.
 Be sure to sanity-check the results, as xrootd failures can cause jobs to terminate early.
 ```
 cp -r condorSubNeff myNeff
@@ -139,6 +141,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
 * `tagname`: tag name for collections that can have different tags for data or MC (default="PAT")
 * `geninfo`: switch to enable use of generator information, should only be used for MC (default=True)
+* `fastsim`: switch to enable special settings for SUSY signal scans produced wit FastSim (default=False)
 * `jsonfile`: name of JSON file to apply to data
 * `jecfile`: name of a database file from which to get JECs (default="")
 * `residual`: switch to enable residual JECs for data (default=False)
