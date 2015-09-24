@@ -21,10 +21,11 @@ These scenarios define various sample-dependent parameters, including:
 global tag, collection tag name, generator info, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
 1. `Spring15`: for Spring15 25ns MC  
-2. `2015B`: for 2015B PromptReco 50ns data  
-3. `re2015B`: for 2015B re-miniAOD 50ns data  
-4. `2015C`: for 2015C PromptReco 25ns data  
-5. `Phys14`: for Phys14 25ns MC (deprecated)  
+2. `Spring15Fast`: for Spring15 25ns FastSim MC (signal scans)
+3. `2015B`: for 2015B PromptReco 50ns data  
+4. `re2015B`: for 2015B re-miniAOD 50ns data  
+5. `2015C`: for 2015C PromptReco 25ns data  
+6. `Phys14`: for Phys14 25ns MC (deprecated)  
 
 ## Interactive Runs
 

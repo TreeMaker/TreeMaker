@@ -1,20 +1,28 @@
 #!/bin/bash
 
-if [ "$1" == 1 ]
-then 
-    exit
+if [ "$1" == 1 ]; then
+  echo "Need to specify output directory in argument 1"
+  exit
 fi
 
-outputDir=$1
+OUTPUTDIR=$1
 KEEPTAR=$2
 
 ./FScheck.sh "$KEEPTAR"
 
+SCENARIO=Spring15
+
 #### Spring15 rare backgrounds - diboson
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.WWToLNuQQ_13TeV-powheg
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.WWTo2L2Nu_13TeV-powheg
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8
-python generateSubmission.py -n 1 -s -o $outputDir -c Spring15 -f Spring15.ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8
+SAMPLES="
+Spring15.WWToLNuQQ_13TeV-powheg \
+Spring15.WWTo2L2Nu_13TeV-powheg \
+Spring15.ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15.WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15.WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15.WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15.ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8
+"
+
+for SAMPLE in ${SAMPLES}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+done
