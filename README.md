@@ -25,7 +25,8 @@ The available scenarios are:
 3. `2015B`: for 2015B PromptReco 50ns data  
 4. `re2015B`: for 2015B re-miniAOD 50ns data  
 5. `2015C`: for 2015C PromptReco 25ns data  
-6. `Phys14`: for Phys14 25ns MC (deprecated)  
+6. `2015D`: for 2015D PromptReco 25ns data  
+7. `Phys14`: for Phys14 25ns MC (deprecated)  
 
 ## Interactive Runs
 

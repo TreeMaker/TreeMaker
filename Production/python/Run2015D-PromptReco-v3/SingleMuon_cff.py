@@ -1,0 +1,72 @@
+import FWCore.ParameterSet.Config as cms
+
+maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+readFiles = cms.untracked.vstring()
+secFiles = cms.untracked.vstring() 
+source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
+readFiles.extend( [
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/629/00000/8EA4C10E-F35E-E511-ABF9-02163E014108.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/630/00000/BCD78EF7-2B5F-E511-A3A3-02163E0170B5.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/672/00000/02B383EC-025F-E511-97CF-02163E01181F.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/673/00000/BC23BFB5-145F-E511-B03F-02163E011A4C.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/674/00000/F459D73B-F95E-E511-B5E7-02163E01446D.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/675/00000/086B30F2-9B5F-E511-A3FC-02163E01429F.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/675/00000/5E85670E-9C5F-E511-AD41-02163E011E80.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/675/00000/D084BBEE-9B5F-E511-B416-02163E012042.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/06DC9FC8-F55F-E511-8214-02163E011D99.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/120A295C-FE5F-E511-9B21-02163E0135B5.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/1A94C275-F05F-E511-883F-02163E014100.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/1E0FBF1E-EF5F-E511-8676-02163E0141BA.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/281931F2-EA5F-E511-B684-02163E013863.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/30CD8613-EF5F-E511-93D1-02163E0141A8.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/3A1CAFDF-EC5F-E511-A2E0-02163E014796.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/566E27EA-EC5F-E511-BBE6-02163E012B6F.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/7E518A1A-EF5F-E511-9C72-02163E0145EF.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/A08C89B5-ED5F-E511-97D9-02163E014649.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/B4AD6B53-ED5F-E511-A05B-02163E0143BA.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/B6BFF15E-ED5F-E511-A6E3-02163E0133E4.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/C2D5A4CC-F55F-E511-A02A-02163E0123FC.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/E0DD2F18-EF5F-E511-B423-02163E0146E4.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/676/00000/FCCE68ED-EC5F-E511-8F08-02163E01465A.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/677/00000/32084875-3A5F-E511-B670-02163E01232B.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/677/00000/8ADA6E74-3A5F-E511-BE8C-02163E013627.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/677/00000/CEAE1A74-3A5F-E511-821F-02163E013938.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/677/00000/D278497C-3A5F-E511-AC54-02163E0125A9.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/677/00000/E8CA6697-3A5F-E511-AE24-02163E011BD1.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/725/00000/B0753B9D-385F-E511-83C8-02163E011CE5.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/727/00000/46F3BA8F-3A5F-E511-99CC-02163E011EF2.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/728/00000/3ABED78F-455F-E511-B394-02163E011CE5.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/0AB3E73A-5B60-E511-A8AF-02163E0146CB.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/163B2B19-5A60-E511-9012-02163E0137DF.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/20AD9A19-5A60-E511-9730-02163E014556.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/20F43722-5960-E511-8F26-02163E014468.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/2C0BE722-5960-E511-B834-02163E014421.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/2E122BB9-5760-E511-93F1-02163E014468.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/501934F6-4260-E511-A0AC-02163E011826.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/601CA4F1-4160-E511-B728-02163E014144.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/648D46F3-4160-E511-A634-02163E014734.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/7225F7BD-5760-E511-8235-02163E014421.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/8208EAF1-4260-E511-9902-02163E014365.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/86A50D1B-5A60-E511-BBFA-02163E0141CA.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/8E025D0C-5A60-E511-B073-02163E0145DA.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/98B00D79-4360-E511-A5A3-02163E0137C1.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/A613F5C2-5A60-E511-91BD-02163E0143A2.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/C8056B20-5A60-E511-A277-02163E012757.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/C8AD9681-4360-E511-A978-02163E01435A.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/D2D06D1B-5A60-E511-88DC-02163E01284C.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/F23710DF-4460-E511-A746-02163E0142FD.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/FCB85319-5A60-E511-9007-02163E014417.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/729/00000/FE7F9005-4560-E511-8D61-02163E0142F1.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/734/00000/84C8C331-4960-E511-AFD1-02163E014144.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/734/00000/C08D5C42-4960-E511-BD77-02163E0145C4.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/734/00000/E4FB9549-4960-E511-A4A1-02163E014741.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/801/00000/48894C8A-2960-E511-8D45-02163E01348F.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/801/00000/AAF9C683-2960-E511-BF68-02163E014297.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/801/00000/CC461D87-2960-E511-820F-02163E0141EA.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/834/00000/34471695-0060-E511-B1D1-02163E0119AF.root',
+       '/store/data/Run2015D/SingleMuon/MINIAOD/PromptReco-v3/000/256/842/00000/E2BD56BB-4760-E511-B0C8-02163E014750.root' ] );
+
+
+secFiles.extend( [
+               ] )
+

@@ -158,10 +158,10 @@ def getWeightProducer(fileName):
         MCSample("ZJetsToNuNu_HT-200To400_13TeV-madgraph", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 96.3828, 5032927),
         MCSample("ZJetsToNuNu_HT-400To600_13TeV-madgraph", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 13.46112, 1014139),
         MCSample("ZJetsToNuNu_HT-600ToInf_13TeV-madgraph", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 5.16969, 1015904),
-        MCSample("GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 1534, 5026005),
-        MCSample("GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 489.9, 10328623),
-        MCSample("GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 62.05, 2476770),
-        MCSample("GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 20.87, 2550765),
+        MCSample("GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 22010, 5026005),
+        MCSample("GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 9110, 10328623),
+        MCSample("GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 273, 2476770),
+        MCSample("GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 94.5, 2550765),
         # rare backgrounds
         MCSample("ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 3.34, 613384), # straight total = 984400
         MCSample("ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 26.23, 1695400),
