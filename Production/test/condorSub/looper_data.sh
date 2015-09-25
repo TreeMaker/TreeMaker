@@ -47,6 +47,8 @@ SAMPLES="
 Run2015C-PromptReco-v1.DoubleEG \
 Run2015C-PromptReco-v1.DoubleMuon \
 Run2015C-PromptReco-v1.HTMHT \
+Run2015C-PromptReco-v1.JetHT \
+Run2015C-PromptReco-v1.MET \
 Run2015C-PromptReco-v1.SingleElectron \
 Run2015C-PromptReco-v1.SingleMuon \
 Run2015C-PromptReco-v1.SinglePhoton
@@ -56,3 +58,19 @@ for SAMPLE in ${SAMPLES}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
 done
 
+#### Run2015D Prompt RECO
+SCENARIO=2015D
+SAMPLES="
+Run2015D-PromptReco-v3.DoubleEG \
+Run2015D-PromptReco-v3.DoubleMuon \
+Run2015D-PromptReco-v3.HTMHT \
+Run2015D-PromptReco-v3.JetHT \
+Run2015D-PromptReco-v3.MET \
+Run2015D-PromptReco-v3.SingleElectron \
+Run2015D-PromptReco-v3.SingleMuon \
+Run2015D-PromptReco-v3.SinglePhoton
+"
+
+for SAMPLE in ${SAMPLES}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+done
