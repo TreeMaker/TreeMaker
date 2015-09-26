@@ -49,8 +49,19 @@ dataSamples = [
     sampleInfo( "DoubleMuon_2015C", [baseDir+"/Run2015C-PromptReco-v1.DoubleMuon_*"] ),
     sampleInfo( "SinglePhoton_2015C", [baseDir+"/Run2015C-PromptReco-v1.SinglePhoton_*"] ),
     sampleInfo( "HTMHT_2015C", [baseDir+"/Run2015C-PromptReco-v1.HTMHT_*"] ),
+    sampleInfo( "JetHT_2015C", [baseDir+"/Run2015C-PromptReco-v1.JetHT_*"] ),
+    sampleInfo( "MET_2015C", [baseDir+"/Run2015C-PromptReco-v1.MET_*"] ),
     sampleInfo( "SingleElectron_2015C", [baseDir+"/Run2015C-PromptReco-v1.SingleElectron_*"] ),
     sampleInfo( "SingleMuon_2015C", [baseDir+"/Run2015C-PromptReco-v1.SingleMuon_*"] ),
+    # 2015D datasets: prompt
+    sampleInfo( "DoubleEG_2015D", [baseDir+"/Run2015D-PromptReco-v3.DoubleEG_*"] ),
+    sampleInfo( "DoubleMuon_2015D", [baseDir+"/Run2015D-PromptReco-v3.DoubleMuon_*"] ),
+    sampleInfo( "SinglePhoton_2015D", [baseDir+"/Run2015D-PromptReco-v3.SinglePhoton_*"] ),
+    sampleInfo( "HTMHT_2015D", [baseDir+"/Run2015D-PromptReco-v3.HTMHT_*"] ),
+    sampleInfo( "JetHT_2015D", [baseDir+"/Run2015D-PromptReco-v3.JetHT_*"] ),
+    sampleInfo( "MET_2015D", [baseDir+"/Run2015D-PromptReco-v3.MET_*"] ),
+    sampleInfo( "SingleElectron_2015D", [baseDir+"/Run2015D-PromptReco-v3.SingleElectron_*"] ),
+    sampleInfo( "SingleMuon_2015D", [baseDir+"/Run2015D-PromptReco-v3.SingleMuon_*"] ),
 ]
 
 # ------------------------------------------------------------
