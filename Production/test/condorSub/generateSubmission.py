@@ -17,17 +17,21 @@ parser.add_option("-s","--submit",dest="submit", default=False,action="store_tru
 
 parser.add_option("-c","--scenario",dest="scenario", default="Spring15",
                                        help="scenario: Phys14, Spring15, 2015B, re2015B, 2015C")
+                                       
+parser.add_option("-j","--firstJob",dest="firstJob", default=0,
+                                       help="first job to submit")
 
 (options, args) = parser.parse_args()
 
 if options.outputDir=="":
     raise Exception, 'No ouput directory (-o) specified'
 
-# varify specified options
+# verify specified options
 print "nFiles: ",options.nFiles
 print "filesConfig: ",options.filesConfig
 print "scenario: ",options.scenario
 print "submit: ",options.submit
+print "firstJob: ",options.firstJob
 
 # grab full file list from config files
 import FWCore.ParameterSet.Config as cms
@@ -47,10 +51,12 @@ else:
     if ( fileListLen % int( options.nFiles ) != 0 ) :
         nJobs += 1
 
-print "I will create "+str(nJobs)+" jobs for you!"
+netJobs = nJobs - int(options.firstJob)
+print "I will create "+str(netJobs)+" jobs for you!"
+if options.firstJob>0: print "(starting from job "+str(options.firstJob)+")"
 
 # start loop over N jobs
-for iJob in range( nJobs ) :
+for iJob in range( int(options.firstJob), nJobs ) :
     # get starting file number
     nstart = iJob*int(options.nFiles)
 
@@ -70,5 +76,3 @@ for iJob in range( nJobs ) :
     # submit jobs to condor, if -s was specified
     if ( options.submit ) :
         os.system("condor_submit jobExecCondor_"+jobname+".jdl")
-    
-
