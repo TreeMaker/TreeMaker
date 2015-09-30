@@ -202,15 +202,17 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if( Jets.isValid() ) {
 		for(unsigned int ij=0; ij<Jets->size();ij++)
 		{
-		   double Eff=1.0; double SF=1.0; double SFUp=1.0; double SFDown=1.0;double MTSFUp=1.0; double MTSFDown=1.0;
-		   FillEffSF(Jets->at(ij),Eff, SF,SFUp,SFDown, MTSFUp, MTSFDown);		   		    	   
+		  double Eff=1.0; double SF=1.0; double SFUp=1.0; double SFDown=1.0;double MTSFUp=1.0; double MTSFDown=1.0;
+		  FillEffSF(Jets->at(ij),Eff, SF,SFUp,SFDown, MTSFUp, MTSFDown);		 
+		  
+		   
 		   //shift b/c sf
 		   double eps_i=Eff*SF;
 	           double epsUp_i=Eff*SFUp;
 		   double epsDown_i=Eff*SFDown;	
 		   //mistag sf for light jets
 		   double MTepsUp_i=Eff*MTSFUp;
-                   double MTepsDown_i=Eff*MTSFDown;		  
+		   double MTepsDown_i=Eff*MTSFDown;		  
 
 		   Prob0=Prob0*(1-eps_i);
 		   Prob0ShiftUp=Prob0ShiftUp*(1-epsUp_i);
@@ -386,7 +388,7 @@ BTagScale::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFUp, double&SFDown,double&MTSFUp, double&MTSFDown){
     
   float jetpt=aJet.pt();
-  if(jetpt>1000.)jetpt=999.
+  if(jetpt>1000.)jetpt=999.;
   float jeteta=aJet.eta();
 
   int parton=aJet.partonFlavour();
@@ -412,7 +414,11 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
     SFUp=readershiftup.eval(jetFlavor,jeteta, jetpt);
     SFDown=readershiftdown.eval(jetFlavor,jeteta, jetpt);
 
-  
+    //fill Efficiency
+    if(abs(parton)==5)Eff=btagEff->GetBinContent(btagEff->FindBin(jetpt));
+    if(abs(parton)==4)Eff=ctagEff->GetBinContent(btagEff->FindBin(jetpt));
+    if(abs(parton)!=4 &&abs(parton)!=5  )Eff=ltagEff->GetBinContent(btagEff->FindBin(jetpt));
+	    
 	/*	
     if(jetpt>400)jetpt=400;
     int parton=aJet.partonFlavour();

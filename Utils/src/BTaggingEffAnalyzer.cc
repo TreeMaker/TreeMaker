@@ -151,10 +151,10 @@ BTaggingEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
 
   iEvent.getByLabel("NJets", NJets);
   iEvent.getByLabel("LeptonsNew", Leptons);
-  iEvent.getByLabel("isoPionTracks", isoPionTracks);
-  iEvent.getByLabel("isoMuonTracks", isoMuonTracks);
-  iEvent.getByLabel("isoElectronTracks", isoElectronTracks);
-  iEvent.getByLabel("JetID", JetID);
+  iEvent.getByLabel("IsolatedPionTracksVeto","isoTracks", isoPionTracks);
+  iEvent.getByLabel("IsolatedMuonTracksVeto","isoTracks", isoMuonTracks);
+  iEvent.getByLabel("IsolatedElectronTracksVeto","isoTracks", isoElectronTracks);
+  iEvent.getByLabel("GoodJets", JetID);
   bool passEvSel=false;
   if(*HT>500 && *MHT>200 && *DeltaPhi1>0.5 && *DeltaPhi2>0.5 && *DeltaPhi3>0.3 && *NJets>=4 && *Leptons==0 && *isoPionTracks==0 && *isoMuonTracks==0 && *isoElectronTracks==0 && *JetID)passEvSel=true;
  
