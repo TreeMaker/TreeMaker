@@ -62,6 +62,9 @@ If you want to reuse an existing CMSSW tarball (no important changes have been m
 ./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction keep
 ```
 
+When the python file list for a given sample is updated, it may be desirable to submit jobs only for the new files. [looper_data_update.sh](./Production/test/condorSub/looper_data_update.sh) shows an example of how to do this.
+To get the number of the first new job, just use `len(readFiles)` from the python file list *before* updating it.
+
 Because of the large number of events in the Spring15 MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
 
 Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. The script [resubCondor.sh](./Production/test/condorSub/resubCondor.sh) can identify the failed jobs and prepare them for resubmission by checking the Condor logs.
