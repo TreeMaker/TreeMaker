@@ -642,7 +642,18 @@ QCD=False,
                                          'JetsProperties:neutralHadronMultiplicity(Jets_neutralHadronMultiplicity)',
                                          'JetsProperties:photonMultiplicity(Jets_photonMultiplicity)',
                                          'JetsProperties:flavor(Jets_flavor)'])
-
+    process.bTaggingEffAnalyzerAK5PF = cms.EDAnalyzer('BTaggingEffAnalyzer',
+        JetsTag            = cms.InputTag('HTJets'),
+        DiscriminatorTag   = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+        DiscriminatorValue = cms.double(0.890),
+        PtNBins            = cms.int32(100),
+        PtMin              = cms.double(0.),
+        PtMax              = cms.double(1000.),
+        EtaNBins           = cms.int32(60),
+        EtaMin             = cms.double(-3.),
+        EtaMax             = cms.double(3.)
+    )
+    process.Baseline += process.bTaggingEffAnalyzerAK5PF
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Optional producers (background estimations, control regions)
