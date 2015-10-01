@@ -22,6 +22,8 @@ jsonfile="",
 jecfile="",
 residual=False,
 QCD=False,
+IncludeBEff=True,
+AddBtagSF=False,
 ):
 
     ## ----------------------------------------------------------------------------------------------
@@ -642,18 +644,26 @@ QCD=False,
                                          'JetsProperties:neutralHadronMultiplicity(Jets_neutralHadronMultiplicity)',
                                          'JetsProperties:photonMultiplicity(Jets_photonMultiplicity)',
                                          'JetsProperties:flavor(Jets_flavor)'])
-    process.bTaggingEffAnalyzerAK5PF = cms.EDAnalyzer('BTaggingEffAnalyzer',
-        JetsTag            = cms.InputTag('HTJets'),
-        DiscriminatorTag   = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-        DiscriminatorValue = cms.double(0.890),
-        PtNBins            = cms.int32(100),
-        PtMin              = cms.double(0.),
-        PtMax              = cms.double(1000.),
-        EtaNBins           = cms.int32(60),
-        EtaMin             = cms.double(-3.),
-        EtaMax             = cms.double(3.)
-    )
-    process.Baseline += process.bTaggingEffAnalyzerAK5PF
+    if IncludeBEff:
+    	process.bTaggingEffAnalyzerAK5PF = cms.EDAnalyzer('BTaggingEffAnalyzer',
+        	JetsTag            = cms.InputTag('HTJets'),
+        	DiscriminatorTag   = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+        	DiscriminatorValue = cms.double(0.890),
+        	PtNBins            = cms.int32(100),
+        	PtMin              = cms.double(0.),
+        	PtMax              = cms.double(1000.),
+        	EtaNBins           = cms.int32(60),
+        	EtaMin             = cms.double(-3.),
+        	EtaMax             = cms.double(3.)
+    	)
+   	process.Baseline += process.bTaggingEffAnalyzerAK5PF
+    if AddBtagSF:
+	process.btagSF=cms.EDAnalyzer('BTagScale',
+		JetsTag            = cms.InputTag('HTJets'),
+		BTagEffInput   =cms.string('./data/test_run_RA2AnalysisTree.root'),
+		CSVTag=cms.strint('./data/CSVv2.csv'),
+		
+		)
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Optional producers (background estimations, control regions)

@@ -113,7 +113,7 @@ private:
 BTagScale::BTagScale(const edm::ParameterSet& iConfig)
 {
 	//register your produc
-	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+	JetTag_ = iConfig.getParameter<edm::InputTag>("JetsTag");
 	btagEffFile_=iConfig.getParameter<std::string>  ("BTagEffInput");
 	CSVSFFile_=iConfig.getParameter<std::string>("CSVTag");
 	//now do what ever other initialization is needed

@@ -15,7 +15,8 @@ lostlepton=parameters.value("lostlepton", True)
 hadtau=parameters.value("hadtau", True)
 doZinv=parameters.value("doZinv", True)
 QCD=parameters.value("QCD", True)
-
+IncludeBEff=parameters.value("IncludeBEff", True)
+AddBtagSF=parameters.value("AddBtagSF", True)
 # other options off by default
 tagandprobe=parameters.value("tagandprobe", False)
 debugtracks=parameters.value("debugtracks", False)
@@ -109,7 +110,9 @@ process = makeTreeFromMiniAOD(process,
     tagname=tagname,
     jsonfile=jsonfile,
     jecfile=jecfile,
-    residual=residual
+    residual=residual,
+    IncludeBEff=IncludeBEff,
+    AddBtagSF=AddBtagSF,
 )
 
 # final tweaks to process
