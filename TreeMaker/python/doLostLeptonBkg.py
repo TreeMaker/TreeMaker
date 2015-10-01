@@ -96,6 +96,7 @@ def doLostLeptonBkg(process,geninfo):
     # may eventually save track isolation, activity
     # process.TreeMaker2.VectorDouble.extend(['IsoElectronTrackMiniIso:MiniIso(IsolatedElectronTracksVeto_MiniIso)','IsoMuonTrackMiniIso:MiniIso(IsolatedMuonTracksVeto_MiniIso)','IsoPionTrackMiniIso:MiniIso(IsolatedPionTracksVeto_MiniIso)'])
     # process.TreeMaker2.VectorDouble.extend(['IsoElectronTrackMiniIso:MT2Activity(IsolatedElectronTracksVeto_MT2Activity)','IsoMuonTrackMiniIso:MT2Activity(IsolatedMuonTracksVeto_MT2Activity)','IsoPionTrackMiniIso:MT2Activity(IsolatedPionTracksVeto_MT2Activity)'])
+    process.TreeMaker2.VectorBool.extend(['LeptonsNew:ElecIDMedium(selectedIDElectrons_mediumID)', 'LeptonsNew:ElecIDIsoMedium(selectedIDIsoElectrons_mediumID)'])
     process.TreeMaker2.VectorRecoCand.extend(['LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdElectron(selectedIDElectrons)'])
     process.TreeMaker2.VectorDouble.extend(['LeptonsNew:MuIDMTW(selectedIDMuons_MTW)','LeptonsNew:ElecIDMTW(selectedIDElectrons_MTW)'])
     process.TreeMaker2.VectorDouble.extend(['IDMuonMiniIso:MiniIso(selectedIDMuons_MiniIso)','IDElectronMiniIso:MiniIso(selectedIDElectrons_MiniIso)'])
