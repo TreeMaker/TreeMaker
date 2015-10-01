@@ -55,7 +55,7 @@ public:
 private:
 	virtual void beginJob() ;
 	virtual void InitTagEff(std::string fname);
-	virtual void FillEffSF(const pat::Jet &aJet, double&Eff, double&SF,double&SFUp, double&SFDown,double&MTSFUp, double&MTSFDown);
+	virtual void FillEffSF(const pat::Jet &aJet, double&Eff, double&SF,double&SFUp, double&SFDown);
 	virtual void produce(edm::Event&, const edm::EventSetup&);
 	virtual void endJob() ;
 	
@@ -67,10 +67,10 @@ private:
         std::string   btagEffFile_;
         std::string   CSVSFFile_;
   //fill these based on the Mass Point (Mg,mLSP)
-	TH1F*btagEff;
-	TH1F*ctagEff;
+	TH2F*btagEff;
+	TH2F*ctagEff;
 	TH2F*ltagEff;
-
+  /*
         TF1*bcSF;
 	TF1*lSF[3];
 	TF1*lminSF[3];
@@ -93,7 +93,7 @@ private:
  0.0270699,
  0.0256006,
  0.0438219};         
-		 	
+  */		 	
 	
 	// ----------member data ---------------------------
 };
@@ -131,7 +131,7 @@ BTagScale::BTagScale(const edm::ParameterSet& iConfig)
         produces<double>("BTagProb1ShiftDown");
         produces<double>("BTagProb2ShiftDown");
         produces<double>("BTagProb3ShiftDown");
-
+	/*
         produces<double>("MTProb0ShiftUp");
         produces<double>("MTProb1ShiftUp");
         produces<double>("MTProb2ShiftUp");
@@ -141,7 +141,7 @@ BTagScale::BTagScale(const edm::ParameterSet& iConfig)
         produces<double>("MTProb1ShiftDown");
         produces<double>("MTProb2ShiftDown");
         produces<double>("MTProb3ShiftDown");
-
+	*/
 }
 
 
@@ -174,8 +174,8 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	double product = 1;
 	double productUp = 1;
 	double productDown=1;
-        double MTproductUp = 1;
-        double MTproductDown=1;
+        //double MTproductUp = 1;
+	// double MTproductDown=1;
 	float Prob1=0.0;
 	float Prob2=0.0;
 	float Prob3=0.0;
@@ -189,7 +189,7 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         double Prob1ShiftDown=0.0;
         double Prob2ShiftDown=0.0;
         double Prob3ShiftDown=0.0;
-
+	/*
         double MTProb0ShiftUp=1.0;
         double MTProb1ShiftUp=0.0;
         double MTProb2ShiftUp=0.0;
@@ -199,11 +199,13 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         double MTProb1ShiftDown=0.0;
         double MTProb2ShiftDown=0.0;
         double MTProb3ShiftDown=0.0;
+	*/
 	if( Jets.isValid() ) {
 		for(unsigned int ij=0; ij<Jets->size();ij++)
 		{
-		  double Eff=1.0; double SF=1.0; double SFUp=1.0; double SFDown=1.0;double MTSFUp=1.0; double MTSFDown=1.0;
-		  FillEffSF(Jets->at(ij),Eff, SF,SFUp,SFDown, MTSFUp, MTSFDown);		 
+		  double Eff=1.0; double SF=1.0; double SFUp=1.0; double SFDown=1.0;
+		  //double MTSFUp=1.0; double MTSFDown=1.0;
+		  FillEffSF(Jets->at(ij),Eff, SF,SFUp,SFDown);		 
 		  
 		   
 		   //shift b/c sf
@@ -211,81 +213,81 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	           double epsUp_i=Eff*SFUp;
 		   double epsDown_i=Eff*SFDown;	
 		   //mistag sf for light jets
-		   double MTepsUp_i=Eff*MTSFUp;
-		   double MTepsDown_i=Eff*MTSFDown;		  
+		   //   double MTepsUp_i=Eff*MTSFUp;
+		   //   double MTepsDown_i=Eff*MTSFDown;		  
 
 		   Prob0=Prob0*(1-eps_i);
 		   Prob0ShiftUp=Prob0ShiftUp*(1-epsUp_i);
 		   Prob0ShiftDown=Prob0ShiftDown*(1-epsDown_i);
-                   MTProb0ShiftUp=MTProb0ShiftUp*(1-MTepsUp_i);
-                   MTProb0ShiftDown=MTProb0ShiftDown*(1-MTepsDown_i);
+		   //   MTProb0ShiftUp=MTProb0ShiftUp*(1-MTepsUp_i);
+		   // MTProb0ShiftDown=MTProb0ShiftDown*(1-MTepsDown_i);
 //		   std::cout<<"Eps nom "<<eps_i <<" eps shift up "<<epsUp_i<<" eps shift down "<<epsDown_i<<std::endl;
 //                   std::cout<<"Prob nom "<<Prob0 <<" Prob shift up "<<Prob0ShiftUp<<" Prob shift down "<<Prob0ShiftDown<<std::endl;
 //		   std::cout<<"Jet Pt, Eta "<<Jets->at(ij).pt()<<", "<<Jets->at(ij).eta()<<" flavor "<<Jets->at(ij).partonFlavour()<<std::endl;
 		   double subprob=0;
 		   double subprobUp=0;
 		   double subprobDown=0;
-                   double MTsubprobUp=0;
-                   double MTsubprobDown=0;
+		   //   double MTsubprobUp=0;
+		   //    double MTsubprobDown=0;
 	        product=1.0;
 		productUp=1.0;
 		productDown=1.0;
-                MTproductUp=1.0;
-                MTproductDown=1.0;	
+		//   MTproductUp=1.0;
+		//   MTproductDown=1.0;	
 	   for(unsigned int ik=0; ik<Jets->size(); ++ik){
-		     Eff=1.0; SF=1.0; SFUp=1.0; SFDown=1.0;MTSFUp=1.0; MTSFDown=1.0;
-		     FillEffSF(Jets->at(ik),Eff, SF,SFUp,SFDown,MTSFUp,MTSFDown);
+		     Eff=1.0; SF=1.0; SFUp=1.0; SFDown=1.0;
+		     FillEffSF(Jets->at(ik),Eff, SF,SFUp,SFDown);
 		     double eps_k=Eff*SF;
 		     double epsUp_k=Eff*SFUp;
 		     double epsDown_k=Eff*SFDown;
-                     double MTepsUp_k=Eff*MTSFUp;
-                     double MTepsDown_k=Eff*MTSFDown;
+                     //double MTepsUp_k=Eff*MTSFUp;
+                     //double MTepsDown_k=Eff*MTSFDown;
 		     if(ik!=ij){
 			product=product*(1-eps_k); 
 			productUp=productUp*(1-epsUp_k);
 			productDown=productDown*(1-epsDown_k);
-			MTproductUp=MTproductUp*(1-MTepsUp_k);
-			MTproductDown=MTproductDown*(1-MTepsDown_k);
+			//	MTproductUp=MTproductUp*(1-MTepsUp_k);
+			//	MTproductDown=MTproductDown*(1-MTepsDown_k);
 		    }
 		     if(ik > ij){
 			 double subproduct = 1;
 			 double subproductUp = 1;
 			 double subproductDown = 1;
-                         double MTsubproductUp = 1;
-                         double MTsubproductDown = 1;
+                         //double MTsubproductUp = 1;
+                         //double MTsubproductDown = 1;
 			 for (unsigned int jj=0; jj<Jets->size(); ++jj) {
 				 if(jj != ik && jj != ij){
-                                 Eff=1.0; SF=1.0; SFUp=1.0; SFDown=1.0;MTSFUp=1.0; MTSFDown=1.0; 
-				FillEffSF(Jets->at(jj),Eff, SF,SFUp,SFDown, MTSFUp, MTSFDown );
+                                 Eff=1.0; SF=1.0; SFUp=1.0; SFDown=1.0; 
+				FillEffSF(Jets->at(jj),Eff, SF,SFUp,SFDown );
 			         double eps_j=Eff*SF;
 				 double epsUp_j=Eff*SFUp;
 				 double epsDown_j=Eff*SFDown;
-                                 double MTepsUp_j=Eff*SFUp;
-                                 double MTepsDown_j=Eff*SFDown;			       	
+				 //     double MTepsUp_j=Eff*SFUp;
+				 //     double MTepsDown_j=Eff*SFDown;			       	
                     		   //std::cout<<"eps_j "<<eps_j<<std::endl; 	
 				   subproduct=subproduct*(1-eps_j);
 				   subproductUp=subproductUp*(1-epsUp_j);  
 				   subproductDown=subproductDown*(1-epsDown_j); 
-				   MTsubproductUp=MTsubproductUp*(1-MTepsUp_j);
-                                   MTsubproductDown=MTsubproductDown*(1-MTepsDown_j);
+				   //   MTsubproductUp=MTsubproductUp*(1-MTepsUp_j);
+				   //    MTsubproductDown=MTsubproductDown*(1-MTepsDown_j);
 				  }
 			}
 			 subprob += eps_k*subproduct; 
 			 subprobUp += epsUp_k*subproductUp;
 			 subprobDown += epsDown_k*subproductDown;
-                         MTsubprobUp += MTepsUp_k*MTsubproductUp;
-                         MTsubprobDown += MTepsDown_k*MTsubproductDown;
+			 //    MTsubprobUp += MTepsUp_k*MTsubproductUp;
+			 //  MTsubprobDown += MTepsDown_k*MTsubproductDown;
 		     }	
 		  } 
 		  Prob1+= eps_i*product;
 		  Prob2+= eps_i*subprob;
-		  
+		  /*	  
 		  MTProb1ShiftUp+= MTepsUp_i*MTproductUp;
 		  MTProb1ShiftDown+= MTepsDown_i*MTproductDown;
                   
 		  MTProb2ShiftUp+=MTepsUp_i*MTsubprobUp;
 		  MTProb2ShiftDown+=MTepsDown_i*MTsubprobDown;
-		  
+		  */
                   Prob1ShiftUp+= epsUp_i*productUp;
                   Prob1ShiftDown+= epsDown_i*productDown;
 
@@ -294,11 +296,12 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
 	}
 	else std::cout<<"BTagScale::Invalid Tag: "<<JetTag_.label()<<std::endl;
+
 	Prob3=1-Prob0-Prob1-Prob2;
 	Prob3ShiftUp=1-Prob0ShiftUp-Prob1ShiftUp-Prob2ShiftUp;
-        MTProb3ShiftUp=1-MTProb0ShiftUp-MTProb1ShiftUp-MTProb2ShiftUp;
+	//  MTProb3ShiftUp=1-MTProb0ShiftUp-MTProb1ShiftUp-MTProb2ShiftUp;
         Prob3ShiftDown=1-Prob0ShiftDown-Prob1ShiftDown-Prob2ShiftDown;	
-	MTProb3ShiftDown=1-MTProb0ShiftDown-MTProb1ShiftDown-MTProb2ShiftDown;
+	//	MTProb3ShiftDown=1-MTProb0ShiftDown-MTProb1ShiftDown-MTProb2ShiftDown;
 	std::auto_ptr<double> b0(new double(Prob0));
 	iEvent.put(b0, "BTagProb0");
 	std::auto_ptr<double> b1(new double(Prob1));
@@ -326,7 +329,7 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         iEvent.put(b2down, "BTagProb2ShiftDown");
         std::auto_ptr<double> b3down(new double(Prob3ShiftDown));
         iEvent.put(b3down, "BTagProb3ShiftDown");
-
+	/*
         std::auto_ptr<double> m0up(new double(MTProb0ShiftUp));
         iEvent.put(m0up, "MTProb0ShiftUp");
         std::auto_ptr<double> m1up(new double(MTProb1ShiftUp));
@@ -344,7 +347,7 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         iEvent.put(m2down, "MTProb2ShiftDown");
         std::auto_ptr<double> m3down(new double(MTProb3ShiftDown));
         iEvent.put(m3down, "MTProb3ShiftDown");
-
+	*/
 
 //	std::cout<<"BTagProb0 Nominal "<<Prob0<<" BTagProb0 Shift Down "<<Prob0ShiftDown<<std::endl;
 }
@@ -385,7 +388,7 @@ void
 BTagScale::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
-void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFUp, double&SFDown,double&MTSFUp, double&MTSFDown){
+void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFUp, double&SFDown){
     
   float jetpt=aJet.pt();
   if(jetpt>1000.)jetpt=999.;
@@ -415,9 +418,9 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
     SFDown=readershiftdown.eval(jetFlavor,jeteta, jetpt);
 
     //fill Efficiency
-    if(abs(parton)==5)Eff=btagEff->GetBinContent(btagEff->FindBin(jetpt));
-    if(abs(parton)==4)Eff=ctagEff->GetBinContent(btagEff->FindBin(jetpt));
-    if(abs(parton)!=4 &&abs(parton)!=5  )Eff=ltagEff->GetBinContent(btagEff->FindBin(jetpt));
+    if(abs(parton)==5)Eff=btagEff->GetBinContent(btagEff->FindBin(jetpt),btagEff->FindBin(jeteta)  );
+    if(abs(parton)==4)Eff=ctagEff->GetBinContent(ctagEff->FindBin(jetpt),ctagEff->FindBin(jeteta)  );
+    if(abs(parton)!=4 &&abs(parton)!=5  )Eff=ltagEff->GetBinContent(ltagEff->FindBin(jetpt),ltagEff->FindBin(jeteta)  );
 	    
 	/*	
     if(jetpt>400)jetpt=400;
@@ -471,10 +474,22 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
 }
 void BTagScale::InitTagEff(std::string fname){
 TFile *TagEffFile = new TFile(fname.c_str(), "READ");
-        btagEff=(TH1F*)TagEffFile->Get("numB");
-        ctagEff=(TH1F*)TagEffFile->Get("numC");
-        ltagEff=(TH2F*)TagEffFile->Get("numL");
-	TagEffFile->Close();
+
+ TH2F*numB=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Num_b");
+ TH2F*numC=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Num_c");
+ TH2F*numl=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Num_udsg");
+  
+ TH2F*denB=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Denom_b");
+ TH2F*denC=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Denom_c");
+ TH2F*denl=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Denom_udsg");
+numB->Divide(denB); 
+numC->Divide(denC); 
+numl->Divide(denl);
+ btagEff=numB; 
+ ctagEff=numC;
+ ltagEff=numl;
+
+ 
 	/*
 	bcSF=new TF1("bcSF", "((0.939238+(0.000278928*x))+(-7.49693e-07*(x*x)))+(2.04822e-10*(x*(x*x)))",20,400);	
 	float ptmax=1000;
