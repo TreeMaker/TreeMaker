@@ -48,6 +48,7 @@
 
 
 class LeptonProducer : public edm::EDProducer {
+  enum elecIDLevel {VETO, LOOSE, MEDIUM, TIGHT};
 public:
   explicit LeptonProducer(const edm::ParameterSet&);
   ~LeptonProducer();
@@ -55,6 +56,7 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   float MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi);
   bool MuonID(const pat::Muon & muon, const reco::Vertex& vtx);
+  bool ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level);
 	
 private:
   virtual void beginJob() ;
@@ -72,6 +74,8 @@ private:
 	
 	
   // ----------member data ---------------------------
+
+
 };
 
 //
@@ -119,6 +123,8 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
   produces<std::vector<double> >("MuIDIsoMTW");
   produces<std::vector<double> >("ElecIDMTW");
   produces<std::vector<double> >("ElecIDIsoMTW");
+  produces<std::vector<bool> >("ElecIDMedium");
+  produces<std::vector<bool> >("ElecIDIsoMedium");
   
   // produces<std::vector<double> >("MuIDActRA2");
   // produces<std::vector<double> >("MuIDIsoActRA2");
@@ -172,6 +178,8 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr<std::vector<double> > muIDIsoMTW(new std::vector<double>());
   std::auto_ptr<std::vector<double> > elecIDMTW(new std::vector<double>());
   std::auto_ptr<std::vector<double> > elecIDIsoMTW(new std::vector<double>());
+  std::auto_ptr<std::vector<bool> > elecIDMedium(new std::vector<bool>());
+  std::auto_ptr<std::vector<bool> > elecIDIsoMedium(new std::vector<bool>());
   // std::auto_ptr<std::vector<double> > muIDActRA2(new std::vector<double>());
   // std::auto_ptr<std::vector<double> > muIDIsoActRA2(new std::vector<double>());
   // std::auto_ptr<std::vector<double> > muIDActMT2(new std::vector<double>());
@@ -232,6 +240,8 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	    }
 	}
     }
+
+
   edm::Handle<edm::View<pat::Electron> > eleHandle;
   iEvent.getByLabel(ElecTag_, eleHandle);
   if(eleHandle.isValid())
@@ -241,75 +251,25 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  if(fabs(eleHandle->at(e).superCluster()->eta())>maxElecEta_ ||eleHandle->at(e).pt()<minElecPt_)continue;
 	  const pat::Electron aEle = eleHandle->at(e);
 	  const reco::Vertex vtx = vtx_h->at(0);
-	  float sieie         = aEle.full5x5_sigmaIetaIeta();
-	  bool convVeto       = aEle.passConversionVeto();
-	  int mhits 		 = aEle.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);;
-	  float dEtaIn        = aEle.deltaEtaSuperClusterTrackAtVtx();
-	  float dPhiIn        = aEle.deltaPhiSuperClusterTrackAtVtx();
-	  float hoe           = aEle.hadronicOverEm();
-	  float ooemoop       = fabs(1.0/aEle.ecalEnergy() - aEle.eSuperClusterOverP()/aEle.ecalEnergy());
-	  float d0vtx         = 0.0;
-	  float dzvtx         = 0.0;
-	  reco::GsfElectron::PflowIsolationVariables pfIso = aEle.pfIsolationVariables();
-	  // // Compute isolation with delta beta correction for PU
-	  float absiso = pfIso.sumChargedHadronPt
-	    + std::max(0.0 , pfIso.sumNeutralHadronEt + pfIso.sumPhotonEt - 0.5 * pfIso.sumPUPt );
-			
-	  d0vtx = aEle.gsfTrack()->dxy(vtx.position());
-	  dzvtx = aEle.gsfTrack()->dz(vtx.position());
-	  absiso=absiso/aEle.pt();
-	  if(useMiniIsolation_) absiso = SUSYIsolation::GetMiniIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&aEle), "electron", rho);
+
+	  float miniIso = SUSYIsolation::GetMiniIsolation(pfcands, dynamic_cast<const reco::Candidate *>(&aEle), "electron", rho);
 								
-	  if(aEle.isEB())
+	  if(ElectronID(aEle, vtx, VETO)) // check VETO id
 	    {
-	      if(sieie< 0.011586 && fabs(dEtaIn)< 0.013625 && fabs(dPhiIn)< 0.230374 && hoe< 0.181130 && ooemoop< 0.295751 && fabs(d0vtx)< 0.094095 && fabs(dzvtx)< 0.713070 && mhits<=2 && convVeto)
+	      // id passed
+	      idElectrons_.push_back(eleHandle->at(e));
+	      elecIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
+	      elecIDMedium->push_back(ElectronID(aEle, vtx, MEDIUM));
+	      if(miniIso<elecIsoValue_)
 		{
-		  // id passed
-		  idElectrons_.push_back(eleHandle->at(e));
-		  elecIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
-		  if(absiso<elecIsoValue_ && useMiniIsolation_)
-		    {
-		      // iso passed
-		      isoElectrons_.push_back(eleHandle->at(e));
-		      elecIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
-		      Leptons++; 
-		      ElectronCharge->push_back(eleHandle->at(e).charge());
-						
-		    }
-		  if (absiso<0.158721 && !useMiniIsolation_)
-		    {
-		      // iso passed
-		      isoElectrons_.push_back(eleHandle->at(e));
-		      elecIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
-		      Leptons++;
-		      ElectronCharge->push_back(eleHandle->at(e).charge());                  
-		    }
+		  // iso passed
+		  isoElectrons_.push_back(eleHandle->at(e));
+		  elecIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
+		  elecIDIsoMedium->push_back(ElectronID(aEle, vtx, MEDIUM));
+		  Leptons++;
+		  ElectronCharge->push_back(eleHandle->at(e).charge());
 		}
 	    }
-	  else{
-	    if(sieie< 0.031849 && fabs(dEtaIn)< 0.011932 && fabs(dPhiIn)< 0.255450 && hoe< 0.223870 && ooemoop< 0.155501 && fabs(d0vtx)< 0.342293 && fabs(dzvtx)< 0.953461 && mhits<=3 && convVeto)
-	      {
-		// id passed
-		idElectrons_.push_back(eleHandle->at(e));
-		elecIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
-		if(absiso<elecIsoValue_ && useMiniIsolation_)
-		  {
-		    // iso passed
-		    isoElectrons_.push_back(eleHandle->at(e));
-		    elecIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
-		    Leptons++;
-		    ElectronCharge->push_back(eleHandle->at(e).charge());
-		  }
-		if (absiso<0.177032  && !useMiniIsolation_)
-		  {
-		    // iso passed
-		    isoElectrons_.push_back(eleHandle->at(e));
-		    elecIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
-		    Leptons++;
-		    ElectronCharge->push_back(eleHandle->at(e).charge());
-		  }
-	      }
-	  }
 	}
     }
   const std::string string1("IdMuon");
@@ -336,6 +296,8 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(muIDIsoMTW,"MuIDIsoMTW");
   iEvent.put(elecIDMTW,"ElecIDMTW");
   iEvent.put(elecIDIsoMTW,"ElecIDIsoMTW");
+  iEvent.put(elecIDMedium,"ElecIDMedium");
+  iEvent.put(elecIDIsoMedium,"ElecIDIsoMedium");
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -403,6 +365,67 @@ bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx){
 					   muon.segmentCompatibility() > (goodGlob ? 0.303 : 0.451);
   bool isMediumPlus = isMedium && muon.dB() < 0.2 && fabs(muon.muonBestTrack()->dz(vtx.position())) < 0.5;
   return isMediumPlus; 
+}
+
+bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level) {
+  // electron ID cuts, updated for Spring15 25ns MC and Run2015C-D data 
+  // https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
+
+  // barrel electrons
+  double eb_ieta_cut[4] = {0.0114, 0.0103, 0.0101, 0.0101};
+  double eb_deta_cut[4] = {0.0152, 0.0105, 0.0103, 0.00926};
+  double eb_dphi_cut[4] = {0.216, 0.115, 0.0336, 0.0336};
+  double eb_hovere_cut[4] = {0.181, 0.104, 0.0876, 0.0597};
+  double eb_ooeminusoop_cut[4] = {0.207, 0.102, 0.0174, 0.012};
+  double eb_d0_cut[4] = {0.0564, 0.0261, 0.0118, 0.0111};
+  double eb_dz_cut[4] = {0.472, 0.41, 0.373, 0.0466};
+  int eb_misshits_cut[4] = {2, 2, 2, 2};
+
+  // endcap electrons
+  double ee_ieta_cut[4] = {0.0352, 0.0301, 0.0283, 0.0279};
+  double ee_deta_cut[4] = {0.0113, 0.00814, 0.00733, 0.00724};
+  double ee_dphi_cut[4] = {0.237, 0.182, 0.114, 0.0918};
+  double ee_hovere_cut[4] = {0.116, 0.0897, 0.0678, 0.0615};
+  double ee_ooeminusoop_cut[4] = {0.174, 0.126, 0.0898, 0.00999};
+  double ee_d0_cut[4] = {0.222, 0.118, 0.0739, 0.0351};
+  double ee_dz_cut[4] = {0.921, 0.822, 0.602, 0.417};
+  int ee_misshits_cut[4] = {3, 1, 1, 1};
+
+  // common
+  bool reqConvVeto[4] = {true, true, true, true};
+
+  double sieie = electron.full5x5_sigmaIetaIeta();
+  bool convVeto = electron.passConversionVeto();
+  int mhits = electron.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);;
+  double dEtaIn  = electron.deltaEtaSuperClusterTrackAtVtx();
+  double dPhiIn  = electron.deltaPhiSuperClusterTrackAtVtx();
+  double hoe   = electron.hadronicOverEm();
+  double ooemoop = fabs(1.0/electron.ecalEnergy() - electron.eSuperClusterOverP()/electron.ecalEnergy());
+  double d0vtx = electron.gsfTrack()->dxy(vtx.position());
+  double dzvtx = electron.gsfTrack()->dz(vtx.position());
+
+  if (electron.isEB()) {
+    return eb_deta_cut[level] > fabs(dEtaIn)
+      && eb_dphi_cut[level] > fabs(dPhiIn)
+      && eb_ieta_cut[level] > sieie
+      && eb_hovere_cut[level] > hoe
+      && eb_d0_cut[level] > fabs(d0vtx)
+      && eb_dz_cut[level] > fabs(dzvtx)
+      && eb_ooeminusoop_cut[level] > fabs(ooemoop)
+      && (!reqConvVeto[level] || convVeto)
+      && (eb_misshits_cut[level] >= mhits);
+  } else if (electron.isEE()) {
+    return ee_deta_cut[level] > fabs(dEtaIn)
+      && ee_dphi_cut[level] > fabs(dPhiIn)
+      && ee_ieta_cut[level] > sieie
+      && ee_hovere_cut[level] > hoe
+      && ee_d0_cut[level] > fabs(d0vtx)
+      && ee_dz_cut[level] > fabs(dzvtx)
+      && ee_ooeminusoop_cut[level] > fabs(ooemoop)
+      && (!reqConvVeto[level] || convVeto)
+      && (ee_misshits_cut[level] >= mhits);
+  } else return false;
+
 }
 
 //define this as a plug-in
