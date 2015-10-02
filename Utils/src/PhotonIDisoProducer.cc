@@ -264,6 +264,9 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }// done with best photon
     
     }//pure photons    
+if (genParticles.isValid()){//genLevel Stuff
+    
+
 
    // loop over gen particles and find nonprompt and hadronization photons
      int matchedGenPrompt = 0;
@@ -306,7 +309,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     if( matchedGenPrompt > 0 || matchedGenNonPrompt == 0 ) photon_nonPrompt->push_back(false);
     else if( matchedGenNonPrompt > 0 ) photon_nonPrompt->push_back(true);
     else photon_nonPrompt->push_back(false);
-
+}//gen level stuff
     //photon_hadronization->push_back( isHadronization );
 
 
