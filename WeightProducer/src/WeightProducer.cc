@@ -203,6 +203,8 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    //register your products
    produces<double> ("weight");
    produces<double> ("PUweight"); 
+   produces<double> ("PUSysUp");
+   produces<double> ("PUSysDown");
 }
 
 WeightProducer::~WeightProducer() {

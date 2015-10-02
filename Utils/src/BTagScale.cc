@@ -403,11 +403,11 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
   float jeteta=aJet.eta();
   
   int parton=aJet.partonFlavour();
-  //std::cout<<"Jet Eta pt "<<jeteta<<" "<<jetpt<<" "<<aJet.partonFlavour()<<std::endl;
+  std::cout<<"Jet Eta pt "<<jeteta<<" "<<jetpt<<" "<<aJet.partonFlavour()<<std::endl;
   BTagEntry::JetFlavor jetFlavor=BTagEntry::FLAV_B;
   if(abs(parton)!=5 && abs(parton)!= 4) jetFlavor=BTagEntry::FLAV_UDSG;
   BTagCalibration calib("csvv2", CSVSFFile_.c_str());
-  //std::cout<<"Build the Calibration "<<std::endl;
+  std::cout<<"Build the Calibration "<<std::endl;
   BTagCalibrationReader reader(&calib,
 			       BTagEntry::OP_MEDIUM,
 			       "comb",
@@ -420,12 +420,12 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
 					BTagEntry::OP_MEDIUM,
 					"comb",
 					"down"); 
- // std::cout<<"Booked the Calibration Reader "<<std::endl;
+ std::cout<<"Booked the Calibration Reader "<<std::endl;
 if(abs(parton)!=4){
     SF=reader.eval(jetFlavor,jeteta, jetpt);
     SFUp=readershiftup.eval(jetFlavor,jeteta, jetpt);
     SFDown=readershiftdown.eval(jetFlavor,jeteta, jetpt);
-   // std::cout<<"Scale Factors "<<SF<<" +/- "<<SFUp<<" "<<SFDown<<std::endl;
+    std::cout<<"Scale Factors "<<SF<<" +/- "<<SFUp<<" "<<SFDown<<std::endl;
 }
 //else{
 //	std::cout<<"Jet Eta pt "<<jeteta<<" "<<jetpt<<" "<<reader.eval( BTagEntry::FLAV_B,jeteta, jetpt)<<std::endl;
