@@ -14,7 +14,7 @@ def doZinvBkg(process,is74X,METTag):
     process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIso(photon_pfNeutralIso)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIsoRhoCorr(photon_pfNeutralIsoRhoCorr)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:sigmaIetaIeta(photon_sigmaIetaIeta)")
-
+    process.TreeMaker2.VectorBool.append("goodPhotons:nonPrompt(photon_nonPrompt)")
     process.TreeMaker2.VectorRecoCand.append("slimmedPhotons(photonCands)")
     
     process.ZinvClean = cms.Sequence()
