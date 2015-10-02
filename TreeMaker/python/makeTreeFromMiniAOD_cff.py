@@ -113,8 +113,8 @@ AddBtagSF=False,
     from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
     process.WeightProducer = getWeightProducer(process.source.fileNames[0])
     process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
-    process.WeightProducer.PU                         = cms.int32(0) # PU S10 3 for S10 2 for S7
-    process.WeightProducer.FileNamePUDataDistribution = cms.string("./data/pu_weights_7_4_25ns_testShifts.root")
+    process.WeightProducer.PU                         = cms.int32(4) # PU S10 3 for S10 2 for S7
+    process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/pu_weights_7_4_25ns_testShifts.root")
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
 

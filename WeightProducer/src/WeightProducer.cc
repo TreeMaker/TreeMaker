@@ -518,6 +518,7 @@ std::vector<double> WeightProducer::generateWeights(PUScenario sc, const TH1* da
       0.041341896,
       0.0384679,
       0.035871463,
+
       0.03341952,
       0.030915649,
       0.028395374,
@@ -619,18 +620,18 @@ std::vector<double> WeightProducer::generateWeights(PUScenario sc, const TH1* da
       5.005E-06};
     npuProbs = npuSummer12_S10;
   }
-
+if(sc==Spring15) nMaxPU=25;
   std::vector<double> result(nMaxPU);
 
   double s = 0.0;
-
+if(sc!=Spring15){
   for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
     double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
     result[npu] = npu_estimated / npuProbs[npu];
     s += npu_estimated;
   }
-if(sc==Spring15){
-  nMaxPU=50;
+}
+else{
   for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
 	double npu_estimated=data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
 	result[npu] =npu_estimated;
