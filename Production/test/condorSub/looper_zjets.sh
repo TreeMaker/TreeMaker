@@ -13,7 +13,7 @@ KEEPTAR=$2
 SCENARIO=Spring15
 
 #### Spring15 backgrounds - zjets
-SAMPLES="
+SAMPLES=(
 Spring15.DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15.DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15.DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
@@ -27,8 +27,8 @@ Spring15.GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15.GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15.GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
-"
+)
 
-for SAMPLE in ${SAMPLES}; do
+for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
 done
