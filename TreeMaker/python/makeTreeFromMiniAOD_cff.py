@@ -114,7 +114,7 @@ AddBtagSF=False,
     process.WeightProducer = getWeightProducer(process.source.fileNames[0])
     process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
     process.WeightProducer.PU                         = cms.int32(0) # PU S10 3 for S10 2 for S7
-    process.WeightProducer.FileNamePUDataDistribution = cms.string("NONE")
+    process.WeightProducer.FileNamePUDataDistribution = cms.string("./data/pu_weights_7_4_25ns_testShifts.root")
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
 
@@ -658,12 +658,17 @@ AddBtagSF=False,
     	)
    	process.Baseline += process.bTaggingEffAnalyzerAK5PF
     if AddBtagSF:
-	process.btagSF=cms.EDAnalyzer('BTagScale',
+	process.BTagScale=cms.EDProducer('BTagScale',
 		JetsTag            = cms.InputTag('HTJets'),
 		BTagEffInput   =cms.string('./data/test_run_RA2AnalysisTree.root'),
-		CSVTag=cms.strint('./data/CSVv2.csv'),
+		CSVTag=cms.string('./data/CSVv2.csv'),
 		
 		)
+	process.Baseline += process.BTagScale
+	VarsDouble.extend(['BTagScale:BTagProb0', 'BTagScale:BTagProb1', 'BTagScale:BTagProb2', 'BTagScale:BTagProb3'])
+#	VarsDouble.extend(['BTagScale:BTagProb0ShiftUp', 'BTagScale:BTagProb1ShiftUp','BTagScale:BTagProb2ShiftUp', 'BTagScale:BTagProb3ShiftUp'])
+#	VarsDouble.extend(['BTagScale:BTagProb0ShiftDown', 'BTagScale:BTagProb1ShiftDown','BTagScale:BTagProb2ShiftDown', 'BTagScale:BTagProb3ShiftDown'])
+	
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Optional producers (background estimations, control regions)

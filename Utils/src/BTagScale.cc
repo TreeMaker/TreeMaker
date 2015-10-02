@@ -39,7 +39,7 @@
 
 #include "TFile.h"
 #include "TH1F.h"
-#include "TH2F.h"
+#include "TH2D.h"
 #include <TF1.h>
 //
 // class declaration
@@ -67,9 +67,9 @@ private:
         std::string   btagEffFile_;
         std::string   CSVSFFile_;
   //fill these based on the Mass Point (Mg,mLSP)
-	TH2F*btagEff;
-	TH2F*ctagEff;
-	TH2F*ltagEff;
+	TH2D*btagEff;
+	TH2D*ctagEff;
+	TH2D*ltagEff;
   /*
         TF1*bcSF;
 	TF1*lSF[3];
@@ -113,6 +113,7 @@ private:
 BTagScale::BTagScale(const edm::ParameterSet& iConfig)
 {
 	//register your produc
+
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetsTag");
 	btagEffFile_=iConfig.getParameter<std::string>  ("BTagEffInput");
 	CSVSFFile_=iConfig.getParameter<std::string>("CSVTag");
@@ -201,11 +202,14 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         double MTProb3ShiftDown=0.0;
 	*/
 	if( Jets.isValid() ) {
+
 		for(unsigned int ij=0; ij<Jets->size();ij++)
 		{
+
 		  double Eff=1.0; double SF=1.0; double SFUp=1.0; double SFDown=1.0;
 		  //double MTSFUp=1.0; double MTSFDown=1.0;
 		  FillEffSF(Jets->at(ij),Eff, SF,SFUp,SFDown);		 
+
 		  
 		   
 		   //shift b/c sf
@@ -281,19 +285,21 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  } 
 		  Prob1+= eps_i*product;
 		  Prob2+= eps_i*subprob;
-		  /*	  
-		  MTProb1ShiftUp+= MTepsUp_i*MTproductUp;
-		  MTProb1ShiftDown+= MTepsDown_i*MTproductDown;
+		  	  
+		  //MTProb1ShiftUp+= MTepsUp_i*MTproductUp;
+		  //MTProb1ShiftDown+= MTepsDown_i*MTproductDown;
                   
-		  MTProb2ShiftUp+=MTepsUp_i*MTsubprobUp;
-		  MTProb2ShiftDown+=MTepsDown_i*MTsubprobDown;
-		  */
+		  //MTProb2ShiftUp+=MTepsUp_i*MTsubprobUp;
+		  //MTProb2ShiftDown+=MTepsDown_i*MTsubprobDown;
+		  
                   Prob1ShiftUp+= epsUp_i*productUp;
                   Prob1ShiftDown+= epsDown_i*productDown;
 
                   Prob2ShiftUp+=epsUp_i*subprobUp;
                   Prob2ShiftDown+=epsDown_i*subprobDown;	 
+
 		}
+
 	}
 	else std::cout<<"BTagScale::Invalid Tag: "<<JetTag_.label()<<std::endl;
 
@@ -301,6 +307,7 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	Prob3ShiftUp=1-Prob0ShiftUp-Prob1ShiftUp-Prob2ShiftUp;
 	//  MTProb3ShiftUp=1-MTProb0ShiftUp-MTProb1ShiftUp-MTProb2ShiftUp;
         Prob3ShiftDown=1-Prob0ShiftDown-Prob1ShiftDown-Prob2ShiftDown;	
+
 	//	MTProb3ShiftDown=1-MTProb0ShiftDown-MTProb1ShiftDown-MTProb2ShiftDown;
 	std::auto_ptr<double> b0(new double(Prob0));
 	iEvent.put(b0, "BTagProb0");
@@ -356,7 +363,8 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 BTagScale::beginJob()
 {
-InitTagEff(btagEffFile_);
+	InitTagEff(btagEffFile_);
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -393,18 +401,17 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
   float jetpt=aJet.pt();
   if(jetpt>1000.)jetpt=999.;
   float jeteta=aJet.eta();
-
-  int parton=aJet.partonFlavour();
-  BTagEntry::JetFlavor jetFlavor=BTagEntry::FLAV_B;
-  if(abs(parton)==4)jetFlavor=BTagEntry::FLAV_C;
-  else jetFlavor=BTagEntry::FLAV_UDSG;
-  BTagCalibration calib("csvv2", CSVSFFile_.c_str());
   
-
+  int parton=aJet.partonFlavour();
+  //std::cout<<"Jet Eta pt "<<jeteta<<" "<<jetpt<<" "<<aJet.partonFlavour()<<std::endl;
+  BTagEntry::JetFlavor jetFlavor=BTagEntry::FLAV_B;
+  if(abs(parton)!=5 && abs(parton)!= 4) jetFlavor=BTagEntry::FLAV_UDSG;
+  BTagCalibration calib("csvv2", CSVSFFile_.c_str());
+  //std::cout<<"Build the Calibration "<<std::endl;
   BTagCalibrationReader reader(&calib,
 			       BTagEntry::OP_MEDIUM,
 			       "comb",
-			       "central");//central Value
+			       "central");//central Valie
   BTagCalibrationReader readershiftup(&calib,
 				      BTagEntry::OP_MEDIUM,
 				      "comb",
@@ -413,16 +420,26 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
 					BTagEntry::OP_MEDIUM,
 					"comb",
 					"down"); 
+ // std::cout<<"Booked the Calibration Reader "<<std::endl;
+if(abs(parton)!=4){
     SF=reader.eval(jetFlavor,jeteta, jetpt);
     SFUp=readershiftup.eval(jetFlavor,jeteta, jetpt);
     SFDown=readershiftdown.eval(jetFlavor,jeteta, jetpt);
+   // std::cout<<"Scale Factors "<<SF<<" +/- "<<SFUp<<" "<<SFDown<<std::endl;
+}
+//else{
+//	std::cout<<"Jet Eta pt "<<jeteta<<" "<<jetpt<<" "<<reader.eval( BTagEntry::FLAV_B,jeteta, jetpt)<<std::endl;
 
+//}
+//std::cout<<"Evaluated SF "<<std::endl;
     //fill Efficiency
-    if(abs(parton)==5)Eff=btagEff->GetBinContent(btagEff->FindBin(jetpt),btagEff->FindBin(jeteta)  );
-    if(abs(parton)==4)Eff=ctagEff->GetBinContent(ctagEff->FindBin(jetpt),ctagEff->FindBin(jeteta)  );
-    if(abs(parton)!=4 &&abs(parton)!=5  )Eff=ltagEff->GetBinContent(ltagEff->FindBin(jetpt),ltagEff->FindBin(jeteta)  );
-	    
-	/*	
+  // std::cout<<"Jet Eta pt "<<jeteta<<" "<<jetpt<<" "<<aJet.partonFlavour()<<std::endl;
+
+    if(abs(parton)==5)Eff=btagEff->GetBinContent(btagEff->FindBin(jetpt,jeteta) );
+    if(abs(parton)==4)Eff=ctagEff->GetBinContent(ctagEff->FindBin(jetpt,jeteta)  );
+    if(abs(parton)!=4 &&abs(parton)!=5  )Eff=ltagEff->GetBinContent(ltagEff->FindBin(jetpt,jeteta)  );
+//std::cout<<"Read the Eff Map "<<std::endl;	    
+	/*
     if(jetpt>400)jetpt=400;
     int parton=aJet.partonFlavour();
     if(abs(parton)==5){
@@ -474,22 +491,22 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
 }
 void BTagScale::InitTagEff(std::string fname){
 TFile *TagEffFile = new TFile(fname.c_str(), "READ");
-
- TH2F*numB=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Num_b");
- TH2F*numC=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Num_c");
- TH2F*numl=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Num_udsg");
+ TH2D*numB=(TH2D*)TagEffFile->Get("bTaggingEffAnalyzerAK5PF/h2_BTaggingEff_Num_b");
+ TH2D*numC=(TH2D*)TagEffFile->Get("bTaggingEffAnalyzerAK5PF/h2_BTaggingEff_Num_c");
+ TH2D*numl=(TH2D*)TagEffFile->Get("bTaggingEffAnalyzerAK5PF/h2_BTaggingEff_Num_udsg");
   
- TH2F*denB=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Denom_b");
- TH2F*denC=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Denom_c");
- TH2F*denl=(TH2F*)TagEffFile->Get("h2_BTaggingEff_Denom_udsg");
+ TH2D*denB=(TH2D*)TagEffFile->Get("bTaggingEffAnalyzerAK5PF/h2_BTaggingEff_Denom_b");
+ TH2D*denC=(TH2D*)TagEffFile->Get("bTaggingEffAnalyzerAK5PF/h2_BTaggingEff_Denom_c");
+ TH2D*denl=(TH2D*)TagEffFile->Get("bTaggingEffAnalyzerAK5PF/h2_BTaggingEff_Denom_udsg");
+
+
 numB->Divide(denB); 
 numC->Divide(denC); 
 numl->Divide(denl);
- btagEff=numB; 
- ctagEff=numC;
- ltagEff=numl;
-
- 
+ btagEff=(TH2D*)numB->Clone("btagEff"); 
+ ctagEff=(TH2D*)numC->Clone("ctagEff");
+ ltagEff=(TH2D*)numl->Clone("ltagEff");
+delete TagEffFile; 
 	/*
 	bcSF=new TF1("bcSF", "((0.939238+(0.000278928*x))+(-7.49693e-07*(x*x)))+(2.04822e-10*(x*(x*x)))",20,400);	
 	float ptmax=1000;
