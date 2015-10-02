@@ -46,6 +46,7 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   ecalRecHitsInputTag_EE_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EE")),
   ecalRecHitsInputTag_EB_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EB")),
   rhoCollection(iConfig.getUntrackedParameter<edm::InputTag>("rhoCollection")),
+  genParCollection(iConfig.getUntrackedParameter<edm::InputTag>("genParCollection")),
   debug(iConfig.getUntrackedParameter<bool>("debug",true))
 {
 
@@ -67,7 +68,8 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   produces< std::vector< double > >("pfGammaIsoRhoCorr"); 
   produces< std::vector< double > >("hasPixelSeed"); 
   produces< std::vector< double > >("passElectronVeto"); 
-
+  produces< std::vector< bool > >("hadronization");
+  produces< std::vector< bool > >("nonPrompt");
 }
 
 
@@ -108,6 +110,8 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr< std::vector< double > > photon_pfNeutralIsoRhoCorr( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_hasPixelSeed( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_passElectronVeto( new std::vector< double > () );
+  std::auto_ptr< std::vector< bool > >   photon_hadronization( new std::vector< bool > () );
+  std::auto_ptr< std::vector< bool > >   photon_nonPrompt ( new std::vector< bool > () );
 
   if( debug ){
     std::cout << "new events" << std::endl;
@@ -123,7 +127,8 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(conversionCollection,conversions);
   Handle<reco::BeamSpot> beamSpot;
   iEvent.getByLabel(beamspotCollection,beamSpot);
-
+  edm::Handle< View<reco::GenParticle> > genParticles;
+  iEvent.getByLabel( genParCollection ,genParticles);
   edm::Handle< double > rho_;
   iEvent.getByLabel(rhoCollection,rho_);
   double rho = *rho_;
@@ -260,6 +265,59 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     }//pure photons    
 
+   // loop over gen particles and find nonprompt and hadronization photons
+     int matchedGenPrompt = 0;
+     int matchedGenNonPrompt = 0 ;
+
+
+
+    for( View<reco::GenParticle>::const_iterator iGen = genParticles->begin();
+         iGen != genParticles->end();
+         ++iGen){
+
+      // check for non-prompt photonts ----------------------
+      if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
+
+        TLorentzVector gen( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
+        TLorentzVector photon( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
+
+        if( gen.DeltaR(photon) < 0.2 ){ /// I LEFT OFF HERE!!!!!!
+          if( abs(iGen->mother()->pdgId()) > 100 && abs(iGen->mother()->pdgId()) != 2212 ) matchedGenNonPrompt++ ;
+          if( abs(iGen->mother()->pdgId()) <= 22 || abs(iGen->mother()->pdgId()) == 2212 ) matchedGenPrompt++ ;
+        }
+      }
+
+
+      // ----------------------------------------------------
+
+      // check for hadronization photons --------------------
+    //  if( abs(iGen->pdgId()) < 6 && ( iGen->status() / 10 ) == 2){
+
+        //TLorentzVector gen2( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
+        //TLorentzVector photon2( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
+
+        //if( gen2.DeltaR(photon2) < 0.4 ) isHadronization = true;
+
+     // }
+      // ----------------------------------------------------
+
+    }// end loop over gen particles
+
+    if( matchedGenPrompt > 0 || matchedGenNonPrompt == 0 ) photon_nonPrompt->push_back(false);
+    else if( matchedGenNonPrompt > 0 ) photon_nonPrompt->push_back(true);
+    else photon_nonPrompt->push_back(false);
+
+    //photon_hadronization->push_back( isHadronization );
+
+
+
+
+
+
+
+
+
+
   }// end loop over candidate photons
 
   iEvent.put(photons); 
@@ -277,6 +335,8 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(photon_pfGammaIsoRhoCorr , "pfGammaIsoRhoCorr" );
   iEvent.put(photon_hasPixelSeed , "hasPixelSeed" );
   iEvent.put(photon_passElectronVeto , "passElectronVeto" );
+  iEvent.put(photon_nonPrompt , "nonPrompt" );
+
  
 }
 

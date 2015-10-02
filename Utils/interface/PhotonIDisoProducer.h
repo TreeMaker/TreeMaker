@@ -48,7 +48,8 @@ private:
   edm::InputTag ecalRecHitsInputTag_EB_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EE_Token_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EB_Token_;
-  edm::InputTag rhoCollection;    
+  edm::InputTag rhoCollection;
+  edm::InputTag genParCollection;    
   bool        debug;
 
 };

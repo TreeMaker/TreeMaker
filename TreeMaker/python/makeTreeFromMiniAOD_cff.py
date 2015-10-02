@@ -369,7 +369,8 @@ fastsim=False
         beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
         ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
-        rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"), 
+        rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
+        genParCollection = cms.untracked.InputTag("prunedGenParticles"), 
         debug                  = cms.untracked.bool(False)
     )
     process.Baseline += process.goodPhotons
