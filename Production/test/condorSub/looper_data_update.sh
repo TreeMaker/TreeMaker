@@ -34,5 +34,5 @@ JOBSTART=(
 )
 
 for ((i=0; i < ${#SAMPLES[@]}; i++)); do
-  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLES[$i]} -j ${JOBSTART[$i]}
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLES[$i]} -d -j ${JOBSTART[$i]}
 done

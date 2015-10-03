@@ -202,8 +202,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
             } //i
 
         }//if vsrc.isValid
-        else 
-            std::cout << "Warning Reco Tag not valid: " << JetTagRecoJets_[ii].label() << std::endl ;
+//        else std::cout << "Warning Reco Tag not valid: " << JetTagRecoJets_[ii].label() << std::endl ;
 
         if ( ii == 0 ) 
         { 
@@ -323,8 +322,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
                 if ( std::abs( genmindeltaphistar ) > std::abs( gendeltaphistar ) ) { genmindeltaphistar = gendeltaphistar; genmindeltaphistarindex = k + 1; }
             }//k
         }//if gensrc.isValid
-		else 
-			std::cout << "Warning Gen Tag not valid: " << JetTagGenJets_[ii].label() << std::endl ;
+//		else std::cout << "Warning Gen Tag not valid: " << JetTagGenJets_[ii].label() << std::endl ;
 
         if ( ii == 0 )
         {
@@ -437,7 +435,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
         }//genIt
         
     } //if
-    else std::cout << "Warning Neutrino Tag not valid: " << GenParticleTag_.label() << std::endl ;
+//    else std::cout << "Warning Neutrino Tag not valid: " << GenParticleTag_.label() << std::endl ;
 
 
     std::auto_ptr < std::vector < TLorentzVector > > neutrino_LVector2              ( new std::vector < TLorentzVector > ( neutrino_LVector             ) ) ;

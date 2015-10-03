@@ -12,38 +12,37 @@ KEEPTAR=$2
 
 #### Run2015B Prompt RECO
 SCENARIO=2015B
-SAMPLES="
+SAMPLES=(
 Run2015B-PromptReco-v1.DoubleEG \
 Run2015B-PromptReco-v1.DoubleMuon \
 Run2015B-PromptReco-v1.HTMHT \
 Run2015B-PromptReco-v1.SingleElectron \
 Run2015B-PromptReco-v1.SingleMuon \
 Run2015B-PromptReco-v1.SinglePhoton
-"
+)
 
-for SAMPLE in ${SAMPLES}; do
-  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
 
 #### Run2015B July 17 reprocessing
 SCENARIO=re2015B
-SAMPLES="
+SAMPLES=(
 Run2015B-17Jul2015-v1.DoubleEG \
 Run2015B-17Jul2015-v1.DoubleMuon \
-Run2015B-17Jul2015-v1.EGamma \
 Run2015B-17Jul2015-v1.HTMHT \
 Run2015B-17Jul2015-v1.SingleElectron \
 Run2015B-17Jul2015-v1.SingleMuon \
 Run2015B-17Jul2015-v1.SinglePhoton
-"
+)
 
-for SAMPLE in ${SAMPLES}; do
-  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
 
 #### Run2015C Prompt RECO
 SCENARIO=2015C
-SAMPLES="
+SAMPLES=(
 Run2015C-PromptReco-v1.DoubleEG \
 Run2015C-PromptReco-v1.DoubleMuon \
 Run2015C-PromptReco-v1.HTMHT \
@@ -52,15 +51,15 @@ Run2015C-PromptReco-v1.MET \
 Run2015C-PromptReco-v1.SingleElectron \
 Run2015C-PromptReco-v1.SingleMuon \
 Run2015C-PromptReco-v1.SinglePhoton
-"
+)
 
-for SAMPLE in ${SAMPLES}; do
-  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
 
 #### Run2015D Prompt RECO
 SCENARIO=2015D
-SAMPLES="
+SAMPLES=(
 Run2015D-PromptReco-v3.DoubleEG \
 Run2015D-PromptReco-v3.DoubleMuon \
 Run2015D-PromptReco-v3.HTMHT \
@@ -69,8 +68,8 @@ Run2015D-PromptReco-v3.MET \
 Run2015D-PromptReco-v3.SingleElectron \
 Run2015D-PromptReco-v3.SingleMuon \
 Run2015D-PromptReco-v3.SinglePhoton
-"
+)
 
-for SAMPLE in ${SAMPLES}; do
-  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
