@@ -16,7 +16,7 @@ hadtau=parameters.value("hadtau", False)
 doZinv=parameters.value("doZinv", False)
 QCD=parameters.value("QCD", False)
 IncludeBEff=parameters.value("IncludeBEff", False)
-AddBtagSF=parameters.value("AddBtagSF", True)
+AddBtagSF=parameters.value("AddBtagSF", False)
 # other options off by default
 tagandprobe=parameters.value("tagandprobe", False)
 debugtracks=parameters.value("debugtracks", False)

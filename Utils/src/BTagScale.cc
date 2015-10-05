@@ -70,30 +70,7 @@ private:
 	TH2D*btagEff;
 	TH2D*ctagEff;
 	TH2D*ltagEff;
-  /*
-        TF1*bcSF;
-	TF1*lSF[3];
-	TF1*lminSF[3];
-	TF1*lmaxSF[3];
-
-	TH1F*ptBasedShifts;
-
-	float ptBins[14]={
-	20,30, 40, 50, 60, 70, 80,100, 120, 160, 210, 260, 320, 400};
-	float ptBinErr[13]={ 0.0918443,
- 0.0282557,
- 0.0264246,
- 0.0242536,
- 0.0218046,
- 0.0207568,
- 0.0207962,
- 0.0208919,
- 0.0200894,
- 0.0258879,
- 0.0270699,
- 0.0256006,
- 0.0438219};         
-  */		 	
+	 	
 	
 	// ----------member data ---------------------------
 };
@@ -117,6 +94,7 @@ BTagScale::BTagScale(const edm::ParameterSet& iConfig)
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetsTag");
 	btagEffFile_=iConfig.getParameter<std::string>  ("BTagEffInput");
 	CSVSFFile_=iConfig.getParameter<std::string>("CSVTag");
+	InitTagEff(btagEffFile_);
 	//now do what ever other initialization is needed
 	produces<double>("BTagProb0");	
 	produces<double>("BTagProb1");
@@ -300,14 +278,14 @@ BTagScale::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         iEvent.put(b3down, "BTagProb3ShiftDown");
 
 
-//	std::cout<<"BTagProb0 Nominal "<<Prob0<<" BTagProb0 Shift Down "<<Prob0ShiftDown<<std::endl;
+	std::cout<<"BTagProb0 Nominal "<<Prob0<<" BTagProb1 "<<Prob1<<" BTag Prob2 "<<Prob2<<std::endl;
 }
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
 BTagScale::beginJob()
 {
-	InitTagEff(btagEffFile_);
+
 
 }
 
@@ -347,7 +325,7 @@ void BTagScale::FillEffSF(const pat::Jet& aJet, double&Eff, double&SF,double&SFU
   float jeteta=aJet.eta();
   
   int parton=aJet.partonFlavour();
-  //  std::cout<<"Jet Eta pt "<<jeteta<<" "<<jetpt<<" "<<aJet.partonFlavour()<<std::endl;
+//  std::cout<<"Jet Eta pt "<<jeteta<<" "<<jetpt<<" "<<aJet.partonFlavour()<<std::endl;
   BTagEntry::JetFlavor jetFlavor=BTagEntry::FLAV_B;
   if(abs(parton)!=5 && abs(parton)!= 4) jetFlavor=BTagEntry::FLAV_UDSG;
   BTagCalibration calib("csvslv1", CSVSFFile_.c_str());

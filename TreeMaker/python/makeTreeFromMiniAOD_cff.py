@@ -117,7 +117,9 @@ AddBtagSF=False,
     process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/pu_weights_7_4_25ns_testShifts.root")
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
-
+    VarsDouble.extend(['WeightProducer:PUweight(puWeight)'])
+    VarsDouble.extend(['WeightProducer:PUSysUp(puSysUp)'])
+    VarsDouble.extend(['WeightProducer:PUSysDown(puSysDown)'])
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples
     ## ----------------------------------------------------------------------------------------------
@@ -666,8 +668,6 @@ AddBtagSF=False,
 		)
 	process.Baseline += process.BTagScale
 	VarsDouble.extend(['BTagScale:BTagProb0', 'BTagScale:BTagProb1', 'BTagScale:BTagProb2', 'BTagScale:BTagProb3'])
-#	VarsDouble.extend(['BTagScale:BTagProb0ShiftUp', 'BTagScale:BTagProb1ShiftUp','BTagScale:BTagProb2ShiftUp', 'BTagScale:BTagProb3ShiftUp'])
-#	VarsDouble.extend(['BTagScale:BTagProb0ShiftDown', 'BTagScale:BTagProb1ShiftDown','BTagScale:BTagProb2ShiftDown', 'BTagScale:BTagProb3ShiftDown'])
 	
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

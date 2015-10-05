@@ -66,7 +66,7 @@ private:
   const double _xs;
   const double _NumberEvents;
   const double _lumi;
-  
+  TH1*hweights; 
   edm::InputTag _weightName;
   std::vector<double> _puWeigths;
   double _weightFactor;
@@ -150,6 +150,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       //  TH1 *hup = 0;
       //TH1 *hdown = 0;
       file.GetObject("ratio", h);
+      hweights=(TH1*)h->Clone("hweights");
       //file.GetObject("ratioUp", hup);
       //file.GetObject("ratioDown", hdown);
       PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
@@ -186,8 +187,8 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
 	std::cout << "Summer12S10" << std::endl;
 	_puWeigths = generateWeights(Summer12S10,h);
       } else if(_PU==4){
-	std::cout << "Spring15" << std::endl;
-        _puWeigths = generateWeights(Spring15,h);
+        hweights->SetDirectory(0);
+        //_puWeigths = generateWeights(Spring15,h);
 	// _puWeigthsShiftUp = generateWeights(Spring15,hup);
 	// _puWeigthsShiftDown = generateWeights(Spring15,hdown);
       }
@@ -321,7 +322,7 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    edm::Handle<std::vector<PileupSummaryInfo> > puInfo;
    iEvent.getByLabel("addPileupInfo", puInfo);
    edm::Handle<reco::VertexCollection> vertices;
-   iEvent.getByLabel("nAllVertices",vertices);
+   iEvent.getByLabel("offlineSlimmedPrimaryVertices",vertices);
    //int npu = 0;
    if (_applyPUWeights) {
 /*
@@ -345,9 +346,9 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 	   _PUSysUp=_PUweightFactor*PShiftUp_.ShiftWeight((float)vertices->size());
 
 	   _PUSysDown=_PUweightFactor*PShiftDown_.ShiftWeight((float)vertices->size());
-	   //_PUSysUp=getPUNVtxWeight(vertices->size(), true, true);
-           //_PUSysDown=getPUNVtxWeight(vertices->size(), true, false);
+//	   std::cout<<"PU weight "<<_PUweightFactor<<std::endl;
 	}
+
    }
 
    ///Also, here one could define look-up tables for all used samples.
@@ -395,12 +396,14 @@ double WeightProducer::getPUWeight(int npu) const {
 }
 double WeightProducer::getPUNVtxWeight(int nvtx) const{
 double w = 1.;
-   if (nvtx < static_cast<int> (_puWeigths.size())) {
-     w = _puWeigths.at(nvtx);
 
-   } else {
-      std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of PU vertices = " << nvtx
-            << " out of histogram binning." << std::endl;
+   //std::cout<<"nvtx "<<nvtx<<std::endl;
+  if (nvtx < hweights->GetBinLowEdge(hweights->GetNbinsX()+1)) {
+        w = hweights->GetBinContent(hweights->GetXaxis()->FindBin(nvtx));
+     } else {
+          std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of PU vertices = " << nvtx
+             << " out of histogram binning." << std::endl;
+	w = hweights->GetBinContent(hweights->GetNbinsX());
    }
 
    return w;
@@ -620,24 +623,24 @@ std::vector<double> WeightProducer::generateWeights(PUScenario sc, const TH1* da
       5.005E-06};
     npuProbs = npuSummer12_S10;
   }
-if(sc==Spring15) nMaxPU=25;
+//if(sc==Spring15) nMaxPU=25;
   std::vector<double> result(nMaxPU);
 
   double s = 0.0;
-if(sc!=Spring15){
+//if(sc!=Spring15){
   for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
     double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
     result[npu] = npu_estimated / npuProbs[npu];
     s += npu_estimated;
   }
-}
-else{
-  for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
-	double npu_estimated=data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
-	result[npu] =npu_estimated;
-	s += npu_estimated;
-  }
-}
+//}
+//else{
+//  for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
+//	double npu_estimated=data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
+//	result[npu] =npu_estimated;
+//	s += npu_estimated;
+//  }
+//}
 
 
   // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
