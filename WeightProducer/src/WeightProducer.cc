@@ -188,8 +188,9 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
 	_puWeigths = generateWeights(Summer12S10,h);
       } else if(_PU==4){
         hweights->SetDirectory(0);
-	float scale=hweights->Integral();
-	hweights->Scale(1.0/scale);
+//	_puWeigths = generateWeights(Spring15,h);
+//	float scale=hweights->Integral();
+//	hweights->Scale(1.0/scale);
 	}else {
 	std::cout << "\n";
 	std::cerr << "ERROR: Undefined pile-up scenario." << std::endl;
@@ -620,31 +621,37 @@ std::vector<double> WeightProducer::generateWeights(PUScenario sc, const TH1* da
       5.005E-06};
     npuProbs = npuSummer12_S10;
   }
-//if(sc==Spring15) nMaxPU=25;
+  if(sc==Spring15) nMaxPU=25;
   std::vector<double> result(nMaxPU);
 
   double s = 0.0;
-//if(sc!=Spring15){
-  for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
-    double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
-    result[npu] = npu_estimated / npuProbs[npu];
-    s += npu_estimated;
+if(sc==Spring15){
+/* 
+ for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
+	double npu_estimated =hweights->GetBinContent(hweights->GetXaxis()->FindBin(npu));
+	s += npu_estimated;	
   }
-//}
-//else{
-//  for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
-//	double npu_estimated=data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
-//	result[npu] =npu_estimated;
-//	s += npu_estimated;
-//  }
-//}
+hweights->Scale(1.0/s);
+*/
+}
+else{
 
 
-  // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
+  for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
+	double npu_estimated=data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
+	result[npu] =npu_estimated/npuProbs[npu];
+	s += npu_estimated;
+  }
   for (unsigned int npu = 0; npu < nMaxPU; ++npu) {
     result[npu] /= s;
   }
  
+
+
+}
+
+
+  // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
   return result;
 }
 
