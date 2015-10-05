@@ -7,7 +7,7 @@ from itertools import izip
 import array
 
 redirector = "root://cmseos.fnal.gov//"
-baseDir = "/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV1/"
+baseDir = "/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV2/"
 
 # ------------------------------------------------------------
 # ------------------------------------------------------------
@@ -39,7 +39,6 @@ dataSamples = [
     # 2015B datasets: prompt + re-miniAOD
     sampleInfo( "DoubleEG_2015B", [baseDir+"/Run2015B-PromptReco-v1.DoubleEG_*", baseDir+"/Run2015B-17Jul2015-v1.DoubleEG_*"] ),
     sampleInfo( "DoubleMuon_2015B", [baseDir+"/Run2015B-PromptReco-v1.DoubleMuon_*", baseDir+"/Run2015B-17Jul2015-v1.DoubleMuon_*"] ),
-    sampleInfo( "EGamma_2015B", [baseDir+"/Run2015B-17Jul2015-v1.EGamma_*"] ),
     sampleInfo( "HTMHT_2015B", [baseDir+"/Run2015B-PromptReco-v1.HTMHT_*", baseDir+"/Run2015B-17Jul2015-v1.HTMHT_*"] ),
     sampleInfo( "SingleElectron_2015B", [baseDir+"/Run2015B-PromptReco-v1.SingleElectron_*", baseDir+"/Run2015B-17Jul2015-v1.SingleElectron_*"] ),
     sampleInfo( "SingleMuon_2015B", [baseDir+"/Run2015B-PromptReco-v1.SingleMuon_*", baseDir+"/Run2015B-17Jul2015-v1.SingleMuon_*"] ),
