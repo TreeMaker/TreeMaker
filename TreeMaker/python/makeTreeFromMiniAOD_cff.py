@@ -647,7 +647,7 @@ AddBtagSF=False,
                                          'JetsProperties:photonMultiplicity(Jets_photonMultiplicity)',
                                          'JetsProperties:flavor(Jets_flavor)'])
     if IncludeBEff:
-    	process.bTaggingEffAnalyzerAK5PF = cms.EDAnalyzer('BTaggingEffAnalyzer',
+    	process.bTaggingEff        = cms.EDAnalyzer('BTaggingEffAnalyzer',
         	JetsTag            = cms.InputTag('HTJets'),
         	DiscriminatorTag   = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
         	DiscriminatorValue = cms.double(0.890),
@@ -658,7 +658,7 @@ AddBtagSF=False,
         	EtaMin             = cms.double(-3.),
         	EtaMax             = cms.double(3.)
     	)
-   	process.Baseline += process.bTaggingEffAnalyzerAK5PF
+   	process.Baseline += process.bTaggingEff
     if AddBtagSF:
 	process.BTagScale=cms.EDProducer('BTagScale',
 		JetsTag            = cms.InputTag('HTJets'),
