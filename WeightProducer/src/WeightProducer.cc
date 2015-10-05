@@ -621,21 +621,10 @@ std::vector<double> WeightProducer::generateWeights(PUScenario sc, const TH1* da
       5.005E-06};
     npuProbs = npuSummer12_S10;
   }
-  if(sc==Spring15) nMaxPU=25;
+//  if(sc==Spring15) nMaxPU=25;
   std::vector<double> result(nMaxPU);
 
   double s = 0.0;
-if(sc==Spring15){
-/* 
- for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
-	double npu_estimated =hweights->GetBinContent(hweights->GetXaxis()->FindBin(npu));
-	s += npu_estimated;	
-  }
-hweights->Scale(1.0/s);
-*/
-}
-else{
-
 
   for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
 	double npu_estimated=data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
@@ -645,11 +634,6 @@ else{
   for (unsigned int npu = 0; npu < nMaxPU; ++npu) {
     result[npu] /= s;
   }
- 
-
-
-}
-
 
   // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
   return result;
