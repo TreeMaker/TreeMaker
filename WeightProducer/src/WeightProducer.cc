@@ -189,8 +189,8 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       } else if(_PU==4){
         hweights->SetDirectory(0);
 //	_puWeigths = generateWeights(Spring15,h);
-//	float scale=hweights->Integral();
-//	hweights->Scale(1.0/scale);
+	float scale=hweights->Integral();
+	hweights->Scale(_NumberEvents/scale);
 	}else {
 	std::cout << "\n";
 	std::cerr << "ERROR: Undefined pile-up scenario." << std::endl;
