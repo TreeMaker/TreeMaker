@@ -661,7 +661,7 @@ AddBtagSF=False,
 	process.BTagScale=cms.EDProducer('BTagScale',
 		JetsTag            = cms.InputTag('HTJets'),
 		BTagEffInput   =cms.string('./data/test_run_RA2AnalysisTree.root'),
-		CSVTag=cms.string('./data/CSVv2.csv'),
+		CSVTag=cms.string('./data/CSVSLV1.csv'),
 		
 		)
 	process.Baseline += process.BTagScale

@@ -39,7 +39,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
-
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
@@ -69,19 +69,19 @@ private:
   
   edm::InputTag _weightName;
   std::vector<double> _puWeigths;
-  std::vector<double> _puWeigthsShiftUp;
-  std::vector<double> _puWeigthsShiftDown;
   double _weightFactor;
   double _PUweightFactor;
   double _PUSysUp;
   double _PUSysDown;
+  reweight::PoissonMeanShifter PShiftDown_;
+  reweight::PoissonMeanShifter PShiftUp_;
   bool _applyPUWeights;
    
   const int _PU; //use this for different PU scenarios
   
   std::vector<double> generateWeights(PUScenario sc, const TH1* data_npu_estimated) const;
   double getPUWeight(int npu) const;
-  double getPUNVtxWeight(int nvtx, bool shift, bool up) const;
+  double getPUNVtxWeight(int nvtx) const;
 };
 
 WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
@@ -147,11 +147,13 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       std::cout << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'" << std::endl;
       TFile file(filePUDataDistr.fullPath().c_str(), "READ");
       TH1 *h = 0;
-      TH1 *hup = 0;
-      TH1 *hdown = 0;
+      //  TH1 *hup = 0;
+      //TH1 *hdown = 0;
       file.GetObject("ratio", h);
-      file.GetObject("ratioUp", hup);
-      file.GetObject("ratioDown", hdown);
+      //file.GetObject("ratioUp", hup);
+      //file.GetObject("ratioDown", hdown);
+      PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+      PShiftUp_ = reweight::PoissonMeanShifter(0.5);
       if (h) {
          h->SetDirectory(0);
       } else {
@@ -186,8 +188,8 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       } else if(_PU==4){
 	std::cout << "Spring15" << std::endl;
         _puWeigths = generateWeights(Spring15,h);
-        _puWeigthsShiftUp = generateWeights(Spring15,hup);
-        _puWeigthsShiftDown = generateWeights(Spring15,hdown);
+	// _puWeigthsShiftUp = generateWeights(Spring15,hup);
+	// _puWeigthsShiftDown = generateWeights(Spring15,hdown);
       }
 	
 	else {
@@ -338,10 +340,13 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
          std::cout << "No Valid PileupSummaryInfo Object! PU reweighing not applied!" << std::endl;
 */
       if(vertices.isValid()){
-	   resultWeight *=getPUNVtxWeight(vertices->size(), false, false);
-	   _PUweightFactor=getPUNVtxWeight(vertices->size(), false, false);	
-	   _PUSysUp=getPUNVtxWeight(vertices->size(), true, true);
-           _PUSysDown=getPUNVtxWeight(vertices->size(), true, false);
+	resultWeight *=getPUNVtxWeight(vertices->size());
+	   _PUweightFactor=getPUNVtxWeight(vertices->size());
+	   _PUSysUp=_PUweightFactor*PShiftUp_.ShiftWeight((float)vertices->size());
+
+	   _PUSysDown=_PUweightFactor*PShiftDown_.ShiftWeight((float)vertices->size());
+	   //_PUSysUp=getPUNVtxWeight(vertices->size(), true, true);
+           //_PUSysDown=getPUNVtxWeight(vertices->size(), true, false);
 	}
    }
 
@@ -388,18 +393,11 @@ double WeightProducer::getPUWeight(int npu) const {
 
    return w;
 }
-double WeightProducer::getPUNVtxWeight(int nvtx,bool shift, bool up) const{
+double WeightProducer::getPUNVtxWeight(int nvtx) const{
 double w = 1.;
    if (nvtx < static_cast<int> (_puWeigths.size())) {
-      if(!shift)w = _puWeigths.at(nvtx);
-	else {
-		if(up){
-		  w=_puWeigthsShiftUp.at(nvtx);
-		}
-		else{
-                  w=_puWeigthsShiftDown.at(nvtx);
-		}
-	}
+     w = _puWeigths.at(nvtx);
+
    } else {
       std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of PU vertices = " << nvtx
             << " out of histogram binning." << std::endl;

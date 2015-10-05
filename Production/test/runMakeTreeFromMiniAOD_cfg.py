@@ -1,7 +1,7 @@
 # Read parameters
 from TreeMaker.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
-scenarioName=parameters.value("scenario","")
+scenarioName=parameters.value("scenario","Spring15")
 inputFilesConfig=parameters.value("inputFilesConfig","")
 dataset=parameters.value("dataset",[])
 nstart = parameters.value("nstart",0)
@@ -11,11 +11,11 @@ reportfreq=parameters.value("reportfreq",1000)
 outfile=parameters.value("outfile","test_run")
 
 # background estimations on by default
-lostlepton=parameters.value("lostlepton", True)
-hadtau=parameters.value("hadtau", True)
-doZinv=parameters.value("doZinv", True)
-QCD=parameters.value("QCD", True)
-IncludeBEff=parameters.value("IncludeBEff", True)
+lostlepton=parameters.value("lostlepton", False)
+hadtau=parameters.value("hadtau", False)
+doZinv=parameters.value("doZinv", False)
+QCD=parameters.value("QCD", False)
+IncludeBEff=parameters.value("IncludeBEff", False)
 AddBtagSF=parameters.value("AddBtagSF", True)
 # other options off by default
 tagandprobe=parameters.value("tagandprobe", False)
