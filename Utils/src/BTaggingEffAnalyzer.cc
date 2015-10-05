@@ -147,7 +147,7 @@ BTaggingEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.getByLabel("DeltaPhi", "DeltaPhi1", DeltaPhi1);
   iEvent.getByLabel("DeltaPhi","DeltaPhi2", DeltaPhi2);
   iEvent.getByLabel("DeltaPhi","DeltaPhi3", DeltaPhi3);
-//  iEvent.getByLabel("DeltaPhi","DeltaPhi4", DeltaPhi4);
+  iEvent.getByLabel("DeltaPhi","DeltaPhi4", DeltaPhi4);
 
   iEvent.getByLabel("NJets", NJets);
   iEvent.getByLabel("LeptonsNew", Leptons);
@@ -156,12 +156,12 @@ BTaggingEffAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   iEvent.getByLabel("IsolatedElectronTracksVeto","isoTracks", isoElectronTracks);
   iEvent.getByLabel("GoodJets", JetID);
   bool passEvSel=false;
-  if(*HT>500 && *MHT>200 && *DeltaPhi1>0.5 && *DeltaPhi2>0.5 && *DeltaPhi3>0.3 && *NJets>=4 && *Leptons==0 && *isoPionTracks==0 && *isoMuonTracks==0 && *isoElectronTracks==0 && *JetID)passEvSel=true;
+  if(*HT>500 && *MHT>200 && *DeltaPhi1>0.5 && *DeltaPhi2>0.5 && *DeltaPhi3>0.3 && *DeltaPhi4>0.3 &&  *NJets>=4 && *Leptons==0 && *isoPionTracks==0 && *isoMuonTracks==0 && *isoElectronTracks==0 && *JetID)passEvSel=true;
  
   // loop over jets
   for(PatJetCollection::const_iterator it = jets->begin(); it != jets->end(); ++it)
   {
-    if(!passEvSel)continue;    
+    if(!passEvSel)return;    
     int partonFlavor = it->partonFlavour();
 
     if( abs(partonFlavor)==5 )
