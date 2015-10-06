@@ -28,6 +28,9 @@
 #include "TH1.h"
 
 // user include files
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
@@ -36,9 +39,10 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
-
+#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
 
 //
 // class decleration
@@ -50,8 +54,7 @@ public:
   ~WeightProducer();
   
 private:
-  enum PUScenario { Flat10, Fall11, Summer12S7, Summer12S10 };
-  
+  enum PUScenario { Flat10, Fall11, Summer12S7, Summer12S10, Spring15 };  
   //  virtual void beginJob() ;
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob();
@@ -63,16 +66,22 @@ private:
   const double _xs;
   const double _NumberEvents;
   const double _lumi;
-  
+  TH1*hweights; 
   edm::InputTag _weightName;
   std::vector<double> _puWeigths;
   double _weightFactor;
+  double _PUweightFactor;
+  double _PUSysUp;
+  double _PUSysDown;
+  reweight::PoissonMeanShifter PShiftDown_;
+  reweight::PoissonMeanShifter PShiftUp_;
   bool _applyPUWeights;
-  
+   
   const int _PU; //use this for different PU scenarios
   
   std::vector<double> generateWeights(PUScenario sc, const TH1* data_npu_estimated) const;
   double getPUWeight(int npu) const;
+  double getPUNVtxWeight(int nvtx) const;
 };
 
 WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
@@ -138,7 +147,14 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       std::cout << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'" << std::endl;
       TFile file(filePUDataDistr.fullPath().c_str(), "READ");
       TH1 *h = 0;
-      file.GetObject("pileup", h);
+      //  TH1 *hup = 0;
+      //TH1 *hdown = 0;
+      file.GetObject("ratio", h);
+      hweights=(TH1*)h->Clone("hweights");
+      //file.GetObject("ratioUp", hup);
+      //file.GetObject("ratioDown", hdown);
+      PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
+      PShiftUp_ = reweight::PoissonMeanShifter(0.5);
       if (h) {
          h->SetDirectory(0);
       } else {
@@ -150,7 +166,12 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
          exit(1);
       }
       file.Close();
-
+      //TH1*hw=0;
+      
+      //TFile nvtxFile("pu_weights_7_4_25ns_v3.root", "READ");	
+      //nvtxFile.GetObject("ratio",hw); 
+      //hw->SetDirectory(0);
+      //nvtxFile.Close();
       std::cout << "  Computing weights for pile-up scenario " << std::flush;
       if( _PU==0 ) {
 	std::cout << "Flat10" << std::endl;
@@ -165,18 +186,25 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       } else if( _PU==3 ) {
 	std::cout << "Summer12S10" << std::endl;
 	_puWeigths = generateWeights(Summer12S10,h);
-      } else {
+      } else if(_PU==4){
+        hweights->SetDirectory(0);
+	//float scale=hweights->Integral();
+	//hweights->Scale(1.0/scale);
+	}else {
 	std::cout << "\n";
 	std::cerr << "ERROR: Undefined pile-up scenario." << std::endl;
       }
-      
+       
       delete h;
-   } else {
+  } else {
       _applyPUWeights = false;
    }
 
    //register your products
    produces<double> ("weight");
+   produces<double> ("PUweight"); 
+   produces<double> ("PUSysUp");
+   produces<double> ("PUSysDown");
 }
 
 WeightProducer::~WeightProducer() {
@@ -290,8 +318,11 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    // Optionally, multiply PU weight
    edm::Handle<std::vector<PileupSummaryInfo> > puInfo;
    iEvent.getByLabel("addPileupInfo", puInfo);
-   int npu = 0;
+   edm::Handle<reco::VertexCollection> vertices;
+   iEvent.getByLabel("offlineSlimmedPrimaryVertices",vertices);
+   //int npu = 0;
    if (_applyPUWeights) {
+/*
       if (puInfo.isValid()) {
          std::vector<PileupSummaryInfo>::const_iterator puIt;
          int n = 0;
@@ -305,6 +336,16 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
          resultWeight *= getPUWeight(npu);
       } else
          std::cout << "No Valid PileupSummaryInfo Object! PU reweighing not applied!" << std::endl;
+*/
+      if(vertices.isValid()){
+	resultWeight *=getPUNVtxWeight(vertices->size());
+	   _PUweightFactor=getPUNVtxWeight(vertices->size());
+	   _PUSysUp=_PUweightFactor*PShiftUp_.ShiftWeight((float)vertices->size());
+
+	   _PUSysDown=_PUweightFactor*PShiftDown_.ShiftWeight((float)vertices->size());
+//	   std::cout<<"PU weight "<<_PUweightFactor<<std::endl;
+	}
+
    }
 
    ///Also, here one could define look-up tables for all used samples.
@@ -315,6 +356,15 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    // put weight into the Event
    std::auto_ptr<double> pOut(new double(resultWeight));
    iEvent.put(pOut, "weight");
+
+   std::auto_ptr<double> pOut2(new double(_PUweightFactor));
+   iEvent.put(pOut2, "PUweight");
+
+   std::auto_ptr<double> pOut3(new double(_PUSysUp));
+   iEvent.put(pOut3, "PUSysUp");
+
+   std::auto_ptr<double> pOut4(new double(_PUSysDown));
+   iEvent.put(pOut4, "PUSysDown");
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -341,7 +391,21 @@ double WeightProducer::getPUWeight(int npu) const {
 
    return w;
 }
+double WeightProducer::getPUNVtxWeight(int nvtx) const{
+double w = 1.;
 
+   //std::cout<<"nvtx "<<nvtx<<std::endl;
+  if (nvtx < hweights->GetBinLowEdge(hweights->GetNbinsX()+1)) {
+        w = hweights->GetBinContent(hweights->GetXaxis()->FindBin(nvtx));
+     } else {
+          std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of PU vertices = " << nvtx
+             << " out of histogram binning." << std::endl;
+	w = hweights->GetBinContent(hweights->GetNbinsX());
+   }
+
+   return w;
+
+}
 // Generate weights for given data PU distribution
 // Scenarios from: https://twiki.cern.ch/twiki/bin/view/CMS/Pileup_MC_Gen_Scenarios
 // Code adapted from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupReweighting
@@ -454,6 +518,7 @@ std::vector<double> WeightProducer::generateWeights(PUScenario sc, const TH1* da
       0.041341896,
       0.0384679,
       0.035871463,
+
       0.03341952,
       0.030915649,
       0.028395374,
@@ -555,19 +620,21 @@ std::vector<double> WeightProducer::generateWeights(PUScenario sc, const TH1* da
       5.005E-06};
     npuProbs = npuSummer12_S10;
   }
-
+//  if(sc==Spring15) nMaxPU=25;
   std::vector<double> result(nMaxPU);
+
   double s = 0.0;
+
   for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
-    double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
-    result[npu] = npu_estimated / npuProbs[npu];
-    s += npu_estimated;
+	double npu_estimated=data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
+	result[npu] =npu_estimated/npuProbs[npu];
+	s += npu_estimated;
   }
-  // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
   for (unsigned int npu = 0; npu < nMaxPU; ++npu) {
     result[npu] /= s;
   }
 
+  // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
   return result;
 }
 
