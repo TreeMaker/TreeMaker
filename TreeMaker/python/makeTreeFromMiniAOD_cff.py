@@ -454,6 +454,8 @@ fastsim=False
         #rerun HBHE noise filter manually
         process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
         process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
+        process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion = cms.bool(False) 
+        process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
         process.Baseline += process.HBHENoiseFilterResultProducer
         VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
 
