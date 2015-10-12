@@ -552,6 +552,7 @@ fastsim=False
         MaxEta = cms.double(2.4),
     )
     process.Baseline += process.HTJets
+    VectorBool.extend(['HTJets:SubJetMask(HTJetsMask)'])
     
     from TreeMaker.Utils.htdouble_cfi import htdouble
     process.HT = htdouble.clone(
@@ -595,6 +596,7 @@ fastsim=False
         MaxEta = cms.double(5.0),
     )
     process.Baseline += process.MHTJets
+    VectorBool.extend(['MHTJets:SubJetMask(MHTJetsMask)'])
     
     from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
     process.MHT = mhtdouble.clone(
