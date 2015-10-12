@@ -59,7 +59,6 @@ private:
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag JetTag_;
    double MinPt_, MaxEta_;
-   bool applyLooseID;
    
    // ----------member data ---------------------------
 };
@@ -85,20 +84,10 @@ SubJetSelectionT<T>::SubJetSelectionT(const edm::ParameterSet& iConfig)
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
    MinPt_ = iConfig.getParameter <double> ("MinPt");
    MaxEta_ = iConfig.getParameter <double> ("MaxEta");
-   //register your products
-   /* Examples
-    *   produces<ExampleData2>();
-    *
-    *   //if do put with a label
-    *   produces<ExampleData2>("label");
-    *
-    *   //if you want to put into the Run
-    *   produces<ExampleData2,InRun>();
-    */
-   //now do what ever other initialization is needed
+
    //register your products
    produces<std::vector<T> >();
-   // 	produces<std::vector<Float_t> > ("testValue");
+   produces<std::vector<bool> >("SubJetMask");
    
 }
 
@@ -122,21 +111,22 @@ void SubJetSelectionT<T>::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 {
    using namespace edm;
    std::auto_ptr<std::vector<T> > prodJets(new std::vector<T>());
+   std::auto_ptr<std::vector<bool> > mask(new std::vector<bool>());
 
    edm::Handle< edm::View<T> > Jets;
    iEvent.getByLabel(JetTag_,Jets);
    if(Jets.isValid()) {
+      mask->resize(Jets->size(),false);
       for(unsigned int i=0; i<Jets->size();i++) {
          if(Jets->at(i).pt()>MinPt_ && std::abs(Jets->at(i).eta() ) < MaxEta_) {
             prodJets->push_back(T(Jets->at(i)) );
+            mask->at(i) = true;
          }
       }
    }
    // put in the event
-   const std::string string1("");
-   iEvent.put(prodJets );
-   
-   // 	iEvent.put(pFloat, "testValue");
+   iEvent.put(prodJets);
+   iEvent.put(mask,"SubJetMask");
    
 }
 
