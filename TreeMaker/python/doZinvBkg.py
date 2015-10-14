@@ -97,7 +97,7 @@ def doZinvBkg(process,is74X,METTag):
        JetTag = cms.InputTag('MHTJetsclean'),
     )
     process.ZinvClean += process.MHTclean
-    process.TreeMaker2.VarsDouble.extend(['MHTclean:Pt(MHTclean)'])
+    process.TreeMaker2.VarsDouble.extend(['MHTclean:Pt(MHTclean)','MHTclean:Phi(MHT_Phiclean)'])
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
     process.METclean = metdouble.clone(
@@ -106,7 +106,7 @@ def doZinvBkg(process,is74X,METTag):
        cleanTag = cms.untracked.VInputTag(cms.InputTag('LeptonsNew:IdIsoElectron'), cms.InputTag('LeptonsNew:IdIsoMuon'), cms.InputTag('goodPhotons', 'bestPhoton'))
     )
     process.ZinvClean += process.METclean
-    process.TreeMaker2.VarsDouble.extend(['METclean:minDeltaPhiN(minDeltaPhiNclean)', 'METclean:Pt(METPtclean)'])
+    process.TreeMaker2.VarsDouble.extend(['METclean:Pt(METPtclean)','METclean:Phi(METPhiclean)'])
 
     process.AdditionalSequence += process.ZinvClean
     
