@@ -181,11 +181,16 @@ def getWeightProducer(fileName):
         MCSample("TTWJetsToQQ_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.4226, 430330), # straight total = 833964
         MCSample("ZH_HToBB_ZToNuNu_M125_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.10035184, 1215888), # straight total = 2115118
         MCSample("WH_HToBB_WToLNu_M125_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.2595, 1240831), # straight total = 2113969
-        MCSample("WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 43.53, 3212964), # straight total = 5161314
-        MCSample("WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 10.96, 14344826), # straight total = 24711046
-        MCSample("WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 5.282, 934728), # straight total = 1689054
-        MCSample("ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 4.578, 22445861), # straight total = 36559813
-        MCSample("ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 2.312, 11932246), # straight total = 18898680
+        MCSample("WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 49.997, 3212964), # straight total = 5161314
+        MCSample("WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 10.71, 14344826), # straight total = 24711046
+        MCSample("WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 3.058, 934728), # straight total = 1689054
+        MCSample("ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 4.04, 22445861), # straight total = 36559813
+        MCSample("ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 3.22, 11932246), # straight total = 18898680
+        MCSample("TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.009103, 519156), # straight total = 1242940
+        MCSample("TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "Asympt25ns_MCRUN2_74_V9_ext1-v1", "RunIISpring15DR74", "Constant", 0.009103, 519156), # straight total = 1242940
+        MCSample("WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.1651, 221468), # straight total = 250000
+        MCSample("WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.05565, 219168), # straight total = 250000
+        MCSample("ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "Asympt25ns_MCRUN2_74_V9-v2", "RunIISpring15DR74", "Constant", 0.01398, 213850), # straight total = 250000
         # signal
         MCSample("SMS-T1bbbb_mGluino-1000_mLSP-900_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.325388, 142674),
         MCSample("SMS-T1bbbb_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "Asympt25ns_MCRUN2_74_V9-v1", "RunIISpring15DR74", "Constant", 0.0141903, 52613),
