@@ -539,7 +539,8 @@ fastsim=False
             'HLT_QuadJet45_TripleCSV0p5_v',
             'HLT_DoubleJet90_Double30_TripleCSV0p5_v',
             'HLT_Ele15_IsoVVVL_PFHT350_v',
-            'HLT_Mu15_IsoVVVL_PFHT350_v'
+            'HLT_Mu15_IsoVVVL_PFHT350_v',
+            'HLT_Ele23_WPLoose_Gsf_v'
         )
     )
     process.Baseline += process.TriggerProducer
