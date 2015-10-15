@@ -643,12 +643,12 @@ fastsim=False
     from TreeMaker.Utils.metdouble_cfi import metdouble
     process.MET = metdouble.clone(
         METTag = METTag,
-        GenMETTag = cms.InputTag("slimmedMETs","","PAT"), #deliberately hardcoded
+        GenMETTag = cms.InputTag("slimmedMETs","",tagname), #original collection used deliberately here
         JetTag = cms.InputTag('HTJets'),
         geninfo = cms.untracked.bool(geninfo),
     )
     process.Baseline += process.MET
-    VarsDouble.extend(['MET:minDeltaPhiN','MET:DeltaPhiN1','MET:DeltaPhiN2','MET:DeltaPhiN3','MET:Pt(METPt)','MET:Phi(METPhi)'])
+    VarsDouble.extend(['MET:Pt(METPt)','MET:Phi(METPhi)','MET:CaloPt(CaloMETPt)','MET:CaloPhi(CaloMETPhi)'])
     if geninfo:
         VarsDouble.extend(['MET:GenPt(GenMETPt)','MET:GenPhi(GenMETPhi)'])
 

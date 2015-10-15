@@ -97,6 +97,8 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    produces<double>("minDeltaPhiN");
    produces<double>("Pt");
    produces<double>("Phi");
+   produces<double>("CaloPt");
+   produces<double>("CaloPhi");
    produces<double>("GenPt");
    produces<double>("GenPhi");
 }
@@ -122,6 +124,7 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    using namespace edm;
    double metpt_=0, metphi_=0;
    double genmetpt_=0, genmetphi_=0;
+   double calometpt_=0, calometphi_=0;
    edm::Handle< edm::View<pat::MET> > MET;
    iEvent.getByLabel(metTag_,MET);
 
@@ -145,13 +148,17 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    else std::cout<<"METDouble::Invalid Tag: "<<metTag_.label()<<std::endl;
 
-   if(GenMET.isValid()  && geninfo_ && GenMET->at(0).genMET()){
-      const reco::GenMET* theGenMET( GenMET->at(0).genMET () ) ;
-      genmetpt_     = theGenMET->pt  ();
-      genmetphi_    = theGenMET->phi ();
-      
+   //GenMET is really the original MET collection from the event (re-correction zeroes out some values)
+   if(GenMET.isValid()){
+      if(geninfo_ && GenMET->at(0).genMET()){
+        const reco::GenMET* theGenMET( GenMET->at(0).genMET () ) ;
+        genmetpt_     = theGenMET->pt  ();
+        genmetphi_    = theGenMET->phi ();
+      }
+      calometpt_=GenMET->at(0).caloMETPt();
+      calometphi_=GenMET->at(0).caloMETPhi();      
    }
-   else if(geninfo_ && !GenMET.isValid()) std::cout<<"METDouble::Invalid Tag: "<<genMetTag_.label()<<std::endl;
+   else if(!GenMET.isValid()) std::cout<<"METDouble::Invalid Tag: "<<genMetTag_.label()<<std::endl;
  
    
    // remove particles from MET calculation
@@ -177,7 +184,12 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(htp,"Pt");
    std::auto_ptr<double> htp2(new double(metphi_));
    iEvent.put(htp2,"Phi");
-   
+
+   std::auto_ptr<double> chtp(new double(calometpt_));
+   iEvent.put(chtp,"CaloPt");
+   std::auto_ptr<double> chtp2(new double(calometphi_));
+   iEvent.put(chtp2,"CaloPhi");
+
    if(geninfo_){
        std::auto_ptr<double> ghtp(new double(genmetpt_));
        iEvent.put(ghtp,"GenPt");
