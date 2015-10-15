@@ -24,7 +24,9 @@ Spring15.TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
 Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
 Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext1 \
 Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext2 \
-Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext3
+Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext3 \
+Spring15.TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
+Spring15.TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8_ext1 \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
