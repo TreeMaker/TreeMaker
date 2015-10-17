@@ -27,24 +27,27 @@
 
 namespace SUSYIsolation {
 
+  // Effective areas from https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF
   inline double GetMuonEA(double eta) {
-    double ea = 0.;
-    if      (fabs(eta)<=0.800) ea = 0.0913;
-    else if (fabs(eta)<=1.300) ea = 0.0765;
-    else if (fabs(eta)<=2.000) ea = 0.0546;
-    else if (fabs(eta)<=2.200) ea = 0.0728;
-    else if (fabs(eta)<=2.500) ea = 0.1177;
-    return ea;
+    double abseta = fabs(eta);
+    if (abseta < 0.8) return 0.0735;
+    else if (abseta < 1.3) return 0.0619;
+    else if (abseta < 2.0) return 0.0465;
+    else if (abseta < 2.2) return 0.0433;
+    else if (abseta < 2.5) return 0.0577;
+    else return 0;
   }
 
   inline double GetElectronEA(double eta) {
-    double ea = 0.;
-    if      (fabs(eta)<=0.800) ea = 0.1013;
-    else if (fabs(eta)<=1.300) ea = 0.0988;
-    else if (fabs(eta)<=2.000) ea = 0.0572;
-    else if (fabs(eta)<=2.200) ea = 0.0842;
-    else if (fabs(eta)<=2.500) ea = 0.1530;
-    return ea;
+    double abseta = fabs(eta);
+    if (abseta < 1) return 0.1752;
+    else if (abseta < 1.479) return 0.1862;
+    else if (abseta < 2.0) return 0.1411;
+    else if (abseta < 2.2) return 0.1534;
+    else if (abseta < 2.3) return 0.1903;
+    else if (abseta < 2.4) return 0.2243;
+    else if (abseta < 2.5) return 0.2687;
+    else return 0;
   }
   
   inline double GetMiniIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
