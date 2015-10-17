@@ -432,16 +432,31 @@ fastsim=False
         )
         process.Baseline += process.METFilters
         VarsInt.extend(['METFilters'])
+        
+        #process.CSCTightHaloFilter = filterDecisionProducer.clone(
+        #    trigTagArg1 = cms.string('TriggerResults'),
+        #    trigTagArg2 = cms.string(''),
+        #    trigTagArg3 = cms.string(tagname),
+        #    filterName  = cms.string("Flag_CSCTightHaloFilter"),
+        #)
+        #process.Baseline += process.CSCTightHaloFilter
+        #VarsInt.extend(['CSCTightHaloFilter'])
 
-        process.CSCTightHaloFilter = filterDecisionProducer.clone(
-            trigTagArg1 = cms.string('TriggerResults'),
-            trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
-            filterName  = cms.string("Flag_CSCTightHaloFilter"),
-        )
-        process.Baseline += process.CSCTightHaloFilter
-        VarsInt.extend(['CSCTightHaloFilter'])
+        #rerun CSC tight halo filter manually
+        from RecoMET.METProducers.CSCHaloData_cfi import *
+        from RecoMET.METProducers.EcalHaloData_cfi import *
+        from RecoMET.METProducers.HcalHaloData_cfi import *
+        from RecoMET.METProducers.GlobalHaloData_cfi import *
+        from RecoMET.METProducers.BeamHaloSummary_cfi import *
 
+        process.load('RecoMET.METFilters.CSCTightHalo2015Filter_cfi')
+        process.CSCTightHalo2015Filter.taggingMode = cms.bool(True)
+        
+        process.BeamHaloId = cms.Sequence(CSCHaloData*EcalHaloData*HcalHaloData*GlobalHaloData*BeamHaloSummary)
+        process.Baseline += process.BeamHaloId
+        process.Baseline += process.CSCTightHalo2015Filter
+        VarsBool.extend(['CSCTightHalo2015Filter(CSCTightHaloFilter)'])
+        
         #process.HBHENoiseFilter = filterDecisionProducer.clone(
         #    trigTagArg1 = cms.string('TriggerResults'),
         #    trigTagArg2 = cms.string(''),
@@ -458,6 +473,8 @@ fastsim=False
         process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
         process.Baseline += process.HBHENoiseFilterResultProducer
         VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
+        #add HBHE iso noise filter
+        VarsBool.extend(['HBHENoiseFilterResultProducer:HBHEIsoNoiseFilterResult(HBHEIsoNoiseFilter)'])
 
         process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
