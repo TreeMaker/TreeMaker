@@ -204,7 +204,7 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel("packedPFCandidates", pfcands);
 
   edm::Handle< double > rho_;
-  iEvent.getByLabel("fixedGridRhoFastjetAll", rho_);
+  iEvent.getByLabel("fixedGridRhoFastjetCentralNeutral", rho_); // Central rho recommended for SUSY
   double rho = *rho_;
 	
   std::vector<pat::Electron> isoElectrons_, idElectrons_;
