@@ -443,12 +443,11 @@ fastsim=False
         #VarsInt.extend(['CSCTightHaloFilter'])
 
         #rerun CSC tight halo filter manually
-        from RecoMET.METProducers.CSCHaloData_cfi import *
-        from RecoMET.METProducers.EcalHaloData_cfi import *
-        from RecoMET.METProducers.HcalHaloData_cfi import *
-        from RecoMET.METProducers.GlobalHaloData_cfi import *
-        from RecoMET.METProducers.BeamHaloSummary_cfi import *
-
+        process.load('RecoMET.METProducers.CSCHaloData_cfi')
+        process.load('RecoMET.METProducers.EcalHaloData_cfi')
+        process.load('RecoMET.METProducers.HcalHaloData_cfi')
+        process.load('RecoMET.METProducers.GlobalHaloData_cfi')
+        process.load('RecoMET.METProducers.BeamHaloSummary_cfi')
         process.load('RecoMET.METFilters.CSCTightHalo2015Filter_cfi')
         process.CSCTightHalo2015Filter.taggingMode = cms.bool(True)
         
