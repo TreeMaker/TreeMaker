@@ -2,31 +2,47 @@
 
 ## Instructions
 
-The following installation instructions assume the user wants to process Run2015B prompt-reco data or Spring15 MC.
+The following installation instructions assume the user wants to process Run2015 prompt-reco data or Spring15 MC.
+
+```
+cmsrel CMSSW_7_4_15
+cd CMSSW_7_4_15/src/
+cmsenv
+git cms-merge-topic -u cms-met:HaloBranch7412
+git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
+scram setup lhapdf
+scram b -j 8
+cd TreeMaker/Production/test
+```
+
+Legacy instructions for `CMSSW_7_4_6_patch6`, to be used for miniAOD v1:
 
 ```
 cmsrel CMSSW_7_4_6_patch6
 cd CMSSW_7_4_6_patch6/src/
 cmsenv
 git cms-merge-topic -u cms-met:METCorUnc74X
+git cms-merge-topic -u cms-met:HaloBranch7412
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
+scram setup lhapdf
 scram b -j 8
 cd TreeMaker/Production/test
 ```
-
-If instead `CMSSW_7_5_1` is used, a different MET branch should be merged: `cms-met:METCorTool75X-071515`.
 
 Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
 global tag, collection tag name, generator info, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
 1. `Spring15`: for Spring15 25ns MC  
-2. `Spring15Fast`: for Spring15 25ns FastSim MC (signal scans)
-3. `2015B`: for 2015B PromptReco 50ns data  
-4. `re2015B`: for 2015B re-miniAOD 50ns data  
-5. `2015C`: for 2015C PromptReco 25ns data  
-6. `2015D`: for 2015D PromptReco 25ns data  
-7. `Phys14`: for Phys14 25ns MC (deprecated)  
+2. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
+3. `Spring15Fast`: for Spring15 25ns FastSim MC (signal scans)  
+4. `2015C`: for 2015C PromptReco 25ns data  
+5. `2015D`: for 2015D PromptReco 25ns data (part 1, unblinded)
+6. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1, unblinded)
+7. `2015Db`: for 2015D PromptReco 25ns data (part 2, blinded)
+8. `2015B`: for 2015B PromptReco 50ns data (deprecated)  
+9. `re2015B`: for 2015B re-miniAOD 50ns data (deprecated)  
+10. `Phys14`: for Phys14 25ns MC (deprecated)  
 
 ## Interactive Runs
 
@@ -38,7 +54,7 @@ dataset="/store/data/Run2015B/..." \
 outfile="test"
 ```
 
-Note that all of the background estimation processes are turned *ON* by default in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py).
+Note that all of the background estimation processes (and some processes necessary to estimate systematic uncertainties) are turned *ON* by default in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py).
 
 ## Submit Production to Condor (@ LPC)
 
