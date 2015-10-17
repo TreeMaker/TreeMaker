@@ -17,7 +17,7 @@ doZinv=parameters.value("doZinv", True)
 QCD=parameters.value("QCD", True)
 
 # compute the PDF weights
-doPDFs=parameters.value("doPDFs", False);
+doPDFs=parameters.value("doPDFs", True);
 
 # other options off by default
 tagandprobe=parameters.value("tagandprobe", False)

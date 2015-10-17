@@ -7,7 +7,7 @@ from itertools import izip
 import array
 
 redirector = "root://cmseos.fnal.gov//"
-baseDir = "/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV2/"
+baseDir = "/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV3/"
 
 # ------------------------------------------------------------
 # ------------------------------------------------------------
@@ -36,13 +36,6 @@ class sampleInfo :
 # ------------------------------------------------------------
 
 dataSamples = [
-    # 2015B datasets: prompt + re-miniAOD
-    sampleInfo( "DoubleEG_2015B", [baseDir+"/Run2015B-PromptReco-v1.DoubleEG_*", baseDir+"/Run2015B-17Jul2015-v1.DoubleEG_*"] ),
-    sampleInfo( "DoubleMuon_2015B", [baseDir+"/Run2015B-PromptReco-v1.DoubleMuon_*", baseDir+"/Run2015B-17Jul2015-v1.DoubleMuon_*"] ),
-    sampleInfo( "HTMHT_2015B", [baseDir+"/Run2015B-PromptReco-v1.HTMHT_*", baseDir+"/Run2015B-17Jul2015-v1.HTMHT_*"] ),
-    sampleInfo( "SingleElectron_2015B", [baseDir+"/Run2015B-PromptReco-v1.SingleElectron_*", baseDir+"/Run2015B-17Jul2015-v1.SingleElectron_*"] ),
-    sampleInfo( "SingleMuon_2015B", [baseDir+"/Run2015B-PromptReco-v1.SingleMuon_*", baseDir+"/Run2015B-17Jul2015-v1.SingleMuon_*"] ),
-    sampleInfo( "SinglePhoton_2015B", [baseDir+"/Run2015B-PromptReco-v1.SinglePhoton_*", baseDir+"/Run2015B-17Jul2015-v1.SinglePhoton_*"] ),
     # 2015C datasets: prompt
     sampleInfo( "DoubleEG_2015C", [baseDir+"/Run2015C-PromptReco-v1.DoubleEG_*"] ),
     sampleInfo( "DoubleMuon_2015C", [baseDir+"/Run2015C-PromptReco-v1.DoubleMuon_*"] ),
@@ -52,15 +45,24 @@ dataSamples = [
     sampleInfo( "SingleElectron_2015C", [baseDir+"/Run2015C-PromptReco-v1.SingleElectron_*"] ),
     sampleInfo( "SingleMuon_2015C", [baseDir+"/Run2015C-PromptReco-v1.SingleMuon_*"] ),
     sampleInfo( "SinglePhoton_2015C", [baseDir+"/Run2015C-PromptReco-v1.SinglePhoton_*"] ),
-    # 2015D datasets: prompt
-    sampleInfo( "DoubleEG_2015D", [baseDir+"/Run2015D-PromptReco-v3.DoubleEG_*"] ),
-    sampleInfo( "DoubleMuon_2015D", [baseDir+"/Run2015D-PromptReco-v3.DoubleMuon_*"] ),
-    sampleInfo( "HTMHT_2015D", [baseDir+"/Run2015D-PromptReco-v3.HTMHT_*"] ),
-    sampleInfo( "JetHT_2015D", [baseDir+"/Run2015D-PromptReco-v3.JetHT_*"] ),
-    sampleInfo( "MET_2015D", [baseDir+"/Run2015D-PromptReco-v3.MET_*"] ),
-    sampleInfo( "SingleElectron_2015D", [baseDir+"/Run2015D-PromptReco-v3.SingleElectron_*"] ),
-    sampleInfo( "SingleMuon_2015D", [baseDir+"/Run2015D-PromptReco-v3.SingleMuon_*"] ),
-    sampleInfo( "SinglePhoton_2015D", [baseDir+"/Run2015D-PromptReco-v3.SinglePhoton_*"] ),
+    # 2015D datasets: re-miniAOD, unblinded
+    sampleInfo( "DoubleEG_2015D", [baseDir+"/Run2015D-05Oct2015-v1.DoubleEG_*"] ),
+    sampleInfo( "DoubleMuon_2015D", [baseDir+"/Run2015D-05Oct2015-v1.DoubleMuon_*"] ),
+    sampleInfo( "HTMHT_2015D", [baseDir+"/Run2015D-05Oct2015-v1.HTMHT_*"] ),
+    sampleInfo( "JetHT_2015D", [baseDir+"/Run2015D-05Oct2015-v1.JetHT_*"] ),
+    sampleInfo( "MET_2015D", [baseDir+"/Run2015D-05Oct2015-v1.MET_*"] ),
+    sampleInfo( "SingleElectron_2015D", [baseDir+"/Run2015D-05Oct2015-v1.SingleElectron_*"] ),
+    sampleInfo( "SingleMuon_2015D", [baseDir+"/Run2015D-05Oct2015-v1.SingleMuon_*"] ),
+    sampleInfo( "SinglePhoton_2015D", [baseDir+"/Run2015D-05Oct2015-v1.SinglePhoton_*"] ),
+    # 2015D datasets: prompt, blinded
+    sampleInfo( "DoubleEG_2015D", [baseDir+"/Run2015D-PromptReco-v4.DoubleEG_*"] ),
+    sampleInfo( "DoubleMuon_2015D", [baseDir+"/Run2015D-PromptReco-v4.DoubleMuon_*"] ),
+    sampleInfo( "HTMHT_2015D", [baseDir+"/Run2015D-PromptReco-v4.HTMHT_*"] ),
+    sampleInfo( "JetHT_2015D", [baseDir+"/Run2015D-PromptReco-v4.JetHT_*"] ),
+    sampleInfo( "MET_2015D", [baseDir+"/Run2015D-PromptReco-v4.MET_*"] ),
+    sampleInfo( "SingleElectron_2015D", [baseDir+"/Run2015D-PromptReco-v4.SingleElectron_*"] ),
+    sampleInfo( "SingleMuon_2015D", [baseDir+"/Run2015D-PromptReco-v4.SingleMuon_*"] ),
+    sampleInfo( "SinglePhoton_2015D", [baseDir+"/Run2015D-PromptReco-v4.SinglePhoton_*"] ),
 ]
 
 # ------------------------------------------------------------
