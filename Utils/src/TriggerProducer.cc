@@ -10,6 +10,7 @@
 //         Created:  Wednesday June 24 2015
 // system include files
 #include <memory>
+#include <algorithm>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
@@ -68,6 +69,13 @@ private:
 TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
 {
   parsedTrigNamesVec = iConfig.getParameter <std::vector<std::string> > ("triggerNameList");
+  //sort the trigger names
+  std::sort(parsedTrigNamesVec.begin(), parsedTrigNamesVec.end());
+  //print triggers
+  std::cout << "List of stored triggers:" << std::endl;
+  for(unsigned t = 0; t < parsedTrigNamesVec.size(); ++t){
+    std::cout << t << ": " << parsedTrigNamesVec[t] << std::endl;
+  }
   
   GetInputTag(trigResultsTag_,
               iConfig.getParameter <std::string> ("trigTagArg1"),
@@ -82,7 +90,7 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
               "patTrigger");
 
   produces<std::vector<std::string> >("TriggerNames");
-  produces<std::vector<bool> >("TriggerPass");
+  produces<std::vector<int> >("TriggerPass");
   produces<std::vector<int> >("TriggerPrescales");
 }
 
@@ -116,9 +124,9 @@ TriggerProducer::GetInputTag(edm::InputTag& tag, std::string arg1, std::string a
 void
 TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  std::auto_ptr<std::vector<bool> > passTrigVec(new std::vector<bool>());
-  std::auto_ptr<std::vector<int> > trigPrescaleVec(new std::vector<int>());
-  std::auto_ptr<std::vector<std::string> > trigNamesVec(new std::vector<std::string>());
+  std::auto_ptr<std::vector<int> > passTrigVec(new std::vector<int>(parsedTrigNamesVec.size(),-1));
+  std::auto_ptr<std::vector<int> > trigPrescaleVec(new std::vector<int>(parsedTrigNamesVec.size(),1));
+  std::auto_ptr<std::vector<std::string> > trigNamesVec(new std::vector<std::string>(parsedTrigNamesVec.size(),""));
 
   //int passesTrigger;
   edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
@@ -128,17 +136,17 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByLabel(trigPrescalesTag_,trigPrescales);
 
   //Find the matching triggers
-
   std::string testTriggerName;
-  for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
-    testTriggerName = trigNames.triggerName(trigIndex);
-    for(unsigned int parsedIndex = 0; parsedIndex < parsedTrigNamesVec.size(); parsedIndex++){
+  for(unsigned int parsedIndex = 0; parsedIndex < parsedTrigNamesVec.size(); parsedIndex++){
+    trigNamesVec->at(parsedIndex) = parsedTrigNamesVec[parsedIndex];
+    for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
+      testTriggerName = trigNames.triggerName(trigIndex);
       if(testTriggerName.find(parsedTrigNamesVec.at(parsedIndex)) != std::string::npos){
-	  trigNamesVec->push_back(testTriggerName.c_str());
-	  passTrigVec->push_back(trigResults->accept(trigIndex));
-	  trigPrescaleVec->push_back(trigPrescales->getPrescaleForIndex(trigIndex));
-	  //std::cout << "Matched: " << testTriggerName << std::endl;
-	  //break; //We only match one trigger to each trigger name fragment passed
+        trigNamesVec->at(parsedIndex) = testTriggerName;
+        passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
+        trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
+        //std::cout << "Matched: " << testTriggerName << std::endl;
+        break; //We only match one trigger to each trigger name fragment passed
       }
     }
   }
@@ -153,9 +161,6 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 TriggerProducer::beginJob()
 {
-  std::cout << "will store trigger information for..." << std::endl;
-  for(unsigned int i = 0; i< parsedTrigNamesVec.size(); i++)
-    std::cout << parsedTrigNamesVec.at(i) << std::endl;
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

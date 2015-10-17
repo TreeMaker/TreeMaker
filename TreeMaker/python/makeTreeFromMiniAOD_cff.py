@@ -544,8 +544,7 @@ fastsim=False
         )
     )
     process.Baseline += process.TriggerProducer
-    VectorBool.extend(['TriggerProducer:TriggerPass'])
-    VectorInt.extend(['TriggerProducer:TriggerPrescales'])
+    VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
     ## ----------------------------------------------------------------------------------------------
