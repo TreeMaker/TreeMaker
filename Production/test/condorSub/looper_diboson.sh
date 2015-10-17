@@ -10,20 +10,20 @@ KEEPTAR=$2
 
 ./FScheck.sh "$KEEPTAR"
 
-SCENARIO=Spring15
+SCENARIO=Spring15v2
 
 #### Spring15 rare backgrounds - diboson
 SAMPLES=(
-Spring15.WWToLNuQQ_13TeV-powheg \
-Spring15.WWTo2L2Nu_13TeV-powheg \
-Spring15.ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15.WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15.WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15.WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15.ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15.WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
-Spring15.ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
-Spring15.WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
+Spring15v2.WWToLNuQQ_13TeV-powheg \
+Spring15v2.WWTo2L2Nu_13TeV-powheg \
+Spring15v2.ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15v2.WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15v2.WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15v2.WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15v2.ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15v2.WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
+Spring15v2.ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
+Spring15v2.WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
