@@ -433,28 +433,14 @@ fastsim=False
         process.Baseline += process.METFilters
         VarsInt.extend(['METFilters'])
         
-        #process.CSCTightHaloFilter = filterDecisionProducer.clone(
-        #    trigTagArg1 = cms.string('TriggerResults'),
-        #    trigTagArg2 = cms.string(''),
-        #    trigTagArg3 = cms.string(tagname),
-        #    filterName  = cms.string("Flag_CSCTightHaloFilter"),
-        #)
-        #process.Baseline += process.CSCTightHaloFilter
-        #VarsInt.extend(['CSCTightHaloFilter'])
-
-        #rerun CSC tight halo filter manually
-        process.load('RecoMET.METProducers.CSCHaloData_cfi')
-        process.load('RecoMET.METProducers.EcalHaloData_cfi')
-        process.load('RecoMET.METProducers.HcalHaloData_cfi')
-        process.load('RecoMET.METProducers.GlobalHaloData_cfi')
-        process.load('RecoMET.METProducers.BeamHaloSummary_cfi')
-        process.load('RecoMET.METFilters.CSCTightHalo2015Filter_cfi')
-        process.CSCTightHalo2015Filter.taggingMode = cms.bool(True)
-        
-        process.BeamHaloId = cms.Sequence(CSCHaloData*EcalHaloData*HcalHaloData*GlobalHaloData*BeamHaloSummary)
-        process.Baseline += process.BeamHaloId
-        process.Baseline += process.CSCTightHalo2015Filter
-        VarsBool.extend(['CSCTightHalo2015Filter(CSCTightHaloFilter)'])
+        process.CSCTightHaloFilter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(tagname),
+            filterName  = cms.string("Flag_CSCTightHaloFilter"),
+        )
+        process.Baseline += process.CSCTightHaloFilter
+        VarsInt.extend(['CSCTightHaloFilter'])
         
         #process.HBHENoiseFilter = filterDecisionProducer.clone(
         #    trigTagArg1 = cms.string('TriggerResults'),

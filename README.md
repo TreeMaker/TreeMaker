@@ -8,7 +8,6 @@ The following installation instructions assume the user wants to process Run2015
 cmsrel CMSSW_7_4_15
 cd CMSSW_7_4_15/src/
 cmsenv
-git cms-merge-topic -u cms-met:HaloBranch7412
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram setup lhapdf
 scram b -j 8
@@ -22,7 +21,6 @@ cmsrel CMSSW_7_4_6_patch6
 cd CMSSW_7_4_6_patch6/src/
 cmsenv
 git cms-merge-topic -u cms-met:METCorUnc74X
-git cms-merge-topic -u cms-met:HaloBranch7412
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram setup lhapdf
 scram b -j 8
