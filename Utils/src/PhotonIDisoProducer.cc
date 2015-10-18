@@ -216,14 +216,14 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     // apply id cuts
     if(isBarrelPhoton){
   
-      if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && iPhoton->sigmaIetaIeta() < 0.0107){//id criterias barrel
+      if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0107){//id criterias barrel
 	passID=true;
 
       }//id criterias
 
     } 
     else if(isEndcapPhoton){
-      if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && iPhoton->sigmaIetaIeta() < 0.0272){//id criteria endcap
+      if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0272){//id criteria endcap
 	passID=true;
 
       }//id criterias endcap

@@ -188,6 +188,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
 	_puWeigths = generateWeights(Summer12S10,h);
       } else if(_PU==4){
         hweights->SetDirectory(0);
+        std::cout << "2015" << std::endl;
 	//float scale=hweights->Integral();
 	//hweights->Scale(1.0/scale);
 	}else {

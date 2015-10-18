@@ -27,6 +27,11 @@ else:
         fileNames = cms.untracked.vstring(readFiles[nstart:(nstart+nfiles)])
     )
 
+#temporary redirector fix
+for f,val in enumerate(process.source.fileNames):
+    if process.source.fileNames[f][0:6]=="/store":
+        process.source.fileNames[f] = "root://cmsxrootd.fnal.gov/"+process.source.fileNames[f]
+
 process.demo = cms.EDAnalyzer('NeffFinder',
     name = cms.string(name)
 )

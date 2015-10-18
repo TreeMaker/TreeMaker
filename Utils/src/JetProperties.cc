@@ -125,7 +125,11 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	produces<std::vector<int> > (string16).setBranchAlias(string16);
 	const std::string string17("NumChadrons");
 	produces<std::vector<int> > (string17).setBranchAlias(string17);
-
+	const std::string string18("chargedMultiplicity");
+	produces<std::vector<int> > (string18).setBranchAlias(string18);
+	const std::string string19("neutralMultiplicity");
+	produces<std::vector<int> > (string19).setBranchAlias(string19);
+	
 	produces<std::vector<int> > ("flavor");
 
 }
@@ -171,6 +175,8 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<int> > NumBhadrons(new std::vector<int>);
 	std::auto_ptr< std::vector<int> > NumChadrons(new std::vector<int>);
 	std::auto_ptr< std::vector<int> > flavor(new std::vector<int>);
+	std::auto_ptr< std::vector<int> > chargedMultiplicity(new std::vector<int>);
+	std::auto_ptr< std::vector<int> > neutralMultiplicity(new std::vector<int>);
 	using namespace edm;
 	using namespace reco;
 	using namespace pat;
@@ -200,6 +206,8 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			NumBhadrons->push_back( Jets->at(i).jetFlavourInfo().getbHadrons().size() );
 			NumChadrons->push_back( Jets->at(i).jetFlavourInfo().getcHadrons().size() );
 			flavor->push_back( Jets->at(i).partonFlavour() );
+			chargedMultiplicity->push_back( Jets->at(i).chargedMultiplicity() );
+			neutralMultiplicity->push_back( Jets->at(i).neutralMultiplicity() );
 		}
 	}
 	const std::string string00("");
@@ -241,6 +249,10 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(NumBhadrons,string16);
 	const std::string string17("NumChadrons");
 	iEvent.put(NumChadrons,string17);
+	const std::string string18("chargedMultiplicity");
+	iEvent.put(chargedMultiplicity,string18);
+	const std::string string19("neutralMultiplicity");
+	iEvent.put(neutralMultiplicity,string19);
 
 	iEvent.put(flavor,"flavor");
 

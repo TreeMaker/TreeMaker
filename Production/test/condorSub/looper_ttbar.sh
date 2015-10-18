@@ -10,21 +10,21 @@ KEEPTAR=$2
 
 ./FScheck.sh "$KEEPTAR"
 
-SCENARIO=Spring15
+SCENARIO=Spring15v2
 
 #### Spring15 backgrounds - ttbar
 SAMPLES=(
-Spring15.TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-Spring15.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-Spring15.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
-Spring15.TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-Spring15.TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
-Spring15.TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-Spring15.TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
-Spring15.TTJets_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-Spring15.TTJets_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-Spring15.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-Spring15.TTJets_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+Spring15v2.TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15v2.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15v2.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
+Spring15v2.TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15v2.TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
+Spring15v2.TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15v2.TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
+Spring15v2.TTJets_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15v2.TTJets_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15v2.TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15v2.TTJets_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
 )
 
 for SAMPLE in ${SAMPLES[@]}; do

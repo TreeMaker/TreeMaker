@@ -10,23 +10,23 @@ KEEPTAR=$2
 
 ./FScheck.sh "$KEEPTAR"
 
-SCENARIO=Spring15
+SCENARIO=Spring15v2
 
 #### Spring15 rare backgrounds - tt/H+X
 SAMPLES=(
-Spring15.WH_HToBB_WToLNu_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15.ZH_HToBB_ZToNuNu_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15.ggZH_HToBB_ZToNuNu_M125_13TeV_powheg_pythia8 \
-Spring15.TTWJetsToQQ_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8 \
-Spring15.TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8 \
-Spring15.TTZToQQ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
-Spring15.TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
-Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext1 \
-Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext2 \
-Spring15.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext3 \
-Spring15.TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
-Spring15.TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8_ext1 \
+Spring15v2.WH_HToBB_WToLNu_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15v2.ZH_HToBB_ZToNuNu_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15v2.ggZH_HToBB_ZToNuNu_M125_13TeV_powheg_pythia8 \
+Spring15v2.TTWJetsToQQ_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8 \
+Spring15v2.TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8 \
+Spring15v2.TTZToQQ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
+Spring15v2.TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
+Spring15v2.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
+Spring15v2.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext1 \
+Spring15v2.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext2 \
+Spring15v2.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext3 \
+Spring15v2.TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
+Spring15v2.TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8_ext1 \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
