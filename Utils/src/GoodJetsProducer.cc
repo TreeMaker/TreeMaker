@@ -63,7 +63,9 @@ private:
    edm::InputTag JetTag_;
    edm::InputTag MuonTag_, ElecTag_, IsoElectronTrackTag_, IsoMuonTrackTag_, IsoPionTrackTag_, PhotonTag_;
    double maxEta_;
-   double maxMuFraction_, minNConstituents_, maxNeutralFraction_, maxPhotonFraction_, minChargedMultiplicity_, minChargedFraction_, maxChargedEMFraction_;
+   double maxNeutralFraction_, maxPhotonFraction_, minChargedFraction_, maxChargedEMFraction_, maxPhotonFractionHF_;
+   double maxNeutralFractionPBNR_, maxPhotonFractionPBNR_, maxNeutralFractionTight_, maxPhotonFractionTight_;
+   int minNconstituents_, minNneutrals_, minNcharged_;
    double jetPtFilter_;
    bool ExcludeLeptonIsoTrackPhotons_, TagMode_;
    double JetConeSize_;
@@ -90,16 +92,20 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    TagMode_ = iConfig.getParameter<bool> ("TagMode");
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
    maxEta_ = iConfig.getParameter <double> ("maxJetEta");
-   maxMuFraction_ = iConfig.getParameter <double> ("maxMuFraction");
-   minNConstituents_ = iConfig.getParameter <double> ("minNConstituents");
+   minNconstituents_ = iConfig.getParameter <int> ("minNconstituents");
+   minNneutrals_ = iConfig.getParameter <int> ("minNneutrals");
+   minNcharged_ = iConfig.getParameter <int> ("minNcharged");
    maxNeutralFraction_ = iConfig.getParameter <double> ("maxNeutralFraction");
    maxPhotonFraction_ = iConfig.getParameter <double> ("maxPhotonFraction");
-   minChargedMultiplicity_ = iConfig.getParameter <double> ("minChargedMultiplicity");
+   maxPhotonFractionHF_ = iConfig.getParameter <double> ("maxPhotonFractionHF");
+   maxNeutralFractionPBNR_ = iConfig.getParameter <double> ("maxNeutralFractionPBNR");
+   maxPhotonFractionPBNR_ = iConfig.getParameter <double> ("maxPhotonFractionPBNR");
+   maxNeutralFractionTight_ = iConfig.getParameter <double> ("maxNeutralFractionTight");
+   maxPhotonFractionTight_ = iConfig.getParameter <double> ("maxPhotonFractionTight");
    minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
    maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
    jetPtFilter_ = iConfig.getParameter <double> ("jetPtFilter");
-   produces<std::vector<Jet> >();
-   produces<bool>();
+   
    ExcludeLeptonIsoTrackPhotons_ = iConfig.getParameter <bool> ("ExcludeLepIsoTrackPhotons");
    MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
    ElecTag_ = iConfig.getParameter<edm::InputTag>("ElecTag");
@@ -108,6 +114,12 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    IsoPionTrackTag_ = iConfig.getParameter<edm::InputTag>("IsoPionTrackTag");
    PhotonTag_ = iConfig.getParameter<edm::InputTag>("PhotonTag");
    JetConeSize_ = iConfig.getParameter <double> ("JetConeSize");
+   
+   produces<std::vector<Jet> >();
+   produces<bool>("JetID");
+   produces<bool>("Loose");
+   produces<bool>("Tight");
+   produces<bool>("PBNR");
 }
 
 
@@ -156,6 +168,9 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
    bool result=true;
+   bool resultLoose=true;
+   bool resultPBNR=true;
+   bool resultTight=true;
    edm::Handle< edm::View<Jet> > Jets;
    iEvent.getByLabel(JetTag_,Jets);
    if(Jets.isValid())
@@ -167,8 +182,9 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
          float phofrac=Jets->at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
          float chgfrac=Jets->at(i).chargedHadronEnergyFraction();
          float chgEMfrac=Jets->at(i).chargedEmEnergyFraction();
-         float muFrac=Jets->at(i).muonEnergyFraction();
-         unsigned int nconstit=Jets->at(i).nConstituents();
+         int chgmulti=Jets->at(i).chargedMultiplicity();
+         int neumulti=Jets->at(i).neutralMultiplicity();
+         int nconstit=chgmulti+neumulti;
          bool skip=false;
          if(ExcludeLeptonIsoTrackPhotons_)
          {
@@ -202,35 +218,50 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
                continue;
             }
          }
-         if (std::abs(Jets->at(i).eta()) < 2.4){
-            int chgmulti=Jets->at(i).chargedHadronMultiplicity();
-            if (muFrac<maxMuFraction_ && nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>=minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_) {
-               prodJets->push_back(Jet(Jets->at(i)));
-            } else {
-               if (Jets->at(i).pt() > jetPtFilter_) {
-                  //std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
-                  if(!TagMode_)return false;
-                  result=false;
-               }
-            }
+         bool good = true;
+         bool goodLoose = true;
+         bool goodPBNR = true;
+         bool goodTight = true;
+         if (std::abs(Jets->at(i).eta()) < 3.0){
+            good = neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ && nconstit>minNconstituents_;
+            if(std::abs(Jets->at(i).eta()) < 2.4) good &= chgfrac>minChargedFraction_ && chgmulti>minNcharged_ && chgEMfrac<maxChargedEMFraction_;
+            //other ID WPs
+            goodLoose = good; //same for central jets
+            goodPBNR = good && neufrac<maxNeutralFractionPBNR_ && phofrac<maxPhotonFractionPBNR_;
+            goodTight = good && neufrac<maxNeutralFractionTight_ && phofrac<maxPhotonFractionTight_;
          } else {
-            if (nconstit>=minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ ) {
-               prodJets->push_back(Jet(Jets->at(i)));
-            } else {
-               if (Jets->at(i).pt() > jetPtFilter_) {
-                  //std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
-                  if(!TagMode_)return false;
-                  result=false;
-               }
-            }
+            good = phofrac<maxPhotonFractionPBNR_ && neumulti>minNneutrals_;
+            //other ID WPs
+            goodLoose = good && phofrac<maxPhotonFractionHF_; //loose phofrac cut is tighter than PBNR
+            goodPBNR = good && neufrac<maxNeutralFractionPBNR_ && phofrac<maxPhotonFractionPBNR_;
+            goodTight = goodLoose; //same as loose for HF
          }
+
+        //save all good jets regardless of pt
+        if (good) {
+           prodJets->push_back(Jet(Jets->at(i)));
+        } 
+		//calculate event filter only for jets that pass pT cut
+        if (Jets->at(i).pt() > jetPtFilter_) {
+           //std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
+           if(!good && !TagMode_) return false;
+           result &= good;
+           resultLoose &= goodLoose;
+           resultPBNR &= goodPBNR;
+           resultTight &= goodTight;
+        }
       }
    }
    // put in the event
-   const std::string string1("");
-   iEvent.put(prodJets );
+   iEvent.put(prodJets);
    std::auto_ptr<bool> passing(new bool(result));
-   iEvent.put(passing);
+   iEvent.put(passing,"JetID");
+   std::auto_ptr<bool> passingLoose(new bool(resultLoose));
+   iEvent.put(passingLoose,"Loose");
+   std::auto_ptr<bool> passingPBNR(new bool(resultPBNR));
+   iEvent.put(passingPBNR,"PBNR");
+   std::auto_ptr<bool> passingTight(new bool(resultTight));
+   iEvent.put(passingTight,"Tight");
    return true;
    
 }

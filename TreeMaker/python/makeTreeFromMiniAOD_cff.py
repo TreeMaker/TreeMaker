@@ -389,11 +389,16 @@ fastsim=False
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
         maxJetEta                 = cms.double(5.0),
-        maxMuFraction             = cms.double(2),
-        minNConstituents          = cms.double(2),
-        maxNeutralFraction        = cms.double(0.90),
-        maxPhotonFraction         = cms.double(0.95),
-        minChargedMultiplicity    = cms.double(0),
+        minNconstituents          = cms.int32(1),
+        minNneutrals              = cms.int32(10),
+        minNcharged               = cms.int32(0),
+        maxNeutralFraction        = cms.double(0.99),
+        maxPhotonFraction         = cms.double(0.99),
+        maxPhotonFractionHF       = cms.double(0.90),
+        maxNeutralFractionPBNR    = cms.double(0.90),
+        maxPhotonFractionPBNR     = cms.double(0.95),
+        maxNeutralFractionTight   = cms.double(0.90),
+        maxPhotonFractionTight    = cms.double(0.90),
         minChargedFraction        = cms.double(0),
         maxChargedEMFraction      = cms.double(0.99),
         jetPtFilter               = cms.double(30),
@@ -407,7 +412,7 @@ fastsim=False
         PhotonTag                 = cms.InputTag('goodPhotons','bestPhoton'),
     )
     process.Baseline += process.GoodJets
-    VarsBool.extend(['GoodJets(JetID)'])
+    VarsBool.extend(['GoodJets:JetID','GoodJets:Loose(JetIDloose)','GoodJets:PBNR','GoodJets:Tight(JetIDtight)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
@@ -674,13 +679,16 @@ fastsim=False
                                             'JetsProperties:jetArea(Jets_jetArea)',
                                             'JetsProperties:muonEnergyFraction(Jets_muonEnergyFraction)',
                                             'JetsProperties:neutralEmEnergyFraction(Jets_neutralEmEnergyFraction)',
+                                            'JetsProperties:neutralHadronEnergyFraction(Jets_neutralHadronEnergyFraction)',
                                             'JetsProperties:photonEnergyFraction(Jets_photonEnergyFraction)'])
     process.TreeMaker2.VectorInt.extend(['JetsProperties:chargedHadronMultiplicity(Jets_chargedHadronMultiplicity)',
                                          'JetsProperties:electronMultiplicity(Jets_electronMultiplicity)',
                                          'JetsProperties:muonMultiplicity(Jets_muonMultiplicity)',
                                          'JetsProperties:neutralHadronMultiplicity(Jets_neutralHadronMultiplicity)',
                                          'JetsProperties:photonMultiplicity(Jets_photonMultiplicity)',
-                                         'JetsProperties:flavor(Jets_flavor)'])
+                                         'JetsProperties:flavor(Jets_flavor)',
+                                         'JetsProperties:chargedMultiplicity(Jets_chargedMultiplicity)',
+                                         'JetsProperties:neutralMultiplicity(Jets_neutralMultiplicity)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
