@@ -413,6 +413,7 @@ fastsim=False
     )
     process.Baseline += process.GoodJets
     VarsBool.extend(['GoodJets:JetID','GoodJets:Loose(JetIDloose)','GoodJets:PBNR','GoodJets:Tight(JetIDtight)'])
+    VectorBool.extend(['GoodJets:JetLooseMask','GoodJets:JetPBNRMask','GoodJets:JetTightMask'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters

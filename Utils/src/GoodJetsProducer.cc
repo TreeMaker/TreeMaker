@@ -67,7 +67,7 @@ private:
    double maxNeutralFractionPBNR_, maxPhotonFractionPBNR_, maxNeutralFractionTight_, maxPhotonFractionTight_;
    int minNconstituents_, minNneutrals_, minNcharged_;
    double jetPtFilter_;
-   bool ExcludeLeptonIsoTrackPhotons_, TagMode_;
+   bool saveAll_, ExcludeLeptonIsoTrackPhotons_, TagMode_;
    double JetConeSize_;
    double deltaR(double eta1, double phi1, double eta2, double phi2);
    
@@ -105,6 +105,7 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
    maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
    jetPtFilter_ = iConfig.getParameter <double> ("jetPtFilter");
+   saveAll_ = iConfig.getParameter <bool> ("SaveAllJets");  
    
    ExcludeLeptonIsoTrackPhotons_ = iConfig.getParameter <bool> ("ExcludeLepIsoTrackPhotons");
    MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
@@ -120,6 +121,10 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    produces<bool>("Loose");
    produces<bool>("Tight");
    produces<bool>("PBNR");
+   produces<std::vector<bool> >("JetIDMask");
+   produces<std::vector<bool> >("JetLooseMask");
+   produces<std::vector<bool> >("JetTightMask");
+   produces<std::vector<bool> >("JetPBNRMask");
 }
 
 
@@ -167,6 +172,10 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    if(ExcludeLeptonIsoTrackPhotons_ && !photonHandle.isValid()) std::cout<<"Warning Muon Tag not valid in GoodJetSelector: "<<PhotonTag_<<std::endl;
    
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
+   std::auto_ptr<std::vector<bool> > jetsVLoose(new std::vector<bool>());
+   std::auto_ptr<std::vector<bool> > jetsLoose(new std::vector<bool>());
+   std::auto_ptr<std::vector<bool> > jetsTight(new std::vector<bool>());
+   std::auto_ptr<std::vector<bool> > jetsPBNR(new std::vector<bool>());
    bool result=true;
    bool resultLoose=true;
    bool resultPBNR=true;
@@ -215,6 +224,10 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             if(skip)
             {
                prodJets->push_back(Jet(Jets->at(i)));
+		       jetsVLoose->push_back(true);
+		       jetsLoose->push_back(true);
+		       jetsTight->push_back(true);
+		       jetsPBNR->push_back(true);
                continue;
             }
          }
@@ -238,8 +251,12 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
 
         //save all good jets regardless of pt
-        if (good) {
+        if (good || saveAll_) {
            prodJets->push_back(Jet(Jets->at(i)));
+		   jetsVLoose->push_back(good);
+		   jetsLoose->push_back(goodLoose);
+		   jetsTight->push_back(goodTight);
+		   jetsPBNR->push_back(goodPBNR);
         } 
 		//calculate event filter only for jets that pass pT cut
         if (Jets->at(i).pt() > jetPtFilter_) {
@@ -254,6 +271,10 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    // put in the event
    iEvent.put(prodJets);
+   iEvent.put(jetsVLoose,"JetIDMask");
+   iEvent.put(jetsLoose,"JetLooseMask");
+   iEvent.put(jetsTight,"JetTightMask");
+   iEvent.put(jetsPBNR,"JetPBNRMask");
    std::auto_ptr<bool> passing(new bool(result));
    iEvent.put(passing,"JetID");
    std::auto_ptr<bool> passingLoose(new bool(resultLoose));

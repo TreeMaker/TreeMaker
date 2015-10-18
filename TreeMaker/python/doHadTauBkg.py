@@ -89,12 +89,21 @@ def doHadTauBkg(process,is74X,geninfo,residual,JetTag):
         maxChargedEMFraction   = cms.double(0.99), 
         MCflag                 = cms.bool(False)
     )
-
     if geninfo:
         process.JetsForHadTau.MCflag = cms.bool(True)
-        
     process.AdditionalSequence += process.JetsForHadTau
-    process.TreeMaker2.VectorRecoCand.extend(['JetsForHadTau:Jet(slimJet)'])
-    process.TreeMaker2.VectorInt.extend(['JetsForHadTau:JetFlag(slimJet_slimJetID)'])
+    
+    # clone GoodJetsProducer
+    process.GoodJetsForHadTau = process.GoodJets.clone(
+        JetTag = cms.InputTag("JetsForHadTau"),
+        jetPtFilter = cms.double(0),
+        SaveAllJets = cms.bool(True),
+        ExcludeLepIsoTrackPhotons = cms.bool(False),
+    )
+    process.AdditionalSequence += process.GoodJetsForHadTau
+    
+    process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau(slimJet)'])
+    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau:JetIDMask(slimJet_slimJetID)','GoodJetsForHadTau:JetLooseMask(slimJet_slimJetIDloose)',
+                                          'GoodJetsForHadTau:JetTightMask(slimJet_slimJetIDtight)','GoodJetsForHadTau:JetPBNRMask(slimJet_slimJetPBNR)'])
     
     return process
