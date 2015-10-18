@@ -44,8 +44,9 @@ private:
   // ----------member data ---------------------------
 };
 
-PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig)
+PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) : getterOfProducts_(edm::ProcessMatch("*"), this)
 {
+  callWhenNewProductsRegistered(getterOfProducts_);
   produces<std::vector<double> >("PDFweights");
   produces<std::vector<int> >("PDFids");
 }
@@ -63,28 +64,29 @@ void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
 
   using namespace edm;
 
-  edm::Handle<LHEEventProduct> LheInfo;
-  iEvent.getByLabel("source",LheInfo);
-
+  std::vector<edm::Handle<LHEEventProduct> > handles;
+  getterOfProducts_.fillHandles(iEvent, handles);
+  
   std::vector<double> pdfweights;
   std::vector<int> pdfids;
-  pdfweights.clear();
-  pdfids.clear();
-
-  std::vector< gen::WeightsInfo > lheweights = LheInfo->weights();
-  // these numbers are hard-coded by the LHEEventInfo
-  for (unsigned int i = 9; i < 110; i++){
-    // std::cout << "lheweights " << i << " = " << lheweights[i].id << ", " << lheweights[i].wgt/lheweights[9].wgt << std::endl;
-    pdfweights.push_back(lheweights[i].wgt/lheweights[9].wgt);
-    pdfids.push_back(i-9);
+  
+  if(!handles.empty()){
+    edm::Handle<LHEEventProduct> LheInfo = handles[0];
+    
+    std::vector< gen::WeightsInfo > lheweights = LheInfo->weights();
+    // these numbers are hard-coded by the LHEEventInfo
+    for (unsigned int i = 9; i < 110; i++){
+      // std::cout << "lheweights " << i << " = " << lheweights[i].id << ", " << lheweights[i].wgt/lheweights[9].wgt << std::endl;
+      pdfweights.push_back(lheweights[i].wgt/lheweights[9].wgt);
+      pdfids.push_back(i-9);
+    }
   }
-
-  std::auto_ptr<std::vector<double> > pdfweights_(new std::vector<double>(pdfweights));
-  iEvent.put(pdfweights_,"PDFweights");
-
-  std::auto_ptr<std::vector<int> > pdfids_(new std::vector<int>(pdfids));
-  iEvent.put(pdfids_,"PDFids");
-
+    std::auto_ptr<std::vector<double> > pdfweights_(new std::vector<double>(pdfweights));
+    iEvent.put(pdfweights_,"PDFweights");
+    
+    std::auto_ptr<std::vector<int> > pdfids_(new std::vector<int>(pdfids));
+    iEvent.put(pdfids_,"PDFids");
+  
 }
 
 // ------------ method called once each job just before starting event loop  ------------
