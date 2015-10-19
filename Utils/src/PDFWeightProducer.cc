@@ -74,18 +74,21 @@ void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     edm::Handle<LHEEventProduct> LheInfo = handles[0];
     
     std::vector< gen::WeightsInfo > lheweights = LheInfo->weights();
-    // these numbers are hard-coded by the LHEEventInfo
-    for (unsigned int i = 9; i < 110; i++){
-      // std::cout << "lheweights " << i << " = " << lheweights[i].id << ", " << lheweights[i].wgt/lheweights[9].wgt << std::endl;
-      pdfweights.push_back(lheweights[i].wgt/lheweights[9].wgt);
-      pdfids.push_back(i-9);
+    if(!lheweights.empty()){
+      // these numbers are hard-coded by the LHEEventInfo
+      for (unsigned int i = 9; i < 110; i++){
+        // std::cout << "lheweights " << i << " = " << lheweights[i].id << ", " << lheweights[i].wgt/lheweights[9].wgt << std::endl;
+        pdfweights.push_back(lheweights[i].wgt/lheweights[9].wgt);
+        pdfids.push_back(i-9);
+      }
     }
   }
-    std::auto_ptr<std::vector<double> > pdfweights_(new std::vector<double>(pdfweights));
-    iEvent.put(pdfweights_,"PDFweights");
-    
-    std::auto_ptr<std::vector<int> > pdfids_(new std::vector<int>(pdfids));
-    iEvent.put(pdfids_,"PDFids");
+
+  std::auto_ptr<std::vector<double> > pdfweights_(new std::vector<double>(pdfweights));
+  iEvent.put(pdfweights_,"PDFweights");
+  
+  std::auto_ptr<std::vector<int> > pdfids_(new std::vector<int>(pdfids));
+  iEvent.put(pdfids_,"PDFids");
   
 }
 
