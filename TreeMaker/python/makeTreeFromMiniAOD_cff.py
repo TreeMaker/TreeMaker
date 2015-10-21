@@ -731,7 +731,7 @@ fastsim=False
     ## ----------------------------------------------------------------------------------------------
     if lostlepton:
         from TreeMaker.TreeMaker.doLostLeptonBkg import doLostLeptonBkg
-        process = doLostLeptonBkg(process,geninfo)
+        process = doLostLeptonBkg(process,geninfo,METTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## Zinv Background

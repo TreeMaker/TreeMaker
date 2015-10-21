@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def doLostLeptonBkg(process,geninfo):
+def doLostLeptonBkg(process,geninfo,METTag):
     process.LostLepton = cms.Sequence()
 
     if geninfo:
@@ -48,7 +48,7 @@ def doLostLeptonBkg(process,geninfo):
             isoCut              = cms.double(-1.),
             pdgId               = cms.int32(11),
             mTCut               = 0.,
-            METTag              = "slimmedMETs"
+            METTag              = METTag
             )
 
     process.TAPMuonTracks = trackIsolationFilter.clone(
@@ -61,21 +61,8 @@ def doLostLeptonBkg(process,geninfo):
             isoCut              = cms.double(-1.), 
             pdgId               = cms.int32(13),
             mTCut               = 0.,
-            METTag              = "slimmedMETs"
+            METTag              = METTag
             )
-
-    ## process.IsolatedMuonTracksVeto = trackIsolationFilter.clone(
-    ##     doTrkIsoVeto        = False,
-    ##     vertexInputTag      = cms.InputTag("goodVertices"),
-    ##     pfCandidatesTag     = cms.InputTag("packedPFCandidates"),
-    ##     dR_ConeSize         = cms.double(0.3),
-    ##     dz_CutValue         = cms.double(0.1),
-    ##     minPt_PFCandidate   = cms.double(5.0),
-    ##     isoCut              = cms.double(0.2), 
-    ##     pdgId               = cms.int32(13),
-    ##     mTCut               = mtcut,
-    ##     METTag              = METTag,
-    ##     )
 
     process.TAPPionTracks = trackIsolationFilter.clone(
             doTrkIsoVeto        = False,
@@ -87,7 +74,7 @@ def doLostLeptonBkg(process,geninfo):
             isoCut              = cms.double(-1.),
             pdgId               = cms.int32(211),
             mTCut               = 0.,
-            METTag              = "slimmedMETs"
+            METTag              = METTag
             )
     process.LostLepton += process.TAPElectronTracks
     process.LostLepton += process.TAPMuonTracks
