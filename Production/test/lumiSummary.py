@@ -45,24 +45,15 @@ dataSamples = [
     sampleInfo( "SingleElectron_2015C", [baseDir+"/Run2015C-PromptReco-v1.SingleElectron_*"] ),
     sampleInfo( "SingleMuon_2015C", [baseDir+"/Run2015C-PromptReco-v1.SingleMuon_*"] ),
     sampleInfo( "SinglePhoton_2015C", [baseDir+"/Run2015C-PromptReco-v1.SinglePhoton_*"] ),
-    # 2015D datasets: re-miniAOD, unblinded
-    sampleInfo( "DoubleEG_2015D", [baseDir+"/Run2015D-05Oct2015-v1.DoubleEG_*"] ),
-    sampleInfo( "DoubleMuon_2015D", [baseDir+"/Run2015D-05Oct2015-v1.DoubleMuon_*"] ),
-    sampleInfo( "HTMHT_2015D", [baseDir+"/Run2015D-05Oct2015-v1.HTMHT_*"] ),
-    sampleInfo( "JetHT_2015D", [baseDir+"/Run2015D-05Oct2015-v1.JetHT_*"] ),
-    sampleInfo( "MET_2015D", [baseDir+"/Run2015D-05Oct2015-v1.MET_*"] ),
-    sampleInfo( "SingleElectron_2015D", [baseDir+"/Run2015D-05Oct2015-v1.SingleElectron_*"] ),
-    sampleInfo( "SingleMuon_2015D", [baseDir+"/Run2015D-05Oct2015-v1.SingleMuon_*"] ),
-    sampleInfo( "SinglePhoton_2015D", [baseDir+"/Run2015D-05Oct2015-v1.SinglePhoton_*"] ),
-    # 2015D datasets: prompt, blinded
-    sampleInfo( "DoubleEG_2015D", [baseDir+"/Run2015D-PromptReco-v4.DoubleEG_*"] ),
-    sampleInfo( "DoubleMuon_2015D", [baseDir+"/Run2015D-PromptReco-v4.DoubleMuon_*"] ),
-    sampleInfo( "HTMHT_2015D", [baseDir+"/Run2015D-PromptReco-v4.HTMHT_*"] ),
-    sampleInfo( "JetHT_2015D", [baseDir+"/Run2015D-PromptReco-v4.JetHT_*"] ),
-    sampleInfo( "MET_2015D", [baseDir+"/Run2015D-PromptReco-v4.MET_*"] ),
-    sampleInfo( "SingleElectron_2015D", [baseDir+"/Run2015D-PromptReco-v4.SingleElectron_*"] ),
-    sampleInfo( "SingleMuon_2015D", [baseDir+"/Run2015D-PromptReco-v4.SingleMuon_*"] ),
-    sampleInfo( "SinglePhoton_2015D", [baseDir+"/Run2015D-PromptReco-v4.SinglePhoton_*"] ),
+    # 2015D datasets: re-miniAOD, prompt v4
+    sampleInfo( "DoubleEG_2015D",       [baseDir+"/Run2015D-05Oct2015-v1.DoubleEG_*"      , baseDir+"/Run2015D-PromptReco-v4.DoubleEG_*"      ] ),
+    sampleInfo( "DoubleMuon_2015D",     [baseDir+"/Run2015D-05Oct2015-v1.DoubleMuon_*"    , baseDir+"/Run2015D-PromptReco-v4.DoubleMuon_*"    ] ),
+    sampleInfo( "HTMHT_2015D",          [baseDir+"/Run2015D-05Oct2015-v1.HTMHT_*"         , baseDir+"/Run2015D-PromptReco-v4.HTMHT_*"         ] ),
+    sampleInfo( "JetHT_2015D",          [baseDir+"/Run2015D-05Oct2015-v1.JetHT_*"         , baseDir+"/Run2015D-PromptReco-v4.JetHT_*"         ] ),
+    sampleInfo( "MET_2015D",            [baseDir+"/Run2015D-05Oct2015-v1.MET_*"           , baseDir+"/Run2015D-PromptReco-v4.MET_*"           ] ),
+    sampleInfo( "SingleElectron_2015D", [baseDir+"/Run2015D-05Oct2015-v1.SingleElectron_*", baseDir+"/Run2015D-PromptReco-v4.SingleElectron_*"] ),
+    sampleInfo( "SingleMuon_2015D",     [baseDir+"/Run2015D-05Oct2015-v1.SingleMuon_*"    , baseDir+"/Run2015D-PromptReco-v4.SingleMuon_*"    ] ),
+    sampleInfo( "SinglePhoton_2015D",   [baseDir+"/Run2015D-05Oct2015-v1.SinglePhoton_*"  , baseDir+"/Run2015D-PromptReco-v4.SinglePhoton_*"  ] ),
 ]
 
 # ------------------------------------------------------------
@@ -78,9 +69,12 @@ if __name__ == "__main__":
     if not os.path.isdir("json"):
         os.mkdir("json")
 
+    lastUnblindRun = 257599
+        
     for s in dataSamples:
         #lumi set for this sample
-        mergedLumis = set()
+        mergedLumisUnblind = set()
+        mergedLumisBlinded = set()
     
         for f in s.fileList:
             file = TFile.Open(f)
@@ -104,25 +98,40 @@ if __name__ == "__main__":
             for run,ls in izip(a1,a2):
                 irun = int(run)
                 ils = int(ls)
-                if not (irun,ils) in mergedLumis:
-                    mergedLumis.add((irun,ils))
+                if irun > lastUnblindRun:
+                    if not (irun,ils) in mergedLumisBlinded:
+                        mergedLumisBlinded.add((irun,ils))
+                else:
+                    if not (irun,ils) in mergedLumisUnblind:
+                        mergedLumisUnblind.add((irun,ils))                
                     
             file.Close()
 
         ### end loop over files in sample
 
         #convert the runlumis from list of pairs to dict: [(123,3), (123,4), (123,5), (123,7), (234,6)] => {123 : [3,4,5,7], 234 : [6]}
-        mLumisDict = {}
-        for k, v in mergedLumis:
-            mLumisDict.setdefault(k, []).append(int(v))
+        mLumisDictUnblind = {}
+        mLumisDictBlinded = {}
+        for k, v in mergedLumisUnblind:
+            mLumisDictUnblind.setdefault(k, []).append(int(v))
+        for k, v in mergedLumisBlinded:
+            mLumisDictBlinded.setdefault(k, []).append(int(v))
 
         #make lumi list from dict
-        mergedLumiList = LumiList(runsAndLumis=mLumisDict)
+        mergedLumiListUnblind = LumiList(runsAndLumis=mLumisDictUnblind)
+        mergedLumiListBlinded = LumiList(runsAndLumis=mLumisDictBlinded)
         #get the compact list using CMSSW framework
-        analyzed = mergedLumiList.getCompactList()
-        if analyzed:
-            outfile = 'json/lumiSummary_'+s.outName+'.json'
+        analyzedUnblind = mergedLumiListUnblind.getCompactList()
+        analyzedBlinded = mergedLumiListBlinded.getCompactList()
+        if analyzedUnblind:
+            outfile = 'json/lumiSummary_unblind_'+s.outName+'.json'
             with open(outfile, 'w') as jsonFile:
-                json.dump(analyzed, jsonFile)
+                json.dump(analyzedUnblind, jsonFile)
+                jsonFile.write("\n")
+                print "wrote "+outfile
+        if analyzedBlinded:
+            outfile = 'json/lumiSummary_blinded_'+s.outName+'.json'
+            with open(outfile, 'w') as jsonFile:
+                json.dump(analyzedBlinded, jsonFile)
                 jsonFile.write("\n")
                 print "wrote "+outfile

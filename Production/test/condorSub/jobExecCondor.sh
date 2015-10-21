@@ -44,13 +44,20 @@ if [[ $CMSEXIT -ne 0 ]]; then
   rm *.root
   echo "exit code $CMSEXIT, skipping xrdcp"
   exit $CMSEXIT
-else
-  # copy output to eos
-  echo "xrdcp output for condor"
-  for FILE in *.root
-    do
-      echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
-      xrdcp -f ${FILE} ${OUTDIR}/${FILE}
-      rm ${FILE}
-    done
 fi
+
+# copy output to eos
+echo "xrdcp output for condor"
+for FILE in *.root
+do
+  echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
+  xrdcp -f ${FILE} ${OUTDIR}/${FILE} 2>&1
+  XRDEXIT=$?
+  if [[ $XRDEXIT -ne 0 ]]; then
+    rm *.root
+    echo "exit code $XRDEXIT, failure in xrdcp"
+    exit $XRDEXIT
+  fi
+  rm ${FILE}
+done
+

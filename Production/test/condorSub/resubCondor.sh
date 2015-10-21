@@ -38,7 +38,7 @@ joblist=""
 
 #search for "return value" in condor logs newer than TIME - denotes finished job
 #or "abort" - denotes removed job
-for file in $(grep -lw "return value\|abort" $(find *.condor -newermt "${TIME}")); do
+for file in $(grep -l "return value\|abort" $(find *.condor -newermt "${TIME}")); do
 	#skip job if it finished successfully - return value 0
 	success=$(grep -lw "return value 0" ${file})
 	if [[ -n "$success" ]]; then
