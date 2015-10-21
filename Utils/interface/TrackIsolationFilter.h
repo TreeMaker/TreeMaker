@@ -25,6 +25,10 @@
 #include "CommonTools/ParticleFlow/interface/PFPileUpAlgo.h"
 #include "Math/VectorUtil.h"
 
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+
 #include "TLorentzVector.h"
 #include "TTree.h"
 
@@ -56,6 +60,9 @@ private:
   edm::InputTag MetInputTag_;
 
   int vtxSize;
+
+  const double GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, bool doActivity=false);
+
 };
 
 #endif
