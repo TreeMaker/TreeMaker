@@ -711,8 +711,13 @@ fastsim=False
     ## Shared processes for lost lepton, tag and probe
     ## ----------------------------------------------------------------------------------------------
     if lostlepton or tagandprobe:
-        from TreeMaker.TreeMaker.doProcessesForLLTP import doProcessesForLLTP
-        process = doProcessesForLLTP(process,geninfo)
+    
+        if geninfo:
+            from TreeMaker.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
+            process.GenLeptons = genLeptonRecoCand.clone(
+                PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
+                pfCandsTag  = cms.InputTag('packedPFCandidates')
+            )
     
     ## ----------------------------------------------------------------------------------------------
     ## Tag And Probe
