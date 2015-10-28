@@ -32,13 +32,15 @@ The available scenarios are:
 1. `Spring15`: for Spring15 25ns MC  
 2. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
 3. `Spring15Fast`: for Spring15 25ns FastSim MC (signal scans)  
-4. `2015C`: for 2015C PromptReco 25ns data  
-5. `2015D`: for 2015D PromptReco 25ns data (part 1, unblinded)  
-6. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1, unblinded)  
-7. `2015Db`: for 2015D PromptReco 25ns data (part 2, blinded)  
-8. `2015B`: for 2015B PromptReco 50ns data (deprecated)  
-9. `re2015B`: for 2015B re-miniAOD 50ns data (deprecated)  
-10. `Phys14`: for Phys14 25ns MC (deprecated)  
+4. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
+5. `2015C`: for 2015C PromptReco 25ns data  
+6. `re2015C`: for 2015C re-reco 25ns data  
+7. `2015D`: for 2015D PromptReco 25ns data (part 1, unblinded)  
+8. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1, unblinded)  
+9. `2015Db`: for 2015D PromptReco 25ns data (part 2, blinded)  
+10. `2015B`: for 2015B PromptReco 50ns data (deprecated)  
+11. `re2015B`: for 2015B re-miniAOD 50ns data (deprecated)  
+12. `Phys14`: for Phys14 25ns MC (deprecated)  
 
 ## Interactive Runs
 
