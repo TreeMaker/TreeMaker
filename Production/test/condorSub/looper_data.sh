@@ -11,21 +11,21 @@ KEEPTAR=$2
 ./FScheck.sh "$KEEPTAR"
 
 #### Run2015C Prompt RECO
-#SCENARIO=2015C
-#SAMPLES=(
-#Run2015C-PromptReco-v1.DoubleEG \
-#Run2015C-PromptReco-v1.DoubleMuon \
-#Run2015C-PromptReco-v1.HTMHT \
-#Run2015C-PromptReco-v1.JetHT \
-#Run2015C-PromptReco-v1.MET \
-#Run2015C-PromptReco-v1.SingleElectron \
-#Run2015C-PromptReco-v1.SingleMuon \
-#Run2015C-PromptReco-v1.SinglePhoton
-#)
-#
-#for SAMPLE in ${SAMPLES[@]}; do
-#  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
-#done
+SCENARIO=re2015C
+SAMPLES=(
+Run2015C_25ns-05Oct2015-v1.DoubleEG \
+Run2015C_25ns-05Oct2015-v1.DoubleMuon \
+Run2015C_25ns-05Oct2015-v1.HTMHT \
+Run2015C_25ns-05Oct2015-v1.JetHT \
+Run2015C_25ns-05Oct2015-v1.MET \
+Run2015C_25ns-05Oct2015-v1.SingleElectron \
+Run2015C_25ns-05Oct2015-v1.SingleMuon \
+Run2015C_25ns-05Oct2015-v1.SinglePhoton
+)
+
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
+done
 
 #### Run2015D re-miniAOD (part 1)
 SCENARIO=re2015D
