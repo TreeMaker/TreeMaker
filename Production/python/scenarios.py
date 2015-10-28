@@ -9,12 +9,16 @@ class Scenario:
             self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,False,"","",False,"Run2_25ns")
         elif sname == "Spring15Fast":
             self.set_vars("MCRUN2_74_V9","PAT",True,True,"","data/Summer15_25nsV2_MC",False,"Run2_25ns")
+        elif sname == "Spring15Fastv2":
+            self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,True,"","",False,"Run2_25ns")
         elif sname == "2015B":
             self.set_vars("74X_dataRun2_Prompt_v1","RECO",False,False,"data/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt","data/Summer15_50nsV5_DATA",True,"Run2_50ns")
         elif sname == "re2015B":
             self.set_vars("74X_dataRun2_Prompt_v1","PAT",False,False,"data/Cert_246908-255031_13TeV_PromptReco_Collisions15_50ns_JSON.txt","data/Summer15_50nsV5_DATA",True,"Run2_50ns")
         elif sname == "2015C":
             self.set_vars("74X_dataRun2_Prompt_v1","RECO",False,False,"data/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt","data/Summer15_25nsV5_DATA",True,"Run2_25ns")
+        elif sname == "re2015C":
+            self.set_vars("74X_dataRun2_v4","RECO",False,False,"data/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt","",True,"Run2_25ns")
         elif sname == "2015D":
             self.set_vars("74X_dataRun2_Prompt_v1","RECO",False,False,"data/Cert_246908-258750_13TeV_PromptReco_Collisions15_25ns_JSON.txt","data/Summer15_25nsV5_DATA",True,"Run2_25ns")
         elif sname == "re2015D":

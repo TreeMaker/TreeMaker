@@ -113,10 +113,12 @@ fastsim=False
     from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
     process.WeightProducer = getWeightProducer(process.source.fileNames[0])
     process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
-    process.WeightProducer.PU                         = cms.int32(4) # PU S10 3 for S10 2 for S7 3 for S10 4 for Spring15
+    process.WeightProducer.PU                         = cms.int32(0) # 0 for Spring15
     process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/pu_weights_7_4_25ns_testShifts.root")
     process.Baseline += process.WeightProducer
     VarsDouble.extend(['WeightProducer:weight(Weight)'])
+    VarsDouble.extend(['WeightProducer:xsec(CrossSection)'])
+    VarsDouble.extend(['WeightProducer:nevents(NumEvents)'])
     VarsDouble.extend(['WeightProducer:PUweight(puWeight)'])
     VarsDouble.extend(['WeightProducer:PUSysUp(puSysUp)'])
     VarsDouble.extend(['WeightProducer:PUSysDown(puSysDown)'])
