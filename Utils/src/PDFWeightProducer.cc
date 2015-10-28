@@ -47,6 +47,7 @@ private:
 PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) : getterOfProducts_(edm::ProcessMatch("*"), this)
 {
   callWhenNewProductsRegistered(getterOfProducts_);
+  produces<std::vector<double> >("ScaleWeights");
   produces<std::vector<double> >("PDFweights");
   produces<std::vector<int> >("PDFids");
 }
@@ -67,6 +68,7 @@ void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   std::vector<edm::Handle<LHEEventProduct> > handles;
   getterOfProducts_.fillHandles(iEvent, handles);
   
+  std::vector<double> scaleweights;
   std::vector<double> pdfweights;
   std::vector<int> pdfids;
   
@@ -76,6 +78,12 @@ void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     std::vector< gen::WeightsInfo > lheweights = LheInfo->weights();
     if(!lheweights.empty()){
       // these numbers are hard-coded by the LHEEventInfo
+      //renormalization/factorization scale weights
+      for (unsigned int i = 0; i < 9; i++){
+        // std::cout << "lheweights " << i << " = " << lheweights[i].id << ", " << lheweights[i].wgt/lheweights[9].wgt << std::endl;
+        scaleweights.push_back(lheweights[i].wgt/lheweights[0].wgt);
+      }
+	  //pdf weights
       for (unsigned int i = 9; i < 110; i++){
         // std::cout << "lheweights " << i << " = " << lheweights[i].id << ", " << lheweights[i].wgt/lheweights[9].wgt << std::endl;
         pdfweights.push_back(lheweights[i].wgt/lheweights[9].wgt);
@@ -84,6 +92,9 @@ void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   }
 
+  std::auto_ptr<std::vector<double> > scaleweights_(new std::vector<double>(scaleweights));
+  iEvent.put(scaleweights_,"ScaleWeights");
+  
   std::auto_ptr<std::vector<double> > pdfweights_(new std::vector<double>(pdfweights));
   iEvent.put(pdfweights_,"PDFweights");
   

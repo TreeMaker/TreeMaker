@@ -157,7 +157,8 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=False)
 * `QCD`: switch to enable the QCD LowDeltaPhi background estimation processes (default=False)
-* `doPDFs`: switch to enable the storage of PDF weights from LHEEventInfo (default=False)
+* `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=False)
+  The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `tagandprobe`: switch to enable the tag and probe processes, disables MT cut on isolated tracks (default=False)
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
 * `applybaseline`: switch to apply the baseline HT selection (default=False)

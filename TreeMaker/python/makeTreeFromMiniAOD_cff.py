@@ -129,7 +129,7 @@ fastsim=False
     if doPDFs:
         process.PDFWeights = cms.EDProducer('PDFWeightProducer')
         process.Baseline += process.PDFWeights
-        VectorDouble.extend(['PDFWeights:PDFweights'])
+        VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
         VectorInt.extend(['PDFWeights:PDFids'])
 
     ## ----------------------------------------------------------------------------------------------
