@@ -35,9 +35,9 @@ The available scenarios are:
 4. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
 5. `2015C`: for 2015C PromptReco 25ns data  
 6. `re2015C`: for 2015C re-reco 25ns data  
-7. `2015D`: for 2015D PromptReco 25ns data (part 1, unblinded)  
-8. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1, unblinded)  
-9. `2015Db`: for 2015D PromptReco 25ns data (part 2, blinded)  
+7. `2015D`: for 2015D PromptReco 25ns data (part 1)  
+8. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
+9. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
 10. `2015B`: for 2015B PromptReco 50ns data (deprecated)  
 11. `re2015B`: for 2015B re-miniAOD 50ns data (deprecated)  
 12. `Phys14`: for Phys14 25ns MC (deprecated)  
@@ -157,7 +157,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=False)
 * `QCD`: switch to enable the QCD LowDeltaPhi background estimation processes (default=False)
-* `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=False)
+* `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=False)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `tagandprobe`: switch to enable the tag and probe processes, disables MT cut on isolated tracks (default=False)
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
