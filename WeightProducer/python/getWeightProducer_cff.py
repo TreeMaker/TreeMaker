@@ -200,8 +200,8 @@ def getWeightProducer(fileName):
         # 13 TeV miniAODv2 samples - Spring15
         # backgrounds
         MCSample("TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 815.96, 11344206),
-        # missing: TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
-        # missing: TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1
+        MCSample("TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 179.25, 60043606),
+        MCSample("TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2_ext1-v1", "RunIISpring15MiniAODv2", "Constant", 179.25, 60043606),
         MCSample("TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 179.25, 59816364),
         MCSample("TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2_ext1-v1", "RunIISpring15MiniAODv2", "Constant", 179.25, 59816364),
         MCSample("TTJets_DiLept_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 86.66, 30498962),
@@ -215,7 +215,7 @@ def getWeightProducer(fileName):
         MCSample("WJetsToLNu_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 59.5, 1745914),
         MCSample("WJetsToLNu_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 22.8, 1039152),
         MCSample("WJetsToLNu_HT-600To800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 15.5, 4041997),
-        # missing: WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+        MCSample("WJetsToLNu_HT-800To1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 6.36581, 1574633),
         MCSample("WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 1.614, 255637),
         MCSample("WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0373769, 253036),
         MCSample("QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant",   1717000, 18718905),
@@ -227,21 +227,21 @@ def getWeightProducer(fileName):
         MCSample("QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant",  25.25, 1912529),
         MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 171.46, 2725655),
         MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 52.58, 973937),
-        # missing: DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+        MCSample("DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v2", "RunIISpring15MiniAODv2", "Constant", 6.761, 1067758),
         MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 2.718, 998912),
         MCSample("DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 6025.2, 9042031),
         MCSample("ZJetsToNuNu_HT-100To200_13TeV-madgraph", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 344.9781, 5154824),
         MCSample("ZJetsToNuNu_HT-200To400_13TeV-madgraph", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 96.3828, 4998316),
         MCSample("ZJetsToNuNu_HT-400To600_13TeV-madgraph", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 13.46112, 1018882),
-        # missing: ZJetsToNuNu_HT-600ToInf_13TeV-madgraph
+        MCSample("ZJetsToNuNu_HT-600ToInf_13TeV-madgraph", "74X_mcRun2_asymptotic_v2-v2", "RunIISpring15MiniAODv2", "Constant", 5.16969, 1008333),
         MCSample("GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 9226, 5015403),
         MCSample("GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 2300, 10424189),
         MCSample("GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 277.4, 2476770),
         MCSample("GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 93.38, 2550765),
         # rare backgrounds
         MCSample("ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 3.34, 613384), # straight total = 984400
-        # missing: ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1
-        # missing: ST_t-channel_top_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1
+        MCSample("ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 26.23, 1680200),
+        MCSample("ST_t-channel_top_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 44.07, 3299800),
         MCSample("ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 35.8, 988500),
         MCSample("ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1", "74X_mcRun2_asymptotic_v2-v2", "RunIISpring15MiniAODv2", "Constant", 35.8, 995600),
         MCSample("WWTo2L2Nu_13TeV-powheg", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 12.6, 1965200),
@@ -249,7 +249,7 @@ def getWeightProducer(fileName):
         MCSample("ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8", "74X_mcRun2_asymptotic_v2_ext1-v1", "RunIISpring15MiniAODv2", "Constant", 0.2934045, 5339546), # straight total = 17947992
         MCSample("ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8", "74X_mcRun2_asymptotic_v2_ext2-v1", "RunIISpring15MiniAODv2", "Constant", 0.2934045, 5339546), # straight total = 17947992
         MCSample("ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8", "74X_mcRun2_asymptotic_v2_ext3-v1", "RunIISpring15MiniAODv2", "Constant", 0.2934045, 5339546), # straight total = 17947992
-        # missing: TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8
+        MCSample("TTZToLLNuNu_M-10_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "74X_mcRun2_asymptotic_v2-v2", "RunIISpring15MiniAODv2", "Constant", 0.228, 184990), # straight total = 398000
         MCSample("TTZToQQ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.5297, 351398), # straight total = 749800
         MCSample("TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.2043, 129850), # straight total = 252908
         MCSample("TTWJetsToQQ_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.4226, 430330), # straight total = 833964
@@ -266,7 +266,12 @@ def getWeightProducer(fileName):
         MCSample("WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.05565, 219168), # straight total = 250000
         MCSample("ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.01398, 213850), # straight total = 250000
         # signal
-        # all missing
+        MCSample("SMS-T1bbbb_mGluino-1000_mLSP-900_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.325388, 142674),
+        MCSample("SMS-T1bbbb_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0141903, 52613),
+        MCSample("SMS-T1qqqq_mGluino-1000_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.325388, 95354),
+        MCSample("SMS-T1qqqq_mGluino-1400_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0252977, 49541),
+        MCSample("SMS-T1tttt_mGluino-1200_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0856418, 147194),
+        MCSample("SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0141903, 103140),
     ]
     
     # loop over all samples until we find a match
