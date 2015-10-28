@@ -86,7 +86,7 @@ TreeMaker::beginJob()
 	tree->SetAutoFlush(1000000);
 	tree->Branch("RunNum",&runNum,"RunNum/i");
 	tree->Branch("LumiBlockNum",&lumiBlockNum,"LumiBlockNum/i");
-	tree->Branch("EvtNum",&evtNum,"EvtNum/i");
+	tree->Branch("EvtNum",&evtNum,"EvtNum/l");
 
 	//initialize TreeObjects
 	for(unsigned v = 0; v < VarNames.size(); ++v){
