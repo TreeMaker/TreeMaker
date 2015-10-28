@@ -397,10 +397,6 @@ fastsim=False
         maxNeutralFraction        = cms.double(0.99),
         maxPhotonFraction         = cms.double(0.99),
         maxPhotonFractionHF       = cms.double(0.90),
-        maxNeutralFractionPBNR    = cms.double(0.90),
-        maxPhotonFractionPBNR     = cms.double(0.95),
-        maxNeutralFractionTight   = cms.double(0.90),
-        maxPhotonFractionTight    = cms.double(0.90),
         minChargedFraction        = cms.double(0),
         maxChargedEMFraction      = cms.double(0.99),
         jetPtFilter               = cms.double(30),
@@ -414,8 +410,7 @@ fastsim=False
         PhotonTag                 = cms.InputTag('goodPhotons','bestPhoton'),
     )
     process.Baseline += process.GoodJets
-    VarsBool.extend(['GoodJets:JetID','GoodJets:Loose(JetIDloose)','GoodJets:PBNR','GoodJets:Tight(JetIDtight)'])
-    VectorBool.extend(['GoodJets:JetLooseMask','GoodJets:JetPBNRMask','GoodJets:JetTightMask'])
+    VarsBool.extend(['GoodJets:JetID'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters

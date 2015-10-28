@@ -80,13 +80,6 @@ def doHadTauBkg(process,is74X,geninfo,residual,JetTag):
         JetTag                 = JetTag,
         reclusJetTag           = cms.InputTag('patJetsAK4PFCHS'),
         maxJetEta              = cms.double(5.0), 
-        maxMuFraction          = cms.double(2), 
-        minNConstituents       = cms.double(2),       
-        maxNeutralFraction     = cms.double(0.90),
-        maxPhotonFraction      = cms.double(0.95),
-        minChargedMultiplicity = cms.double(0), 
-        minChargedFraction     = cms.double(0),     
-        maxChargedEMFraction   = cms.double(0.99), 
         MCflag                 = cms.bool(False)
     )
     if geninfo:
@@ -103,7 +96,6 @@ def doHadTauBkg(process,is74X,geninfo,residual,JetTag):
     process.AdditionalSequence += process.GoodJetsForHadTau
     
     process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau(slimJet)'])
-    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau:JetIDMask(slimJet_slimJetID)','GoodJetsForHadTau:JetLooseMask(slimJet_slimJetIDloose)',
-                                          'GoodJetsForHadTau:JetTightMask(slimJet_slimJetIDtight)','GoodJetsForHadTau:JetPBNRMask(slimJet_slimJetPBNR)'])
+    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau:JetIDMask(slimJet_slimJetID)'])
     
     return process
