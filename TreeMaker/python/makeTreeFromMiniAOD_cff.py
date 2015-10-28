@@ -686,7 +686,8 @@ fastsim=False
                                          'JetsProperties:muonMultiplicity(Jets_muonMultiplicity)',
                                          'JetsProperties:neutralHadronMultiplicity(Jets_neutralHadronMultiplicity)',
                                          'JetsProperties:photonMultiplicity(Jets_photonMultiplicity)',
-                                         'JetsProperties:flavor(Jets_flavor)',
+                                         'JetsProperties:partonFlavor(Jets_partonFlavor)',
+                                         'JetsProperties:hadronFlavor(Jets_hadronFlavor)',
                                          'JetsProperties:chargedMultiplicity(Jets_chargedMultiplicity)',
                                          'JetsProperties:neutralMultiplicity(Jets_neutralMultiplicity)'])
 
