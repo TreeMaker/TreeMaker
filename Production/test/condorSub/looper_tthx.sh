@@ -16,7 +16,6 @@ SCENARIO=Spring15v2
 SAMPLES=(
 Spring15v2.WH_HToBB_WToLNu_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
 Spring15v2.ZH_HToBB_ZToNuNu_M125_13TeV_amcatnloFXFX_madspin_pythia8 \
-Spring15v2.ggZH_HToBB_ZToNuNu_M125_13TeV_powheg_pythia8 \
 Spring15v2.TTWJetsToQQ_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8 \
 Spring15v2.TTWJetsToLNu_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8 \
 Spring15v2.TTZToQQ_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
