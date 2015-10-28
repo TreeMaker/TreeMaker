@@ -62,7 +62,7 @@ class TreeMaker : public edm::EDProducer {
 		// general event information
 		UInt_t runNum;
 		UInt_t lumiBlockNum;
-		UInt_t evtNum;
+		ULong64_t evtNum;
 		vector<TreeObjectBase*> variables;
 };
 

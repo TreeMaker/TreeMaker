@@ -129,8 +129,10 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	produces<std::vector<int> > (string18).setBranchAlias(string18);
 	const std::string string19("neutralMultiplicity");
 	produces<std::vector<int> > (string19).setBranchAlias(string19);
-	
-	produces<std::vector<int> > ("flavor");
+	const std::string string20("partonFlavor");
+	produces<std::vector<int> > (string20).setBranchAlias(string20);
+	const std::string string21("hadronFlavor");
+	produces<std::vector<int> > (string21).setBranchAlias(string21);
 
 }
 
@@ -174,7 +176,8 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<double> > bDiscriminatorSimpleCSV(new std::vector<double>);
 	std::auto_ptr< std::vector<int> > NumBhadrons(new std::vector<int>);
 	std::auto_ptr< std::vector<int> > NumChadrons(new std::vector<int>);
-	std::auto_ptr< std::vector<int> > flavor(new std::vector<int>);
+	std::auto_ptr< std::vector<int> > partonFlavor(new std::vector<int>);
+	std::auto_ptr< std::vector<int> > hadronFlavor(new std::vector<int>);
 	std::auto_ptr< std::vector<int> > chargedMultiplicity(new std::vector<int>);
 	std::auto_ptr< std::vector<int> > neutralMultiplicity(new std::vector<int>);
 	using namespace edm;
@@ -205,7 +208,8 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			bDiscriminatorSimpleCSV->push_back( Jets->at(i).bDiscriminator("combinedSecondaryVertexBJetTags") );
 			NumBhadrons->push_back( Jets->at(i).jetFlavourInfo().getbHadrons().size() );
 			NumChadrons->push_back( Jets->at(i).jetFlavourInfo().getcHadrons().size() );
-			flavor->push_back( Jets->at(i).partonFlavour() );
+			partonFlavor->push_back( Jets->at(i).partonFlavour() );
+			hadronFlavor->push_back( Jets->at(i).hadronFlavour() );
 			chargedMultiplicity->push_back( Jets->at(i).chargedMultiplicity() );
 			neutralMultiplicity->push_back( Jets->at(i).neutralMultiplicity() );
 		}
@@ -253,8 +257,10 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(chargedMultiplicity,string18);
 	const std::string string19("neutralMultiplicity");
 	iEvent.put(neutralMultiplicity,string19);
-
-	iEvent.put(flavor,"flavor");
+	const std::string string20("partonFlavor");
+	iEvent.put(partonFlavor,"partonFlavor");
+	const std::string string21("hadronFlavor");
+	iEvent.put(hadronFlavor,"hadronFlavor");
 
 }
 

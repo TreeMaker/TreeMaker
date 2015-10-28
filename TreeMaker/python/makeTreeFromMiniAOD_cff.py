@@ -129,7 +129,7 @@ fastsim=False
     if doPDFs:
         process.PDFWeights = cms.EDProducer('PDFWeightProducer')
         process.Baseline += process.PDFWeights
-        VectorDouble.extend(['PDFWeights:PDFweights'])
+        VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
         VectorInt.extend(['PDFWeights:PDFids'])
 
     ## ----------------------------------------------------------------------------------------------
@@ -397,10 +397,6 @@ fastsim=False
         maxNeutralFraction        = cms.double(0.99),
         maxPhotonFraction         = cms.double(0.99),
         maxPhotonFractionHF       = cms.double(0.90),
-        maxNeutralFractionPBNR    = cms.double(0.90),
-        maxPhotonFractionPBNR     = cms.double(0.95),
-        maxNeutralFractionTight   = cms.double(0.90),
-        maxPhotonFractionTight    = cms.double(0.90),
         minChargedFraction        = cms.double(0),
         maxChargedEMFraction      = cms.double(0.99),
         jetPtFilter               = cms.double(30),
@@ -414,8 +410,7 @@ fastsim=False
         PhotonTag                 = cms.InputTag('goodPhotons','bestPhoton'),
     )
     process.Baseline += process.GoodJets
-    VarsBool.extend(['GoodJets:JetID','GoodJets:Loose(JetIDloose)','GoodJets:PBNR','GoodJets:Tight(JetIDtight)'])
-    VectorBool.extend(['GoodJets:JetLooseMask','GoodJets:JetPBNRMask','GoodJets:JetTightMask'])
+    VarsBool.extend(['GoodJets:JetID'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
@@ -550,7 +545,9 @@ fastsim=False
             'HLT_DoubleJet90_Double30_TripleCSV0p5_v',
             'HLT_Ele15_IsoVVVL_PFHT350_v',
             'HLT_Mu15_IsoVVVL_PFHT350_v',
-            'HLT_Ele23_WPLoose_Gsf_v'
+            'HLT_Ele23_WPLoose_Gsf_v',
+            'HLT_PFMETNoMu90_NoiseCleaned_PFMHTNoMu90_IDTight_v',
+            'HLT_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v',
         )
     )
     process.Baseline += process.TriggerProducer
@@ -661,8 +658,8 @@ fastsim=False
     VarsDouble.extend(['MET:Pt(METPt)','MET:Phi(METPhi)','MET:CaloPt(CaloMETPt)','MET:CaloPhi(CaloMETPhi)'])
     if geninfo:
         VarsDouble.extend(['MET:GenPt(GenMETPt)','MET:GenPhi(GenMETPhi)'])
-        VarsDouble.extend(['MET:metType1PtJetResUp(metType1PtJetResUp)', 'MET:metType1PtJetResDown(metType1PtJetResDown)', 'MET:metType1PtJetEnUp(metType1PtJetEnUp)', 'MET:metType1PtJetEnDown(metType1PtJetEnDown)', 'MET:metType1PtMuonEnUp(metType1PtMuonEnUp)', 'MET:metType1PtMuonEnDown(metType1PtMuonEnDown)', 'MET:metType1PtElectronEnUp(metType1PtElectronEnUp)', 'MET:metType1PtElectronEnDown(metType1PtElectronEnDown)', 'MET:metType1PtTauEnUp(metType1PtTauEnUp)', 'MET:metType1PtTauEnDown(metType1PtTauEnDown)', 'MET:metType1PtUnclusteredEnUp(metType1PtUnclusteredEnUp)', 'MET:metType1PtUnclusteredEnDown(metType1PtUnclusteredEnDown)', 'MET:metType1PtPhotonEnUp(metType1PtPhotonEnUp)', 'MET:metType1PtPhotonEnDown(metType1PtPhotonEnDown)'])
-        VarsDouble.extend(['MET:metType1PhiJetResUp(metType1PhiJetResUp)', 'MET:metType1PhiJetResDown(metType1PhiJetResDown)', 'MET:metType1PhiJetEnUp(metType1PhiJetEnUp)', 'MET:metType1PhiJetEnDown(metType1PhiJetEnDown)', 'MET:metType1PhiMuonEnUp(metType1PhiMuonEnUp)', 'MET:metType1PhiMuonEnDown(metType1PhiMuonEnDown)', 'MET:metType1PhiElectronEnUp(metType1PhiElectronEnUp)', 'MET:metType1PhiElectronEnDown(metType1PhiElectronEnDown)', 'MET:metType1PhiTauEnUp(metType1PhiTauEnUp)', 'MET:metType1PhiTauEnDown(metType1PhiTauEnDown)', 'MET:metType1PhiUnclusteredEnUp(metType1PhiUnclusteredEnUp)', 'MET:metType1PhiUnclusteredEnDown(metType1PhiUnclusteredEnDown)', 'MET:metType1PhiPhotonEnUp(metType1PhiPhotonEnUp)', 'MET:metType1PhiPhotonEnDown(metType1PhiPhotonEnDown)'])
+        VarsDouble.extend(['MET:metType1PtJetResUp', 'MET:metType1PtJetResDown', 'MET:metType1PtJetEnUp', 'MET:metType1PtJetEnDown', 'MET:metType1PtMuonEnUp', 'MET:metType1PtMuonEnDown', 'MET:metType1PtElectronEnUp', 'MET:metType1PtElectronEnDown', 'MET:metType1PtTauEnUp', 'MET:metType1PtTauEnDown', 'MET:metType1PtUnclusteredEnUp', 'MET:metType1PtUnclusteredEnDown', 'MET:metType1PtPhotonEnUp', 'MET:metType1PtPhotonEnDown'])
+        VarsDouble.extend(['MET:metType1PhiJetResUp', 'MET:metType1PhiJetResDown', 'MET:metType1PhiJetEnUp', 'MET:metType1PhiJetEnDown', 'MET:metType1PhiMuonEnUp', 'MET:metType1PhiMuonEnDown', 'MET:metType1PhiElectronEnUp', 'MET:metType1PhiElectronEnDown', 'MET:metType1PhiTauEnUp', 'MET:metType1PhiTauEnDown', 'MET:metType1PhiUnclusteredEnUp', 'MET:metType1PhiUnclusteredEnDown', 'MET:metType1PhiPhotonEnUp', 'MET:metType1PhiPhotonEnDown'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties
@@ -691,7 +688,8 @@ fastsim=False
                                          'JetsProperties:muonMultiplicity(Jets_muonMultiplicity)',
                                          'JetsProperties:neutralHadronMultiplicity(Jets_neutralHadronMultiplicity)',
                                          'JetsProperties:photonMultiplicity(Jets_photonMultiplicity)',
-                                         'JetsProperties:flavor(Jets_flavor)',
+                                         'JetsProperties:partonFlavor(Jets_partonFlavor)',
+                                         'JetsProperties:hadronFlavor(Jets_hadronFlavor)',
                                          'JetsProperties:chargedMultiplicity(Jets_chargedMultiplicity)',
                                          'JetsProperties:neutralMultiplicity(Jets_neutralMultiplicity)'])
 
