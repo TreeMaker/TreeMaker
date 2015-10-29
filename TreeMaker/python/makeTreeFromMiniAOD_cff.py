@@ -658,8 +658,7 @@ fastsim=False
     VarsDouble.extend(['MET:Pt(METPt)','MET:Phi(METPhi)','MET:CaloPt(CaloMETPt)','MET:CaloPhi(CaloMETPhi)'])
     if geninfo:
         VarsDouble.extend(['MET:GenPt(GenMETPt)','MET:GenPhi(GenMETPhi)'])
-        VarsDouble.extend(['MET:metType1PtJetResUp', 'MET:metType1PtJetResDown', 'MET:metType1PtJetEnUp', 'MET:metType1PtJetEnDown', 'MET:metType1PtMuonEnUp', 'MET:metType1PtMuonEnDown', 'MET:metType1PtElectronEnUp', 'MET:metType1PtElectronEnDown', 'MET:metType1PtTauEnUp', 'MET:metType1PtTauEnDown', 'MET:metType1PtUnclusteredEnUp', 'MET:metType1PtUnclusteredEnDown', 'MET:metType1PtPhotonEnUp', 'MET:metType1PtPhotonEnDown'])
-        VarsDouble.extend(['MET:metType1PhiJetResUp', 'MET:metType1PhiJetResDown', 'MET:metType1PhiJetEnUp', 'MET:metType1PhiJetEnDown', 'MET:metType1PhiMuonEnUp', 'MET:metType1PhiMuonEnDown', 'MET:metType1PhiElectronEnUp', 'MET:metType1PhiElectronEnDown', 'MET:metType1PhiTauEnUp', 'MET:metType1PhiTauEnDown', 'MET:metType1PhiUnclusteredEnUp', 'MET:metType1PhiUnclusteredEnDown', 'MET:metType1PhiPhotonEnUp', 'MET:metType1PhiPhotonEnDown'])
+        VectorDouble.extend(['MET:PtUp(METPtUp)', 'MET:PtDown(METPtDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties
