@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def doZinvBkg(process,is74X,METTag):
+def doZinvBkg(process,METTag):
     ##### add branches for photon studies
     process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
@@ -65,12 +65,9 @@ def doZinvBkg(process,is74X,METTag):
     from TreeMaker.Utils.btagint_cfi import btagint
     process.BTagsclean = btagint.clone(
        JetTag       = cms.InputTag('HTJetsclean'),
-       BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
-       BTagCutValue = cms.double(0.814)
+       BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+       BTagCutValue = cms.double(0.890)
     )
-    if is74X:
-        process.BTagsclean.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
-        process.BTagsclean.BTagCutValue = cms.double(0.890)
 
     process.ZinvClean += process.BTagsclean
     process.TreeMaker2.VarsInt.extend(['BTagsclean'])

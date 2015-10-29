@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def doHadTauBkg(process,is74X,geninfo,residual,JetTag):
+def doHadTauBkg(process,geninfo,residual,JetTag):
     process.load("RecoJets.JetProducers.ak4PFJets_cfi")
     from JetMETCorrections.Configuration.JetCorrectionServices_cff import ak4PFCHSL1FastL2L3,ak4PFCHSL1Fastjet,ak4PFCHSL2Relative,ak4PFCHSL3Absolute
 
@@ -16,41 +16,23 @@ def doHadTauBkg(process,is74X,geninfo,residual,JetTag):
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jetCorrectionLevels = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'Type-2')
     if residual: jetCorrectionLevels = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual'], 'Type-2')
-    if is74X:
-        addJetCollection(
-            process,
-            postfix            = "",
-            labelName          = 'AK4PFCHS',
-            jetSource          = cms.InputTag('ak4PFJetsCHS'),
-            pfCandidates       = cms.InputTag('packedPFCandidates'),
-            pvSource           = cms.InputTag('offlineSlimmedPrimaryVertices'),  # 74x
-            svSource           = cms.InputTag('slimmedSecondaryVertices'),       # 74x
-            elSource           = cms.InputTag('slimmedElectrons'),
-            muSource           = cms.InputTag('slimmedMuons'),
-            jetCorrections     = jetCorrectionLevels,
-            btagDiscriminators = [ 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ],  # 74x
-            genJetCollection   = cms.InputTag('ak4GenJets'),
-            genParticles       = cms.InputTag('prunedGenParticles'),
-            algo               = 'AK',
-            rParam             = 0.4
-        )
-    else:
-        addJetCollection(
-            process,
-            postfix            = "",
-            labelName          = 'AK4PFCHS',
-            jetSource          = cms.InputTag('ak4PFJetsCHS'),
-            pfCandidates       = cms.InputTag('packedPFCandidates'),
-            trackSource        = cms.InputTag('unpackedTracksAndVertices'),           # 72x
-            pvSource           = cms.InputTag('unpackedTracksAndVertices'),              # 72x
-            svSource           = cms.InputTag('unpackedTracksAndVertices','secondary'),  # 72x
-            jetCorrections     = jetCorrectionLevels,
-            btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],  # 72x
-            genJetCollection   = cms.InputTag('ak4GenJets'),
-            algo               = 'AK',
-            rParam             = 0.4
-        )
-    # end of if is74X:
+    addJetCollection(
+        process,
+        postfix            = "",
+        labelName          = 'AK4PFCHS',
+        jetSource          = cms.InputTag('ak4PFJetsCHS'),
+        pfCandidates       = cms.InputTag('packedPFCandidates'),
+        pvSource           = cms.InputTag('offlineSlimmedPrimaryVertices'),  # 74x
+        svSource           = cms.InputTag('slimmedSecondaryVertices'),       # 74x
+        elSource           = cms.InputTag('slimmedElectrons'),
+        muSource           = cms.InputTag('slimmedMuons'),
+        jetCorrections     = jetCorrectionLevels,
+        btagDiscriminators = [ 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ],  # 74x
+        genJetCollection   = cms.InputTag('ak4GenJets'),
+        genParticles       = cms.InputTag('prunedGenParticles'),
+        algo               = 'AK',
+        rParam             = 0.4
+    )
 
     # adjust MC matching
     process.patJetsAK4PFCHS.getJetMCFlavour   = False

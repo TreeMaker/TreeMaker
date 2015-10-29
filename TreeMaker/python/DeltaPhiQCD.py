@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def DeltaPhiQCD(process, is74X, geninfo):
+def DeltaPhiQCD(process, geninfo):
     process.DeltaPhiQCDSeq = cms.Sequence()
 
     if geninfo:
@@ -34,11 +34,9 @@ def DeltaPhiQCD(process, is74X, geninfo):
     process.DeltaPhiQCD = deltaphiqcd.clone (
         JetTagRecoJets      = cms.VInputTag ( 'MHTJets','HTJets' ) ,
         JetTagGenJets       = cms.VInputTag ( 'GenMHTJets', 'GenHTJets' ) ,
-        BTagInputTag        = cms.string   ( 'combinedInclusiveSecondaryVertexV2BJetTags' ) ,
+        BTagInputTag        = cms.string   ( 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ) ,
         GenParticleTag      = cms.InputTag ( 'prunedGenParticles' ) ,
     )
-    if is74X:
-       process.DeltaPhiQCD.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.DeltaPhiQCDSeq += process.DeltaPhiQCD
     
     process.AdditionalSequence += process.DeltaPhiQCDSeq

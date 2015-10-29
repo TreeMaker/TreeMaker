@@ -38,10 +38,6 @@ fastsim=False
     # CMSSW version sniffing
     CMSSWVER = os.getenv("CMSSW_VERSION")
     CMSSWVER_parts = CMSSWVER.split("_")
-    is74X = False
-    if int(CMSSWVER_parts[1])==7 and int(CMSSWVER_parts[2])>=4:
-        is74X = True
-        print "Configuring for 74X"
 
     # define if mt cut should be applied and the value (less than 0 means no cut)
     mtcut = cms.double(100)
@@ -593,12 +589,9 @@ fastsim=False
     from TreeMaker.Utils.btagint_cfi import btagint
     process.BTags = btagint.clone(
         JetTag       = cms.InputTag('HTJets'),
-        BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
-        BTagCutValue = cms.double(0.814)
+        BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+        BTagCutValue = cms.double(0.890)
     )
-    if is74X:
-        process.BTags.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
-        process.BTags.BTagCutValue = cms.double(0.890)
     process.Baseline += process.BTags
     VarsInt.extend(['BTags'])
     
@@ -671,10 +664,9 @@ fastsim=False
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
     process.JetsProperties = jetproperties.clone(
         JetTag       = cms.InputTag('GoodJets'),
-        BTagInputTag = cms.string('combinedInclusiveSecondaryVertexV2BJetTags'),
+        BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
         METTag       = METTag,
     )
-    if is74X: process.JetsProperties.BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.Baseline += process.JetsProperties
     process.TreeMaker2.VectorRecoCand.extend(['GoodJets(Jets)'])
     process.TreeMaker2.VectorDouble.extend(['JetsProperties:bDiscriminatorUser(Jets_bDiscriminatorCSV)',
@@ -710,7 +702,7 @@ fastsim=False
     ## ----------------------------------------------------------------------------------------------
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
-        process = doHadTauBkg(process,is74X,geninfo,residual,JetTag)
+        process = doHadTauBkg(process,geninfo,residual,JetTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## Shared processes for lost lepton, tag and probe
@@ -743,7 +735,7 @@ fastsim=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,is74X,METTag)
+        process = doZinvBkg(process,METTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
@@ -752,7 +744,7 @@ fastsim=False
     ## ----------------------------------------------------------------------------------------------
     if QCD:
         from TreeMaker.TreeMaker.DeltaPhiQCD import DeltaPhiQCD
-        process = DeltaPhiQCD(process,is74X,geninfo)
+        process = DeltaPhiQCD(process,geninfo)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
