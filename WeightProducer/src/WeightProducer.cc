@@ -39,7 +39,6 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
-#include "PhysicsTools/Utilities/interface/LumiReWeighting.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
@@ -63,20 +62,12 @@ private:
   const double _xs;
   const double _NumberEvents;
   const double _lumi;
-  TH1 *hweights; 
   edm::InputTag _weightName;
-  std::vector<double> _puWeights;
+  TH1 *pu_central, *pu_up, *pu_down;
   double _weightFactor;
-  double _PUweightFactor;
-  double _PUSysUp;
-  double _PUSysDown;
-  reweight::PoissonMeanShifter PShiftDown_;
-  reweight::PoissonMeanShifter PShiftUp_;
   bool _applyPUWeights;
-   
-  const int _PU; //use this for different PU scenarios
   
-  double getPUNVtxWeight(int nvtx) const;
+  double getPUWeight(int numint, TH1* pu) const;
 };
 
 WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
@@ -86,7 +77,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _NumberEvents(iConfig.getParameter<double> ("NumberEvts")),
    _lumi(iConfig.getParameter<double> ("Lumi")),
    _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
-   _PU(iConfig.getParameter<int> ("PU"))
+   pu_central(0), pu_up(0), pu_down(0)
 {
 
    // Option 1: weight constant, as defined in cfg file
@@ -124,35 +115,20 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
 
       std::cout << "WeightProducer: Applying multiplicative PU weights" << std::endl;
       std::cout << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'" << std::endl;
-      TFile file(filePUDataDistr.fullPath().c_str(), "READ");
-      TH1 *h = 0;
-      //TH1 *hup = 0;
-      //TH1 *hdown = 0;
-      file.GetObject("ratio", h);
-      hweights=(TH1*)h->Clone("hweights");
-      //file.GetObject("ratioUp", hup);
-      //file.GetObject("ratioDown", hdown);
-      PShiftDown_ = reweight::PoissonMeanShifter(-0.5);
-      PShiftUp_ = reweight::PoissonMeanShifter(0.5);
-      if (h) {
-         h->SetDirectory(0);
-      } else {
-         std::cerr << "ERROR in WeightProducer: Histogram 'pileup' does not exist in file '"
-               << filePUDataDistr.fullPath() << "'\n.";
+      TFile* file = TFile::Open(filePUDataDistr.fullPath().c_str(), "READ");
+      pu_central = (TH1*)file->Get("pu_weights_central");
+	  if(pu_central) pu_central->SetDirectory(0);
+      pu_up = (TH1*)file->Get("pu_weights_up");
+	  if(pu_up) pu_up->SetDirectory(0);
+      pu_down = (TH1*)file->Get("pu_weights_down");
+	  if(pu_down) pu_down->SetDirectory(0);
+
+      if(!pu_central || !pu_up || !pu_down) {
+         std::cerr << "ERROR in WeightProducer: Pileup histograms missing from file '"
+               << filePUDataDistr.fullPath() << std::endl;
          _applyPUWeights = false;
       }
-      file.Close();
-
-      std::cout << "  Computing weights for pile-up scenario " << std::flush;
-      if(_PU==0){
-        hweights->SetDirectory(0);
-        std::cout << "2015" << std::endl;
-      } else {
-        std::cout << std::endl;
-        std::cerr << "ERROR: Undefined pile-up scenario." << std::endl;
-      }
-       
-      delete h;
+      file->Close();
    } else {
       _applyPUWeights = false;
    }
@@ -161,7 +137,9 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    produces<double> ("weight");
    produces<double> ("xsec");
    produces<double> ("nevents");
-   produces<double> ("PUweight"); 
+   produces<int>    ("NumInteractions");
+   produces<double> ("TrueNumInteractions");
+   produces<double> ("PUweight");
    produces<double> ("PUSysUp");
    produces<double> ("PUSysDown");
 }
@@ -201,18 +179,43 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
    // Optionally, include PU weight
    edm::Handle<std::vector<PileupSummaryInfo> > puInfo;
-   iEvent.getByLabel("addPileupInfo", puInfo);
-   edm::Handle<reco::VertexCollection> vertices;
-   iEvent.getByLabel("offlineSlimmedPrimaryVertices",vertices);
-   //int npu = 0;
-   if (_applyPUWeights) {
-      if(vertices.isValid()){
-	    _PUweightFactor = getPUNVtxWeight(vertices->size());
-	    _PUSysUp = _PUweightFactor*PShiftUp_.ShiftWeight((float)vertices->size());
-	    _PUSysDown = _PUweightFactor*PShiftDown_.ShiftWeight((float)vertices->size());
-//	    std::cout<<"PU weight "<<_PUweightFactor<<std::endl;
-	  }
+   iEvent.getByLabel("slimmedAddPileupInfo", puInfo);
+   if (_applyPUWeights && puInfo.isValid()){
+	   int _NumInt = 0;
+	   double _TrueNumInt = 0.;
+	   double _PUweightFactor = 1.;
+       double _PUSysUp = 1.;
+       double _PUSysDown = 1.;
+	   
+	   //get PU info
+       std::vector<PileupSummaryInfo>::const_iterator PVI;
+       for(PVI = puInfo->begin(); PVI != puInfo->end(); ++PVI) {
+		   //look only at primary BX (in-time)
+           if(PVI->getBunchCrossing()==0){
+		       _NumInt = PVI->getPU_NumInteractions();
+		       _TrueNumInt = PVI->getTrueNumInteractions();
+			   break;
+		   }
+	   }	   
+	   
+	    _PUweightFactor = getPUWeight(_NumInt,pu_central);
+	    _PUSysUp = getPUWeight(_NumInt,pu_up);
+	    _PUSysDown = getPUWeight(_NumInt,pu_down);
 
+        std::auto_ptr<double> puOut1(new double(_PUweightFactor));
+        iEvent.put(puOut1, "PUweight");
+        
+        std::auto_ptr<double> puOut2(new double(_PUSysUp));
+        iEvent.put(puOut2, "PUSysUp");
+        
+        std::auto_ptr<double> puOut3(new double(_PUSysDown));
+        iEvent.put(puOut3, "PUSysDown");
+		
+		std::auto_ptr<int> puOut4(new int(_NumInt));
+        iEvent.put(puOut4, "NumInteractions");
+		
+		std::auto_ptr<double> puOut5(new double(_TrueNumInt));
+        iEvent.put(puOut5, "TrueNumInteractions");
    }
 
    //---------------------------------------------------------------------------
@@ -226,15 +229,6 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
    std::auto_ptr<double> pOutN(new double(_NumberEvents));
    iEvent.put(pOutN, "nevents");
-   
-   std::auto_ptr<double> pOut2(new double(_PUweightFactor));
-   iEvent.put(pOut2, "PUweight");
-
-   std::auto_ptr<double> pOut3(new double(_PUSysUp));
-   iEvent.put(pOut3, "PUSysUp");
-
-   std::auto_ptr<double> pOut4(new double(_PUSysDown));
-   iEvent.put(pOut4, "PUSysDown");
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -250,16 +244,16 @@ void WeightProducer::endJob() {
 // Get weight factor dependent on number of
 // added PU interactions
 // --------------------------------------------------
-double WeightProducer::getPUNVtxWeight(int nvtx) const{
+double WeightProducer::getPUWeight(int numint, TH1* pu) const{
   double w = 1.;
 
-   //std::cout<<"nvtx "<<nvtx<<std::endl;
-  if (nvtx < hweights->GetBinLowEdge(hweights->GetNbinsX()+1)) {
-        w = hweights->GetBinContent(hweights->GetXaxis()->FindBin(nvtx));
+   //std::cout<<"numint "<<numint<<std::endl;
+  if (numint < pu->GetBinLowEdge(pu->GetNbinsX()+1)) {
+        w = pu->GetBinContent(pu->GetXaxis()->FindBin(numint));
   } else {
-    std::cerr << "WARNING in WeightProcessor::getPUNVtxWeight: Number of PU vertices = " << nvtx
+    std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of interactions = " << numint
               << " out of histogram binning." << std::endl;
-    w = hweights->GetBinContent(hweights->GetNbinsX());
+    w = pu->GetBinContent(pu->GetNbinsX());
   }
 
    return w;

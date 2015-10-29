@@ -110,18 +110,15 @@ fastsim=False
     ## ----------------------------------------------------------------------------------------------
     ## WeightProducer
     ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
-    process.WeightProducer = getWeightProducer(process.source.fileNames[0])
-    process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
-    process.WeightProducer.PU                         = cms.int32(0) # 0 for Spring15
-    process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/pu_weights_7_4_25ns_testShifts.root")
-    process.Baseline += process.WeightProducer
-    VarsDouble.extend(['WeightProducer:weight(Weight)'])
-    VarsDouble.extend(['WeightProducer:xsec(CrossSection)'])
-    VarsDouble.extend(['WeightProducer:nevents(NumEvents)'])
-    VarsDouble.extend(['WeightProducer:PUweight(puWeight)'])
-    VarsDouble.extend(['WeightProducer:PUSysUp(puSysUp)'])
-    VarsDouble.extend(['WeightProducer:PUSysDown(puSysDown)'])
+    if geninfo:
+        from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
+        process.WeightProducer = getWeightProducer(process.source.fileNames[0])
+        process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
+        process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1029.root")
+        process.Baseline += process.WeightProducer
+        VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
+                           'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
+        VarsInt.extend(['WeightProducer:NumInteractions'])
 
     ## ----------------------------------------------------------------------------------------------
     ## PDF weights for PDF systematics
@@ -548,6 +545,13 @@ fastsim=False
             'HLT_Ele23_WPLoose_Gsf_v',
             'HLT_PFMETNoMu90_NoiseCleaned_PFMHTNoMu90_IDTight_v',
             'HLT_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v',
+            'HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT250_v',
+            'HLT_DoubleMu8_Mass8_PFHT250_v',
+            'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2',
+            'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2',
+            'HLT_PFHT750_4JetPt50_v',
+            'HLT_PFHT450_SixJet40_PFBTagCSV0p72_v',
+            'HLT_PFHT400_SixJet30_BTagCSV0p55_2PFBTagCSV0p72_v',
         )
     )
     process.Baseline += process.TriggerProducer
