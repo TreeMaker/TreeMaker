@@ -17,8 +17,4 @@ weightProducer = cms.EDProducer('WeightProducer',
    # Data PU distribution. If a file name is specified,
    # a multiplicative PU weight factor is applied.
    FileNamePUDataDistribution = cms.string("NONE"),
-   
-   ## use this for different PU scenarios
-   ##  0: Spring15
-   PU = cms.int32(0)
 )
