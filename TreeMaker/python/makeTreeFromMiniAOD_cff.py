@@ -545,6 +545,13 @@ fastsim=False
             'HLT_Ele23_WPLoose_Gsf_v',
             'HLT_PFMETNoMu90_NoiseCleaned_PFMHTNoMu90_IDTight_v',
             'HLT_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v',
+            'HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT250_v',
+            'HLT_DoubleMu8_Mass8_PFHT250_v',
+            'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_DZ_v2',
+            'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v2',
+            'HLT_PFHT750_4JetPt50_v',
+            'HLT_PFHT450_SixJet40_PFBTagCSV0p72_v',
+            'HLT_PFHT400_SixJet30_BTagCSV0p55_2PFBTagCSV0p72_v',
         )
     )
     process.Baseline += process.TriggerProducer
