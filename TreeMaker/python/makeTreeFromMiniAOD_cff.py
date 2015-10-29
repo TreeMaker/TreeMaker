@@ -377,35 +377,6 @@ fastsim=False
     VarsInt.append("goodPhotons:NumPhotons")
 
     ## ----------------------------------------------------------------------------------------------
-    ## GoodJets
-    ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
-    process.GoodJets = GoodJetsProducer.clone(
-        TagMode                   = cms.bool(True),
-        JetTag                    = JetTag,
-        maxJetEta                 = cms.double(5.0),
-        minNconstituents          = cms.int32(1),
-        minNneutrals              = cms.int32(10),
-        minNcharged               = cms.int32(0),
-        maxNeutralFraction        = cms.double(0.99),
-        maxPhotonFraction         = cms.double(0.99),
-        maxPhotonFractionHF       = cms.double(0.90),
-        minChargedFraction        = cms.double(0),
-        maxChargedEMFraction      = cms.double(0.99),
-        jetPtFilter               = cms.double(30),
-        ExcludeLepIsoTrackPhotons = cms.bool(True),
-        JetConeSize               = cms.double(0.4),
-        MuonTag                   = cms.InputTag('LeptonsNew:IdIsoMuon'),
-        ElecTag                   = cms.InputTag('LeptonsNew:IdIsoElectron'),
-        IsoElectronTrackTag       = cms.InputTag('IsolatedElectronTracksVeto'),
-        IsoMuonTrackTag           = cms.InputTag('IsolatedMuonTracksVeto'),
-        IsoPionTrackTag           = cms.InputTag('IsolatedPionTracksVeto'),
-        PhotonTag                 = cms.InputTag('goodPhotons','bestPhoton'),
-    )
-    process.Baseline += process.GoodJets
-    VarsBool.extend(['GoodJets:JetID'])
-
-    ## ----------------------------------------------------------------------------------------------
     ## MET Filters
     ## ----------------------------------------------------------------------------------------------
     
@@ -555,64 +526,16 @@ fastsim=False
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
     ## ----------------------------------------------------------------------------------------------
-    ## HT
+    ## Jet variables
     ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
-    process.HTJets = SubJetSelection.clone(
-        JetTag = cms.InputTag('GoodJets'),
-        MinPt  = cms.double(30),
-        MaxEta = cms.double(2.4),
-    )
-    process.Baseline += process.HTJets
-    VectorBool.extend(['HTJets:SubJetMask(HTJetsMask)'])
-    
-    from TreeMaker.Utils.htdouble_cfi import htdouble
-    process.HT = htdouble.clone(
-        JetTag = cms.InputTag('HTJets'),
-    )
-    process.Baseline += process.HT
-    VarsDouble.extend(['HT'])
-    
-    ## ----------------------------------------------------------------------------------------------
-    ## NJets
-    ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.njetint_cfi import njetint
-    process.NJets = njetint.clone(
-        JetTag = cms.InputTag('HTJets'),
-    )
-    process.Baseline += process.NJets
-    VarsInt.extend(['NJets'])
-    
-    ## ----------------------------------------------------------------------------------------------
-    ## BTags
-    ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.btagint_cfi import btagint
-    process.BTags = btagint.clone(
-        JetTag       = cms.InputTag('HTJets'),
-        BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-        BTagCutValue = cms.double(0.890)
-    )
-    process.Baseline += process.BTags
-    VarsInt.extend(['BTags'])
-    
-    ## ----------------------------------------------------------------------------------------------
-    ## MHT
-    ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
-    process.MHTJets = SubJetSelection.clone(
-        JetTag = cms.InputTag('GoodJets'),
-        MinPt  = cms.double(30),
-        MaxEta = cms.double(5.0),
-    )
-    process.Baseline += process.MHTJets
-    VectorBool.extend(['MHTJets:SubJetMask(MHTJetsMask)'])
-    
-    from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
-    process.MHT = mhtdouble.clone(
-        JetTag  = cms.InputTag('MHTJets'),
-    )
-    process.Baseline += process.MHT
-    VarsDouble.extend(['MHT:Pt(MHT)','MHT:Phi(MHT_Phi)'])
+
+    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
+    process = makeJetVars(process,
+                          sequence="Baseline",
+                          JetTag=JetTag,
+                          suff='',
+                          skipGoodJets=False,
+                          storeProperties=True)
     
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
@@ -629,17 +552,6 @@ fastsim=False
     if applybaseline:
         process.Baseline += process.HTFilter
         #process.Baseline += process.MHTFilter
-
-    ## ----------------------------------------------------------------------------------------------
-    ## DeltaPhi
-    ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
-    process.DeltaPhi = deltaphidouble.clone(
-        DeltaPhiJets = cms.InputTag('HTJets'),
-        MHTJets      = cms.InputTag("MHTJets"),
-    )
-    process.Baseline += process.DeltaPhi
-    VarsDouble.extend(['DeltaPhi:DeltaPhi1','DeltaPhi:DeltaPhi2','DeltaPhi:DeltaPhi3','DeltaPhi:DeltaPhi4'])
     
     ## ----------------------------------------------------------------------------------------------
     ## MET
@@ -656,37 +568,6 @@ fastsim=False
     if geninfo:
         VarsDouble.extend(['MET:GenPt(GenMETPt)','MET:GenPhi(GenMETPhi)'])
         VectorDouble.extend(['MET:PtUp(METPtUp)', 'MET:PtDown(METPtDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
-
-    ## ----------------------------------------------------------------------------------------------
-    ## Jet properties
-    ## ----------------------------------------------------------------------------------------------
-    
-    from TreeMaker.Utils.jetproperties_cfi import jetproperties
-    process.JetsProperties = jetproperties.clone(
-        JetTag       = cms.InputTag('GoodJets'),
-        BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-        METTag       = METTag,
-    )
-    process.Baseline += process.JetsProperties
-    process.TreeMaker2.VectorRecoCand.extend(['GoodJets(Jets)'])
-    process.TreeMaker2.VectorDouble.extend(['JetsProperties:bDiscriminatorUser(Jets_bDiscriminatorCSV)',
-                                            'JetsProperties:bDiscriminatorMVA(Jets_bDiscriminatorMVA)',
-                                            'JetsProperties:chargedEmEnergyFraction(Jets_chargedEmEnergyFraction)',
-                                            'JetsProperties:chargedHadronEnergyFraction(Jets_chargedHadronEnergyFraction)',
-                                            'JetsProperties:jetArea(Jets_jetArea)',
-                                            'JetsProperties:muonEnergyFraction(Jets_muonEnergyFraction)',
-                                            'JetsProperties:neutralEmEnergyFraction(Jets_neutralEmEnergyFraction)',
-                                            'JetsProperties:neutralHadronEnergyFraction(Jets_neutralHadronEnergyFraction)',
-                                            'JetsProperties:photonEnergyFraction(Jets_photonEnergyFraction)'])
-    process.TreeMaker2.VectorInt.extend(['JetsProperties:chargedHadronMultiplicity(Jets_chargedHadronMultiplicity)',
-                                         'JetsProperties:electronMultiplicity(Jets_electronMultiplicity)',
-                                         'JetsProperties:muonMultiplicity(Jets_muonMultiplicity)',
-                                         'JetsProperties:neutralHadronMultiplicity(Jets_neutralHadronMultiplicity)',
-                                         'JetsProperties:photonMultiplicity(Jets_photonMultiplicity)',
-                                         'JetsProperties:partonFlavor(Jets_partonFlavor)',
-                                         'JetsProperties:hadronFlavor(Jets_hadronFlavor)',
-                                         'JetsProperties:chargedMultiplicity(Jets_chargedMultiplicity)',
-                                         'JetsProperties:neutralMultiplicity(Jets_neutralMultiplicity)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

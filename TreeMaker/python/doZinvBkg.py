@@ -39,62 +39,15 @@ def doZinvBkg(process,METTag):
        PhotonR     = cms.double(0.4)
     )
     process.ZinvClean += process.cleanTheJets
-
-    from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
-    process.HTJetsclean = SubJetSelection.clone(
-       JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
-       MinPt  = cms.double(30),
-       MaxEta = cms.double(2.4),
-    )
-    process.ZinvClean += process.HTJetsclean
-
-    from TreeMaker.Utils.htdouble_cfi import htdouble
-    process.HTclean = htdouble.clone(
-       JetTag = cms.InputTag('HTJetsclean'),
-    )
-    process.ZinvClean += process.HTclean
-    process.TreeMaker2.VarsDouble.extend(['HTclean'])
-
-    from TreeMaker.Utils.njetint_cfi import njetint
-    process.NJetsclean = njetint.clone(
-       JetTag = cms.InputTag('HTJetsclean'),
-    )
-    process.ZinvClean += process.NJetsclean
-    process.TreeMaker2.VarsInt.extend(['NJetsclean'])
-
-    from TreeMaker.Utils.btagint_cfi import btagint
-    process.BTagsclean = btagint.clone(
-       JetTag       = cms.InputTag('HTJetsclean'),
-       BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-       BTagCutValue = cms.double(0.890)
-    )
-
-    process.ZinvClean += process.BTagsclean
-    process.TreeMaker2.VarsInt.extend(['BTagsclean'])
-
-    from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
-    process.MHTJetsclean = SubJetSelection.clone(
-       JetTag = cms.InputTag('cleanTheJets', 'GoodJetsclean'),
-       MinPt = cms.double(30),
-       MaxEta = cms.double(5.0),
-    )
-    process.ZinvClean += process.MHTJetsclean
-
-    from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
-    process.DeltaPhiClean = deltaphidouble.clone(
-        DeltaPhiJets  = cms.InputTag('HTJetsclean'),
-        MHTJets  = cms.InputTag("MHTJetsclean"),
-        )
-    process.ZinvClean += process.DeltaPhiClean
-    process.TreeMaker2.VarsDouble.extend(['DeltaPhiClean:DeltaPhi1(DeltaPhi1clean)','DeltaPhiClean:DeltaPhi2(DeltaPhi2clean)','DeltaPhiClean:DeltaPhi3(DeltaPhi3clean)','DeltaPhiClean:DeltaPhi4(DeltaPhi4clean)'])
     
-    from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
-    from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
-    process.MHTclean = mhtdouble.clone(
-       JetTag = cms.InputTag('MHTJetsclean'),
-    )
-    process.ZinvClean += process.MHTclean
-    process.TreeMaker2.VarsDouble.extend(['MHTclean:Pt(MHTclean)','MHTclean:Phi(MHT_Phiclean)'])
+    CleanJetsTag = cms.InputTag('cleanTheJets', 'GoodJetsclean')
+    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
+    process = makeJetVars(process,
+                          sequence="ZinvClean",
+                          JetTag=CleanJetsTag,
+                          suff='clean',
+                          skipGoodJets=True,
+                          storeProperties=False)
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
     process.METclean = metdouble.clone(
