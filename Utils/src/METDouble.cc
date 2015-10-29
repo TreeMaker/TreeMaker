@@ -64,6 +64,7 @@ private:
    std::vector<edm::InputTag> cleanTag_;
    double MinJetPt_,MaxJetEta_;
    bool geninfo_;
+   std::vector<pat::MET::METUncertainty> uncUpList, uncDownList;
    
    // ----------member data ---------------------------
 };
@@ -90,6 +91,9 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    MaxJetEta_ = iConfig.getUntrackedParameter<double> ("minJetEta",5.);
    geninfo_   = iConfig.getUntrackedParameter<bool>("geninfo",false);
    
+   uncUpList = {pat::MET::JetResUp, pat::MET::JetEnUp, pat::MET::MuonEnUp, pat::MET::ElectronEnUp, pat::MET::TauEnUp, pat::MET::UnclusteredEnUp, pat::MET::PhotonEnUp};
+   uncDownList = {pat::MET::JetResDown, pat::MET::JetEnDown, pat::MET::MuonEnDown, pat::MET::ElectronEnDown, pat::MET::TauEnDown, pat::MET::UnclusteredEnDown, pat::MET::PhotonEnDown};
+   
    //register your product
    produces<double>("DeltaPhiN1");
    produces<double>("DeltaPhiN2");
@@ -102,36 +106,10 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    produces<double>("GenPt");
    produces<double>("GenPhi");
 
-   produces<double>("metType1PtJetResUp");           
-   produces<double>("metType1PtJetResDown");      
-   produces<double>("metType1PtJetEnUp");         
-   produces<double>("metType1PtJetEnDown");       
-   produces<double>("metType1PtMuonEnUp");        
-   produces<double>("metType1PtMuonEnDown");      
-   produces<double>("metType1PtElectronEnUp");    
-   produces<double>("metType1PtElectronEnDown");  
-   produces<double>("metType1PtTauEnUp");	      
-   produces<double>("metType1PtTauEnDown");       
-   produces<double>("metType1PtUnclusteredEnUp"); 
-   produces<double>("metType1PtUnclusteredEnDown");
-   produces<double>("metType1PtPhotonEnUp");      
-   produces<double>("metType1PtPhotonEnDown");    
- 
-   produces<double>("metType1PhiJetResUp");       
-   produces<double>("metType1PhiJetResDown");     
-   produces<double>("metType1PhiJetEnUp");        
-   produces<double>("metType1PhiJetEnDown");        
-   produces<double>("metType1PhiMuonEnUp");       
-   produces<double>("metType1PhiMuonEnDown");     
-   produces<double>("metType1PhiElectronEnUp");     
-   produces<double>("metType1PhiElectronEnDown");       
-   produces<double>("metType1PhiTauEnUp");        
-   produces<double>("metType1PhiTauEnDown");        
-   produces<double>("metType1PhiUnclusteredEnUp");      
-   produces<double>("metType1PhiUnclusteredEnDown");	      
-   produces<double>("metType1PhiPhotonEnUp");       
-   produces<double>("metType1PhiPhotonEnDown");     
-
+   produces<std::vector<double> >("PtUp");
+   produces<std::vector<double> >("PtDown");
+   produces<std::vector<double> >("PhiUp");
+   produces<std::vector<double> >("PhiDown");
 }
 
 
@@ -157,36 +135,10 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    double genmetpt_=0, genmetphi_=0;
    double calometpt_=0, calometphi_=0;
 
-
-   double metType1PtJetResUp_ = 0.;           
-   double metType1PtJetResDown_ = 0.;   
-   double metType1PtJetEnUp_ = 0.;      
-   double metType1PtJetEnDown_ = 0.;    
-   double metType1PtMuonEnUp_ = 0.;     
-   double metType1PtMuonEnDown_ = 0.;   
-   double metType1PtElectronEnUp_ = 0.; 
-   double metType1PtElectronEnDown_ = 0.;     
-   double metType1PtTauEnUp_ = 0.;	           
-   double metType1PtTauEnDown_ = 0.;          
-   double metType1PtUnclusteredEnUp_ = 0.;    
-   double metType1PtUnclusteredEnDown_ = 0.;  
-   double metType1PtPhotonEnUp_ = 0.;         
-   double metType1PtPhotonEnDown_ = 0.;       	     
-      
-   double metType1PhiJetResUp_ = 0.;          
-   double metType1PhiJetResDown_ = 0.;        
-   double metType1PhiJetEnUp_ = 0.;           
-   double metType1PhiJetEnDown_ = 0.;         
-   double metType1PhiMuonEnUp_ = 0.;          
-   double metType1PhiMuonEnDown_ = 0.;        
-   double metType1PhiElectronEnUp_ = 0.;      
-   double metType1PhiElectronEnDown_ = 0.;        
-   double metType1PhiTauEnUp_ = 0.;           
-   double metType1PhiTauEnDown_ = 0.;         
-   double metType1PhiUnclusteredEnUp_ = 0.;       
-   double metType1PhiUnclusteredEnDown_ = 0.;     
-   double metType1PhiPhotonEnUp_ = 0.;        
-   double metType1PhiPhotonEnDown_ = 0.;   
+   std::vector<double> metPtUp_(uncUpList.size(),0.);
+   std::vector<double> metPhiUp_(uncUpList.size(),0.);
+   std::vector<double> metPtDown_(uncDownList.size(),0.);
+   std::vector<double> metPhiDown_(uncDownList.size(),0.);
    
    edm::Handle< edm::View<pat::MET> > MET;
    iEvent.getByLabel(metTag_,MET);
@@ -207,37 +159,13 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       metpt_=MET->at(0).pt();
       metphi_=MET->at(0).phi();
       metLorentz=MET->at(0).p4();
-	  
-      metType1PtJetResUp_  = MET->at(0).shiftedPt(pat::MET::JetResUp, pat::MET::Type1);
-      metType1PtJetResDown_ = MET->at(0).shiftedPt(pat::MET::JetResDown, pat::MET::Type1);
-      metType1PtJetEnUp_   = MET->at(0).shiftedPt(pat::MET::JetEnUp, pat::MET::Type1);
-      metType1PtJetEnDown_  = MET->at(0).shiftedPt(pat::MET::JetEnDown, pat::MET::Type1);
-      metType1PtMuonEnUp_  = MET->at(0).shiftedPt(pat::MET::MuonEnUp, pat::MET::Type1);
-      metType1PtMuonEnDown_ = MET->at(0).shiftedPt(pat::MET::MuonEnDown, pat::MET::Type1);
-      metType1PtElectronEnUp_      = MET->at(0).shiftedPt(pat::MET::ElectronEnUp, pat::MET::Type1);
-      metType1PtElectronEnDown_     = MET->at(0).shiftedPt(pat::MET::ElectronEnDown, pat::MET::Type1);
-      metType1PtTauEnUp_   = MET->at(0).shiftedPt(pat::MET::TauEnUp, pat::MET::Type1);
-      metType1PtTauEnDown_  = MET->at(0).shiftedPt(pat::MET::TauEnDown, pat::MET::Type1);
-      metType1PtUnclusteredEnUp_    = MET->at(0).shiftedPt(pat::MET::UnclusteredEnUp, pat::MET::Type1);
-      metType1PtUnclusteredEnDown_  = MET->at(0).shiftedPt(pat::MET::UnclusteredEnDown, pat::MET::Type1);
-      metType1PtPhotonEnUp_ = MET->at(0).shiftedPt(pat::MET::PhotonEnUp, pat::MET::Type1);
-      metType1PtPhotonEnDown_       = MET->at(0).shiftedPt(pat::MET::PhotonEnDown, pat::MET::Type1);
-
-      metType1PhiJetResUp_  = MET->at(0).shiftedPhi(pat::MET::JetResUp, pat::MET::Type1);
-      metType1PhiJetResDown_        = MET->at(0).shiftedPhi(pat::MET::JetResDown, pat::MET::Type1);
-      metType1PhiJetEnUp_ = MET->at(0).shiftedPhi(pat::MET::JetEnUp, pat::MET::Type1);	      
-      metType1PhiJetEnDown_ = MET->at(0).shiftedPhi(pat::MET::JetEnDown, pat::MET::Type1);	      
-      metType1PhiMuonEnUp_  = MET->at(0).shiftedPhi(pat::MET::MuonEnUp, pat::MET::Type1);	      
-      metType1PhiMuonEnDown_        = MET->at(0).shiftedPhi(pat::MET::MuonEnDown, pat::MET::Type1);	 
-      metType1PhiElectronEnUp_      = MET->at(0).shiftedPhi(pat::MET::ElectronEnUp, pat::MET::Type1);	      
-      metType1PhiElectronEnDown_    = MET->at(0).shiftedPhi(pat::MET::ElectronEnDown, pat::MET::Type1);	      
-      metType1PhiTauEnUp_ = MET->at(0).shiftedPhi(pat::MET::TauEnUp, pat::MET::Type1);	      
-      metType1PhiTauEnDown_ = MET->at(0).shiftedPhi(pat::MET::TauEnDown, pat::MET::Type1);	      
-      metType1PhiUnclusteredEnUp_   = MET->at(0).shiftedPhi(pat::MET::UnclusteredEnUp, pat::MET::Type1);	      
-      metType1PhiUnclusteredEnDown_ = MET->at(0).shiftedPhi(pat::MET::UnclusteredEnDown, pat::MET::Type1);	      
-      metType1PhiPhotonEnUp_        = MET->at(0).shiftedPhi(pat::MET::PhotonEnUp, pat::MET::Type1);	      
-      metType1PhiPhotonEnDown_      = MET->at(0).shiftedPhi(pat::MET::PhotonEnDown, pat::MET::Type1);	      
-	  
+      
+      for(unsigned u = 0; u < uncUpList.size(); ++u){
+        metPtUp_[u] = MET->at(0).shiftedPt(uncUpList[u], pat::MET::Type1);
+        metPtDown_[u] = MET->at(0).shiftedPt(uncDownList[u], pat::MET::Type1);
+        metPhiUp_[u] = MET->at(0).shiftedPhi(uncUpList[u], pat::MET::Type1);
+        metPhiDown_[u] = MET->at(0).shiftedPhi(uncDownList[u], pat::MET::Type1);
+      }
    }
    else std::cout<<"METDouble::Invalid Tag: "<<metTag_.label()<<std::endl;
 
@@ -289,63 +217,14 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
        std::auto_ptr<double> ghtp2(new double(genmetphi_));
        iEvent.put(ghtp2,"GenPhi");
 
-       std::auto_ptr<double> uncp1(new double(metType1PtJetResUp_));           
-       iEvent.put(uncp1,"metType1PtJetResUp");
-       std::auto_ptr<double> uncp2(new double(metType1PtJetResDown_));   
-       iEvent.put(uncp2,"metType1PtJetResDown");
-       std::auto_ptr<double> uncp3(new double(metType1PtJetEnUp_));      
-       iEvent.put(uncp3,"metType1PtJetEnUp");
-       std::auto_ptr<double> uncp4(new double(metType1PtJetEnDown_));    
-       iEvent.put(uncp4,"metType1PtJetEnDown");
-       std::auto_ptr<double> uncp5(new double(metType1PtMuonEnUp_));     
-       iEvent.put(uncp5,"metType1PtMuonEnUp");
-       std::auto_ptr<double> uncp6(new double(metType1PtMuonEnDown_));   
-       iEvent.put(uncp6,"metType1PtMuonEnDown");
-       std::auto_ptr<double> uncp7(new double(metType1PtElectronEnUp_)); 
-       iEvent.put(uncp7,"metType1PtElectronEnUp");
-       std::auto_ptr<double> uncp8(new double(metType1PtElectronEnDown_));     
-       iEvent.put(uncp8,"metType1PtElectronEnDown");
-       std::auto_ptr<double> uncp9(new double(metType1PtTauEnUp_));	           
-       iEvent.put(uncp9,"metType1PtTauEnUp");
-       std::auto_ptr<double> uncp10(new double(metType1PtTauEnDown_));          
-       iEvent.put(uncp10,"metType1PtTauEnDown");
-       std::auto_ptr<double> uncp11(new double(metType1PtUnclusteredEnUp_));    
-       iEvent.put(uncp11,"metType1PtUnclusteredEnUp");
-       std::auto_ptr<double> uncp12(new double(metType1PtUnclusteredEnDown_));  
-       iEvent.put(uncp12,"metType1PtUnclusteredEnDown");
-       std::auto_ptr<double> uncp13(new double(metType1PtPhotonEnUp_));         
-       iEvent.put(uncp13,"metType1PtPhotonEnUp");
-       std::auto_ptr<double> uncp14(new double(metType1PtPhotonEnDown_));       	     
-       iEvent.put(uncp14,"metType1PtPhotonEnDown");
-      
-       std::auto_ptr<double> uncp15(new double(metType1PhiJetResUp_));          
-       iEvent.put(uncp15,"metType1PhiJetResUp");
-       std::auto_ptr<double> uncp16(new double(metType1PhiJetResDown_));        
-       iEvent.put(uncp16,"metType1PhiJetResDown");
-       std::auto_ptr<double> uncp17(new double(metType1PhiJetEnUp_));           
-       iEvent.put(uncp17,"metType1PhiJetEnUp");
-       std::auto_ptr<double> uncp18(new double(metType1PhiJetEnDown_));         
-       iEvent.put(uncp18,"metType1PhiJetEnDown");
-       std::auto_ptr<double> uncp19(new double(metType1PhiMuonEnUp_));          
-       iEvent.put(uncp19,"metType1PhiMuonEnUp");
-       std::auto_ptr<double> uncp20(new double(metType1PhiMuonEnDown_));        
-       iEvent.put(uncp20,"metType1PhiMuonEnDown");
-       std::auto_ptr<double> uncp21(new double(metType1PhiElectronEnUp_));      
-       iEvent.put(uncp21,"metType1PhiElectronEnUp");
-       std::auto_ptr<double> uncp22(new double(metType1PhiElectronEnDown_));        
-       iEvent.put(uncp22,"metType1PhiElectronEnDown");
-       std::auto_ptr<double> uncp23(new double(metType1PhiTauEnUp_));           
-       iEvent.put(uncp23,"metType1PhiTauEnUp");
-       std::auto_ptr<double> uncp24(new double(metType1PhiTauEnDown_));         
-       iEvent.put(uncp24,"metType1PhiTauEnDown");
-       std::auto_ptr<double> uncp25(new double(metType1PhiUnclusteredEnUp_));       
-       iEvent.put(uncp25,"metType1PhiUnclusteredEnUp");
-       std::auto_ptr<double> uncp26(new double(metType1PhiUnclusteredEnDown_));     
-       iEvent.put(uncp26,"metType1PhiUnclusteredEnDown");
-       std::auto_ptr<double> uncp27(new double(metType1PhiPhotonEnUp_));        
-       iEvent.put(uncp27,"metType1PhiPhotonEnUp");
-       std::auto_ptr<double> uncp28(new double(metType1PhiPhotonEnDown_));   
-       iEvent.put(uncp28,"metType1PhiPhotonEnDown");
+       std::auto_ptr<std::vector<double> > uncp1(new std::vector<double>(metPtUp_));
+       iEvent.put(uncp1,"PtUp");
+       std::auto_ptr<std::vector<double> > uncp2(new std::vector<double>(metPtDown_));
+       iEvent.put(uncp2,"PtDown");
+       std::auto_ptr<std::vector<double> > uncp3(new std::vector<double>(metPhiUp_));
+       iEvent.put(uncp3,"PhiUp");
+       std::auto_ptr<std::vector<double> > uncp4(new std::vector<double>(metPhiDown_));
+       iEvent.put(uncp4,"PhiDown");
    }
 
    if( Jets.isValid() ) {
