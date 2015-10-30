@@ -401,14 +401,20 @@ signal=False
         process.Baseline += process.METFilters
         VarsInt.extend(['METFilters'])
         
-        process.CSCTightHaloFilter = filterDecisionProducer.clone(
-            trigTagArg1 = cms.string('TriggerResults'),
-            trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
-            filterName  = cms.string("Flag_CSCTightHaloFilter"),
-        )
+        #process.CSCTightHaloFilter = filterDecisionProducer.clone(
+        #    trigTagArg1 = cms.string('TriggerResults'),
+        #    trigTagArg2 = cms.string(''),
+        #    trigTagArg3 = cms.string(tagname),
+        #    filterName  = cms.string("Flag_CSCTightHaloFilter"),
+        #)
+        #process.Baseline += process.CSCTightHaloFilter
+        #VarsInt.extend(['CSCTightHaloFilter'])
+        
+        #run beam halo filter from text list of events
+        from TreeMaker.Utils.getEventListFilter_cff import getEventListFilter
+        process.CSCTightHaloFilter = getEventListFilter(process.source.fileNames[0])
         process.Baseline += process.CSCTightHaloFilter
-        VarsInt.extend(['CSCTightHaloFilter'])
+        VarsBool.extend(['CSCTightHaloFilter'])
         
         #process.HBHENoiseFilter = filterDecisionProducer.clone(
         #    trigTagArg1 = cms.string('TriggerResults'),
