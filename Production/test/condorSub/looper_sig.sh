@@ -10,7 +10,7 @@ KEEPTAR=$2
 
 ./FScheck.sh "$KEEPTAR"
 
-SCENARIO=Spring15v2
+SCENARIO=Spring15v2sig
 
 #### Spring15 gluino
 SAMPLES=(

@@ -27,20 +27,23 @@ cd TreeMaker/Production/test
 
 Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
-global tag, collection tag name, generator info, JSON file, JEC file, residual JECs, era.  
+global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
 1. `Spring15`: for Spring15 25ns MC  
-2. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
-3. `Spring15Fast`: for Spring15 25ns FastSim MC (signal scans)  
-4. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
-5. `2015C`: for 2015C PromptReco 25ns data  
-6. `re2015C`: for 2015C re-reco 25ns data  
-7. `2015D`: for 2015D PromptReco 25ns data (part 1)  
-8. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
-9. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
-10. `2015B`: for 2015B PromptReco 50ns data (deprecated)  
-11. `re2015B`: for 2015B re-miniAOD 50ns data (deprecated)  
-12. `Phys14`: for Phys14 25ns MC (deprecated)  
+2. `Spring15sig`: for Spring15 25ns MC (signal)  
+3. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
+4. `Spring15v2sig`: for Spring15 re-miniAOD (v2) 25ns MC (signal)  
+5. `Spring15Fast`: for Spring15 25ns FastSim MC (signal scans)  
+6. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
+7. `2015C`: for 2015C PromptReco 25ns data  
+8. `re2015C`: for 2015C re-reco 25ns data  
+9. `2015D`: for 2015D PromptReco 25ns data (part 1)  
+10. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
+11. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
+Deprecated:  
+12. `2015B`: for 2015B PromptReco 50ns data  
+13. `re2015B`: for 2015B re-miniAOD 50ns data  
+14. `Phys14`: for Phys14 25ns MC  
 
 ## Interactive Runs
 
@@ -166,7 +169,8 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
 * `tagname`: tag name for collections that can have different tags for data or MC (default="PAT")
 * `geninfo`: switch to enable use of generator information, should only be used for MC (default=True)
-* `fastsim`: switch to enable special settings for SUSY signal scans produced wit FastSim (default=False)
+* `fastsim`: switch to enable special settings for SUSY signal scans produced with FastSim (default=False)
+* `signal`: switch to enable assessment of signal systematics (default=False)
 * `jsonfile`: name of JSON file to apply to data
 * `jecfile`: name of a database file from which to get JECs (default="")
 * `residual`: switch to enable residual JECs for data (default=False)
