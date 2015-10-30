@@ -23,7 +23,8 @@ jecfile="",
 residual=False,
 QCD=False,
 doPDFs=False,
-fastsim=False
+fastsim=False,
+signal=False
 ):
 
     ## ----------------------------------------------------------------------------------------------
@@ -535,8 +536,44 @@ fastsim=False
                           JetTag=JetTag,
                           suff='',
                           skipGoodJets=False,
-                          storeProperties=True)
-    
+                          storeProperties=True
+    )
+
+    ## ----------------------------------------------------------------------------------------------
+    ## Jet uncertainty variations
+    ## ----------------------------------------------------------------------------------------------
+
+    if signal:
+        from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
+        
+        #JEC unc up
+        process.patJetsJECup = JetUncertaintyProducer.clone(
+            JetTag = JetTag,
+            jecUncDir = cms.int32(1)
+        )
+        process.Baseline += process.patJetsJECup
+        process = makeJetVars(process,
+                              sequence="Baseline",
+                              JetTag=cms.InputTag("patJetsJECup"),
+                              suff='JECup',
+                              skipGoodJets=False,
+                              storeProperties=False
+        )
+
+        #JEC unc down
+        process.patJetsJECdown = JetUncertaintyProducer.clone(
+            JetTag = JetTag,
+            jecUncDir = cms.int32(-1)
+        )
+        process.Baseline += process.patJetsJECdown
+        process = makeJetVars(process,
+                              sequence="Baseline",
+                              JetTag=cms.InputTag("patJetsJECdown"),
+                              suff='JECdown',
+                              skipGoodJets=False,
+                              storeProperties=False
+        )
+
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
     ## ----------------------------------------------------------------------------------------------

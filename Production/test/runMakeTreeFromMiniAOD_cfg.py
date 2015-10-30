@@ -34,6 +34,7 @@ globaltag=parameters.value("globaltag",scenario.globaltag)
 tagname=parameters.value("tagname",scenario.tagname)
 geninfo=parameters.value("geninfo",scenario.geninfo)
 fastsim=parameters.value("fastsim",scenario.fastsim)
+signal=parameters.value("signal",scenario.signal)
 jsonfile=parameters.value("jsonfile",scenario.jsonfile)
 jecfile=parameters.value("jecfile",scenario.jecfile)
 residual=parameters.value("residual",scenario.residual)
@@ -93,6 +94,7 @@ print " global tag: "+globaltag
 print " Instance name of tag information: "+tagname
 print " Including gen-level information: "+str(geninfo)
 print " Using fastsim settings: "+str(fastsim)
+print " Running signal uncertainties: "+str(signal)
 if len(jsonfile)>0: print " JSON file applied: "+jsonfile
 if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual else "")
 print " era of this dataset: "+era
@@ -118,7 +120,8 @@ process = makeTreeFromMiniAOD(process,
     jecfile=jecfile,
     residual=residual,
     doPDFs=doPDFs,
-    fastsim=fastsim
+    fastsim=fastsim,
+    signal=signal
 )
 
 # final tweaks to process
