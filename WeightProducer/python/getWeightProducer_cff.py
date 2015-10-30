@@ -285,15 +285,6 @@ def getWeightProducer(fileName):
             applyWeight = True
             weightProducer.weight = cms.double(-1.)
             break
-
-    ## --- PU Reweighting and Lumi ------------------------------------------------
-
-    if mcVersion == "Summer12_5_3_X":
-        weightProducer.weight = cms.double(-1.)
-        weightProducer.Lumi = cms.double(19466)
-        weightProducer.PU = cms.int32(3) # PU S10
-        weightProducer.FileNamePUDataDistribution = cms.string("RA2Classic/WeightProducer/data/DataPileupHistogram_RA2Summer12_190456-208686_ABCD.root")
-        applyWeight = True
 	
     if applyWeight:
         print "Setup WeightProducer for '"+fileName+"'"
