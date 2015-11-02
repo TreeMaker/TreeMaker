@@ -108,7 +108,7 @@ def makeJSON(optlist):
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-o", "--outdir", dest="outdir", default="json", help="output directory for JSON files (default = %default)")
-    parser.add_option("-b", "--basedir", dest="basedir", default="/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV3", help="location of data ntuples (default = %default)")
+    parser.add_option("-b", "--basedir", dest="basedir", default="/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV4", help="location of data ntuples (default = %default)")
     parser.add_option("-l", "--lastUnblindRun", dest="lastUnblindRun", default=257599, help="last unblind run number (-1 = all unblind) (default = %default)")
     parser.add_option("-d", "--dict", dest="dictfile", default="dataSamples.py", help="list of data sample names and files (default = %default)")
     parser.add_option("-n", "--npool", dest="npool", default=4, help="number of processes to run (default = %default)")
