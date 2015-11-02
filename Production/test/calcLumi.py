@@ -31,12 +31,12 @@ for f in jsonfiles:
     lumival = brilout.split()[-3]
     
     if not key in output:
-        output[key] = [[pd,lumival]]
-    else:
-        output[key].append([pd,lumival])
+        output[key] = dict()
+    
+    output[key][pd] = lumival
         
 #organized print
-for key,val in output.iteritems():
+for key,val in sorted(output.iteritems()):
     print key+"-"*10
-    for v in val:
-        print v[0]+": "+v[1]
+    for pd,lumi in sorted(val.iteritems()):
+        print pd+": "+lumi
