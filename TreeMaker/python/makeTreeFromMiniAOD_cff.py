@@ -542,7 +542,7 @@ signal=False
                           JetTag=JetTag,
                           suff='',
                           skipGoodJets=False,
-                          storeProperties=True
+                          storeProperties=2
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -563,7 +563,7 @@ signal=False
                               JetTag=cms.InputTag("patJetsJECup"),
                               suff='JECup',
                               skipGoodJets=False,
-                              storeProperties=False
+                              storeProperties=1
         )
 
         #JEC unc down
@@ -577,7 +577,7 @@ signal=False
                               JetTag=cms.InputTag("patJetsJECdown"),
                               suff='JECdown',
                               skipGoodJets=False,
-                              storeProperties=False
+                              storeProperties=1
         )
 
     ## ----------------------------------------------------------------------------------------------
