@@ -69,6 +69,8 @@ private:
    bool saveAll_, ExcludeLeptonIsoTrackPhotons_, TagMode_;
    double JetConeSize_;
    double deltaR(double eta1, double phi1, double eta2, double phi2);
+   bool ZinvSkipPhoton_, ZinvSkipLeptons_;
+
    
    // ----------member data ---------------------------
 };
@@ -103,6 +105,8 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    saveAll_ = iConfig.getParameter <bool> ("SaveAllJets");  
    
    ExcludeLeptonIsoTrackPhotons_ = iConfig.getParameter <bool> ("ExcludeLepIsoTrackPhotons");
+   ZinvSkipPhoton_ = iConfig.getParameter<bool>("ZinvSkipPhoton");
+   ZinvSkipLeptons_ = iConfig.getParameter<bool>("ZinvSkipLeptons");
    MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
    ElecTag_ = iConfig.getParameter<edm::InputTag>("ElecTag");
    IsoElectronTrackTag_ = iConfig.getParameter<edm::InputTag>("IsoElectronTrackTag");
@@ -180,13 +184,16 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
          bool skip=false;
          if(ExcludeLeptonIsoTrackPhotons_)
          {
-            for(unsigned int m=0; m<muonHandle->size(); ++m)
+            if (!ZinvSkipLeptons_)
             {
-               if(std::abs(Jets->at(i).pt() - muonHandle->at(m).pt() ) / muonHandle->at(m).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),muonHandle->at(m).eta(),muonHandle->at(m).phi())<JetConeSize_ ) skip=true;
-            }
-            for(unsigned int e=0; e<eleHandle->size(); ++e)
-            {
-               if(std::abs(Jets->at(i).pt() - eleHandle->at(e).pt() ) / eleHandle->at(e).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),eleHandle->at(e).eta(),eleHandle->at(e).phi())<JetConeSize_ ) skip=true;
+               for(unsigned int m=0; m<muonHandle->size(); ++m)
+               {
+                  if(std::abs(Jets->at(i).pt() - muonHandle->at(m).pt() ) / muonHandle->at(m).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),muonHandle->at(m).eta(),muonHandle->at(m).phi())<JetConeSize_ ) skip=true;
+               }
+               for(unsigned int e=0; e<eleHandle->size(); ++e)
+               {
+                  if(std::abs(Jets->at(i).pt() - eleHandle->at(e).pt() ) / eleHandle->at(e).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),eleHandle->at(e).eta(),eleHandle->at(e).phi())<JetConeSize_ ) skip=true;
+               }
             }
             for(unsigned int e=0; e<isoElectronTrackHandle->size(); ++e)
             {
@@ -200,9 +207,11 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             {
                if(std::abs(Jets->at(i).pt() - isoPionTrackHandle->at(e).pt() ) / isoPionTrackHandle->at(e).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),isoPionTrackHandle->at(e).eta(),isoPionTrackHandle->at(e).phi())<JetConeSize_ ) skip=true;
             }
-            for(unsigned int p=0; p<photonHandle->size(); ++p)
-            {
-               if(std::abs(Jets->at(i).pt() - photonHandle->at(p).pt() ) / photonHandle->at(p).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),photonHandle->at(p).eta(),photonHandle->at(p).phi())<JetConeSize_ ) skip=true;
+            if (!ZinvSkipPhoton_) {
+               for(unsigned int p=0; p<photonHandle->size(); ++p)
+               {
+                  if(std::abs(Jets->at(i).pt() - photonHandle->at(p).pt() ) / photonHandle->at(p).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),photonHandle->at(p).eta(),photonHandle->at(p).phi())<JetConeSize_ ) skip=true;
+               }
             }
             if(skip)
             {
