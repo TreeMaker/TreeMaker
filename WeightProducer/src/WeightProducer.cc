@@ -67,7 +67,7 @@ private:
   double _weightFactor;
   bool _applyPUWeights;
   
-  double getPUWeight(int numint, TH1* pu) const;
+  double getPUWeight(double trueint, TH1* pu) const;
 };
 
 WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
@@ -198,9 +198,9 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 		   }
 	   }	   
 	   
-	    _PUweightFactor = getPUWeight(_NumInt,pu_central);
-	    _PUSysUp = getPUWeight(_NumInt,pu_up);
-	    _PUSysDown = getPUWeight(_NumInt,pu_down);
+	    _PUweightFactor = getPUWeight(_TrueNumInt,pu_central);
+	    _PUSysUp = getPUWeight(_TrueNumInt,pu_up);
+	    _PUSysDown = getPUWeight(_TrueNumInt,pu_down);
 
         std::auto_ptr<double> puOut1(new double(_PUweightFactor));
         iEvent.put(puOut1, "PUweight");
@@ -241,17 +241,17 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 void WeightProducer::endJob() {
 }
 
-// Get weight factor dependent on number of
+// Get weight factor dependent on true number of
 // added PU interactions
 // --------------------------------------------------
-double WeightProducer::getPUWeight(int numint, TH1* pu) const{
+double WeightProducer::getPUWeight(double trueint, TH1* pu) const{
   double w = 1.;
 
-   //std::cout<<"numint "<<numint<<std::endl;
-  if (numint < pu->GetBinLowEdge(pu->GetNbinsX()+1)) {
-        w = pu->GetBinContent(pu->GetXaxis()->FindBin(numint));
+   //std::cout<<"trueint "<<trueint<<std::endl;
+  if (trueint < pu->GetBinLowEdge(pu->GetNbinsX()+1)) {
+        w = pu->GetBinContent(pu->GetXaxis()->FindBin(trueint));
   } else {
-    std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of interactions = " << numint
+    std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of interactions = " << trueint
               << " out of histogram binning." << std::endl;
     w = pu->GetBinContent(pu->GetNbinsX());
   }
