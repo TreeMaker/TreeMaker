@@ -135,11 +135,11 @@ def makeJetVars(process,sequence,JetTag,suff,skipGoodJets,storeProperties):
         )
         setattr(process,"JetsProperties"+suff,JetsProperties)
         theSequence += getattr(process,"JetsProperties"+suff)
+        process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorUser(Jets'+suff+'_bDiscriminatorCSV)'])
         process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
                                              'JetsProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)'])
         if storeProperties>1:
-            process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorUser(Jets'+suff+'_bDiscriminatorCSV)',
-                                                    'JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
+            process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
                                                     'JetsProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
                                                     'JetsProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
                                                     'JetsProperties'+suff+':jetArea(Jets'+suff+'_jetArea)',
