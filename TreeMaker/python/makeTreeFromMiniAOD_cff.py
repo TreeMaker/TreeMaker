@@ -111,7 +111,7 @@ signal=False
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
         process.WeightProducer = getWeightProducer(process.source.fileNames[0])
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
-        process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1029.root")
+        process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1104.root")
         process.Baseline += process.WeightProducer
         VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
