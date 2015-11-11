@@ -14,7 +14,8 @@ lostlepton=False,
 hadtau=False,
 tagandprobe=False,
 applybaseline=False,
-doZinv=False,
+doZinv_photon=False,
+doZinv_leptons=False,
 debugtracks=False,
 geninfo=False,
 tagname="RECO",
@@ -542,7 +543,9 @@ signal=False
                           JetTag=JetTag,
                           suff='',
                           skipGoodJets=False,
-                          storeProperties=2
+                          storeProperties=2,
+                          ZinvSkipLeptons=False,
+                          ZinvSkipPhoton=False
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -657,9 +660,9 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     ## Zinv Background
     ## ----------------------------------------------------------------------------------------------
-    if doZinv:
+    if (doZinv_photon or doZinv_leptons):
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,METTag)
+        process = doZinvBkg(process,METTag, doZinv_photon, doZinv_leptons)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
