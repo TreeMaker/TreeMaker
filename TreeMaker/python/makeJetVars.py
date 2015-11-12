@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, ZinvSkipLeptons, ZinvSkipPhoton):
+def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag()):
     if hasattr(process,sequence):
         theSequence = getattr(process,sequence)
     else:
@@ -29,14 +29,7 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
             jetPtFilter               = cms.double(30),
             ExcludeLepIsoTrackPhotons = cms.bool(True),
             JetConeSize               = cms.double(0.4),
-            ZinvSkipLeptons           = ZinvSkipLeptons,
-            ZinvSkipPhoton            = ZinvSkipPhoton,
-            MuonTag                   = cms.InputTag('LeptonsNew:IdIsoMuon'),
-            ElecTag                   = cms.InputTag('LeptonsNew:IdIsoElectron'),
-            IsoElectronTrackTag       = cms.InputTag('IsolatedElectronTracksVeto'),
-            IsoMuonTrackTag           = cms.InputTag('IsolatedMuonTracksVeto'),
-            IsoPionTrackTag           = cms.InputTag('IsolatedPionTracksVeto'),
-            PhotonTag                 = cms.InputTag('goodPhotons','bestPhoton'),
+            SkipTag                   = SkipTag
         )
         setattr(process,"GoodJets"+suff,GoodJets)
         theSequence += getattr(process,"GoodJets"+suff)

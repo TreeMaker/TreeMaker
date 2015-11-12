@@ -13,8 +13,7 @@ outfile=parameters.value("outfile","test_run")
 # background estimations on by default
 lostlepton=parameters.value("lostlepton", True)
 hadtau=parameters.value("hadtau", True)
-doZinv_photon=parameters.value("doZinv_photon", True)
-doZinv_leptons=parameters.value("doZinv_leptons", True)
+doZinv=parameters.value("doZinv", True)
 QCD=parameters.value("QCD", True)
 
 # compute the PDF weights
@@ -81,8 +80,7 @@ print " outfile: "+outfile+"_RA2AnalysisTree"
 print " "
 print " storing lostlepton variables: "+str(lostlepton)
 print " storing hadtau variables: "+str(hadtau)
-print " storing Zinv_leptons variables: "+str(doZinv_leptons)
-print " storing Zinv_photon variables: "+str(doZinv_photon)
+print " storing Zinv variables: "+str(doZinv)
 print " storing QCD variables: "+str(QCD)
 print " "
 print " storing PDF weights: "+str(doPDFs)
@@ -114,8 +112,7 @@ process = makeTreeFromMiniAOD(process,
     QCD=QCD,
     tagandprobe=tagandprobe,
     applybaseline=applybaseline,
-    doZinv_leptons=doZinv_leptons,
-    doZinv_photon=doZinv_photon,
+    doZinv=doZinv,
     debugtracks=debugtracks,
     geninfo=geninfo,
     tagname=tagname,

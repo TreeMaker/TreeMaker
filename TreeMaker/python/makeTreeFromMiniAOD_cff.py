@@ -14,8 +14,7 @@ lostlepton=False,
 hadtau=False,
 tagandprobe=False,
 applybaseline=False,
-doZinv_photon=False,
-doZinv_leptons=False,
+doZinv=False,
 debugtracks=False,
 geninfo=False,
 tagname="RECO",
@@ -537,6 +536,16 @@ signal=False
     ## Jet variables
     ## ----------------------------------------------------------------------------------------------
 
+    # list of clean tags - ignore jet ID for jets matching these objects
+    SkipTag = cms.VInputTag(
+        cms.InputTag('LeptonsNew:IdIsoMuon'),
+        cms.InputTag('LeptonsNew:IdIsoElectron'),
+        cms.InputTag('IsolatedElectronTracksVeto'),
+        cms.InputTag('IsolatedMuonTracksVeto'),
+        cms.InputTag('IsolatedPionTracksVeto'),
+        cms.InputTag('goodPhotons','bestPhoton'),
+    )
+    
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     process = makeJetVars(process,
                           sequence="Baseline",
@@ -544,8 +553,7 @@ signal=False
                           suff='',
                           skipGoodJets=False,
                           storeProperties=2,
-                          ZinvSkipLeptons=False,
-                          ZinvSkipPhoton=False
+                          SkipTag=SkipTag
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -566,7 +574,8 @@ signal=False
                               JetTag=cms.InputTag("patJetsJECup"),
                               suff='JECup',
                               skipGoodJets=False,
-                              storeProperties=1
+                              storeProperties=1,
+                              SkipTag=SkipTag
         )
 
         #JEC unc down
@@ -580,7 +589,8 @@ signal=False
                               JetTag=cms.InputTag("patJetsJECdown"),
                               suff='JECdown',
                               skipGoodJets=False,
-                              storeProperties=1
+                              storeProperties=1,
+                              SkipTag=SkipTag
         )
 
     ## ----------------------------------------------------------------------------------------------
@@ -660,9 +670,9 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     ## Zinv Background
     ## ----------------------------------------------------------------------------------------------
-    if (doZinv_photon or doZinv_leptons):
+    if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,METTag, doZinv_photon, doZinv_leptons)
+        process = doZinvBkg(process,METTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
