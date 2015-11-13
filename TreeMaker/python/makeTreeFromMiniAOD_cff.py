@@ -543,7 +543,6 @@ signal=False
         cms.InputTag('IsolatedElectronTracksVeto'),
         cms.InputTag('IsolatedMuonTracksVeto'),
         cms.InputTag('IsolatedPionTracksVeto'),
-        cms.InputTag('goodPhotons','bestPhoton'),
     )
     
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars

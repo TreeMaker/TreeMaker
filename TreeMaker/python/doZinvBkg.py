@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, cleanedCandidates, suff, SkipTag):
+def reclusterZinv(process, cleanedCandidates, suff):
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
@@ -91,7 +91,6 @@ def reclusterZinv(process, cleanedCandidates, suff, SkipTag):
         suff='clean'+suff,
         skipGoodJets=False,
         storeProperties=1,
-        SkipTag=SkipTag
     ) 
 
     return process
@@ -181,12 +180,6 @@ def doZinvBkg(process,METTag):
         process,
         cms.InputTag("leptonCleanedCandidates"),
         "DY",
-        cms.VInputTag(
-            cms.InputTag('IsolatedElectronTracksVeto'),
-            cms.InputTag('IsolatedMuonTracksVeto'),
-            cms.InputTag('IsolatedPionTracksVeto'),
-            cms.InputTag('goodPhotons','bestPhoton'),
-        )
     )
     
     # remove photon for GJet
@@ -202,13 +195,6 @@ def doZinvBkg(process,METTag):
         process,
         cms.InputTag("photonCleanedCandidates"),
         "GJ",
-        cms.VInputTag(
-            cms.InputTag('LeptonsNew:IdIsoMuon'),
-            cms.InputTag('LeptonsNew:IdIsoElectron'),
-            cms.InputTag('IsolatedElectronTracksVeto'),
-            cms.InputTag('IsolatedMuonTracksVeto'),
-            cms.InputTag('IsolatedPionTracksVeto'),
-        )
     )
 
     process.AdditionalSequence += process.ZinvClean
