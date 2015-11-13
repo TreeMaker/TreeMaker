@@ -122,41 +122,6 @@ def doZinvBkg(process,METTag):
     process.ZinvClean += process.makeTheZs
     process.TreeMaker2.VectorRecoCand.append("makeTheZs:ZCandidates")
     
-    from TreeMaker.Utils.jetcleaner_cfi import JetCleaner
-    process.cleanTheJets = JetCleaner.clone(
-       JetTag      = cms.InputTag('GoodJets'),
-       ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
-       ElectronR   = cms.double(0.4),
-       MuonTag     = cms.InputTag('LeptonsNew:IdIsoMuon'),
-       MuonR       = cms.double(0.4),
-       PhotonTag   = cms.InputTag('goodPhotons', 'bestPhoton'),
-       PhotonR     = cms.double(0.4)
-    )
-    process.ZinvClean += process.cleanTheJets
-    
-    CleanJetsTag = cms.InputTag('cleanTheJets', 'GoodJetsclean')
-    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
-    process = makeJetVars(process,
-                          sequence="ZinvClean",
-                          JetTag=CleanJetsTag,
-                          suff='clean',
-                          skipGoodJets=True,
-                          storeProperties=0
-    )
-
-    from TreeMaker.Utils.metdouble_cfi import metdouble
-    process.METclean = metdouble.clone(
-       METTag = METTag,
-       JetTag = cms.InputTag('HTJetsclean'),
-       cleanTag = cms.untracked.VInputTag(
-           cms.InputTag('LeptonsNew:IdIsoElectron'),
-           cms.InputTag('LeptonsNew:IdIsoMuon'),
-           cms.InputTag('goodPhotons', 'bestPhoton')
-       )
-    )
-    process.ZinvClean += process.METclean
-    process.TreeMaker2.VarsDouble.extend(['METclean:Pt(METPtclean)','METclean:Phi(METPhiclean)'])
-    
     ###
     # do the new cleaning
     ###
