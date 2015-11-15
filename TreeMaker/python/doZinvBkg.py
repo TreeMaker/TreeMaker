@@ -159,6 +159,8 @@ def doZinvBkg(process,METTag,geninfo,residual):
     process.TreeMaker2.VectorDouble.append("goodPhotons:sigmaIetaIeta(photon_sigmaIetaIeta)")
     process.TreeMaker2.VectorBool.append("goodPhotons:nonPrompt(photon_nonPrompt)")
     process.TreeMaker2.VectorRecoCand.append("slimmedPhotons(photonCands)")
+    process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotonsLoose")
+    process.TreeMaker2.VectorRecoCand.append("goodPhotons:bestPhotonLoose")
     
     process.ZinvClean = cms.Sequence()
 
@@ -218,6 +220,25 @@ def doZinvBkg(process,METTag,geninfo,residual):
         residual,
         cms.InputTag("photonCleanedCandidates"),
         "GJ",
+    )
+    
+    # remove photon for GJet purity studies (loose ID/iso)
+    process.selectedPhotonsLoose = cms.EDFilter("CandPtrSelector",
+        src = cms.InputTag("goodPhotons:bestPhotonLoose"), cut = cms.string('')
+    )
+    process.ZinvClean += process.selectedPhotonsLoose
+    process.loosePhotonCleanedCandidates =  cms.EDProducer("PackedCandPtrProjector",
+        src = cms.InputTag("packedPFCandidates"), veto = cms.InputTag("selectedPhotonsLoose")
+    )
+    process.ZinvClean += process.loosePhotonCleanedCandidates
+
+    # make jets for GJet
+    process = reclusterZinv(
+        process,
+        geninfo,
+        residual,
+        cms.InputTag("loosePhotonCleanedCandidates"),
+        "GJloose",
     )
 
     process.AdditionalSequence += process.ZinvClean

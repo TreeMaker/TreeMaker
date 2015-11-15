@@ -55,7 +55,9 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
 
   produces< std::vector< pat::Photon > >(""); 
   produces< std::vector< pat::Photon > >("bestPhoton"); 
+  produces< std::vector< pat::Photon > >("bestPhotonLoose"); 
   produces< int >("NumPhotons");
+  produces< int >("NumPhotonsLoose");
   produces< std::vector< double > >("isEB");
   produces< std::vector< double > >("genMatched"); 
   produces< std::vector< double > >("hadTowOverEM"); 
@@ -95,8 +97,10 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::auto_ptr< std::vector< pat::Photon > > photons ( new std::vector< pat::Photon >() );
   std::auto_ptr< std::vector< pat::Photon > > bestPhoton ( new std::vector< pat::Photon >() );
-
+  std::auto_ptr< std::vector< pat::Photon > > bestPhotonLoose ( new std::vector< pat::Photon >() );
+  
   std::auto_ptr< int > NumPhotons ( new int(0) );
+  std::auto_ptr< int > NumPhotonsLoose ( new int(0) );
 
   std::auto_ptr< std::vector< double > > photon_isEB( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_genMatched( new std::vector< double > () );
@@ -151,6 +155,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   effAreas.addEffA( 2.4, 99., 0.0035, 0.1709, 0.1484 );
 
   double bestPhotonPt = 0. ; 
+  double bestPhotonPtLoose = 0. ; 
 
   /// setup cluster tools
   noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
@@ -192,7 +197,9 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     bool isBarrelPhoton=false;
     bool isEndcapPhoton=false;
     bool passID=false;
+    bool passIDLoose=false;
     bool passIso=false;
+    bool passIsoLoose=false;
     bool passAcc=false;
 
     double PhEta=iPhoton->eta();
@@ -215,36 +222,38 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     // apply id cuts
     if(isBarrelPhoton){
-  
       if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0107){//id criterias barrel
-	passID=true;
-
-      }//id criterias
-
+        passID=true;
+      }//id criterias barrel
+      if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position())){//id criterias barrel (loose, no sieie cut)
+        passIDLoose=true;
+      }//id criterias barrel (loose)
     } 
     else if(isEndcapPhoton){
       if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0272){//id criteria endcap
-	passID=true;
-
+        passID=true;
       }//id criterias endcap
-
-    }
-    else {
-      passID=false;
+      if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position())){//id criteria endcap (loose, no sieie cut)
+        passIDLoose=true;
+      }//id criterias endcap (loose)
     }
  
     // apply isolation cuts
     if(isBarrelPhoton){
       if(chIso <2.67 && nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){
-	passIso=true;      
+        passIso=true;      
       }
-     
+      if(nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){//loose, no charged iso cut
+        passIsoLoose=true;      
+      }
     }
     else if(isEndcapPhoton){
       if(chIso <1.79 && nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){
-	passIso=true;
+        passIso=true;
       }
-
+      if(nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){//loose, no charged iso cut
+        passIsoLoose=true;
+      }
     }
     else{
       passIso=false;
@@ -257,13 +266,28 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       // make sure only the highest pt photon is used
       if(iPhoton->pt() > bestPhotonPt){ 
 
-	bestPhoton->clear();
-	bestPhoton->push_back( *iPhoton );
-	bestPhotonPt=iPhoton->pt();
+        bestPhoton->clear();
+        bestPhoton->push_back( *iPhoton );
+        bestPhotonPt=iPhoton->pt();
 
       }// done with best photon
     
-    }//pure photons    
+    }//pure photons
+
+    // check if photon is a good loose photon
+    if( passAcc && passIDLoose && passIsoLoose && iPhoton->pt() > 100.0){//pure photons
+      (*NumPhotonsLoose)++;
+      // make sure only the highest pt photon is used
+      if(iPhoton->pt() > bestPhotonPtLoose){ 
+
+        bestPhotonLoose->clear();
+        bestPhotonLoose->push_back( *iPhoton );
+        bestPhotonPtLoose=iPhoton->pt();
+
+      }// done with best loose photon
+    
+    }//pure photons
+
 if (genParticles.isValid()){//genLevel Stuff
     
 
@@ -326,6 +350,8 @@ if (genParticles.isValid()){//genLevel Stuff
   iEvent.put(photons); 
   iEvent.put(bestPhoton, "bestPhoton" ); 
   iEvent.put(NumPhotons, "NumPhotons" ); 
+  iEvent.put(bestPhotonLoose, "bestPhotonLoose" ); 
+  iEvent.put(NumPhotonsLoose, "NumPhotonsLoose" ); 
   iEvent.put(photon_isEB , "isEB" );
   iEvent.put(photon_genMatched , "genMatched" );
   iEvent.put(photon_hadTowOverEM , "hadTowOverEM" );
