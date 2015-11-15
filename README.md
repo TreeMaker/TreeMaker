@@ -8,6 +8,7 @@ The following installation instructions assume the user wants to process Run2015
 cmsrel CMSSW_7_4_15
 cd CMSSW_7_4_15/src/
 cmsenv
+git cms-merge-topic -u kpedro88:METfix7415
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram b -j 8
 cd TreeMaker/Production/test
