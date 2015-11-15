@@ -61,7 +61,7 @@ private:
 
   int vtxSize;
 
-  const double GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, bool doActivity=false);
+  const double GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const int tkInd, bool doActivity=false);
 
 };
 

@@ -120,11 +120,7 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	// get PFCandidate collection
 	//---------------------------------
   
-	edm::Handle<PFCandidateCollection> pfCandidatesHandle;
-//	edm::Handle<edm::View< pat::PackedCandidate> >pfCandidatesHandle;
-	iEvent.getByLabel(pfCandidatesTag_, pfCandidatesHandle);
-  
-	edm::Handle<pat::PackedCandidateCollection> pfCandidates;
+	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
 	iEvent.getByLabel(pfCandidatesTag_, pfCandidates);
 
 	//---------------------------------
@@ -236,7 +232,7 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	return result;
 }
 
-const double TrackIsolationFilter::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, bool doActivity) {
+const double TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const int tkInd, bool doActivity) {
   if (tkInd<0||tkInd>(int)pfcands->size()) return -999.;
   double trkiso(0.); 
   double r_iso = 0.3;
