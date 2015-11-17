@@ -671,7 +671,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,METTag,geninfo,residual)
+        process = doZinvBkg(process,JetTag,METTag,geninfo,residual)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

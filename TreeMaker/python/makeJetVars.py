@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag()):
+def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     if hasattr(process,sequence):
         theSequence = getattr(process,sequence)
     else:
@@ -36,6 +36,8 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         GoodJetsTag = cms.InputTag("GoodJets"+suff)
         process.TreeMaker2.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
         if storeProperties>0: process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
+        if onlyGoodJets:
+            return process
     
     ## ----------------------------------------------------------------------------------------------
     ## HT
