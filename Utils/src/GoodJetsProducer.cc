@@ -61,7 +61,7 @@ private:
    virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag JetTag_;
-   edm::InputTag MuonTag_, ElecTag_, IsoElectronTrackTag_, IsoMuonTrackTag_, IsoPionTrackTag_, PhotonTag_;
+   std::vector<edm::InputTag> SkipTag_;
    double maxEta_;
    double maxNeutralFraction_, maxPhotonFraction_, minChargedFraction_, maxChargedEMFraction_, maxPhotonFractionHF_;
    int minNconstituents_, minNneutrals_, minNcharged_;
@@ -69,6 +69,7 @@ private:
    bool saveAll_, ExcludeLeptonIsoTrackPhotons_, TagMode_;
    double JetConeSize_;
    double deltaR(double eta1, double phi1, double eta2, double phi2);
+
    
    // ----------member data ---------------------------
 };
@@ -103,12 +104,7 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    saveAll_ = iConfig.getParameter <bool> ("SaveAllJets");  
    
    ExcludeLeptonIsoTrackPhotons_ = iConfig.getParameter <bool> ("ExcludeLepIsoTrackPhotons");
-   MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
-   ElecTag_ = iConfig.getParameter<edm::InputTag>("ElecTag");
-   IsoElectronTrackTag_ = iConfig.getParameter<edm::InputTag>("IsoElectronTrackTag");
-   IsoMuonTrackTag_ = iConfig.getParameter<edm::InputTag>("IsoMuonTrackTag");
-   IsoPionTrackTag_ = iConfig.getParameter<edm::InputTag>("IsoPionTrackTag");
-   PhotonTag_ = iConfig.getParameter<edm::InputTag>("PhotonTag");
+   SkipTag_  = iConfig.getParameter<std::vector<edm::InputTag>>("SkipTag");
    JetConeSize_ = iConfig.getParameter <double> ("JetConeSize");
    
    produces<std::vector<Jet> >();
@@ -136,29 +132,22 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
    // load to be excluded leptons, isotracks and photons
-   edm::Handle<edm::View<pat::Muon> > muonHandle;
-   iEvent.getByLabel(MuonTag_, muonHandle);
-   if(ExcludeLeptonIsoTrackPhotons_ && !muonHandle.isValid()) std::cout<<"Warning Muon Tag not valid in GoodJetSelector: "<<MuonTag_<<std::endl;
-   
-   edm::Handle<edm::View<pat::Electron> > eleHandle;
-   iEvent.getByLabel(ElecTag_, eleHandle);
-   if(ExcludeLeptonIsoTrackPhotons_ && !eleHandle.isValid()) std::cout<<"Warning elec Tag not valid in GoodJetSelector: "<<ElecTag_<<std::endl;
-   
-   edm::Handle<edm::View<pat::PackedCandidate> > isoElectronTrackHandle;
-   iEvent.getByLabel(IsoElectronTrackTag_, isoElectronTrackHandle);
-   if(ExcludeLeptonIsoTrackPhotons_ && !isoElectronTrackHandle.isValid()) std::cout<<"Warning isoelectrontrack Tag not valid in GoodJetSelector: "<<IsoElectronTrackTag_<<std::endl;
-   
-   edm::Handle<edm::View<pat::PackedCandidate> > isoMuonTrackHandle;
-   iEvent.getByLabel(IsoMuonTrackTag_, isoMuonTrackHandle);
-   if(ExcludeLeptonIsoTrackPhotons_ && !isoMuonTrackHandle.isValid()) std::cout<<"Warning isomuontrack Tag not valid in GoodJetSelector: "<<IsoMuonTrackTag_<<std::endl;
-   
-   edm::Handle<edm::View<pat::PackedCandidate> > isoPionTrackHandle;
-   iEvent.getByLabel(IsoPionTrackTag_, isoPionTrackHandle);
-   if(ExcludeLeptonIsoTrackPhotons_ && !isoPionTrackHandle.isValid()) std::cout<<"Warning isopiontrack Tag not valid in GoodJetSelector: "<<IsoPionTrackTag_<<std::endl;
-   
-   edm::Handle<std::vector<pat::Photon> > photonHandle;
-   iEvent.getByLabel(PhotonTag_, photonHandle);
-   if(ExcludeLeptonIsoTrackPhotons_ && !photonHandle.isValid()) std::cout<<"Warning Muon Tag not valid in GoodJetSelector: "<<PhotonTag_<<std::endl;
+   std::vector<edm::Handle<edm::View<reco::Candidate>>> excludeHandles;
+   excludeHandles.reserve(SkipTag_.size());
+   if(ExcludeLeptonIsoTrackPhotons_ && SkipTag_.size()){
+      // loop over each edm::InputTag
+      for (std::vector<edm::InputTag>::const_iterator iC = SkipTag_.begin(); iC != SkipTag_.end(); ++iC) {
+         // get each collection the edm::InputTag corresponds to
+         edm::Handle<edm::View<reco::Candidate>> cleanCands;
+         iEvent.getByLabel(*iC, cleanCands);
+         if (cleanCands.isValid()) {
+            excludeHandles.push_back(cleanCands);
+         }
+         else {
+             std::cout<<"Warning: skip tag not valid in GoodJetsProducer: "<<*iC<<std::endl;
+         }
+      }
+   }
    
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
    std::auto_ptr<std::vector<bool> > jetsMask(new std::vector<bool>());
@@ -178,36 +167,23 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
          int neumulti=Jets->at(i).neutralMultiplicity();
          int nconstit=chgmulti+neumulti;
          bool skip=false;
-         if(ExcludeLeptonIsoTrackPhotons_)
+         if(ExcludeLeptonIsoTrackPhotons_ && excludeHandles.size())
          {
-            for(unsigned int m=0; m<muonHandle->size(); ++m)
-            {
-               if(std::abs(Jets->at(i).pt() - muonHandle->at(m).pt() ) / muonHandle->at(m).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),muonHandle->at(m).eta(),muonHandle->at(m).phi())<JetConeSize_ ) skip=true;
-            }
-            for(unsigned int e=0; e<eleHandle->size(); ++e)
-            {
-               if(std::abs(Jets->at(i).pt() - eleHandle->at(e).pt() ) / eleHandle->at(e).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),eleHandle->at(e).eta(),eleHandle->at(e).phi())<JetConeSize_ ) skip=true;
-            }
-            for(unsigned int e=0; e<isoElectronTrackHandle->size(); ++e)
-            {
-               if(std::abs(Jets->at(i).pt() - isoElectronTrackHandle->at(e).pt() ) / isoElectronTrackHandle->at(e).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),isoElectronTrackHandle->at(e).eta(),isoElectronTrackHandle->at(e).phi())<JetConeSize_ ) skip=true;
-            }
-            for(unsigned int e=0; e<isoMuonTrackHandle->size(); ++e)
-            {
-               if(std::abs(Jets->at(i).pt() - isoMuonTrackHandle->at(e).pt() ) / isoMuonTrackHandle->at(e).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),isoMuonTrackHandle->at(e).eta(),isoMuonTrackHandle->at(e).phi())<JetConeSize_ ) skip=true;
-            }
-            for(unsigned int e=0; e<isoPionTrackHandle->size(); ++e)
-            {
-               if(std::abs(Jets->at(i).pt() - isoPionTrackHandle->at(e).pt() ) / isoPionTrackHandle->at(e).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),isoPionTrackHandle->at(e).eta(),isoPionTrackHandle->at(e).phi())<JetConeSize_ ) skip=true;
-            }
-            for(unsigned int p=0; p<photonHandle->size(); ++p)
-            {
-               if(std::abs(Jets->at(i).pt() - photonHandle->at(p).pt() ) / photonHandle->at(p).pt() <1 && deltaR(Jets->at(i).eta(),Jets->at(i).phi(),photonHandle->at(p).eta(),photonHandle->at(p).phi())<JetConeSize_ ) skip=true;
+            for(unsigned h=0; h<excludeHandles.size(); ++h){
+                for(unsigned ih=0; ih<excludeHandles[h]->size(); ++ih){
+                    if(std::abs(Jets->at(i).pt() - excludeHandles[h]->at(ih).pt() ) / excludeHandles[h]->at(ih).pt() < 1 && 
+                       deltaR(Jets->at(i).eta(),Jets->at(i).phi(),excludeHandles[h]->at(ih).eta(),excludeHandles[h]->at(ih).phi()) < JetConeSize_ )
+                    {
+                       skip=true;
+                       break;
+                    }
+                    if(skip) break; //no need to keep checking
+                }
             }
             if(skip)
             {
                prodJets->push_back(Jet(Jets->at(i)));
-		       jetsMask->push_back(true);
+               jetsMask->push_back(true);
                continue;
             }
          }
@@ -222,9 +198,9 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         //save all good jets regardless of pt
         if (good || saveAll_) {
            prodJets->push_back(Jet(Jets->at(i)));
-		   jetsMask->push_back(good);
+           jetsMask->push_back(good);
         } 
-		//calculate event filter only for jets that pass pT cut
+        //calculate event filter only for jets that pass pT cut
         if (Jets->at(i).pt() > jetPtFilter_) {
            //std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
            if(!good && !TagMode_) return false;

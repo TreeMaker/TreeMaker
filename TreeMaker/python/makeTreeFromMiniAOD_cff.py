@@ -536,13 +536,23 @@ signal=False
     ## Jet variables
     ## ----------------------------------------------------------------------------------------------
 
+    # list of clean tags - ignore jet ID for jets matching these objects
+    SkipTag = cms.VInputTag(
+        cms.InputTag('LeptonsNew:IdIsoMuon'),
+        cms.InputTag('LeptonsNew:IdIsoElectron'),
+        cms.InputTag('IsolatedElectronTracksVeto'),
+        cms.InputTag('IsolatedMuonTracksVeto'),
+        cms.InputTag('IsolatedPionTracksVeto'),
+    )
+    
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     process = makeJetVars(process,
                           sequence="Baseline",
                           JetTag=JetTag,
                           suff='',
                           skipGoodJets=False,
-                          storeProperties=2
+                          storeProperties=2,
+                          SkipTag=SkipTag
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -563,7 +573,8 @@ signal=False
                               JetTag=cms.InputTag("patJetsJECup"),
                               suff='JECup',
                               skipGoodJets=False,
-                              storeProperties=1
+                              storeProperties=1,
+                              SkipTag=SkipTag
         )
 
         #JEC unc down
@@ -577,7 +588,8 @@ signal=False
                               JetTag=cms.InputTag("patJetsJECdown"),
                               suff='JECdown',
                               skipGoodJets=False,
-                              storeProperties=1
+                              storeProperties=1,
+                              SkipTag=SkipTag
         )
 
     ## ----------------------------------------------------------------------------------------------
@@ -659,7 +671,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,METTag)
+        process = doZinvBkg(process,JetTag,METTag,geninfo,residual)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

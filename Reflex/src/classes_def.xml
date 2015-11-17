@@ -3,6 +3,8 @@
   <class name="std::vector<std::vector<TLorentzVector> >"/>
   <class name="std::vector<pat::Jet>"/>
   <class name="std::vector<std::vector<pat::Jet> >"/>
+  <class name="edm::PtrVector<pat::PackedCandidate>"/>
   <class name="edm::Wrapper<std::vector<TLorentzVector> >"/>
   <class name="edm::Wrapper<std::vector<std::vector<TLorentzVector> > >"/>
+  <class name="edm::Wrapper<edm::PtrVector<pat::PackedCandidate> >"/>
 </lcgdict>
