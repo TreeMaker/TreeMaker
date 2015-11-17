@@ -11,26 +11,26 @@ KEEPTAR=$2
 ./FScheck.sh "$KEEPTAR"
 
 #### Run2015D Prompt RECO
-SCENARIO=2015D
+SCENARIO=2015Db
 SAMPLES=(
-Run2015D-PromptReco-v3.DoubleEG \
-Run2015D-PromptReco-v3.DoubleMuon \
-Run2015D-PromptReco-v3.HTMHT \
-Run2015D-PromptReco-v3.JetHT \
-Run2015D-PromptReco-v3.MET \
-Run2015D-PromptReco-v3.SingleElectron \
-Run2015D-PromptReco-v3.SingleMuon \
-Run2015D-PromptReco-v3.SinglePhoton
+Run2015D-PromptReco-v4.DoubleEG \
+Run2015D-PromptReco-v4.DoubleMuon \
+Run2015D-PromptReco-v4.HTMHT \
+Run2015D-PromptReco-v4.JetHT \
+Run2015D-PromptReco-v4.MET \
+Run2015D-PromptReco-v4.SingleElectron \
+Run2015D-PromptReco-v4.SingleMuon \
+Run2015D-PromptReco-v4.SinglePhoton
 )
 JOBSTART=(
-78 \
-40 \
-30 \
-76 \
-29 \
-95 \
-60 \
-40
+384 \
+190 \
+94 \
+242 \
+82 \
+456 \
+329 \
+143
 )
 
 for ((i=0; i < ${#SAMPLES[@]}; i++)); do
