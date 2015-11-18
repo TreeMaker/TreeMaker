@@ -2,7 +2,7 @@
 
 ## Instructions
 
-The following installation instructions assume the user wants to process Run2015 prompt-reco data or Spring15 MC.
+The following installation instructions assume the user wants to process Run2015 data or Spring15 MC (miniAOD v2 format).
 
 ```
 cmsrel CMSSW_7_4_15
@@ -14,45 +14,24 @@ scram b -j 8
 cd TreeMaker/Production/test
 ```
 
-Legacy instructions for `CMSSW_7_4_6_patch6`, to be used for miniAOD v1:
-
-```
-cmsrel CMSSW_7_4_6_patch6
-cd CMSSW_7_4_6_patch6/src/
-cmsenv
-git cms-merge-topic -u cms-met:METCorUnc74X
-git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
-scram b -j 8
-cd TreeMaker/Production/test
-```
-
 Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
 global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
-1. `Spring15`: for Spring15 25ns MC  
-2. `Spring15sig`: for Spring15 25ns MC (signal)  
-3. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
-4. `Spring15v2sig`: for Spring15 re-miniAOD (v2) 25ns MC (signal)  
-5. `Spring15Fast`: for Spring15 25ns FastSim MC (signal scans)  
-6. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
-7. `2015C`: for 2015C PromptReco 25ns data  
-8. `re2015C`: for 2015C re-reco 25ns data  
-9. `2015D`: for 2015D PromptReco 25ns data (part 1)  
-10. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
-11. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
-Deprecated:  
-12. `2015B`: for 2015B PromptReco 50ns data  
-13. `re2015B`: for 2015B re-miniAOD 50ns data  
-14. `Phys14`: for Phys14 25ns MC  
+1. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
+2. `Spring15v2sig`: for Spring15 re-miniAOD (v2) 25ns MC (signal)  
+3. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
+4. `re2015C`: for 2015C re-reco 25ns data  
+5. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
+6. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
 
 ## Interactive Runs
 
 To run interactively:
 ```
 cmsRun runMakeTreeFromMiniAOD_cfg.py \
-scenario=2015B \
-dataset="/store/data/Run2015B/..." \
+scenario=Spring15v2 \
+dataset="/store/mc/RunIISpring15MiniAODv2/..." \
 outfile="test"
 ```
 
@@ -117,9 +96,9 @@ For MC samples, it can also automatically generate the appropriate configuration
 python get_py.py dict=dict.py
 ```
 
-To check for new samples, consult [production monitoring](https://dmytro.web.cern.ch/dmytro/cmsprodmon/requests.php?campaign=RunIISpring15DR74) or query DAS (in this case, for Spring15 MC):
+To check for new samples, consult [production monitoring](https://dmytro.web.cern.ch/dmytro/cmsprodmon/requests.php?campaign=RunIISpring15MiniAODv2) or query DAS (in this case, for Spring15 MC):
 ```
-das_client.py --query="dataset=/*/RunIISpring15DR74-Asympt25ns*/MINIAODSIM" --limit=0 | & less
+das_client.py --query="dataset=/*/RunIISpring15MiniAODv2*/MINIAODSIM" --limit=0 | & less
 ```
 
 ### Samples with Negative Weight Events
@@ -171,7 +150,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `tagname`: tag name for collections that can have different tags for data or MC (default="PAT")
 * `geninfo`: switch to enable use of generator information, should only be used for MC (default=True)
 * `fastsim`: switch to enable special settings for SUSY signal scans produced with FastSim (default=False)
-* `signal`: switch to enable assessment of signal systematics (default=False)
+* `signal`: switch to enable assessment of signal systematics (default=False) (currently unused)
 * `jsonfile`: name of JSON file to apply to data
 * `jecfile`: name of a database file from which to get JECs (default="")
 * `residual`: switch to enable residual JECs for data (default=False)
