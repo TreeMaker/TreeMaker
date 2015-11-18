@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, jecuncfile, cleanedCandidates, suff):
+def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
@@ -58,7 +58,6 @@ def reclusterZinv(process, geninfo, residual, jecuncfile, cleanedCandidates, suf
         jetColl='patJetsAK4PFCLEAN'+suff,
         pfCandColl=cleanedCandidates.value(),
         repro74X=True, # to recompute without reclustering
-        jecUncFile=jecuncfile,
         postfix=postfix
     )
     if not residual: #skip residuals for data if not used
@@ -146,7 +145,7 @@ def reclusterZinv(process, geninfo, residual, jecuncfile, cleanedCandidates, suf
     
     return process
 
-def doZinvBkg(process,JetTag,METTag,geninfo,residual,jecuncfile):
+def doZinvBkg(process,JetTag,METTag,geninfo,residual):
     ##### add branches for photon studies
     process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
@@ -261,7 +260,6 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,jecuncfile):
         process,
         geninfo,
         residual,
-        jecuncfile,
         cms.InputTag("leptonCleanedCandidates"),
         "DY",
     )
@@ -281,7 +279,6 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,jecuncfile):
         process,
         geninfo,
         residual,
-        jecuncfile,
         cms.InputTag("photonCleanedCandidates"),
         "GJ",
     )
@@ -301,7 +298,6 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,jecuncfile):
         process,
         geninfo,
         residual,
-        jecuncfile,
         cms.InputTag("loosePhotonCleanedCandidates"),
         "GJloose",
     )

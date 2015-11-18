@@ -20,7 +20,6 @@ geninfo=False,
 tagname="RECO",
 jsonfile="",
 jecfile="",
-jecuncfile="",
 residual=False,
 QCD=False,
 doPDFs=False,
@@ -190,8 +189,6 @@ signal=False
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
     JetTag = cms.InputTag('slimmedJets')
     METTag = cms.InputTag('slimmedMETs')
-    if len(jecuncfile)==0: jecuncfile = "CondFormats/JetMETObjects/data/Summer15_50nsV5_DATA_UncertaintySources_AK4PFchs.txt" #this is the default in runMet for some reason
-    
     if len(jecfile)>0:
         #get name of JECs without any directories
         JECera = jecfile.split('/')[-1]
@@ -248,7 +245,6 @@ signal=False
             isData=not geninfo, # controls gen met
             jetCollUnskimmed=JetTag.value(),
             jetColl=JetTag.value(),
-            jecUncFile=jecuncfile,
             postfix="Update"
         )
         if not residual: #skip residuals for data if not used
@@ -684,7 +680,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,JetTag,METTag,geninfo,residual,jecuncfile)
+        process = doZinvBkg(process,JetTag,METTag,geninfo,residual)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
