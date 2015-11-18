@@ -105,6 +105,8 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
         jecUncDir = cms.int32(1)
     )
     process.AdditionalSequence += process.JetsForHadTauJECup
+    #get the JEC factor and unc from here
+    process.TreeMaker2.VectorDouble.extend(['JetsForHadTauJECup:jecFactor(slimJet_jecFactor)','JetsForHadTauJECup:jecUnc(slimJet_jecUnc)'])
     process = makeJetVarsHadTau(process,
                           sequence="AdditionalSequence",
                           JetTag=cms.InputTag("JetsForHadTauJECup"),

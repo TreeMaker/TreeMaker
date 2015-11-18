@@ -37,6 +37,8 @@ JetUncertaintyProducer::JetUncertaintyProducer(const edm::ParameterSet& iConfig)
 	jecUncDir_(iConfig.getParameter<int>("jecUncDir"))
 {
 	produces<std::vector<pat::Jet>>();
+	produces<std::vector<double>>("jecFactor");
+	produces<std::vector<double>>("jecUnc");
 }
 
 void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -52,6 +54,11 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 	iEvent.getByLabel(JetTag_, jets);
 
 	std::auto_ptr< std::vector<pat::Jet> > newJets ( new std::vector<pat::Jet>() );
+	newJets->reserve(jets->size());
+	std::auto_ptr< std::vector<double> > jecFactorVec ( new std::vector<double>() );
+	jecFactorVec->reserve(jets->size());
+	std::auto_ptr< std::vector<double> > jecUncVec ( new std::vector<double>() );
+	jecUncVec->reserve(jets->size());
 
 	for (edm::View<pat::Jet>::const_iterator itJet = jets->begin(); itJet != jets->end(); itJet++) {
 		// construct the Jet from the ref -> save ref to original object
@@ -88,12 +95,23 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 		
 		//store varied jet
 		newJets->push_back(ajet);
+		
+		//store JEC unc for this jet
+		jecUncVec->push_back(uncertainty);
+		
+		//store JEC factor for this jet
+		std::vector<std::string> availableJECLevels = jetPtr->availableJECLevels();
+		double scaleRawToFull = jetPtr->jecFactor(availableJECLevels.back())/jetPtr->jecFactor("Uncorrected");
+		jecFactorVec->push_back(scaleRawToFull);
 	}
 
 	//sort jets in pt
 	std::sort(newJets->begin(), newJets->end(), pTComparator_);
+	//JEC factor and unc are NOT sorted (kept in order of original collection)
 	
 	iEvent.put(newJets);
+	iEvent.put(jecUncVec,"jecUnc");
+	iEvent.put(jecFactorVec,"jecFactor");
 }
 
 DEFINE_FWK_MODULE(JetUncertaintyProducer);

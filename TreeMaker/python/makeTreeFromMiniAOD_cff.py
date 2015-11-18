@@ -568,38 +568,39 @@ signal=False
     ## Jet uncertainty variations
     ## ----------------------------------------------------------------------------------------------
 
-    if signal:
-        from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
-        
-        #JEC unc up
-        process.patJetsJECup = JetUncertaintyProducer.clone(
-            JetTag = JetTag,
-            jecUncDir = cms.int32(1)
-        )
-        process.Baseline += process.patJetsJECup
-        process = makeJetVars(process,
-                              sequence="Baseline",
-                              JetTag=cms.InputTag("patJetsJECup"),
-                              suff='JECup',
-                              skipGoodJets=False,
-                              storeProperties=1,
-                              SkipTag=SkipTag
-        )
+    from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
+    
+    #JEC unc up
+    process.patJetsJECup = JetUncertaintyProducer.clone(
+        JetTag = JetTag,
+        jecUncDir = cms.int32(1)
+    )
+    process.Baseline += process.patJetsJECup
+    #get the JEC factor and unc from here
+    VectorDouble.extend(['patJetsJECup:jecFactor(Jets_jecFactor)','patJetsJECup:jecUnc(Jets_jecUnc)'])
+    process = makeJetVars(process,
+                          sequence="Baseline",
+                          JetTag=cms.InputTag("patJetsJECup"),
+                          suff='JECup',
+                          skipGoodJets=False,
+                          storeProperties=1,
+                          SkipTag=SkipTag
+    )
 
-        #JEC unc down
-        process.patJetsJECdown = JetUncertaintyProducer.clone(
-            JetTag = JetTag,
-            jecUncDir = cms.int32(-1)
-        )
-        process.Baseline += process.patJetsJECdown
-        process = makeJetVars(process,
-                              sequence="Baseline",
-                              JetTag=cms.InputTag("patJetsJECdown"),
-                              suff='JECdown',
-                              skipGoodJets=False,
-                              storeProperties=1,
-                              SkipTag=SkipTag
-        )
+    #JEC unc down
+    process.patJetsJECdown = JetUncertaintyProducer.clone(
+        JetTag = JetTag,
+        jecUncDir = cms.int32(-1)
+    )
+    process.Baseline += process.patJetsJECdown
+    process = makeJetVars(process,
+                          sequence="Baseline",
+                          JetTag=cms.InputTag("patJetsJECdown"),
+                          suff='JECdown',
+                          skipGoodJets=False,
+                          storeProperties=1,
+                          SkipTag=SkipTag
+    )
 
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
