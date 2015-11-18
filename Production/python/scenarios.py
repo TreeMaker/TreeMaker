@@ -25,7 +25,7 @@ class Scenario:
         elif sname == "Spring15v2sig":
             self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,False,True,"","data/Summer15_25nsV6_MC",dir+"data/Summer15_25nsV6_MC_UncertaintySources_AK4PFchs.txt",False,"Run2_25ns")
         elif sname == "Spring15Fastv2":
-            self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,True,True,"","data/Summer15_25nsV6_MC",dir+"data/Summer15_25nsV6_MC_UncertaintySources_AK4PFchs.txt",False,"Run2_25ns")
+            self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,True,True,"","data/MCRUN2_74_V9","",False,"Run2_25ns")
         elif sname == "re2015C":
             self.set_vars("74X_dataRun2_v4","RECO",False,False,False,"data/Cert_246908-260627_13TeV_PromptReco_Collisions15_25ns_JSON.txt","data/Summer15_25nsV6_DATA",dir+"data/Summer15_25nsV6_MC_UncertaintySources_AK4PFchs.txt",True,"Run2_25ns")
         elif sname == "re2015D":
