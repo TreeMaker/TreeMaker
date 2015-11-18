@@ -38,12 +38,19 @@ def DeltaPhiQCD(process, geninfo):
         GenParticleTag      = cms.InputTag ( 'prunedGenParticles' ) ,
     )
     process.DeltaPhiQCDSeq += process.DeltaPhiQCD
-    
+
+    from TreeMaker.Utils.genjetproperties_cfi import genjetproperties
+    process.GenJetProperties = genjetproperties.clone(
+        GenJetTag  = cms.InputTag('GenMHTJets')
+    )
+    process.DeltaPhiQCDSeq += process.GenJetProperties
+ 
     process.AdditionalSequence += process.DeltaPhiQCDSeq
 
     process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:RJetDeltaPhi' ] )
 
     process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:GenDeltaPhi' ] )
+    process.TreeMaker2.VectorDouble.extend ( [ 'GenJetProperties:invisibleEnergy(GenJets_invisibleEnergy)' ] )
 
     process.TreeMaker2.VectorTLorentzVector.extend ( [ 'DeltaPhiQCD:NeutrinoLorentzVector' ] )
     process.TreeMaker2.VectorInt.extend ( [ 'DeltaPhiQCD:NeutrinoPdg' ] )
