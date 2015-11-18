@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
+def reclusterZinv(process, geninfo, residual, jecuncfile, cleanedCandidates, suff):
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
@@ -20,6 +20,8 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     # for a full list & description of parameters see:
     # PhysicsTools/PatAlgos/python/tools/jetTools.py
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
+    jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
+    if residual: jecLevels.append("L2L3Residual")
     addJetCollection(
        process,
        labelName = 'AK4PFCLEAN'+suff,
@@ -32,7 +34,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
        getJetMCFlavour = True, # seems to be enough for hadronFlavour()
        #genJetCollection = cms.InputTag('slimmedGenJets'),
        genParticles = cms.InputTag('prunedGenParticles'), # likely needed for hadronFlavour()....
-       jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
+       jetCorrections = ('AK4PFchs', jecLevels, 'None'),
        btagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
     )
     # turn on/off GEN matching (different than hadronFlavour()?)
@@ -56,6 +58,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
         jetColl='patJetsAK4PFCLEAN'+suff,
         pfCandColl=cleanedCandidates.value(),
         repro74X=True, # to recompute without reclustering
+        jecUncFile=jecuncfile,
         postfix=postfix
     )
     if not residual: #skip residuals for data if not used
@@ -143,7 +146,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     
     return process
 
-def doZinvBkg(process,JetTag,METTag,geninfo,residual):
+def doZinvBkg(process,JetTag,METTag,geninfo,residual,jecuncfile):
     ##### add branches for photon studies
     process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
@@ -258,6 +261,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual):
         process,
         geninfo,
         residual,
+        jecuncfile,
         cms.InputTag("leptonCleanedCandidates"),
         "DY",
     )
@@ -277,6 +281,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual):
         process,
         geninfo,
         residual,
+        jecuncfile,
         cms.InputTag("photonCleanedCandidates"),
         "GJ",
     )
@@ -296,6 +301,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual):
         process,
         geninfo,
         residual,
+        jecuncfile,
         cms.InputTag("loosePhotonCleanedCandidates"),
         "GJloose",
     )

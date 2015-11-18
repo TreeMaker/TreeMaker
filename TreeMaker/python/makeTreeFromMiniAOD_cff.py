@@ -20,6 +20,7 @@ geninfo=False,
 tagname="RECO",
 jsonfile="",
 jecfile="",
+jecuncfile="",
 residual=False,
 QCD=False,
 doPDFs=False,
@@ -111,7 +112,7 @@ signal=False
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
         process.WeightProducer = getWeightProducer(process.source.fileNames[0])
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
-        process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1104.root")
+        process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1117.root")
         process.Baseline += process.WeightProducer
         VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
@@ -189,6 +190,8 @@ signal=False
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
     JetTag = cms.InputTag('slimmedJets')
     METTag = cms.InputTag('slimmedMETs')
+    if len(jecuncfile)==0: jecuncfile = "CondFormats/JetMETObjects/data/Summer15_50nsV5_DATA_UncertaintySources_AK4PFchs.txt" #this is the default in runMet for some reason
+    
     if len(jecfile)>0:
         #get name of JECs without any directories
         JECera = jecfile.split('/')[-1]
@@ -243,16 +246,21 @@ signal=False
         runMetCorAndUncFromMiniAOD(
             process,
             isData=not geninfo, # controls gen met
+            jetCollUnskimmed=JetTag.value(),
+            jetColl=JetTag.value(),
+            jecUncFile=jecuncfile,
+            postfix="Update"
         )
         if not residual: #skip residuals for data if not used
-            process.patPFMetT1T2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-            process.patPFMetT1T2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-            process.patPFMetT2Corr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-            process.patPFMetT2SmearCorr.jetCorrLabelRes = cms.InputTag("L3Absolute")
-            process.shiftedPatJetEnDown.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-            process.shiftedPatJetEnUp.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-            
-        METTag = cms.InputTag('slimmedMETs','',process.name_())
+            process.patPFMetT1T2CorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT1T2SmearCorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT2CorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.patPFMetT2SmearCorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
+            process.shiftedPatJetEnDownUpdate.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+            process.shiftedPatJetEnUpUpdate.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+        if hasattr(process,"slimmedMETsUpdate"):
+            delattr(getattr(process,"slimmedMETsUpdate"),"caloMET")
+        METTag = cms.InputTag('slimmedMETsUpdate','',process.name_())
 
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
@@ -412,7 +420,7 @@ signal=False
         
         #run beam halo filter from text list of events
         from TreeMaker.Utils.getEventListFilter_cff import getEventListFilter
-        process.CSCTightHaloFilter = getEventListFilter(process.source.fileNames[0])
+        process.CSCTightHaloFilter = getEventListFilter(process.source.fileNames[0],"Nov14","csc2015")
         process.Baseline += process.CSCTightHaloFilter
         VarsBool.extend(['CSCTightHaloFilter'])
         
@@ -452,6 +460,11 @@ signal=False
             )
         process.Baseline += process.eeBadScFilter
         VarsInt.extend(['eeBadScFilter'])
+        
+        #run eeBadSc4 filter from text list of events
+        process.eeBadSc4Filter = getEventListFilter(process.source.fileNames[0],"Nov14","ecalscn1043093")
+        process.Baseline += process.eeBadSc4Filter
+        VarsBool.extend(['eeBadSc4Filter'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
@@ -671,7 +684,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,JetTag,METTag,geninfo,residual)
+        process = doZinvBkg(process,JetTag,METTag,geninfo,residual,jecuncfile)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
