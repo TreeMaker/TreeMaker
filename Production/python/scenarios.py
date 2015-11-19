@@ -2,7 +2,7 @@ class Scenario:
     def __init__(self,sname):
         self.known = True
         ### CURRENT
-        elif sname == "Spring15v2":
+        if sname == "Spring15v2":
             self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,False,False,"","data/Summer15_25nsV6_MC",False,"Run2_25ns")
         elif sname == "Spring15v2sig":
             self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,False,True,"","data/Summer15_25nsV6_MC",False,"Run2_25ns")
