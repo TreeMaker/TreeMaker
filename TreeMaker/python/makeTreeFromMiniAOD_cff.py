@@ -20,7 +20,6 @@ geninfo=False,
 tagname="RECO",
 jsonfile="",
 jecfile="",
-jecuncfile="",
 residual=False,
 QCD=False,
 doPDFs=False,
@@ -190,8 +189,6 @@ signal=False
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
     JetTag = cms.InputTag('slimmedJets')
     METTag = cms.InputTag('slimmedMETs')
-    if len(jecuncfile)==0: jecuncfile = "CondFormats/JetMETObjects/data/Summer15_50nsV5_DATA_UncertaintySources_AK4PFchs.txt" #this is the default in runMet for some reason
-    
     if len(jecfile)>0:
         #get name of JECs without any directories
         JECera = jecfile.split('/')[-1]
@@ -248,7 +245,6 @@ signal=False
             isData=not geninfo, # controls gen met
             jetCollUnskimmed=JetTag.value(),
             jetColl=JetTag.value(),
-            jecUncFile=jecuncfile,
             postfix="Update"
         )
         if not residual: #skip residuals for data if not used
@@ -572,38 +568,39 @@ signal=False
     ## Jet uncertainty variations
     ## ----------------------------------------------------------------------------------------------
 
-    if signal:
-        from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
-        
-        #JEC unc up
-        process.patJetsJECup = JetUncertaintyProducer.clone(
-            JetTag = JetTag,
-            jecUncDir = cms.int32(1)
-        )
-        process.Baseline += process.patJetsJECup
-        process = makeJetVars(process,
-                              sequence="Baseline",
-                              JetTag=cms.InputTag("patJetsJECup"),
-                              suff='JECup',
-                              skipGoodJets=False,
-                              storeProperties=1,
-                              SkipTag=SkipTag
-        )
+    from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
+    
+    #JEC unc up
+    process.patJetsJECup = JetUncertaintyProducer.clone(
+        JetTag = JetTag,
+        jecUncDir = cms.int32(1)
+    )
+    process.Baseline += process.patJetsJECup
+    #get the JEC factor and unc from here
+    VectorDouble.extend(['patJetsJECup:jecFactor(Jets_jecFactor)','patJetsJECup:jecUnc(Jets_jecUnc)'])
+    process = makeJetVars(process,
+                          sequence="Baseline",
+                          JetTag=cms.InputTag("patJetsJECup"),
+                          suff='JECup',
+                          skipGoodJets=False,
+                          storeProperties=1,
+                          SkipTag=SkipTag
+    )
 
-        #JEC unc down
-        process.patJetsJECdown = JetUncertaintyProducer.clone(
-            JetTag = JetTag,
-            jecUncDir = cms.int32(-1)
-        )
-        process.Baseline += process.patJetsJECdown
-        process = makeJetVars(process,
-                              sequence="Baseline",
-                              JetTag=cms.InputTag("patJetsJECdown"),
-                              suff='JECdown',
-                              skipGoodJets=False,
-                              storeProperties=1,
-                              SkipTag=SkipTag
-        )
+    #JEC unc down
+    process.patJetsJECdown = JetUncertaintyProducer.clone(
+        JetTag = JetTag,
+        jecUncDir = cms.int32(-1)
+    )
+    process.Baseline += process.patJetsJECdown
+    process = makeJetVars(process,
+                          sequence="Baseline",
+                          JetTag=cms.InputTag("patJetsJECdown"),
+                          suff='JECdown',
+                          skipGoodJets=False,
+                          storeProperties=1,
+                          SkipTag=SkipTag
+    )
 
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
@@ -684,7 +681,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,JetTag,METTag,geninfo,residual,jecuncfile)
+        process = doZinvBkg(process,JetTag,METTag,geninfo,residual)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

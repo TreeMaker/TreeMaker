@@ -37,7 +37,6 @@ fastsim=parameters.value("fastsim",scenario.fastsim)
 signal=parameters.value("signal",scenario.signal)
 jsonfile=parameters.value("jsonfile",scenario.jsonfile)
 jecfile=parameters.value("jecfile",scenario.jecfile)
-jecuncfile=parameters.value("jecuncfile",scenario.jecuncfile)
 residual=parameters.value("residual",scenario.residual)
 era=parameters.value("era",scenario.era)
 
@@ -98,7 +97,6 @@ print " Using fastsim settings: "+str(fastsim)
 print " Running signal uncertainties: "+str(signal)
 if len(jsonfile)>0: print " JSON file applied: "+jsonfile
 if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual else "")
-if len(jecuncfile)>0: print " JEC uncertainty sources: "+jecuncfile
 print " era of this dataset: "+era
 print "************************************************"
 
@@ -120,7 +118,6 @@ process = makeTreeFromMiniAOD(process,
     tagname=tagname,
     jsonfile=jsonfile,
     jecfile=jecfile,
-    jecuncfile=jecuncfile,
     residual=residual,
     doPDFs=doPDFs,
     fastsim=fastsim,
