@@ -18,6 +18,8 @@
 
 // system include files
 #include <memory>
+#include <iostream>
+#include <unordered_set>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -33,6 +35,7 @@
 
 #include "TLorentzVector.h"
 #include <DataFormats/ParticleFlowCandidate/interface/PFCandidate.h>
+#include <DataFormats/HepMCCandidate/interface/GenParticle.h>
 
 #include <vector>
 
@@ -77,76 +80,83 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::cout << "===================" << std::endl;  
   }
 
-  std::vector<int> pdgIdOfInterest;
-  pdgIdOfInterest.push_back(21);
-  pdgIdOfInterest.push_back(22);
-  pdgIdOfInterest.push_back(23);
-  pdgIdOfInterest.push_back(24);
-  pdgIdOfInterest.push_back(25);
+  std::unordered_set<int> pdgIdOfInterest;
+  pdgIdOfInterest.insert(21);
+  pdgIdOfInterest.insert(22);
+  pdgIdOfInterest.insert(23);
+  pdgIdOfInterest.insert(24);
+  pdgIdOfInterest.insert(25);
 
-  pdgIdOfInterest.push_back(1);
-  pdgIdOfInterest.push_back(2);
-  pdgIdOfInterest.push_back(3);
-  pdgIdOfInterest.push_back(4);
-  pdgIdOfInterest.push_back(5);
-  pdgIdOfInterest.push_back(6);
+  pdgIdOfInterest.insert(1);
+  pdgIdOfInterest.insert(2);
+  pdgIdOfInterest.insert(3);
+  pdgIdOfInterest.insert(4);
+  pdgIdOfInterest.insert(5);
+  pdgIdOfInterest.insert(6);
 
-  pdgIdOfInterest.push_back(11);
-  pdgIdOfInterest.push_back(12);
-  pdgIdOfInterest.push_back(13);
-  pdgIdOfInterest.push_back(14);
-  pdgIdOfInterest.push_back(15);
-  pdgIdOfInterest.push_back(16);
+  pdgIdOfInterest.insert(11);
+  pdgIdOfInterest.insert(12);
+  pdgIdOfInterest.insert(13);
+  pdgIdOfInterest.insert(14);
+  pdgIdOfInterest.insert(15);
+  pdgIdOfInterest.insert(16);
 
-  pdgIdOfInterest.push_back(1000021);
-  pdgIdOfInterest.push_back(1000022);
-  pdgIdOfInterest.push_back(1000023);
-  pdgIdOfInterest.push_back(1000025);
-  pdgIdOfInterest.push_back(1000035);
+  pdgIdOfInterest.insert(1000021);
+  pdgIdOfInterest.insert(1000022);
+  pdgIdOfInterest.insert(1000023);
+  pdgIdOfInterest.insert(1000025);
+  pdgIdOfInterest.insert(1000035);
 
-  pdgIdOfInterest.push_back(1000001);
-  pdgIdOfInterest.push_back(1000002);
-  pdgIdOfInterest.push_back(1000003);
-  pdgIdOfInterest.push_back(1000004);
-  pdgIdOfInterest.push_back(1000005);
-  pdgIdOfInterest.push_back(1000006);
+  pdgIdOfInterest.insert(1000001);
+  pdgIdOfInterest.insert(1000002);
+  pdgIdOfInterest.insert(1000003);
+  pdgIdOfInterest.insert(1000004);
+  pdgIdOfInterest.insert(1000005);
+  pdgIdOfInterest.insert(1000006);
 
-  pdgIdOfInterest.push_back(2000001);
-  pdgIdOfInterest.push_back(2000002);
-  pdgIdOfInterest.push_back(2000003);
-  pdgIdOfInterest.push_back(2000004);
-  pdgIdOfInterest.push_back(2000005);
-  pdgIdOfInterest.push_back(2000006);
+  pdgIdOfInterest.insert(2000001);
+  pdgIdOfInterest.insert(2000002);
+  pdgIdOfInterest.insert(2000003);
+  pdgIdOfInterest.insert(2000004);
+  pdgIdOfInterest.insert(2000005);
+  pdgIdOfInterest.insert(2000006);
 
-  edm::Handle< View<reco::Candidate> > genPartCands;
+  edm::Handle< View<reco::GenParticle> > genPartCands;
   iEvent.getByLabel( "prunedGenParticles" ,genPartCands);
   
-  for(View<reco::Candidate>::const_iterator iPart = genPartCands->begin();
+  for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin();
       iPart != genPartCands->end();
       ++iPart){
     
-    if( std::find( pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId()) ) != pdgIdOfInterest.end() && abs( iPart->status() ) >20 && abs( iPart->status() ) <30 ){
+    if( std::find( pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId()) ) != pdgIdOfInterest.end() 
+        && (    ( abs(iPart->pdgId()) != 1000021 && abs( iPart->status() ) >20 && abs( iPart->status() ) <30 ) 
+             || ( abs(iPart->pdgId()) == 1000021 && iPart->isLastCopy() ) ) ){ //special requirement for gluinos
+      
+      //check gluino status
+      if( abs(iPart->pdgId()) == 1000021 ){
+          std::cout << "Gluino: status = " << abs( iPart->status() ) << ", isLastCopy = " << iPart->isLastCopy() << std::endl;
+      }
       
       TLorentzVector temp;
       temp.SetPtEtaPhiE( iPart->pt() ,
-			 iPart->eta() ,
-			 iPart->phi() ,
-			 iPart->energy() 
-			 );
+                         iPart->eta() ,
+                         iPart->phi() ,
+                         iPart->energy() 
+                         );
 
       genParticle->push_back( temp );     
       PDGid->push_back( iPart->pdgId() );
 
       int parentIndex = 0;
 
-      for(View<reco::Candidate>::const_iterator jPart = genPartCands->begin();
-	  jPart != genPartCands->end();
-	  ++jPart){
+      for(View<reco::GenParticle>::const_iterator jPart = genPartCands->begin();
+          jPart != genPartCands->end();
+          ++jPart){
 
-	if( pow( pow( iPart->phi() - jPart->phi() , 2 ) + pow( iPart->eta() - jPart->eta() , 2 ) , .5 ) < 0.01 ) 
-	  break;
-	
-	parentIndex++;
+        if( pow( pow( iPart->phi() - jPart->phi() , 2 ) + pow( iPart->eta() - jPart->eta() , 2 ) , .5 ) < 0.01 ) 
+          break;
+        
+        parentIndex++;
 
       }
       
