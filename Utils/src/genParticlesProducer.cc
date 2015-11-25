@@ -130,13 +130,9 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     if( std::find( pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId()) ) != pdgIdOfInterest.end() 
         && (    ( abs(iPart->pdgId()) != 1000021 && abs( iPart->status() ) >20 && abs( iPart->status() ) <30 ) 
-             || ( abs(iPart->pdgId()) == 1000021 && iPart->isLastCopy() ) ) ){ //special requirement for gluinos
-      
-      //check gluino status
-      if( abs(iPart->pdgId()) == 1000021 ){
-          std::cout << "Gluino: status = " << abs( iPart->status() ) << ", isLastCopy = " << iPart->isLastCopy() << std::endl;
-      }
-      
+             || ( abs(iPart->pdgId()) == 1000021 && iPart->isLastCopy() ) ) ) //special requirement for gluinos
+    {
+
       TLorentzVector temp;
       temp.SetPtEtaPhiE( iPart->pt() ,
                          iPart->eta() ,
