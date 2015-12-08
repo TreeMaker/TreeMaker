@@ -26,7 +26,7 @@ for f in jsonfiles:
         section = fsplit[2]
     key = section+"_"+category
     
-    cmd = "./brilcalc lumi --normtag /afs/cern.ch/user/c/cmsbril/public/normtag_json/OfflineNormtagV1.json -u /pb -i "+f
+    cmd = "./brilcalc lumi --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/OfflineNormtagV2.json -u /pb -i "+f
     brilout = os.popen(cmd).read()
     lumival = brilout.split()[-3]
     
