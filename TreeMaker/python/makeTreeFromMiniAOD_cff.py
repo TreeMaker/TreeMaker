@@ -416,7 +416,7 @@ signal=False
         
         #run beam halo filter from text list of events
         from TreeMaker.Utils.getEventListFilter_cff import getEventListFilter
-        process.CSCTightHaloFilter = getEventListFilter(process.source.fileNames[0],"Nov14","csc2015")
+        process.CSCTightHaloFilter = getEventListFilter(process.source.fileNames[0],"Dec01","csc2015")
         process.Baseline += process.CSCTightHaloFilter
         VarsBool.extend(['CSCTightHaloFilter'])
         
@@ -458,7 +458,7 @@ signal=False
         VarsInt.extend(['eeBadScFilter'])
         
         #run eeBadSc4 filter from text list of events
-        process.eeBadSc4Filter = getEventListFilter(process.source.fileNames[0],"Nov14","ecalscn1043093")
+        process.eeBadSc4Filter = getEventListFilter(process.source.fileNames[0],"Dec01","ecalscn1043093")
         process.Baseline += process.eeBadSc4Filter
         VarsBool.extend(['eeBadSc4Filter'])
 
