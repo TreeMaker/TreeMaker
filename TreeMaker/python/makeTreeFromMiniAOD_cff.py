@@ -560,6 +560,7 @@ signal=False
                           sequence="Baseline",
                           JetTag=JetTag,
                           suff='',
+                          fastsim=fastsim,
                           skipGoodJets=False,
                           storeProperties=2,
                           SkipTag=SkipTag
@@ -583,6 +584,7 @@ signal=False
                           sequence="Baseline",
                           JetTag=cms.InputTag("patJetsJECup"),
                           suff='JECup',
+                          fastsim=fastsim,
                           skipGoodJets=False,
                           storeProperties=1,
                           SkipTag=SkipTag
@@ -598,6 +600,7 @@ signal=False
                           sequence="Baseline",
                           JetTag=cms.InputTag("patJetsJECdown"),
                           suff='JECdown',
+                          fastsim=fastsim,
                           skipGoodJets=False,
                           storeProperties=1,
                           SkipTag=SkipTag
@@ -682,7 +685,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,JetTag,METTag,geninfo,residual)
+        process = doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
