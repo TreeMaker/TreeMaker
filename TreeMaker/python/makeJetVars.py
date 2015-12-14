@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeJetVars(process, sequence, JetTag, suff, fastsim, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     if hasattr(process,sequence):
         theSequence = getattr(process,sequence)
     else:
@@ -10,6 +10,8 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
+    saveAll = False
+    if fastsim: saveAll = True
     if skipGoodJets:
         GoodJetsTag = JetTag
     else:
@@ -29,7 +31,8 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
             jetPtFilter               = cms.double(30),
             ExcludeLepIsoTrackPhotons = cms.bool(True),
             JetConeSize               = cms.double(0.4),
-            SkipTag                   = SkipTag
+            SkipTag                   = SkipTag,
+            SaveAllJets               = saveAll
         )
         setattr(process,"GoodJets"+suff,GoodJets)
         theSequence += getattr(process,"GoodJets"+suff)

@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
+def reclusterZinv(process, geninfo, residual, fastsim, cleanedCandidates, suff):
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
@@ -130,6 +130,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
         sequence="ZinvClean",
         JetTag = cms.InputTag("reclusteredJets"+suff),
         suff=postfix,
+        fastsim=fastsim,
         skipGoodJets=False,
         storeProperties=1,
     )
@@ -145,7 +146,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     
     return process
 
-def doZinvBkg(process,JetTag,METTag,geninfo,residual):
+def doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim):
     ##### add branches for photon studies
     process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
@@ -192,6 +193,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual):
                           sequence="ZinvClean",
                           JetTag=JetTag,
                           suff='clean',
+                          fastsim=fastsim,
                           skipGoodJets=False,
                           storeProperties=0,
                           SkipTag=OldSkipTag,
@@ -216,6 +218,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual):
                           sequence="ZinvClean",
                           JetTag=CleanJetsTag,
                           suff='clean',
+                          fastsim=fastsim,
                           skipGoodJets=True,
                           storeProperties=1,
     )
@@ -260,6 +263,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual):
         process,
         geninfo,
         residual,
+        fastsim,
         cms.InputTag("leptonCleanedCandidates"),
         "DY",
     )
@@ -279,6 +283,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual):
         process,
         geninfo,
         residual,
+        fastsim,
         cms.InputTag("photonCleanedCandidates"),
         "GJ",
     )
@@ -298,6 +303,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual):
         process,
         geninfo,
         residual,
+        fastsim,
         cms.InputTag("loosePhotonCleanedCandidates"),
         "GJloose",
     )
