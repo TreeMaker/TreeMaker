@@ -69,9 +69,12 @@ if dataset!=[] :
     readFiles.extend( [dataset] )
 
 #temporary redirector fix
+redir="root://cmsxrootd.fnal.gov/"
+#fastsim is phedexed to LPC Tier3
+if fastsim: redir="root://cmseos.fnal.gov/"
 for f,val in enumerate(readFiles):
     if readFiles[f][0:6]=="/store":
-        readFiles[f] = "root://cmsxrootd.fnal.gov/"+readFiles[f]
+        readFiles[f] = redir+readFiles[f]
     
 # print out settings
 print "***** SETUP ************************************"
