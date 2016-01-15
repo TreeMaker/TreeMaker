@@ -129,8 +129,8 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       ++iPart){
     
     if( std::find( pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId()) ) != pdgIdOfInterest.end() 
-        && (    ( abs(iPart->pdgId()) != 1000021 && abs( iPart->status() ) >20 && abs( iPart->status() ) <30 ) 
-             || ( abs(iPart->pdgId()) == 1000021 && iPart->isLastCopy() ) ) ) //special requirement for gluinos
+        && (    ( abs(iPart->pdgId()) != 1000021 && abs(iPart->pdgId()) != 1000006 && abs( iPart->status() ) >20 && abs( iPart->status() ) <30 ) 
+             || ( (abs(iPart->pdgId()) == 1000021 || abs(iPart->pdgId()) != 1000006) && iPart->isLastCopy() ) ) ) //special requirement for gluinos & stops
     {
 
       TLorentzVector temp;
