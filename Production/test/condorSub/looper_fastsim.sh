@@ -154,9 +154,20 @@ Spring15Fastv2.SMS-T5qqqqVV_mGluino-1100To1175_mLSP-1to1050_TuneCUETP8M1_13TeV-m
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-1200To1275_mLSP-1to1150_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-1300To1375_mLSP-1to1250_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-1400To1550_mLSP-1To1275_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T5qqqqVV_mGluino-1600To1750_mLSP-1To950_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-600To675_mLSP-1to550_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-700To775_mLSP-1To650_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-800To975_mLSP-1To850_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-100-125_mLSP-1to50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-200_mLSP-1to125_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-225_mLSP-25to150_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-250_mLSP-1to175_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-275_mLSP-75to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-400to475_mLSP-1to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-500-525-550_mLSP-1to425-325to450-1to475_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-500_mLSP-325_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-600-950_mLSP-1to450_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2tt_mStop-850_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
