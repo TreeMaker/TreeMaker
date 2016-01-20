@@ -65,7 +65,7 @@ private:
   const reco::GenParticle* BosonFound(const reco::GenParticle * particle);
   const reco::GenParticle* TauFound(const reco::GenParticle * particle);
 
-  const double GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, bool doActivity=false);
+  void GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity);
   const int MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track);
   const double GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track);
 	
@@ -222,8 +222,11 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  selectedElectronTauDecay->push_back(0);
 		  int matchedPFCand(MatchToPFCand(pfcands, &selectedElectron->back()));
 		  selectedElectronGenRecoD3->push_back(GetGenRecoD3(pfcands, matchedPFCand, &selectedElectron->back()));
-		  selectedElectronTrkIso->push_back(GetTrkIso(pfcands, matchedPFCand));
-		  selectedElectronTrkAct->push_back(GetTrkIso(pfcands, matchedPFCand, true));
+		  float trkiso = 0.;
+		  float activity = 0.;
+		  GetTrkIso(pfcands, matchedPFCand, trkiso, activity);
+		  selectedElectronTrkIso->push_back(trkiso);
+		  selectedElectronTrkAct->push_back(activity);
 		}
 	      if(abs(FinalBoson->daughter(ii)->pdgId())== 13) 
 		{
@@ -231,8 +234,11 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  selectedMuonTauDecay->push_back(0);
 		  int matchedPFCand(MatchToPFCand(pfcands, &selectedMuon->back()));
 		  selectedMuonGenRecoD3->push_back(GetGenRecoD3(pfcands, matchedPFCand, &selectedMuon->back()));
-		  selectedMuonTrkIso->push_back(GetTrkIso(pfcands, matchedPFCand));
-		  selectedMuonTrkAct->push_back(GetTrkIso(pfcands, matchedPFCand, true));
+		  float trkiso = 0.;
+		  float activity = 0.;
+		  GetTrkIso(pfcands, matchedPFCand, trkiso, activity);
+		  selectedMuonTrkIso->push_back(trkiso);
+		  selectedMuonTrkAct->push_back(activity);
 		}
 	      if(abs(FinalBoson->daughter(ii)->pdgId())== 15) 
 		{
@@ -286,8 +292,11 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			  selectedElectronTauDecay->push_back(1);
 			  int matchedPFCand(MatchToPFCand(pfcands, &selectedElectron->back()));
 			  selectedElectronGenRecoD3->push_back(GetGenRecoD3(pfcands, matchedPFCand, &selectedElectron->back()));
-			  selectedElectronTrkIso->push_back(GetTrkIso(pfcands, matchedPFCand));
-			  selectedElectronTrkAct->push_back(GetTrkIso(pfcands, matchedPFCand, true));
+			  float trkiso = 0.;
+			  float activity = 0.;
+			  GetTrkIso(pfcands, matchedPFCand, trkiso, activity);
+			  selectedElectronTrkIso->push_back(trkiso);
+			  selectedElectronTrkAct->push_back(activity);
 			  hadTauDecay=0;
 			}
 		      else if(abs(FinalTauDecay->daughter(iii)->pdgId())== 13) 
@@ -296,8 +305,11 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			  selectedMuonTauDecay->push_back(1);
 			  int matchedPFCand(MatchToPFCand(pfcands, &selectedMuon->back()));
 			  selectedMuonGenRecoD3->push_back(GetGenRecoD3(pfcands, matchedPFCand, &selectedMuon->back()));
-			  selectedMuonTrkIso->push_back(GetTrkIso(pfcands, matchedPFCand));
-			  selectedMuonTrkAct->push_back(GetTrkIso(pfcands, matchedPFCand, true));
+			  float trkiso = 0.;
+			  float activity = 0.;
+			  GetTrkIso(pfcands, matchedPFCand, trkiso, activity);
+			  selectedMuonTrkIso->push_back(trkiso);
+			  selectedMuonTrkAct->push_back(activity);
 			  hadTauDecay=0;
 			}
 		      // store all decay productes of the tau in a new colleciton
@@ -349,8 +361,11 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       int matched_track = MatchToPFCand(pfcands, &selectedTauDecayCands->at(leadTrk));
       if (matched_track>=0) {
   	//	printf("Matched gen pion to iso track: ptg = %3.3f, pttk = %3.3f --> d3 = %3.3f\n", selectedTauLeadTrkPT[icand], TAPPionTracks->at(matched_TAP_track).Pt(), mind3);
-  	selectedTauLeadTrkIso->push_back(GetTrkIso(pfcands, matched_track));
-  	selectedTauLeadTrkAct->push_back(GetTrkIso(pfcands, matched_track, true));
+	float trkiso = 0.;
+	float activity = 0.;
+	GetTrkIso(pfcands, matched_track, trkiso, activity);
+	selectedTauLeadTrkIso->push_back(trkiso);
+	selectedTauLeadTrkAct->push_back(activity);	
   	selectedTauLeadTrkd3->push_back(GetGenRecoD3(pfcands, matched_track, &selectedTauDecayCands->at(leadTrk)));
       } else {
   	selectedTauLeadTrkIso->push_back(-999.);
@@ -486,26 +501,29 @@ const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * p
 }
 
 
-const double GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, bool doActivity) {
-  if (tkInd<0||tkInd>(int)pfcands->size()) return -999.;
-  double trkiso(0.); 
+void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) {
+  if (tkInd>pfcands->size()) {
+	  trkiso = -999.;
+	  activity = -999.;
+	  return;
+  }
+  trkiso = 0.;
+  activity = 0.;
   double r_iso = 0.3;
   for (unsigned int iPF(0); iPF<pfcands->size(); iPF++) {
     const pat::PackedCandidate &pfc = pfcands->at(iPF);
     if (pfc.charge()==0) continue;
-    if ((int)iPF==tkInd) continue; // don't count track in its own sum
-    double dr = deltaR(pfc, pfcands->at(tkInd));
-    if (doActivity) {
-      if (dr < r_iso || dr > 0.4) continue; // activity annulus
-    } else {
-      if (dr > r_iso) continue; // mini iso cone
-    }
+    if (iPF==tkInd) continue; // don't count track in its own sum
     float dz_other = pfc.dz();
     if( fabs(dz_other) > 0.1 ) continue;
-    trkiso += pfc.pt();
+    double dr = deltaR(pfc, pfcands->at(tkInd));
+    // activity annulus
+    if (dr >= r_iso && dr <= 0.4) activity += pfc.pt();
+    // mini iso cone
+    if (dr <= r_iso) trkiso += pfc.pt();
   }
-    double result = trkiso/pfcands->at(tkInd).pt();
-    return result;
+  trkiso = trkiso/pfcands->at(tkInd).pt();
+  activity = activity/pfcands->at(tkInd).pt();
 }
 
 const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) {
