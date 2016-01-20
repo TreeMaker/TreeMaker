@@ -155,6 +155,7 @@ Spring15Fastv2.SMS-T5qqqqVV_mGluino-1200To1275_mLSP-1to1150_TuneCUETP8M1_13TeV-m
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-1300To1375_mLSP-1to1250_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-1400To1550_mLSP-1To1275_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-1600To1750_mLSP-1To950_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T5qqqqVV_mGluino-1800to2000_mLSP-1to1250_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-600To675_mLSP-1to550_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-700To775_mLSP-1To650_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T5qqqqVV_mGluino-800To975_mLSP-1To850_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
