@@ -363,25 +363,6 @@ signal=False
     VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
 
     ## ----------------------------------------------------------------------------------------------
-    ## Photons
-    ## ----------------------------------------------------------------------------------------------
-    process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
-        photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
-        electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
-        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
-        beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
-        ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
-        ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
-        rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
-        genParCollection = cms.untracked.InputTag("prunedGenParticles"), 
-        debug                  = cms.untracked.bool(False)
-    )
-    process.Baseline += process.goodPhotons
-    # good photon tag is InputTag('goodPhotons','bestPhoton')
-    VectorRecoCand.append("goodPhotons:bestPhoton")
-    VarsInt.append("goodPhotons:NumPhotons")
-
-    ## ----------------------------------------------------------------------------------------------
     ## MET Filters
     ## ----------------------------------------------------------------------------------------------
     
@@ -685,7 +666,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim)
+        process = doZinvBkg(process,tagname,JetTag,METTag,geninfo,residual,fastsim)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

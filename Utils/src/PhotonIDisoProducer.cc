@@ -53,11 +53,7 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   ecalRecHitsInputTag_EE_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EE_);
   ecalRecHitsInputTag_EB_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EB_);
 
-  produces< std::vector< pat::Photon > >(""); 
-  produces< std::vector< pat::Photon > >("bestPhoton"); 
-  produces< std::vector< pat::Photon > >("bestPhotonLoose"); 
-  produces< int >("NumPhotons");
-  produces< int >("NumPhotonsLoose");
+  produces< std::vector< pat::Photon > >(); 
   produces< std::vector< double > >("isEB");
   produces< std::vector< double > >("genMatched"); 
   produces< std::vector< double > >("hadTowOverEM"); 
@@ -78,7 +74,7 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
 PhotonIDisoProducer::~PhotonIDisoProducer()
 {
  
-   // do anything here that needs to be done at desctruction time
+   // do anything here that needs to be done at destruction time
    // (e.g. close files, deallocate resources etc.)
 
 }
@@ -94,14 +90,8 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
   using namespace edm;
-
-  std::auto_ptr< std::vector< pat::Photon > > photons ( new std::vector< pat::Photon >() );
-  std::auto_ptr< std::vector< pat::Photon > > bestPhoton ( new std::vector< pat::Photon >() );
-  std::auto_ptr< std::vector< pat::Photon > > bestPhotonLoose ( new std::vector< pat::Photon >() );
   
-  std::auto_ptr< int > NumPhotons ( new int(0) );
-  std::auto_ptr< int > NumPhotonsLoose ( new int(0) );
-
+  std::auto_ptr< std::vector< pat::Photon > > goodPhotons ( new std::vector< pat::Photon >() );
   std::auto_ptr< std::vector< double > > photon_isEB( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_genMatched( new std::vector< double > () );
   std::auto_ptr< std::vector< double > > photon_hadTowOverEM( new std::vector< double > () );
@@ -154,9 +144,6 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   effAreas.addEffA( 2.3, 2.4, 0.0074, 0.0232, 0.0924 );
   effAreas.addEffA( 2.4, 99., 0.0035, 0.1709, 0.1484 );
 
-  double bestPhotonPt = 0. ; 
-  double bestPhotonPtLoose = 0. ; 
-
   /// setup cluster tools
   noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
         
@@ -170,35 +157,18 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       std::cout << "photon phi: " << iPhoton->phi() << std::endl;
     }
 
-    photon_isEB->push_back( iPhoton->isEB() );
-    photon_genMatched->push_back( iPhoton->genPhoton() != NULL );
-    photon_hadTowOverEM->push_back( iPhoton->hadTowOverEm() ) ;
-
     std::vector<float> vCov = clusterTools_.localCovariances( *(iPhoton->superCluster()->seed()) ); 
     const float sieie = (isnan(vCov[0]) ? 0. : sqrt(vCov[0])); 
-    photon_sigmaIetaIeta->push_back( sieie );
     
-    photon_pfChargedIso->push_back(      iPhoton->chargedHadronIso() );
-    photon_pfGammaIso->push_back(        iPhoton->photonIso() );
-    photon_pfNeutralIso->push_back(      iPhoton->neutralHadronIso() );
-
     double chIso = effAreas.rhoCorrectedIso(  pfCh  , iPhoton->chargedHadronIso() , iPhoton->eta() , rho ); 
     double nuIso = effAreas.rhoCorrectedIso(  pfNu  , iPhoton->neutralHadronIso() , iPhoton->eta() , rho ); 
     double gamIso = effAreas.rhoCorrectedIso( pfGam , iPhoton->photonIso()        , iPhoton->eta() , rho ); 
 
-    photon_pfChargedIsoRhoCorr->push_back( chIso  );
-    photon_pfGammaIsoRhoCorr->push_back(   gamIso  );
-    photon_pfNeutralIsoRhoCorr->push_back( nuIso );
-
-    photon_hasPixelSeed->push_back( iPhoton->hasPixelSeed() );
-    photon_passElectronVeto->push_back( !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) );
-
-    // apply photon selection -- all good photons and the leading pt photon will be saved
+    // apply photon selection -- all good photons will be saved
+	// use loose selection with no sieie or chiso cuts
     bool isBarrelPhoton=false;
     bool isEndcapPhoton=false;
-    bool passID=false;
     bool passIDLoose=false;
-    bool passIso=false;
     bool passIsoLoose=false;
     bool passAcc=false;
 
@@ -213,7 +183,6 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     else {
       isBarrelPhoton=false;
       isEndcapPhoton=false;
-
     }
 
     if(isBarrelPhoton || isEndcapPhoton){
@@ -222,17 +191,17 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     // apply id cuts
     if(isBarrelPhoton){
-      if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0107){//id criterias barrel
-        passID=true;
-      }//id criterias barrel
+      //if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0107){//id criterias barrel
+      //  passID=true;
+      //}//id criterias barrel
       if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position())){//id criterias barrel (loose, no sieie cut)
         passIDLoose=true;
       }//id criterias barrel (loose)
     } 
     else if(isEndcapPhoton){
-      if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0272){//id criteria endcap
-        passID=true;
-      }//id criterias endcap
+      //if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0272){//id criteria endcap
+      //  passID=true;
+      //}//id criterias endcap
       if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position())){//id criteria endcap (loose, no sieie cut)
         passIDLoose=true;
       }//id criterias endcap (loose)
@@ -240,118 +209,85 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
     // apply isolation cuts
     if(isBarrelPhoton){
-      if(chIso <2.67 && nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){
-        passIso=true;      
-      }
+      //if(chIso <2.67 && nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){
+      //  passIso=true;      
+      //}
       if(nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){//loose, no charged iso cut
         passIsoLoose=true;      
       }
     }
     else if(isEndcapPhoton){
-      if(chIso <1.79 && nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){
-        passIso=true;
-      }
+      //if(chIso <1.79 && nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){
+      //  passIso=true;
+      //}
       if(nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){//loose, no charged iso cut
         passIsoLoose=true;
       }
     }
-    else{
-      passIso=false;
-    }
-
-    // check if photons is a good photon
-    if( passAcc && passID && passIso && iPhoton->pt() > 100.0){//pure photons
-      (*NumPhotons)++;
-      photons->push_back( *iPhoton );
-      // make sure only the highest pt photon is used
-      if(iPhoton->pt() > bestPhotonPt){ 
-
-        bestPhoton->clear();
-        bestPhoton->push_back( *iPhoton );
-        bestPhotonPt=iPhoton->pt();
-
-      }// done with best photon
-    
-    }//pure photons
 
     // check if photon is a good loose photon
     if( passAcc && passIDLoose && passIsoLoose && iPhoton->pt() > 100.0){//pure photons
-      (*NumPhotonsLoose)++;
-      // make sure only the highest pt photon is used
-      if(iPhoton->pt() > bestPhotonPtLoose){ 
-
-        bestPhotonLoose->clear();
-        bestPhotonLoose->push_back( *iPhoton );
-        bestPhotonPtLoose=iPhoton->pt();
-
-      }// done with best loose photon
-    
-    }//pure photons
-
-if (genParticles.isValid()){//genLevel Stuff
-    
-
-
-   // loop over gen particles and find nonprompt and hadronization photons
-     int matchedGenPrompt = 0;
-     int matchedGenNonPrompt = 0 ;
+      goodPhotons->push_back( *iPhoton );
+      photon_isEB->push_back( iPhoton->isEB() );
+      photon_genMatched->push_back( iPhoton->genPhoton() != NULL );
+      photon_hadTowOverEM->push_back( iPhoton->hadTowOverEm() ) ;
+      photon_sigmaIetaIeta->push_back( sieie );
+      photon_pfChargedIso->push_back(      iPhoton->chargedHadronIso() );
+      photon_pfGammaIso->push_back(        iPhoton->photonIso() );
+      photon_pfNeutralIso->push_back(      iPhoton->neutralHadronIso() );
+      photon_pfChargedIsoRhoCorr->push_back( chIso  );
+      photon_pfGammaIsoRhoCorr->push_back(   gamIso  );
+      photon_pfNeutralIsoRhoCorr->push_back( nuIso );
+      photon_hasPixelSeed->push_back( iPhoton->hasPixelSeed() );
+      photon_passElectronVeto->push_back( !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) );
 
 
+      if (genParticles.isValid()){//genLevel Stuff
+        // loop over gen particles and find nonprompt and hadronization photons
+        int matchedGenPrompt = 0;
+        int matchedGenNonPrompt = 0 ;
+        
+        for( View<reco::GenParticle>::const_iterator iGen = genParticles->begin();
+             iGen != genParticles->end();
+             ++iGen){
+        
+          // check for non-prompt photons ----------------------
+          if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
+        
+            TLorentzVector gen( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
+            TLorentzVector photon( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
+        
+            if( gen.DeltaR(photon) < 0.2 ){ /// I LEFT OFF HERE!!!!!!
+              if( abs(iGen->mother()->pdgId()) > 100 && abs(iGen->mother()->pdgId()) != 2212 ) matchedGenNonPrompt++ ;
+              if( abs(iGen->mother()->pdgId()) <= 22 || abs(iGen->mother()->pdgId()) == 2212 ) matchedGenPrompt++ ;
+            }
+          }
+        
+          // ----------------------------------------------------
+        
+          // check for hadronization photons --------------------
+        //  if( abs(iGen->pdgId()) < 6 && ( iGen->status() / 10 ) == 2){
+        
+            //TLorentzVector gen2( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
+            //TLorentzVector photon2( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
+        
+            //if( gen2.DeltaR(photon2) < 0.4 ) isHadronization = true;
+        
+         // }
+          // ----------------------------------------------------
+        
+        }// end loop over gen particles
 
-    for( View<reco::GenParticle>::const_iterator iGen = genParticles->begin();
-         iGen != genParticles->end();
-         ++iGen){
-
-      // check for non-prompt photonts ----------------------
-      if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
-
-        TLorentzVector gen( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
-        TLorentzVector photon( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
-
-        if( gen.DeltaR(photon) < 0.2 ){ /// I LEFT OFF HERE!!!!!!
-          if( abs(iGen->mother()->pdgId()) > 100 && abs(iGen->mother()->pdgId()) != 2212 ) matchedGenNonPrompt++ ;
-          if( abs(iGen->mother()->pdgId()) <= 22 || abs(iGen->mother()->pdgId()) == 2212 ) matchedGenPrompt++ ;
-        }
-      }
-
-
-      // ----------------------------------------------------
-
-      // check for hadronization photons --------------------
-    //  if( abs(iGen->pdgId()) < 6 && ( iGen->status() / 10 ) == 2){
-
-        //TLorentzVector gen2( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
-        //TLorentzVector photon2( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
-
-        //if( gen2.DeltaR(photon2) < 0.4 ) isHadronization = true;
-
-     // }
-      // ----------------------------------------------------
-
-    }// end loop over gen particles
-
-    if( matchedGenPrompt > 0 || matchedGenNonPrompt == 0 ) photon_nonPrompt->push_back(false);
-    else if( matchedGenNonPrompt > 0 ) photon_nonPrompt->push_back(true);
-    else photon_nonPrompt->push_back(false);
-}//gen level stuff
+        if( matchedGenPrompt > 0 || matchedGenNonPrompt == 0 ) photon_nonPrompt->push_back(false);
+        else if( matchedGenNonPrompt > 0 ) photon_nonPrompt->push_back(true);
+        else photon_nonPrompt->push_back(false);
+      }//gen level stuff
     //photon_hadronization->push_back( isHadronization );
 
-
-
-
-
-
-
-
-
+    }//pure photons
 
   }// end loop over candidate photons
-
-  iEvent.put(photons); 
-  iEvent.put(bestPhoton, "bestPhoton" ); 
-  iEvent.put(NumPhotons, "NumPhotons" ); 
-  iEvent.put(bestPhotonLoose, "bestPhotonLoose" ); 
-  iEvent.put(NumPhotonsLoose, "NumPhotonsLoose" ); 
+  iEvent.put(goodPhotons); 
   iEvent.put(photon_isEB , "isEB" );
   iEvent.put(photon_genMatched , "genMatched" );
   iEvent.put(photon_hadTowOverEM , "hadTowOverEM" );

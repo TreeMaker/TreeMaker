@@ -146,8 +146,27 @@ def reclusterZinv(process, geninfo, residual, fastsim, cleanedCandidates, suff):
     
     return process
 
-def doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim):
+def doZinvBkg(process,tagname,JetTag,METTag,geninfo,residual,fastsim):
+    process.ZinvClean = cms.Sequence()
+
+    ## ----------------------------------------------------------------------------------------------
+    ## Photons
+    ## ----------------------------------------------------------------------------------------------
+    process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
+        photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
+        electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
+        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
+        beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
+        ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
+        ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
+        rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
+        genParCollection = cms.untracked.InputTag("prunedGenParticles"), 
+        debug                  = cms.untracked.bool(False)
+    )
+    process.ZinvClean += process.goodPhotons
+    
     ##### add branches for photon studies
+    process.TreeMaker2.VectorRecoCand.append("goodPhotons(IdIsoPhoton)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:isEB(photon_isEB)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:genMatched(photon_genMatched)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:hadTowOverEM(photon_hadTowOverEM)")
@@ -161,11 +180,6 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim):
     process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIsoRhoCorr(photon_pfNeutralIsoRhoCorr)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:sigmaIetaIeta(photon_sigmaIetaIeta)")
     process.TreeMaker2.VectorBool.append("goodPhotons:nonPrompt(photon_nonPrompt)")
-    process.TreeMaker2.VectorRecoCand.append("slimmedPhotons(photonCands)")
-    process.TreeMaker2.VarsInt.append("goodPhotons:NumPhotonsLoose")
-    process.TreeMaker2.VectorRecoCand.append("goodPhotons:bestPhotonLoose")
-    
-    process.ZinvClean = cms.Sequence()
 
     from TreeMaker.Utils.zproducer_cfi import ZProducer
     process.makeTheZs = ZProducer.clone(
@@ -187,7 +201,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim):
         cms.InputTag('IsolatedElectronTracksVeto'),
         cms.InputTag('IsolatedMuonTracksVeto'),
         cms.InputTag('IsolatedPionTracksVeto'),
-        cms.InputTag('goodPhotons', 'bestPhoton'),
+        cms.InputTag('goodPhotons'),
     )
     process = makeJetVars(process,
                           sequence="ZinvClean",
@@ -207,7 +221,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim):
        ElectronR   = cms.double(0.4),
        MuonTag     = cms.InputTag('LeptonsNew:IdIsoMuon'),
        MuonR       = cms.double(0.4),
-       PhotonTag   = cms.InputTag('goodPhotons', 'bestPhoton'),
+       PhotonTag   = cms.InputTag('goodPhotons'),
        PhotonR     = cms.double(0.4)
     )
     process.ZinvClean += process.cleanTheJets
@@ -230,7 +244,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim):
        cleanTag = cms.untracked.VInputTag(
            cms.InputTag('LeptonsNew:IdIsoElectron'),
            cms.InputTag('LeptonsNew:IdIsoMuon'),
-           cms.InputTag('goodPhotons', 'bestPhoton')
+           cms.InputTag('goodPhotons')
        )
     )
     process.ZinvClean += process.METclean
@@ -270,7 +284,7 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim):
     
     # remove photon for GJet
     process.selectedPhotons = cms.EDFilter("CandPtrSelector",
-        src = cms.InputTag("goodPhotons:bestPhoton"), cut = cms.string('')
+        src = cms.InputTag('goodPhotons'), cut = cms.string('')
     )
     process.ZinvClean += process.selectedPhotons
     process.photonCleanedCandidates =  cms.EDProducer("PackedCandPtrProjector",
@@ -286,26 +300,6 @@ def doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim):
         fastsim,
         cms.InputTag("photonCleanedCandidates"),
         "GJ",
-    )
-    
-    # remove photon for GJet purity studies (loose ID/iso)
-    process.selectedPhotonsLoose = cms.EDFilter("CandPtrSelector",
-        src = cms.InputTag("goodPhotons:bestPhotonLoose"), cut = cms.string('')
-    )
-    process.ZinvClean += process.selectedPhotonsLoose
-    process.loosePhotonCleanedCandidates =  cms.EDProducer("PackedCandPtrProjector",
-        src = cms.InputTag("packedPFCandidates"), veto = cms.InputTag("selectedPhotonsLoose")
-    )
-    process.ZinvClean += process.loosePhotonCleanedCandidates
-
-    # make jets for GJet
-    process = reclusterZinv(
-        process,
-        geninfo,
-        residual,
-        fastsim,
-        cms.InputTag("loosePhotonCleanedCandidates"),
-        "GJloose",
     )
 
     process.AdditionalSequence += process.ZinvClean
