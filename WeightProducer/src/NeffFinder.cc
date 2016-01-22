@@ -35,10 +35,12 @@ class NeffFinder: public edm::EDAnalyzer {
 		//member variables
 		std::string name;
 		unsigned long pos, neg;
+		edm::InputTag genEvtTag_;
+		edm::EDGetTokenT<GenEventInfoProduct> genEvtTok_;
 };
 
 NeffFinder::NeffFinder(const edm::ParameterSet& iConfig) :
-name(iConfig.getParameter<std::string>("name")), pos(0), neg(0) { }
+name(iConfig.getParameter<std::string>("name")), pos(0), neg(0), genEvtTag_(edm::InputTag("generator")), genEvtTok_(consumes<GenEventInfoProduct>(genEvtTag_)) { }
 
 NeffFinder::~NeffFinder() { }
 
@@ -47,7 +49,7 @@ void
 NeffFinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 	//account for negative weights
 	edm::Handle<GenEventInfoProduct> genEvtInfoHandle;
-	iEvent.getByLabel("generator", genEvtInfoHandle);
+	iEvent.getByToken(genEvtTok_, genEvtInfoHandle);
 	if (genEvtInfoHandle.isValid()) {
 		double genweight_ = genEvtInfoHandle->weight();
 		if(genweight_ < 0) ++neg;

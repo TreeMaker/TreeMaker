@@ -80,6 +80,10 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	maxEta_= iConfig.getParameter<double>("etaCut");
 	debug_= iConfig.getParameter<bool>("debug");
 	
+	pfCandidatesTok_ = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
+	vertexInputTok_ = consumes<edm::View<reco::Vertex>>(vertexInputTag_);
+	MetInputTok_ = consumes<edm::View<pat::MET>>(MetInputTag_);
+	
 	produces<std::vector<pat::PackedCandidate> >(""); 
 	produces<vector<TLorentzVector> >("pfcands");
 	produces<vector<double> >("pfcandsactivity").setBranchAlias("pfcands_activity");
@@ -110,7 +114,7 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	auto_ptr<vector<int>   >  pfcands_id     (new vector<int>  );
 	
 	edm::Handle< edm::View<pat::MET> > MET;
-	iEvent.getByLabel(MetInputTag_,MET);
+	iEvent.getByToken(MetInputTok_,MET);
 	reco::MET::LorentzVector metLorentz(0,0,0,0);
 	if(MET.isValid() ){
 		metLorentz=MET->at(0).p4();
@@ -121,14 +125,14 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	//---------------------------------
   
 	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
-	iEvent.getByLabel(pfCandidatesTag_, pfCandidates);
+	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
 
 	//---------------------------------
 	// get Vertex Collection
 	//---------------------------------
 	
 	edm::Handle<edm::View<reco::Vertex> > vertices;
-	iEvent.getByLabel(vertexInputTag_, vertices);
+	iEvent.getByToken(vertexInputTok_, vertices);
 	vtxSize = vertices->size();
 	bool hasGoodVtx = false;
 	if(vertices->size() > 0) hasGoodVtx = true;

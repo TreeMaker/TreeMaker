@@ -60,6 +60,8 @@ private:
   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag PrunedGenParticleTag_;
   edm::InputTag pfCandsTag_;
+  edm::EDGetTokenT<edm::View<reco::GenParticle>> PrunedGenParticleTok_;
+  edm::EDGetTokenT<pat::PackedCandidateCollection> pfCandsTok_;
   int pdgID_;
 	
   const reco::GenParticle* BosonFound(const reco::GenParticle * particle);
@@ -87,9 +89,12 @@ private:
 //
 GenLeptonRecoCand::GenLeptonRecoCand(const edm::ParameterSet& iConfig)
 {
-  //register your produc
+  //register your product
   PrunedGenParticleTag_ 				= 	iConfig.getParameter<edm::InputTag >("PrunedGenParticleTag");
   pfCandsTag_ = 	iConfig.getParameter<edm::InputTag >("pfCandsTag");
+  PrunedGenParticleTok_ = consumes<edm::View<reco::GenParticle>>(PrunedGenParticleTag_);
+  pfCandsTok_ = consumes<pat::PackedCandidateCollection>(pfCandsTag_);
+  
   const std::string string1("Boson");
   const std::string string1t("BosonPDGId");
   const std::string string2("Muon");
@@ -201,10 +206,10 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   std::auto_ptr< std::vector<reco::GenParticle> > selectedTauNu(new std::vector<reco::GenParticle>);
   Handle<edm::View<reco::GenParticle> > pruned;
-  iEvent.getByLabel(PrunedGenParticleTag_,pruned);
+  iEvent.getByToken(PrunedGenParticleTok_,pruned);
 
   edm::Handle<pat::PackedCandidateCollection> pfcands;
-  iEvent.getByLabel(pfCandsTag_, pfcands);
+  iEvent.getByToken(pfCandsTok_, pfcands);
 
   for(size_t i=0; i<pruned->size();i++)
     {

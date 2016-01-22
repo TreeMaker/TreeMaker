@@ -52,6 +52,7 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
+	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	
 	
 	// ----------member data ---------------------------
@@ -71,8 +72,9 @@ private:
 //
 NJetInt::NJetInt(const edm::ParameterSet& iConfig)
 {
-	//register your produc
+	//register your product
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
 	
 	produces<int>("");
 	/* Examples
@@ -109,7 +111,7 @@ NJetInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	using namespace edm;
 	int NJets=0;
 	edm::Handle< edm::View<pat::Jet> > Jets;
-	iEvent.getByLabel(JetTag_,Jets);
+	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
 	  	     	
 		//NJets=Jets->size();
@@ -117,7 +119,7 @@ NJetInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			++NJets;
 		}
 	}
-	else std::cout<<"NJetInt::Invlide Tag: "<<JetTag_.label()<<std::endl;
+	else std::cout<<"NJetInt::Invalid Tag: "<<JetTag_.label()<<std::endl;
 	std::auto_ptr<int> htp(new int(NJets));
 	iEvent.put(htp);
 	

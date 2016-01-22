@@ -39,24 +39,47 @@ private:
   virtual void beginJob() ;
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob() ;
-	
+    
   virtual void beginRun(edm::Run&, edm::EventSetup const&);
   virtual void endRun(edm::Run&, edm::EventSetup const&);
   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  edm::InputTag LeptonTag_, PFCandTag_, JetTag_;
-  std::string LeptonType_;
-	
+  edm::InputTag LeptonTag_, PFCandTag_, JetTag_, RhoTag_;
+  edm::EDGetTokenT<edm::View<reco::Candidate>> LeptonTok_;
+  edm::EDGetTokenT<pat::PackedCandidateCollection> PFCandTok_;
+  edm::EDGetTokenT<pat::JetCollection> JetTok_;
+  edm::EDGetTokenT<double> RhoTok_;
+  
+  std::string LeptonTypeName_;
+  enum lepton_type { electron = 0, muon = 1, gen = 2, track = 3, other = 4 };
+  lepton_type LeptonType_;
+  SUSYIsolation SUSYIsolationHelper;
+    
   // ----------member data ---------------------------
 };
 
 IsolationProducer::IsolationProducer(const edm::ParameterSet& iConfig)
 {
-  //register your producer
-  LeptonTag_ 	    = 	iConfig.getParameter<edm::InputTag>("LeptonTag");
-  LeptonType_       = 	iConfig.getParameter<std::string>("LeptonType");
-  PFCandTag_        = 	iConfig.getParameter<edm::InputTag>("PFCandTag");
-  JetTag_        = 	iConfig.getParameter<edm::InputTag>("JetTag");
+  //register your product
+  LeptonTag_         =     iConfig.getParameter<edm::InputTag>("LeptonTag");
+  LeptonTypeName_       =     iConfig.getParameter<std::string>("LeptonType");
+  PFCandTag_        =     iConfig.getParameter<edm::InputTag>("PFCandTag");
+  JetTag_        =     iConfig.getParameter<edm::InputTag>("JetTag");
+  RhoTag_ = edm::InputTag("fixedGridRhoFastjetAll");
+  
+  LeptonTok_ = consumes<edm::View<reco::Candidate>>(LeptonTag_);
+  PFCandTok_ = consumes<pat::PackedCandidateCollection>(PFCandTag_);
+  JetTok_ = consumes<pat::JetCollection>(JetTag_);
+  RhoTok_ = consumes<double>(RhoTag_);
+  
+  if(LeptonTypeName_=="electron") LeptonType_ = electron; 
+  else if(LeptonTypeName_=="muon") LeptonType_ = muon; 
+  else if(LeptonTypeName_=="gen") LeptonType_ = gen; 
+  else if(LeptonTypeName_=="track") LeptonType_ = track; 
+  else {
+    LeptonType_ = other;
+    std::cout << "IsolationProducer Error: " << LeptonTypeName_ << " is not a valid collection." << std::endl;
+  }
 
   produces<std::vector<double> >("MiniIso");
   produces<std::vector<double> >("RA2Activity");
@@ -66,10 +89,10 @@ IsolationProducer::IsolationProducer(const edm::ParameterSet& iConfig)
 
 IsolationProducer::~IsolationProducer()
 {
-	
+    
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
-	
+    
 }
 
 void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -77,87 +100,58 @@ void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   //  std::cout<<"Running IsolationProducer"<<std::endl;
  
   using namespace edm;
-		
+        
   std::auto_ptr<std::vector<double> > mini_iso(new std::vector<double>());
   std::auto_ptr<std::vector<double> > ra2_activity(new std::vector<double>());
   std::auto_ptr<std::vector<double> > mt2_activity(new std::vector<double>());
 
   
   edm::Handle<pat::PackedCandidateCollection> pfcands;
-  iEvent.getByLabel(PFCandTag_, pfcands);
+  iEvent.getByToken(PFCandTok_, pfcands);
 
   edm::Handle<pat::JetCollection> jets;
-  iEvent.getByLabel(JetTag_, jets);
+  iEvent.getByToken(JetTok_, jets);
 
   edm::Handle< double > rho_;
-  iEvent.getByLabel("fixedGridRhoFastjetAll", rho_);
+  iEvent.getByToken(RhoTok_, rho_);
   double rho = *rho_;
 
-  //std::cout << "Computing mini isolation for " << LeptonTag_.label() << ":" << LeptonTag_.instance() << std::endl;
-  if (LeptonType_=="electron") {
-    edm::Handle<edm::View<pat::Electron> > eleHandle;
-    iEvent.getByLabel(LeptonTag_, eleHandle);
-    if(eleHandle.isValid())
+  if(LeptonType_ != other){
+    //std::cout << "Computing mini isolation for " << LeptonTag_.label() << ":" << LeptonTag_.instance() << std::endl;
+    edm::Handle<edm::View<reco::Candidate> > lepHandle;
+    iEvent.getByToken(LeptonTok_, lepHandle);
+    if(lepHandle.isValid())
+    {
+      SUSYIsolation::iso_types IsoType_ = SUSYIsolation::other;
+      bool useEME = false;
+      if(LeptonType_==electron){ IsoType_ = SUSYIsolation::electron; useEME = false; }
+      else if(LeptonType_==muon){ IsoType_ = SUSYIsolation::muon; useEME = true; }
+    
+      for(unsigned int e=0; e<lepHandle->size(); ++e)
       {
-	for(unsigned int e=0; e<eleHandle->size(); ++e)
-	  {
-	    const reco::Candidate* lep = dynamic_cast<const reco::Candidate *>(&((*eleHandle)[e]));
-	    mini_iso->push_back(SUSYIsolation::GetMiniIsolation(pfcands, lep, LeptonType_, rho));
-	    ra2_activity->push_back(SUSYIsolation::GetRA2Activity(jets, lep, false));
-	    mt2_activity->push_back(SUSYIsolation::GetMiniIsolation(pfcands, lep, LeptonType_, rho, true));
-	  }
+        if(LeptonType_==gen){
+          int pdgId = abs(lepHandle->at(e).pdgId());
+          if (pdgId==11) IsoType_ = SUSYIsolation::electron;
+          else IsoType_ = SUSYIsolation::muon; // treat taus as muons for now
+          useEME = (pdgId==13);
+        }
+        else if(LeptonType_==track){
+          int pdgId = abs(lepHandle->at(e).pdgId());
+          if (pdgId==11) IsoType_ = SUSYIsolation::electron;
+          else if(pdgId==13) IsoType_ = SUSYIsolation::muon;
+          useEME = (pdgId==13);
+        }
+          
+        const reco::Candidate* lep = &((*lepHandle)[e]);
+        double mini_iso_val(0.);
+        double mt2_activity_val(0.);
+        SUSYIsolationHelper.GetMiniIsolation(pfcands, lep, IsoType_, rho, mini_iso_val, mt2_activity_val);
+        mini_iso->push_back(mini_iso_val);
+        mt2_activity->push_back(mt2_activity_val);
+        ra2_activity->push_back(SUSYIsolationHelper.GetRA2Activity(jets, lep, useEME));
       }
-  }
-  else if (LeptonType_=="muon") {
-    edm::Handle<edm::View<pat::Muon> > muonHandle;
-    iEvent.getByLabel(LeptonTag_, muonHandle);
-    if(muonHandle.isValid()) {
-      for(unsigned int m=0; m<muonHandle->size(); ++m)
-	{
-	  const reco::Candidate* lep = dynamic_cast<const reco::Candidate *>(&((*muonHandle)[m]));
-	  mini_iso->push_back(SUSYIsolation::GetMiniIsolation(pfcands, lep, LeptonType_, rho));
-	  ra2_activity->push_back(SUSYIsolation::GetRA2Activity(jets, lep, true));
-	  mt2_activity->push_back(SUSYIsolation::GetMiniIsolation(pfcands, lep, LeptonType_, rho, true));
-	}
     }
   }
-  else if (LeptonType_=="gen") {
-    edm::Handle<edm::View<reco::GenParticle> > genHandle;
-    iEvent.getByLabel(LeptonTag_, genHandle);
-    if(genHandle.isValid()) {
-      for(unsigned int igen=0; igen<genHandle->size(); ++igen)
-	{
-	  int pdgId = abs(genHandle->at(igen).pdgId());
-	  std::string gen_type="";
-	  if (pdgId==11) gen_type="electron";
-	  else gen_type="muon"; // treat taus as muons for now
-	  const reco::Candidate* lep = dynamic_cast<const reco::Candidate *>(&((*genHandle)[igen]));
-	  mini_iso->push_back(SUSYIsolation::GetMiniIsolation(pfcands, lep, gen_type, rho));
-	  ra2_activity->push_back(SUSYIsolation::GetRA2Activity(jets, lep, (pdgId==13)));
-	  mt2_activity->push_back(SUSYIsolation::GetMiniIsolation(pfcands, lep, gen_type, rho, true));
-	}
-    }
-  }
-  else if (LeptonType_=="track") {
-    edm::Handle<edm::View<pat::PackedCandidate> > trackHandle;
-    iEvent.getByLabel(LeptonTag_, trackHandle);
-    if(trackHandle.isValid()) {
-      for(unsigned int itrack=0; itrack<trackHandle->size(); ++itrack)
-	{
-	  int pdgId = abs(trackHandle->at(itrack).pdgId());
-	  std::string track_type="";
-	  if (pdgId==11) track_type="electron";
-	  else if (pdgId==13) track_type="muon";
-	  const reco::Candidate* lep = dynamic_cast<const reco::Candidate *>(&((*trackHandle)[itrack]));
-	  mini_iso->push_back(SUSYIsolation::GetMiniIsolation(pfcands, lep, track_type, rho));
-	  ra2_activity->push_back(SUSYIsolation::GetRA2Activity(jets, lep, (pdgId==13)));
-	  mt2_activity->push_back(SUSYIsolation::GetMiniIsolation(pfcands, lep, track_type, rho, true));
-	}
-    }
-  }
-  else std::cout << "IsolationProducer Error: " << LeptonType_ << " is not a valid collection." << std::endl;
-
-  
 
   iEvent.put(mini_iso,"MiniIso");
   iEvent.put(ra2_activity,"RA2Activity");

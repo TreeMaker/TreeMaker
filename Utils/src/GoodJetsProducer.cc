@@ -62,6 +62,8 @@ private:
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag JetTag_;
    std::vector<edm::InputTag> SkipTag_;
+   edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
+   std::vector<edm::EDGetTokenT<edm::View<reco::Candidate>>> SkipTok_;
    double maxEta_;
    double maxNeutralFraction_, maxPhotonFraction_, minChargedFraction_, maxChargedEMFraction_, maxPhotonFractionHF_;
    int minNconstituents_, minNneutrals_, minNcharged_;
@@ -107,6 +109,9 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    SkipTag_  = iConfig.getParameter<std::vector<edm::InputTag>>("SkipTag");
    JetConeSize_ = iConfig.getParameter <double> ("JetConeSize");
    
+   JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
+   for(auto& tag: SkipTag_) SkipTok_.push_back(consumes<edm::View<reco::Candidate>>(tag));
+   
    produces<std::vector<Jet> >();
    produces<bool>("JetID");
    produces<std::vector<bool> >("JetIDMask");
@@ -136,15 +141,15 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    excludeHandles.reserve(SkipTag_.size());
    if(ExcludeLeptonIsoTrackPhotons_ && SkipTag_.size()){
       // loop over each edm::InputTag
-      for (std::vector<edm::InputTag>::const_iterator iC = SkipTag_.begin(); iC != SkipTag_.end(); ++iC) {
+      for (unsigned iC = 0; iC < SkipTag_.size(); ++iC) {
          // get each collection the edm::InputTag corresponds to
          edm::Handle<edm::View<reco::Candidate>> cleanCands;
-         iEvent.getByLabel(*iC, cleanCands);
+         iEvent.getByToken(SkipTok_[iC], cleanCands);
          if (cleanCands.isValid()) {
             excludeHandles.push_back(cleanCands);
          }
          else {
-             std::cout<<"Warning: skip tag not valid in GoodJetsProducer: "<<*iC<<std::endl;
+             std::cout<<"Warning: skip tag not valid in GoodJetsProducer: "<<SkipTag_[iC]<<std::endl;
          }
       }
    }
@@ -153,7 +158,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::auto_ptr<std::vector<bool> > jetsMask(new std::vector<bool>());
    bool result=true;
    edm::Handle< edm::View<Jet> > Jets;
-   iEvent.getByLabel(JetTag_,Jets);
+   iEvent.getByToken(JetTok_,Jets);
    if(Jets.isValid())
    {
       for(unsigned int i=0; i<Jets->size();i++)

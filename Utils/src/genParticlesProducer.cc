@@ -41,6 +41,7 @@
 
 genParticlesProducer::genParticlesProducer(const edm::ParameterSet& iConfig):
   genCollection(iConfig.getUntrackedParameter<edm::InputTag>("genCollection")),
+  genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
   debug(iConfig.getUntrackedParameter<bool>("debug",true))
 {
   produces< std::vector< TLorentzVector > >(""); 
@@ -96,7 +97,7 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   );
 
   edm::Handle< View<reco::GenParticle> > genPartCands;
-  iEvent.getByLabel( "prunedGenParticles" ,genPartCands);
+  iEvent.getByToken(genCollectionTok, genPartCands);
   
   for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart){
     if ( std::find( pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId()) ) == pdgIdOfInterest.end() ) continue;

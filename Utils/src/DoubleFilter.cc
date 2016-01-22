@@ -74,6 +74,7 @@ private:
 	// ----------member data ---------------------------
 	
 	edm::InputTag DoubleTag_;
+	edm::EDGetTokenT<double> DoubleTok_;
 	double CutValue_;
 };
 
@@ -92,6 +93,7 @@ DoubleFilter::DoubleFilter(const edm::ParameterSet& iConfig)
 {
 	//now do what ever initialization is needed
 	DoubleTag_ = iConfig.getParameter<edm::InputTag>("DoubleTag");
+	DoubleTok_ = consumes<double>(DoubleTag_);
 	CutValue_ = iConfig.getParameter <double> ("CutValue");
 }
 
@@ -114,7 +116,7 @@ bool
 DoubleFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	edm::Handle<double> var;	
-	iEvent.getByLabel(DoubleTag_,var);
+	iEvent.getByToken(DoubleTok_,var);
 	if(*var<CutValue_) return false;
 	
 	return true;

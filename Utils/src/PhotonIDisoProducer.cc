@@ -47,6 +47,14 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   ecalRecHitsInputTag_EB_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EB")),
   rhoCollection(iConfig.getUntrackedParameter<edm::InputTag>("rhoCollection")),
   genParCollection(iConfig.getUntrackedParameter<edm::InputTag>("genParCollection")),
+  photonTok_(consumes<edm::View<pat::Photon>>(photonCollection)),
+  electronTok_(consumes<pat::ElectronCollection>(electronCollection)),
+  conversionTok_(consumes<std::vector<reco::Conversion>>(conversionCollection)),
+  beamspotTok_(consumes<reco::BeamSpot>(beamspotCollection)),
+  ecalRecHitsInputTag_EE_Token_(consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EE_)),
+  ecalRecHitsInputTag_EB_Token_(consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EB_)),
+  rhoTok_(consumes<double>(rhoCollection)),
+  genParTok_(consumes<edm::View<reco::GenParticle>>(genParCollection)),
   debug(iConfig.getUntrackedParameter<bool>("debug",true))
 {
 
@@ -114,17 +122,17 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   
   Handle< View< pat::Photon> > photonCands;
-  iEvent.getByLabel( photonCollection ,photonCands);
+  iEvent.getByToken( photonTok_,photonCands);
   Handle<pat::ElectronCollection> electrons;
-  iEvent.getByLabel(electronCollection, electrons);
+  iEvent.getByToken(electronTok_, electrons);
   Handle<vector<reco::Conversion> > conversions;
-  iEvent.getByLabel(conversionCollection,conversions);
+  iEvent.getByToken(conversionTok_,conversions);
   Handle<reco::BeamSpot> beamSpot;
-  iEvent.getByLabel(beamspotCollection,beamSpot);
+  iEvent.getByToken(beamspotTok_,beamSpot);
   edm::Handle< View<reco::GenParticle> > genParticles;
-  iEvent.getByLabel( genParCollection ,genParticles);
+  iEvent.getByToken( genParTok_,genParticles);
   edm::Handle< double > rho_;
-  iEvent.getByLabel(rhoCollection,rho_);
+  iEvent.getByToken(rhoTok_,rho_);
   double rho = *rho_;
 
   if( debug ) std::cout << "got photon collection" << std::endl;

@@ -58,6 +58,7 @@ private:
    virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag JetTag_;
+   edm::EDGetTokenT<edm::View<T>> JetTok_;
    double MinPt_, MaxEta_;
    
    // ----------member data ---------------------------
@@ -84,6 +85,8 @@ SubJetSelectionT<T>::SubJetSelectionT(const edm::ParameterSet& iConfig)
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
    MinPt_ = iConfig.getParameter <double> ("MinPt");
    MaxEta_ = iConfig.getParameter <double> ("MaxEta");
+   
+   JetTok_ = consumes<edm::View<T>>(JetTag_);
 
    //register your products
    produces<std::vector<T> >();
@@ -114,7 +117,7 @@ void SubJetSelectionT<T>::produce(edm::Event& iEvent, const edm::EventSetup& iSe
    std::auto_ptr<std::vector<bool> > mask(new std::vector<bool>());
 
    edm::Handle< edm::View<T> > Jets;
-   iEvent.getByLabel(JetTag_,Jets);
+   iEvent.getByToken(JetTok_,Jets);
    if(Jets.isValid()) {
       mask->resize(Jets->size(),false);
       for(unsigned int i=0; i<Jets->size();i++) {

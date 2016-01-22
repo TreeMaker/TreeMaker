@@ -52,6 +52,7 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
+	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	
 	
 	// ----------member data ---------------------------
@@ -73,6 +74,7 @@ HTDouble::HTDouble(const edm::ParameterSet& iConfig)
 {
 	//register your produc
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
 	
 	produces<double>("");
 	/* Examples
@@ -109,14 +111,14 @@ HTDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	using namespace edm;
 	double ht_=0;
 	edm::Handle< edm::View<pat::Jet> > Jets;
-	iEvent.getByLabel(JetTag_,Jets);
+	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
 		for(unsigned int i=0; i<Jets->size();i++)
 		{
 			ht_ +=Jets->at(i).pt();
 		}
 	}
-	else std::cout<<"HTDouble::Invlide Tag: "<<JetTag_.label()<<std::endl;
+	else std::cout<<"HTDouble::Invalid Tag: "<<JetTag_.label()<<std::endl;
 	std::auto_ptr<double> htp(new double(ht_));
 	iEvent.put(htp);
 	

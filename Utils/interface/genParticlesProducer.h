@@ -31,6 +31,7 @@ private:
   // --------------- members ---------------------
   
   edm::InputTag genCollection; 
+  edm::EDGetTokenT<edm::View<reco::GenParticle>> genCollectionTok; 
   bool        debug;
 
 };

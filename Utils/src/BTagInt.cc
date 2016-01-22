@@ -52,6 +52,7 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
+	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	std::string   btagname_;
 	double        btagvalue_;
 	
@@ -73,8 +74,9 @@ private:
 //
 BTagInt::BTagInt(const edm::ParameterSet& iConfig)
 {
-	//register your produc
+	//register your product
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+	JetTok_ = consumes<edm::View<pat::Jet> >(JetTag_);
 	btagname_ = iConfig.getParameter<std::string>  ("BTagInputTag");
 	btagvalue_   = iConfig.getParameter<double>       ("BTagCutValue");
 	
@@ -115,14 +117,14 @@ BTagInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	using namespace pat;
 	int BTags=0;
 	edm::Handle< edm::View<pat::Jet> > Jets;
-	iEvent.getByLabel(JetTag_,Jets);
+	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
 		for(unsigned int i=0; i<Jets->size();i++)
 		{
 		  if(Jets->at(i).bDiscriminator(btagname_) >btagvalue_)BTags++;
 		}
 	}
-	else std::cout<<"BTagInt::Invlide Tag: "<<JetTag_.label()<<std::endl;
+	else std::cout<<"BTagInt::Invalid Tag: "<<JetTag_.label()<<std::endl;
 	std::auto_ptr<int> htp(new int(BTags));
 	iEvent.put(htp);
 	

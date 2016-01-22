@@ -13,6 +13,7 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "FWCore/Framework/interface/ConsumesCollector.h"
 
 //ROOT headers
 #include "TString.h"
@@ -57,7 +58,6 @@ class TreeMaker : public edm::EDProducer {
 		bool debug, doLorentz, sortBranches;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
-		vector<vector<string> > VarNames;
 		map<string,unsigned> nameCache;
 		// general event information
 		UInt_t runNum;
@@ -71,12 +71,13 @@ class TreeObjectBase {
 	public:
 		//constructor
 		TreeObjectBase() : tempFull(""), branchType("") {}
-		TreeObjectBase(string tempFull_, TTree* tree_) : tempFull(tempFull_), nameInTree(tempFull_), tagName(tempFull_), tree(tree_) {}
+		TreeObjectBase(string tempFull_) : tempFull(tempFull_), nameInTree(tempFull_), tagName(tempFull_), tree(NULL) {}
 		//destructor
 		virtual ~TreeObjectBase() {}
 		//functions
 		virtual string GetNameInTree() { return nameInTree; }
-		virtual void Initialize(map<string,unsigned>& nameCache) {}
+		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC) {}
+		virtual void SetTree(TTree* tree_) { tree = tree_; }
 		virtual void AddBranch() {}
 		virtual void SetDefault() {}
 		virtual void FillTree(edm::Event& iEvent) {}
@@ -124,11 +125,11 @@ class TreeObject : public TreeObjectBase {
 	public:
 		//constructor
 		TreeObject() : TreeObjectBase() {}
-		TreeObject(string tempFull_, TTree* tree_) : TreeObjectBase(tempFull_,tree_) {}
+		TreeObject(string tempFull_) : TreeObjectBase(tempFull_) {}
 		//destructor
 		virtual ~TreeObject() {}
 		//functions
-		virtual void Initialize(map<string,unsigned>& nameCache) {
+		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC) {
 			//case 1: x      -> tag = x,   name = x
 			//case 2: x:y    -> tag = x:y, name = y
 			//case 3: x(y)   -> tag = x,   name = y
@@ -154,14 +155,18 @@ class TreeObject : public TreeObjectBase {
 			cout << "full name: " << tempFull << " -> tag: " << tagName << " nameInTree: " << nameInTree << endl;
 			//make tag
 			tag = edm::InputTag(tagName);
+			SetConsumes(std::move(iC));
 			
 			//finalize name to avoid duplicates
 			FinalizeName(nameCache);
 		}
+		virtual void SetConsumes(edm::ConsumesCollector && iC){
+			tok = iC.consumes<T>(tag);
+		}
 		virtual void FillTree(edm::Event& iEvent){
 			SetDefault();
 			edm::Handle<T> var;
-			iEvent.getByLabel(tag,var);
+			iEvent.getByToken(tok,var);
 			if( var.isValid() ) {
 				value = *var;
 			}
@@ -176,30 +181,31 @@ class TreeObject : public TreeObjectBase {
 	protected:
 		//member variables
 		T value;
+		edm::EDGetTokenT<T> tok;
 };
 
 //specialize!
 
 template<>
-void TreeObject<bool>::AddBranch() { tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/O").c_str()); }
+void TreeObject<bool>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/O").c_str()); }
 template<>
-void TreeObject<int>::AddBranch() { tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/I").c_str()); }
+void TreeObject<int>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/I").c_str()); }
 template<>
-void TreeObject<double>::AddBranch() { tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/D").c_str()); }
+void TreeObject<double>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/D").c_str()); }
 template<>
-void TreeObject<string>::AddBranch() { tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+void TreeObject<string>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
-void TreeObject<TLorentzVector>::AddBranch() { tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+void TreeObject<TLorentzVector>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
-void TreeObject<vector<bool> >::AddBranch() { tree->Branch(nameInTree.c_str(),"vector<bool>",&value,32000,0); }
+void TreeObject<vector<bool> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<bool>",&value,32000,0); }
 template<>
-void TreeObject<vector<int> >::AddBranch() { tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,0); }
+void TreeObject<vector<int> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,0); }
 template<>
-void TreeObject<vector<double> >::AddBranch() { tree->Branch(nameInTree.c_str(),"vector<double>",&value,32000,0); }
+void TreeObject<vector<double> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<double>",&value,32000,0); }
 template<>
-void TreeObject<vector<string> >::AddBranch() { tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,0); }
+void TreeObject<vector<string> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,0); }
 template<>
-void TreeObject<vector<TLorentzVector> >::AddBranch() { tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0); }
+void TreeObject<vector<TLorentzVector> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0); }
 
 template<>
 void TreeObject<bool>::SetDefault() { value = false; }
@@ -228,15 +234,18 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 	public:
 		//constructor
 		TreeRecoCand() : TreeObject<vector<TLorentzVector> >() {}
-		TreeRecoCand(string tempFull_, TTree* tree_, bool doLorentz_=true) : TreeObject<vector<TLorentzVector> >(tempFull_,tree_), doLorentz(doLorentz_) {}
+		TreeRecoCand(string tempFull_, bool doLorentz_=true) : TreeObject<vector<TLorentzVector> >(tempFull_), doLorentz(doLorentz_) {}
 		//destructor
 		virtual ~TreeRecoCand() {}
 		
 		//functions
+		virtual void SetConsumes(edm::ConsumesCollector && iC){
+			candTok = iC.consumes<edm::View<reco::Candidate>>(tag);
+		}
 		virtual void FillTree(edm::Event& iEvent){
 			SetDefault();
 			edm::Handle< edm::View<reco::Candidate> > cands;
-			iEvent.getByLabel(tag,cands);
+			iEvent.getByToken(candTok,cands);
 			if( cands.isValid() ) {
 				if(doLorentz){
 					value.reserve(cands->size());
@@ -262,14 +271,16 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 			}
 		}
 		virtual void AddBranch() {
-			if(doLorentz){
-				tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0);
-			}
-			else {
-				tree->Branch((nameInTree+"Pt").c_str(),"vector<double>",&pt,32000,0);
-				tree->Branch((nameInTree+"Eta").c_str(),"vector<double>",&eta,32000,0);
-				tree->Branch((nameInTree+"Phi").c_str(),"vector<double>",&phi,32000,0);
-				tree->Branch((nameInTree+"E").c_str(),"vector<double>",&energy,32000,0);
+			if(tree){
+				if(doLorentz){
+					tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0);
+				}
+				else {
+					tree->Branch((nameInTree+"Pt").c_str(),"vector<double>",&pt,32000,0);
+					tree->Branch((nameInTree+"Eta").c_str(),"vector<double>",&eta,32000,0);
+					tree->Branch((nameInTree+"Phi").c_str(),"vector<double>",&phi,32000,0);
+					tree->Branch((nameInTree+"E").c_str(),"vector<double>",&energy,32000,0);
+				}
 			}
 		}
 		virtual void SetDefault() {
@@ -286,6 +297,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 	
 	protected:
 		//member variables
+		edm::EDGetTokenT<edm::View<reco::Candidate>> candTok;
 		bool doLorentz;
 		vector<double> pt, eta, phi, energy;
 };

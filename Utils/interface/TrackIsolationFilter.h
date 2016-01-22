@@ -28,6 +28,7 @@
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "DataFormats/PatCandidates/interface/MET.h"
 
 #include "TLorentzVector.h"
 #include "TTree.h"
@@ -58,6 +59,9 @@ private:
   edm::InputTag pfCandidatesTag_;
   edm::InputTag vertexInputTag_;
   edm::InputTag MetInputTag_;
+  edm::EDGetTokenT<edm::View<pat::PackedCandidate>> pfCandidatesTok_;
+  edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
+  edm::EDGetTokenT<edm::View<pat::MET>> MetInputTok_;
 
   int vtxSize;
 

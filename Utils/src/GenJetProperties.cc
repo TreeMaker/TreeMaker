@@ -40,6 +40,7 @@ private:
   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag GenJetTag;
+  edm::EDGetTokenT<edm::View<reco::GenJet>> GenJetTok;
 
 	
 	
@@ -61,6 +62,7 @@ private:
 GenJetProperties::GenJetProperties(const edm::ParameterSet& iConfig)
 {
   GenJetTag = iConfig.getParameter<edm::InputTag>("GenJetTag");
+  GenJetTok = consumes<edm::View<reco::GenJet>>(GenJetTag);
   //register your products
   /* Examples
    *   produces<ExampleData2>();
@@ -102,7 +104,7 @@ GenJetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   using namespace edm;
   using namespace reco;
   edm::Handle< edm::View<reco::GenJet> > GenJets;
-  iEvent.getByLabel(GenJetTag,GenJets);
+  iEvent.getByToken(GenJetTok,GenJets);
   if( GenJets.isValid() ) {
     for(unsigned int i=0; i<GenJets->size();i++)
       {
