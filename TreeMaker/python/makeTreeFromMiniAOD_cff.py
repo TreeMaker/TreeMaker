@@ -12,7 +12,6 @@ globaltag="",
 numevents=1000,
 lostlepton=False,
 hadtau=False,
-tagandprobe=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
@@ -42,9 +41,6 @@ signal=False
 
     # define if mt cut should be applied and the value (less than 0 means no cut)
     mtcut = cms.double(100)
-    if tagandprobe:
-        mtcut=-100
-        print "Doing tagandprobe"
     print "Calculation with mtcut: "+ str(mtcut)
 
     # log output
@@ -634,25 +630,6 @@ signal=False
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
         process = doHadTauBkg(process,geninfo,residual,JetTag)
-
-    ## ----------------------------------------------------------------------------------------------
-    ## Shared processes for lost lepton, tag and probe
-    ## ----------------------------------------------------------------------------------------------
-    if lostlepton or tagandprobe:
-    
-        if geninfo:
-            from TreeMaker.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
-            process.GenLeptons = genLeptonRecoCand.clone(
-                PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
-                pfCandsTag  = cms.InputTag('packedPFCandidates')
-            )
-    
-    ## ----------------------------------------------------------------------------------------------
-    ## Tag And Probe
-    ## ----------------------------------------------------------------------------------------------
-    if tagandprobe:
-        from TreeMaker.TreeMaker.doTagAndProbe import doTagAndProbe
-        process = doTagAndProbe(process,geninfo,METTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background

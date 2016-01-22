@@ -4,6 +4,11 @@ def doLostLeptonBkg(process,geninfo,METTag):
     process.LostLepton = cms.Sequence()
 
     if geninfo:
+        from TreeMaker.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
+        process.GenLeptons = genLeptonRecoCand.clone(
+            PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
+            pfCandsTag  = cms.InputTag('packedPFCandidates')
+        )
         process.LostLepton += process.GenLeptons
 
     from TreeMaker.Utils.isolationproducer_cfi import isolationproducer

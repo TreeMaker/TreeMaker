@@ -20,7 +20,6 @@ QCD=parameters.value("QCD", True)
 doPDFs=parameters.value("doPDFs", True);
 
 # other options off by default
-tagandprobe=parameters.value("tagandprobe", False)
 debugtracks=parameters.value("debugtracks", False)
 applybaseline=parameters.value("applybaseline", False)
 gridcontrol=parameters.value("gridcontrol", False)
@@ -88,7 +87,6 @@ print " storing QCD variables: "+str(QCD)
 print " "
 print " storing PDF weights: "+str(doPDFs)
 print " "
-print " storing tag and probe variables: "+str(tagandprobe)
 print " storing track debugging variables: "+str(debugtracks)
 print " Applying baseline selection filter: "+str(applybaseline)
 print " "
@@ -113,7 +111,6 @@ process = makeTreeFromMiniAOD(process,
     hadtau=hadtau,
     lostlepton=lostlepton,
     QCD=QCD,
-    tagandprobe=tagandprobe,
     applybaseline=applybaseline,
     doZinv=doZinv,
     debugtracks=debugtracks,
