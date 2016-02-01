@@ -67,11 +67,17 @@ If the `-d` flag is used when submitting jobs, each data file will be checked to
 Because of the large number of events in the Spring15 MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
 
 Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. The script [resubCondor.sh](./Production/test/condorSub/resubCondor.sh) can identify the failed jobs and prepare them for resubmission by checking the Condor logs.
+The existing JDL files are listed for resubmission in the output script. If the script finds a failed job, it automatically checks to see if any newer instances of that job were successful (to account for multiple rounds of job submission from the same production folder).
 ```
-./resubCondor.sh "YYYY-MM-DD HH:MM" myResub.sh
+./resubCondor.sh -t "YYYY-MM-DD HH:MM" -o myResub.sh
 ./myResub.sh
 ```
-The first parameter, if used, tells the script to look at only the jobs which finished after the specified starting date/time (default=beginning of time, "1970-01-01 00:00"). The second parameter, if used, specifies the name of the output resubmission script (default="resub.sh"). The existing JDL files are resubmitted by the resubmission script. If the script finds a failed job, it automatically checks to see if any newer instances of that job were successful (to account for multiple rounds of job submission from the same production folder).
+
+These are the parameters for the script:
+* `-o` : output script name, default = "resub.sh"
+* `-t` : search for logs modified after this time (in specified format)
+* `-f` : search for logs modified after this file
+* if neither `-t` nor `-f` is given, all logs will be searched
 
 ## Calculate Integrated Luminosity
 
@@ -90,8 +96,15 @@ to determine the integrated luminosity for the dataset. (NB: this only works on 
 
 ## Info for New Samples
 
-The script [get_py.py](./Production/test/get_py.py) will automatically download the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (disabled with `py=False`).
+The script [get_py.py](./Production/test/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (disabled with `py=False`).
 For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (disabled with `wp=False`).
+
+Before running the script for the first time, some environment settings are necessary:
+```
+source /cvmfs/cms.cern.ch/crab3/crab_gcc493.csh
+```
+
+To run the script:
 ```
 python get_py.py dict=dict.py
 ```
