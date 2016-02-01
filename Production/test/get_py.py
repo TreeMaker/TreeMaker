@@ -47,7 +47,7 @@ for f,x in dict.flist.iteritems():
         if makewp:
             nevents += fileArray["event_count"]
     
-    if makewp:
+    if makepy:
         #sort list of files for consistency
         filelist.sort()
         counter = 0
