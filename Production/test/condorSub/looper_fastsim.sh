@@ -169,6 +169,9 @@ Spring15Fastv2.SMS-T2tt_mStop-275_mLSP-75to200_TuneCUETP8M1_13TeV-madgraphMLM-py
 Spring15Fastv2.SMS-T2tt_mStop-400to475_mLSP-1to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T2tt_mStop-500-525-550_mLSP-1to425-325to450-1to475_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T2tt_mStop-600-950_mLSP-1to450_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2bb_mSbottom-300to400_0to375_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2bb_mSbottom-425to600_0to575_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2bb_mSbottom-625to1050_0to550_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
