@@ -32,5 +32,9 @@ cd -
 # run CMSSW
 cmsRun nefffinder_cfg.py name=${SAMPLE} nstart=${NSTART} nfiles=${NFILES} 2>&1
 
+CMSEXIT=$?
 
-
+if [[ $CMSEXIT -ne 0 ]]; then
+  echo "exit code $CMSEXIT in cmsRun"
+  exit $CMSEXIT
+fi
