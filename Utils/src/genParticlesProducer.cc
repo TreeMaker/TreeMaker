@@ -80,59 +80,31 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     std::cout << "===================" << std::endl;  
   }
 
-  std::unordered_set<int> pdgIdOfInterest;
-  pdgIdOfInterest.insert(21);
-  pdgIdOfInterest.insert(22);
-  pdgIdOfInterest.insert(23);
-  pdgIdOfInterest.insert(24);
-  pdgIdOfInterest.insert(25);
-
-  pdgIdOfInterest.insert(1);
-  pdgIdOfInterest.insert(2);
-  pdgIdOfInterest.insert(3);
-  pdgIdOfInterest.insert(4);
-  pdgIdOfInterest.insert(5);
-  pdgIdOfInterest.insert(6);
-
-  pdgIdOfInterest.insert(11);
-  pdgIdOfInterest.insert(12);
-  pdgIdOfInterest.insert(13);
-  pdgIdOfInterest.insert(14);
-  pdgIdOfInterest.insert(15);
-  pdgIdOfInterest.insert(16);
-
-  pdgIdOfInterest.insert(1000021);
-  pdgIdOfInterest.insert(1000022);
-  pdgIdOfInterest.insert(1000023);
-  pdgIdOfInterest.insert(1000025);
-  pdgIdOfInterest.insert(1000035);
-
-  pdgIdOfInterest.insert(1000001);
-  pdgIdOfInterest.insert(1000002);
-  pdgIdOfInterest.insert(1000003);
-  pdgIdOfInterest.insert(1000004);
-  pdgIdOfInterest.insert(1000005);
-  pdgIdOfInterest.insert(1000006);
-
-  pdgIdOfInterest.insert(2000001);
-  pdgIdOfInterest.insert(2000002);
-  pdgIdOfInterest.insert(2000003);
-  pdgIdOfInterest.insert(2000004);
-  pdgIdOfInterest.insert(2000005);
-  pdgIdOfInterest.insert(2000006);
+  std::unordered_set<int> pdgIdOfInterest(
+    {21,22,23,24,25,
+     1,2,3,4,5,6,
+     11,12,13,14,15,16,
+     1000021,1000022,1000023,1000025,1000035,
+     1000001,1000002,1000003,1000004,1000005,1000006,
+     2000001,2000002,2000003,2000004,2000005,2000006}
+  );
+  
+  std::unordered_set<int> pdgIdLastCopy(
+    {1000021,
+     1000001,1000002,1000003,1000004,1000005,1000006,
+     2000001,2000002,2000003,2000004}
+  );
 
   edm::Handle< View<reco::GenParticle> > genPartCands;
   iEvent.getByLabel( "prunedGenParticles" ,genPartCands);
   
-  for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin();
-      iPart != genPartCands->end();
-      ++iPart){
+  for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart){
+    if ( std::find( pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId()) ) == pdgIdOfInterest.end() ) continue;
     
-    if( std::find( pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId()) ) != pdgIdOfInterest.end() 
-        && (    ( abs(iPart->pdgId()) != 1000021 && abs(iPart->pdgId()) != 1000006 && abs(iPart->pdgId()) != 1000005 && abs( iPart->status() ) >20 && abs( iPart->status() ) <30 ) 
-             || ( (abs(iPart->pdgId()) == 1000021 || abs(iPart->pdgId()) == 1000006 || abs(iPart->pdgId()) == 1000005) && iPart->isLastCopy() ) ) ) //special requirement for gluinos, stops, sbottoms
+    bool checkLastCopy = ( std::find( pdgIdLastCopy.begin(), pdgIdLastCopy.end(), abs(iPart->pdgId()) ) != pdgIdLastCopy.end() );
+    if( ( checkLastCopy && iPart->isLastCopy() ) 
+        || ( !checkLastCopy && abs( iPart->status() ) > 20 && abs( iPart->status() ) < 30 ) )
     {
-
       TLorentzVector temp;
       temp.SetPtEtaPhiE( iPart->pt() ,
                          iPart->eta() ,
@@ -145,22 +117,15 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       int parentIndex = 0;
 
-      for(View<reco::GenParticle>::const_iterator jPart = genPartCands->begin();
-          jPart != genPartCands->end();
-          ++jPart){
-
-        if( pow( pow( iPart->phi() - jPart->phi() , 2 ) + pow( iPart->eta() - jPart->eta() , 2 ) , .5 ) < 0.01 ) 
-          break;
+      for(View<reco::GenParticle>::const_iterator jPart = genPartCands->begin(); jPart != genPartCands->end(); ++jPart){
+        if( pow( pow( iPart->phi() - jPart->phi() , 2 ) + pow( iPart->eta() - jPart->eta() , 2 ) , .5 ) < 0.01 ) break;
         
         parentIndex++;
-
       }
       
       parent->push_back( parentIndex );
 
     }
-    
-
   }// end of loop over gen-particles
 
   iEvent.put(genParticle); 
