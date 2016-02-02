@@ -172,6 +172,11 @@ Spring15Fastv2.SMS-T2tt_mStop-600-950_mLSP-1to450_TuneCUETP8M1_13TeV-madgraphMLM
 Spring15Fastv2.SMS-T2bb_mSbottom-300to400_0to375_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T2bb_mSbottom-425to600_0to575_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15Fastv2.SMS-T2bb_mSbottom-625to1050_0to550_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15Fastv2.SMS-T2qq_mSq1300to1550_mLSP-0to1050_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM \
+Spring15Fastv2.SMS-T2qq_mSq300to400_mLSP-0to350_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM \
+Spring15Fastv2.SMS-T2qq_mSq450to550_mLSP-0to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM \
+Spring15Fastv2.SMS-T2qq_mSq600to900_mLSP-0to850_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM \
+Spring15Fastv2.SMS-T2qq_mSq950to1250_mLSP-0to1050_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISpring15MiniAODv2-FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/MINIAODSIM \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
