@@ -60,8 +60,11 @@ private:
 
     const reco::GenParticle* TauFound(const reco::GenParticle * particle);
 
-	edm::InputTag JetTag_;
-    edm::InputTag reclusJetTag_;
+    edm::InputTag JetTag_, reclusJetTag_, MuonTag_, ElecTag_, GenPartTag_;
+    edm::EDGetTokenT<edm::View<pat::Muon>> MuonTok_;
+    edm::EDGetTokenT<edm::View<pat::Electron>> ElecTok_;
+    edm::EDGetTokenT<std::vector<pat::Jet>> JetTok_, reclusJetTok_;
+    edm::EDGetTokenT<edm::View<reco::GenParticle>> GenPartTok_;
     double jetPtCut_miniAOD_, genMatch_dR_;
     double relPt_for_xCheck_, dR_for_xCheck_;
     bool debug_;	
@@ -94,6 +97,15 @@ JetsForHadTauProducer::JetsForHadTauProducer(const edm::ParameterSet& iConfig)
     MCflag_ = iConfig.getParameter<bool>("MCflag");
     useReclusteredJets_ = iConfig.getParameter<bool>("useReclusteredJets");
     debug_ = iConfig.getParameter<bool>("debug");
+	MuonTag_ = edm::InputTag("slimmedMuons");
+	ElecTag_ = edm::InputTag("slimmedElectrons");
+	GenPartTag_ = edm::InputTag("prunedGenParticles");
+	
+	MuonTok_ = consumes<edm::View<pat::Muon>>(MuonTag_);
+	ElecTok_ = consumes<edm::View<pat::Electron>>(ElecTag_);
+	JetTok_ = consumes<std::vector<pat::Jet>>(JetTag_);
+	reclusJetTok_ = consumes<std::vector<pat::Jet>>(reclusJetTag_);
+	GenPartTok_ = consumes<edm::View<reco::GenParticle>>(GenPartTag_);
         
 	produces<std::vector<Jet> >();	
 }
@@ -122,11 +134,11 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   edm::Handle<edm::View<pat::Muon> > muon;
   edm::Handle<edm::View<pat::Electron> > electron;  
 
-  iEvent.getByLabel(JetTag_,Jets);
-  if (useReclusteredJets_) iEvent.getByLabel(reclusJetTag_,reclusJets);
-  iEvent.getByLabel("slimmedMuons", muon);
-  iEvent.getByLabel("slimmedElectrons", electron);
-  if (MCflag_) iEvent.getByLabel("prunedGenParticles",pruned);
+  iEvent.getByToken(JetTok_,Jets);
+  if (useReclusteredJets_) iEvent.getByToken(reclusJetTok_,reclusJets);
+  iEvent.getByToken(MuonTok_, muon);
+  iEvent.getByToken(ElecTok_, electron);
+  if (MCflag_) iEvent.getByToken(GenPartTok_,pruned);
 
   // finalJets should be equal to slimmedJets when pt>10. 
   // We just want to add low pT reclustered Jets to it. 

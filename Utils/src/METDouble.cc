@@ -61,7 +61,8 @@ private:
    virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag metTag_, genMetTag_, JetTag_;
-   std::vector<edm::InputTag> cleanTag_;
+   edm::EDGetTokenT<edm::View<pat::MET>> metTok_, genMetTok_;
+   edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
    double MinJetPt_,MaxJetEta_;
    bool geninfo_;
    std::vector<pat::MET::METUncertainty> uncUpList, uncDownList;
@@ -86,10 +87,13 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    metTag_    = iConfig.getParameter<edm::InputTag> ("METTag");
    genMetTag_ = iConfig.getParameter<edm::InputTag> ("GenMETTag");
    JetTag_    = iConfig.getParameter<edm::InputTag> ("JetTag");
-   cleanTag_  = iConfig.getUntrackedParameter<std::vector<edm::InputTag>>("cleanTag");
    MinJetPt_  = iConfig.getUntrackedParameter<double> ("minJetPt",30.);
    MaxJetEta_ = iConfig.getUntrackedParameter<double> ("minJetEta",5.);
    geninfo_   = iConfig.getUntrackedParameter<bool>("geninfo",false);
+   
+   metTok_ = consumes<edm::View<pat::MET>>(metTag_);
+   genMetTok_ = consumes<edm::View<pat::MET>>(genMetTag_);
+   JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
    
    uncUpList = {pat::MET::JetResUp, pat::MET::JetEnUp, pat::MET::MuonEnUp, pat::MET::ElectronEnUp, pat::MET::TauEnUp, pat::MET::UnclusteredEnUp, pat::MET::PhotonEnUp};
    uncDownList = {pat::MET::JetResDown, pat::MET::JetEnDown, pat::MET::MuonEnDown, pat::MET::ElectronEnDown, pat::MET::TauEnDown, pat::MET::UnclusteredEnDown, pat::MET::PhotonEnDown};
@@ -141,13 +145,13 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    std::vector<double> metPhiDown_(uncDownList.size(),0.);
    
    edm::Handle< edm::View<pat::MET> > MET;
-   iEvent.getByLabel(metTag_,MET);
+   iEvent.getByToken(metTok_,MET);
 
    edm::Handle< edm::View<pat::MET> > GenMET;
-   iEvent.getByLabel(genMetTag_,GenMET);
+   iEvent.getByToken(genMetTok_,GenMET);
    
    edm::Handle< edm::View<pat::Jet> > Jets;
-   iEvent.getByLabel(JetTag_,Jets);
+   iEvent.getByToken(JetTok_,Jets);
    
    double dpnhat[3];
    unsigned int goodcount=0;
@@ -180,26 +184,6 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       calometphi_=GenMET->at(0).caloMETPhi();      
    }
    else if(!GenMET.isValid()) std::cout<<"METDouble::Invalid Tag: "<<genMetTag_.label()<<std::endl;
- 
-   
-   // remove particles from MET calculation
-   // cleanTag_ is a vector of edm::InputTag
-   if (cleanTag_.size()) {
-      // loop over each edm::InputTag
-      for (std::vector<edm::InputTag>::const_iterator iC = cleanTag_.begin(); iC != cleanTag_.end(); ++iC) {
-         // get each collection the edm::InputTag corresponds to
-         edm::Handle<edm::View<reco::Candidate>> cleanCands;
-         iEvent.getByLabel(*iC, cleanCands);
-         if (cleanCands.isValid()) {
-            // for each element in the collection add the p4 back in to the MET
-            for (View<reco::Candidate>::const_iterator iCand = cleanCands->begin(); iCand != cleanCands->end(); ++iCand) {
-               metLorentz += iCand->p4();
-            }
-         }
-      }
-      metpt_ = metLorentz.Pt();
-      metphi_ = metLorentz.Phi();
-   }
    
    std::auto_ptr<double> htp(new double(metpt_));
    iEvent.put(htp,"Pt");

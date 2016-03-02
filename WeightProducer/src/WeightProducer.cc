@@ -57,46 +57,59 @@ private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob();
   
-  const std::string _weightingMethod;
+  enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, other = 3 };
+  
+  const std::string _weightingMethodName;
   const double _startWeight;
   const double _xs;
   const double _NumberEvents;
   const double _lumi;
-  edm::InputTag _weightName;
+  edm::InputTag _weightName, _genEvtTag, _puInfoTag;
+  edm::EDGetTokenT<double> _weightTok;
+  edm::EDGetTokenT<GenEventInfoProduct> _genEvtTok;
+  edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puInfoTok;
   TH1 *pu_central, *pu_up, *pu_down;
   double _weightFactor;
   bool _applyPUWeights;
+  weight_method _weightingMethod;
   
   double getPUWeight(double trueint, TH1* pu) const;
 };
 
 WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
-   _weightingMethod(iConfig.getParameter<std::string> ("Method")),
+   _weightingMethodName(iConfig.getParameter<std::string> ("Method")),
    _startWeight(iConfig.getParameter<double> ("weight")),
    _xs(iConfig.getParameter<double> ("XS")),
    _NumberEvents(iConfig.getParameter<double> ("NumberEvts")),
    _lumi(iConfig.getParameter<double> ("Lumi")),
    _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
-   pu_central(0), pu_up(0), pu_down(0)
+   _genEvtTag(edm::InputTag("generator")),
+   _puInfoTag(edm::InputTag("slimmedAddPileupInfo")),
+   pu_central(0), pu_up(0), pu_down(0), _weightingMethod(other)
 {
 
    // Option 1: weight constant, as defined in cfg file
    if (_startWeight >= 0) {
+      _weightingMethod = StartWeight;
       std::cout << "WeightProducer: Using constant event weight of " << _startWeight << std::endl;
    }
 
    // Option 2: weight from event
-   else if (_weightingMethod == "FromEvent") {
+   else if (_weightingMethodName == "FromEvent") {
+      _weightingMethod = FromEvent;
       std::cout << "WeightProducer: Using weight from event" << std::endl;
+      _weightTok = consumes<double>(_weightName);
    }
 
    // Option 3: compute new weight
-   else if (_weightingMethod == "Constant") {
+   else if (_weightingMethodName == "Constant") {
+      _weightingMethod = Constant;
       _weightFactor = _lumi * _xs / _NumberEvents;
       std::cout << "WeightProducer: Using constant event weight of " << _weightFactor << std::endl;
       std::cout << "  Target luminosity (1/pb) : " << _lumi << std::endl;
       std::cout << "        Cross section (pb) : " << _xs << std::endl;
       std::cout << "          Number of events : " << _NumberEvents << std::endl;
+      _genEvtTok = consumes<GenEventInfoProduct>(_genEvtTag);
    }
 
    // No option specified
@@ -117,11 +130,11 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       std::cout << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'" << std::endl;
       TFile* file = TFile::Open(filePUDataDistr.fullPath().c_str(), "READ");
       pu_central = (TH1*)file->Get("pu_weights_central");
-	  if(pu_central) pu_central->SetDirectory(0);
+      if(pu_central) pu_central->SetDirectory(0);
       pu_up = (TH1*)file->Get("pu_weights_up");
-	  if(pu_up) pu_up->SetDirectory(0);
+      if(pu_up) pu_up->SetDirectory(0);
       pu_down = (TH1*)file->Get("pu_weights_down");
-	  if(pu_down) pu_down->SetDirectory(0);
+      if(pu_down) pu_down->SetDirectory(0);
 
       if(!pu_central || !pu_up || !pu_down) {
          std::cerr << "ERROR in WeightProducer: Pileup histograms missing from file '"
@@ -132,6 +145,8 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    } else {
       _applyPUWeights = false;
    }
+   
+   _puInfoTok = consumes<std::vector<PileupSummaryInfo>>(_puInfoTag);
 
    //register your products
    produces<double> ("weight");
@@ -153,24 +168,24 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    double resultWeight = 1.;
 
    //Option 1: constant start weight from config file
-   if (_startWeight >= 0) {
+   if (_weightingMethod == StartWeight) {
       resultWeight = _startWeight;
    }
 
    //Option 2: existing weight variable in the event named as in _weightName
-   else if (_weightingMethod == "FromEvent") {
+   else if (_weightingMethod == FromEvent) {
       edm::Handle<double> event_weight;
-      iEvent.getByLabel(_weightName, event_weight);
+      iEvent.getByToken(_weightTok, event_weight);
       resultWeight = (event_weight.isValid() ? (*event_weight) : 1.0);
    }
 
    //Option 3: weighting from lumi, xs, and num evts
-   else if (_weightingMethod == "Constant") {
+   else if (_weightingMethod == Constant) {
       resultWeight = _weightFactor;
-	  
+      
       //account for negative weights
       edm::Handle<GenEventInfoProduct> genEvtInfoHandle;
-      iEvent.getByLabel("generator", genEvtInfoHandle);
+      iEvent.getByToken(_genEvtTok, genEvtInfoHandle);
       if (genEvtInfoHandle.isValid()) {
         double genweight_ = genEvtInfoHandle->weight();
         if(genweight_ < 0) resultWeight *= -1;
@@ -179,28 +194,28 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 
    // Optionally, include PU weight
    edm::Handle<std::vector<PileupSummaryInfo> > puInfo;
-   iEvent.getByLabel("slimmedAddPileupInfo", puInfo);
+   iEvent.getByToken(_puInfoTok, puInfo);
    if (_applyPUWeights && puInfo.isValid()){
-	   int _NumInt = 0;
-	   double _TrueNumInt = 0.;
-	   double _PUweightFactor = 1.;
+       int _NumInt = 0;
+       double _TrueNumInt = 0.;
+       double _PUweightFactor = 1.;
        double _PUSysUp = 1.;
        double _PUSysDown = 1.;
-	   
-	   //get PU info
+       
+       //get PU info
        std::vector<PileupSummaryInfo>::const_iterator PVI;
        for(PVI = puInfo->begin(); PVI != puInfo->end(); ++PVI) {
-		   //look only at primary BX (in-time)
+           //look only at primary BX (in-time)
            if(PVI->getBunchCrossing()==0){
-		       _NumInt = PVI->getPU_NumInteractions();
-		       _TrueNumInt = PVI->getTrueNumInteractions();
-			   break;
-		   }
-	   }	   
-	   
-	    _PUweightFactor = getPUWeight(_TrueNumInt,pu_central);
-	    _PUSysUp = getPUWeight(_TrueNumInt,pu_up);
-	    _PUSysDown = getPUWeight(_TrueNumInt,pu_down);
+               _NumInt = PVI->getPU_NumInteractions();
+               _TrueNumInt = PVI->getTrueNumInteractions();
+               break;
+           }
+       }       
+       
+        _PUweightFactor = getPUWeight(_TrueNumInt,pu_central);
+        _PUSysUp = getPUWeight(_TrueNumInt,pu_up);
+        _PUSysDown = getPUWeight(_TrueNumInt,pu_down);
 
         std::auto_ptr<double> puOut1(new double(_PUweightFactor));
         iEvent.put(puOut1, "PUweight");
@@ -210,11 +225,11 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
         
         std::auto_ptr<double> puOut3(new double(_PUSysDown));
         iEvent.put(puOut3, "PUSysDown");
-		
-		std::auto_ptr<int> puOut4(new int(_NumInt));
+        
+        std::auto_ptr<int> puOut4(new int(_NumInt));
         iEvent.put(puOut4, "NumInteractions");
-		
-		std::auto_ptr<double> puOut5(new double(_TrueNumInt));
+        
+        std::auto_ptr<double> puOut5(new double(_TrueNumInt));
         iEvent.put(puOut5, "TrueNumInteractions");
    }
 
@@ -251,7 +266,7 @@ double WeightProducer::getPUWeight(double trueint, TH1* pu) const{
   if (trueint < pu->GetBinLowEdge(pu->GetNbinsX()+1)) {
         w = pu->GetBinContent(pu->GetXaxis()->FindBin(trueint));
   } else {
-    std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of interactions = " << trueint
+    std::cerr << "WARNING in WeightProducer::getPUWeight: Number of interactions = " << trueint
               << " out of histogram binning." << std::endl;
     w = pu->GetBinContent(pu->GetNbinsX());
   }

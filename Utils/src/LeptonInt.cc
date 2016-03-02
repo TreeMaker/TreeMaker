@@ -53,6 +53,7 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	std::vector<edm::InputTag> leptonTag_;
+	std::vector<edm::EDGetTokenT<edm::View<reco::Candidate>>> leptonTok_;
 	
 	
 	// ----------member data ---------------------------
@@ -74,6 +75,7 @@ LeptonInt::LeptonInt(const edm::ParameterSet& iConfig)
 {
 	//register your produc
 	leptonTag_ 				= 	iConfig.getParameter< std::vector<edm::InputTag> >("LeptonTag");
+	for(auto& tag: leptonTag_) leptonTok_.push_back(consumes<edm::View<reco::Candidate>>(tag));
 	
 	produces<int>("");
 	/* Examples
@@ -109,10 +111,10 @@ LeptonInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
 	int Leptons=0;
-	for(unsigned int i=0; i< leptonTag_.size();i++)
+	for(unsigned int i=0; i< leptonTok_.size();i++)
 	{
 		edm::Handle< edm::View<reco::Candidate> > cands;
-		iEvent.getByLabel(leptonTag_.at(i),cands);
+		iEvent.getByToken(leptonTok_.at(i),cands);
 		if( cands.isValid() ) 
 		{
 			Leptons+=cands->size();

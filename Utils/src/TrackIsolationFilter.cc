@@ -80,6 +80,10 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	maxEta_= iConfig.getParameter<double>("etaCut");
 	debug_= iConfig.getParameter<bool>("debug");
 	
+	pfCandidatesTok_ = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
+	vertexInputTok_ = consumes<edm::View<reco::Vertex>>(vertexInputTag_);
+	MetInputTok_ = consumes<edm::View<pat::MET>>(MetInputTag_);
+	
 	produces<std::vector<pat::PackedCandidate> >(""); 
 	produces<vector<TLorentzVector> >("pfcands");
 	produces<vector<double> >("pfcandsactivity").setBranchAlias("pfcands_activity");
@@ -110,7 +114,7 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	auto_ptr<vector<int>   >  pfcands_id     (new vector<int>  );
 	
 	edm::Handle< edm::View<pat::MET> > MET;
-	iEvent.getByLabel(MetInputTag_,MET);
+	iEvent.getByToken(MetInputTok_,MET);
 	reco::MET::LorentzVector metLorentz(0,0,0,0);
 	if(MET.isValid() ){
 		metLorentz=MET->at(0).p4();
@@ -121,14 +125,14 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	//---------------------------------
   
 	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
-	iEvent.getByLabel(pfCandidatesTag_, pfCandidates);
+	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
 
 	//---------------------------------
 	// get Vertex Collection
 	//---------------------------------
 	
 	edm::Handle<edm::View<reco::Vertex> > vertices;
-	iEvent.getByLabel(vertexInputTag_, vertices);
+	iEvent.getByToken(vertexInputTok_, vertices);
 	vtxSize = vertices->size();
 	bool hasGoodVtx = false;
 	if(vertices->size() > 0) hasGoodVtx = true;
@@ -191,8 +195,9 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 		//----------------------------------------------------------------------------
 		// now make cuts on isolation and dz
 		//----------------------------------------------------------------------------
-		float trkiso = GetTrkIso(pfCandidates, (int)i);
-		float activity = GetTrkIso(pfCandidates, (int)i, true);
+		float trkiso = 0.;
+		float activity = 0.;
+		GetTrkIso(pfCandidates, i, trkiso, activity);
 		float dz_it = pfCand.dz();
 		if( debug_ && !goodCand) continue;
 		if( isoCut_>0 && trkiso > isoCut_ ) continue;
@@ -232,26 +237,29 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	return result;
 }
 
-const double TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const int tkInd, bool doActivity) {
-  if (tkInd<0||tkInd>(int)pfcands->size()) return -999.;
-  double trkiso(0.); 
+void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) {
+  if (tkInd>pfcands->size()) {
+	  trkiso = -999.;
+	  activity = -999.;
+	  return;
+  }
+  trkiso = 0.;
+  activity = 0.;
   double r_iso = 0.3;
   for (unsigned int iPF(0); iPF<pfcands->size(); iPF++) {
     const pat::PackedCandidate &pfc = pfcands->at(iPF);
     if (pfc.charge()==0) continue;
-    if ((int)iPF==tkInd) continue; // don't count track in its own sum
-    double dr = deltaR(pfc, pfcands->at(tkInd));
-    if (doActivity) {
-      if (dr < r_iso || dr > 0.4) continue; // activity annulus
-    } else {
-      if (dr > r_iso) continue; // mini iso cone
-    }
+    if (iPF==tkInd) continue; // don't count track in its own sum
     float dz_other = pfc.dz();
     if( fabs(dz_other) > 0.1 ) continue;
-    trkiso += pfc.pt();
+    double dr = deltaR(pfc, pfcands->at(tkInd));
+    // activity annulus
+    if (dr >= r_iso && dr <= 0.4) activity += pfc.pt();
+    // mini iso cone
+    if (dr <= r_iso) trkiso += pfc.pt();
   }
-    double result = trkiso/pfcands->at(tkInd).pt();
-    return result;
+  trkiso = trkiso/pfcands->at(tkInd).pt();
+  activity = activity/pfcands->at(tkInd).pt();
 }
 
 //define this as a plug-in

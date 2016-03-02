@@ -27,12 +27,14 @@ class JetUncertaintyProducer : public edm::EDProducer {
 		virtual void produce(edm::Event&, const edm::EventSetup&);
 		GreaterByPt<pat::Jet> pTComparator_;
 		edm::InputTag JetTag_;
+		edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 		std::string JetType_;
 		int jecUncDir_;
 };
 
 JetUncertaintyProducer::JetUncertaintyProducer(const edm::ParameterSet& iConfig) :
 	JetTag_(iConfig.getParameter<edm::InputTag>("JetTag")),
+	JetTok_(consumes<edm::View<pat::Jet>>(JetTag_)),
 	JetType_(iConfig.getParameter<std::string>("JetType")),
 	jecUncDir_(iConfig.getParameter<int>("jecUncDir"))
 {
@@ -51,7 +53,7 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 
 	//get the input jet collection (nominal JECs already applied)
 	edm::Handle<edm::View<pat::Jet>> jets;
-	iEvent.getByLabel(JetTag_, jets);
+	iEvent.getByToken(JetTok_, jets);
 
 	std::auto_ptr< std::vector<pat::Jet> > newJets ( new std::vector<pat::Jet>() );
 	newJets->reserve(jets->size());

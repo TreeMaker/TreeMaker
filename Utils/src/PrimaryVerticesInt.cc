@@ -56,6 +56,7 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag vertexCollectionTag_;
+	edm::EDGetTokenT<reco::VertexCollection> vertexCollectionTok_;
 	
 	
 	// ----------member data ---------------------------
@@ -77,6 +78,7 @@ PrimaryVerticesInt::PrimaryVerticesInt(const edm::ParameterSet& iConfig)
 {
 	//register your produc
 	vertexCollectionTag_ = iConfig.getParameter<edm::InputTag>("VertexCollection");
+	vertexCollectionTok_ = consumes<reco::VertexCollection>(vertexCollectionTag_);
 	
 	produces<int>("");
 	/* Examples
@@ -113,7 +115,7 @@ PrimaryVerticesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	using namespace edm;
 	int nVertices=0;
 	edm::Handle<reco::VertexCollection> vertices;
-	iEvent.getByLabel(vertexCollectionTag_,vertices);
+	iEvent.getByToken(vertexCollectionTok_,vertices);
 	if( vertices.isValid() ) {
 		nVertices = vertices->size();
 	}

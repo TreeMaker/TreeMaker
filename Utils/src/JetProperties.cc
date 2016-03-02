@@ -53,6 +53,7 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
+	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	std::string   btagname_;
 
 	
@@ -76,6 +77,9 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 {
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 	btagname_ = iConfig.getParameter<std::string>  ("BTagInputTag");
+	
+	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
+	
 	//register your products
 	/* Examples
 	 *   produces<ExampleData2>();
@@ -184,7 +188,7 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	using namespace reco;
 	using namespace pat;
 	edm::Handle< edm::View<pat::Jet> > Jets;
-	iEvent.getByLabel(JetTag_,Jets);
+	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
 		for(unsigned int i=0; i<Jets->size();i++)
 		{

@@ -18,12 +18,18 @@ private:
    virtual void produce(edm::Event&, const edm::EventSetup&);
    edm::InputTag ElectronTag_;
    edm::InputTag MuonTag_;
+   edm::EDGetTokenT<std::vector<pat::Electron>> ElectronTok_;
+   edm::EDGetTokenT<std::vector<pat::Muon>> MuonTok_;
 };
 
 ZProducer::ZProducer(const edm::ParameterSet& iConfig)
 {
    ElectronTag_ = iConfig.getParameter<edm::InputTag>("ElectronTag");
    MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
+   
+   ElectronTok_ = consumes<std::vector<pat::Electron>>(ElectronTag_);
+   MuonTok_ = consumes<std::vector<pat::Muon>>(MuonTag_);
+   
    produces<pat::CompositeCandidateCollection>("ZCandidates");
 }
 
@@ -33,7 +39,7 @@ void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    // make candidates from electrons
    edm::Handle<std::vector<pat::Electron>> electronHandle;
-	iEvent.getByLabel(ElectronTag_, electronHandle);
+   iEvent.getByToken(ElectronTok_, electronHandle);
    const std::vector<pat::Electron> * electrons = electronHandle.product();
    for (std::vector<pat::Electron>::const_iterator iL1 = electrons->begin(); iL1 != electrons->end(); ++iL1) {
       if (iL1->charge() > 0) {
@@ -51,7 +57,7 @@ void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    // make candidates from muons
    edm::Handle<std::vector<pat::Muon>> muonHandle;
-	iEvent.getByLabel(MuonTag_, muonHandle);
+   iEvent.getByToken(MuonTok_, muonHandle);
    const std::vector<pat::Muon> * muons = muonHandle.product();
    for (std::vector<pat::Muon>::const_iterator iL1 = muons->begin(); iL1 != muons->end(); ++iL1) {
       if (iL1->charge() > 0) {

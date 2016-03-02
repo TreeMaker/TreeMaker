@@ -52,7 +52,8 @@ class MhtDouble : public edm::EDProducer {
       virtual void endRun(edm::Run&, edm::EventSetup const&);
       virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
       virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	    edm::InputTag JetTag_;
+      edm::InputTag JetTag_;
+	  edm::EDGetTokenT<reco::CandidateView> JetTok_;
 
 
       // ----------member data ---------------------------
@@ -72,8 +73,9 @@ class MhtDouble : public edm::EDProducer {
 //
 MhtDouble::MhtDouble(const edm::ParameterSet& iConfig)
 {
-   //register your produc
+   //register your product
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+   JetTok_ = consumes<reco::CandidateView>(JetTag_);
 
 	 produces<double>("Pt");
 	 produces<double>("Phi");
@@ -110,7 +112,7 @@ MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
   edm::Handle< reco::CandidateView > Jets;
-	iEvent.getByLabel(JetTag_,Jets);
+	iEvent.getByToken(JetTok_,Jets);
 	reco::MET::LorentzVector mhtLorentz(0,0,0,0);
 	if( Jets.isValid() ) {
 		for(unsigned int i=0; i<Jets->size();i++)

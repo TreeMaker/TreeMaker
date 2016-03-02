@@ -75,7 +75,10 @@ private:
   virtual void endRun(edm::Run&, edm::EventSetup const&);
   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  edm::InputTag MuonTag_, ElecTag_;
+  edm::InputTag MuonTag_, ElecTag_, MHTPtTag_, MHTPhiTag_;
+  edm::EDGetTokenT<edm::View<pat::Muon>> MuonTok_;
+  edm::EDGetTokenT<edm::View<pat::Electron>> ElecTok_;
+  edm::EDGetTokenT<double> MHTPtTok_, MHTPhiTok_;
 	
 	
   // ----------member data ---------------------------
@@ -86,6 +89,12 @@ ExtrapolationProducer::ExtrapolationProducer(const edm::ParameterSet& iConfig)
   //register your producer
   MuonTag_ 				= 	iConfig.getParameter<edm::InputTag >("MuonTag");
   ElecTag_ 				= 	iConfig.getParameter<edm::InputTag >("ElectronTag");
+  MHTPtTag_ = edm::InputTag("MHT","Pt");
+  MHTPhiTag_ = edm::InputTag("MHT","Phi");
+  MuonTok_ = consumes<edm::View<pat::Muon>>(MuonTag_);
+  ElecTok_ = consumes<edm::View<pat::Electron>>(ElecTag_);
+  MHTPtTok_ = consumes<double>(MHTPtTag_);
+  MHTPhiTok_ = consumes<double>(MHTPhiTag_);
 
   produces<std::vector<double> >("MuPTW");
   produces<std::vector<double> >("MuCDTT");
@@ -114,12 +123,10 @@ void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
   std::auto_ptr<std::vector<double> > elecCDTT(new std::vector<double>());
 
   edm::Handle < double > mhtHandle ;
-  edm::InputTag MHT_Pt("MHT","Pt");
-  iEvent.getByLabel(MHT_Pt,mhtHandle);
+  iEvent.getByToken(MHTPtTok_,mhtHandle);
   double MHT = *mhtHandle;
   edm::Handle < double > mhtPhiHandle ;
-  edm::InputTag MHT_Phi("MHT","Phi");
-  iEvent.getByLabel(MHT_Phi,mhtPhiHandle);
+  iEvent.getByToken(MHTPhiTok_,mhtPhiHandle);
   double MHTPhi = *mhtPhiHandle;
   TVector2 mhtVec(0,0);
   if (mhtHandle.isValid() && mhtPhiHandle.isValid()) {
@@ -127,7 +134,7 @@ void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
   } else std::cout<<"ExtrapolationProducer can't find MHT"<<std::endl;
 
   edm::Handle<edm::View<pat::Muon> > muonHandle;
-  iEvent.getByLabel(MuonTag_, muonHandle);
+  iEvent.getByToken(MuonTok_, muonHandle);
   if(muonHandle.isValid()) {
     for(unsigned int m=0; m<muonHandle->size(); ++m)
       {
@@ -137,7 +144,7 @@ void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
   }
 
   edm::Handle<edm::View<pat::Electron> > eleHandle;
-  iEvent.getByLabel(ElecTag_, eleHandle);
+  iEvent.getByToken(ElecTok_, eleHandle);
   if(eleHandle.isValid())
     {
       for(unsigned int e=0; e<eleHandle->size(); ++e)

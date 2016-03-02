@@ -46,10 +46,16 @@ private:
   edm::InputTag beamspotCollection; 
   edm::InputTag ecalRecHitsInputTag_EE_;
   edm::InputTag ecalRecHitsInputTag_EB_;
+  edm::InputTag rhoCollection;
+  edm::InputTag genParCollection;
+  edm::EDGetTokenT<edm::View<pat::Photon>> photonTok_;
+  edm::EDGetTokenT<pat::ElectronCollection> electronTok_;
+  edm::EDGetTokenT<std::vector<reco::Conversion>> conversionTok_;
+  edm::EDGetTokenT<reco::BeamSpot> beamspotTok_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EE_Token_;
   edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EB_Token_;
-  edm::InputTag rhoCollection;
-  edm::InputTag genParCollection;    
+  edm::EDGetTokenT<double> rhoTok_;
+  edm::EDGetTokenT<edm::View<reco::GenParticle>> genParTok_;
   bool        debug;
 
 };

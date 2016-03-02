@@ -12,7 +12,6 @@ globaltag="",
 numevents=1000,
 lostlepton=False,
 hadtau=False,
-tagandprobe=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
@@ -42,9 +41,6 @@ signal=False
 
     # define if mt cut should be applied and the value (less than 0 means no cut)
     mtcut = cms.double(100)
-    if tagandprobe:
-        mtcut=-100
-        print "Doing tagandprobe"
     print "Calculation with mtcut: "+ str(mtcut)
 
     # log output
@@ -363,25 +359,6 @@ signal=False
     VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
 
     ## ----------------------------------------------------------------------------------------------
-    ## Photons
-    ## ----------------------------------------------------------------------------------------------
-    process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
-        photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
-        electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
-        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
-        beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
-        ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
-        ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
-        rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
-        genParCollection = cms.untracked.InputTag("prunedGenParticles"), 
-        debug                  = cms.untracked.bool(False)
-    )
-    process.Baseline += process.goodPhotons
-    # good photon tag is InputTag('goodPhotons','bestPhoton')
-    VectorRecoCand.append("goodPhotons:bestPhoton")
-    VarsInt.append("goodPhotons:NumPhotons")
-
-    ## ----------------------------------------------------------------------------------------------
     ## MET Filters
     ## ----------------------------------------------------------------------------------------------
     
@@ -655,25 +632,6 @@ signal=False
         process = doHadTauBkg(process,geninfo,residual,JetTag)
 
     ## ----------------------------------------------------------------------------------------------
-    ## Shared processes for lost lepton, tag and probe
-    ## ----------------------------------------------------------------------------------------------
-    if lostlepton or tagandprobe:
-    
-        if geninfo:
-            from TreeMaker.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
-            process.GenLeptons = genLeptonRecoCand.clone(
-                PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
-                pfCandsTag  = cms.InputTag('packedPFCandidates')
-            )
-    
-    ## ----------------------------------------------------------------------------------------------
-    ## Tag And Probe
-    ## ----------------------------------------------------------------------------------------------
-    if tagandprobe:
-        from TreeMaker.TreeMaker.doTagAndProbe import doTagAndProbe
-        process = doTagAndProbe(process,geninfo,METTag)
-
-    ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background
     ## ----------------------------------------------------------------------------------------------
     if lostlepton:
@@ -685,7 +643,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,JetTag,METTag,geninfo,residual,fastsim)
+        process = doZinvBkg(process,tagname,geninfo,residual,fastsim)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

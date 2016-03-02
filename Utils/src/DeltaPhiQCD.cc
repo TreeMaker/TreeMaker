@@ -53,9 +53,13 @@ private:
     virtual void beginLuminosityBlock ( edm::LuminosityBlock&, edm::EventSetup const& ) ;
     virtual void endLuminosityBlock ( edm::LuminosityBlock&, edm::EventSetup const& ) ;
     std::vector<edm::InputTag> JetTagRecoJets_ ;
+	std::vector<edm::EDGetTokenT<edm::View < reco::Jet >>> JetTokRecoJets_ ;
     std::vector<edm::InputTag> JetTagGenJets_ ;
+	std::vector<edm::EDGetTokenT<edm::View < reco::GenJet >>> JetTokGenJets_ ;
     std::string   btagname_ ;      
-    edm::InputTag GenParticleTag_ ;
+    edm::InputTag GenParticleTag_, MHTPhiTag_;
+	edm::EDGetTokenT<edm::View < reco::GenParticle >> GenParticleTok_ ;
+	edm::EDGetTokenT<double> MHTPhiTok_ ;
     
     // ----------member data ---------------------------
 };
@@ -82,7 +86,11 @@ DeltaPhiQCD::DeltaPhiQCD ( const edm::ParameterSet& iConfig )
     btagname_       = iConfig.getParameter < std::string   > ( "BTagInputTag"   ) ;
     JetTagGenJets_  = iConfig.getParameter < std::vector<edm::InputTag> > ( "JetTagGenJets"  ) ;
     GenParticleTag_ = iConfig.getParameter < edm::InputTag > ( "GenParticleTag" ) ;
-
+    MHTPhiTag_ = edm::InputTag ( "MHT" , "Phi" ) ;
+    for(auto& tag: JetTagRecoJets_) JetTokRecoJets_.push_back(consumes<edm::View < reco::Jet >>(tag));
+    for(auto& tag: JetTagGenJets_) JetTokGenJets_.push_back(consumes<edm::View < reco::GenJet >>(tag));
+    GenParticleTok_ = consumes<edm::View < reco::GenParticle >>(GenParticleTag_);
+    MHTPhiTok_ = consumes<double>(MHTPhiTag_);
 
     produces < std::vector < TLorentzVector > > ( "NeutrinoLorentzVector" ) ;
 
@@ -133,9 +141,6 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
     
     std::vector < std::string > minDeltaphiNames ;
     
-    edm::Handle < double > var ;
-    
-    
     std::vector<std::vector<double> > savephi(2,std::vector<double>(8,-9));
     std::vector<std::vector<double> > saveeta(2,std::vector<double>(8,-9));
     double recojetseta = -99. , recojetsphi = -99. , deltaphi = -99. ;
@@ -145,15 +150,15 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
     
     int mindeltaphi3jetindex = -9, mindeltaphi4jetindex = -9, mindeltaphi5jetindex = -9, mindeltaphistarindex = -9 ;
     
-    edm::InputTag MHT_Phi ( "MHT" , "Phi" ) ;
-    iEvent.getByLabel ( MHT_Phi , var ) ;
+    edm::Handle < double > var ;    
+    iEvent.getByToken ( MHTPhiTok_ , var ) ;
     if ( var.isValid() ) mhtphi = *var ;
     else { std::cout << "Warning: Can not retrieve MHTPhi" << std::endl ; mhtphi = -9 ; }
 
     for ( unsigned int ii = 0; ii < 2; ii++ )
     {
         edm::Handle < edm::View < reco::Jet > > src ;
-        iEvent.getByLabel ( JetTagRecoJets_[ii] , src ) ;
+        iEvent.getByToken ( JetTokRecoJets_[ii] , src ) ;
         
         if ( src.isValid() )
         {
@@ -272,7 +277,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
     {
 
         edm::Handle < edm::View < reco::GenJet > > gensrc ;
-        iEvent.getByLabel( JetTagGenJets_[ii],gensrc ) ;
+        iEvent.getByToken( JetTokGenJets_[ii],gensrc ) ;
 
         if ( gensrc.isValid() )
         {
@@ -397,7 +402,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
     std::vector < int > neutrino_pdgid_vector, neutrino_mother_pdgid_vector ;
 
     edm::Handle < edm::View < reco::GenParticle > > genpart ;
-    iEvent.getByLabel ( GenParticleTag_, genpart ) ;
+    iEvent.getByToken ( GenParticleTok_, genpart ) ;
 
     vector<double> neutrino_pt(6,-9);
     vector<double> neutrino_eta(6,-9);
