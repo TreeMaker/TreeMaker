@@ -117,6 +117,11 @@ def getWeightProducer(fileName):
         MCSample("SMS-T1qqqq_mGluino-1400_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0252977, 49541),
         MCSample("SMS-T1tttt_mGluino-1200_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0856418, 147194),
         MCSample("SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0141903, 103140),
+        MCSample("SMS-T2tt_mStop-500_mLSP-325_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.51848, 388207),
+        MCSample("SMS-T2tt_mStop-850_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0189612, 240685),
+        # private signal
+        MCSample("T5HH_1200_200", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0856418, 48928),
+        MCSample("T5HH_1200_950", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0856418, 48925),
     ]
     
     # loop over all samples until we find a match
