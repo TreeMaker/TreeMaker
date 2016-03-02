@@ -1,5 +1,7 @@
 # TreeMaker
 
+**NOTE:** This is the archived branch of TreeMaker for 2015 data and MC.
+
 ## Instructions
 
 The following installation instructions assume the user wants to process Run2015 data or Spring15 MC (miniAOD v2 format).
@@ -9,7 +11,7 @@ cmsrel CMSSW_7_4_15
 cd CMSSW_7_4_15/src/
 cmsenv
 git cms-merge-topic -u kpedro88:METfix7415
-git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
+git clone git@github.com:TreeMaker/TreeMaker.git -b Run2_2015
 scram b -j 8
 cd TreeMaker/Production/test
 ```
