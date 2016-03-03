@@ -19,4 +19,6 @@
 <use name="root"/>
 <use name="rootmath"/>
 <use name="lhapdf"/>
+<use name="fastjet"/>
+<use   name="PhysicsTools/Heppy"/>
 <flags   EDM_PLUGIN="1"/>

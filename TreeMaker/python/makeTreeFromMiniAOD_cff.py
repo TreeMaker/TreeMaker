@@ -615,12 +615,20 @@ signal=False
         VarsDouble.extend(['MET:GenPt(GenMETPt)','MET:GenPhi(GenMETPhi)'])
         VectorDouble.extend(['MET:PtUp(METPtUp)', 'MET:PtDown(METPtDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
 
+    from TreeMaker.Utils.mt2producer_cfi import mt2Producer
+    process.Mt2Producer = mt2Producer.clone(
+                JetTag  = cms.InputTag('MHTJets'),
+                METTag = METTag
+        )
+    process.Baseline += process.Mt2Producer
+    VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
+    
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Optional producers (background estimations, control regions)
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
-    
+
     # sequence for optional producers
     process.AdditionalSequence = cms.Sequence()
     
