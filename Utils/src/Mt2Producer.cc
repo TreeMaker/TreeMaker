@@ -10,16 +10,10 @@
    Implementation:
    [Notes on implementation]
 */
-//
 // Original Author:  Arne-Rasmus Draeger,68/111,4719,
-//         Created:  Fri Apr 11 16:35:33 CEST 2014
-// $Id$
+// Translated from HeppyTools to EDProducer by Sam Bein, Jan 2016
 
-
-
-// system include files
 #include <memory>
-// user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
