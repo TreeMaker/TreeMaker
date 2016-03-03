@@ -91,7 +91,7 @@ Mt2Producer::Mt2Producer(const edm::ParameterSet& iConfig)
   JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
   JetTok_ = consumes<reco::CandidateView>(JetTag_);
 
-  MetTag_ = iConfig.getParameter<edm::InputTag> ("MetTag");
+  MetTag_ = iConfig.getParameter<edm::InputTag> ("METTag");
   MetTok_ = consumes<edm::View<pat::MET>>(MetTag_);
   produces<double>("mt2");
 
