@@ -155,7 +155,7 @@ signal=False
     ## GenParticles
     ## ----------------------------------------------------------------------------------------------
     if geninfo :
-        process.genParticles = cms.EDProducer("genParticlesProducer",
+        process.genParticles = cms.EDProducer("GenParticlesProducer",
             genCollection = cms.untracked.InputTag("prunedGenParticles"),
             debug = cms.untracked.bool(False)
         )

@@ -1,6 +1,6 @@
 // -*- C++ -*-
 // Package:    TreeMaker
-// Class:      genParticlesProducer
+// Class:      GenParticlesProducer
 // Authors:  Andrew Whitbeck, Sam Bein 
 //         Created:  Wed March 7, 2014
 //         Modified: Thurs March 3, 2016
@@ -14,14 +14,14 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "TreeMaker/Utils/interface/genParticlesProducer.h"
+#include "TreeMaker/Utils/interface/GenParticlesProducer.h"
 #include "TLorentzVector.h"
 #include <DataFormats/ParticleFlowCandidate/interface/PFCandidate.h>
 #include <DataFormats/HepMCCandidate/interface/GenParticle.h>
 #include <vector>
 
 
-genParticlesProducer::genParticlesProducer(const edm::ParameterSet& iConfig):
+GenParticlesProducer::GenParticlesProducer(const edm::ParameterSet& iConfig):
   genCollection(iConfig.getUntrackedParameter<edm::InputTag>("genCollection")),
   genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
   debug(iConfig.getUntrackedParameter<bool>("debug",true))
@@ -34,7 +34,7 @@ genParticlesProducer::genParticlesProducer(const edm::ParameterSet& iConfig):
   
 }
 
-genParticlesProducer::~genParticlesProducer()
+GenParticlesProducer::~GenParticlesProducer()
 {
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
@@ -47,7 +47,7 @@ genParticlesProducer::~genParticlesProducer()
 
 // ------------ method called for each event  ------------
 void
-genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
   using namespace edm;
@@ -72,7 +72,12 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 					      1000001,1000002,1000003,1000004,1000005,1000006,
 					      2000001,2000002,2000003,2000004,2000005,2000006}
 					  );
-
+  std::unordered_set<int> needyPdgIds(
+					{1000021, 1000001,1000002,1000003,1000004,1000005,1000006,
+					    2000001,2000002,2000003,2000004,
+					    6, 23, 24, 25}
+					);
+  
   edm::Handle< View<reco::GenParticle> > genPartCands;
   iEvent.getByToken(genCollectionTok, genPartCands);
 
@@ -82,8 +87,13 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (std::find(pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId())) == pdgIdOfInterest.end())
 	continue;
 
+      bool isNeedy = (std::find( needyPdgIds.begin(), needyPdgIds.end(), abs(iPart->pdgId()) ) != needyPdgIds.end() );
+      bool specialConsideration = isNeedy && iPart->isLastCopy();
       int status = abs(iPart->status());
-      if(!( status==1 || status ==2 || (status > 20 && status < 30 ))) continue;
+      bool interesting_status =  status==1 || status ==2 || (status > 20 && status < 30 );
+
+      if(!( interesting_status || specialConsideration)) continue;
+
       TLorentzVector temp;
       temp.SetPtEtaPhiE(iPart->pt(), iPart->eta(), iPart->phi(), iPart->energy());
       genParticle_vec->push_back(temp);
@@ -116,7 +126,6 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       itlv = std::find(genParticle_vec->begin(), genParticle_vec->end(), mothers->at(g));
       auto index = std::distance(genParticle_vec->begin(), itlv);
       int parentIndex = index;
-      //std::cout << "pdg"<< PdgId_vec->at(g) <<"parentIndex=" << parentIndex << "mother"<< ParentId_vec->at(g) << std::endl;
       if (itlv == genParticle_vec->end()) parentIndex = -1;
       Parent_vec->push_back(parentIndex);
     }
@@ -133,44 +142,44 @@ genParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 // ------------ method called once each job just before starting event loop  ------------
 void 
 
-genParticlesProducer::beginJob()
+GenParticlesProducer::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
-genParticlesProducer::endJob() 
+GenParticlesProducer::endJob() 
 {
 }
 
 // ------------ method called when starting to processes a run  ------------
 void 
-genParticlesProducer::beginRun(edm::Run const&, edm::EventSetup const&)
+GenParticlesProducer::beginRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
 void 
-genParticlesProducer::endRun(edm::Run const&, edm::EventSetup const&)
+GenParticlesProducer::endRun(edm::Run const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
 void 
-genParticlesProducer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+GenParticlesProducer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
 void 
-genParticlesProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
+GenParticlesProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
 {
 }
 
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
-genParticlesProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+GenParticlesProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 
   /*
     edm::ParameterSetDescription desc;
@@ -184,4 +193,4 @@ genParticlesProducer::fillDescriptions(edm::ConfigurationDescriptions& descripti
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 //define this as a plug-in
-DEFINE_FWK_MODULE(genParticlesProducer);
+DEFINE_FWK_MODULE(GenParticlesProducer);
