@@ -57,73 +57,66 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr< std::vector< int > > Status_vec( new std::vector< int > () );
   std::auto_ptr< std::vector< int > > Parent_vec( new std::vector< int > () );
   std::auto_ptr< std::vector< int > > ParentId_vec( new std::vector< int > () );
-  std::auto_ptr< std::vector< TLorentzVector > > mothers( new std::vector< TLorentzVector > () );//not stored
+  std::auto_ptr< std::vector< TLorentzVector > > parents( new std::vector< TLorentzVector > () );//not stored
 
   if( debug ){
     std::cout << "new events" << std::endl;
     std::cout << "===================" << std::endl;  
   }
 
-  std::unordered_set<int> pdgIdOfInterest(
-					  {21,22,23,24,25,
-					      1,2,3,4,5,6,
-					      11,12,13,14,15,16,
-					      1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
-					      1000001,1000002,1000003,1000004,1000005,1000006,
-					      2000001,2000002,2000003,2000004,2000005,2000006}
-					  );
-  std::unordered_set<int> needyPdgIds(
-					{1000021, 1000001,1000002,1000003,1000004,1000005,1000006,
-					    2000001,2000002,2000003,2000004,
+  std::unordered_set<int> typicalChildIds({1,2,3,4,5,11,12,13,14,15,16,22});
+  std::unordered_set<int> typicalParentIds(
+					{1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
+					    1000001,1000002,1000003,1000004,1000005,1000006,
+					    2000001,2000002,2000003,2000004,2000005,2000006,
 					    6, 23, 24, 25}
 					);
   
   edm::Handle< View<reco::GenParticle> > genPartCands;
   iEvent.getByToken(genCollectionTok, genPartCands);
 
-  //Filter out unwanted gen particles and store 4-vector, pdgid, status, and motherID:
+  //Filter out unwanted gen particles and store 4-vector, pdgid, status, and parentID:
   for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart)
     {
-      if (std::find(pdgIdOfInterest.begin(), pdgIdOfInterest.end(), abs(iPart->pdgId())) == pdgIdOfInterest.end())
-	continue;
+      bool typicalChild=!(std::find(typicalChildIds.begin(),typicalChildIds.end(),abs(iPart->pdgId()))==typicalChildIds.end());
+      bool typicalParent=!(std::find(typicalParentIds.begin(),typicalParentIds.end(),abs(iPart->pdgId()))==typicalParentIds.end());
+      if (!(typicalChild || typicalParent)) continue;
 
-      bool isNeedy = (std::find( needyPdgIds.begin(), needyPdgIds.end(), abs(iPart->pdgId()) ) != needyPdgIds.end() );
-      bool specialConsideration = isNeedy && iPart->isLastCopy();
       int status = abs(iPart->status());
-      bool interesting_status =  status==1 || status ==2 || (status > 20 && status < 30 );
-
-      if(!( interesting_status || specialConsideration)) continue;
+      bool acceptableParent = typicalParent && iPart->isLastCopy();
+      bool acceptableChild = typicalChild && (status==1 || status==2 || (status>20 && status<30));
+      if (!(acceptableChild || acceptableParent)) continue;
 
       TLorentzVector temp;
       temp.SetPtEtaPhiE(iPart->pt(), iPart->eta(), iPart->phi(), iPart->energy());
       genParticle_vec->push_back(temp);
       PdgId_vec->push_back(iPart->pdgId());
       Status_vec->push_back(status);
-      TLorentzVector mother; mother.SetPtEtaPhiE(0,0,0,0);
-      int mothid = 0;
-      const reco::GenParticle *Mother;
-      Mother = static_cast<const reco::GenParticle *>(iPart->mother());
+      TLorentzVector parent; parent.SetPtEtaPhiE(0,0,0,0);
+      int parentid = 0;
+      const reco::GenParticle *Parent;
+      Parent = static_cast<const reco::GenParticle *>(iPart->mother());
       while(true)
 	{
-	  if(!(Mother)) break;
-	  int status = Mother->status();
+	  if(!(Parent)) break;
+	  int status = Parent->status();
 	  if((status>20 && status < 30) || status==62)
 	    {
-	      mothid = Mother->pdgId();
-	      mother.SetPtEtaPhiE(Mother->pt(), Mother->eta(), Mother->phi(), Mother->energy());	   
+	      parentid = Parent->pdgId();
+	      parent.SetPtEtaPhiE(Parent->pt(), Parent->eta(), Parent->phi(), Parent->energy());	   
 	      if( status>20 && status<30 )break;
 	    }
-	  Mother = static_cast<const reco::GenParticle *>(Mother->mother());
+	  Parent = static_cast<const reco::GenParticle *>(Parent->mother());
 	}
-      mothers->push_back(mother);
-      ParentId_vec->push_back(mothid);
+      parents->push_back(parent);
+      ParentId_vec->push_back(parentid);
     }
 
-  //Identify each gp's mother within the vector of stored gp's and store motherIdx:
+  //Identify each gp's parent within the vector of stored gp's and store parentIdx:
   std::vector<TLorentzVector>::iterator itlv;
   for (unsigned int g = 0; g < genParticle_vec->size(); g++)
     {
-      itlv = std::find(genParticle_vec->begin(), genParticle_vec->end(), mothers->at(g));
+      itlv = std::find(genParticle_vec->begin(), genParticle_vec->end(), parents->at(g));
       auto index = std::distance(genParticle_vec->begin(), itlv);
       int parentIndex = index;
       if (itlv == genParticle_vec->end()) parentIndex = -1;
