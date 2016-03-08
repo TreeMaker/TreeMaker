@@ -32,6 +32,74 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 
+//enum lists of properties
+enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyFraction, d_chargedEmEnergyFraction, d_neutralEmEnergyFraction,
+				d_electronEnergyFraction, d_photonEnergyFraction, d_muonEnergyFraction, d_bDiscriminatorUser, d_bDiscriminatorMVA, d_bDiscriminatorSimpleCSV, d_qgLikelihood };
+enum JetPropI { i_chargedHadronMultiplicity, i_neutralHadronMultiplicity, i_electronMultiplicity, i_photonMultiplicity,
+				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor };
+
+// helper class
+template <class T>
+class NamedPtr {
+	public:
+		//constructor
+		NamedPtr() : name("") {}
+		NamedPtr(std::string name_, edm::EDProducer* edprod) : name(name_), ptr(new std::vector<T>()) {
+			edprod->produces<std::vector<T>>(name).setBranchAlias(name);
+		}
+		//destructor
+		virtual ~NamedPtr() {}
+		//accessors
+		void put(edm::Event& iEvent) { iEvent.put(ptr,name); }
+		void reset() { ptr.reset(new std::vector<T>()); }
+		void push_back(T tmp) { ptr->push_back(tmp); }
+		virtual void get_property(const pat::Jet* Jet) { }
+	
+		//member variables
+		std::string name;
+		std::auto_ptr< std::vector<T> > ptr;
+};
+
+// specialized helper classes
+template <JetPropD D>
+class NamedPtrD : public NamedPtr<double> {
+	public:
+		using NamedPtr<double>::NamedPtr;
+		virtual void get_property(const pat::Jet* Jet) { }
+};
+
+template <JetPropI I>
+class NamedPtrI : public NamedPtr<int> {
+	public:
+		using NamedPtr<int>::NamedPtr;
+		virtual void get_property(const pat::Jet* Jet) { }
+};
+
+//define accessors
+template<> void NamedPtrD<d_jetArea>::get_property(const pat::Jet* Jet)                     { push_back(Jet->jetArea()); }
+template<> void NamedPtrD<d_chargedHadronEnergyFraction>::get_property(const pat::Jet* Jet) { push_back(Jet->chargedHadronEnergyFraction()); }
+template<> void NamedPtrD<d_neutralHadronEnergyFraction>::get_property(const pat::Jet* Jet) { push_back(Jet->neutralHadronEnergyFraction()); }
+template<> void NamedPtrD<d_chargedEmEnergyFraction>::get_property(const pat::Jet* Jet)     { push_back(Jet->chargedEmEnergyFraction()); }
+template<> void NamedPtrD<d_neutralEmEnergyFraction>::get_property(const pat::Jet* Jet)     { push_back(Jet->neutralEmEnergyFraction()); }
+template<> void NamedPtrD<d_electronEnergyFraction>::get_property(const pat::Jet* Jet)      { push_back(Jet->electronEnergyFraction()); }
+template<> void NamedPtrD<d_photonEnergyFraction>::get_property(const pat::Jet* Jet)        { push_back(Jet->photonEnergyFraction()); }
+template<> void NamedPtrD<d_muonEnergyFraction>::get_property(const pat::Jet* Jet)          { push_back(Jet->muonEnergyFraction()); }
+//bDiscriminatorUser gets special attention
+template<> void NamedPtrD<d_bDiscriminatorMVA>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator("combinedMVABJetTags")); }
+template<> void NamedPtrD<d_bDiscriminatorSimpleCSV>::get_property(const pat::Jet* Jet)     { push_back(Jet->bDiscriminator("combinedSecondaryVertexBJetTags")); }
+//qgLikelihood gets special attention
+template<> void NamedPtrI<i_chargedHadronMultiplicity>::get_property(const pat::Jet* Jet)   { push_back(Jet->chargedHadronMultiplicity()); }
+template<> void NamedPtrI<i_neutralHadronMultiplicity>::get_property(const pat::Jet* Jet)   { push_back(Jet->neutralHadronMultiplicity()); }
+template<> void NamedPtrI<i_electronMultiplicity>::get_property(const pat::Jet* Jet)        { push_back(Jet->electronMultiplicity()); }
+template<> void NamedPtrI<i_photonMultiplicity>::get_property(const pat::Jet* Jet)          { push_back(Jet->photonMultiplicity()); }
+template<> void NamedPtrI<i_muonMultiplicity>::get_property(const pat::Jet* Jet)            { push_back(Jet->muonMultiplicity()); }
+template<> void NamedPtrI<i_NumBhadrons>::get_property(const pat::Jet* Jet)                 { push_back(Jet->jetFlavourInfo().getbHadrons().size()); }
+template<> void NamedPtrI<i_NumChadrons>::get_property(const pat::Jet* Jet)                 { push_back(Jet->jetFlavourInfo().getcHadrons().size()); }
+template<> void NamedPtrI<i_chargedMultiplicity>::get_property(const pat::Jet* Jet)         { push_back(Jet->chargedMultiplicity()); }
+template<> void NamedPtrI<i_neutralMultiplicity>::get_property(const pat::Jet* Jet)         { push_back(Jet->neutralMultiplicity()); }
+template<> void NamedPtrI<i_partonFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->partonFlavour()); }
+template<> void NamedPtrI<i_hadronFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->hadronFlavour()); }
+
 //
 // class declaration
 //
@@ -57,20 +125,10 @@ private:
 	edm::InputTag QGTag_;
 	edm::EDGetTokenT<edm::ValueMap<float>> QGTok_;
 	std::string   btagname_;
-
-	
-	
-	// ----------member data ---------------------------
+	std::vector<NamedPtr<int>*> IntPtrs_;
+	std::vector<NamedPtr<double>*> DoublePtrs_;
+	NamedPtr<double> *DoublePtr_bDiscriminatorUser_, *DoublePtr_qgLikelihood_;
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
@@ -96,53 +154,31 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	 */
 	//now do what ever other initialization is needed
 	//register your products
-	const std::string string0("jetArea");
-	produces<std::vector<double> > (string0).setBranchAlias(string0);
-	const std::string string1("chargedHadronEnergyFraction");
-	produces<std::vector<double> > (string1).setBranchAlias(string1);
-	const std::string string2("chargedHadronMultiplicity");
-	produces<std::vector<int> > (string2).setBranchAlias(string2);
-	const std::string string3("neutralHadronEnergyFraction");
-	produces<std::vector<double> > (string3).setBranchAlias(string3);
-	const std::string string4("neutralHadronMultiplicity");
-	produces<std::vector<int> > (string4).setBranchAlias(string4);
-	const std::string string5("chargedEmEnergyFraction");
-	produces<std::vector<double> > (string5).setBranchAlias(string5);
-	const std::string string6("neutralEmEnergyFraction");
-	produces<std::vector<double> > (string6).setBranchAlias(string6);
-// 	const std::string string7("patJetsNeutralEmFractionPBNR");
-// 	produces<std::vector<double> > (string7).setBranchAlias(string7);
-	const std::string string8("electronMultiplicity");
-	produces<std::vector<int> > (string8).setBranchAlias(string8);
-	const std::string string9("photonEnergyFraction");
-	produces<std::vector<double> > (string9).setBranchAlias(string9);
-	const std::string string10("photonMultiplicity");
-	produces<std::vector<int> > (string10).setBranchAlias(string10);
-	const std::string string11("muonEnergyFraction");
-	produces<std::vector<double> > (string11).setBranchAlias(string11);
-	const std::string string12("muonMultiplicity");
-	produces<std::vector<int> > (string12).setBranchAlias(string12);
-	const std::string string13("bDiscriminatorUser");
-	produces<std::vector<double> > (string13).setBranchAlias(string13);
-	const std::string string14("bDiscriminatorMVA");
-	produces<std::vector<double> > (string14).setBranchAlias(string14);
-	const std::string string15("bDiscriminatorSimpleCSV");
-	produces<std::vector<double> > (string15).setBranchAlias(string15);
-	const std::string string16("NumBhadrons");
-	produces<std::vector<int> > (string16).setBranchAlias(string16);
-	const std::string string17("NumChadrons");
-	produces<std::vector<int> > (string17).setBranchAlias(string17);
-	const std::string string18("chargedMultiplicity");
-	produces<std::vector<int> > (string18).setBranchAlias(string18);
-	const std::string string19("neutralMultiplicity");
-	produces<std::vector<int> > (string19).setBranchAlias(string19);
-	const std::string string20("partonFlavor");
-	produces<std::vector<int> > (string20).setBranchAlias(string20);
-	const std::string string21("hadronFlavor");
-	produces<std::vector<int> > (string21).setBranchAlias(string21);
-	const std::string string22("qgLikelihood");
-	produces<std::vector<double> > (string22).setBranchAlias(string22);
+	IntPtrs_.push_back(new NamedPtrI<i_chargedHadronMultiplicity>("chargedHadronMultiplicity",this));
+	IntPtrs_.push_back(new NamedPtrI<i_neutralHadronMultiplicity>("neutralHadronMultiplicity",this));
+	IntPtrs_.push_back(new NamedPtrI<i_electronMultiplicity>     ("electronMultiplicity",this)     );
+	IntPtrs_.push_back(new NamedPtrI<i_photonMultiplicity>       ("photonMultiplicity",this)       );
+	IntPtrs_.push_back(new NamedPtrI<i_muonMultiplicity>         ("muonMultiplicity",this)         );
+	IntPtrs_.push_back(new NamedPtrI<i_NumBhadrons>              ("NumBhadrons",this)              );
+	IntPtrs_.push_back(new NamedPtrI<i_NumChadrons>              ("NumChadrons",this)              );
+	IntPtrs_.push_back(new NamedPtrI<i_chargedMultiplicity>      ("chargedMultiplicity",this)      );
+	IntPtrs_.push_back(new NamedPtrI<i_neutralMultiplicity>      ("neutralMultiplicity",this)      );
+	IntPtrs_.push_back(new NamedPtrI<i_partonFlavor>             ("partonFlavor",this)             );
+	IntPtrs_.push_back(new NamedPtrI<i_hadronFlavor>             ("hadronFlavor",this)             );
 
+	DoublePtrs_.push_back(new NamedPtrD<d_jetArea>                    ("jetArea",this)                    );
+	DoublePtrs_.push_back(new NamedPtrD<d_chargedHadronEnergyFraction>("chargedHadronEnergyFraction",this));
+	DoublePtrs_.push_back(new NamedPtrD<d_neutralHadronEnergyFraction>("neutralHadronEnergyFraction",this));
+	DoublePtrs_.push_back(new NamedPtrD<d_chargedEmEnergyFraction>    ("chargedEmEnergyFraction",this)    );
+	DoublePtrs_.push_back(new NamedPtrD<d_neutralEmEnergyFraction>    ("neutralEmEnergyFraction",this)    );
+	DoublePtrs_.push_back(new NamedPtrD<d_electronEnergyFraction>     ("electronEnergyFraction",this)     );
+	DoublePtrs_.push_back(new NamedPtrD<d_photonEnergyFraction>       ("photonEnergyFraction",this)       );
+	DoublePtrs_.push_back(new NamedPtrD<d_muonEnergyFraction>         ("muonEnergyFraction",this)         );
+	DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorMVA>          ("bDiscriminatorMVA",this)          );
+	DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSimpleCSV>    ("bDiscriminatorSimpleCSV",this)    );
+	
+	DoublePtr_bDiscriminatorUser_ = new NamedPtrD<d_bDiscriminatorUser>("bDiscriminatorUser",this);
+	DoublePtr_qgLikelihood_ = new NamedPtrD<d_qgLikelihood>("qgLikelihood",this);
 }
 
 
@@ -163,36 +199,16 @@ JetProperties::~JetProperties()
 void
 JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-	using namespace edm;
-	std::auto_ptr<std::vector<pat::Jet> > prodJets(new std::vector<pat::Jet>());
-	
-	std::auto_ptr< std::vector<double> > jetArea(new std::vector<double>);
-	std::auto_ptr< std::vector<double> > chargedHadronEnergyFraction(new std::vector<double>);
-	std::auto_ptr< std::vector<int> > chargedHadronMultiplicity(new std::vector<int>);
-	std::auto_ptr< std::vector<double> > neutralHadronEnergyFraction(new std::vector<double>);
-	std::auto_ptr< std::vector<int> > neutralHadronMultiplicity(new std::vector<int>);
-	std::auto_ptr< std::vector<double> > chargedEmEnergyFraction(new std::vector<double>);
-	std::auto_ptr< std::vector<double> > neutralEmEnergyFraction(new std::vector<double>);
-// 	std::auto_ptr< std::vector<double> > patJetsNeutralEmFractionPBNR(new std::vector<double>);
-	std::auto_ptr< std::vector<double> > electronEnergyFraction(new std::vector<double>);
-	std::auto_ptr< std::vector<int> > electronMultiplicity(new std::vector<int>);
-	std::auto_ptr< std::vector<double> > photonEnergyFraction(new std::vector<double>);
-	std::auto_ptr< std::vector<int> > photonMultiplicity(new std::vector<int>);
-	std::auto_ptr< std::vector<double> > muonEnergyFraction(new std::vector<double>);
-	std::auto_ptr< std::vector<int> > muonMultiplicity(new std::vector<int>);
-	std::auto_ptr< std::vector<double> > bDiscriminatorUser(new std::vector<double>);
-	std::auto_ptr< std::vector<double> > bDiscriminatorMVA(new std::vector<double>);
-	std::auto_ptr< std::vector<double> > bDiscriminatorSimpleCSV(new std::vector<double>);
-	std::auto_ptr< std::vector<int> > NumBhadrons(new std::vector<int>);
-	std::auto_ptr< std::vector<int> > NumChadrons(new std::vector<int>);
-	std::auto_ptr< std::vector<int> > partonFlavor(new std::vector<int>);
-	std::auto_ptr< std::vector<int> > hadronFlavor(new std::vector<int>);
-	std::auto_ptr< std::vector<int> > chargedMultiplicity(new std::vector<int>);
-	std::auto_ptr< std::vector<int> > neutralMultiplicity(new std::vector<int>);
-	std::auto_ptr< std::vector<double> > qgLikelihood(new std::vector<double>);
-	using namespace edm;
-	using namespace reco;
-	using namespace pat;
+	//reset ptrs
+	for(unsigned ip = 0; ip < IntPtrs_.size(); ++ip){
+		IntPtrs_[ip]->reset();
+	}
+	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
+		DoublePtrs_[ip]->reset();
+	}
+	DoublePtr_bDiscriminatorUser_->reset();
+	DoublePtr_qgLikelihood_->reset();
+
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
 	edm::Handle<edm::ValueMap<float>> qgHandle;
@@ -200,83 +216,31 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	bool qgValid = qgHandle.isValid();
 	if( Jets.isValid() ) {
 		for(auto Jet = Jets->begin();  Jet != Jets->end(); ++Jet){
-			jetArea->push_back( Jet->jetArea() );
-			chargedHadronEnergyFraction->push_back( Jet->chargedHadronEnergyFraction() );
-			chargedHadronMultiplicity->push_back( Jet->chargedHadronMultiplicity() );
-			neutralHadronEnergyFraction->push_back( Jet->neutralHadronEnergyFraction() );
-			neutralHadronMultiplicity->push_back( Jet->neutralHadronMultiplicity() );
-			chargedEmEnergyFraction->push_back( Jet->chargedEmEnergyFraction() );
-			neutralEmEnergyFraction->push_back( Jet->neutralEmEnergyFraction() );
-// 			patJetsNeutralEmFractionPBNR->push_back( Jet->patJetsNeutralEmFractionPBNR() / Jet->jecFactor(0) );
-			electronEnergyFraction->push_back( Jet->electronEnergyFraction() );
-			electronMultiplicity->push_back( Jet->electronMultiplicity() );
-			photonEnergyFraction->push_back( Jet->photonEnergyFraction() );
-			photonMultiplicity->push_back( Jet->photonMultiplicity() );
-			muonEnergyFraction->push_back( Jet->muonEnergyFraction() );
-			muonMultiplicity->push_back( Jet->muonMultiplicity() );
-			bDiscriminatorUser->push_back( Jet->bDiscriminator(btagname_) );
-			bDiscriminatorMVA->push_back( Jet->bDiscriminator("combinedMVABJetTags") );
-			bDiscriminatorSimpleCSV->push_back( Jet->bDiscriminator("combinedSecondaryVertexBJetTags") );
-			NumBhadrons->push_back( Jet->jetFlavourInfo().getbHadrons().size() );
-			NumChadrons->push_back( Jet->jetFlavourInfo().getcHadrons().size() );
-			partonFlavor->push_back( Jet->partonFlavour() );
-			hadronFlavor->push_back( Jet->hadronFlavour() );
-			chargedMultiplicity->push_back( Jet->chargedMultiplicity() );
-			neutralMultiplicity->push_back( Jet->neutralMultiplicity() );
+			for(unsigned ip = 0; ip < IntPtrs_.size(); ++ip){
+				IntPtrs_[ip]->get_property(&(*Jet));
+			}
+			for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
+				DoublePtrs_[ip]->get_property(&(*Jet));
+			}
+			//special attention for a few properties
+			DoublePtr_bDiscriminatorUser_->push_back( Jet->bDiscriminator(btagname_) );
 			if(qgValid){
 				edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(Jets, Jet - Jets->begin()));
 				float qgLikelihood_ = (*qgHandle)[jetRef];
-				qgLikelihood->push_back(qgLikelihood_);
+				DoublePtr_qgLikelihood_->push_back( qgLikelihood_ );
 			}
 		}
 	}
 
-	const std::string string0("jetArea");
-	iEvent.put(jetArea,string0);
-	const std::string string1("chargedHadronEnergyFraction");
-	iEvent.put(chargedHadronEnergyFraction,string1);
-	const std::string string2("chargedHadronMultiplicity");
-	iEvent.put(chargedHadronMultiplicity,string2);
-	const std::string string3("neutralHadronEnergyFraction");
-	iEvent.put(neutralHadronEnergyFraction,string3);
-	const std::string string4("neutralHadronMultiplicity");
-	iEvent.put(neutralHadronMultiplicity,string4);
-	const std::string string5("chargedEmEnergyFraction");
-	iEvent.put(chargedEmEnergyFraction,string5);
-	const std::string string6("neutralEmEnergyFraction");
-	iEvent.put(neutralEmEnergyFraction,string6);
-// 	const std::string string7("patJetsNeutralEmFractionPBNR");
-// 	iEvent.put(patJetsNeutralEmFractionPBNR,string7);
-	const std::string string8("electronMultiplicity");
-	iEvent.put(electronMultiplicity,string8);
-	const std::string string9("photonEnergyFraction");
-	iEvent.put(photonEnergyFraction,string9);
-	const std::string string10("photonMultiplicity");
-	iEvent.put(photonMultiplicity,string10);
-	const std::string string11("muonEnergyFraction");
-	iEvent.put(muonEnergyFraction,string11);
-	const std::string string12("muonMultiplicity");
-	iEvent.put(muonMultiplicity,string12);
-	const std::string string13("bDiscriminatorUser");
-	iEvent.put(bDiscriminatorUser,string13);
-	const std::string string14("bDiscriminatorMVA");
-	iEvent.put(bDiscriminatorMVA,string14);
-	const std::string string15("bDiscriminatorSimpleCSV");
-	iEvent.put(bDiscriminatorSimpleCSV,string15);
-	const std::string string16("NumBhadrons");
-	iEvent.put(NumBhadrons,string16);
-	const std::string string17("NumChadrons");
-	iEvent.put(NumChadrons,string17);
-	const std::string string18("chargedMultiplicity");
-	iEvent.put(chargedMultiplicity,string18);
-	const std::string string19("neutralMultiplicity");
-	iEvent.put(neutralMultiplicity,string19);
-	const std::string string20("partonFlavor");
-	iEvent.put(partonFlavor,"partonFlavor");
-	const std::string string21("hadronFlavor");
-	iEvent.put(hadronFlavor,"hadronFlavor");
-	const std::string string22("qgLikelihood");
-	iEvent.put(qgLikelihood,"qgLikelihood");
+	//put products
+	for(unsigned ip = 0; ip < IntPtrs_.size(); ++ip){
+		IntPtrs_[ip]->put(iEvent);
+	}
+	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
+		DoublePtrs_[ip]->put(iEvent);
+	}
+	DoublePtr_bDiscriminatorUser_->put(iEvent);
+	DoublePtr_qgLikelihood_->put(iEvent);
 
 }
 
@@ -289,6 +253,17 @@ JetProperties::beginJob()
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 JetProperties::endJob() {
+	//memory management
+	for(unsigned ip = 0; ip < IntPtrs_.size(); ++ip){
+		delete (IntPtrs_[ip]);
+	}
+	IntPtrs_.clear();
+	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
+		delete (DoublePtrs_[ip]);
+	}
+	DoublePtrs_.clear();
+	delete DoublePtr_bDiscriminatorUser_;
+	delete DoublePtr_qgLikelihood_;
 }
 
 // ------------ method called when starting to processes a run  ------------
