@@ -54,6 +54,8 @@ private:
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
+	edm::InputTag QGTag_;
+	edm::EDGetTokenT<edm::ValueMap<float>> QGTok_;
 	std::string   btagname_;
 
 	
@@ -77,8 +79,10 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 {
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 	btagname_ = iConfig.getParameter<std::string>  ("BTagInputTag");
+	QGTag_ = iConfig.getParameter<edm::InputTag>("QGTag");
 	
 	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
+	QGTok_ = consumes<edm::ValueMap<float>>(QGTag_);
 	
 	//register your products
 	/* Examples
@@ -92,7 +96,6 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	 */
 	//now do what ever other initialization is needed
 	//register your products
-	produces<std::vector<pat::Jet> >();
 	const std::string string0("jetArea");
 	produces<std::vector<double> > (string0).setBranchAlias(string0);
 	const std::string string1("chargedHadronEnergyFraction");
@@ -137,6 +140,8 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	produces<std::vector<int> > (string20).setBranchAlias(string20);
 	const std::string string21("hadronFlavor");
 	produces<std::vector<int> > (string21).setBranchAlias(string21);
+	const std::string string22("qgLikelihood");
+	produces<std::vector<double> > (string22).setBranchAlias(string22);
 
 }
 
@@ -184,43 +189,48 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::auto_ptr< std::vector<int> > hadronFlavor(new std::vector<int>);
 	std::auto_ptr< std::vector<int> > chargedMultiplicity(new std::vector<int>);
 	std::auto_ptr< std::vector<int> > neutralMultiplicity(new std::vector<int>);
+	std::auto_ptr< std::vector<double> > qgLikelihood(new std::vector<double>);
 	using namespace edm;
 	using namespace reco;
 	using namespace pat;
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
+	edm::Handle<edm::ValueMap<float>> qgHandle;
+	iEvent.getByToken(QGTok_, qgHandle);
+	bool qgValid = qgHandle.isValid();
 	if( Jets.isValid() ) {
-		for(unsigned int i=0; i<Jets->size();i++)
-		{
-			prodJets->push_back(pat::Jet(Jets->at(i)));
-			jetArea->push_back( Jets->at(i).jetArea() );
-			chargedHadronEnergyFraction->push_back( Jets->at(i).chargedHadronEnergyFraction() );
-			chargedHadronMultiplicity->push_back( Jets->at(i).chargedHadronMultiplicity() );
-			neutralHadronEnergyFraction->push_back( Jets->at(i).neutralHadronEnergyFraction() );
-			neutralHadronMultiplicity->push_back( Jets->at(i).neutralHadronMultiplicity() );
-			chargedEmEnergyFraction->push_back( Jets->at(i).chargedEmEnergyFraction() );
-			neutralEmEnergyFraction->push_back( Jets->at(i).neutralEmEnergyFraction() );
-// 			patJetsNeutralEmFractionPBNR->push_back( Jets->at(i).patJetsNeutralEmFractionPBNR() / Jets->at(i).jecFactor(0) );
-			electronEnergyFraction->push_back( Jets->at(i).electronEnergyFraction() );
-			electronMultiplicity->push_back( Jets->at(i).electronMultiplicity() );
-			photonEnergyFraction->push_back( Jets->at(i).photonEnergyFraction() );
-			photonMultiplicity->push_back( Jets->at(i).photonMultiplicity() );
-			muonEnergyFraction->push_back( Jets->at(i).muonEnergyFraction() );
-			muonMultiplicity->push_back( Jets->at(i).muonMultiplicity() );
-			bDiscriminatorUser->push_back( Jets->at(i).bDiscriminator(btagname_) );
-			bDiscriminatorMVA->push_back( Jets->at(i).bDiscriminator("combinedMVABJetTags") );
-			bDiscriminatorSimpleCSV->push_back( Jets->at(i).bDiscriminator("combinedSecondaryVertexBJetTags") );
-			NumBhadrons->push_back( Jets->at(i).jetFlavourInfo().getbHadrons().size() );
-			NumChadrons->push_back( Jets->at(i).jetFlavourInfo().getcHadrons().size() );
-			partonFlavor->push_back( Jets->at(i).partonFlavour() );
-			hadronFlavor->push_back( Jets->at(i).hadronFlavour() );
-			chargedMultiplicity->push_back( Jets->at(i).chargedMultiplicity() );
-			neutralMultiplicity->push_back( Jets->at(i).neutralMultiplicity() );
+		for(auto Jet = Jets->begin();  Jet != Jets->end(); ++Jet){
+			jetArea->push_back( Jet->jetArea() );
+			chargedHadronEnergyFraction->push_back( Jet->chargedHadronEnergyFraction() );
+			chargedHadronMultiplicity->push_back( Jet->chargedHadronMultiplicity() );
+			neutralHadronEnergyFraction->push_back( Jet->neutralHadronEnergyFraction() );
+			neutralHadronMultiplicity->push_back( Jet->neutralHadronMultiplicity() );
+			chargedEmEnergyFraction->push_back( Jet->chargedEmEnergyFraction() );
+			neutralEmEnergyFraction->push_back( Jet->neutralEmEnergyFraction() );
+// 			patJetsNeutralEmFractionPBNR->push_back( Jet->patJetsNeutralEmFractionPBNR() / Jet->jecFactor(0) );
+			electronEnergyFraction->push_back( Jet->electronEnergyFraction() );
+			electronMultiplicity->push_back( Jet->electronMultiplicity() );
+			photonEnergyFraction->push_back( Jet->photonEnergyFraction() );
+			photonMultiplicity->push_back( Jet->photonMultiplicity() );
+			muonEnergyFraction->push_back( Jet->muonEnergyFraction() );
+			muonMultiplicity->push_back( Jet->muonMultiplicity() );
+			bDiscriminatorUser->push_back( Jet->bDiscriminator(btagname_) );
+			bDiscriminatorMVA->push_back( Jet->bDiscriminator("combinedMVABJetTags") );
+			bDiscriminatorSimpleCSV->push_back( Jet->bDiscriminator("combinedSecondaryVertexBJetTags") );
+			NumBhadrons->push_back( Jet->jetFlavourInfo().getbHadrons().size() );
+			NumChadrons->push_back( Jet->jetFlavourInfo().getcHadrons().size() );
+			partonFlavor->push_back( Jet->partonFlavour() );
+			hadronFlavor->push_back( Jet->hadronFlavour() );
+			chargedMultiplicity->push_back( Jet->chargedMultiplicity() );
+			neutralMultiplicity->push_back( Jet->neutralMultiplicity() );
+			if(qgValid){
+				edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(Jets, Jet - Jets->begin()));
+				float qgLikelihood_ = (*qgHandle)[jetRef];
+				qgLikelihood->push_back(qgLikelihood_);
+			}
 		}
 	}
-	const std::string string00("");
-	iEvent.put(prodJets );
-	
+
 	const std::string string0("jetArea");
 	iEvent.put(jetArea,string0);
 	const std::string string1("chargedHadronEnergyFraction");
@@ -265,6 +275,8 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(partonFlavor,"partonFlavor");
 	const std::string string21("hadronFlavor");
 	iEvent.put(hadronFlavor,"hadronFlavor");
+	const std::string string22("qgLikelihood");
+	iEvent.put(qgLikelihood,"qgLikelihood");
 
 }
 

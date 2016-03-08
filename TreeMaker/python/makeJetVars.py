@@ -128,10 +128,23 @@ def makeJetVars(process, sequence, JetTag, suff, fastsim, skipGoodJets, storePro
     ## ----------------------------------------------------------------------------------------------
     
     if storeProperties>0:
+        # get QG tagging discriminant
+        QGTagger = cms.EDProducer('QGTagger',
+            srcJets	            = GoodJetsTag,
+            jetsLabel           = cms.string('QGL_AK4PFchs'),
+            srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),		
+            srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
+            useQualityCuts	    = cms.bool(False)
+        )
+        setattr(process,"QGTagger"+suff,QGTagger)
+        theSequence += getattr(process,"QGTagger"+suff)
+        QGTag = cms.InputTag("QGTagger"+suff,"qgLikelihood")
+        # make jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetsProperties = jetproperties.clone(
             JetTag       = GoodJetsTag,
-            BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags')
+            BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+            QGTag        = QGTag
         )
         setattr(process,"JetsProperties"+suff,JetsProperties)
         theSequence += getattr(process,"JetsProperties"+suff)
@@ -146,7 +159,8 @@ def makeJetVars(process, sequence, JetTag, suff, fastsim, skipGoodJets, storePro
                                                     'JetsProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
-                                                    'JetsProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)'])
+                                                    'JetsProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
+                                                    'JetsProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)'])
             process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
                                                  'JetsProperties'+suff+':electronMultiplicity(Jets'+suff+'_electronMultiplicity)',
                                                  'JetsProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
