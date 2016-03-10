@@ -179,6 +179,26 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     ## JECs
     ## ----------------------------------------------------------------------------------------------
+
+    process.load("CondCore.DBCommon.CondDBCommon_cfi")
+    from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
+    
+    # QG tagging DB payload
+    qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
+    process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",CondDBSetup,
+        toGet = cms.VPSet(),
+        connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
+    )
+    for type in ['AK4PFchs','AK4PFchs_antib']:
+        process.QGPoolDBESSource.toGet.extend(
+            cms.VPSet(
+                cms.PSet(
+                    record = cms.string('QGLikelihoodRcd'),
+                    tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
+                    label  = cms.untracked.string('QGL_'+type)
+                )
+            )
+        )
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
@@ -192,8 +212,6 @@ signal=False
         if os.getenv('GC_CONF'): 
             JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
 
-        process.load("CondCore.DBCommon.CondDBCommon_cfi")
-        from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
         process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
             connect = JECPatch,
             toGet   = cms.VPSet(
