@@ -213,7 +213,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   for(size_t i=0; i<pruned->size();i++)
     {
-      if( (abs((*pruned)[i].pdgId() ) == 24 || abs((*pruned)[i].pdgId() ) == 23 ) && (*pruned)[i].status()==22) // needs to be checked if this workes for Z 23 as well
+      if( (abs((*pruned)[i].pdgId() ) == 24 || abs((*pruned)[i].pdgId() ) == 23 || abs((*pruned)[i].pdgId() ) == 1000024 ) && (*pruned)[i].status()==22) // needs to be checked if this workes for Z 23 as well
 	{
 	  const reco::GenParticle * FinalBoson = BosonFound(&(*pruned)[i]);
 	  size_t bosonDaugthers = FinalBoson->numberOfDaughters();
@@ -489,7 +489,7 @@ const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle *
 {
   for(size_t i=0;i< particle->numberOfDaughters();i++)
     {
-      if(abs(particle->daughter(i)->pdgId() )== 24 || abs(particle->daughter(i)->pdgId() ) == 23 ) return BosonFound((reco::GenParticle*)particle->daughter(i));
+      if(abs(particle->daughter(i)->pdgId() )== 24 || abs(particle->daughter(i)->pdgId() ) == 23 || abs(particle->daughter(i)->pdgId() ) == 1000024) return BosonFound((reco::GenParticle*)particle->daughter(i));
     }
   return particle;
 	
