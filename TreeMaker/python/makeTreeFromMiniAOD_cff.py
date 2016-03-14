@@ -48,7 +48,7 @@ signal=False
     process.MessageLogger.cerr.FwkReport.reportEvery = reportfreq
     process.options = cms.untracked.PSet(
         allowUnscheduled = cms.untracked.bool(True),
-        wantSummary = cms.untracked.bool(True)
+#        wantSummary = cms.untracked.bool(True) # off by default
     )
 
     # files to process
