@@ -25,14 +25,23 @@ The available scenarios are:
 5. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
 6. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
 
-## Interactive Runs
+## Unit Tests (Interactive Runs)
 
-To run interactively:
+Several predefined run commands (at least one for each scenario) are defined in a script called [unitTest.py](./Production/test/unitTest.py). It has several parameters:
+* `test`: number of the test to run (default=-1, displays all tests)
+* `name`: name of the output ROOT and log files for the test (default="", each test has its own default name)
+* `run`: run the selected test (default=False)
+* `numevents`: how many events to run (default=100)
+* `shell`: how to format the command (default="tcsh", also knows "bash")
+
+A few examples of how to run the script:  
+1) To see all tests:
 ```
-cmsRun runMakeTreeFromMiniAOD_cfg.py \
-scenario=Spring15v2 \
-dataset="/store/mc/RunIISpring15MiniAODv2/..." \
-outfile="test"
+python unitTest.py
+```
+2) To run test 2:
+```
+python unitTest.py test=2 run=True
 ```
 
 Note that all of the background estimation processes (and some processes necessary to estimate systematic uncertainties) are turned *ON* by default in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py).
