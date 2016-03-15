@@ -1,19 +1,19 @@
 #!/bin/bash
 
 CHECKARGS=""
-OUTDIR=""
+OUTPUTDIR=""
 
 #check arguments
 while getopts "kd:" opt; do
   case "$opt" in
   k) CHECKARGS="${CHECKARGS} -k"
     ;;
-  d) OUTDIR=$OPTARG
+  d) OUTPUTDIR=$OPTARG
     ;;
   esac
 done
 
-if [ -z "$OUTDIR" ]; then
+if [ -z "$OUTPUTDIR" ]; then
   echo "Need to specify output directory with -d"
   exit  
 fi
