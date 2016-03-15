@@ -101,11 +101,26 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
 
     ## ----------------------------------------------------------------------------------------------
+    ## SUSY scan info
+    ## ----------------------------------------------------------------------------------------------
+    if geninfo :
+        # mother and LSP masses for SUSY signal scans
+        # branches always added, but only have values for fastsim samples
+        # needed for WeightProducer
+        from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
+        process.SusyScan = SusyScanProducer.clone(
+            shouldScan = cms.bool(fastsim),
+            debug = cms.bool(False)
+        )
+        process.Baseline += process.SusyScan
+        VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
+    
+    ## ----------------------------------------------------------------------------------------------
     ## WeightProducer
     ## ----------------------------------------------------------------------------------------------
     if geninfo:
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
-        process.WeightProducer = getWeightProducer(process.source.fileNames[0])
+        process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1117.root")
         process.Baseline += process.WeightProducer
@@ -165,17 +180,6 @@ signal=False
         VectorInt.append("genParticles:Status(GenParticles_Status)")
         VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
         VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
-        
-        # mother and LSP masses for SUSY signal scans
-        # branches always added, but only have values for fastsim samples
-        from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
-        process.SusyScan = SusyScanProducer.clone(
-            shouldScan = cms.bool(fastsim),
-            debug = cms.bool(False)
-        )
-        process.Baseline += process.SusyScan
-        VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
-        
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs

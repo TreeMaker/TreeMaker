@@ -18,9 +18,8 @@ class MCSample:
         self.XS = XS
         self.NumberEvts = NumberEvts
 
-def getWeightProducer(fileName):
+def getWeightProducer(fileName,fastsim=False):
 
-    mcVersion = "none"                  # For lumi and PU weights
     applyWeight = False
     
     ## --- Setup default WeightProducer ------------------------------------
@@ -31,10 +30,20 @@ def getWeightProducer(fileName):
     # Set default values to produce an event weight of 1
     weightProducer.weight = cms.double(1.0)
     weightProducer.Method = cms.string("Constant")
-    weightProducer.LumiScale = cms.double(1.0)
     weightProducer.FileNamePUDataDistribution = cms.string("NONE")
-    weightProducer.PU = cms.int32(0)
 
+    # assign cross sections for fastsim
+    # assume privately-produced samples do not have mixed mass points
+    if fastsim and "SusyRA2Analysis2015" not in fileName:
+        weightProducer.weight = cms.double(-1.)
+        weightProducer.Method = cms.string("FastSim")
+        weightProducer.NumberEvts = cms.double(1.0)
+        if "SMS-T1" in fileName or "SMS-T5" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T1.txt")
+        elif "SMS-T2tt" in fileName or "SMS-T2bb" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2.txt")
+        elif "SMS-T2qq" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2qq.txt")
+        print "Setup WeightProducer for '"+fileName+"'"
+        return weightProducer
+    
     # list of samples
     samples = [
         # 13 TeV miniAODv2 samples - Spring15
@@ -126,12 +135,13 @@ def getWeightProducer(fileName):
         # private signal
         MCSample("T5HH_1200_200", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0856418, 48928),
         MCSample("T5HH_1200_950", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0856418, 48925),
+        MCSample("T1ttbb_1300_5", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0460525, 22407),
+        MCSample("T1ttbb_1300_10", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0460525, 20237),
     ]
     
     # loop over all samples until we find a match
     for sample in samples:
         if sample.name in fileName and sample.production in fileName:
-            mcVersion = sample.mcVersion
             weightProducer.Method     = cms.string(sample.Method)
             weightProducer.XS         = cms.double(sample.XS)
             weightProducer.NumberEvts = cms.double(sample.NumberEvts)

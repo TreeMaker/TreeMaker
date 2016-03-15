@@ -22,7 +22,10 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
+#include <unordered_map>
 
 #include "TFile.h"
 #include "TH1.h"
@@ -57,22 +60,24 @@ private:
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob();
   
-  enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, other = 3 };
+  enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, FastSim = 3, other = 4 };
   
   const std::string _weightingMethodName;
   const double _startWeight;
-  const double _xs;
+  double _xs;
   const double _NumberEvents;
   const double _lumi;
-  edm::InputTag _weightName, _genEvtTag, _puInfoTag;
-  edm::EDGetTokenT<double> _weightTok;
+  edm::InputTag _weightName, _genEvtTag, _puInfoTag, _SusyMotherTag;
+  edm::EDGetTokenT<double> _weightTok, _SusyMotherTok;
   edm::EDGetTokenT<GenEventInfoProduct> _genEvtTok;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puInfoTok;
   TH1 *pu_central, *pu_up, *pu_down;
   double _weightFactor;
   bool _applyPUWeights;
   weight_method _weightingMethod;
+  std::unordered_map<double,double> _FastSimXsec;
   
+  void process(std::string line, char delim, std::vector<std::string>& fields);
   double getPUWeight(double trueint, TH1* pu) const;
 };
 
@@ -85,6 +90,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
    _genEvtTag(edm::InputTag("generator")),
    _puInfoTag(edm::InputTag("slimmedAddPileupInfo")),
+   _SusyMotherTag(edm::InputTag("SusyScan:SusyMotherMass")),
    pu_central(0), pu_up(0), pu_down(0), _weightingMethod(other)
 {
 
@@ -110,6 +116,50 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       std::cout << "        Cross section (pb) : " << _xs << std::endl;
       std::cout << "          Number of events : " << _NumberEvents << std::endl;
       _genEvtTok = consumes<GenEventInfoProduct>(_genEvtTag);
+   }
+   
+   // Option 4: assign cross section for FastSim
+   else if (_weightingMethodName == "FastSim") {
+      _weightingMethod = FastSim;
+      std::cout << "WeightProducer: Finding cross sections for FastSim" << std::endl;
+      std::cout << "  Target luminosity (1/pb) : " << _lumi << std::endl;
+      std::cout << "          Number of events : " << _NumberEvents << std::endl;
+      _SusyMotherTok = consumes<double>(_SusyMotherTag);
+     
+      //setup xsec map
+      std::string inputXsecName = iConfig.getParameter<std::string> ("XsecFile");
+	  bool foundXsec = true;
+      if(inputXsecName.size()>0){
+         edm::FileInPath fileXsec(inputXsecName);
+         std::ifstream infile(fileXsec.fullPath().c_str());
+         if(infile.is_open()){
+            std::string line;
+            while(getline(infile,line)){
+               std::vector<std::string> items;
+               process(line,'\t',items);
+               //convert input to proper types
+               if(items.size()==2){
+                  double mass_tmp;
+                  std::stringstream s0(items[0]);
+                  s0 >> mass_tmp;
+                  
+                  double xsec_tmp;
+                  std::stringstream s1(items[1]);
+                  s1 >> xsec_tmp;
+                  
+                  //insert into map
+                  _FastSimXsec.emplace(mass_tmp,xsec_tmp);
+               }
+            }
+         }
+         else foundXsec = false;
+      }
+      else foundXsec = false;
+      
+      if(!foundXsec) {
+         std::cout << "WARNING: WeightProducer: Could not open FastSim xsec file: " << inputXsecName << std::endl;
+         _weightingMethod = other;
+      }
    }
 
    // No option specified
@@ -190,6 +240,18 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
         double genweight_ = genEvtInfoHandle->weight();
         if(genweight_ < 0) resultWeight *= -1;
       }
+   }
+   
+   //Option 4: get cross section from input file
+   else if (_weightingMethod == FastSim) {
+      _xs = 0;
+      edm::Handle<double> SusyMotherHandle;
+      iEvent.getByToken(_SusyMotherTok, SusyMotherHandle);
+      if (SusyMotherHandle.isValid()){
+         auto itr = _FastSimXsec.find(*SusyMotherHandle);
+         if(itr!=_FastSimXsec.end()) _xs = itr->second;
+      }
+      resultWeight = _xs * _NumberEvents * _lumi;
    }
 
    // Optionally, include PU weight
@@ -272,6 +334,15 @@ double WeightProducer::getPUWeight(double trueint, TH1* pu) const{
   }
 
    return w;
+}
+
+//generalization for processing a line
+void WeightProducer::process(std::string line, char delim, std::vector<std::string>& fields){
+	std::stringstream ss(line);
+	std::string field;
+	while(getline(ss,field,delim)){
+		fields.push_back(field);
+	}
 }
 
 //define this as a plug-in
