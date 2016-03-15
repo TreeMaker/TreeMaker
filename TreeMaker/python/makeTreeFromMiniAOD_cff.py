@@ -160,11 +160,11 @@ signal=False
             debug = cms.untracked.bool(False)
         )
         process.Baseline += process.genParticles
-        VectorTLorentzVector.append("genParticles(genParticles)")
-        VectorInt.append("genParticles:PdgId(genParticles_PdgId)")
-        VectorInt.append("genParticles:Status(genParticles_Status)")
-        VectorInt.append("genParticles:Parent(genParticles_ParentIdx)")
-        VectorInt.append("genParticles:ParentId(genParticles_ParentId)")
+        VectorTLorentzVector.append("genParticles(GenParticles)")
+        VectorInt.append("genParticles:PdgId(GenParticles_PdgId)")
+        VectorInt.append("genParticles:Status(GenParticles_Status)")
+        VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
+        VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
         
         # mother and LSP masses for SUSY signal scans
         # branches always added, but only have values for fastsim samples
