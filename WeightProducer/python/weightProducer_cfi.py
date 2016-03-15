@@ -14,6 +14,9 @@ weightProducer = cms.EDProducer('WeightProducer',
    NumberEvts = cms.double(-1.),         
    Lumi = cms.double(1.),              # Lumi in 1/pb
 
+   #Option 4: text file of mother mass -> xsec for FastSim
+   XsecFile = cms.string(""),
+   
    # Data PU distribution. If a file name is specified,
    # a multiplicative PU weight factor is applied.
    FileNamePUDataDistribution = cms.string("NONE"),

@@ -144,7 +144,8 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         JetsProperties = jetproperties.clone(
             JetTag       = GoodJetsTag,
             BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-            QGTag        = QGTag
+            QGTag        = QGTag,
+            AK8          = cms.bool(False)
         )
         setattr(process,"JetsProperties"+suff,JetsProperties)
         theSequence += getattr(process,"JetsProperties"+suff)

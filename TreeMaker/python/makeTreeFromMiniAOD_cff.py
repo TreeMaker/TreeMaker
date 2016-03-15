@@ -101,11 +101,26 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
 
     ## ----------------------------------------------------------------------------------------------
+    ## SUSY scan info
+    ## ----------------------------------------------------------------------------------------------
+    if geninfo :
+        # mother and LSP masses for SUSY signal scans
+        # branches always added, but only have values for fastsim samples
+        # needed for WeightProducer
+        from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
+        process.SusyScan = SusyScanProducer.clone(
+            shouldScan = cms.bool(fastsim),
+            debug = cms.bool(False)
+        )
+        process.Baseline += process.SusyScan
+        VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
+    
+    ## ----------------------------------------------------------------------------------------------
     ## WeightProducer
     ## ----------------------------------------------------------------------------------------------
     if geninfo:
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
-        process.WeightProducer = getWeightProducer(process.source.fileNames[0])
+        process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1117.root")
         process.Baseline += process.WeightProducer
@@ -165,17 +180,6 @@ signal=False
         VectorInt.append("genParticles:Status(GenParticles_Status)")
         VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
         VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
-        
-        # mother and LSP masses for SUSY signal scans
-        # branches always added, but only have values for fastsim samples
-        from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
-        process.SusyScan = SusyScanProducer.clone(
-            shouldScan = cms.bool(fastsim),
-            debug = cms.bool(False)
-        )
-        process.Baseline += process.SusyScan
-        VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
-        
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
@@ -205,6 +209,7 @@ signal=False
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
     JetTag = cms.InputTag('slimmedJets')
+    JetAK8Tag = cms.InputTag('slimmedJetsAK8')
     METTag = cms.InputTag('slimmedMETs')
     if len(jecfile)>0:
         #get name of JECs without any directories
@@ -225,7 +230,12 @@ signal=False
                     record = cms.string("JetCorrectionsRecord"),
                     tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK4PF"),
                     label  = cms.untracked.string("AK4PF")
-                )
+                ),
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK8PFchs"),
+                    label  = cms.untracked.string("AK8PFchs")
+                ),
             )
         )
         process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
@@ -250,6 +260,23 @@ signal=False
         process.Baseline += process.patJetsReapplyJEC
         
         JetTag = cms.InputTag('patJetsReapplyJEC')
+        
+        # also update the corrections for AK8 jets
+        process.patJetCorrFactorsReapplyJECAK8 = patJetCorrFactorsUpdated.clone(
+            src     = cms.InputTag("slimmedJetsAK8"),
+            levels  = ['L1FastJet',
+                      'L2Relative',
+                      'L3Absolute'],
+            payload = 'AK8PFchs' # Make sure to choose the appropriate levels and payload here!
+        )
+        if residual: process.patJetCorrFactorsReapplyJECAK8.levels.append('L2L3Residual')
+        process.patJetsReapplyJECAK8 = patJetsUpdated.clone(
+            jetSource = cms.InputTag("slimmedJetsAK8"),
+            jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJECAK8"))
+        )
+        process.Baseline += process.patJetCorrFactorsReapplyJECAK8
+        process.Baseline += process.patJetsReapplyJECAK8
+        JetAK8Tag = cms.InputTag('patJetsReapplyJECAK8')
         
         # update the MET to account for the new JECs
         # ref: https://github.com/cms-met/cmssw/blob/METCorUnc74X/PhysicsTools/PatAlgos/test/corMETFromMiniAOD.py
@@ -560,6 +587,23 @@ signal=False
                           storeProperties=2,
                           SkipTag=SkipTag
     )
+    
+    # AK8 jet variables - separate instance of jet properties producer
+    from TreeMaker.Utils.jetproperties_cfi import jetproperties
+    process.JetsPropertiesAK8 = jetproperties.clone(
+        JetTag       = JetAK8Tag,
+        BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+        QGTag        = cms.InputTag(""),
+        AK8          = cms.bool(True)
+    )
+    process.Baseline += process.JetsPropertiesAK8
+    VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
+    VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
+                         'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
+                         'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
+                         'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
+                         'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
+                         'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet uncertainty variations

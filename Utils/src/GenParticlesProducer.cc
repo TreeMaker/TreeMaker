@@ -59,25 +59,22 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr< std::vector< int > > ParentId_vec( new std::vector< int > () );
   std::auto_ptr< std::vector< TLorentzVector > > parents( new std::vector< TLorentzVector > () );//not stored
 
-  if( debug ){
-    std::cout << "new events" << std::endl;
-    std::cout << "===================" << std::endl;  
-  }
-
   std::unordered_set<int> typicalChildIds({1,2,3,4,5,11,12,13,14,15,16,22});
   std::unordered_set<int> typicalParentIds(
-					   {1,2,1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
-					    1000001,1000002,1000003,1000004,1000005,1000006,
-					    2000001,2000002,2000003,2000004,2000005,2000006,
-					    6, 23, 24, 25}
-					);
+                                           {1,2,1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
+                                            1000001,1000002,1000003,1000004,1000005,1000006,
+                                            2000001,2000002,2000003,2000004,2000005,2000006,
+                                            6, 23, 24, 25}
+                                        );
   
   edm::Handle< View<reco::GenParticle> > genPartCands;
   iEvent.getByToken(genCollectionTok, genPartCands);
 
   //Filter out unwanted gen particles and store 4-vector, pdgid, status, and parentID:
-  //std::cout<< "======new event============"<<std::endl;
-  //std::cout<<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t"<<std::endl;
+  if( debug ){
+    std::cout<< "======new event============"<<std::endl;
+    std::cout<<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t"<<std::endl;
+  }
   for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart)
     {
       bool typicalChild=!(std::find(typicalChildIds.begin(),typicalChildIds.end(),abs(iPart->pdgId()))==typicalChildIds.end());
@@ -100,19 +97,23 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       const reco::GenParticle *Parent;
       Parent = static_cast<const reco::GenParticle *>(iPart->mother());
       while(true)
-	{
-	  if(!(Parent)) break;
-	  //if(abs(PdgId_vec->back())==24) 
-	  //std::cout << "W parent Id, status ="<< Parent->pdgId()<<", "<<Parent->status()<<",px="<<Parent->px()<<",py="<<Parent->py()<<",phi="<<Parent->phi()<<std::endl;
-	  if(Parent->isLastCopy() || Parent->status()==21)
-	    {
-	      parentid = Parent->pdgId();
-	      parent.SetPxPyPzE(Parent->px(), Parent->py(), Parent->pz(), Parent->energy());
-	      //if(abs(PdgId_vec->back())==24) std:: cout << "planning to keep this mother"<<std::endl;
-	      break;	   
-	    }
-	  Parent = static_cast<const reco::GenParticle *>(Parent->mother());
-	}
+        {
+          if(!(Parent)) break;
+          if( debug ){
+            if(abs(PdgId_vec->back())==24) 
+              std::cout << "W parent Id, status ="<< Parent->pdgId()<<", "<<Parent->status()<<",px="<<Parent->px()<<",py="<<Parent->py()<<",phi="<<Parent->phi()<<std::endl;
+          }
+          if(Parent->isLastCopy() || Parent->status()==21)
+            {
+              parentid = Parent->pdgId();
+              parent.SetPxPyPzE(Parent->px(), Parent->py(), Parent->pz(), Parent->energy());
+              if( debug ){
+                if(abs(PdgId_vec->back())==24) std:: cout << "planning to keep this mother"<<std::endl;
+              }
+              break;
+            }
+          Parent = static_cast<const reco::GenParticle *>(Parent->mother());
+        }
       parents->push_back(parent);
       ParentId_vec->push_back(parentid);
 
@@ -127,8 +128,10 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       int parentIndex = index;
       if (itlv == genParticle_vec->end()) parentIndex = -1;
       Parent_vec->push_back(parentIndex);
-      //std::cout<<g<<"\t"<<PdgId_vec->at(g)<<"\t"<<Status_vec->at(g)<<"\t"<<ParentId_vec->at(g)<<"\t"<<Parent_vec->at(g)<<std::endl;//", eta="<<  parents->at(g).Eta() <<"phi="<< parents->at(g).Phi() <<std::endl;
-      //std::cout<< "eta="<< parents->at(g).Eta() << std::endl;
+      if( debug ){
+        std::cout<<g<<"\t"<<PdgId_vec->at(g)<<"\t"<<Status_vec->at(g)<<"\t"<<ParentId_vec->at(g)<<"\t"<<Parent_vec->at(g)<<std::endl;//", eta="<<  parents->at(g).Eta() <<"phi="<< parents->at(g).Phi() <<std::endl;
+        std::cout<< "eta="<< parents->at(g).Eta() << std::endl;
+      }
     }
 
   iEvent.put(genParticle_vec); 

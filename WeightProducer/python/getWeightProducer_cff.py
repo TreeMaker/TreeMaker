@@ -18,9 +18,8 @@ class MCSample:
         self.XS = XS
         self.NumberEvts = NumberEvts
 
-def getWeightProducer(fileName):
+def getWeightProducer(fileName,fastsim=False):
 
-    mcVersion = "none"                  # For lumi and PU weights
     applyWeight = False
     
     ## --- Setup default WeightProducer ------------------------------------
@@ -31,10 +30,20 @@ def getWeightProducer(fileName):
     # Set default values to produce an event weight of 1
     weightProducer.weight = cms.double(1.0)
     weightProducer.Method = cms.string("Constant")
-    weightProducer.LumiScale = cms.double(1.0)
     weightProducer.FileNamePUDataDistribution = cms.string("NONE")
-    weightProducer.PU = cms.int32(0)
 
+    # assign cross sections for fastsim
+    # assume privately-produced samples do not have mixed mass points
+    if fastsim and "SusyRA2Analysis2015" not in fileName:
+        weightProducer.weight = cms.double(-1.)
+        weightProducer.Method = cms.string("FastSim")
+        weightProducer.NumberEvts = cms.double(1.0)
+        if "SMS-T1" in fileName or "SMS-T5" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T1.txt")
+        elif "SMS-T2tt" in fileName or "SMS-T2bb" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2.txt")
+        elif "SMS-T2qq" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2qq.txt")
+        print "Setup WeightProducer for '"+fileName+"'"
+        return weightProducer
+    
     # list of samples
     samples = [
         # 13 TeV miniAODv2 samples - Spring15
@@ -70,10 +79,14 @@ def getWeightProducer(fileName):
         MCSample("QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 120.4, 3868886),
         MCSample("QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant",  25.24, 1912529),
         # DY/Z: k-factor of 1.23 applied
-        MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 183.1, 2725655),
-        MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 50.49, 973937),
-        MCSample("DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v2", "RunIISpring15MiniAODv2", "Constant", 6.994, 1067758),
-        MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 2.700, 998912),
+        MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 183.1, 11079482), # subtotal = 2725655
+        MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2_ext1-v1", "RunIISpring15MiniAODv2", "Constant", 183.1, 11079482), # subtotal = 8353827
+        MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 50.49, 9580541), # subtotal = 973937
+        MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2_ext1-v1", "RunIISpring15MiniAODv2", "Constant", 50.49, 9580541), # subtotal = 8606604
+        MCSample("DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v2", "RunIISpring15MiniAODv2", "Constant", 6.994, 10420186), # subtotal = 1067758
+        MCSample("DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2_ext1-v1", "RunIISpring15MiniAODv2", "Constant", 6.994, 10420186), # subtotal = 9352428
+        MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 2.700, 4902520), # subtotal = 998912
+        MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2_ext1-v1", "RunIISpring15MiniAODv2", "Constant", 2.700, 4902520), # subtotal = 3903608
         MCSample("DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 6025.2, 9042031),
         MCSample("ZJetsToNuNu_HT-100To200_13TeV-madgraph", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 344.3, 5154824),
         MCSample("ZJetsToNuNu_HT-200To400_13TeV-madgraph", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 95.23, 4998316),
@@ -122,12 +135,13 @@ def getWeightProducer(fileName):
         # private signal
         MCSample("T5HH_1200_200", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0856418, 48928),
         MCSample("T5HH_1200_950", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0856418, 48925),
+        MCSample("T1ttbb_1300_5", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0460525, 22407),
+        MCSample("T1ttbb_1300_10", "SusyRA2Analysis2015", "MiniAODv2", "Constant", 0.0460525, 20237),
     ]
     
     # loop over all samples until we find a match
     for sample in samples:
         if sample.name in fileName and sample.production in fileName:
-            mcVersion = sample.mcVersion
             weightProducer.Method     = cms.string(sample.Method)
             weightProducer.XS         = cms.double(sample.XS)
             weightProducer.NumberEvts = cms.double(sample.NumberEvts)
