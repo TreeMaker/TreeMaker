@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, fastsim, cleanedCandidates, suff):
+def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
@@ -130,7 +130,6 @@ def reclusterZinv(process, geninfo, residual, fastsim, cleanedCandidates, suff):
         sequence="ZinvClean",
         JetTag = cms.InputTag("reclusteredJets"+suff),
         suff=postfix,
-        fastsim=fastsim,
         skipGoodJets=False,
         storeProperties=1,
     )
@@ -146,7 +145,7 @@ def reclusterZinv(process, geninfo, residual, fastsim, cleanedCandidates, suff):
     
     return process
 
-def doZinvBkg(process,tagname,geninfo,residual,fastsim):
+def doZinvBkg(process,tagname,geninfo,residual):
     process.ZinvClean = cms.Sequence()
 
     ## ----------------------------------------------------------------------------------------------
@@ -218,7 +217,6 @@ def doZinvBkg(process,tagname,geninfo,residual,fastsim):
         process,
         geninfo,
         residual,
-        fastsim,
         cms.InputTag("cleanedCandidates"),
         ""
     )

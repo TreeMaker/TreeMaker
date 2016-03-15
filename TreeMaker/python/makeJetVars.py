@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, sequence, JetTag, suff, fastsim, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     if hasattr(process,sequence):
         theSequence = getattr(process,sequence)
     else:
@@ -10,8 +10,6 @@ def makeJetVars(process, sequence, JetTag, suff, fastsim, skipGoodJets, storePro
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
-    saveAll = False
-    if fastsim: saveAll = True
     if skipGoodJets:
         GoodJetsTag = JetTag
     else:
@@ -32,13 +30,15 @@ def makeJetVars(process, sequence, JetTag, suff, fastsim, skipGoodJets, storePro
             ExcludeLepIsoTrackPhotons = cms.bool(True),
             JetConeSize               = cms.double(0.4),
             SkipTag                   = SkipTag,
-            SaveAllJets               = saveAll
+            SaveAllJets               = True
         )
         setattr(process,"GoodJets"+suff,GoodJets)
         theSequence += getattr(process,"GoodJets"+suff)
         GoodJetsTag = cms.InputTag("GoodJets"+suff)
         process.TreeMaker2.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
-        if storeProperties>0: process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
+        if storeProperties>0:
+            process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
+            process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
         if onlyGoodJets:
             return process
     
