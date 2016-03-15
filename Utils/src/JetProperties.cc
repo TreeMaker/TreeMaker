@@ -20,6 +20,11 @@
 
 // system include files
 #include <memory>
+#include <string>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <iterator>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -37,6 +42,7 @@ enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyF
 				d_electronEnergyFraction, d_photonEnergyFraction, d_muonEnergyFraction, d_bDiscriminatorUser, d_bDiscriminatorMVA, d_bDiscriminatorSimpleCSV, d_qgLikelihood };
 enum JetPropI { i_chargedHadronMultiplicity, i_neutralHadronMultiplicity, i_electronMultiplicity, i_photonMultiplicity,
 				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor };
+enum JetAK8PropD { d_prunedMass, d_bDiscriminatorSubjet1, d_bDiscriminatorSubjet2, d_NsubjettinessTau1, d_NsubjettinessTau2, d_NsubjettinessTau3 };
 
 // helper class
 template <class T>
@@ -75,6 +81,13 @@ class NamedPtrI : public NamedPtr<int> {
 		virtual void get_property(const pat::Jet* Jet) { }
 };
 
+template <JetAK8PropD D>
+class NamedPtrAK8D : public NamedPtr<double> {
+	public:
+		using NamedPtr<double>::NamedPtr;
+		virtual void get_property(const pat::Jet* Jet) { }
+};
+
 //define accessors
 template<> void NamedPtrD<d_jetArea>::get_property(const pat::Jet* Jet)                     { push_back(Jet->jetArea()); }
 template<> void NamedPtrD<d_chargedHadronEnergyFraction>::get_property(const pat::Jet* Jet) { push_back(Jet->chargedHadronEnergyFraction()); }
@@ -99,6 +112,12 @@ template<> void NamedPtrI<i_chargedMultiplicity>::get_property(const pat::Jet* J
 template<> void NamedPtrI<i_neutralMultiplicity>::get_property(const pat::Jet* Jet)         { push_back(Jet->neutralMultiplicity()); }
 template<> void NamedPtrI<i_partonFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->partonFlavour()); }
 template<> void NamedPtrI<i_hadronFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->hadronFlavour()); }
+//ak8 jet accessors
+template<> void NamedPtrAK8D<d_prunedMass>::get_property(const pat::Jet* Jet)               { push_back(Jet->userFloat("ak8PFJetsCHSPrunedMass")); }
+//bDiscriminatorSubjet1,2 get special attention
+template<> void NamedPtrAK8D<d_NsubjettinessTau1>::get_property(const pat::Jet* Jet)        { push_back(Jet->userFloat("NjettinessAK8:tau1")); }
+template<> void NamedPtrAK8D<d_NsubjettinessTau2>::get_property(const pat::Jet* Jet)        { push_back(Jet->userFloat("NjettinessAK8:tau2")); }
+template<> void NamedPtrAK8D<d_NsubjettinessTau3>::get_property(const pat::Jet* Jet)        { push_back(Jet->userFloat("NjettinessAK8:tau3")); }
 
 //
 // class declaration
@@ -125,9 +144,11 @@ private:
 	edm::InputTag QGTag_;
 	edm::EDGetTokenT<edm::ValueMap<float>> QGTok_;
 	std::string   btagname_;
+	bool doQG_, doAK8_;
 	std::vector<NamedPtr<int>*> IntPtrs_;
 	std::vector<NamedPtr<double>*> DoublePtrs_;
 	NamedPtr<double> *DoublePtr_bDiscriminatorUser_, *DoublePtr_qgLikelihood_;
+	NamedPtr<double> *DoublePtr_bDiscriminatorSubjet1_, *DoublePtr_bDiscriminatorSubjet2_;
 };
 
 //
@@ -138,9 +159,11 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 	btagname_ = iConfig.getParameter<std::string>  ("BTagInputTag");
 	QGTag_ = iConfig.getParameter<edm::InputTag>("QGTag");
+	doAK8_ = iConfig.getParameter<bool>("AK8");
+	doQG_ = (QGTag_.label().size()>0);
 	
 	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
-	QGTok_ = consumes<edm::ValueMap<float>>(QGTag_);
+	if(doQG_) QGTok_ = consumes<edm::ValueMap<float>>(QGTag_);
 	
 	//register your products
 	/* Examples
@@ -154,31 +177,46 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	 */
 	//now do what ever other initialization is needed
 	//register your products
-	IntPtrs_.push_back(new NamedPtrI<i_chargedHadronMultiplicity>("chargedHadronMultiplicity",this));
-	IntPtrs_.push_back(new NamedPtrI<i_neutralHadronMultiplicity>("neutralHadronMultiplicity",this));
-	IntPtrs_.push_back(new NamedPtrI<i_electronMultiplicity>     ("electronMultiplicity",this)     );
-	IntPtrs_.push_back(new NamedPtrI<i_photonMultiplicity>       ("photonMultiplicity",this)       );
-	IntPtrs_.push_back(new NamedPtrI<i_muonMultiplicity>         ("muonMultiplicity",this)         );
-	IntPtrs_.push_back(new NamedPtrI<i_NumBhadrons>              ("NumBhadrons",this)              );
-	IntPtrs_.push_back(new NamedPtrI<i_NumChadrons>              ("NumChadrons",this)              );
-	IntPtrs_.push_back(new NamedPtrI<i_chargedMultiplicity>      ("chargedMultiplicity",this)      );
-	IntPtrs_.push_back(new NamedPtrI<i_neutralMultiplicity>      ("neutralMultiplicity",this)      );
-	IntPtrs_.push_back(new NamedPtrI<i_partonFlavor>             ("partonFlavor",this)             );
-	IntPtrs_.push_back(new NamedPtrI<i_hadronFlavor>             ("hadronFlavor",this)             );
+	if(doAK8_){
+		DoublePtrs_.push_back(new NamedPtrAK8D<d_prunedMass>       ("prunedMass",this)       );
+		DoublePtrs_.push_back(new NamedPtrAK8D<d_NsubjettinessTau1>("NsubjettinessTau1",this));
+		DoublePtrs_.push_back(new NamedPtrAK8D<d_NsubjettinessTau2>("NsubjettinessTau2",this));
+		DoublePtrs_.push_back(new NamedPtrAK8D<d_NsubjettinessTau3>("NsubjettinessTau3",this));
+		
+		DoublePtr_bDiscriminatorSubjet1_ = new NamedPtrAK8D<d_bDiscriminatorSubjet1>("bDiscriminatorSubjet1",this);
+		DoublePtr_bDiscriminatorSubjet2_ = new NamedPtrAK8D<d_bDiscriminatorSubjet2>("bDiscriminatorSubjet2",this);
+		DoublePtr_bDiscriminatorUser_ = NULL;
+		DoublePtr_qgLikelihood_ = NULL;
+	}
+	else {
+		IntPtrs_.push_back(new NamedPtrI<i_chargedHadronMultiplicity>("chargedHadronMultiplicity",this));
+		IntPtrs_.push_back(new NamedPtrI<i_neutralHadronMultiplicity>("neutralHadronMultiplicity",this));
+		IntPtrs_.push_back(new NamedPtrI<i_electronMultiplicity>     ("electronMultiplicity",this)     );
+		IntPtrs_.push_back(new NamedPtrI<i_photonMultiplicity>       ("photonMultiplicity",this)       );
+		IntPtrs_.push_back(new NamedPtrI<i_muonMultiplicity>         ("muonMultiplicity",this)         );
+		IntPtrs_.push_back(new NamedPtrI<i_NumBhadrons>              ("NumBhadrons",this)              );
+		IntPtrs_.push_back(new NamedPtrI<i_NumChadrons>              ("NumChadrons",this)              );
+		IntPtrs_.push_back(new NamedPtrI<i_chargedMultiplicity>      ("chargedMultiplicity",this)      );
+		IntPtrs_.push_back(new NamedPtrI<i_neutralMultiplicity>      ("neutralMultiplicity",this)      );
+		IntPtrs_.push_back(new NamedPtrI<i_partonFlavor>             ("partonFlavor",this)             );
+		IntPtrs_.push_back(new NamedPtrI<i_hadronFlavor>             ("hadronFlavor",this)             );
 
-	DoublePtrs_.push_back(new NamedPtrD<d_jetArea>                    ("jetArea",this)                    );
-	DoublePtrs_.push_back(new NamedPtrD<d_chargedHadronEnergyFraction>("chargedHadronEnergyFraction",this));
-	DoublePtrs_.push_back(new NamedPtrD<d_neutralHadronEnergyFraction>("neutralHadronEnergyFraction",this));
-	DoublePtrs_.push_back(new NamedPtrD<d_chargedEmEnergyFraction>    ("chargedEmEnergyFraction",this)    );
-	DoublePtrs_.push_back(new NamedPtrD<d_neutralEmEnergyFraction>    ("neutralEmEnergyFraction",this)    );
-	DoublePtrs_.push_back(new NamedPtrD<d_electronEnergyFraction>     ("electronEnergyFraction",this)     );
-	DoublePtrs_.push_back(new NamedPtrD<d_photonEnergyFraction>       ("photonEnergyFraction",this)       );
-	DoublePtrs_.push_back(new NamedPtrD<d_muonEnergyFraction>         ("muonEnergyFraction",this)         );
-	DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorMVA>          ("bDiscriminatorMVA",this)          );
-	DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSimpleCSV>    ("bDiscriminatorSimpleCSV",this)    );
-	
-	DoublePtr_bDiscriminatorUser_ = new NamedPtrD<d_bDiscriminatorUser>("bDiscriminatorUser",this);
-	DoublePtr_qgLikelihood_ = new NamedPtrD<d_qgLikelihood>("qgLikelihood",this);
+		DoublePtrs_.push_back(new NamedPtrD<d_jetArea>                    ("jetArea",this)                    );
+		DoublePtrs_.push_back(new NamedPtrD<d_chargedHadronEnergyFraction>("chargedHadronEnergyFraction",this));
+		DoublePtrs_.push_back(new NamedPtrD<d_neutralHadronEnergyFraction>("neutralHadronEnergyFraction",this));
+		DoublePtrs_.push_back(new NamedPtrD<d_chargedEmEnergyFraction>    ("chargedEmEnergyFraction",this)    );
+		DoublePtrs_.push_back(new NamedPtrD<d_neutralEmEnergyFraction>    ("neutralEmEnergyFraction",this)    );
+		DoublePtrs_.push_back(new NamedPtrD<d_electronEnergyFraction>     ("electronEnergyFraction",this)     );
+		DoublePtrs_.push_back(new NamedPtrD<d_photonEnergyFraction>       ("photonEnergyFraction",this)       );
+		DoublePtrs_.push_back(new NamedPtrD<d_muonEnergyFraction>         ("muonEnergyFraction",this)         );
+		DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorMVA>          ("bDiscriminatorMVA",this)          );
+		DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSimpleCSV>    ("bDiscriminatorSimpleCSV",this)    );
+		
+		DoublePtr_bDiscriminatorUser_ = new NamedPtrD<d_bDiscriminatorUser>("bDiscriminatorUser",this);
+		DoublePtr_qgLikelihood_ = new NamedPtrD<d_qgLikelihood>("qgLikelihood",this);
+		DoublePtr_bDiscriminatorSubjet1_ = NULL;
+		DoublePtr_bDiscriminatorSubjet2_ = NULL;
+	}
 }
 
 
@@ -206,13 +244,15 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 		DoublePtrs_[ip]->reset();
 	}
-	DoublePtr_bDiscriminatorUser_->reset();
-	DoublePtr_qgLikelihood_->reset();
+	if(DoublePtr_bDiscriminatorSubjet1_) DoublePtr_bDiscriminatorSubjet1_->reset();
+	if(DoublePtr_bDiscriminatorSubjet2_) DoublePtr_bDiscriminatorSubjet2_->reset();
+	if(DoublePtr_bDiscriminatorUser_) DoublePtr_bDiscriminatorUser_->reset();
+	if(DoublePtr_qgLikelihood_) DoublePtr_qgLikelihood_->reset();
 
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
 	edm::Handle<edm::ValueMap<float>> qgHandle;
-	iEvent.getByToken(QGTok_, qgHandle);
+	if(doQG_) iEvent.getByToken(QGTok_, qgHandle);
 	bool qgValid = qgHandle.isValid();
 	if( Jets.isValid() ) {
 		for(auto Jet = Jets->begin();  Jet != Jets->end(); ++Jet){
@@ -223,8 +263,17 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				DoublePtrs_[ip]->get_property(&(*Jet));
 			}
 			//special attention for a few properties
-			DoublePtr_bDiscriminatorUser_->push_back( Jet->bDiscriminator(btagname_) );
-			if(qgValid){
+			if(doAK8_) {
+				//for debugging: print out available subjet collections
+				//std::vector<std::string> labels = Jet->subjetCollectionNames();
+				//std::copy(labels.begin(), labels.end(), std::ostream_iterator<std::string>(std::cout, " "));
+				DoublePtr_bDiscriminatorSubjet1_->push_back( Jet->subjets("SoftDrop").size() > 0 ? Jet->subjets("SoftDrop").at(0)->bDiscriminator(btagname_) : -10. );
+				DoublePtr_bDiscriminatorSubjet2_->push_back( Jet->subjets("SoftDrop").size() > 1 ? Jet->subjets("SoftDrop").at(1)->bDiscriminator(btagname_) : -10. );
+			}
+			
+			if(DoublePtr_bDiscriminatorUser_) DoublePtr_bDiscriminatorUser_->push_back( Jet->bDiscriminator(btagname_) );
+			
+			if(qgValid && DoublePtr_qgLikelihood_){
 				edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(Jets, Jet - Jets->begin()));
 				float qgLikelihood_ = (*qgHandle)[jetRef];
 				DoublePtr_qgLikelihood_->push_back( qgLikelihood_ );
@@ -239,8 +288,10 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 		DoublePtrs_[ip]->put(iEvent);
 	}
-	DoublePtr_bDiscriminatorUser_->put(iEvent);
-	DoublePtr_qgLikelihood_->put(iEvent);
+	if(DoublePtr_bDiscriminatorSubjet1_) DoublePtr_bDiscriminatorSubjet1_->put(iEvent);
+	if(DoublePtr_bDiscriminatorSubjet2_) DoublePtr_bDiscriminatorSubjet2_->put(iEvent);
+	if(DoublePtr_bDiscriminatorUser_) DoublePtr_bDiscriminatorUser_->put(iEvent);
+	if(DoublePtr_qgLikelihood_) DoublePtr_qgLikelihood_->put(iEvent);
 
 }
 
@@ -262,6 +313,8 @@ JetProperties::endJob() {
 		delete (DoublePtrs_[ip]);
 	}
 	DoublePtrs_.clear();
+	delete DoublePtr_bDiscriminatorSubjet1_;
+	delete DoublePtr_bDiscriminatorSubjet2_;
 	delete DoublePtr_bDiscriminatorUser_;
 	delete DoublePtr_qgLikelihood_;
 }
