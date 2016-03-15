@@ -1,8 +1,17 @@
 #!/bin/bash
 
-KEEPTAR=$1
 
-./FScheck.sh "$KEEPTAR"
+CHECKARGS=""
+
+#check arguments
+while getopts "k" opt; do
+  case "$opt" in
+  k) CHECKARGS="${CHECKARGS} -k"
+    ;;
+  esac
+done
+
+./FScheck.sh ${CHECKARGS}
 
 #### Spring15 negative-weight samples
 python generateSubmissionNeff.py -s -f Spring15.ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8

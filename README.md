@@ -58,20 +58,17 @@ If you copy this to another directory and run the [looper.sh](./Production/test/
 ```
 cp -r condorSub myProduction
 cd myProduction
-./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction
+./looper.sh -d root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction
 ```
 
 The jobs open the files over xrootd, so [looper.sh](./Production/test/condorSub/looper.sh) will check that you have a valid grid proxy. 
 It will also make a tarball of the current CMSSW working directory to send to the worker node. 
-If you want to reuse an existing CMSSW tarball (no important changes have been made since the last time you submitted jobs), there is an extra argument:
-```
-./looper.sh root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction keep
-```
+If you want to reuse an existing CMSSW tarball (no important changes have been made since the last time you submitted jobs), add the argument `-k`.
 
 When the python file list for a given sample is updated, it may be desirable to submit jobs only for the new files. [looper_data_update.sh](./Production/test/condorSub/looper_data_update.sh) shows an example of how to do this.
 To get the number of the first new job, just use `len(readFiles)` from the python file list *before* updating it.
 
-If the `-d` flag is used when submitting jobs, each data file will be checked to see if the run it contains is certified in the corresponding JSON file. The JSON file is taken by default from the scenario; an alternative can be specified with the `--json` option, e.g. if the JSON is updated and you want to submit jobs only for the newly certified runs. (Use [compareJSON.py](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/FWCore/PythonUtilities/scripts/compareJSON.py) to subtract one JSON list from another, following [this twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#How_to_compare_Good_Luminosity_f).)
+If the `-d` flag is used with [generateSubmission.py](./Production/test/condorSub/generateSubmission.py) when submitting jobs, each data file will be checked to see if the run it contains is certified in the corresponding JSON file. The JSON file is taken by default from the scenario; an alternative can be specified with the `--json` option, e.g. if the JSON is updated and you want to submit jobs only for the newly certified runs. (Use [compareJSON.py](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/FWCore/PythonUtilities/scripts/compareJSON.py) to subtract one JSON list from another, following [this twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#How_to_compare_Good_Luminosity_f).)
 
 Because of the large number of events in the Spring15 MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
 

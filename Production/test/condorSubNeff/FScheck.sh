@@ -1,6 +1,14 @@
 #!/bin/bash
 
-KEEPTAR=$1
+KEEPTAR=""
+
+#check arguments
+while getopts "k" opt; do
+  case "$opt" in
+  k) KEEPTAR="keep"
+    ;;
+  esac
+done
 
 # grid proxy existence & expiration check
 PCHECK=`voms-proxy-info -timeleft`

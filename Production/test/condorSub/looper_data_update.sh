@@ -1,14 +1,24 @@
 #!/bin/bash
 
-if [ "$1" == 1 ]; then
-  echo "Need to specify output directory in argument 1"
-  exit
+CHECKARGS=""
+OUTDIR=""
+
+#check arguments
+while getopts "kd:" opt; do
+  case "$opt" in
+  k) CHECKARGS="${CHECKARGS} -k"
+    ;;
+  d) OUTDIR=$OPTARG
+    ;;
+  esac
+done
+
+if [ -z "$OUTDIR" ]; then
+  echo "Need to specify output directory with -d"
+  exit  
 fi
 
-OUTPUTDIR=$1
-KEEPTAR=$2
-
-./FScheck.sh "$KEEPTAR"
+./FScheck.sh ${CHECKARGS}
 
 #### Run2015D Prompt RECO
 SCENARIO=2015Db
