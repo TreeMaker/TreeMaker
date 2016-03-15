@@ -155,15 +155,16 @@ signal=False
     ## GenParticles
     ## ----------------------------------------------------------------------------------------------
     if geninfo :
-        process.genParticles = cms.EDProducer("genParticlesProducer",
+        process.genParticles = cms.EDProducer("GenParticlesProducer",
             genCollection = cms.untracked.InputTag("prunedGenParticles"),
             debug = cms.untracked.bool(False)
         )
         process.Baseline += process.genParticles
-        ## JACK--do we really need to save all of these?
-        VectorTLorentzVector.append("genParticles(genParticles)")
-        VectorInt.append("genParticles:PDGid(genParticles_PDGid)")
-        #VectorInt.append("genParticles:parent(genParticles_parent)")
+        VectorTLorentzVector.append("genParticles(GenParticles)")
+        VectorInt.append("genParticles:PdgId(GenParticles_PdgId)")
+        VectorInt.append("genParticles:Status(GenParticles_Status)")
+        VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
+        VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
         
         # mother and LSP masses for SUSY signal scans
         # branches always added, but only have values for fastsim samples

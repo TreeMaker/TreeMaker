@@ -5,11 +5,11 @@
 #include <vector>
 
 
-class genParticlesProducer : public edm::EDProducer {
+class GenParticlesProducer : public edm::EDProducer {
 
 public:
-  explicit genParticlesProducer(const edm::ParameterSet&);
-  ~genParticlesProducer();
+  explicit GenParticlesProducer(const edm::ParameterSet&);
+  ~GenParticlesProducer();
   
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
