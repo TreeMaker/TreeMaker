@@ -76,8 +76,8 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.getByToken(genCollectionTok, genPartCands);
 
   //Filter out unwanted gen particles and store 4-vector, pdgid, status, and parentID:
-  //std::cout<< "======new event============"<<std::endl;
-  //std::cout<<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t"<<std::endl;
+  std::cout<< "======new event============"<<std::endl;
+  std::cout<<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t"<<std::endl;
   for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart)
     {
       bool typicalChild=!(std::find(typicalChildIds.begin(),typicalChildIds.end(),abs(iPart->pdgId()))==typicalChildIds.end());
@@ -86,7 +86,8 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
       int status = abs(iPart->status());
       bool acceptableParent = typicalParent && (iPart->isLastCopy() || status==21);
-      bool acceptableChild = typicalChild && (status==1 || status==2 || (status>20 && status<30));
+      //bool acceptableChild = typicalChild && (status==1 || status==2 || (status>20 && status<30));
+      bool acceptableChild = typicalChild && iPart->isLastCopy();
       if (!(acceptableChild || acceptableParent)) continue;
 
       TLorentzVector temp;
@@ -126,7 +127,7 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       int parentIndex = index;
       if (itlv == genParticle_vec->end()) parentIndex = -1;
       Parent_vec->push_back(parentIndex);
-      //std::cout<<g<<"\t"<<PdgId_vec->at(g)<<"\t"<<Status_vec->at(g)<<"\t"<<ParentId_vec->at(g)<<"\t"<<Parent_vec->at(g)<<std::endl;//", eta="<<  parents->at(g).Eta() <<"phi="<< parents->at(g).Phi() <<std::endl;
+      std::cout<<g<<"\t"<<PdgId_vec->at(g)<<"\t"<<Status_vec->at(g)<<"\t"<<ParentId_vec->at(g)<<"\t"<<Parent_vec->at(g)<<std::endl;//", eta="<<  parents->at(g).Eta() <<"phi="<< parents->at(g).Phi() <<std::endl;
       //std::cout<< "eta="<< parents->at(g).Eta() << std::endl;
     }
 
