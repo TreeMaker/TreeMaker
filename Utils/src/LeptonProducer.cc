@@ -368,6 +368,7 @@ LeptonProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 
 float LeptonProducer::MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi)
 {
+  if(std::isnan(lepPhi) || std::isnan(metPhi)) return 0.;
   float deltaPhi =TVector2::Phi_mpi_pi(lepPhi-metPhi);
   return sqrt(2*lepPt*metPt*(1-cos(deltaPhi)) );
 }
