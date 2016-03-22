@@ -36,6 +36,7 @@ Spring15v2.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext2 \
 Spring15v2.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext3 \
 Spring15v2.TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8 \
 Spring15v2.TTTT_TuneCUETP8M1_13TeV-amcatnlo-pythia8_ext1 \
+Spring15v2.TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8 \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do

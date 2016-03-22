@@ -123,6 +123,7 @@ def getWeightProducer(fileName,fastsim=False):
         MCSample("WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.1651, 221468), # straight total = 250000
         MCSample("WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.05565, 219168), # straight total = 250000
         MCSample("ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.01398, 213850), # straight total = 250000
+        MCSample("TTGJets_TuneCUETP8M1_13TeV-amcatnloFXFX-madspin-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 3.697, 1566388), # straight total = 4832230
         # signal
         MCSample("SMS-T1bbbb_mGluino-1000_mLSP-900_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.325388, 142674),
         MCSample("SMS-T1bbbb_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0141903, 52613),
