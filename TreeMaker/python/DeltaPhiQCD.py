@@ -32,9 +32,9 @@ def DeltaPhiQCD(process, geninfo):
 
     from TreeMaker.Utils.deltaphiqcd_cfi import deltaphiqcd
     process.DeltaPhiQCD = deltaphiqcd.clone (
-        JetTagRecoJets      = cms.VInputTag ( 'MHTJets','HTJets' ) ,
-        JetTagGenJets       = cms.VInputTag ( 'GenMHTJets', 'GenHTJets' ) ,
-        BTagInputTag        = cms.string   ( 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ) ,
+#        JetTagRecoJets      = cms.VInputTag ( 'MHTJets','HTJets' ) ,
+#        JetTagGenJets       = cms.VInputTag ( 'GenMHTJets', 'GenHTJets' ) ,
+#        BTagInputTag        = cms.string   ( 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ) ,
         GenParticleTag      = cms.InputTag ( 'prunedGenParticles' ) ,
     )
     process.DeltaPhiQCDSeq += process.DeltaPhiQCD
@@ -47,26 +47,26 @@ def DeltaPhiQCD(process, geninfo):
  
     process.AdditionalSequence += process.DeltaPhiQCDSeq
 
-    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:RJetDeltaPhi' ] )
+#    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:RJetDeltaPhi' ] )
 
-    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:GenDeltaPhi' ] )
-    process.TreeMaker2.VectorDouble.extend ( [ 'GenJetProperties:invisibleEnergy(GenJets_invisibleEnergy)' ] )
+#    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:GenDeltaPhi' ] )
+#    process.TreeMaker2.VectorDouble.extend ( [ 'GenJetProperties:invisibleEnergy(GenJets_invisibleEnergy)' ] )
 
     process.TreeMaker2.VectorTLorentzVector.extend ( [ 'DeltaPhiQCD:NeutrinoLorentzVector' ] )
     process.TreeMaker2.VectorInt.extend ( [ 'DeltaPhiQCD:NeutrinoPdg' ] )
     process.TreeMaker2.VectorInt.extend ( [ 'DeltaPhiQCD:NeutrinoMotherPdg' ] )
 
-    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:RJetMinDeltaPhiEta24'      ] )
-    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:RJetMinDeltaPhiEta5'       ] )
-    process.TreeMaker2.VectorInt.extend    ( [ 'DeltaPhiQCD:RJetMinDeltaPhiIndexEta24' ] )
-    process.TreeMaker2.VectorInt.extend    ( [ 'DeltaPhiQCD:RJetMinDeltaPhiIndexEta5'  ] )
+#    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:RJetMinDeltaPhiEta24'      ] )
+#    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:RJetMinDeltaPhiEta5'       ] )
+#    process.TreeMaker2.VectorInt.extend    ( [ 'DeltaPhiQCD:RJetMinDeltaPhiIndexEta24' ] )
+#    process.TreeMaker2.VectorInt.extend    ( [ 'DeltaPhiQCD:RJetMinDeltaPhiIndexEta5'  ] )
 
-    process.TreeMaker2.VectorString.extend ( [ 'DeltaPhiQCD:minDeltaPhiNames'          ] )
+#    process.TreeMaker2.VectorString.extend ( [ 'DeltaPhiQCD:minDeltaPhiNames'          ] )
 
-    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:GenMinDeltaPhiEta24'       ] )
-    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:GenMinDeltaPhiEta5'        ] )
-    process.TreeMaker2.VectorInt.extend    ( [ 'DeltaPhiQCD:GenMinDeltaPhiIndexEta24'  ] )
-    process.TreeMaker2.VectorInt.extend    ( [ 'DeltaPhiQCD:GenMinDeltaPhiIndexEta5'   ] )
+#    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:GenMinDeltaPhiEta24'       ] )
+#    process.TreeMaker2.VectorDouble.extend ( [ 'DeltaPhiQCD:GenMinDeltaPhiEta5'        ] )
+#    process.TreeMaker2.VectorInt.extend    ( [ 'DeltaPhiQCD:GenMinDeltaPhiIndexEta24'  ] )
+#    process.TreeMaker2.VectorInt.extend    ( [ 'DeltaPhiQCD:GenMinDeltaPhiIndexEta5'   ] )
 
 
     return process
