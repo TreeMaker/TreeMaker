@@ -9,27 +9,15 @@ weightProducer = cms.EDProducer('WeightProducer',
    weightName  = cms.InputTag('weight'), # Name of an existing weight-variable in the event
 
    #Option 3: Weight computed from num evts, xs, and target lumi
-   Method = cms.string(""),              # "Constant" to calculate a weight = L*XS/N,
-                                         # "PtHat" to calculate a weight from pthat variable for 'flat' samples
+   Method = cms.string(""),              # "Constant" to calculate a weight = L*XS/N
    XS = cms.double(1.),                  # XS in pb
    NumberEvts = cms.double(-1.),         
-   Lumi = cms.double(100.),              # Lumi in 1/pb
-   Exponent = cms.double(-4.5),          # used (only) for 'PtHat'-weighting
+   Lumi = cms.double(1.),              # Lumi in 1/pb
 
-
-   #The final calculated weight is scaled by the following factor.
-   #This can be used e.g. to scale the luminosity by +-1sigma.
-   LumiScale = cms.double( 1.0 ),
-
+   #Option 4: text file of mother mass -> xsec for FastSim
+   XsecFile = cms.string(""),
+   
    # Data PU distribution. If a file name is specified,
    # a multiplicative PU weight factor is applied.
    FileNamePUDataDistribution = cms.string("NONE"),
-   
-   ## use this for different PU scenarios as described at
-   ## https://twiki.cern.ch/twiki/bin/view/CMS/Pileup_MC_Gen_Scenarios                 
-   ##  0: Flat10
-   ##  1: for Fall11
-   ##  2: Summer12 S7
-   ##  3: Summer12 S10                                
-   PU = cms.int32(0)
 )

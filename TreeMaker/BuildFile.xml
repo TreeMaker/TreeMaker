@@ -11,6 +11,6 @@
 <use name="DataFormats/Common"/>
 <use name="DataFormats/Candidate"/>
 <use name="DataFormats/PatCandidates"/>
-<use name="TreeMaker/Products"/>
+<use name="TreeMaker/Reflex"/>
 
 <flags   EDM_PLUGIN="1"/>

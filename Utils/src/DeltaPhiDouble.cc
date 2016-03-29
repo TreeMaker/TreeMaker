@@ -54,6 +54,7 @@ private:
    virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag MHTJetTag_, DeltaPhiJetTag_;
+   edm::EDGetTokenT<edm::View<reco::Candidate>> MHTJetTok_, DeltaPhiJetTok_;
    
    
    // ----------member data ---------------------------
@@ -73,9 +74,11 @@ private:
 //
 DeltaPhiDouble::DeltaPhiDouble(const edm::ParameterSet& iConfig)
 {
-   //register your produc
+   //register your product
    MHTJetTag_ = iConfig.getParameter<edm::InputTag> ("MHTJets");
    DeltaPhiJetTag_ = iConfig.getParameter<edm::InputTag> ("DeltaPhiJets");
+   MHTJetTok_ = consumes<edm::View<reco::Candidate> >(MHTJetTag_);
+   DeltaPhiJetTok_ = consumes<edm::View<reco::Candidate> >(DeltaPhiJetTag_);
    
    produces<double>("Jet1Pt");
    produces<double>("Jet2Pt");
@@ -135,7 +138,7 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    double deltaphi3=10;
    double deltaphi4=10;
    edm::Handle< edm::View<reco::Candidate> > MHTJets;
-   iEvent.getByLabel(MHTJetTag_,MHTJets);
+   iEvent.getByToken(MHTJetTok_,MHTJets);
    reco::MET::LorentzVector mhtLorentz(0,0,0,0);
    if( MHTJets.isValid() ) {
       for(unsigned int i=0; i<MHTJets->size();i++)
@@ -145,7 +148,7 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    else std::cout<<"DeltaPhiDouble::Invlide MHT Jet Tag: "<<MHTJetTag_.label()<<std::endl;
    edm::Handle< edm::View<reco::Candidate> > DeltaPhiJets;
-   iEvent.getByLabel(DeltaPhiJetTag_,DeltaPhiJets);
+   iEvent.getByToken(DeltaPhiJetTok_,DeltaPhiJets);
    float minDeltaPhi=99;
    if( DeltaPhiJets.isValid() ) {
       int count=0;

@@ -36,10 +36,32 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 	debug = iConfig.getParameter<bool>("debug");
 	doLorentz = iConfig.getParameter<bool>("doLorentz");
 	sortBranches = iConfig.getParameter<bool>("sortBranches");
-	//loop over all var type names
-	VarNames.reserve(VarTypeNames.size());
+	//loop over all var type names to initialize TreeObjects
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
-		VarNames.push_back(iConfig.getParameter< vector<string> >(VarTypeNames.at(v)));
+		vector<string> VarNames = iConfig.getParameter< vector<string> >(VarTypeNames.at(v));
+		cout << VarTypeNames.at(v) << ":" << endl;
+		for(unsigned t = 0; t < VarNames.size(); ++t){
+			//check for the right type
+			TreeObjectBase* tmp = NULL;
+			switch(VarTypes[v]){
+				case TreeTypes::t_bool     : tmp = new TreeObject<bool>(VarNames[t]); break;
+				case TreeTypes::t_int      : tmp = new TreeObject<int>(VarNames[t]); break;
+				case TreeTypes::t_double   : tmp = new TreeObject<double>(VarNames[t]); break;
+				case TreeTypes::t_string   : tmp = new TreeObject<string>(VarNames[t]); break;
+				case TreeTypes::t_lorentz  : tmp = new TreeObject<TLorentzVector>(VarNames[t]); break;
+				case TreeTypes::t_vbool    : tmp = new TreeObject<vector<bool> >(VarNames[t]); break;
+				case TreeTypes::t_vint     : tmp = new TreeObject<vector<int> >(VarNames[t]); break;
+				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double> >(VarNames[t]); break;
+				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string> >(VarNames[t]); break;
+				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector> >(VarNames[t]); break;
+				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarNames[t],doLorentz); break;
+			}
+			//if a known type was found, initialize and store the object
+			if(tmp) {
+				tmp->Initialize(nameCache,consumesCollector());
+				variables.push_back(tmp);
+			}
+		}
 	}
 }
 
@@ -86,40 +108,14 @@ TreeMaker::beginJob()
 	tree->SetAutoFlush(1000000);
 	tree->Branch("RunNum",&runNum,"RunNum/i");
 	tree->Branch("LumiBlockNum",&lumiBlockNum,"LumiBlockNum/i");
-	tree->Branch("EvtNum",&evtNum,"EvtNum/i");
-
-	//initialize TreeObjects
-	for(unsigned v = 0; v < VarNames.size(); ++v){
-		cout << VarTypeNames[v] << ":" << endl;
-		for(unsigned t = 0; t < VarNames[v].size(); ++t){
-			//check for the right type
-			TreeObjectBase* tmp = NULL;
-			switch(VarTypes[v]){
-				case TreeTypes::t_bool     : tmp = new TreeObject<bool>(VarNames[v][t],tree); break;
-				case TreeTypes::t_int      : tmp = new TreeObject<int>(VarNames[v][t],tree); break;
-				case TreeTypes::t_double   : tmp = new TreeObject<double>(VarNames[v][t],tree); break;
-				case TreeTypes::t_string   : tmp = new TreeObject<string>(VarNames[v][t],tree); break;
-				case TreeTypes::t_lorentz  : tmp = new TreeObject<TLorentzVector>(VarNames[v][t],tree); break;
-				case TreeTypes::t_vbool    : tmp = new TreeObject<vector<bool> >(VarNames[v][t],tree); break;
-				case TreeTypes::t_vint     : tmp = new TreeObject<vector<int> >(VarNames[v][t],tree); break;
-				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double> >(VarNames[v][t],tree); break;
-				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string> >(VarNames[v][t],tree); break;
-				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector> >(VarNames[v][t],tree); break;
-				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarNames[v][t],tree,doLorentz); break;
-			}
-			//if a known type was found, initialize and store the object
-			if(tmp) {
-				tmp->Initialize(nameCache);
-				variables.push_back(tmp);
-			}
-		}
-	}
+	tree->Branch("EvtNum",&evtNum,"EvtNum/l");
 	
 	//sort TreeObjects (if desired)
 	if(sortBranches) sort(variables.begin(),variables.end(),TreeObjectComp());
 	
 	//add branches to tree
 	for(unsigned t = 0; t < variables.size(); ++t){
+		variables[t]->SetTree(tree);
 		variables[t]->AddBranch();
 	}
 }

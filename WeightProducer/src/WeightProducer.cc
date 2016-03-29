@@ -22,12 +22,18 @@
 #include <memory>
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
+#include <unordered_map>
 
 #include "TFile.h"
 #include "TH1.h"
 
 // user include files
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
+
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 
@@ -36,12 +42,12 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
-
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 
+
 //
-// class decleration
+// class declaration
 //
 
 class WeightProducer: public edm::EDProducer {
@@ -50,79 +56,115 @@ public:
   ~WeightProducer();
   
 private:
-  enum PUScenario { Flat10, Fall11, Summer12S7, Summer12S10 };
-  
   //  virtual void beginJob() ;
   virtual void produce(edm::Event&, const edm::EventSetup&);
   virtual void endJob();
   
-  const std::string _weightingMethod;
-  const double _expo;
+  enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, FastSim = 3, other = 4 };
+  
+  const std::string _weightingMethodName;
   const double _startWeight;
-  const double _LumiScale;
-  const double _xs;
+  double _xs;
   const double _NumberEvents;
   const double _lumi;
-  
-  edm::InputTag _weightName;
-  std::vector<double> _puWeigths;
+  edm::InputTag _weightName, _genEvtTag, _puInfoTag, _SusyMotherTag;
+  edm::EDGetTokenT<double> _weightTok, _SusyMotherTok;
+  edm::EDGetTokenT<GenEventInfoProduct> _genEvtTok;
+  edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puInfoTok;
+  TH1 *pu_central, *pu_up, *pu_down;
   double _weightFactor;
   bool _applyPUWeights;
+  weight_method _weightingMethod;
+  std::unordered_map<double,double> _FastSimXsec;
   
-  const int _PU; //use this for different PU scenarios
-  
-  std::vector<double> generateWeights(PUScenario sc, const TH1* data_npu_estimated) const;
-  double getPUWeight(int npu) const;
+  void process(std::string line, char delim, std::vector<std::string>& fields);
+  double getPUWeight(double trueint, TH1* pu) const;
 };
 
 WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
-   _weightingMethod(iConfig.getParameter<std::string> ("Method")), _expo(iConfig.getParameter<double> ("Exponent")),
-         _startWeight(iConfig.getParameter<double> ("weight")), _LumiScale(iConfig.getParameter<double> ("LumiScale")),
-         _xs(iConfig.getParameter<double> ("XS")), _NumberEvents(iConfig.getParameter<double> ("NumberEvts")), _lumi(
-               iConfig.getParameter<double> ("Lumi")), _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
-   	 _PU(iConfig.getParameter<int> ("PU"))
-
- {
+   _weightingMethodName(iConfig.getParameter<std::string> ("Method")),
+   _startWeight(iConfig.getParameter<double> ("weight")),
+   _xs(iConfig.getParameter<double> ("XS")),
+   _NumberEvents(iConfig.getParameter<double> ("NumberEvts")),
+   _lumi(iConfig.getParameter<double> ("Lumi")),
+   _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
+   _genEvtTag(edm::InputTag("generator")),
+   _puInfoTag(edm::InputTag("slimmedAddPileupInfo")),
+   _SusyMotherTag(edm::InputTag("SusyScan:SusyMotherMass")),
+   pu_central(0), pu_up(0), pu_down(0), _weightingMethod(other)
+{
 
    // Option 1: weight constant, as defined in cfg file
    if (_startWeight >= 0) {
+      _weightingMethod = StartWeight;
       std::cout << "WeightProducer: Using constant event weight of " << _startWeight << std::endl;
    }
 
    // Option 2: weight from event
-   else if (_weightingMethod == "FromEvent") {
+   else if (_weightingMethodName == "FromEvent") {
+      _weightingMethod = FromEvent;
       std::cout << "WeightProducer: Using weight from event" << std::endl;
+      _weightTok = consumes<double>(_weightName);
    }
 
    // Option 3: compute new weight
-   else if (_weightingMethod == "Constant") {
+   else if (_weightingMethodName == "Constant") {
+      _weightingMethod = Constant;
       _weightFactor = _lumi * _xs / _NumberEvents;
       std::cout << "WeightProducer: Using constant event weight of " << _weightFactor << std::endl;
       std::cout << "  Target luminosity (1/pb) : " << _lumi << std::endl;
       std::cout << "        Cross section (pb) : " << _xs << std::endl;
       std::cout << "          Number of events : " << _NumberEvents << std::endl;
+      _genEvtTok = consumes<GenEventInfoProduct>(_genEvtTag);
    }
-
-   else if (_weightingMethod == "PtHat") {
-      _weightFactor = _lumi * _xs / (_NumberEvents * pow(15., _expo));
-      std::cout << "WeightProducer: Using ptHat dependent event weight" << std::endl;
-   }
-
-   // Option 4: Use generator weight
-   else if (_weightingMethod == "BinnedPythia" || _weightingMethod == "BinnedMadGraph") {
-      std::cout << "WeightProducer: Using generator event weight" << std::endl;
+   
+   // Option 4: assign cross section for FastSim
+   else if (_weightingMethodName == "FastSim") {
+      _weightingMethod = FastSim;
+      std::cout << "WeightProducer: Finding cross sections for FastSim" << std::endl;
+      std::cout << "  Target luminosity (1/pb) : " << _lumi << std::endl;
+      std::cout << "          Number of events : " << _NumberEvents << std::endl;
+      _SusyMotherTok = consumes<double>(_SusyMotherTag);
+     
+      //setup xsec map
+      std::string inputXsecName = iConfig.getParameter<std::string> ("XsecFile");
+	  bool foundXsec = true;
+      if(inputXsecName.size()>0){
+         edm::FileInPath fileXsec(inputXsecName);
+         std::ifstream infile(fileXsec.fullPath().c_str());
+         if(infile.is_open()){
+            std::string line;
+            while(getline(infile,line)){
+               std::vector<std::string> items;
+               process(line,'\t',items);
+               //convert input to proper types
+               if(items.size()==2){
+                  double mass_tmp;
+                  std::stringstream s0(items[0]);
+                  s0 >> mass_tmp;
+                  
+                  double xsec_tmp;
+                  std::stringstream s1(items[1]);
+                  s1 >> xsec_tmp;
+                  
+                  //insert into map
+                  _FastSimXsec.emplace(mass_tmp,xsec_tmp);
+               }
+            }
+         }
+         else foundXsec = false;
+      }
+      else foundXsec = false;
+      
+      if(!foundXsec) {
+         std::cout << "WARNING: WeightProducer: Could not open FastSim xsec file: " << inputXsecName << std::endl;
+         _weightingMethod = other;
+      }
    }
 
    // No option specified
    else {
       std::cerr << "WARNING: WeightProducer: No weighting option specified. Using event weights of 1" << std::endl;
-   }
-
-   ///This is to consider the lumi-uncertainty, i.e. to scale the weights up- or down by 1sigma of the lumi-scale
-   ///uncertainty. In general the scale is 1.0!
-   _weightFactor *= _LumiScale;
-   if (_LumiScale != 1.) {
-      std::cout << "WeightProducer: Scaling event weights by factor " << _LumiScale << std::endl;
    }
 
    // Optionally, compute multiplicative weight factors for PU reweighting
@@ -136,47 +178,35 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
 
       std::cout << "WeightProducer: Applying multiplicative PU weights" << std::endl;
       std::cout << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'" << std::endl;
-      TFile file(filePUDataDistr.fullPath().c_str(), "READ");
-      TH1 *h = 0;
-      file.GetObject("pileup", h);
-      if (h) {
-         h->SetDirectory(0);
-      } else {
-         std::cerr << "ERROR in WeightProducer: Histogram 'pileup' does not exist in file '"
-               << filePUDataDistr.fullPath() << "'\n.";
-         std::cerr
-               << "See https://twiki.cern.ch/twiki/bin/view/CMS/HamburgWikiAnalysisCalibration#Pile_Up_Reweighting for available input distributions."
-               << std::endl;
-         exit(1);
-      }
-      file.Close();
+      TFile* file = TFile::Open(filePUDataDistr.fullPath().c_str(), "READ");
+      pu_central = (TH1*)file->Get("pu_weights_central");
+      if(pu_central) pu_central->SetDirectory(0);
+      pu_up = (TH1*)file->Get("pu_weights_up");
+      if(pu_up) pu_up->SetDirectory(0);
+      pu_down = (TH1*)file->Get("pu_weights_down");
+      if(pu_down) pu_down->SetDirectory(0);
 
-      std::cout << "  Computing weights for pile-up scenario " << std::flush;
-      if( _PU==0 ) {
-	std::cout << "Flat10" << std::endl;
-	_puWeigths = generateWeights(Flat10,h);
-      } else if( _PU==1 ) {
-	std::cout << "Fall11" << std::endl;
-	_puWeigths = generateWeights(Fall11,h);
-
-      } else if( _PU==2 ) {
-	std::cout << "Summer12S7" << std::endl;
-	_puWeigths = generateWeights(Summer12S7,h);
-      } else if( _PU==3 ) {
-	std::cout << "Summer12S10" << std::endl;
-	_puWeigths = generateWeights(Summer12S10,h);
-      } else {
-	std::cout << "\n";
-	std::cerr << "ERROR: Undefined pile-up scenario." << std::endl;
+      if(!pu_central || !pu_up || !pu_down) {
+         std::cerr << "ERROR in WeightProducer: Pileup histograms missing from file '"
+               << filePUDataDistr.fullPath() << std::endl;
+         _applyPUWeights = false;
       }
-      
-      delete h;
+      file->Close();
    } else {
       _applyPUWeights = false;
    }
+   
+   _puInfoTok = consumes<std::vector<PileupSummaryInfo>>(_puInfoTag);
 
    //register your products
    produces<double> ("weight");
+   produces<double> ("xsec");
+   produces<double> ("nevents");
+   produces<int>    ("NumInteractions");
+   produces<double> ("TrueNumInteractions");
+   produces<double> ("PUweight");
+   produces<double> ("PUSysUp");
+   produces<double> ("PUSysDown");
 }
 
 WeightProducer::~WeightProducer() {
@@ -188,133 +218,94 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    double resultWeight = 1.;
 
    //Option 1: constant start weight from config file
-   if (_startWeight >= 0) {
+   if (_weightingMethod == StartWeight) {
       resultWeight = _startWeight;
    }
-   //Option 2: existing weight variable in the event named as in _weightName
-   else if (_weightingMethod == "FromEvent") {
-      edm::Handle<double> event_weight;
-      iEvent.getByLabel(_weightName, event_weight);
-      resultWeight = (event_weight.isValid() ? (*event_weight) : 1.0);
 
-      ///This is to consider the lumi-uncertainty, i.e. to scale the weights up- or down by 1sigma of the lumi-scale
-      ///uncertainty. In general the scale is 1.0!
-      resultWeight *= _LumiScale;
+   //Option 2: existing weight variable in the event named as in _weightName
+   else if (_weightingMethod == FromEvent) {
+      edm::Handle<double> event_weight;
+      iEvent.getByToken(_weightTok, event_weight);
+      resultWeight = (event_weight.isValid() ? (*event_weight) : 1.0);
    }
+
    //Option 3: weighting from lumi, xs, and num evts
-   else if (_weightingMethod == "Constant") {
+   else if (_weightingMethod == Constant) {
       resultWeight = _weightFactor;
-	  
+      
       //account for negative weights
       edm::Handle<GenEventInfoProduct> genEvtInfoHandle;
-      iEvent.getByLabel("generator", genEvtInfoHandle);
+      iEvent.getByToken(_genEvtTok, genEvtInfoHandle);
       if (genEvtInfoHandle.isValid()) {
         double genweight_ = genEvtInfoHandle->weight();
         if(genweight_ < 0) resultWeight *= -1;
       }
-   } else if (_weightingMethod == "PtHat") {
-      // Get pthat
-      double ptHat = 0.;
-      edm::Handle<GenEventInfoProduct> genEvtInfoHandle;
-      iEvent.getByLabel("generator", genEvtInfoHandle);
-      if (genEvtInfoHandle.isValid()) {
-         ptHat = genEvtInfoHandle->binningValues()[0];
-         resultWeight = _weightFactor * pow(ptHat, _expo);
-      } else {
-         std::cout << "WARNING:: PtHat information needed but not available: set weight to 1!" << std::endl;
-         resultWeight = 1.;
-      }
-   } else if (_weightingMethod == "BinnedPythia") {
-      // Get pthat
-      double ptHat = 0.;
-      edm::Handle<GenEventInfoProduct> genEvtInfoHandle;
-      iEvent.getByLabel("generator", genEvtInfoHandle);
-      if (genEvtInfoHandle.isValid()) {
-         ptHat = genEvtInfoHandle->binningValues()[0];
-         if (ptHat > 0.)
-            resultWeight = 4.844e+10 * _lumi / 1000000;
-         if (ptHat > 5.)
-            resultWeight = 3.675e+10 * _lumi / 1650000;
-         if (ptHat > 15.)
-            resultWeight = 8.159e+08 * _lumi / 11000000;
-         if (ptHat > 30.)
-            resultWeight = 5.312e+07 * _lumi / 6583068;
-         if (ptHat > 50.)
-            resultWeight = 6.359e+06 * _lumi / 6600000;
-         if (ptHat > 80.)
-            resultWeight = 7.843e+05 * _lumi / 6589956;
-         if (ptHat > 120.)
-            resultWeight = 1.151e+05 * _lumi / 6127528;
-         if (ptHat > 170.)
-            resultWeight = 2.426e+04 * _lumi / 6220160;
-         if (ptHat > 300.)
-            resultWeight = 1.168e+03 * _lumi / 6432669;
-         if (ptHat > 470.)
-            resultWeight = 7.022e+01 * _lumi / 3990085;
-         if (ptHat > 600.)
-            resultWeight = 1.555e+01 * _lumi / 4245695;
-         if (ptHat > 800.)
-            resultWeight = 1.844e+00 * _lumi / 4053888;
-         if (ptHat > 1000.)
-            resultWeight = 3.321e-01 * _lumi / 2093222;
-         if (ptHat > 1400.)
-            resultWeight = 1.087e-02 * _lumi / 2196200;
-         if (ptHat > 1800.)
-            resultWeight = 3.575e-04 * _lumi / 293139;
-         //std::cout << resultWeight << std::endl;
-      } else {
-         std::cout << "WARNING:: PtHat information needed but not available: set weight to 1!" << std::endl;
-         resultWeight = 1.;
-      }
-   } else if (_weightingMethod == "BinnedMadGraph") {
-      // Get pthat
-      double ptHat = 0.;
-      edm::Handle<GenEventInfoProduct> genEvtInfoHandle;
-      iEvent.getByLabel("generator", genEvtInfoHandle);
-      if (genEvtInfoHandle.isValid()) {
-         ptHat = genEvtInfoHandle->binningValues()[0];
-         if (ptHat > 100.)
-            resultWeight = 7.0e+06 * _lumi / 21066112;
-         if (ptHat > 250.)
-            resultWeight = 1.71e+05 * _lumi / 20674219;
-         if (ptHat > 500.)
-            resultWeight = 5.2e+03 * _lumi / 14437469;
-         if (ptHat > 1000.)
-            resultWeight = 8.3e+01 * _lumi / 6294851;
-         //std::cout << ptHat << " " << resultWeight << std::endl;
-      } else {
-         std::cout << "WARNING:: PtHat information needed but not available: set weight to 1!" << std::endl;
-         resultWeight = 1.;
-      }
    }
-   // Optionally, multiply PU weight
-   edm::Handle<std::vector<PileupSummaryInfo> > puInfo;
-   iEvent.getByLabel("addPileupInfo", puInfo);
-   int npu = 0;
-   if (_applyPUWeights) {
-      if (puInfo.isValid()) {
-         std::vector<PileupSummaryInfo>::const_iterator puIt;
-         int n = 0;
-         for (puIt = puInfo->begin(); puIt != puInfo->end(); ++puIt, ++n) {
-            //std::cout << " Pileup Information: bunchXing, nvtx: " << puIt->getBunchCrossing() << " " << puIt->getPU_NumInteractions() << std::endl;
-            if (puIt->getBunchCrossing() == 0) { // Select in-time bunch crossing
-               npu = puIt->getTrueNumInteractions();
-               break;
-            }
-         }
-         resultWeight *= getPUWeight(npu);
-      } else
-         std::cout << "No Valid PileupSummaryInfo Object! PU reweighing not applied!" << std::endl;
+   
+   //Option 4: get cross section from input file
+   else if (_weightingMethod == FastSim) {
+      _xs = 0;
+      edm::Handle<double> SusyMotherHandle;
+      iEvent.getByToken(_SusyMotherTok, SusyMotherHandle);
+      if (SusyMotherHandle.isValid()){
+         auto itr = _FastSimXsec.find(*SusyMotherHandle);
+         if(itr!=_FastSimXsec.end()) _xs = itr->second;
+      }
+      resultWeight = _xs * _NumberEvents * _lumi;
    }
 
-   ///Also, here one could define look-up tables for all used samples.
-   ///An identifying 'string' for the currently used sample could be read
-   ///from the config file. Perhaps this can be obtained dirtectly from crab?
+   // Optionally, include PU weight
+   edm::Handle<std::vector<PileupSummaryInfo> > puInfo;
+   iEvent.getByToken(_puInfoTok, puInfo);
+   if (_applyPUWeights && puInfo.isValid()){
+       int _NumInt = 0;
+       double _TrueNumInt = 0.;
+       double _PUweightFactor = 1.;
+       double _PUSysUp = 1.;
+       double _PUSysDown = 1.;
+       
+       //get PU info
+       std::vector<PileupSummaryInfo>::const_iterator PVI;
+       for(PVI = puInfo->begin(); PVI != puInfo->end(); ++PVI) {
+           //look only at primary BX (in-time)
+           if(PVI->getBunchCrossing()==0){
+               _NumInt = PVI->getPU_NumInteractions();
+               _TrueNumInt = PVI->getTrueNumInteractions();
+               break;
+           }
+       }       
+       
+        _PUweightFactor = getPUWeight(_TrueNumInt,pu_central);
+        _PUSysUp = getPUWeight(_TrueNumInt,pu_up);
+        _PUSysDown = getPUWeight(_TrueNumInt,pu_down);
+
+        std::auto_ptr<double> puOut1(new double(_PUweightFactor));
+        iEvent.put(puOut1, "PUweight");
+        
+        std::auto_ptr<double> puOut2(new double(_PUSysUp));
+        iEvent.put(puOut2, "PUSysUp");
+        
+        std::auto_ptr<double> puOut3(new double(_PUSysDown));
+        iEvent.put(puOut3, "PUSysDown");
+        
+        std::auto_ptr<int> puOut4(new int(_NumInt));
+        iEvent.put(puOut4, "NumInteractions");
+        
+        std::auto_ptr<double> puOut5(new double(_TrueNumInt));
+        iEvent.put(puOut5, "TrueNumInteractions");
+   }
+
    //---------------------------------------------------------------------------
 
    // put weight into the Event
    std::auto_ptr<double> pOut(new double(resultWeight));
    iEvent.put(pOut, "weight");
+   
+   std::auto_ptr<double> pOutX(new double(_xs));
+   iEvent.put(pOutX, "xsec");
+
+   std::auto_ptr<double> pOutN(new double(_NumberEvents));
+   iEvent.put(pOutN, "nevents");
 }
 
 // ------------ method called once each job just before starting event loop  ------------
@@ -327,248 +318,31 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
 void WeightProducer::endJob() {
 }
 
-// Get weight factor dependent on number of
+// Get weight factor dependent on true number of
 // added PU interactions
 // --------------------------------------------------
-double WeightProducer::getPUWeight(int npu) const {
-   double w = 1.;
-   if (npu < static_cast<int> (_puWeigths.size())) {
-      w = _puWeigths.at(npu);
-   } else {
-      std::cerr << "WARNING in WeightProcessor::getPUWeight: Number of PU vertices = " << npu
-            << " out of histogram binning." << std::endl;
-   }
+double WeightProducer::getPUWeight(double trueint, TH1* pu) const{
+  double w = 1.;
+
+   //std::cout<<"trueint "<<trueint<<std::endl;
+  if (trueint < pu->GetBinLowEdge(pu->GetNbinsX()+1)) {
+        w = pu->GetBinContent(pu->GetXaxis()->FindBin(trueint));
+  } else {
+    std::cerr << "WARNING in WeightProducer::getPUWeight: Number of interactions = " << trueint
+              << " out of histogram binning." << std::endl;
+    w = pu->GetBinContent(pu->GetNbinsX());
+  }
 
    return w;
 }
 
-// Generate weights for given data PU distribution
-// Scenarios from: https://twiki.cern.ch/twiki/bin/view/CMS/Pileup_MC_Gen_Scenarios
-// Code adapted from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupReweighting
-// --------------------------------------------------
-std::vector<double> WeightProducer::generateWeights(PUScenario sc, const TH1* data_npu_estimated) const {
-
-  unsigned int nMaxPU = 0;
-  double *npuProbs = 0;
-
-  if( sc == Flat10 ) {
-    nMaxPU = 25;
-    // see SimGeneral/MixingModule/python/mix_E7TeV_FlatDist10_2011EarlyData_inTimeOnly_cfi.py; copy and paste from there:
-    double npu_probs[25] = { 0.0698146584,
-			     0.0698146584,
-			     0.0698146584,
-			     0.0698146584,
-			     0.0698146584,
-			     0.0698146584,
-			     0.0698146584,
-			     0.0698146584,
-			     0.0698146584,
-			     0.0698146584,
-			     0.0698146584, /* <-- 10*/
-			     0.0630151648,
-			     0.0526654164,
-			     0.0402754482,
-			     0.0292988928,
-			     0.0194384503,
-			     0.0122016783,
-			     0.007207042,
-			     0.004003637,
-			     0.0020278322,
-			     0.0010739954,
-			     0.0004595759,
-			     0.0002229748,
-			     0.0001028162,
-			     4.58337152809607E-05 /* <-- 24 */};
-    npuProbs = npu_probs;
-  } else if( sc == Fall11 ) {
-    nMaxPU = 50;
-    double npu_probs[50] = {
-      0.003388501,
-      0.010357558,
-      0.024724258,
-      0.042348605,
-      0.058279812,
-      0.068851751,
-      0.072914824,
-      0.071579609,
-      0.066811668,
-      0.060672356,
-      0.054528356,
-      0.04919354,
-      0.044886042,
-      0.041341896,
-      0.0384679,
-      0.035871463,
-      0.03341952,
-      0.030915649,
-      0.028395374,
-      0.025798107,
-      0.023237445,
-      0.020602754,
-      0.0180688,
-      0.015559693,
-      0.013211063,
-      0.010964293,
-      0.008920993,
-      0.007080504,
-      0.005499239,
-      0.004187022,
-      0.003096474,
-      0.002237361,
-      0.001566428,
-      0.001074149,
-      0.000721755,
-      0.000470838,
-      0.00030268,
-      0.000184665,
-      0.000112883,
-      6.74043E-05,
-      3.82178E-05,
-      2.22847E-05,
-      1.20933E-05,
-      6.96173E-06,
-      3.4689E-06,
-      1.96172E-06,
-      8.49283E-07,
-      5.02393E-07,
-      2.15311E-07,
-      9.56938E-08
-    };
-    npuProbs = npu_probs;
-  } else if( sc == Summer12S7 ) {
-    nMaxPU = 50;
-    double npu_probs[50] = {
-      0.003388501,
-      0.010357558,
-      0.024724258,
-      0.042348605,
-      0.058279812,
-      0.068851751,
-      0.072914824,
-      0.071579609,
-      0.066811668,
-      0.060672356,
-      0.054528356,
-      0.04919354,
-      0.044886042,
-      0.041341896,
-      0.0384679,
-      0.035871463,
-      0.03341952,
-      0.030915649,
-      0.028395374,
-      0.025798107,
-      0.023237445,
-      0.020602754,
-      0.0180688,
-      0.015559693,
-      0.013211063,
-      0.010964293,
-      0.008920993,
-      0.007080504,
-      0.005499239,
-      0.004187022,
-      0.003096474,
-      0.002237361,
-      0.001566428,
-      0.001074149,
-      0.000721755,
-      0.000470838,
-      0.00030268,
-      0.000184665,
-      0.000112883,
-      6.74043E-05,
-      3.82178E-05,
-      2.22847E-05,
-      1.20933E-05,
-      6.96173E-06,
-      3.4689E-06,
-      1.96172E-06,
-      8.49283E-07,
-      5.02393E-07,
-      2.15311E-07,
-      9.56938E-08
-    };
-    npuProbs = npu_probs;
-  } else if( sc == Summer12S10 ) {
-    nMaxPU = 60;
-    double npuSummer12_S10[60] = {
-      2.560E-06,
-      5.239E-06,
-      1.420E-05,
-      5.005E-05,
-      1.001E-04,
-      2.705E-04,
-      1.999E-03,
-      6.097E-03,
-      1.046E-02,
-      1.383E-02,
-      1.685E-02,
-      2.055E-02,
-      2.572E-02,
-      3.262E-02,
-      4.121E-02,
-      4.977E-02,
-      5.539E-02,
-      5.725E-02,
-      5.607E-02,
-      5.312E-02,
-      5.008E-02,
-      4.763E-02,
-      4.558E-02,
-      4.363E-02,
-      4.159E-02,
-      3.933E-02,
-      3.681E-02,
-      3.406E-02,
-      3.116E-02,
-      2.818E-02,
-      2.519E-02,
-      2.226E-02,
-      1.946E-02,
-      1.682E-02,
-      1.437E-02,
-      1.215E-02,
-      1.016E-02,
-      8.400E-03,
-      6.873E-03,
-      5.564E-03,
-      4.457E-03,
-      3.533E-03,
-      2.772E-03,
-      2.154E-03,
-      1.656E-03,
-      1.261E-03,
-      9.513E-04,
-      7.107E-04,
-      5.259E-04,
-      3.856E-04,
-      2.801E-04,
-      2.017E-04,
-      1.439E-04,
-      1.017E-04,
-      7.126E-05,
-      4.948E-05,
-      3.405E-05,
-      2.322E-05,
-      1.570E-05,
-      5.005E-06};
-    npuProbs = npuSummer12_S10;
-  }
-
-  std::vector<double> result(nMaxPU);
-  double s = 0.0;
-  for(unsigned int npu = 0; npu < nMaxPU; ++npu) {
-    double npu_estimated = data_npu_estimated->GetBinContent(data_npu_estimated->GetXaxis()->FindBin(npu));
-    result[npu] = npu_estimated / npuProbs[npu];
-    s += npu_estimated;
-  }
-  // normalize weights such that the total sum of weights over thw whole sample is 1.0, i.e., sum_i  result[i] * npu_probs[i] should be 1.0 (!)
-  for (unsigned int npu = 0; npu < nMaxPU; ++npu) {
-    result[npu] /= s;
-  }
-
-  return result;
+//generalization for processing a line
+void WeightProducer::process(std::string line, char delim, std::vector<std::string>& fields){
+	std::stringstream ss(line);
+	std::string field;
+	while(getline(ss,field,delim)){
+		fields.push_back(field);
+	}
 }
 
 //define this as a plug-in

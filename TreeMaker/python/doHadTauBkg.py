@@ -1,6 +1,28 @@
 import FWCore.ParameterSet.Config as cms
 
-def doHadTauBkg(process,is74X,geninfo,residual,JetTag):
+def makeJetVarsHadTau(process,sequence,JetTag,suff):
+    if hasattr(process,sequence):
+        theSequence = getattr(process,sequence)
+    else:
+        print "Unknown sequence: "+sequence
+        return
+
+    # clone GoodJetsProducer
+    GoodJetsForHadTau = process.GoodJets.clone(
+        JetTag = JetTag,
+        jetPtFilter = cms.double(0),
+        SaveAllJets = cms.bool(True),
+        ExcludeLepIsoTrackPhotons = cms.bool(False),
+    )
+    setattr(process,"GoodJetsForHadTau"+suff,GoodJetsForHadTau)
+    theSequence += getattr(process,"GoodJetsForHadTau"+suff)
+    
+    process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(slimJet'+suff+')'])
+    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau'+suff+':JetIDMask(slimJet'+suff+'_slimJetID)'])
+    
+    return process
+
+def doHadTauBkg(process,geninfo,residual,JetTag):
     process.load("RecoJets.JetProducers.ak4PFJets_cfi")
     from JetMETCorrections.Configuration.JetCorrectionServices_cff import ak4PFCHSL1FastL2L3,ak4PFCHSL1Fastjet,ak4PFCHSL2Relative,ak4PFCHSL3Absolute
 
@@ -16,41 +38,23 @@ def doHadTauBkg(process,is74X,geninfo,residual,JetTag):
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jetCorrectionLevels = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'Type-2')
     if residual: jetCorrectionLevels = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute', 'L2L3Residual'], 'Type-2')
-    if is74X:
-        addJetCollection(
-            process,
-            postfix            = "",
-            labelName          = 'AK4PFCHS',
-            jetSource          = cms.InputTag('ak4PFJetsCHS'),
-            pfCandidates       = cms.InputTag('packedPFCandidates'),
-            pvSource           = cms.InputTag('offlineSlimmedPrimaryVertices'),  # 74x
-            svSource           = cms.InputTag('slimmedSecondaryVertices'),       # 74x
-            elSource           = cms.InputTag('slimmedElectrons'),
-            muSource           = cms.InputTag('slimmedMuons'),
-            jetCorrections     = jetCorrectionLevels,
-            btagDiscriminators = [ 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ],  # 74x
-            genJetCollection   = cms.InputTag('ak4GenJets'),
-            genParticles       = cms.InputTag('prunedGenParticles'),
-            algo               = 'AK',
-            rParam             = 0.4
-        )
-    else:
-        addJetCollection(
-            process,
-            postfix            = "",
-            labelName          = 'AK4PFCHS',
-            jetSource          = cms.InputTag('ak4PFJetsCHS'),
-            pfCandidates       = cms.InputTag('packedPFCandidates'),
-            trackSource        = cms.InputTag('unpackedTracksAndVertices'),           # 72x
-            pvSource           = cms.InputTag('unpackedTracksAndVertices'),              # 72x
-            svSource           = cms.InputTag('unpackedTracksAndVertices','secondary'),  # 72x
-            jetCorrections     = jetCorrectionLevels,
-            btagDiscriminators = [ 'combinedInclusiveSecondaryVertexV2BJetTags' ],  # 72x
-            genJetCollection   = cms.InputTag('ak4GenJets'),
-            algo               = 'AK',
-            rParam             = 0.4
-        )
-    # end of if is74X:
+    addJetCollection(
+        process,
+        postfix            = "",
+        labelName          = 'AK4PFCHS',
+        jetSource          = cms.InputTag('ak4PFJetsCHS'),
+        pfCandidates       = cms.InputTag('packedPFCandidates'),
+        pvSource           = cms.InputTag('offlineSlimmedPrimaryVertices'),  # 74x
+        svSource           = cms.InputTag('slimmedSecondaryVertices'),       # 74x
+        elSource           = cms.InputTag('slimmedElectrons'),
+        muSource           = cms.InputTag('slimmedMuons'),
+        jetCorrections     = jetCorrectionLevels,
+        btagDiscriminators = [ 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ],  # 74x
+        genJetCollection   = cms.InputTag('ak4GenJets'),
+        genParticles       = cms.InputTag('prunedGenParticles'),
+        algo               = 'AK',
+        rParam             = 0.4
+    )
 
     # adjust MC matching
     process.patJetsAK4PFCHS.getJetMCFlavour   = False
@@ -80,21 +84,45 @@ def doHadTauBkg(process,is74X,geninfo,residual,JetTag):
         JetTag                 = JetTag,
         reclusJetTag           = cms.InputTag('patJetsAK4PFCHS'),
         maxJetEta              = cms.double(5.0), 
-        maxMuFraction          = cms.double(2), 
-        minNConstituents       = cms.double(2),       
-        maxNeutralFraction     = cms.double(0.90),
-        maxPhotonFraction      = cms.double(0.95),
-        minChargedMultiplicity = cms.double(0), 
-        minChargedFraction     = cms.double(0),     
-        maxChargedEMFraction   = cms.double(0.99), 
         MCflag                 = cms.bool(False)
     )
-
     if geninfo:
         process.JetsForHadTau.MCflag = cms.bool(True)
-        
     process.AdditionalSequence += process.JetsForHadTau
-    process.TreeMaker2.VectorRecoCand.extend(['JetsForHadTau:Jet(slimJet)'])
-    process.TreeMaker2.VectorInt.extend(['JetsForHadTau:JetFlag(slimJet_slimJetID)'])
+    
+    process = makeJetVarsHadTau(process,
+        sequence="AdditionalSequence",
+        JetTag=cms.InputTag("JetsForHadTau"),
+        suff='',
+    )
+    
+    # jet uncertainty variations
+    from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
+    
+    #JEC unc up
+    process.JetsForHadTauJECup = JetUncertaintyProducer.clone(
+        JetTag = cms.InputTag("JetsForHadTau"),
+        jecUncDir = cms.int32(1)
+    )
+    process.AdditionalSequence += process.JetsForHadTauJECup
+    #get the JEC factor and unc from here
+    process.TreeMaker2.VectorDouble.extend(['JetsForHadTauJECup:jecFactor(slimJet_jecFactor)','JetsForHadTauJECup:jecUnc(slimJet_jecUnc)'])
+    process = makeJetVarsHadTau(process,
+                          sequence="AdditionalSequence",
+                          JetTag=cms.InputTag("JetsForHadTauJECup"),
+                          suff='JECup',
+    )
+
+    #JEC unc down
+    process.JetsForHadTauJECdown = JetUncertaintyProducer.clone(
+        JetTag = cms.InputTag("JetsForHadTau"),
+        jecUncDir = cms.int32(-1)
+    )
+    process.AdditionalSequence += process.JetsForHadTauJECdown
+    process = makeJetVarsHadTau(process,
+                          sequence="AdditionalSequence",
+                          JetTag=cms.InputTag("JetsForHadTauJECdown"),
+                          suff='JECdown',
+    )
     
     return process

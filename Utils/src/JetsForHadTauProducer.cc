@@ -58,18 +58,18 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
-        const reco::GenParticle* TauFound(const reco::GenParticle * particle);
+    const reco::GenParticle* TauFound(const reco::GenParticle * particle);
 
-	edm::InputTag JetTag_;
-        edm::InputTag reclusJetTag_;
-	double maxEta_;
-	double maxMuFraction_, minNConstituents_, maxNeutralFraction_, maxPhotonFraction_, minChargedMultiplicity_, minChargedFraction_, maxChargedEMFraction_;
-
-        double jetPtCut_miniAOD_, genMatch_dR_;
-        double relPt_for_xCheck_, dR_for_xCheck_;
-        bool debug_;	
-        bool MCflag_;
-        bool useReclusteredJets_;
+    edm::InputTag JetTag_, reclusJetTag_, MuonTag_, ElecTag_, GenPartTag_;
+    edm::EDGetTokenT<edm::View<pat::Muon>> MuonTok_;
+    edm::EDGetTokenT<edm::View<pat::Electron>> ElecTok_;
+    edm::EDGetTokenT<std::vector<pat::Jet>> JetTok_, reclusJetTok_;
+    edm::EDGetTokenT<edm::View<reco::GenParticle>> GenPartTok_;
+    double jetPtCut_miniAOD_, genMatch_dR_;
+    double relPt_for_xCheck_, dR_for_xCheck_;
+    bool debug_;	
+    bool MCflag_;
+    bool useReclusteredJets_;
 	// ----------member data ---------------------------
 };
 
@@ -88,28 +88,24 @@ private:
 using namespace pat;
 JetsForHadTauProducer::JetsForHadTauProducer(const edm::ParameterSet& iConfig)
 {
-        const std::string string1t("JetFlag");
-        const std::string string1("Jet");
-        produces<std::vector<Jet> > (string1).setBranchAlias(string1);
-        produces<std::vector<int> > (string1t).setBranchAlias(string1t);
-
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
-        reclusJetTag_ = iConfig.getParameter<edm::InputTag>("reclusJetTag");
-	maxEta_ = iConfig.getParameter <double> ("maxJetEta");
-	maxMuFraction_ = iConfig.getParameter <double> ("maxMuFraction");
-	minNConstituents_ = iConfig.getParameter <double> ("minNConstituents");
-	maxNeutralFraction_ = iConfig.getParameter <double> ("maxNeutralFraction");
-	maxPhotonFraction_ = iConfig.getParameter <double> ("maxPhotonFraction");
-	minChargedMultiplicity_ = iConfig.getParameter <double> ("minChargedMultiplicity");
-	minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
-	maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
-        jetPtCut_miniAOD_ = iConfig.getParameter<double>("jetPtCut_miniAOD");
-        genMatch_dR_ = iConfig.getParameter<double>("genMatch_dR");
-        dR_for_xCheck_ = iConfig.getParameter<double>("dR_for_xCheck");
-        relPt_for_xCheck_ = iConfig.getParameter<double>("relPt_for_xCheck");
-        MCflag_ = iConfig.getParameter<bool>("MCflag");
-        useReclusteredJets_ = iConfig.getParameter<bool>("useReclusteredJets");
-        debug_ = iConfig.getParameter<bool>("debug");
+    reclusJetTag_ = iConfig.getParameter<edm::InputTag>("reclusJetTag");
+    jetPtCut_miniAOD_ = iConfig.getParameter<double>("jetPtCut_miniAOD");
+    genMatch_dR_ = iConfig.getParameter<double>("genMatch_dR");
+    dR_for_xCheck_ = iConfig.getParameter<double>("dR_for_xCheck");
+    relPt_for_xCheck_ = iConfig.getParameter<double>("relPt_for_xCheck");
+    MCflag_ = iConfig.getParameter<bool>("MCflag");
+    useReclusteredJets_ = iConfig.getParameter<bool>("useReclusteredJets");
+    debug_ = iConfig.getParameter<bool>("debug");
+	MuonTag_ = edm::InputTag("slimmedMuons");
+	ElecTag_ = edm::InputTag("slimmedElectrons");
+	GenPartTag_ = edm::InputTag("prunedGenParticles");
+	
+	MuonTok_ = consumes<edm::View<pat::Muon>>(MuonTag_);
+	ElecTok_ = consumes<edm::View<pat::Electron>>(ElecTag_);
+	JetTok_ = consumes<std::vector<pat::Jet>>(JetTag_);
+	reclusJetTok_ = consumes<std::vector<pat::Jet>>(reclusJetTag_);
+	GenPartTok_ = consumes<edm::View<reco::GenParticle>>(GenPartTag_);
         
 	produces<std::vector<Jet> >();	
 }
@@ -133,27 +129,23 @@ void
 JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-  std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
-  std::auto_ptr< std::vector<int> > prodJetsFlag(new std::vector<int>);
-//  edm::Handle< edm::View<Jet> > Jets;
-//  edm::Handle< edm::View<Jet> > reclusJets;
   edm::Handle<std::vector<pat::Jet> > Jets,reclusJets; 
   edm::Handle<edm::View<reco::GenParticle> > pruned;
   edm::Handle<edm::View<pat::Muon> > muon;
   edm::Handle<edm::View<pat::Electron> > electron;  
 
-  iEvent.getByLabel(JetTag_,Jets);
-  if (useReclusteredJets_) iEvent.getByLabel(reclusJetTag_,reclusJets);
-  iEvent.getByLabel("slimmedMuons", muon);
-  iEvent.getByLabel("slimmedElectrons", electron);
-  if (MCflag_) iEvent.getByLabel("prunedGenParticles",pruned);
+  iEvent.getByToken(JetTok_,Jets);
+  if (useReclusteredJets_) iEvent.getByToken(reclusJetTok_,reclusJets);
+  iEvent.getByToken(MuonTok_, muon);
+  iEvent.getByToken(ElecTok_, electron);
+  if (MCflag_) iEvent.getByToken(GenPartTok_,pruned);
 
   // finalJets should be equal to slimmedJets when pt>10. 
   // We just want to add low pT reclustered Jets to it. 
-  std::vector<pat::Jet> finalJets = (*Jets); 
+  std::auto_ptr<std::vector<Jet> > finalJets(new std::vector<Jet>(*Jets));
 
   if (useReclusteredJets_){
-  if (debug_) std::cout << "Jets and reculsJets isValid:" << Jets.isValid() << " " << reclusJets.isValid() << std::endl;
+  if (debug_) std::cout << "Jets and reclusJets isValid:" << Jets.isValid() << " " << reclusJets.isValid() << std::endl;
   if(Jets.isValid() && reclusJets.isValid() )
   {
 
@@ -161,7 +153,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
     
     // Check which ones to keep
     int cntJetPassPtCut = 0;
-    if (debug_) std::cout << "Jets and reculsJets size:" << Jets->size() << " " << reclusJets->size() << std::endl;
+    if (debug_) std::cout << "Jets and reclusJets size:" << Jets->size() << " " << reclusJets->size() << std::endl;
     for(unsigned int io=0; io < reclusJets->size(); io++){
        const double otjet_pt = reclusJets->at(io).pt(), otjet_eta = reclusJets->at(io).eta(), otjet_phi = reclusJets->at(io).phi();
        TLorentzVector perLVec; perLVec.SetPtEtaPhiE(otjet_pt, otjet_eta, otjet_phi, reclusJets->at(io).energy());
@@ -250,7 +242,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	     //
 	     //
              if( otjet_pt>0 && otjet_pt < 14000 &&  cntgenMatch ){
-              finalJets.push_back(reclusJets->at(io));          
+              finalJets->push_back(reclusJets->at(io));          
              }
           }
        } // above or below jetPtCut_miniAOD_
@@ -258,46 +250,8 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   } // Jets.isValid() and reclusJets.isValid()
   } // useReclusteredJets_
 
-//.................................////.................................//
-
-    for(unsigned int i=0; i<finalJets.size();i++)
-    {
-      //if(std::abs(finalJets.at(i).eta())>maxEta_)
-      //{
-      //prodJets->push_back(Jet(finalJets.at(i)) );
-      //continue;
-      // }
-      float neufrac=finalJets.at(i).neutralHadronEnergyFraction();//gives raw energy in the denominator
-      float phofrac=finalJets.at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
-      float chgfrac=finalJets.at(i).chargedHadronEnergyFraction();
-      float chgEMfrac=finalJets.at(i).chargedEmEnergyFraction();
-      float muFrac=finalJets.at(i).muonEnergyFraction();
-      unsigned int nconstit=finalJets.at(i).nConstituents();
-      int chgmulti=finalJets.at(i).chargedHadronMultiplicity();
-      if(muFrac<maxMuFraction_ && std::abs(finalJets.at(i).eta())<2.4 &&  nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ &&chgmulti>minChargedMultiplicity_ && chgfrac>minChargedFraction_ && chgEMfrac<maxChargedEMFraction_)prodJetsFlag->push_back(1);
-      else if(muFrac<maxMuFraction_ && std::abs(finalJets.at(i).eta())>=2.4 && nconstit>minNConstituents_ && neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_)prodJetsFlag->push_back(1);
-      else prodJetsFlag->push_back(0);
-      prodJets->push_back(Jet(finalJets.at(i)) );
-      // 	std::cout<<"muFrac<maxMuFraction_"<<muFrac<<" < "<<maxMuFraction_<<std::endl
-      // 	<<"nconstit>minNConstituents_"<<nconstit<<" > "<<minNConstituents_<<std::endl
-      // 	<<"neufrac<maxNeutralFraction_"<<neufrac<<" < "<<maxNeutralFraction_<<std::endl
-      // 	<<"phofrac<maxPhotonFraction_"<<phofrac<<" < "<<maxPhotonFraction_<<std::endl
-      // 	<<"chgmulti>minChargedMultiplicity_"<<chgmulti<<" > "<<minChargedMultiplicity_<<std::endl
-      // 	<<"chgfrac>minChargedFraction_"<<chgfrac<<" > "<<minChargedFraction_<<std::endl
-      // 	<<"chgEMfrac<maxChargedEMFraction_"<<chgEMfrac<<" < "<<maxChargedEMFraction_<<std::endl
-      // 	<<std::endl<<std::endl<<std::endl;
-    }
-
   // put in the event
-  const std::string string1t("JetFlag");
-  const std::string string1("Jet");
-  iEvent.put(prodJetsFlag,string1t);
-  iEvent.put(prodJets,string1);
-
-  finalJets.clear(); 
-  
-  if(!finalJets.empty())
-    finalJets.clear();
+  iEvent.put(finalJets);
   
 }
 

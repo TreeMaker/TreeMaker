@@ -1,0 +1,15 @@
+universe = vanilla
+Executable = jobExecCondorNeff.sh
+Requirements = OpSys == "LINUX" && (Arch != "DUMMY" )
+request_disk = 10000000
+request_memory = 2100
+Should_Transfer_Files = YES
+WhenToTransferOutput = ON_EXIT_OR_EVICT
+Transfer_Input_Files = jobExecCondorNeff.sh, ../nefffinder_cfg.py, CMSSWVER.tar.gz
+Output = JOBNAME_$(Cluster).stdout
+Error = JOBNAME_$(Cluster).stderr
+Log = JOBNAME_$(Cluster).condor
+notification = Never
+x509userproxy = $ENV(X509_USER_PROXY)
+Arguments = CMSSWVER SAMPLE NSTART NFILES
+Queue 1

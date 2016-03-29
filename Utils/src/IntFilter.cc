@@ -74,6 +74,7 @@ private:
 	// ----------member data ---------------------------
 	
 	edm::InputTag IntTag_;
+	edm::EDGetTokenT<int> IntTok_;
 	double CutValue_;
 	int CutTyp_;
 };
@@ -95,6 +96,7 @@ IntFilter::IntFilter(const edm::ParameterSet& iConfig)
 	IntTag_ = iConfig.getParameter<edm::InputTag>("IntTag");
 	CutValue_ = iConfig.getParameter <double> ("CutValue");
 	CutTyp_ = iConfig.getParameter <int> ("CutTyp");
+	IntTok_ = consumes<int>(IntTag_);
 }
 
 
@@ -116,7 +118,7 @@ bool
 IntFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	edm::Handle<int> var;	
-	iEvent.getByLabel(IntTag_,var);
+	iEvent.getByToken(IntTok_,var);
 	if(CutTyp_==0)
 	{
 	  if(*var<CutValue_) return false;

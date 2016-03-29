@@ -10,7 +10,6 @@
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
-#include <TLorentzVector.h>
 
 class ZProducer : public edm::EDProducer {
 public:
@@ -19,25 +18,28 @@ private:
    virtual void produce(edm::Event&, const edm::EventSetup&);
    edm::InputTag ElectronTag_;
    edm::InputTag MuonTag_;
+   edm::EDGetTokenT<std::vector<pat::Electron>> ElectronTok_;
+   edm::EDGetTokenT<std::vector<pat::Muon>> MuonTok_;
 };
 
 ZProducer::ZProducer(const edm::ParameterSet& iConfig)
 {
    ElectronTag_ = iConfig.getParameter<edm::InputTag>("ElectronTag");
    MuonTag_ = iConfig.getParameter<edm::InputTag>("MuonTag");
+   
+   ElectronTok_ = consumes<std::vector<pat::Electron>>(ElectronTag_);
+   MuonTok_ = consumes<std::vector<pat::Muon>>(MuonTag_);
+   
    produces<pat::CompositeCandidateCollection>("ZCandidates");
-   produces<int>("ZNum");
-   produces<std::vector<TLorentzVector>>("Zp4");
 }
 
 void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   std::auto_ptr<std::vector<TLorentzVector>> Zp4(new std::vector<TLorentzVector>());
    std::auto_ptr<pat::CompositeCandidateCollection> ZCandidates(new pat::CompositeCandidateCollection());
 
    // make candidates from electrons
    edm::Handle<std::vector<pat::Electron>> electronHandle;
-	iEvent.getByLabel(ElectronTag_, electronHandle);
+   iEvent.getByToken(ElectronTok_, electronHandle);
    const std::vector<pat::Electron> * electrons = electronHandle.product();
    for (std::vector<pat::Electron>::const_iterator iL1 = electrons->begin(); iL1 != electrons->end(); ++iL1) {
       if (iL1->charge() > 0) {
@@ -45,11 +47,9 @@ void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             if (iL2->charge() < 0) {
                pat::CompositeCandidate theZ;
                theZ.setP4(iL1->p4()+ iL2->p4());
-               theZ.addDaughter(*iL1, "positive daughter");
-               theZ.addDaughter(*iL2, "negative daughter");
+               theZ.addDaughter(*iL1, "positive electron daughter");
+               theZ.addDaughter(*iL2, "negative electron daughter");
                ZCandidates->push_back(theZ);
-               TLorentzVector p4temp(theZ.px(), theZ.py(), theZ.pz(), theZ.energy());
-               Zp4->push_back(p4temp);
             }
          }
       }
@@ -57,7 +57,7 @@ void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
    // make candidates from muons
    edm::Handle<std::vector<pat::Muon>> muonHandle;
-	iEvent.getByLabel(MuonTag_, muonHandle);
+   iEvent.getByToken(MuonTok_, muonHandle);
    const std::vector<pat::Muon> * muons = muonHandle.product();
    for (std::vector<pat::Muon>::const_iterator iL1 = muons->begin(); iL1 != muons->end(); ++iL1) {
       if (iL1->charge() > 0) {
@@ -65,26 +65,15 @@ void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             if (iL2->charge() < 0) {
                pat::CompositeCandidate theZ;
                theZ.setP4(iL1->p4()+iL2->p4());
-               theZ.addDaughter(*iL1, "positive daughter");
-               theZ.addDaughter(*iL2, "negative daughter");
+               theZ.addDaughter(*iL1, "positive muon daughter");
+               theZ.addDaughter(*iL2, "negative muon daughter");
                ZCandidates->push_back(theZ);
-               TLorentzVector p4temp(theZ.px(), theZ.py(), theZ.pz(), theZ.energy());
-               Zp4->push_back(p4temp);
             }
          }
       }
    }
 
-   // add the number of Z candidates to the event
-   std::auto_ptr<int> item0(new int(ZCandidates->size()));
-	iEvent.put(item0, std::string("ZNum"));
-
-   // add the TLorentzVectors to the event
-   
-	iEvent.put(Zp4, std::string("Zp4"));
-
    // add the Z candidates to the event
-   
    iEvent.put(ZCandidates, std::string("ZCandidates"));
 }
 

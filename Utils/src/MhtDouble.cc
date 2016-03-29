@@ -31,6 +31,7 @@
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/Candidate/interface/CandidateFwd.h"
 //
 // class declaration
 //
@@ -51,7 +52,8 @@ class MhtDouble : public edm::EDProducer {
       virtual void endRun(edm::Run&, edm::EventSetup const&);
       virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
       virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	    edm::InputTag JetTag_;
+      edm::InputTag JetTag_;
+	  edm::EDGetTokenT<reco::CandidateView> JetTok_;
 
 
       // ----------member data ---------------------------
@@ -71,8 +73,9 @@ class MhtDouble : public edm::EDProducer {
 //
 MhtDouble::MhtDouble(const edm::ParameterSet& iConfig)
 {
-   //register your produc
+   //register your product
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+   JetTok_ = consumes<reco::CandidateView>(JetTag_);
 
 	 produces<double>("Pt");
 	 produces<double>("Phi");
@@ -108,8 +111,8 @@ void
 MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
-  edm::Handle< edm::View<pat::Jet> > Jets;
-	iEvent.getByLabel(JetTag_,Jets);
+  edm::Handle< reco::CandidateView > Jets;
+	iEvent.getByToken(JetTok_,Jets);
 	reco::MET::LorentzVector mhtLorentz(0,0,0,0);
 	if( Jets.isValid() ) {
 		for(unsigned int i=0; i<Jets->size();i++)
@@ -117,7 +120,7 @@ MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		mhtLorentz -=Jets->at(i).p4();
 		}
   }
-  else std::cout<<"MHTDouble::Invlide Tag: "<<JetTag_.label()<<std::endl;
+  else std::cout<<"MHTDouble::Invalid Tag: "<<JetTag_.label()<<std::endl;
 	std::auto_ptr<double > Pt(new double(mhtLorentz.pt()));
 	std::auto_ptr<double > Phi(new double(mhtLorentz.phi()));
 	iEvent.put(Pt,"Pt");
