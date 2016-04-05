@@ -559,7 +559,12 @@ signal=False
             'HLT_PFHT450_SixJet40_PFBTagCSV0p72_v',
             'HLT_PFHT400_SixJet30_BTagCSV0p55_2PFBTagCSV0p72_v',
             'HLT_PFHT350_PFMET100_v',
-        )
+            'HLT_PFMETNoMu90_JetIdCleaned_PFMHTNoMu90_IDTight_v',
+            'HLT_PFMETNoMu120_JetIdCleaned_PFMHTNoMu120_IDTight_v',
+            'HLT_PFMETNoMu90_PFMHTNoMu90_IDTight_v',
+            'HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_v',
+            'HLT_DiCentralPFJet55_PFMET110_JetIdCleaned_v',
+       )
     )
     process.Baseline += process.TriggerProducer
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
