@@ -12,10 +12,14 @@ KEEPTAR=$2
 
 SCENARIO=Spring15Fastv2
 
-#### privately generated T1ttbb
+#### privately generated SMS
 SAMPLES=(
 PrivateSamples.SMS-T1ttbb_mGluino-1300_mLSP-5_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_cff \
 PrivateSamples.SMS-T1ttbb_mGluino-1300_mLSP-10_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_cff \
+PrivateSamples.SMS-T2tt_mStop-170_mLSP-1_2bd_madgraphMLM-pythia8_13TeV \
+PrivateSamples.SMS-T2tt_mStop-170_mLSP-1_madgraphMLM-pythia8_13TeV \
+PrivateSamples.SMS-T2tt_mStop-172_mLSP-1_madgraphMLM-pythia8_13TeV \
+PrivateSamples.SMS-T2tt_mStop-173_mLSP-1_madgraphMLM-pythia8_13TeV \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
