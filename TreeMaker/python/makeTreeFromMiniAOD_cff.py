@@ -20,7 +20,6 @@ tagname="RECO",
 jsonfile="",
 jecfile="",
 residual=False,
-QCD=False,
 doPDFs=False,
 fastsim=False,
 signal=False
@@ -717,15 +716,6 @@ signal=False
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
         process = doZinvBkg(process,tagname,geninfo,residual)
-
-    ## ----------------------------------------------------------------------------------------------
-    ## ----------------------------------------------------------------------------------------------
-    ## QCD DeltaPhi
-    ## ----------------------------------------------------------------------------------------------
-    ## ----------------------------------------------------------------------------------------------
-    if QCD:
-        from TreeMaker.TreeMaker.DeltaPhiQCD import DeltaPhiQCD
-        process = DeltaPhiQCD(process,geninfo)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
