@@ -52,63 +52,58 @@ private:
     virtual void endRun( edm::Run&, edm::EventSetup const& ) ;
     virtual void beginLuminosityBlock ( edm::LuminosityBlock&, edm::EventSetup const& ) ;
     virtual void endLuminosityBlock ( edm::LuminosityBlock&, edm::EventSetup const& ) ;
-    std::vector<edm::InputTag> JetTagRecoJets_ ;
-	std::vector<edm::EDGetTokenT<edm::View < reco::Jet >>> JetTokRecoJets_ ;
-    std::vector<edm::InputTag> JetTagGenJets_ ;
-	std::vector<edm::EDGetTokenT<edm::View < reco::GenJet >>> JetTokGenJets_ ;
-    std::string   btagname_ ;      
-    edm::InputTag GenParticleTag_, MHTPhiTag_;
-	edm::EDGetTokenT<edm::View < reco::GenParticle >> GenParticleTok_ ;
-	edm::EDGetTokenT<double> MHTPhiTok_ ;
+
+//    std::vector<edm::InputTag> JetTagRecoJets_ ;
+//    std::vector<edm::EDGetTokenT<edm::View < reco::Jet >>> JetTokRecoJets_ ;
+//    std::vector<edm::InputTag> JetTagGenJets_ ;
+//    std::vector<edm::EDGetTokenT<edm::View < reco::GenJet >>> JetTokGenJets_ ;
+//    std::string   btagname_ ;      
+//    edm::InputTag MHTPhiTag_;
+
+    edm::InputTag GenParticleTag_;
+    edm::EDGetTokenT<edm::View < reco::GenParticle >> GenParticleTok_ ;
+
+//	edm::EDGetTokenT<double> MHTPhiTok_ ;
     
     // ----------member data ---------------------------
 };
 
-//
-// constants, enums and typedefs
-//
 
-
-//
-// static data member definitions
-//
-//
-
-//
-// constructors and destructor
-//
 DeltaPhiQCD::DeltaPhiQCD ( const edm::ParameterSet& iConfig )
 {
 
 
     //register your product
-    JetTagRecoJets_ = iConfig.getParameter < std::vector<edm::InputTag> > ( "JetTagRecoJets" ) ;
-    btagname_       = iConfig.getParameter < std::string   > ( "BTagInputTag"   ) ;
-    JetTagGenJets_  = iConfig.getParameter < std::vector<edm::InputTag> > ( "JetTagGenJets"  ) ;
+//    JetTagRecoJets_ = iConfig.getParameter < std::vector<edm::InputTag> > ( "JetTagRecoJets" ) ;
+//    btagname_       = iConfig.getParameter < std::string   > ( "BTagInputTag"   ) ;
+//    JetTagGenJets_  = iConfig.getParameter < std::vector<edm::InputTag> > ( "JetTagGenJets"  ) ;
+//    MHTPhiTag_ = edm::InputTag ( "MHT" , "Phi" ) ;
+//    for(auto& tag: JetTagRecoJets_) JetTokRecoJets_.push_back(consumes<edm::View < reco::Jet >>(tag));
+//    for(auto& tag: JetTagGenJets_) JetTokGenJets_.push_back(consumes<edm::View < reco::GenJet >>(tag));
+//    MHTPhiTok_ = consumes<double>(MHTPhiTag_); 
+
+
     GenParticleTag_ = iConfig.getParameter < edm::InputTag > ( "GenParticleTag" ) ;
-    MHTPhiTag_ = edm::InputTag ( "MHT" , "Phi" ) ;
-    for(auto& tag: JetTagRecoJets_) JetTokRecoJets_.push_back(consumes<edm::View < reco::Jet >>(tag));
-    for(auto& tag: JetTagGenJets_) JetTokGenJets_.push_back(consumes<edm::View < reco::GenJet >>(tag));
     GenParticleTok_ = consumes<edm::View < reco::GenParticle >>(GenParticleTag_);
-    MHTPhiTok_ = consumes<double>(MHTPhiTag_);
 
     produces < std::vector < TLorentzVector > > ( "NeutrinoLorentzVector" ) ;
+    produces < std::vector < int > > ( "NeutrinoPdg"               ) ;
+    produces < std::vector < int > > ( "NeutrinoMotherPdg"         ) ;
 
+
+/*
     produces < std::vector < double > > ( "GenDeltaPhi"          ) ;
     produces < std::vector < double > > ( "RJetDeltaPhi"         ) ;
     produces < std::vector < double > > ( "RJetMinDeltaPhiEta24" ) ;
     produces < std::vector < double > > ( "RJetMinDeltaPhiEta5"  ) ;
     produces < std::vector < double > > ( "GenMinDeltaPhiEta24"  ) ;
     produces < std::vector < double > > ( "GenMinDeltaPhiEta5"   ) ;
-
     produces < std::vector < std::string > > ( "minDeltaPhiNames" ) ;
-
-    produces < std::vector < int > > ( "NeutrinoPdg"               ) ;
-    produces < std::vector < int > > ( "NeutrinoMotherPdg"         ) ;
     produces < std::vector < int > > ( "RJetMinDeltaPhiIndexEta24" ) ;
     produces < std::vector < int > > ( "RJetMinDeltaPhiIndexEta5"  ) ;
     produces < std::vector < int > > ( "GenMinDeltaPhiIndexEta24"  ) ;
     produces < std::vector < int > > ( "GenMinDeltaPhiIndexEta5"   ) ;
+*/
 
 }
 
@@ -132,8 +127,67 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
     
     using namespace edm;
     using namespace std;
+
+    std::vector < TLorentzVector > neutrino_LVector;
+    std::vector < int > neutrino_pdgid_vector, neutrino_mother_pdgid_vector ;
+
+    edm::Handle < edm::View < reco::GenParticle > > genpart ;
+    iEvent.getByToken ( GenParticleTok_, genpart ) ;
+
+    vector<double> neutrino_pt(6,-9);
+    vector<double> neutrino_eta(6,-9);
+    vector<double> neutrino_phi(6,-9);
+    vector<double> neutrino_energy(6,-9);
+
+    vector<int> neutrino_pdgid(6,0);
+    vector<int> neutrino_mother_pdgid(6,0);
+
+    if ( genpart.isValid () )
+    {
+        //sort gen neutrinos by pT
+        std::multimap<double,size_t> genMap;
+        for( size_t i = 0; i < genpart -> size(); i++ )
+        {
+            if( abs( genpart -> at(i).pdgId () ) == 12 || abs( genpart -> at(i).pdgId () ) == 14 || abs( genpart -> at(i).pdgId () ) == 16 )
+            {
+                genMap.insert(std::make_pair(genpart->at(i).pt(),i));
+            }//if abs
+        }//i
+
+        unsigned i = 0;
+        for ( auto genIt = genMap.rbegin(); genIt != genMap.rend() && i<5; ++genIt, ++i )
+        {
+            TLorentzVector dumb_vector ;
+            dumb_vector.SetPtEtaPhiE(genpart -> at(genIt->second).pt(),
+                                     genpart -> at(genIt->second).eta(),
+                                     genpart -> at(genIt->second).phi(),
+                                     genpart -> at(genIt->second).energy()
+                                    );
+            neutrino_LVector            .push_back ( dumb_vector                                  ) ;
+            neutrino_pdgid_vector       .push_back ( genpart -> at(genIt->second).pdgId()         ) ;
+            neutrino_mother_pdgid_vector.push_back ( genpart -> at(genIt->second).mother()->pdgId() ) ;
+        }//genIt
+
+    } //if
+//    else std::cout << "Warning Neutrino Tag not valid: " << GenParticleTag_.label() << std::endl ;
+
+
+    std::auto_ptr < std::vector < TLorentzVector > > neutrino_LVector2              ( new std::vector < TLorentzVector > ( neutrino_LVector             ) ) ;
+    std::auto_ptr < std::vector < int            > > neutrino_pdgid_vector2         ( new std::vector < int            > ( neutrino_pdgid_vector        ) ) ;
+    std::auto_ptr < std::vector < int            > > neutrino_mother_pdgid_vector2  ( new std::vector < int            > ( neutrino_mother_pdgid_vector ) ) ;
+
+
+    iEvent.put ( neutrino_LVector2            , "NeutrinoLorentzVector" ) ;
+    iEvent.put ( neutrino_pdgid_vector2       , "NeutrinoPdg"           ) ;
+    iEvent.put ( neutrino_mother_pdgid_vector2, "NeutrinoMotherPdg"     ) ;
+
+
+
+
+
+/*
     typedef math::XYZTLorentzVector LorentzVector;
-    
+
     std::vector < double >  deltaphi_vector ;
     std::vector < double >  RJetminDeltaphi5, RJetminDeltaphi24 ;
     
@@ -248,6 +302,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
     std::auto_ptr < std::vector < std::string > > minDeltaphiNames_2  ( new std::vector < std::string > ( minDeltaphiNames  ) ) ;
     iEvent.put ( minDeltaphiNames_2       , "minDeltaPhiNames"          ) ;
 
+*/
 
 
 
@@ -256,8 +311,7 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
 
 
 
-
-
+/*
     std::vector < TLorentzVector > GenJetVector ;
 
     std::vector < double >  Gendeltaphi_vector ;
@@ -370,87 +424,10 @@ void DeltaPhiQCD::produce ( edm::Event& iEvent, const edm::EventSetup& iSetup )
     iEvent.put ( GenminDeltaphiIndex5_2  , "GenMinDeltaPhiIndexEta5"  ) ;
 
 
+*/
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    std::vector < TLorentzVector > neutrino_LVector;
-    std::vector < int > neutrino_pdgid_vector, neutrino_mother_pdgid_vector ;
-
-    edm::Handle < edm::View < reco::GenParticle > > genpart ;
-    iEvent.getByToken ( GenParticleTok_, genpart ) ;
-
-    vector<double> neutrino_pt(6,-9);
-    vector<double> neutrino_eta(6,-9);
-    vector<double> neutrino_phi(6,-9);
-    vector<double> neutrino_energy(6,-9);
-
-    vector<int> neutrino_pdgid(6,0);
-    vector<int> neutrino_mother_pdgid(6,0);
-
-    if ( genpart.isValid () )
-    {
-        //sort gen neutrinos by pT
-        std::multimap<double,size_t> genMap;
-        for( size_t i = 0; i < genpart -> size(); i++ )
-        {
-            if( abs( genpart -> at(i).pdgId () ) == 12 || abs( genpart -> at(i).pdgId () ) == 14 || abs( genpart -> at(i).pdgId () ) == 16 )
-            {
-                genMap.insert(std::make_pair(genpart->at(i).pt(),i));
-            }//if abs
-        }//i
-        
-        unsigned i = 0;
-        for ( auto genIt = genMap.rbegin(); genIt != genMap.rend() && i<5; ++genIt, ++i )
-        {
-            TLorentzVector dumb_vector ;
-            dumb_vector.SetPtEtaPhiE(genpart -> at(genIt->second).pt(),
-                                     genpart -> at(genIt->second).eta(),
-                                     genpart -> at(genIt->second).phi(),
-                                     genpart -> at(genIt->second).energy()
-                                    );
-
-            neutrino_LVector            .push_back ( dumb_vector                                  ) ;
-            neutrino_pdgid_vector       .push_back ( genpart -> at(genIt->second).pdgId()         ) ;
-            neutrino_mother_pdgid_vector.push_back ( genpart -> at(genIt->second).mother()->pdgId() ) ;            
-        }//genIt
-        
-    } //if
-//    else std::cout << "Warning Neutrino Tag not valid: " << GenParticleTag_.label() << std::endl ;
-
-
-    std::auto_ptr < std::vector < TLorentzVector > > neutrino_LVector2              ( new std::vector < TLorentzVector > ( neutrino_LVector             ) ) ;
-    std::auto_ptr < std::vector < int            > > neutrino_pdgid_vector2         ( new std::vector < int            > ( neutrino_pdgid_vector        ) ) ;
-    std::auto_ptr < std::vector < int            > > neutrino_mother_pdgid_vector2  ( new std::vector < int            > ( neutrino_mother_pdgid_vector ) ) ;
-
-
-    iEvent.put ( neutrino_LVector2            , "NeutrinoLorentzVector" ) ;
-    iEvent.put ( neutrino_pdgid_vector2       , "NeutrinoPdg"           ) ;
-    iEvent.put ( neutrino_mother_pdgid_vector2, "NeutrinoMotherPdg"     ) ;
 
 
 
