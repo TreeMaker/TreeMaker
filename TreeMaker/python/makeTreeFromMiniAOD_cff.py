@@ -109,7 +109,7 @@ signal=False
         # needed for WeightProducer
         from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
         process.SusyScan = SusyScanProducer.clone(
-            shouldScan = cms.bool(fastsim),
+            shouldScan = cms.bool(fastsim and signal),
             debug = cms.bool(False)
         )
         process.Baseline += process.SusyScan
@@ -120,7 +120,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if geninfo:
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
-        process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim)
+        process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim and signal)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1117.root")
         process.Baseline += process.WeightProducer

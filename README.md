@@ -20,10 +20,11 @@ global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC
 The available scenarios are:  
 1. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
 2. `Spring15v2sig`: for Spring15 re-miniAOD (v2) 25ns MC (signal)  
-3. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
-4. `re2015C`: for 2015C re-reco 25ns data  
-5. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
-6. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
+3. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC
+4. `Spring15Fastv2sig`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
+5. `re2015C`: for 2015C re-reco 25ns data  
+6. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
+7. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
 
 ## Unit Tests (Interactive Runs)
 

@@ -20,7 +20,7 @@ fi
 
 ./FScheck.sh ${CHECKARGS}
 
-SCENARIO=Spring15Fastv2
+SCENARIO=Spring15Fastv2sig
 
 #### Spring15 gluino - fastsim scans
 SAMPLES=(

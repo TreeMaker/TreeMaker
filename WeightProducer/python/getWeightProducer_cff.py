@@ -62,6 +62,8 @@ def getWeightProducer(fileName,fastsim=False):
         MCSample("TTJets_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant",  1.103362965, 3510897),
         MCSample("TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.199703704, 1014678),
         MCSample("TTJets_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant",  0.002379801, 507842),
+        # ttbar fastsim
+        MCSample("TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 831.76, 11413480),
         # WJets: k-factor of 1.21 applied
         MCSample("WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 1627.45, 10152718),
         MCSample("WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 435.24, 5221599),
