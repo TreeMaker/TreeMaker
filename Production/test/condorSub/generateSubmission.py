@@ -17,7 +17,7 @@ parser.add_option("-s","--submit",dest="submit", default=False,action="store_tru
                                        help="submit jobs to condor once they are configured  (default = %default)")
 
 parser.add_option("-c","--scenario",dest="scenario", default="Spring15",
-                                       help="scenario: Spring15, Spring15v2, Spring15Fast, Spring15Fastv2, 2015C, re2015C, 2015D, re2015D, 2015Db  (default = %default)")
+                                       help="scenario: Spring15v2, Spring15v2sig, Spring15Fastv2, Spring15Fastv2sig, re2015C, re2015D, 2015Db  (default = %default)")
                                        
 parser.add_option("-j","--firstJob",dest="firstJob", default=0,
                                        help="first job to submit  (default = %default)")
