@@ -648,6 +648,41 @@ signal=False
     )
 
     ## ----------------------------------------------------------------------------------------------
+    ## GenJet variables
+    ## ----------------------------------------------------------------------------------------------
+    if geninfo:
+        # store all genjets
+        VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
+    
+        from TreeMaker.Utils.subJetSelection_cfi import SubGenJetSelection
+        
+        process.GenHTJets = SubGenJetSelection.clone(
+            JetTag = cms.InputTag('slimmedGenJets'),
+            MinPt  = cms.double(30),
+            MaxEta = cms.double(2.4),
+        )
+        process.Baseline += process.GenHTJets
+        VectorBool.extend(['GenHTJets:SubJetMask(GenHTJetsMask)'])
+        
+        # make gen HT?
+        
+        process.GenMHTJets = SubGenJetSelection.clone(
+            JetTag = cms.InputTag('slimmedGenJets'),
+            MinPt  = cms.double(30),
+            MaxEta = cms.double(5.0),
+        )
+        process.Baseline += process.GenMHTJets
+        VectorBool.extend(['GenMHTJets:SubJetMask(GenMHTJetsMask)'])
+        
+        # make gen MHT
+        from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
+        process.GenMHT = mhtdouble.clone(
+            JetTag  = cms.InputTag('GenMHTJets'),
+        )
+        process.Baseline += process.GenMHT
+        VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHT_Phi)'])
+    
+    ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.Utils.doublefilter_cfi import DoubleFilter
