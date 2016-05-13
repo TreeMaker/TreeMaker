@@ -14,7 +14,6 @@ outfile=parameters.value("outfile","test_run")
 lostlepton=parameters.value("lostlepton", True)
 hadtau=parameters.value("hadtau", True)
 doZinv=parameters.value("doZinv", True)
-QCD=parameters.value("QCD", True)
 
 # compute the PDF weights
 doPDFs=parameters.value("doPDFs", True);
@@ -83,7 +82,6 @@ print " "
 print " storing lostlepton variables: "+str(lostlepton)
 print " storing hadtau variables: "+str(hadtau)
 print " storing Zinv variables: "+str(doZinv)
-print " storing QCD variables: "+str(QCD)
 print " "
 print " storing PDF weights: "+str(doPDFs)
 print " "
@@ -110,7 +108,6 @@ process = makeTreeFromMiniAOD(process,
     numevents=numevents,
     hadtau=hadtau,
     lostlepton=lostlepton,
-    QCD=QCD,
     applybaseline=applybaseline,
     doZinv=doZinv,
     debugtracks=debugtracks,
