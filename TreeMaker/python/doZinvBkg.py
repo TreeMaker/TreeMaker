@@ -179,6 +179,7 @@ def doZinvBkg(process,tagname,geninfo,residual):
     process.TreeMaker2.VectorDouble.append("goodPhotons:pfNeutralIsoRhoCorr(photon_pfNeutralIsoRhoCorr)")
     process.TreeMaker2.VectorDouble.append("goodPhotons:sigmaIetaIeta(photon_sigmaIetaIeta)")
     process.TreeMaker2.VectorBool.append("goodPhotons:nonPrompt(photon_nonPrompt)")
+    process.TreeMaker2.VectorBool.append("goodPhotons:fullID(photon_fullID)")
 
     from TreeMaker.Utils.zproducer_cfi import ZProducer
     process.makeTheZs = ZProducer.clone(
