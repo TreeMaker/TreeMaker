@@ -146,7 +146,8 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetsProperties = jetproperties.clone(
             JetTag       = GoodJetsTag,
-            BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+            BTagInputTagCSV = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+            BTagInputTagMVA = cms.string('pfCombinedMVABJetTags'),
             QGTag        = QGTag,
             QGTagMult    = QGTagMult,
             QGTagPtD     = QGTagPtD,
@@ -155,14 +156,13 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         )
         setattr(process,"JetsProperties"+suff,JetsProperties)
         theSequence += getattr(process,"JetsProperties"+suff)
-        process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorUser(Jets'+suff+'_bDiscriminatorCSV)'])
+        process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)'])
         process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
                                              'JetsProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)'])
         if storeProperties>1:
             process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
                                                     'JetsProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
                                                     'JetsProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
-                                                    'JetsProperties'+suff+':jetArea(Jets'+suff+'_jetArea)',
                                                     'JetsProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',

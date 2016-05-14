@@ -17,8 +17,8 @@ def makeJetVarsHadTau(process,sequence,JetTag,suff):
     setattr(process,"GoodJetsForHadTau"+suff,GoodJetsForHadTau)
     theSequence += getattr(process,"GoodJetsForHadTau"+suff)
     
-    process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(slimJet'+suff+')'])
-    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau'+suff+':JetIDMask(slimJet'+suff+'_slimJetID)'])
+    process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(softJets'+suff+')'])
+    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau'+suff+':JetIDMask(softJets'+suff+'_ID)'])
     
     return process
 
@@ -106,7 +106,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
     )
     process.AdditionalSequence += process.JetsForHadTauJECup
     #get the JEC factor and unc from here
-    process.TreeMaker2.VectorDouble.extend(['JetsForHadTauJECup:jecFactor(slimJet_jecFactor)','JetsForHadTauJECup:jecUnc(slimJet_jecUnc)'])
+    process.TreeMaker2.VectorDouble.extend(['JetsForHadTauJECup:jecFactor(softJets_jecFactor)','JetsForHadTauJECup:jecUnc(softJets_jecUnc)'])
     process = makeJetVarsHadTau(process,
                           sequence="AdditionalSequence",
                           JetTag=cms.InputTag("JetsForHadTauJECup"),

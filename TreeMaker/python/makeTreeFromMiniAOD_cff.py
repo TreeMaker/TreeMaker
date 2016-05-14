@@ -383,25 +383,8 @@ signal=False
         METTag           = METTag, 
     )
     process.Baseline += process.LeptonsNew
-    VarsInt.extend(['LeptonsNew(Leptons)'])
     VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
     VectorInt.extend(['LeptonsNew:MuonCharge(MuonCharge)','LeptonsNew:ElectronCharge(ElectronCharge)'])
-
-    process.LeptonsNewTag = leptonproducer.clone(
-        MuonTag          = cms.InputTag('slimmedMuons'),
-        ElectronTag      = cms.InputTag('slimmedElectrons'),
-        PrimaryVertex    = cms.InputTag('offlineSlimmedPrimaryVertices'),
-        minElecPt        = cms.double(20),
-        maxElecEta       = cms.double(2.5),
-        minMuPt          = cms.double(20),
-        maxMuEta         = cms.double(2.4),
-        UseMiniIsolation = cms.bool(True),
-        muIsoValue       = cms.double(0.2),
-        elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
-        METTag           = METTag,
-    )
-    process.Baseline += process.LeptonsNewTag
-    VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
@@ -418,14 +401,6 @@ signal=False
     if not fastsim: # MET filters are not run for fastsim samples
 
         from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
-        process.METFilters = filterDecisionProducer.clone(
-            trigTagArg1 = cms.string('TriggerResults'),
-            trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
-            filterName  = cms.string("Flag_METFilters"),
-        )
-        process.Baseline += process.METFilters
-        VarsInt.extend(['METFilters'])
         
         #process.CSCTightHaloFilter = filterDecisionProducer.clone(
         #    trigTagArg1 = cms.string('TriggerResults'),

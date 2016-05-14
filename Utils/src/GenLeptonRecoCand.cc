@@ -124,17 +124,17 @@ GenLeptonRecoCand::GenLeptonRecoCand(const edm::ParameterSet& iConfig)
   produces<std::vector<reco::GenParticle> > (string1).setBranchAlias(string1);
   produces<std::vector<int> > (string1t).setBranchAlias(string1t);
   produces<std::vector<reco::GenParticle> > (string2).setBranchAlias(string2);
-  produces<std::vector<int> > (string2t).setBranchAlias(string2t);
+  produces<std::vector<bool> > (string2t).setBranchAlias(string2t);
   produces<std::vector<double> > (string2tt).setBranchAlias(string2tt);
   produces<std::vector<double> > (string2ttt).setBranchAlias(string2ttt);
   produces<std::vector<double> > (string2tttt).setBranchAlias(string2ttt);
   produces<std::vector<reco::GenParticle> > (string3).setBranchAlias(string3);
-  produces<std::vector<int> > (string3t).setBranchAlias(string3t);
+  produces<std::vector<bool> > (string3t).setBranchAlias(string3t);
   produces<std::vector<double> > (string3tt).setBranchAlias(string3tt);
   produces<std::vector<double> > (string3ttt).setBranchAlias(string3ttt);
   produces<std::vector<double> > (string3tttt).setBranchAlias(string3ttt);
   produces<std::vector<reco::GenParticle> > (string4).setBranchAlias(string4);
-  produces<std::vector<int> > (string4t).setBranchAlias(string4t);
+  produces<std::vector<bool> > (string4t).setBranchAlias(string4t);
   produces<std::vector<reco::GenParticle> > (string4tt).setBranchAlias(string4tt);
   produces<std::vector<int> > (string4tt2).setBranchAlias(string4tt2);
   produces<std::vector<int> > (string4tt3).setBranchAlias(string4tt3);
@@ -183,17 +183,17 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   std::auto_ptr< std::vector<reco::GenParticle> > selectedBoson(new std::vector<reco::GenParticle>);
   std::auto_ptr< std::vector<int> > selectedBosonPDGId(new std::vector<int>);
   std::auto_ptr< std::vector<reco::GenParticle> > selectedMuon(new std::vector<reco::GenParticle>);
-  std::auto_ptr< std::vector<int> > selectedMuonTauDecay(new std::vector<int>);
+  std::auto_ptr< std::vector<bool> > selectedMuonTauDecay(new std::vector<bool>);
   std::auto_ptr< std::vector<double> > selectedMuonGenRecoD3(new std::vector<double>);
   std::auto_ptr< std::vector<double> > selectedMuonTrkIso(new std::vector<double>);
   std::auto_ptr< std::vector<double> > selectedMuonTrkAct(new std::vector<double>);
   std::auto_ptr< std::vector<reco::GenParticle> > selectedElectron(new std::vector<reco::GenParticle>);
-  std::auto_ptr< std::vector<int> > selectedElectronTauDecay(new std::vector<int>);
+  std::auto_ptr< std::vector<bool> > selectedElectronTauDecay(new std::vector<bool>);
   std::auto_ptr< std::vector<double> > selectedElectronGenRecoD3(new std::vector<double>);
   std::auto_ptr< std::vector<double> > selectedElectronTrkIso(new std::vector<double>);
   std::auto_ptr< std::vector<double> > selectedElectronTrkAct(new std::vector<double>);
   std::auto_ptr< std::vector<reco::GenParticle> > selectedTau(new std::vector<reco::GenParticle>);
-  std::auto_ptr< std::vector<int> > selectedTauHadTronic(new std::vector<int>);
+  std::auto_ptr< std::vector<bool> > selectedTauHadronic(new std::vector<bool>);
   std::auto_ptr< std::vector<reco::GenParticle> > selectedTauDecayCands(new std::vector<reco::GenParticle>);
   std::auto_ptr< std::vector<int> > selectedTauDecayCandspdgID(new std::vector<int>);
   std::auto_ptr< std::vector<int> > selectedTauDecayCandsmomInd(new std::vector<int>);
@@ -249,7 +249,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		{
 		  selectedTau->push_back(*((reco::GenParticle*) FinalBoson->daughter(ii) ));
 
-		  // 					selectedTauHadTronic->push_back(0);
+		  // 					selectedTauHadronic->push_back(0);
 		  const reco::GenParticle * FinalTauDecay = TauFound((reco::GenParticle*)FinalBoson->daughter(ii));
 
 		  for(size_t iii=0; iii<FinalTauDecay->numberOfDaughters();iii++)
@@ -288,7 +288,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		      }
 		    }
 
-		  int hadTauDecay=1;
+		  bool hadTauDecay=1;
 		  for(size_t iii=0; iii<FinalTauDecay->numberOfDaughters();iii++)
 		    {
 		      if(abs(FinalTauDecay->daughter(iii)->pdgId())== 11) 
@@ -322,7 +322,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 						
 		      // 						else std::cout<<"No lep decay tau with daughters["<<iii<<"]: "<<FinalTauDecay->daughter(iii)->pdgId()<<std::endl;
 		    }
-		  selectedTauHadTronic->push_back(hadTauDecay);
+		  selectedTauHadronic->push_back(hadTauDecay);
 		}
 	    }
 
@@ -333,7 +333,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if (selectedTauNu->size()!=selectedTau->size()) printf("WARNING: number of tau neutrino stored and number of taus do not matched %6d %6d\n",int(selectedTauNu->size()),int(selectedTau->size()));
 
   // Now get properties of leading track from tau
-  for (unsigned int itau(0); itau<selectedTauHadTronic->size(); itau++) {
+  for (unsigned int itau(0); itau<selectedTauHadronic->size(); itau++) {
     unsigned int nNHad(0), nTrk(0);
     std::vector<int> tau_trks;
     for (unsigned int icand(0); icand<selectedTauDecayCands->size(); icand++) {
@@ -425,7 +425,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(selectedElectronTrkIso,string3ttt);
   iEvent.put(selectedElectronTrkAct,string3tttt);
   iEvent.put(selectedTau,string4);
-  iEvent.put(selectedTauHadTronic,string4t);
+  iEvent.put(selectedTauHadronic,string4t);
   iEvent.put(selectedTauDecayCands,string4tt);
   iEvent.put(selectedTauDecayCandspdgID,string4tt2);
   iEvent.put(selectedTauDecayCandsmomInd,string4tt3);
