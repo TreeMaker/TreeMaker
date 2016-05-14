@@ -139,12 +139,18 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         setattr(process,"QGTagger"+suff,QGTagger)
         theSequence += getattr(process,"QGTagger"+suff)
         QGTag = cms.InputTag("QGTagger"+suff,"qgLikelihood")
+        QGTagMult = cms.InputTag("QGTagger"+suff,"mult")
+        QGTagPtD = cms.InputTag("QGTagger"+suff,"ptD")
+        QGTagAxis2 = cms.InputTag("QGTagger"+suff,"axis2")
         # make jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetsProperties = jetproperties.clone(
             JetTag       = GoodJetsTag,
             BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
             QGTag        = QGTag,
+            QGTagMult    = QGTagMult,
+            QGTagPtD     = QGTagPtD,
+            QGTagAxis2   = QGTagAxis2,
             AK8          = cms.bool(False)
         )
         setattr(process,"JetsProperties"+suff,JetsProperties)
@@ -161,13 +167,16 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
                                                     'JetsProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
                                                     'JetsProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
-                                                    'JetsProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)'])
+                                                    'JetsProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
+                                                    'JetsProperties'+suff+':qgPtD(Jets'+suff+'_qgPtD)',
+                                                    'JetsProperties'+suff+':qgAxis2(Jets'+suff+'_qgAxis2)'])
             process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
                                                  'JetsProperties'+suff+':electronMultiplicity(Jets'+suff+'_electronMultiplicity)',
                                                  'JetsProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
                                                  'JetsProperties'+suff+':neutralHadronMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
                                                  'JetsProperties'+suff+':photonMultiplicity(Jets'+suff+'_photonMultiplicity)',
                                                  'JetsProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
-                                                 'JetsProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)'])
+                                                 'JetsProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
+                                                 'JetsProperties'+suff+':qgMult(Jets'+suff+'_qgMult)'])
                                              
     return process
