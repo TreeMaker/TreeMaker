@@ -21,3 +21,4 @@ if [ -z "$KEEPTAR" ]; then
   tar --exclude-caches-all -zcf ${CMSSW_VERSION}.tar.gz -C ${CMSSW_BASE}/.. ${CMSSW_VERSION}
 fi
 
+ls -lth ${CMSSW_VERSION}.tar.gz

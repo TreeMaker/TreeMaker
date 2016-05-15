@@ -140,9 +140,8 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   iEvent.getByToken(ElecTok_, electron);
   if (MCflag_) iEvent.getByToken(GenPartTok_,pruned);
 
-  // finalJets should be equal to slimmedJets when pt>10. 
-  // We just want to add low pT reclustered Jets to it. 
-  std::auto_ptr<std::vector<Jet> > finalJets(new std::vector<Jet>(*Jets));
+  // finalJets should only contain low pT reclustered Jets
+  std::auto_ptr<std::vector<Jet> > finalJets(new std::vector<Jet>());
 
   if (useReclusteredJets_){
   if (debug_) std::cout << "Jets and reclusJets isValid:" << Jets.isValid() << " " << reclusJets.isValid() << std::endl;

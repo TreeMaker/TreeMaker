@@ -39,9 +39,10 @@
 
 //enum lists of properties
 enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyFraction, d_chargedEmEnergyFraction, d_neutralEmEnergyFraction,
-				d_electronEnergyFraction, d_photonEnergyFraction, d_muonEnergyFraction, d_bDiscriminatorUser, d_bDiscriminatorMVA, d_bDiscriminatorSimpleCSV, d_qgLikelihood };
+				d_electronEnergyFraction, d_photonEnergyFraction, d_muonEnergyFraction, d_bDiscriminatorCSV, d_bDiscriminatorMVA,
+				d_qgLikelihood, d_qgPtD, d_qgAxis2 };
 enum JetPropI { i_chargedHadronMultiplicity, i_neutralHadronMultiplicity, i_electronMultiplicity, i_photonMultiplicity,
-				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor };
+				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor, i_qgMult };
 enum JetAK8PropD { d_prunedMass, d_bDiscriminatorSubjet1, d_bDiscriminatorSubjet2, d_NsubjettinessTau1, d_NsubjettinessTau2, d_NsubjettinessTau3 };
 
 // helper class
@@ -97,10 +98,9 @@ template<> void NamedPtrD<d_neutralEmEnergyFraction>::get_property(const pat::Je
 template<> void NamedPtrD<d_electronEnergyFraction>::get_property(const pat::Jet* Jet)      { push_back(Jet->electronEnergyFraction()); }
 template<> void NamedPtrD<d_photonEnergyFraction>::get_property(const pat::Jet* Jet)        { push_back(Jet->photonEnergyFraction()); }
 template<> void NamedPtrD<d_muonEnergyFraction>::get_property(const pat::Jet* Jet)          { push_back(Jet->muonEnergyFraction()); }
-//bDiscriminatorUser gets special attention
-template<> void NamedPtrD<d_bDiscriminatorMVA>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator("combinedMVABJetTags")); }
-template<> void NamedPtrD<d_bDiscriminatorSimpleCSV>::get_property(const pat::Jet* Jet)     { push_back(Jet->bDiscriminator("combinedSecondaryVertexBJetTags")); }
-//qgLikelihood gets special attention
+//bDiscriminators get special attention
+template<> void NamedPtrD<d_bDiscriminatorMVA>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator("pfCombinedMVAV2BJetTags")); }
+//qg quantities get special attention
 template<> void NamedPtrI<i_chargedHadronMultiplicity>::get_property(const pat::Jet* Jet)   { push_back(Jet->chargedHadronMultiplicity()); }
 template<> void NamedPtrI<i_neutralHadronMultiplicity>::get_property(const pat::Jet* Jet)   { push_back(Jet->neutralHadronMultiplicity()); }
 template<> void NamedPtrI<i_electronMultiplicity>::get_property(const pat::Jet* Jet)        { push_back(Jet->electronMultiplicity()); }
@@ -141,14 +141,16 @@ private:
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
-	edm::InputTag QGTag_;
-	edm::EDGetTokenT<edm::ValueMap<float>> QGTok_;
-	std::string   btagname_;
+	edm::InputTag QGTag_, QGTagMult_, QGTagPtD_, QGTagAxis2_;
+	edm::EDGetTokenT<edm::ValueMap<float>> QGTok_, QGTokPtD_, QGTokAxis2_;
+	edm::EDGetTokenT<edm::ValueMap<int>> QGTokMult_;
+	std::string   btagnameCSV_, btagnameMVA_;
 	bool doQG_, doAK8_;
 	std::vector<NamedPtr<int>*> IntPtrs_;
 	std::vector<NamedPtr<double>*> DoublePtrs_;
-	NamedPtr<double> *DoublePtr_bDiscriminatorUser_, *DoublePtr_qgLikelihood_;
+	NamedPtr<double> *DoublePtr_bDiscriminatorCSV_, *DoublePtr_bDiscriminatorMVA_, *DoublePtr_qgLikelihood_, *DoublePtr_qgPtD_, *DoublePtr_qgAxis2_;
 	NamedPtr<double> *DoublePtr_bDiscriminatorSubjet1_, *DoublePtr_bDiscriminatorSubjet2_;
+	NamedPtr<int> *IntPtr_qgMult_;
 };
 
 //
@@ -157,13 +159,22 @@ private:
 JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 {
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
-	btagname_ = iConfig.getParameter<std::string>  ("BTagInputTag");
+	btagnameCSV_ = iConfig.getParameter<std::string>  ("BTagInputTagCSV");
+	btagnameMVA_ = iConfig.getParameter<std::string>  ("BTagInputTagMVA");
 	QGTag_ = iConfig.getParameter<edm::InputTag>("QGTag");
+	QGTagMult_ = iConfig.getParameter<edm::InputTag>("QGTagMult");
+	QGTagPtD_ = iConfig.getParameter<edm::InputTag>("QGTagPtD");
+	QGTagAxis2_ = iConfig.getParameter<edm::InputTag>("QGTagAxis2");
 	doAK8_ = iConfig.getParameter<bool>("AK8");
 	doQG_ = (QGTag_.label().size()>0);
 	
 	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
-	if(doQG_) QGTok_ = consumes<edm::ValueMap<float>>(QGTag_);
+	if(doQG_) {
+		QGTok_ = consumes<edm::ValueMap<float>>(QGTag_);
+		QGTokMult_ = consumes<edm::ValueMap<int>>(QGTagMult_);
+		QGTokPtD_ = consumes<edm::ValueMap<float>>(QGTagPtD_);
+		QGTokAxis2_ = consumes<edm::ValueMap<float>>(QGTagAxis2_);
+	}
 	
 	//register your products
 	/* Examples
@@ -185,8 +196,12 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		
 		DoublePtr_bDiscriminatorSubjet1_ = new NamedPtrAK8D<d_bDiscriminatorSubjet1>("bDiscriminatorSubjet1",this);
 		DoublePtr_bDiscriminatorSubjet2_ = new NamedPtrAK8D<d_bDiscriminatorSubjet2>("bDiscriminatorSubjet2",this);
-		DoublePtr_bDiscriminatorUser_ = NULL;
+		DoublePtr_bDiscriminatorCSV_ = NULL;
+		DoublePtr_bDiscriminatorMVA_ = NULL;
 		DoublePtr_qgLikelihood_ = NULL;
+		IntPtr_qgMult_ = NULL;
+		DoublePtr_qgPtD_ = NULL;
+		DoublePtr_qgAxis2_ = NULL;
 	}
 	else {
 		IntPtrs_.push_back(new NamedPtrI<i_chargedHadronMultiplicity>("chargedHadronMultiplicity",this));
@@ -209,11 +224,13 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		DoublePtrs_.push_back(new NamedPtrD<d_electronEnergyFraction>     ("electronEnergyFraction",this)     );
 		DoublePtrs_.push_back(new NamedPtrD<d_photonEnergyFraction>       ("photonEnergyFraction",this)       );
 		DoublePtrs_.push_back(new NamedPtrD<d_muonEnergyFraction>         ("muonEnergyFraction",this)         );
-		DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorMVA>          ("bDiscriminatorMVA",this)          );
-		DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSimpleCSV>    ("bDiscriminatorSimpleCSV",this)    );
 		
-		DoublePtr_bDiscriminatorUser_ = new NamedPtrD<d_bDiscriminatorUser>("bDiscriminatorUser",this);
+		DoublePtr_bDiscriminatorCSV_ = new NamedPtrD<d_bDiscriminatorCSV>("bDiscriminatorCSV",this);
+		DoublePtr_bDiscriminatorMVA_ = new NamedPtrD<d_bDiscriminatorMVA>("bDiscriminatorMVA",this);
 		DoublePtr_qgLikelihood_ = new NamedPtrD<d_qgLikelihood>("qgLikelihood",this);
+		IntPtr_qgMult_ = new NamedPtrI<i_qgMult>("qgMult",this);
+		DoublePtr_qgPtD_ = new NamedPtrD<d_qgPtD>("qgPtD",this);
+		DoublePtr_qgAxis2_ = new NamedPtrD<d_qgAxis2>("qgAxis2",this);
 		DoublePtr_bDiscriminatorSubjet1_ = NULL;
 		DoublePtr_bDiscriminatorSubjet2_ = NULL;
 	}
@@ -246,14 +263,24 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 	if(DoublePtr_bDiscriminatorSubjet1_) DoublePtr_bDiscriminatorSubjet1_->reset();
 	if(DoublePtr_bDiscriminatorSubjet2_) DoublePtr_bDiscriminatorSubjet2_->reset();
-	if(DoublePtr_bDiscriminatorUser_) DoublePtr_bDiscriminatorUser_->reset();
+	if(DoublePtr_bDiscriminatorCSV_) DoublePtr_bDiscriminatorCSV_->reset();
+	if(DoublePtr_bDiscriminatorMVA_) DoublePtr_bDiscriminatorMVA_->reset();
 	if(DoublePtr_qgLikelihood_) DoublePtr_qgLikelihood_->reset();
+	if(DoublePtr_qgPtD_) DoublePtr_qgPtD_->reset();
+	if(DoublePtr_qgAxis2_) DoublePtr_qgAxis2_->reset();
+	if(IntPtr_qgMult_) IntPtr_qgMult_->reset();
 
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
-	edm::Handle<edm::ValueMap<float>> qgHandle;
-	if(doQG_) iEvent.getByToken(QGTok_, qgHandle);
-	bool qgValid = qgHandle.isValid();
+	edm::Handle<edm::ValueMap<float>> qgHandle, qgHandlePtD, qgHandleAxis2;
+	edm::Handle<edm::ValueMap<int>> qgHandleMult;
+	if(doQG_) {
+		iEvent.getByToken(QGTok_, qgHandle);
+		iEvent.getByToken(QGTokMult_, qgHandleMult);
+		iEvent.getByToken(QGTokPtD_, qgHandlePtD);
+		iEvent.getByToken(QGTokAxis2_, qgHandleAxis2);
+	}
+	bool qgValid = qgHandle.isValid(), qgValidMult = qgHandleMult.isValid(), qgValidPtD = qgHandlePtD.isValid(), qgValidAxis2 = qgHandleAxis2.isValid();
 	if( Jets.isValid() ) {
 		for(auto Jet = Jets->begin();  Jet != Jets->end(); ++Jet){
 			for(unsigned ip = 0; ip < IntPtrs_.size(); ++ip){
@@ -267,16 +294,32 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				//for debugging: print out available subjet collections
 				//std::vector<std::string> labels = Jet->subjetCollectionNames();
 				//std::copy(labels.begin(), labels.end(), std::ostream_iterator<std::string>(std::cout, " "));
-				DoublePtr_bDiscriminatorSubjet1_->push_back( Jet->subjets("SoftDrop").size() > 0 ? Jet->subjets("SoftDrop").at(0)->bDiscriminator(btagname_) : -10. );
-				DoublePtr_bDiscriminatorSubjet2_->push_back( Jet->subjets("SoftDrop").size() > 1 ? Jet->subjets("SoftDrop").at(1)->bDiscriminator(btagname_) : -10. );
+				DoublePtr_bDiscriminatorSubjet1_->push_back( Jet->subjets("SoftDrop").size() > 0 ? Jet->subjets("SoftDrop").at(0)->bDiscriminator(btagnameCSV_) : -10. );
+				DoublePtr_bDiscriminatorSubjet2_->push_back( Jet->subjets("SoftDrop").size() > 1 ? Jet->subjets("SoftDrop").at(1)->bDiscriminator(btagnameCSV_) : -10. );
 			}
 			
-			if(DoublePtr_bDiscriminatorUser_) DoublePtr_bDiscriminatorUser_->push_back( Jet->bDiscriminator(btagname_) );
+			if(DoublePtr_bDiscriminatorCSV_) DoublePtr_bDiscriminatorCSV_->push_back( Jet->bDiscriminator(btagnameCSV_) );
+			
+			if(DoublePtr_bDiscriminatorMVA_) DoublePtr_bDiscriminatorMVA_->push_back( Jet->bDiscriminator(btagnameMVA_) );
 			
 			if(qgValid && DoublePtr_qgLikelihood_){
 				edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(Jets, Jet - Jets->begin()));
-				float qgLikelihood_ = (*qgHandle)[jetRef];
-				DoublePtr_qgLikelihood_->push_back( qgLikelihood_ );
+				DoublePtr_qgLikelihood_->push_back( (*qgHandle)[jetRef] );
+			}
+			
+			if(qgValidMult && IntPtr_qgMult_){
+				edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(Jets, Jet - Jets->begin()));
+				IntPtr_qgMult_->push_back( (*qgHandleMult)[jetRef] );
+			}
+			
+			if(qgValidPtD && DoublePtr_qgPtD_){
+				edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(Jets, Jet - Jets->begin()));
+				DoublePtr_qgPtD_->push_back( (*qgHandlePtD)[jetRef] );
+			}
+			
+			if(qgValidAxis2 && DoublePtr_qgAxis2_){
+				edm::RefToBase<pat::Jet> jetRef(edm::Ref<edm::View<pat::Jet> >(Jets, Jet - Jets->begin()));
+				DoublePtr_qgAxis2_->push_back( (*qgHandleAxis2)[jetRef] );
 			}
 		}
 	}
@@ -290,8 +333,12 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 	if(DoublePtr_bDiscriminatorSubjet1_) DoublePtr_bDiscriminatorSubjet1_->put(iEvent);
 	if(DoublePtr_bDiscriminatorSubjet2_) DoublePtr_bDiscriminatorSubjet2_->put(iEvent);
-	if(DoublePtr_bDiscriminatorUser_) DoublePtr_bDiscriminatorUser_->put(iEvent);
+	if(DoublePtr_bDiscriminatorCSV_) DoublePtr_bDiscriminatorCSV_->put(iEvent);
+	if(DoublePtr_bDiscriminatorMVA_) DoublePtr_bDiscriminatorMVA_->put(iEvent);
 	if(DoublePtr_qgLikelihood_) DoublePtr_qgLikelihood_->put(iEvent);
+	if(DoublePtr_qgPtD_) DoublePtr_qgPtD_->put(iEvent);
+	if(DoublePtr_qgAxis2_) DoublePtr_qgAxis2_->put(iEvent);
+	if(IntPtr_qgMult_) IntPtr_qgMult_->put(iEvent);
 
 }
 
@@ -315,8 +362,12 @@ JetProperties::endJob() {
 	DoublePtrs_.clear();
 	delete DoublePtr_bDiscriminatorSubjet1_;
 	delete DoublePtr_bDiscriminatorSubjet2_;
-	delete DoublePtr_bDiscriminatorUser_;
+	delete DoublePtr_bDiscriminatorCSV_;
+	delete DoublePtr_bDiscriminatorMVA_;
 	delete DoublePtr_qgLikelihood_;
+	delete DoublePtr_qgPtD_;
+	delete DoublePtr_qgAxis2_;
+	delete IntPtr_qgMult_;
 }
 
 // ------------ method called when starting to processes a run  ------------

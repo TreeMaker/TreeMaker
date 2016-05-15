@@ -108,7 +108,7 @@ For MC samples, it can also automatically generate the appropriate configuration
 
 Before running the script for the first time, some environment settings are necessary:
 ```
-source /cvmfs/cms.cern.ch/crab3/crab_gcc493.csh
+source /cvmfs/cms.cern.ch/crab3/crab.csh
 ```
 
 To run the script:

@@ -383,25 +383,8 @@ signal=False
         METTag           = METTag, 
     )
     process.Baseline += process.LeptonsNew
-    VarsInt.extend(['LeptonsNew(Leptons)'])
     VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
     VectorInt.extend(['LeptonsNew:MuonCharge(MuonCharge)','LeptonsNew:ElectronCharge(ElectronCharge)'])
-
-    process.LeptonsNewTag = leptonproducer.clone(
-        MuonTag          = cms.InputTag('slimmedMuons'),
-        ElectronTag      = cms.InputTag('slimmedElectrons'),
-        PrimaryVertex    = cms.InputTag('offlineSlimmedPrimaryVertices'),
-        minElecPt        = cms.double(20),
-        maxElecEta       = cms.double(2.5),
-        minMuPt          = cms.double(20),
-        maxMuEta         = cms.double(2.4),
-        UseMiniIsolation = cms.bool(True),
-        muIsoValue       = cms.double(0.2),
-        elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
-        METTag           = METTag,
-    )
-    process.Baseline += process.LeptonsNewTag
-    VarsInt.extend(['LeptonsNewTag(TagLeptonHighPT)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
@@ -418,14 +401,6 @@ signal=False
     if not fastsim: # MET filters are not run for fastsim samples
 
         from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
-        process.METFilters = filterDecisionProducer.clone(
-            trigTagArg1 = cms.string('TriggerResults'),
-            trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
-            filterName  = cms.string("Flag_METFilters"),
-        )
-        process.Baseline += process.METFilters
-        VarsInt.extend(['METFilters'])
         
         #process.CSCTightHaloFilter = filterDecisionProducer.clone(
         #    trigTagArg1 = cms.string('TriggerResults'),
@@ -647,6 +622,41 @@ signal=False
                           SkipTag=SkipTag
     )
 
+    ## ----------------------------------------------------------------------------------------------
+    ## GenJet variables
+    ## ----------------------------------------------------------------------------------------------
+    if geninfo:
+        # store all genjets
+        VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
+    
+        from TreeMaker.Utils.subJetSelection_cfi import SubGenJetSelection
+        
+        process.GenHTJets = SubGenJetSelection.clone(
+            JetTag = cms.InputTag('slimmedGenJets'),
+            MinPt  = cms.double(30),
+            MaxEta = cms.double(2.4),
+        )
+        process.Baseline += process.GenHTJets
+        VectorBool.extend(['GenHTJets:SubJetMask(GenHTJetsMask)'])
+        
+        # make gen HT?
+        
+        process.GenMHTJets = SubGenJetSelection.clone(
+            JetTag = cms.InputTag('slimmedGenJets'),
+            MinPt  = cms.double(30),
+            MaxEta = cms.double(5.0),
+        )
+        process.Baseline += process.GenMHTJets
+        VectorBool.extend(['GenMHTJets:SubJetMask(GenMHTJetsMask)'])
+        
+        # make gen MHT
+        from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
+        process.GenMHT = mhtdouble.clone(
+            JetTag  = cms.InputTag('GenMHTJets'),
+        )
+        process.Baseline += process.GenMHT
+        VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHT_Phi)'])
+    
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
     ## ----------------------------------------------------------------------------------------------
