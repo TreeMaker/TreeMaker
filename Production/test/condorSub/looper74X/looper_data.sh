@@ -23,6 +23,8 @@ fi
 #### Run2015C Prompt RECO
 SCENARIO=re2015C
 SAMPLES=(
+Run2015C_25ns-05Oct2015-v1.DoubleEG \
+Run2015C_25ns-05Oct2015-v1.DoubleMuon \
 Run2015C_25ns-05Oct2015-v1.HTMHT \
 Run2015C_25ns-05Oct2015-v1.JetHT \
 Run2015C_25ns-05Oct2015-v1.MET \
@@ -38,6 +40,8 @@ done
 #### Run2015D re-miniAOD (part 1)
 SCENARIO=re2015D
 SAMPLES=(
+Run2015D-05Oct2015-v1.DoubleEG \
+Run2015D-05Oct2015-v1.DoubleMuon \
 Run2015D-05Oct2015-v1.HTMHT \
 Run2015D-05Oct2015-v1.JetHT \
 Run2015D-05Oct2015-v1.MET \
@@ -53,6 +57,8 @@ done
 #### Run2015D Prompt RECO (part 2)
 SCENARIO=2015Db
 SAMPLES=(
+Run2015D-PromptReco-v4.DoubleEG \
+Run2015D-PromptReco-v4.DoubleMuon \
 Run2015D-PromptReco-v4.HTMHT \
 Run2015D-PromptReco-v4.JetHT \
 Run2015D-PromptReco-v4.MET \
