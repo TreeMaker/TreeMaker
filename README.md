@@ -1,6 +1,27 @@
 # TreeMaker
 
-## Instructions
+## Instructions (80X)
+
+The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 format).
+
+```
+cmsrel CMSSW_8_0_7_patch2
+cd CMSSW_8_0_7_patch2/src/
+cmsenv
+git cms-merge-topic -u kpedro88:METfix807p2
+git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
+scram b -j 8
+cd TreeMaker/Production/test
+```
+
+Several predefined scenarios are available for ease of production.
+These scenarios define various sample-dependent parameters, including:  
+global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
+The available scenarios are:  
+1. `Spring16`: for Spring16 miniAOD (v1) 25ns MC
+1. `Spring16sig`: for Spring16 miniAOD (v1) 25ns MC (signal)
+
+## Instructions (74X)
 
 The following installation instructions assume the user wants to process Run2015 data or Spring15 MC (miniAOD v2 format).
 
