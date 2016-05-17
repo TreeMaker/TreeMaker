@@ -22,6 +22,9 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if residual: jecLevels.append("L2L3Residual")
+    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags']
+    #doesn't work
+    #if not is74X: btagDiscs.append('pfCombinedMVAV2BJetTags')
     addJetCollection(
        process,
        labelName = 'AK4PFCLEAN'+suff,
@@ -35,7 +38,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
        #genJetCollection = cms.InputTag('slimmedGenJets'),
        genParticles = cms.InputTag('prunedGenParticles'), # likely needed for hadronFlavour()....
        jetCorrections = ('AK4PFchs', jecLevels, 'None'),
-       btagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
+       btagDiscriminators = btagDiscs,
     )
     # turn on/off GEN matching (different than hadronFlavour()?)
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenPartonMatch = cms.bool(False)
@@ -143,6 +146,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
+        is74X=is74X
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
@@ -203,7 +207,6 @@ def doZinvBkg(process,tagname,geninfo,residual,is74X):
     ###
     # do the new cleaning
     ###
-    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
 
     # combine leptons
     process.selectedLeptons = cms.EDProducer("CandViewMerger",

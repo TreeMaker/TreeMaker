@@ -650,7 +650,8 @@ signal=False
                           suff='',
                           skipGoodJets=False,
                           storeProperties=2,
-                          SkipTag=SkipTag
+                          SkipTag=SkipTag,
+                          is74X=is74X
     )
     
     # AK8 jet variables - separate instance of jet properties producer
@@ -662,6 +663,7 @@ signal=False
         QGTag        = cms.InputTag(""),
         AK8          = cms.bool(True)
     )
+    if not is74X: process.JetsPropertiesAK8.BTagInputTagMVA = cms.string('pfCombinedMVAV2BJetTags')
     process.Baseline += process.JetsPropertiesAK8
     VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
     VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
@@ -691,7 +693,8 @@ signal=False
                           suff='JECup',
                           skipGoodJets=False,
                           storeProperties=1,
-                          SkipTag=SkipTag
+                          SkipTag=SkipTag,
+                          is74X=is74X
     )
 
     #JEC unc down
@@ -706,7 +709,8 @@ signal=False
                           suff='JECdown',
                           skipGoodJets=False,
                           storeProperties=1,
-                          SkipTag=SkipTag
+                          SkipTag=SkipTag,
+                          is74X=is74X
     )
 
     ## ----------------------------------------------------------------------------------------------
