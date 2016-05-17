@@ -97,11 +97,11 @@ def getWeightProducer(fileName,fastsim=False):
         MCSample("ZJetsToNuNu_HT-100To200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 344.3, 11457410),
         MCSample("ZJetsToNuNu_HT-200To400_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 95.23, 19914665),
         # missing: ZJetsToNuNu_HT-400To600_13TeV-madgraph
-        # unknown cross sections for new ZJets HT samples
-        MCSample("ZJetsToNuNu_HT-600To800_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 1, 5650700),
-        MCSample("ZJetsToNuNu_HT-800To1200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 1, 2156175),
-        MCSample("ZJetsToNuNu_HT-1200To2500_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 1, 365216),
-        MCSample("ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 1, 405752),
+        # rough cross sections for new ZJets HT samples: 600toInf xsec = 5.063 * 63.86%, 29.16%, 6.85%, 0.13% (genHT fractions in 600toInf sample)
+        MCSample("ZJetsToNuNu_HT-600To800_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 3.233, 5650700),
+        MCSample("ZJetsToNuNu_HT-800To1200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 1.476, 2156175),
+        MCSample("ZJetsToNuNu_HT-1200To2500_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 0.347, 365216),
+        MCSample("ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 0.00658, 405752),
         MCSample("GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2", "RunIISpring16MiniAODv1", "Constant", 9226, 5142782),
         MCSample("GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 2300, 10296521),
         MCSample("GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 277.4, 2528414),
