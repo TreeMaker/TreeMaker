@@ -23,8 +23,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if residual: jecLevels.append("L2L3Residual")
     btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags']
-    #doesn't work
-    #if not is74X: btagDiscs.append('pfCombinedMVAV2BJetTags')
+    if not is74X: btagDiscs.append('pfCombinedMVAV2BJetTags')
     addJetCollection(
        process,
        labelName = 'AK4PFCLEAN'+suff,
@@ -39,6 +38,8 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
        genParticles = cms.InputTag('prunedGenParticles'), # likely needed for hadronFlavour()....
        jetCorrections = ('AK4PFchs', jecLevels, 'None'),
        btagDiscriminators = btagDiscs,
+       muSource = cms.InputTag("slimmedMuons"),
+       elSource = cms.InputTag("slimmedElectrons")
     )
     # turn on/off GEN matching (different than hadronFlavour()?)
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenPartonMatch = cms.bool(False)
