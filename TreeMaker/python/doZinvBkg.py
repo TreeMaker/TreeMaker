@@ -156,7 +156,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     )
     setattr(process,"METclean"+suff,METclean)
     process.ZinvClean += getattr(process,"METclean"+suff)
-    process.TreeMaker2.VarsDouble.extend(['METclean'+suff+':Pt(METPtclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')'])
+    process.TreeMaker2.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')'])
     
     return process
 

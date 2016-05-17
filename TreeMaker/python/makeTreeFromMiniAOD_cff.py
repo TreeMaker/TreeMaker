@@ -140,9 +140,10 @@ signal=False
     ## GenHT for stitching together MC samples
     ## ----------------------------------------------------------------------------------------------
     if geninfo:
-        process.GenHT = cms.EDProducer('GenHTProducer')
-        process.Baseline += process.GenHT
-        VarsDouble.extend(['GenHT:genHT'])
+        process.MadHT = cms.EDProducer('GenHTProducer')
+        process.Baseline += process.MadHT
+        # called madHT, i.e. MadGraph, to distinguish from GenHT from GenJets
+        VarsDouble.extend(['MadHT:genHT(madHT)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## PrimaryVertices
@@ -730,7 +731,13 @@ signal=False
         process.Baseline += process.GenHTJets
         VectorBool.extend(['GenHTJets:SubJetMask(GenHTJetsMask)'])
         
-        # make gen HT?
+        # make gen HT
+        from TreeMaker.Utils.htdouble_cfi import htdouble
+        process.GenHT = htdouble.clone(
+            JetTag = cms.InputTag("GenHTJets"),
+        )
+        process.Baseline += process.GenHT
+        VarsDouble.extend(['GenHT'])
         
         process.GenMHTJets = SubGenJetSelection.clone(
             JetTag = cms.InputTag('slimmedGenJets'),
@@ -746,7 +753,7 @@ signal=False
             JetTag  = cms.InputTag('GenMHTJets'),
         )
         process.Baseline += process.GenMHT
-        VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHT_Phi)'])
+        VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
@@ -775,10 +782,10 @@ signal=False
         geninfo = cms.untracked.bool(geninfo),
     )
     process.Baseline += process.MET
-    VarsDouble.extend(['MET:Pt(METPt)','MET:Phi(METPhi)','MET:CaloPt(CaloMETPt)','MET:CaloPhi(CaloMETPhi)'])
+    VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)'])
     if geninfo:
-        VarsDouble.extend(['MET:GenPt(GenMETPt)','MET:GenPhi(GenMETPhi)'])
-        VectorDouble.extend(['MET:PtUp(METPtUp)', 'MET:PtDown(METPtDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
+        VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
+        VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
 
     from TreeMaker.Utils.mt2producer_cfi import mt2Producer
     process.Mt2Producer = mt2Producer.clone(

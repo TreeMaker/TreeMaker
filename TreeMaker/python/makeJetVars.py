@@ -120,7 +120,7 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
     )
     setattr(process,"MHT"+suff,MHT)
     theSequence += getattr(process,"MHT"+suff)
-    process.TreeMaker2.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHT_Phi'+suff+')'])
+    process.TreeMaker2.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHTPhi'+suff+')'])
 
     ## ----------------------------------------------------------------------------------------------
     ## DeltaPhi
