@@ -210,17 +210,7 @@ signal=False
                     )
                 )
             )
-    
-    # get QG tagging discriminant
-    process.QGTagger = cms.EDProducer('QGTagger',
-        srcJets	            = JetTag,
-        jetsLabel           = cms.string('QGL_AK4PFchs'),
-        srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),		
-        srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
-        useQualityCuts	    = cms.bool(False)
-    )
-    process.Baseline += process.QGTagger
-    
+
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
@@ -270,8 +260,6 @@ signal=False
                 jetSource = cms.InputTag("slimmedJets"),
                 jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
             )
-            process.patJetsReapplyJEC.userData.userFloats.src += ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2']
-            process.patJetsReapplyJEC.userData.userInts.src += ['QGTagger:mult']
             
             process.Baseline += process.patJetCorrFactorsReapplyJEC
             process.Baseline += process.patJetsReapplyJEC
@@ -328,8 +316,6 @@ signal=False
                 postfix = 'UpdatedJEC',
                 jetCorrections = ('AK4PFchs', levels, 'None')
             )
-            process.updatedPatJetsUpdatedJEC.userData.userFloats.src += ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2']
-            process.updatedPatJetsUpdatedJEC.userData.userInts.src += ['QGTagger:mult']
             process.Baseline += process.patJetCorrFactorsUpdatedJEC
             process.Baseline += process.updatedPatJetsUpdatedJEC
             
@@ -356,6 +342,42 @@ signal=False
             )
             METTag = cms.InputTag('slimmedMETs','',process.name_())
 
+    ## ----------------------------------------------------------------------------------------------
+    ## Jet auxiliary info
+    ## ----------------------------------------------------------------------------------------------
+    
+    # get QG tagging discriminant
+    process.QGTagger = cms.EDProducer('QGTagger',
+        srcJets	            = JetTag,
+        jetsLabel           = cms.string('QGL_AK4PFchs'),
+        srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),		
+        srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
+        useQualityCuts	    = cms.bool(False)
+    )
+    process.Baseline += process.QGTagger
+    
+    from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
+    
+    #JEC uncertainty - after JECs are updated
+    process.jecUnc = JetUncertaintyProducer.clone(
+        JetTag = JetTag,
+        jecUncDir = cms.int32(0)
+    )
+    process.Baseline += process.jecUnc
+    
+    #add userfloats to jet collection
+    if is74X: from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+    else: from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets as patJetsUpdated
+    process.patJetsAuxiliary = patJetsUpdated.clone(
+        jetSource = JetTag,
+        addJetCorrFactors = cms.bool(False),
+        addBTagInfo = cms.bool(False)
+    )
+    process.patJetsAuxiliary.userData.userFloats.src += ['jecUnc','QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2']
+    process.patJetsAuxiliary.userData.userInts.src += ['QGTagger:mult']
+    process.Baseline += process.patJetsAuxiliary
+    JetTag = cms.InputTag('patJetsAuxiliary')
+    
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
     ## ----------------------------------------------------------------------------------------------
@@ -704,14 +726,6 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
 
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
-    
-    #JEC factors
-    process.patJetsJECfactor = JetUncertaintyProducer.clone(
-        JetTag = JetTag,
-        jecUncDir = cms.int32(0)
-    )
-    #get the JEC factor and unc from here
-    VectorDouble.extend(['patJetsJECfactor:jecFactor(Jets_jecFactor)','patJetsJECfactor:jecUnc(Jets_jecUnc)'])
 
     #JEC unc up
     process.patJetsJECup = JetUncertaintyProducer.clone(
@@ -840,7 +854,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
-        process = doHadTauBkg(process,geninfo,residual,JetTag)
+        process = doHadTauBkg(process,geninfo,residual,JetTag,is74X)
 
     ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background

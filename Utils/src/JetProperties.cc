@@ -41,7 +41,7 @@
 //enum lists of properties
 enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyFraction, d_chargedEmEnergyFraction, d_neutralEmEnergyFraction,
 				d_electronEnergyFraction, d_photonEnergyFraction, d_muonEnergyFraction, d_bDiscriminatorCSV, d_bDiscriminatorMVA,
-				d_qgLikelihood, d_qgPtD, d_qgAxis2,
+				d_jecFactor, d_jecUnc, d_qgLikelihood, d_qgPtD, d_qgAxis2,
 				d_prunedMass, d_bDiscriminatorSubjet1, d_bDiscriminatorSubjet2, d_NsubjettinessTau1, d_NsubjettinessTau2, d_NsubjettinessTau3 }; //AK8 properties
 enum JetPropI { i_chargedHadronMultiplicity, i_neutralHadronMultiplicity, i_electronMultiplicity, i_photonMultiplicity,
 				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor, i_qgMult };
@@ -96,7 +96,8 @@ template<> void NamedPtrD<d_photonEnergyFraction>::get_property(const pat::Jet* 
 template<> void NamedPtrD<d_muonEnergyFraction>::get_property(const pat::Jet* Jet)          { push_back(Jet->muonEnergyFraction()); }
 template<> void NamedPtrD<d_bDiscriminatorCSV>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator(extraInfo.at(0))); }
 template<> void NamedPtrD<d_bDiscriminatorMVA>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator(extraInfo.at(0))); }
-//bDiscriminators get special attention
+template<> void NamedPtrD<d_jecFactor>::get_property(const pat::Jet* Jet)                   { push_back(Jet->jecFactor(Jet->availableJECLevels().back())/Jet->jecFactor("Uncorrected")); }
+template<> void NamedPtrD<d_jecUnc>::get_property(const pat::Jet* Jet)                      { push_back(Jet->userFloat(extraInfo.at(0))); }
 template<> void NamedPtrD<d_qgLikelihood>::get_property(const pat::Jet* Jet)                { push_back(Jet->userFloat(extraInfo.at(0))); }
 template<> void NamedPtrD<d_qgPtD>::get_property(const pat::Jet* Jet)                       { push_back(Jet->userFloat(extraInfo.at(0))); }
 template<> void NamedPtrD<d_qgAxis2>::get_property(const pat::Jet* Jet)                     { push_back(Jet->userFloat(extraInfo.at(0))); }
@@ -104,7 +105,6 @@ template<> void NamedPtrD<d_qgAxis2>::get_property(const pat::Jet* Jet)         
 template<> void NamedPtrD<d_prunedMass>::get_property(const pat::Jet* Jet)                  { push_back(Jet->userFloat(extraInfo.at(0))); }
 template<> void NamedPtrD<d_bDiscriminatorSubjet1>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 0 ? Jet->subjets(extraInfo.at(0)).at(0)->bDiscriminator(extraInfo.at(1)) : -10.); }
 template<> void NamedPtrD<d_bDiscriminatorSubjet2>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 1 ? Jet->subjets(extraInfo.at(0)).at(1)->bDiscriminator(extraInfo.at(1)) : -10.); }
-//bDiscriminatorSubjet1,2 get special attention                                             
 template<> void NamedPtrD<d_NsubjettinessTau1>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat(extraInfo.at(0))); }
 template<> void NamedPtrD<d_NsubjettinessTau2>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat(extraInfo.at(0))); }
 template<> void NamedPtrD<d_NsubjettinessTau3>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat(extraInfo.at(0))); }
@@ -188,6 +188,8 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="muonEnergyFraction"         ) { DoublePtrs_.push_back(new NamedPtrD<d_muonEnergyFraction>         ("muonEnergyFraction",this)         ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="bDiscriminatorCSV"          ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorCSV>          ("bDiscriminatorCSV",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="bDiscriminatorMVA"          ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorMVA>          ("bDiscriminatorMVA",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="jecFactor"                  ) { DoublePtrs_.push_back(new NamedPtrD<d_jecFactor>                  ("jecFactor",this)                  ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="jecUnc"                     ) { DoublePtrs_.push_back(new NamedPtrD<d_jecUnc>                     ("jecUnc",this)                     ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="qgLikelihood"               ) { DoublePtrs_.push_back(new NamedPtrD<d_qgLikelihood>               ("qgLikelihood",this)               ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="qgPtD"                      ) { DoublePtrs_.push_back(new NamedPtrD<d_qgPtD>                      ("qgPtD",this)                      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="qgAxis2"                    ) { DoublePtrs_.push_back(new NamedPtrD<d_qgAxis2>                    ("qgAxis2",this)                    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }

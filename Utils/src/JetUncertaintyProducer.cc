@@ -19,6 +19,7 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 class JetUncertaintyProducer : public edm::EDProducer {
 	public:
@@ -39,8 +40,7 @@ JetUncertaintyProducer::JetUncertaintyProducer(const edm::ParameterSet& iConfig)
 	jecUncDir_(iConfig.getParameter<int>("jecUncDir"))
 {
 	if(jecUncDir_==0){
-		produces<std::vector<double>>("jecFactor");
-		produces<std::vector<double>>("jecUnc");
+		produces<edm::ValueMap<float>>("");
 	}
 	else{
 		produces<std::vector<pat::Jet>>();
@@ -61,8 +61,6 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 
 	std::auto_ptr< std::vector<pat::Jet> > newJets ( new std::vector<pat::Jet>() );
 	newJets->reserve(jets->size());
-	std::auto_ptr< std::vector<double> > jecFactorVec ( new std::vector<double>() );
-	jecFactorVec->reserve(jets->size());
 	std::auto_ptr< std::vector<double> > jecUncVec ( new std::vector<double>() );
 	jecUncVec->reserve(jets->size());
 
@@ -86,12 +84,6 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 		if(jecUncDir_==0){
 			//store JEC unc for this jet
 			jecUncVec->push_back(uncertainty);
-			
-			//store JEC factor for this jet
-			std::vector<std::string> availableJECLevels = jetPtr->availableJECLevels();
-			double scaleRawToFull = jetPtr->jecFactor(availableJECLevels.back())/jetPtr->jecFactor("Uncorrected");
-			jecFactorVec->push_back(scaleRawToFull);
-			
 			continue;
 		}
 		//downward variation
@@ -114,9 +106,12 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 	}
 
 	if(jecUncDir_==0){
-		//JEC factor and unc are NOT sorted (kept in order of original collection)	
-		iEvent.put(jecUncVec,"jecUnc");
-		iEvent.put(jecFactorVec,"jecFactor");		
+		//store uncertainty as a userfloat
+		std::auto_ptr<edm::ValueMap<float>> out(new edm::ValueMap<float>());
+		typename edm::ValueMap<float>::Filler filler(*out);
+		filler.insert(jets, jecUncVec->begin(), jecUncVec->end());
+		filler.fill();
+		iEvent.put(out,"");
 	}
 	else{
 		//sort jets in pt
