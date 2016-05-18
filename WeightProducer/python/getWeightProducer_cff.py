@@ -117,6 +117,13 @@ def getWeightProducer(fileName):
         MCSample("SMS-T1qqqq_mGluino-1400_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0252977, 49541),
         MCSample("SMS-T1tttt_mGluino-1200_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0856418, 147194),
         MCSample("SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "74X_mcRun2_asymptotic_v2-v1", "RunIISpring15MiniAODv2", "Constant", 0.0141903, 103140),
+        # private signal
+        MCSample("SMS-T2tt_mStop-175_mLSP-1", "FullSim74X", "private_samples", "Constant", 121.416, 1360170),
+        MCSample("SMS-T2tt_mStop-200_mLSP-25", "FullSim74X", "private_samples", "Constant", 64.5085, 1479747),
+        MCSample("SMS-T2tt_mStop-225_mLSP-50", "FullSim74X", "private_samples", "Constant", 36.3818, 1048192),
+        MCSample("SMS-T2tt_mStop-250_mLSP-75", "FullSim74X", "private_samples", "Constant", 21.5949, 1416350),
+        MCSample("SMS-T2tt_mStop-275_mLSP-100", "FullSim74X", "private_samples", "Constant", 13.3231, 801385),
+        MCSample("SMS-T2tt_mStop-300_mLSP-125", "FullSim74X", "private_samples", "Constant", 8.51615, 531262),
     ]
     
     # loop over all samples until we find a match

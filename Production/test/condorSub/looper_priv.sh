@@ -25,3 +25,19 @@ PrivateSamples.SMS-T2tt_mStop-173_mLSP-1_madgraphMLM-pythia8_13TeV \
 for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
 done
+
+SCENARIO=Spring15v2sig
+
+#### Spring15 stop
+SAMPLES=(
+PrivateSamples.SMS-T2tt_mStop-175_mLSP-1_madgraphMLM-pythia8_13TeV \
+PrivateSamples.SMS-T2tt_mStop-200_mLSP-25_madgraphMLM-pythia8_13TeV \
+PrivateSamples.SMS-T2tt_mStop-225_mLSP-50_madgraphMLM-pythia8_13TeV \
+PrivateSamples.SMS-T2tt_mStop-250_mLSP-75_madgraphMLM-pythia8_13TeV \
+PrivateSamples.SMS-T2tt_mStop-275_mLSP-100_madgraphMLM-pythia8_13TeV \
+PrivateSamples.SMS-T2tt_mStop-300_mLSP-125_madgraphMLM-pythia8_13TeV \
+)
+
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
+done
