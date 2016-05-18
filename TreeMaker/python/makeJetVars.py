@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, is74X=False):
     if hasattr(process,sequence):
         theSequence = getattr(process,sequence)
     else:
@@ -84,9 +84,21 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
         BTagCutValue = cms.double(0.890)
     )
+    if not is74X: BTags.BTagCutValue = cms.double(0.800)
     setattr(process,"BTags"+suff,BTags)
     theSequence += getattr(process,"BTags"+suff)
     process.TreeMaker2.VarsInt.extend(['BTags'+suff])
+    
+    from TreeMaker.Utils.btagint_cfi import btagint
+    BTagsMVA = btagint.clone(
+        JetTag       = HTJetsTag,
+        BTagInputTag = cms.string('pfCombinedMVABJetTags'),
+        BTagCutValue = cms.double(0.185)
+    )
+    if not is74X: BTagsMVA.BTagInputTag = cms.string('pfCombinedMVAV2BJetTags')
+    setattr(process,"BTagsMVA"+suff,BTagsMVA)
+    theSequence += getattr(process,"BTagsMVA"+suff)
+    process.TreeMaker2.VarsInt.extend(['BTagsMVA'+suff])
     
     ## ----------------------------------------------------------------------------------------------
     ## MHT
@@ -108,7 +120,7 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
     )
     setattr(process,"MHT"+suff,MHT)
     theSequence += getattr(process,"MHT"+suff)
-    process.TreeMaker2.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHT_Phi'+suff+')'])
+    process.TreeMaker2.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHTPhi'+suff+')'])
 
     ## ----------------------------------------------------------------------------------------------
     ## DeltaPhi
@@ -154,6 +166,7 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
             QGTagAxis2   = QGTagAxis2,
             AK8          = cms.bool(False)
         )
+        if not is74X: JetsProperties.BTagInputTagMVA = cms.string('pfCombinedMVAV2BJetTags')
         setattr(process,"JetsProperties"+suff,JetsProperties)
         theSequence += getattr(process,"JetsProperties"+suff)
         process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)'])

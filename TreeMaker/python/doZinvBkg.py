@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
+def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
@@ -22,6 +22,8 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if residual: jecLevels.append("L2L3Residual")
+    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags']
+    if not is74X: btagDiscs.append('pfCombinedMVAV2BJetTags')
     addJetCollection(
        process,
        labelName = 'AK4PFCLEAN'+suff,
@@ -35,7 +37,9 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
        #genJetCollection = cms.InputTag('slimmedGenJets'),
        genParticles = cms.InputTag('prunedGenParticles'), # likely needed for hadronFlavour()....
        jetCorrections = ('AK4PFchs', jecLevels, 'None'),
-       btagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
+       btagDiscriminators = btagDiscs,
+       muSource = cms.InputTag("slimmedMuons"),
+       elSource = cms.InputTag("slimmedElectrons")
     )
     # turn on/off GEN matching (different than hadronFlavour()?)
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenPartonMatch = cms.bool(False)
@@ -51,25 +55,36 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     # recalculate MET from cleaned candidates and reclustered jets
     postfix="clean"+suff
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-    runMetCorAndUncFromMiniAOD(
-        process,
-        isData=not geninfo, # controls gen met
-        jetCollUnskimmed="reclusteredJets"+suff,
-        jetColl='patJetsAK4PFCLEAN'+suff,
-        pfCandColl=cleanedCandidates.value(),
-        repro74X=True, # to recompute without reclustering
-        postfix=postfix
-    )
-    if not residual: #skip residuals for data if not used
-            getattr(process,"patPFMetT1T2Corr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
-            getattr(process,"patPFMetT1T2SmearCorr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
-            getattr(process,"patPFMetT2Corr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
-            getattr(process,"patPFMetT2SmearCorr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
-            getattr(process,"shiftedPatJetEnDown"+postfix).jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-            getattr(process,"shiftedPatJetEnUp"+postfix).jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-    if hasattr(process,"slimmedMETs"+postfix):
-        delattr(getattr(process,"slimmedMETs"+postfix),"caloMET")
-    METTag = cms.InputTag('slimmedMETs'+postfix)
+    if is74X:
+        runMetCorAndUncFromMiniAOD(
+            process,
+            isData=not geninfo, # controls gen met
+            jetCollUnskimmed="reclusteredJets"+suff,
+            jetColl='patJetsAK4PFCLEAN'+suff,
+            pfCandColl=cleanedCandidates.value(),
+            repro74X=True, # to recompute without reclustering
+            postfix=postfix
+        )
+        if not residual: #skip residuals for data if not used
+                getattr(process,"patPFMetT1T2Corr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
+                getattr(process,"patPFMetT1T2SmearCorr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
+                getattr(process,"patPFMetT2Corr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
+                getattr(process,"patPFMetT2SmearCorr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
+                getattr(process,"shiftedPatJetEnDown"+postfix).jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+                getattr(process,"shiftedPatJetEnUp"+postfix).jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+        if hasattr(process,"slimmedMETs"+postfix):
+            delattr(getattr(process,"slimmedMETs"+postfix),"caloMET")
+        METTag = cms.InputTag('slimmedMETs'+postfix)
+    else:
+        runMetCorAndUncFromMiniAOD(
+            process,
+            isData=not geninfo, # controls gen met
+            jetCollUnskimmed='patJetsAK4PFCLEAN'+suff,
+            pfCandColl=cleanedCandidates.value(),
+            repro80X=True, # to recompute without reclustering
+            postfix=postfix
+        )
+        METTag = cms.InputTag('slimmedMETs'+postfix)
     
     # isolated tracks
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -132,6 +147,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
+        is74X=is74X
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
@@ -141,11 +157,11 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     )
     setattr(process,"METclean"+suff,METclean)
     process.ZinvClean += getattr(process,"METclean"+suff)
-    process.TreeMaker2.VarsDouble.extend(['METclean'+suff+':Pt(METPtclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')'])
+    process.TreeMaker2.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')'])
     
     return process
 
-def doZinvBkg(process,tagname,geninfo,residual):
+def doZinvBkg(process,tagname,geninfo,residual,is74X):
     process.ZinvClean = cms.Sequence()
 
     ## ----------------------------------------------------------------------------------------------
@@ -192,7 +208,6 @@ def doZinvBkg(process,tagname,geninfo,residual):
     ###
     # do the new cleaning
     ###
-    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
 
     # combine leptons
     process.selectedLeptons = cms.EDProducer("CandViewMerger",
@@ -219,7 +234,8 @@ def doZinvBkg(process,tagname,geninfo,residual):
         geninfo,
         residual,
         cms.InputTag("cleanedCandidates"),
-        ""
+        "",
+        is74X
     )
 
     process.AdditionalSequence += process.ZinvClean

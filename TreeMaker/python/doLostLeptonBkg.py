@@ -91,21 +91,21 @@ def doLostLeptonBkg(process,geninfo,METTag):
             LeptonTag = cms.InputTag('GenLeptons:Muon'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
+            JetTag = cms.InputTag('HTJets')
         )    
         process.LostLepton += process.GenMuonMiniIso
         process.GenElectronMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Electron'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
+            JetTag = cms.InputTag('HTJets')
         )    
         process.LostLepton += process.GenElectronMiniIso
         process.GenTauMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Tau'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
+            JetTag = cms.InputTag('HTJets')
         )    
         process.LostLepton += process.GenTauMiniIso      
     
@@ -117,7 +117,6 @@ def doLostLeptonBkg(process,geninfo,METTag):
     )
     process.LostLepton += process.PTWExtrapolation
         
-    print "Adding LostLepton calculations to final path and tree"
     process.AdditionalSequence += process.LostLepton
     
     # may eventually save track isolation, activity

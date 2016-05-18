@@ -37,10 +37,10 @@ signal=False
     # CMSSW version sniffing
     CMSSWVER = os.getenv("CMSSW_VERSION")
     CMSSWVER_parts = CMSSWVER.split("_")
-
-    # define if mt cut should be applied and the value (less than 0 means no cut)
-    mtcut = cms.double(100)
-    print "Calculation with mtcut: "+ str(mtcut)
+    is74X = False
+    if int(CMSSWVER_parts[1])==7 and int(CMSSWVER_parts[2])>=4:
+        is74X = True
+        print "Configuring for 74X"
 
     # log output
     process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -140,9 +140,10 @@ signal=False
     ## GenHT for stitching together MC samples
     ## ----------------------------------------------------------------------------------------------
     if geninfo:
-        process.GenHT = cms.EDProducer('GenHTProducer')
-        process.Baseline += process.GenHT
-        VarsDouble.extend(['GenHT:genHT'])
+        process.MadHT = cms.EDProducer('GenHTProducer')
+        process.Baseline += process.MadHT
+        # called madHT, i.e. MadGraph, to distinguish from GenHT from GenJets
+        VarsDouble.extend(['MadHT:genHT(madHT)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## PrimaryVertices
@@ -188,21 +189,22 @@ signal=False
     from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
     
     # QG tagging DB payload
-    qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
-    process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",CondDBSetup,
-        toGet = cms.VPSet(),
-        connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
-    )
-    for type in ['AK4PFchs','AK4PFchs_antib']:
-        process.QGPoolDBESSource.toGet.extend(
-            cms.VPSet(
-                cms.PSet(
-                    record = cms.string('QGLikelihoodRcd'),
-                    tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
-                    label  = cms.untracked.string('QGL_'+type)
+    if is74X:
+        qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
+        process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",CondDBSetup,
+            toGet = cms.VPSet(),
+            connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
+        )
+        for type in ['AK4PFchs','AK4PFchs_antib']:
+            process.QGPoolDBESSource.toGet.extend(
+                cms.VPSet(
+                    cms.PSet(
+                        record = cms.string('QGLikelihoodRcd'),
+                        tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
+                        label  = cms.untracked.string('QGL_'+type)
+                    )
                 )
             )
-        )
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
@@ -239,65 +241,104 @@ signal=False
         )
         process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
         
-        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
-        process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
-            src     = cms.InputTag("slimmedJets"),
-            levels  = ['L1FastJet',
-                      'L2Relative',
-                      'L3Absolute'],
-            payload = 'AK4PFchs' # Make sure to choose the appropriate levels and payload here!
-        )
-        if residual: process.patJetCorrFactorsReapplyJEC.levels.append('L2L3Residual')
-        
-        from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-        process.patJetsReapplyJEC = patJetsUpdated.clone(
-            jetSource = cms.InputTag("slimmedJets"),
-            jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
-        )
-        
-        process.Baseline += process.patJetCorrFactorsReapplyJEC
-        process.Baseline += process.patJetsReapplyJEC
-        
-        JetTag = cms.InputTag('patJetsReapplyJEC')
-        
-        # also update the corrections for AK8 jets
-        process.patJetCorrFactorsReapplyJECAK8 = patJetCorrFactorsUpdated.clone(
-            src     = cms.InputTag("slimmedJetsAK8"),
-            levels  = ['L1FastJet',
-                      'L2Relative',
-                      'L3Absolute'],
-            payload = 'AK8PFchs' # Make sure to choose the appropriate levels and payload here!
-        )
-        if residual: process.patJetCorrFactorsReapplyJECAK8.levels.append('L2L3Residual')
-        process.patJetsReapplyJECAK8 = patJetsUpdated.clone(
-            jetSource = cms.InputTag("slimmedJetsAK8"),
-            jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJECAK8"))
-        )
-        process.Baseline += process.patJetCorrFactorsReapplyJECAK8
-        process.Baseline += process.patJetsReapplyJECAK8
-        JetAK8Tag = cms.InputTag('patJetsReapplyJECAK8')
-        
-        # update the MET to account for the new JECs
-        # ref: https://github.com/cms-met/cmssw/blob/METCorUnc74X/PhysicsTools/PatAlgos/test/corMETFromMiniAOD.py
-        
-        from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-        runMetCorAndUncFromMiniAOD(
-            process,
-            isData=not geninfo, # controls gen met
-            jetCollUnskimmed=JetTag.value(),
-            jetColl=JetTag.value(),
-            postfix="Update"
-        )
-        if not residual: #skip residuals for data if not used
-            process.patPFMetT1T2CorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
-            process.patPFMetT1T2SmearCorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
-            process.patPFMetT2CorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
-            process.patPFMetT2SmearCorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
-            process.shiftedPatJetEnDownUpdate.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-            process.shiftedPatJetEnUpUpdate.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-        if hasattr(process,"slimmedMETsUpdate"):
-            delattr(getattr(process,"slimmedMETsUpdate"),"caloMET")
-        METTag = cms.InputTag('slimmedMETsUpdate','',process.name_())
+        # all changed from 74X->80X
+        if is74X:
+            from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetCorrFactorsUpdated
+            process.patJetCorrFactorsReapplyJEC = patJetCorrFactorsUpdated.clone(
+                src     = cms.InputTag("slimmedJets"),
+                levels  = ['L1FastJet',
+                          'L2Relative',
+                          'L3Absolute'],
+                payload = 'AK4PFchs' # Make sure to choose the appropriate levels and payload here!
+            )
+            if residual: process.patJetCorrFactorsReapplyJEC.levels.append('L2L3Residual')
+            
+            from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
+            process.patJetsReapplyJEC = patJetsUpdated.clone(
+                jetSource = cms.InputTag("slimmedJets"),
+                jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
+            )
+            
+            process.Baseline += process.patJetCorrFactorsReapplyJEC
+            process.Baseline += process.patJetsReapplyJEC
+            
+            JetTag = cms.InputTag('patJetsReapplyJEC')
+            
+            # also update the corrections for AK8 jets
+            process.patJetCorrFactorsReapplyJECAK8 = patJetCorrFactorsUpdated.clone(
+                src     = cms.InputTag("slimmedJetsAK8"),
+                levels  = ['L1FastJet',
+                          'L2Relative',
+                          'L3Absolute'],
+                payload = 'AK8PFchs' # Make sure to choose the appropriate levels and payload here!
+            )
+            if residual: process.patJetCorrFactorsReapplyJECAK8.levels.append('L2L3Residual')
+            process.patJetsReapplyJECAK8 = patJetsUpdated.clone(
+                jetSource = cms.InputTag("slimmedJetsAK8"),
+                jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJECAK8"))
+            )
+            process.Baseline += process.patJetCorrFactorsReapplyJECAK8
+            process.Baseline += process.patJetsReapplyJECAK8
+            JetAK8Tag = cms.InputTag('patJetsReapplyJECAK8')
+            
+            # update the MET to account for the new JECs
+            # ref: https://github.com/cms-met/cmssw/blob/METCorUnc74X/PhysicsTools/PatAlgos/test/corMETFromMiniAOD.py
+            
+            from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+            runMetCorAndUncFromMiniAOD(
+                process,
+                isData=not geninfo, # controls gen met
+                jetCollUnskimmed=JetTag.value(),
+                jetColl=JetTag.value(),
+                postfix="Update"
+            )
+            if not residual: #skip residuals for data if not used
+                process.patPFMetT1T2CorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
+                process.patPFMetT1T2SmearCorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
+                process.patPFMetT2CorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
+                process.patPFMetT2SmearCorrUpdate.jetCorrLabelRes = cms.InputTag("L3Absolute")
+                process.shiftedPatJetEnDownUpdate.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+                process.shiftedPatJetEnUpUpdate.jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
+            if hasattr(process,"slimmedMETsUpdate"):
+                delattr(getattr(process,"slimmedMETsUpdate"),"caloMET")
+            METTag = cms.InputTag('slimmedMETsUpdate','',process.name_())
+        else:
+            levels  = ['L1FastJet','L2Relative','L3Absolute']
+            if residual: levels.append('L2L3Residual')
+            
+            from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
+            
+            updateJetCollection(
+                process,
+                jetSource = cms.InputTag('slimmedJets'),
+                postfix = 'UpdatedJEC',
+                jetCorrections = ('AK4PFchs', levels, 'None')
+            )
+            process.Baseline += process.patJetCorrFactorsUpdatedJEC
+            process.Baseline += process.updatedPatJetsUpdatedJEC
+            
+            JetTag = cms.InputTag('updatedPatJetsUpdatedJEC')
+            
+            # also update the corrections for AK8 jets
+            updateJetCollection(
+                process,
+                jetSource = cms.InputTag('slimmedJetsAK8'),
+                labelName = 'AK8',
+                postfix = 'UpdatedJEC',
+                jetCorrections = ('AK8PFchs', levels, 'None')
+            )
+            process.Baseline += process.patJetCorrFactorsAK8UpdatedJEC
+            process.Baseline += process.updatedPatJetsAK8UpdatedJEC
+            
+            JetAK8Tag = cms.InputTag('updatedPatJetsAK8UpdatedJEC')
+            
+            # update the MET to account for the new JECs
+            from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+            runMetCorAndUncFromMiniAOD(
+                process,
+                isData=not geninfo, # controls gen met
+            )
+            METTag = cms.InputTag('slimmedMETs','',process.name_())
 
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
@@ -314,7 +355,7 @@ signal=False
         minPt_PFCandidate   = cms.double(5.0),
         isoCut              = cms.double(0.2),
         pdgId               = cms.int32(11),
-        mTCut               = mtcut,
+        mTCut               = cms.double(100.),
         METTag              = METTag,
     )
 
@@ -327,7 +368,7 @@ signal=False
         minPt_PFCandidate   = cms.double(5.0),
         isoCut              = cms.double(0.2), 
         pdgId               = cms.int32(13),
-        mTCut               = mtcut,
+        mTCut               = cms.double(100.),
         METTag              = METTag,
     )
 
@@ -340,7 +381,7 @@ signal=False
         minPt_PFCandidate   = cms.double(10.0),
         isoCut              = cms.double(0.1),
         pdgId               = cms.int32(211),
-        mTCut               = mtcut,
+        mTCut               = cms.double(100.),
         METTag              = METTag,
     )
 
@@ -402,62 +443,108 @@ signal=False
 
         from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
         
-        #process.CSCTightHaloFilter = filterDecisionProducer.clone(
-        #    trigTagArg1 = cms.string('TriggerResults'),
-        #    trigTagArg2 = cms.string(''),
-        #    trigTagArg3 = cms.string(tagname),
-        #    filterName  = cms.string("Flag_CSCTightHaloFilter"),
-        #)
-        #process.Baseline += process.CSCTightHaloFilter
-        #VarsInt.extend(['CSCTightHaloFilter'])
-        
-        #run beam halo filter from text list of events
-        from TreeMaker.Utils.getEventListFilter_cff import getEventListFilter
-        process.CSCTightHaloFilter = getEventListFilter(process.source.fileNames[0],"Dec01","csc2015")
-        process.Baseline += process.CSCTightHaloFilter
-        VarsBool.extend(['CSCTightHaloFilter'])
-        
-        #process.HBHENoiseFilter = filterDecisionProducer.clone(
-        #    trigTagArg1 = cms.string('TriggerResults'),
-        #    trigTagArg2 = cms.string(''),
-        #    trigTagArg3 = cms.string(tagname),
-        #    filterName  = cms.string("Flag_HBHENoiseFilter"),
-        #)
-        #process.Baseline += process.HBHENoiseFilter
-        #VarsInt.extend(['HBHENoiseFilter'])
-        
-        #rerun HBHE noise filter manually
-        process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
-        process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
-        process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion = cms.bool(False) 
-        process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
-        process.Baseline += process.HBHENoiseFilterResultProducer
-        VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
-        #add HBHE iso noise filter
-        VarsBool.extend(['HBHENoiseFilterResultProducer:HBHEIsoNoiseFilterResult(HBHEIsoNoiseFilter)'])
+        if is74X:
+            #process.CSCTightHaloFilter = filterDecisionProducer.clone(
+            #    trigTagArg1 = cms.string('TriggerResults'),
+            #    trigTagArg2 = cms.string(''),
+            #    trigTagArg3 = cms.string(tagname),
+            #    filterName  = cms.string("Flag_CSCTightHaloFilter"),
+            #)
+            #process.Baseline += process.CSCTightHaloFilter
+            #VarsInt.extend(['CSCTightHaloFilter'])
+            
+            #run beam halo filter from text list of events
+            from TreeMaker.Utils.getEventListFilter_cff import getEventListFilter
+            process.CSCTightHaloFilter = getEventListFilter(process.source.fileNames[0],"Dec01","csc2015")
+            process.Baseline += process.CSCTightHaloFilter
+            VarsBool.extend(['CSCTightHaloFilter'])
+            
+            #process.HBHENoiseFilter = filterDecisionProducer.clone(
+            #    trigTagArg1 = cms.string('TriggerResults'),
+            #    trigTagArg2 = cms.string(''),
+            #    trigTagArg3 = cms.string(tagname),
+            #    filterName  = cms.string("Flag_HBHENoiseFilter"),
+            #)
+            #process.Baseline += process.HBHENoiseFilter
+            #VarsInt.extend(['HBHENoiseFilter'])
+            
+            #rerun HBHE noise filter manually
+            process.load('CommonTools.RecoAlgos.HBHENoiseFilterResultProducer_cfi')
+            process.HBHENoiseFilterResultProducer.minZeros = cms.int32(99999)
+            process.HBHENoiseFilterResultProducer.IgnoreTS4TS5ifJetInLowBVRegion = cms.bool(False) 
+            process.HBHENoiseFilterResultProducer.defaultDecision = cms.string("HBHENoiseFilterResultRun2Loose")
+            process.Baseline += process.HBHENoiseFilterResultProducer
+            VarsBool.extend(['HBHENoiseFilterResultProducer:HBHENoiseFilterResult(HBHENoiseFilter)'])
+            #add HBHE iso noise filter
+            VarsBool.extend(['HBHENoiseFilterResultProducer:HBHEIsoNoiseFilterResult(HBHEIsoNoiseFilter)'])
 
-        process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
-            trigTagArg1 = cms.string('TriggerResults'),
-            trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
-            filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
-        )
-        process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
-        VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
-        
-        process.eeBadScFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string('TriggerResults'),
-            trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(tagname),
-            filterName  =   cms.string("Flag_eeBadScFilter"),
+            process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
+                trigTagArg1 = cms.string('TriggerResults'),
+                trigTagArg2 = cms.string(''),
+                trigTagArg3 = cms.string(tagname),
+                filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
             )
-        process.Baseline += process.eeBadScFilter
-        VarsInt.extend(['eeBadScFilter'])
-        
-        #run eeBadSc4 filter from text list of events
-        process.eeBadSc4Filter = getEventListFilter(process.source.fileNames[0],"Dec01","ecalscn1043093")
-        process.Baseline += process.eeBadSc4Filter
-        VarsBool.extend(['eeBadSc4Filter'])
+            process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
+            VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+            
+            process.eeBadScFilter = filterDecisionProducer.clone(
+                trigTagArg1  = cms.string('TriggerResults'),
+                trigTagArg2  = cms.string(''),
+                trigTagArg3  = cms.string(tagname),
+                filterName  =   cms.string("Flag_eeBadScFilter"),
+                )
+            process.Baseline += process.eeBadScFilter
+            VarsInt.extend(['eeBadScFilter'])
+            
+            #run eeBadSc4 filter from text list of events
+            process.eeBadSc4Filter = getEventListFilter(process.source.fileNames[0],"Dec01","ecalscn1043093")
+            process.Baseline += process.eeBadSc4Filter
+            VarsBool.extend(['eeBadSc4Filter'])
+        else: #~all changed for 80X
+            process.CSCTightHaloFilter = filterDecisionProducer.clone(
+                trigTagArg1 = cms.string('TriggerResults'),
+                trigTagArg2 = cms.string(''),
+                trigTagArg3 = cms.string(tagname),
+                filterName  = cms.string("Flag_CSCTightHalo2015Filter"),
+            )
+            process.Baseline += process.CSCTightHaloFilter
+            VarsInt.extend(['CSCTightHaloFilter'])
+            
+            process.HBHENoiseFilter = filterDecisionProducer.clone(
+                trigTagArg1 = cms.string('TriggerResults'),
+                trigTagArg2 = cms.string(''),
+                trigTagArg3 = cms.string(tagname),
+                filterName  = cms.string("Flag_HBHENoiseFilter"),
+            )
+            process.Baseline += process.HBHENoiseFilter
+            VarsInt.extend(['HBHENoiseFilter'])
+            
+            process.HBHEIsoNoiseFilter = filterDecisionProducer.clone(
+                trigTagArg1 = cms.string('TriggerResults'),
+                trigTagArg2 = cms.string(''),
+                trigTagArg3 = cms.string(tagname),
+                filterName  = cms.string("Flag_HBHENoiseIsoFilter"),
+            )
+            process.Baseline += process.HBHEIsoNoiseFilter
+            VarsInt.extend(['HBHEIsoNoiseFilter'])
+            
+            process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
+                trigTagArg1 = cms.string('TriggerResults'),
+                trigTagArg2 = cms.string(''),
+                trigTagArg3 = cms.string(tagname),
+                filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
+            )
+            process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
+            VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+            
+            process.eeBadScFilter = filterDecisionProducer.clone(
+                trigTagArg1  = cms.string('TriggerResults'),
+                trigTagArg2  = cms.string(''),
+                trigTagArg3  = cms.string(tagname),
+                filterName  =   cms.string("Flag_eeBadScFilter"),
+                )
+            process.Baseline += process.eeBadScFilter
+            VarsInt.extend(['eeBadScFilter'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
@@ -564,17 +651,20 @@ signal=False
                           suff='',
                           skipGoodJets=False,
                           storeProperties=2,
-                          SkipTag=SkipTag
+                          SkipTag=SkipTag,
+                          is74X=is74X
     )
     
     # AK8 jet variables - separate instance of jet properties producer
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
     process.JetsPropertiesAK8 = jetproperties.clone(
         JetTag       = JetAK8Tag,
-        BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+        BTagInputTagCSV = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+        BTagInputTagMVA = cms.string('pfCombinedMVABJetTags'),
         QGTag        = cms.InputTag(""),
         AK8          = cms.bool(True)
     )
+    if not is74X: process.JetsPropertiesAK8.BTagInputTagMVA = cms.string('pfCombinedMVAV2BJetTags')
     process.Baseline += process.JetsPropertiesAK8
     VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
     VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
@@ -604,7 +694,8 @@ signal=False
                           suff='JECup',
                           skipGoodJets=False,
                           storeProperties=1,
-                          SkipTag=SkipTag
+                          SkipTag=SkipTag,
+                          is74X=is74X
     )
 
     #JEC unc down
@@ -619,7 +710,8 @@ signal=False
                           suff='JECdown',
                           skipGoodJets=False,
                           storeProperties=1,
-                          SkipTag=SkipTag
+                          SkipTag=SkipTag,
+                          is74X=is74X
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -639,7 +731,13 @@ signal=False
         process.Baseline += process.GenHTJets
         VectorBool.extend(['GenHTJets:SubJetMask(GenHTJetsMask)'])
         
-        # make gen HT?
+        # make gen HT
+        from TreeMaker.Utils.htdouble_cfi import htdouble
+        process.GenHT = htdouble.clone(
+            JetTag = cms.InputTag("GenHTJets"),
+        )
+        process.Baseline += process.GenHT
+        VarsDouble.extend(['GenHT'])
         
         process.GenMHTJets = SubGenJetSelection.clone(
             JetTag = cms.InputTag('slimmedGenJets'),
@@ -655,7 +753,7 @@ signal=False
             JetTag  = cms.InputTag('GenMHTJets'),
         )
         process.Baseline += process.GenMHT
-        VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHT_Phi)'])
+        VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
@@ -684,10 +782,10 @@ signal=False
         geninfo = cms.untracked.bool(geninfo),
     )
     process.Baseline += process.MET
-    VarsDouble.extend(['MET:Pt(METPt)','MET:Phi(METPhi)','MET:CaloPt(CaloMETPt)','MET:CaloPhi(CaloMETPhi)'])
+    VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)'])
     if geninfo:
-        VarsDouble.extend(['MET:GenPt(GenMETPt)','MET:GenPhi(GenMETPhi)'])
-        VectorDouble.extend(['MET:PtUp(METPtUp)', 'MET:PtDown(METPtDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
+        VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
+        VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
 
     from TreeMaker.Utils.mt2producer_cfi import mt2Producer
     process.Mt2Producer = mt2Producer.clone(
@@ -725,7 +823,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,tagname,geninfo,residual)
+        process = doZinvBkg(process,tagname,geninfo,residual,is74X)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
