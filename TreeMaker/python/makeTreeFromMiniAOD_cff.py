@@ -674,9 +674,6 @@ signal=False
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
     process.JetsPropertiesAK8 = jetproperties.clone(
         JetTag       = JetAK8Tag,
-        BTagInputTagCSV = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-        BTagInputTagMVA = cms.string('pfCombinedMVABJetTags'),
-        QGTag        = cms.InputTag(""),
         properties = cms.vstring(
             "prunedMass"           ,
             "NsubjettinessTau1"    ,
@@ -686,7 +683,13 @@ signal=False
             "bDiscriminatorSubjet2",
         )
     )
-    if not is74X: process.JetsPropertiesAK8.BTagInputTagMVA = cms.string('pfCombinedMVAV2BJetTags')
+    #specify userfloats
+    process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
+    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
+    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
+    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
+    process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.Baseline += process.JetsPropertiesAK8
     VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
     VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',

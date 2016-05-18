@@ -2,8 +2,6 @@ import FWCore.ParameterSet.Config as cms
 
 jetproperties = cms.EDProducer('JetProperties',
     JetTag       = cms.InputTag('slimmedJets'),
-    BTagInputTagCSV = cms.string('pfCombinedSecondaryVertexBJetTags'),
-    BTagInputTagMVA = cms.string('pfCombinedMVABJetTags'),
     properties = cms.vstring(
         "chargedHadronMultiplicity",
         "neutralHadronMultiplicity",
@@ -30,5 +28,11 @@ jetproperties = cms.EDProducer('JetProperties',
         "qgAxis2"                    ,
         "bDiscriminatorCSV"          ,
         "bDiscriminatorMVA"          ,
-    )    
+    ),
+    bDiscriminatorCSV = cms.vstring('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+    bDiscriminatorMVA = cms.vstring('pfCombinedMVABJetTags'),
+    qgLikelihood = cms.vstring('QGTagger:qgLikelihood'),
+    qgPtD = cms.vstring('QGTagger:ptD'),
+    qgAxis2 = cms.vstring('QGTagger:axis2'),
+    qgMult = cms.vstring('QGTagger:mult'),
 )

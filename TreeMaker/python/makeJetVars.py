@@ -143,12 +143,12 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         # make jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetsProperties = jetproperties.clone(
-            JetTag       = GoodJetsTag,
-            BTagInputTagCSV = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-            BTagInputTagMVA = cms.string('pfCombinedMVABJetTags'),
+            JetTag       = GoodJetsTag
         )
-        if not is74X: JetsProperties.BTagInputTagMVA = cms.string('pfCombinedMVAV2BJetTags')
-        if storeProperties==1: JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","partonFlavor","hadronFlavor")
+        # provide extra info where necessary
+        JetsProperties.bDiscriminatorMVA = cms.vstring('pfCombinedMVABJetTags') if is74X else cms.vstring('pfCombinedMVAV2BJetTags')
+        if storeProperties==1: 
+            JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","partonFlavor","hadronFlavor")
         setattr(process,"JetsProperties"+suff,JetsProperties)
         theSequence += getattr(process,"JetsProperties"+suff)
         process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',

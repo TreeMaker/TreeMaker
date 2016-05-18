@@ -61,11 +61,13 @@ class NamedPtr {
 		void put(edm::Event& iEvent) { iEvent.put(ptr,name); }
 		void reset() { ptr.reset(new std::vector<T>()); }
 		void push_back(T tmp) { ptr->push_back(tmp); }
+		void setExtraInfo(const std::vector<std::string>& extraInfo_) { extraInfo = extraInfo_; }
 		virtual void get_property(const pat::Jet* Jet) { }
 	
 		//member variables
 		std::string name;
 		std::auto_ptr< std::vector<T> > ptr;
+		std::vector<std::string> extraInfo;
 };
 
 // specialized helper classes
@@ -92,16 +94,20 @@ template<> void NamedPtrD<d_neutralEmEnergyFraction>::get_property(const pat::Je
 template<> void NamedPtrD<d_electronEnergyFraction>::get_property(const pat::Jet* Jet)      { push_back(Jet->electronEnergyFraction()); }
 template<> void NamedPtrD<d_photonEnergyFraction>::get_property(const pat::Jet* Jet)        { push_back(Jet->photonEnergyFraction()); }
 template<> void NamedPtrD<d_muonEnergyFraction>::get_property(const pat::Jet* Jet)          { push_back(Jet->muonEnergyFraction()); }
+template<> void NamedPtrD<d_bDiscriminatorCSV>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator(extraInfo.at(0))); }
+template<> void NamedPtrD<d_bDiscriminatorMVA>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator(extraInfo.at(0))); }
 //bDiscriminators get special attention
-template<> void NamedPtrD<d_qgLikelihood>::get_property(const pat::Jet* Jet)                { push_back(Jet->userFloat("QGTagger:qgLikelihood")); }
-template<> void NamedPtrD<d_qgPtD>::get_property(const pat::Jet* Jet)                       { push_back(Jet->userFloat("QGTagger:ptD")); }
-template<> void NamedPtrD<d_qgAxis2>::get_property(const pat::Jet* Jet)                     { push_back(Jet->userFloat("QGTagger:axis2")); }
+template<> void NamedPtrD<d_qgLikelihood>::get_property(const pat::Jet* Jet)                { push_back(Jet->userFloat(extraInfo.at(0))); }
+template<> void NamedPtrD<d_qgPtD>::get_property(const pat::Jet* Jet)                       { push_back(Jet->userFloat(extraInfo.at(0))); }
+template<> void NamedPtrD<d_qgAxis2>::get_property(const pat::Jet* Jet)                     { push_back(Jet->userFloat(extraInfo.at(0))); }
 //ak8 jet accessors
-template<> void NamedPtrD<d_prunedMass>::get_property(const pat::Jet* Jet)                  { push_back(Jet->userFloat("ak8PFJetsCHSPrunedMass")); }
+template<> void NamedPtrD<d_prunedMass>::get_property(const pat::Jet* Jet)                  { push_back(Jet->userFloat(extraInfo.at(0))); }
+template<> void NamedPtrD<d_bDiscriminatorSubjet1>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 0 ? Jet->subjets(extraInfo.at(0)).at(0)->bDiscriminator(extraInfo.at(1)) : -10.); }
+template<> void NamedPtrD<d_bDiscriminatorSubjet2>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 1 ? Jet->subjets(extraInfo.at(0)).at(1)->bDiscriminator(extraInfo.at(1)) : -10.); }
 //bDiscriminatorSubjet1,2 get special attention                                             
-template<> void NamedPtrD<d_NsubjettinessTau1>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat("NjettinessAK8:tau1")); }
-template<> void NamedPtrD<d_NsubjettinessTau2>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat("NjettinessAK8:tau2")); }
-template<> void NamedPtrD<d_NsubjettinessTau3>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat("NjettinessAK8:tau3")); }
+template<> void NamedPtrD<d_NsubjettinessTau1>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat(extraInfo.at(0))); }
+template<> void NamedPtrD<d_NsubjettinessTau2>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat(extraInfo.at(0))); }
+template<> void NamedPtrD<d_NsubjettinessTau3>::get_property(const pat::Jet* Jet)           { push_back(Jet->userFloat(extraInfo.at(0))); }
 template<> void NamedPtrI<i_chargedHadronMultiplicity>::get_property(const pat::Jet* Jet)   { push_back(Jet->chargedHadronMultiplicity()); }
 template<> void NamedPtrI<i_neutralHadronMultiplicity>::get_property(const pat::Jet* Jet)   { push_back(Jet->neutralHadronMultiplicity()); }
 template<> void NamedPtrI<i_electronMultiplicity>::get_property(const pat::Jet* Jet)        { push_back(Jet->electronMultiplicity()); }
@@ -113,7 +119,7 @@ template<> void NamedPtrI<i_chargedMultiplicity>::get_property(const pat::Jet* J
 template<> void NamedPtrI<i_neutralMultiplicity>::get_property(const pat::Jet* Jet)         { push_back(Jet->neutralMultiplicity()); }
 template<> void NamedPtrI<i_partonFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->partonFlavour()); }
 template<> void NamedPtrI<i_hadronFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->hadronFlavour()); }
-template<> void NamedPtrI<i_qgMult>::get_property(const pat::Jet* Jet)                      { push_back(Jet->userInt("QGTagger:mult")); }
+template<> void NamedPtrI<i_qgMult>::get_property(const pat::Jet* Jet)                      { push_back(Jet->userInt(extraInfo.at(0))); }
 
 //
 // class declaration
@@ -135,13 +141,16 @@ private:
 	virtual void endRun(edm::Run&, edm::EventSetup const&);
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+	
+	template <class T>
+	void checkExtraInfo(const edm::ParameterSet& iConfig, const std::string& name, T ptr){
+		if(iConfig.exists(name)) ptr->setExtraInfo(iConfig.getParameter<std::vector<std::string>>(name));
+	}
+	
 	edm::InputTag JetTag_;
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
-	std::string   btagnameCSV_, btagnameMVA_;
 	std::vector<NamedPtr<int>*> IntPtrs_;
 	std::vector<NamedPtr<double>*> DoublePtrs_;
-	NamedPtr<double> *DoublePtr_bDiscriminatorCSV_, *DoublePtr_bDiscriminatorMVA_;
-	NamedPtr<double> *DoublePtr_bDiscriminatorSubjet1_, *DoublePtr_bDiscriminatorSubjet2_;
 };
 
 //
@@ -150,54 +159,44 @@ private:
 JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 {
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
-	btagnameCSV_ = iConfig.getParameter<std::string>  ("BTagInputTagCSV");
-	btagnameMVA_ = iConfig.getParameter<std::string>  ("BTagInputTagMVA");
-	
 	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
 
-	//initialize special ones
-	DoublePtr_bDiscriminatorSubjet1_ = NULL;
-	DoublePtr_bDiscriminatorSubjet2_ = NULL;
-	DoublePtr_bDiscriminatorCSV_ = NULL;
-	DoublePtr_bDiscriminatorMVA_ = NULL;
-	
 	//get lists of desired properties
 	std::vector<std::string> props = iConfig.getParameter<std::vector<std::string>> ("properties");
 	
 	//register your products
 	for(auto& p : props){
-		     if(p=="chargedHadronMultiplicity"  ) IntPtrs_.push_back(new NamedPtrI<i_chargedHadronMultiplicity>     ("chargedHadronMultiplicity",this)  );
-		else if(p=="neutralHadronMultiplicity"  ) IntPtrs_.push_back(new NamedPtrI<i_neutralHadronMultiplicity>     ("neutralHadronMultiplicity",this)  );
-		else if(p=="electronMultiplicity"       ) IntPtrs_.push_back(new NamedPtrI<i_electronMultiplicity>          ("electronMultiplicity",this)       );
-		else if(p=="photonMultiplicity"         ) IntPtrs_.push_back(new NamedPtrI<i_photonMultiplicity>            ("photonMultiplicity",this)         );
-		else if(p=="muonMultiplicity"           ) IntPtrs_.push_back(new NamedPtrI<i_muonMultiplicity>              ("muonMultiplicity",this)           );
-		else if(p=="NumBhadrons"                ) IntPtrs_.push_back(new NamedPtrI<i_NumBhadrons>                   ("NumBhadrons",this)                );
-		else if(p=="NumChadrons"                ) IntPtrs_.push_back(new NamedPtrI<i_NumChadrons>                   ("NumChadrons",this)                );
-		else if(p=="chargedMultiplicity"        ) IntPtrs_.push_back(new NamedPtrI<i_chargedMultiplicity>           ("chargedMultiplicity",this)        );
-		else if(p=="neutralMultiplicity"        ) IntPtrs_.push_back(new NamedPtrI<i_neutralMultiplicity>           ("neutralMultiplicity",this)        );
-		else if(p=="partonFlavor"               ) IntPtrs_.push_back(new NamedPtrI<i_partonFlavor>                  ("partonFlavor",this)               );
-		else if(p=="hadronFlavor"               ) IntPtrs_.push_back(new NamedPtrI<i_hadronFlavor>                  ("hadronFlavor",this)               );
-		else if(p=="qgMult"                     ) IntPtrs_.push_back(new NamedPtrI<i_qgMult>                        ("qgMult",this)                     );
-		else if(p=="jetArea"                    ) DoublePtrs_.push_back(new NamedPtrD<d_jetArea>                    ("jetArea",this)                    );
-		else if(p=="chargedHadronEnergyFraction") DoublePtrs_.push_back(new NamedPtrD<d_chargedHadronEnergyFraction>("chargedHadronEnergyFraction",this));
-		else if(p=="neutralHadronEnergyFraction") DoublePtrs_.push_back(new NamedPtrD<d_neutralHadronEnergyFraction>("neutralHadronEnergyFraction",this));
-		else if(p=="chargedEmEnergyFraction"    ) DoublePtrs_.push_back(new NamedPtrD<d_chargedEmEnergyFraction>    ("chargedEmEnergyFraction",this)    );
-		else if(p=="neutralEmEnergyFraction"    ) DoublePtrs_.push_back(new NamedPtrD<d_neutralEmEnergyFraction>    ("neutralEmEnergyFraction",this)    );
-		else if(p=="electronEnergyFraction"     ) DoublePtrs_.push_back(new NamedPtrD<d_electronEnergyFraction>     ("electronEnergyFraction",this)     );
-		else if(p=="photonEnergyFraction"       ) DoublePtrs_.push_back(new NamedPtrD<d_photonEnergyFraction>       ("photonEnergyFraction",this)       );
-		else if(p=="muonEnergyFraction"         ) DoublePtrs_.push_back(new NamedPtrD<d_muonEnergyFraction>         ("muonEnergyFraction",this)         );
-		else if(p=="qgLikelihood"               ) DoublePtrs_.push_back(new NamedPtrD<d_qgLikelihood>               ("qgLikelihood",this)               );
-		else if(p=="qgPtD"                      ) DoublePtrs_.push_back(new NamedPtrD<d_qgPtD>                      ("qgPtD",this)                      );
-		else if(p=="qgAxis2"                    ) DoublePtrs_.push_back(new NamedPtrD<d_qgAxis2>                    ("qgAxis2",this)                    );
-		else if(p=="prunedMass"                 ) DoublePtrs_.push_back(new NamedPtrD<d_prunedMass>                 ("prunedMass",this)                 );
-		else if(p=="NsubjettinessTau1"          ) DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau1>          ("NsubjettinessTau1",this)          );
-		else if(p=="NsubjettinessTau2"          ) DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau2>          ("NsubjettinessTau2",this)          );
-		else if(p=="NsubjettinessTau3"          ) DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau3>          ("NsubjettinessTau3",this)          );
-		//special ones
-		else if(p=="bDiscriminatorCSV"          ) DoublePtr_bDiscriminatorCSV_ = new NamedPtrD<d_bDiscriminatorCSV>("bDiscriminatorCSV",this);
-		else if(p=="bDiscriminatorMVA"          ) DoublePtr_bDiscriminatorMVA_ = new NamedPtrD<d_bDiscriminatorMVA>("bDiscriminatorMVA",this);
-		else if(p=="bDiscriminatorSubjet1"      ) DoublePtr_bDiscriminatorSubjet1_ = new NamedPtrD<d_bDiscriminatorSubjet1>("bDiscriminatorSubjet1",this);
-		else if(p=="bDiscriminatorSubjet2"      ) DoublePtr_bDiscriminatorSubjet2_ = new NamedPtrD<d_bDiscriminatorSubjet2>("bDiscriminatorSubjet2",this);
+		     if(p=="chargedHadronMultiplicity"  ) { IntPtrs_.push_back(new NamedPtrI<i_chargedHadronMultiplicity>     ("chargedHadronMultiplicity",this)  ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="neutralHadronMultiplicity"  ) { IntPtrs_.push_back(new NamedPtrI<i_neutralHadronMultiplicity>     ("neutralHadronMultiplicity",this)  ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="electronMultiplicity"       ) { IntPtrs_.push_back(new NamedPtrI<i_electronMultiplicity>          ("electronMultiplicity",this)       ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="photonMultiplicity"         ) { IntPtrs_.push_back(new NamedPtrI<i_photonMultiplicity>            ("photonMultiplicity",this)         ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="muonMultiplicity"           ) { IntPtrs_.push_back(new NamedPtrI<i_muonMultiplicity>              ("muonMultiplicity",this)           ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="NumBhadrons"                ) { IntPtrs_.push_back(new NamedPtrI<i_NumBhadrons>                   ("NumBhadrons",this)                ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="NumChadrons"                ) { IntPtrs_.push_back(new NamedPtrI<i_NumChadrons>                   ("NumChadrons",this)                ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="chargedMultiplicity"        ) { IntPtrs_.push_back(new NamedPtrI<i_chargedMultiplicity>           ("chargedMultiplicity",this)        ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="neutralMultiplicity"        ) { IntPtrs_.push_back(new NamedPtrI<i_neutralMultiplicity>           ("neutralMultiplicity",this)        ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="partonFlavor"               ) { IntPtrs_.push_back(new NamedPtrI<i_partonFlavor>                  ("partonFlavor",this)               ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="hadronFlavor"               ) { IntPtrs_.push_back(new NamedPtrI<i_hadronFlavor>                  ("hadronFlavor",this)               ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="qgMult"                     ) { IntPtrs_.push_back(new NamedPtrI<i_qgMult>                        ("qgMult",this)                     ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="jetArea"                    ) { DoublePtrs_.push_back(new NamedPtrD<d_jetArea>                    ("jetArea",this)                    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="chargedHadronEnergyFraction") { DoublePtrs_.push_back(new NamedPtrD<d_chargedHadronEnergyFraction>("chargedHadronEnergyFraction",this)); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="neutralHadronEnergyFraction") { DoublePtrs_.push_back(new NamedPtrD<d_neutralHadronEnergyFraction>("neutralHadronEnergyFraction",this)); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="chargedEmEnergyFraction"    ) { DoublePtrs_.push_back(new NamedPtrD<d_chargedEmEnergyFraction>    ("chargedEmEnergyFraction",this)    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="neutralEmEnergyFraction"    ) { DoublePtrs_.push_back(new NamedPtrD<d_neutralEmEnergyFraction>    ("neutralEmEnergyFraction",this)    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="electronEnergyFraction"     ) { DoublePtrs_.push_back(new NamedPtrD<d_electronEnergyFraction>     ("electronEnergyFraction",this)     ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="photonEnergyFraction"       ) { DoublePtrs_.push_back(new NamedPtrD<d_photonEnergyFraction>       ("photonEnergyFraction",this)       ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="muonEnergyFraction"         ) { DoublePtrs_.push_back(new NamedPtrD<d_muonEnergyFraction>         ("muonEnergyFraction",this)         ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="bDiscriminatorCSV"          ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorCSV>          ("bDiscriminatorCSV",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="bDiscriminatorMVA"          ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorMVA>          ("bDiscriminatorMVA",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="qgLikelihood"               ) { DoublePtrs_.push_back(new NamedPtrD<d_qgLikelihood>               ("qgLikelihood",this)               ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="qgPtD"                      ) { DoublePtrs_.push_back(new NamedPtrD<d_qgPtD>                      ("qgPtD",this)                      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="qgAxis2"                    ) { DoublePtrs_.push_back(new NamedPtrD<d_qgAxis2>                    ("qgAxis2",this)                    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="prunedMass"                 ) { DoublePtrs_.push_back(new NamedPtrD<d_prunedMass>                 ("prunedMass",this)                 ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="NsubjettinessTau1"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau1>          ("NsubjettinessTau1",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="NsubjettinessTau2"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau2>          ("NsubjettinessTau2",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="NsubjettinessTau3"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau3>          ("NsubjettinessTau3",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="bDiscriminatorSubjet1"      ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSubjet1>      ("bDiscriminatorSubjet1",this)      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="bDiscriminatorSubjet2"      ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSubjet2>      ("bDiscriminatorSubjet2",this)      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else std::cout << "JetsProperties: unknown property " << p << std::endl;
 	}	
 }
@@ -227,10 +226,6 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 		DoublePtrs_[ip]->reset();
 	}
-	if(DoublePtr_bDiscriminatorSubjet1_) DoublePtr_bDiscriminatorSubjet1_->reset();
-	if(DoublePtr_bDiscriminatorSubjet2_) DoublePtr_bDiscriminatorSubjet2_->reset();
-	if(DoublePtr_bDiscriminatorCSV_) DoublePtr_bDiscriminatorCSV_->reset();
-	if(DoublePtr_bDiscriminatorMVA_) DoublePtr_bDiscriminatorMVA_->reset();
 
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
@@ -242,19 +237,9 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 				DoublePtrs_[ip]->get_property(&(*Jet));
 			}
-			//special attention for a few properties
-			if(DoublePtr_bDiscriminatorSubjet1_) {
-				//for debugging: print out available subjet collections
-				//std::vector<std::string> labels = Jet->subjetCollectionNames();
-				//std::copy(labels.begin(), labels.end(), std::ostream_iterator<std::string>(std::cout, " "));
-				DoublePtr_bDiscriminatorSubjet1_->push_back( Jet->subjets("SoftDrop").size() > 0 ? Jet->subjets("SoftDrop").at(0)->bDiscriminator(btagnameCSV_) : -10. );
-			}
-			
-			if(DoublePtr_bDiscriminatorSubjet2_) DoublePtr_bDiscriminatorSubjet2_->push_back( Jet->subjets("SoftDrop").size() > 1 ? Jet->subjets("SoftDrop").at(1)->bDiscriminator(btagnameCSV_) : -10. );
-			
-			if(DoublePtr_bDiscriminatorCSV_) DoublePtr_bDiscriminatorCSV_->push_back( Jet->bDiscriminator(btagnameCSV_) );
-			
-			if(DoublePtr_bDiscriminatorMVA_) DoublePtr_bDiscriminatorMVA_->push_back( Jet->bDiscriminator(btagnameMVA_) );			
+			//for debugging: print out available subjet collections
+			//std::vector<std::string> labels = Jet->subjetCollectionNames();
+			//std::copy(labels.begin(), labels.end(), std::ostream_iterator<std::string>(std::cout, " "));
 		}
 	}
 
@@ -265,10 +250,6 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 		DoublePtrs_[ip]->put(iEvent);
 	}
-	if(DoublePtr_bDiscriminatorSubjet1_) DoublePtr_bDiscriminatorSubjet1_->put(iEvent);
-	if(DoublePtr_bDiscriminatorSubjet2_) DoublePtr_bDiscriminatorSubjet2_->put(iEvent);
-	if(DoublePtr_bDiscriminatorCSV_) DoublePtr_bDiscriminatorCSV_->put(iEvent);
-	if(DoublePtr_bDiscriminatorMVA_) DoublePtr_bDiscriminatorMVA_->put(iEvent);
 
 }
 
@@ -290,10 +271,6 @@ JetProperties::endJob() {
 		delete (DoublePtrs_[ip]);
 	}
 	DoublePtrs_.clear();
-	delete DoublePtr_bDiscriminatorSubjet1_;
-	delete DoublePtr_bDiscriminatorSubjet2_;
-	delete DoublePtr_bDiscriminatorCSV_;
-	delete DoublePtr_bDiscriminatorMVA_;
 }
 
 // ------------ method called when starting to processes a run  ------------
