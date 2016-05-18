@@ -99,14 +99,20 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
     # jet uncertainty variations
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
     
+    #JEC factors
+    process.JetsForHadTauJECfactor = JetUncertaintyProducer.clone(
+        JetTag = cms.InputTag("JetsForHadTau"),
+        jecUncDir = cms.int32(0)
+    )
+    #get the JEC factor and unc from here
+    process.TreeMaker2.VectorDouble.extend(['JetsForHadTauJECfactor:jecFactor(softJets_jecFactor)','JetsForHadTauJECfactor:jecUnc(softJets_jecUnc)'])
+
     #JEC unc up
     process.JetsForHadTauJECup = JetUncertaintyProducer.clone(
         JetTag = cms.InputTag("JetsForHadTau"),
         jecUncDir = cms.int32(1)
     )
     process.AdditionalSequence += process.JetsForHadTauJECup
-    #get the JEC factor and unc from here
-    process.TreeMaker2.VectorDouble.extend(['JetsForHadTauJECup:jecFactor(softJets_jecFactor)','JetsForHadTauJECup:jecUnc(softJets_jecUnc)'])
     process = makeJetVarsHadTau(process,
                           sequence="AdditionalSequence",
                           JetTag=cms.InputTag("JetsForHadTauJECup"),

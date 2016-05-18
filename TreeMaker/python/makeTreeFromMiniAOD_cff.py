@@ -680,14 +680,20 @@ signal=False
 
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
     
+    #JEC factors
+    process.patJetsJECfactor = JetUncertaintyProducer.clone(
+        JetTag = JetTag,
+        jecUncDir = cms.int32(0)
+    )
+    #get the JEC factor and unc from here
+    VectorDouble.extend(['patJetsJECfactor:jecFactor(Jets_jecFactor)','patJetsJECfactor:jecUnc(Jets_jecUnc)'])
+
     #JEC unc up
     process.patJetsJECup = JetUncertaintyProducer.clone(
         JetTag = JetTag,
         jecUncDir = cms.int32(1)
     )
     process.Baseline += process.patJetsJECup
-    #get the JEC factor and unc from here
-    VectorDouble.extend(['patJetsJECup:jecFactor(Jets_jecFactor)','patJetsJECup:jecUnc(Jets_jecUnc)'])
     process = makeJetVars(process,
                           sequence="Baseline",
                           JetTag=cms.InputTag("patJetsJECup"),
