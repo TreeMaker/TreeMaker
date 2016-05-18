@@ -41,7 +41,6 @@ def doLostLeptonBkg(process,geninfo,METTag):
     process.LostLepton += process.IDIsoElectronMiniIso
 
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
-    from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationCounter
 
     process.TAPElectronTracks = trackIsolationFilter.clone(
             doTrkIsoVeto        = False,

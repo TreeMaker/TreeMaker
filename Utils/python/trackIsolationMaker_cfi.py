@@ -14,10 +14,3 @@ trackIsolationFilter = cms.EDFilter("TrackIsolationFilter",
                                     mTCut               = cms.double(100.),
                                     debug               = cms.bool(False),
 )
-
-trackIsolationCounter  = cms.EDFilter("PATCandViewCountFilter",
-                                      minNumber = cms.uint32(0),
-                                      maxNumber = cms.uint32(999999),
-                                      src = cms.InputTag("trackIsolationFilter")
-)
-

@@ -360,7 +360,6 @@ signal=False
     ## IsoTracks
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
-    from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationCounter
 
     process.IsolatedElectronTracksVeto = trackIsolationFilter.clone(
         doTrkIsoVeto        = False,
