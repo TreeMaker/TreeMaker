@@ -188,6 +188,11 @@ signal=False
     process.load("CondCore.DBCommon.CondDBCommon_cfi")
     from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
     
+    # default miniAOD tags
+    JetTag = cms.InputTag('slimmedJets')
+    JetAK8Tag = cms.InputTag('slimmedJetsAK8')
+    METTag = cms.InputTag('slimmedMETs')
+    
     # QG tagging DB payload
     if is74X:
         qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
@@ -206,12 +211,19 @@ signal=False
                 )
             )
     
+    # get QG tagging discriminant
+    process.QGTagger = cms.EDProducer('QGTagger',
+        srcJets	            = JetTag,
+        jetsLabel           = cms.string('QGL_AK4PFchs'),
+        srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),		
+        srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
+        useQualityCuts	    = cms.bool(False)
+    )
+    process.Baseline += process.QGTagger
+    
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
-    JetTag = cms.InputTag('slimmedJets')
-    JetAK8Tag = cms.InputTag('slimmedJetsAK8')
-    METTag = cms.InputTag('slimmedMETs')
     if len(jecfile)>0:
         #get name of JECs without any directories
         JECera = jecfile.split('/')[-1]
@@ -258,6 +270,8 @@ signal=False
                 jetSource = cms.InputTag("slimmedJets"),
                 jetCorrFactorsSource = cms.VInputTag(cms.InputTag("patJetCorrFactorsReapplyJEC"))
             )
+            process.patJetsReapplyJEC.userData.userFloats.src += ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2']
+            process.patJetsReapplyJEC.userData.userInts.src += ['QGTagger:mult']
             
             process.Baseline += process.patJetCorrFactorsReapplyJEC
             process.Baseline += process.patJetsReapplyJEC
@@ -314,6 +328,8 @@ signal=False
                 postfix = 'UpdatedJEC',
                 jetCorrections = ('AK4PFchs', levels, 'None')
             )
+            process.updatedPatJetsUpdatedJEC.userData.userFloats.src += ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2']
+            process.updatedPatJetsUpdatedJEC.userData.userInts.src += ['QGTagger:mult']
             process.Baseline += process.patJetCorrFactorsUpdatedJEC
             process.Baseline += process.updatedPatJetsUpdatedJEC
             
@@ -662,7 +678,14 @@ signal=False
         BTagInputTagCSV = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
         BTagInputTagMVA = cms.string('pfCombinedMVABJetTags'),
         QGTag        = cms.InputTag(""),
-        AK8          = cms.bool(True)
+        properties = cms.vstring(
+            "prunedMass"           ,
+            "NsubjettinessTau1"    ,
+            "NsubjettinessTau2"    ,
+            "NsubjettinessTau3"    ,
+            "bDiscriminatorSubjet1",
+            "bDiscriminatorSubjet2",
+        )
     )
     if not is74X: process.JetsPropertiesAK8.BTagInputTagMVA = cms.string('pfCombinedMVAV2BJetTags')
     process.Baseline += process.JetsPropertiesAK8
