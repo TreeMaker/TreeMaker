@@ -18,8 +18,8 @@ def addJetInfo(process, sequence, JetTag, is74X, userFloats, userInts, suff=""):
     patJetsAuxiliary = patJetsUpdated.clone(
         jetSource = JetTag,
         addJetCorrFactors = cms.bool(False),
-        addBTagInfo = cms.bool(False)
     )
+    if not is74X: patJetsAuxiliary.addBTagInfo = cms.bool(False)
     patJetsAuxiliary.userData.userFloats.src += userFloats
     patJetsAuxiliary.userData.userInts.src += userInts
     setattr(process,JetTagOut.value(),patJetsAuxiliary)
