@@ -140,46 +140,30 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
     ## ----------------------------------------------------------------------------------------------
     
     if storeProperties>0:
-        # get QG tagging discriminant
-        QGTagger = cms.EDProducer('QGTagger',
-            srcJets	            = GoodJetsTag,
-            jetsLabel           = cms.string('QGL_AK4PFchs'),
-            srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),		
-            srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
-            useQualityCuts	    = cms.bool(False)
-        )
-        setattr(process,"QGTagger"+suff,QGTagger)
-        theSequence += getattr(process,"QGTagger"+suff)
-        QGTag = cms.InputTag("QGTagger"+suff,"qgLikelihood")
-        QGTagMult = cms.InputTag("QGTagger"+suff,"mult")
-        QGTagPtD = cms.InputTag("QGTagger"+suff,"ptD")
-        QGTagAxis2 = cms.InputTag("QGTagger"+suff,"axis2")
         # make jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetsProperties = jetproperties.clone(
-            JetTag       = GoodJetsTag,
-            BTagInputTagCSV = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-            BTagInputTagMVA = cms.string('pfCombinedMVABJetTags'),
-            QGTag        = QGTag,
-            QGTagMult    = QGTagMult,
-            QGTagPtD     = QGTagPtD,
-            QGTagAxis2   = QGTagAxis2,
-            AK8          = cms.bool(False)
+            JetTag       = GoodJetsTag
         )
-        if not is74X: JetsProperties.BTagInputTagMVA = cms.string('pfCombinedMVAV2BJetTags')
+        # provide extra info where necessary
+        JetsProperties.bDiscriminatorMVA = cms.vstring('pfCombinedMVABJetTags') if is74X else cms.vstring('pfCombinedMVAV2BJetTags')
+        if storeProperties==1: 
+            JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","partonFlavor","hadronFlavor")
         setattr(process,"JetsProperties"+suff,JetsProperties)
         theSequence += getattr(process,"JetsProperties"+suff)
-        process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)'])
+        process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
+                                                'JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)'])
         process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
                                              'JetsProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)'])
         if storeProperties>1:
-            process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
-                                                    'JetsProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
+            process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
                                                     'JetsProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
                                                     'JetsProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
                                                     'JetsProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
+                                                    'JetsProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
+                                                    'JetsProperties'+suff+':jecUnc(Jets'+suff+'_jecUnc)',
                                                     'JetsProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
                                                     'JetsProperties'+suff+':qgPtD(Jets'+suff+'_qgPtD)',
                                                     'JetsProperties'+suff+':qgAxis2(Jets'+suff+'_qgAxis2)'])

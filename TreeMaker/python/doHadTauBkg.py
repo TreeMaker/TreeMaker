@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVarsHadTau(process,sequence,JetTag,suff):
+def makeJetVarsHadTau(process,sequence,JetTag,suff,storeProperties=0):
     if hasattr(process,sequence):
         theSequence = getattr(process,sequence)
     else:
@@ -16,13 +16,27 @@ def makeJetVarsHadTau(process,sequence,JetTag,suff):
     )
     setattr(process,"GoodJetsForHadTau"+suff,GoodJetsForHadTau)
     theSequence += getattr(process,"GoodJetsForHadTau"+suff)
+    GoodJetsTag = cms.InputTag("GoodJetsForHadTau"+suff)
     
     process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(softJets'+suff+')'])
     process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau'+suff+':JetIDMask(softJets'+suff+'_ID)'])
     
+    if storeProperties>0:
+        # make jet properties producer
+        from TreeMaker.Utils.jetproperties_cfi import jetproperties
+        JetsProperties = jetproperties.clone(
+            JetTag       = GoodJetsTag,
+            properties   = cms.vstring("jecFactor","jecUnc")
+        )
+        # provide extra info where necessary
+        JetsProperties.jecUnc = cms.vstring("jecUncHadTau")
+        setattr(process,"HadTauJetsProperties"+suff,JetsProperties)
+        theSequence += getattr(process,"HadTauJetsProperties"+suff)
+        process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(softJets'+suff+'_jecFactor)','HadTauJetsProperties:jecUnc(softJets'+suff+'_jecUnc)'])
+    
     return process
 
-def doHadTauBkg(process,geninfo,residual,JetTag):
+def doHadTauBkg(process,geninfo,residual,JetTag,is74X):
     process.load("RecoJets.JetProducers.ak4PFJets_cfi")
     from JetMETCorrections.Configuration.JetCorrectionServices_cff import ak4PFCHSL1FastL2L3,ak4PFCHSL1Fastjet,ak4PFCHSL2Relative,ak4PFCHSL3Absolute
 
@@ -89,40 +103,96 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
     if geninfo:
         process.JetsForHadTau.MCflag = cms.bool(True)
     process.AdditionalSequence += process.JetsForHadTau
-    
-    process = makeJetVarsHadTau(process,
-        sequence="AdditionalSequence",
-        JetTag=cms.InputTag("JetsForHadTau"),
-        suff='',
-    )
-    
+    JetTagHadTau = cms.InputTag("JetsForHadTau")
+
     # jet uncertainty variations
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
     
-    #JEC unc up
-    process.JetsForHadTauJECup = JetUncertaintyProducer.clone(
-        JetTag = cms.InputTag("JetsForHadTau"),
-        jecUncDir = cms.int32(1)
+    #JEC uncertainty
+    process.jecUncHadTau = JetUncertaintyProducer.clone(
+        JetTag = JetTagHadTau,
+        jecUncDir = cms.int32(0)
     )
-    process.AdditionalSequence += process.JetsForHadTauJECup
-    #get the JEC factor and unc from here
-    process.TreeMaker2.VectorDouble.extend(['JetsForHadTauJECup:jecFactor(softJets_jecFactor)','JetsForHadTauJECup:jecUnc(softJets_jecUnc)'])
+    process.AdditionalSequence += process.jecUncHadTau
+    # add userfloat & update tag
+    from TreeMaker.TreeMaker.addJetInfo import addJetInfo
+    process, JetTagHadTau = addJetInfo(process, "AdditionalSequence", JetTagHadTau, is74X, ['jecUncHadTau'], [])
+    
+    # skip all jet smearing for data and for 74X
+    from TreeMaker.TreeMaker.JetDepot import JetDepot
+    doJERsmearing = geninfo and not is74X
+    
+    # JEC unc up
+    process, JetTagHadTauJECup = JetDepot(process,
+        sequence="AdditionalSequence",
+        JetTag=JetTagHadTau,
+        jecUncDir=1,
+        doSmear=doJERsmearing,
+        jerUncDir=0
+    )
     process = makeJetVarsHadTau(process,
-                          sequence="AdditionalSequence",
-                          JetTag=cms.InputTag("JetsForHadTauJECup"),
-                          suff='JECup',
+        sequence="AdditionalSequence",
+        JetTag=JetTagHadTauJECup,
+        suff='JECup',
     )
+    
+    # JEC unc down
+    process, JetTagHadTauJECdown = JetDepot(process,
+        sequence="AdditionalSequence",
+        JetTag=JetTagHadTau,
+        jecUncDir=-1,
+        doSmear=doJERsmearing,
+        jerUncDir=0
+    )
+    process = makeJetVarsHadTau(process,
+        sequence="AdditionalSequence",
+        JetTag=JetTagHadTauJECdown,
+        suff='JECdown',
+    )
+    
+    if doJERsmearing:
+        # JER unc up
+        process, JetTagHadTauJERup = JetDepot(process,
+            sequence="AdditionalSequence",
+            JetTag=JetTagHadTau,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=1
+        )
+        process = makeJetVarsHadTau(process,
+            sequence="AdditionalSequence",
+            JetTag=JetTagHadTauJERup,
+            suff='JERup',
+        )
+        
+        # JER unc down
+        process, JetTagHadTauJERdown = JetDepot(process,
+            sequence="AdditionalSequence",
+            JetTag=JetTagHadTau,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=-1
+        )
+        process = makeJetVarsHadTau(process,
+            sequence="AdditionalSequence",
+            JetTag=JetTagHadTauJERdown,
+            suff='JERdown',
+        )
 
-    #JEC unc down
-    process.JetsForHadTauJECdown = JetUncertaintyProducer.clone(
-        JetTag = cms.InputTag("JetsForHadTau"),
-        jecUncDir = cms.int32(-1)
-    )
-    process.AdditionalSequence += process.JetsForHadTauJECdown
+        # finally, do central smearing and replace jet tag
+        process, JetTagHadTau = JetDepot(process,
+            sequence="AdditionalSequence",
+            JetTag=JetTagHadTau,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=0
+        )
+    
     process = makeJetVarsHadTau(process,
-                          sequence="AdditionalSequence",
-                          JetTag=cms.InputTag("JetsForHadTauJECdown"),
-                          suff='JECdown',
+        sequence="AdditionalSequence",
+        JetTag=JetTagHadTau,
+        suff='',
+        storeProperties=1
     )
     
     return process
