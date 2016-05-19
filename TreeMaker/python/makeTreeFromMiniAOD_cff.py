@@ -20,6 +20,7 @@ tagname="RECO",
 jsonfile="",
 jecfile="",
 residual=False,
+jerfile="",
 doPDFs=False,
 fastsim=False,
 signal=False
@@ -193,24 +194,6 @@ signal=False
     JetAK8Tag = cms.InputTag('slimmedJetsAK8')
     METTag = cms.InputTag('slimmedMETs')
     
-    # QG tagging DB payload
-    if is74X:
-        qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
-        process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",CondDBSetup,
-            toGet = cms.VPSet(),
-            connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
-        )
-        for type in ['AK4PFchs','AK4PFchs_antib']:
-            process.QGPoolDBESSource.toGet.extend(
-                cms.VPSet(
-                    cms.PSet(
-                        record = cms.string('QGLikelihoodRcd'),
-                        tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
-                        label  = cms.untracked.string('QGL_'+type)
-                    )
-                )
-            )
-
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
@@ -342,42 +325,17 @@ signal=False
             )
             METTag = cms.InputTag('slimmedMETs','',process.name_())
 
-    ## ----------------------------------------------------------------------------------------------
-    ## Jet auxiliary info
-    ## ----------------------------------------------------------------------------------------------
-    
-    # get QG tagging discriminant
-    process.QGTagger = cms.EDProducer('QGTagger',
-        srcJets	            = JetTag,
-        jetsLabel           = cms.string('QGL_AK4PFchs'),
-        srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),		
-        srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
-        useQualityCuts	    = cms.bool(False)
-    )
-    process.Baseline += process.QGTagger
-    
+    # JEC uncertainty - after JECs are updated
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
-    
-    #JEC uncertainty - after JECs are updated
     process.jecUnc = JetUncertaintyProducer.clone(
         JetTag = JetTag,
         jecUncDir = cms.int32(0)
     )
     process.Baseline += process.jecUnc
-    
-    #add userfloats to jet collection
-    if is74X: from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import patJetsUpdated
-    else: from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets as patJetsUpdated
-    process.patJetsAuxiliary = patJetsUpdated.clone(
-        jetSource = JetTag,
-        addJetCorrFactors = cms.bool(False),
-        addBTagInfo = cms.bool(False)
-    )
-    process.patJetsAuxiliary.userData.userFloats.src += ['jecUnc','QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2']
-    process.patJetsAuxiliary.userData.userInts.src += ['QGTagger:mult']
-    process.Baseline += process.patJetsAuxiliary
-    JetTag = cms.InputTag('patJetsAuxiliary')
-    
+    # add userfloat & update tag
+    from TreeMaker.TreeMaker.addJetInfo import addJetInfo
+    process, JetTag = addJetInfo(process, "Baseline", JetTag, is74X, ['jecUnc'], [])
+
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
     ## ----------------------------------------------------------------------------------------------
@@ -669,9 +627,9 @@ signal=False
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
     ## ----------------------------------------------------------------------------------------------
-    ## Jet variables
+    ## JER smearing, various uncertainties
     ## ----------------------------------------------------------------------------------------------
-
+    
     # list of clean tags - ignore jet ID for jets matching these objects
     SkipTag = cms.VInputTag(
         cms.InputTag('LeptonsNew:IdIsoMuon'),
@@ -681,7 +639,156 @@ signal=False
         cms.InputTag('IsolatedPionTracksVeto'),
     )
     
+    # get the JERs (disabled by default)
+    # this requires the user to download the .db file from this github
+    # https://github.com/cms-jet/JRDatabase
+    if len(jerfile)>0:
+        #get name of JERs without any directories
+        JERera = jerfile.split('/')[-1]
+        JERPatch = cms.string('sqlite_file:'+jerfile+'.db')
+        if os.getenv('GC_CONF'): 
+            JERPatch = cms.string('sqlite_file:../src/'+jerfile+'.db')
+    
+        process.jer = cms.ESSource("PoolDBESSource",CondDBSetup,
+            connect = JERPatch,
+            toGet = cms.VPSet(
+                cms.PSet(
+                    record = cms.string('JetResolutionRcd'),
+                    tag    = cms.string('JR_'+JERera+'_PtResolution_AK4PFchs'),
+                    label  = cms.untracked.string('AK4PFchs_pt')
+                ),
+                cms.PSet(
+                    record = cms.string('JetResolutionScaleFactorRcd'),
+                    tag    = cms.string('JR_'+JERera+'_SF_AK4PFchs'),
+                    label  = cms.untracked.string('AK4PFchs')
+                ),
+            ),
+        )
+
+        process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
+
+    # skip all jet smearing for data and for 74X
+    from TreeMaker.TreeMaker.JetDepot import JetDepot
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
+    doJERsmearing = geninfo and not is74X
+    
+    # JEC unc up
+    process, JetTagJECup = JetDepot(process,
+        sequence="Baseline",
+        JetTag=JetTag,
+        jecUncDir=1,
+        doSmear=doJERsmearing,
+        jerUncDir=0
+    )
+    process = makeJetVars(process,
+                          sequence="Baseline",
+                          JetTag=JetTagJECup,
+                          suff='JECup',
+                          skipGoodJets=False,
+                          storeProperties=1,
+                          SkipTag=SkipTag,
+                          is74X=is74X
+    )
+    
+    # JEC unc down
+    process, JetTagJECdown = JetDepot(process,
+        sequence="Baseline",
+        JetTag=JetTag,
+        jecUncDir=-1,
+        doSmear=doJERsmearing,
+        jerUncDir=0
+    )
+    process = makeJetVars(process,
+                          sequence="Baseline",
+                          JetTag=JetTagJECdown,
+                          suff='JECdown',
+                          skipGoodJets=False,
+                          storeProperties=1,
+                          SkipTag=SkipTag,
+                          is74X=is74X
+    )
+    
+    if doJERsmearing:
+        # JER unc up
+        process, JetTagJERup = JetDepot(process,
+            sequence="Baseline",
+            JetTag=JetTag,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=1
+        )
+        process = makeJetVars(process,
+                              sequence="Baseline",
+                              JetTag=JetTagJERup,
+                              suff='JERup',
+                              skipGoodJets=False,
+                              storeProperties=1,
+                              SkipTag=SkipTag,
+                              is74X=is74X
+        )
+        
+        # JER unc down
+        process, JetTagJERdown = JetDepot(process,
+            sequence="Baseline",
+            JetTag=JetTag,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=-1
+        )
+        process = makeJetVars(process,
+                              sequence="Baseline",
+                              JetTag=JetTagJERdown,
+                              suff='JERdown',
+                              skipGoodJets=False,
+                              storeProperties=1,
+                              SkipTag=SkipTag,
+                              is74X=is74X
+        )
+
+        # finally, do central smearing and replace jet tag
+        process, JetTag = JetDepot(process,
+            sequence="Baseline",
+            JetTag=JetTag,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=0
+        )
+        
+    ## ----------------------------------------------------------------------------------------------
+    ## Jet variables
+    ## ----------------------------------------------------------------------------------------------
+
+    # QG tagging DB payload
+    if is74X:
+        qgDatabaseVersion = 'v1' # check https://twiki.cern.ch/twiki/bin/viewauth/CMS/QGDataBaseVersion
+        process.QGPoolDBESSource = cms.ESSource("PoolDBESSource",CondDBSetup,
+            toGet = cms.VPSet(),
+            connect = cms.string('frontier://FrontierProd/CMS_COND_PAT_000'),
+        )
+        for type in ['AK4PFchs','AK4PFchs_antib']:
+            process.QGPoolDBESSource.toGet.extend(
+                cms.VPSet(
+                    cms.PSet(
+                        record = cms.string('QGLikelihoodRcd'),
+                        tag    = cms.string('QGLikelihoodObject_'+qgDatabaseVersion+'_'+type),
+                        label  = cms.untracked.string('QGL_'+type)
+                    )
+                )
+            )
+
+    # get QG tagging discriminant
+    process.QGTagger = cms.EDProducer('QGTagger',
+        srcJets	            = JetTag,
+        jetsLabel           = cms.string('QGL_AK4PFchs'),
+        srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),		
+        srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
+        useQualityCuts	    = cms.bool(False)
+    )
+    process.Baseline += process.QGTagger
+    
+    # add userfloats & update tag
+    process, JetTag = addJetInfo(process, "Baseline", JetTag, is74X, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2'], ['QGTagger:mult'])
+    
     process = makeJetVars(process,
                           sequence="Baseline",
                           JetTag=JetTag,
@@ -720,44 +827,6 @@ signal=False
                          'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
                          'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
                          'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
-
-    ## ----------------------------------------------------------------------------------------------
-    ## Jet uncertainty variations
-    ## ----------------------------------------------------------------------------------------------
-
-    from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
-
-    #JEC unc up
-    process.patJetsJECup = JetUncertaintyProducer.clone(
-        JetTag = JetTag,
-        jecUncDir = cms.int32(1)
-    )
-    process.Baseline += process.patJetsJECup
-    process = makeJetVars(process,
-                          sequence="Baseline",
-                          JetTag=cms.InputTag("patJetsJECup"),
-                          suff='JECup',
-                          skipGoodJets=False,
-                          storeProperties=1,
-                          SkipTag=SkipTag,
-                          is74X=is74X
-    )
-
-    #JEC unc down
-    process.patJetsJECdown = JetUncertaintyProducer.clone(
-        JetTag = JetTag,
-        jecUncDir = cms.int32(-1)
-    )
-    process.Baseline += process.patJetsJECdown
-    process = makeJetVars(process,
-                          sequence="Baseline",
-                          JetTag=cms.InputTag("patJetsJECdown"),
-                          suff='JECdown',
-                          skipGoodJets=False,
-                          storeProperties=1,
-                          SkipTag=SkipTag,
-                          is74X=is74X
-    )
 
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables

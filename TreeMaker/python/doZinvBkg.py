@@ -51,6 +51,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
         cut = cms.string("pt>10.")
     )
     setattr(process,'reclusteredJets'+suff,reclusteredJets)
+    JetTagClean = cms.InputTag("reclusteredJets"+suff)
 
     # recalculate MET from cleaned candidates and reclustered jets
     postfix="clean"+suff
@@ -138,12 +139,26 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     process.TreeMaker2.VarsInt.extend(['IsolatedMuonTracksVetoClean'+suff+':isoTracks(isoMuonTracksclean'+suff+')'])
     process.TreeMaker2.VarsInt.extend(['IsolatedPionTracksVetoClean'+suff+':isoTracks(isoPionTracksclean'+suff+')'])
 
+    # skip all jet smearing for data and for 74X
+    from TreeMaker.TreeMaker.JetDepot import JetDepot
+    doJERsmearing = geninfo and not is74X
+    
+    if doJERsmearing:
+        # do central smearing and replace jet tag
+        process, JetTagClean = JetDepot(process,
+            sequence="ZinvClean",
+            JetTag=JetTagClean,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=0
+        )
+    
     # make the event variables
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     process = makeJetVars(
         process,
         sequence="ZinvClean",
-        JetTag = cms.InputTag("reclusteredJets"+suff),
+        JetTag = JetTagClean,
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,

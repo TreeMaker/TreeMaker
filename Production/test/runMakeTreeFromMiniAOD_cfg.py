@@ -36,6 +36,7 @@ signal=parameters.value("signal",scenario.signal)
 jsonfile=parameters.value("jsonfile",scenario.jsonfile)
 jecfile=parameters.value("jecfile",scenario.jecfile)
 residual=parameters.value("residual",scenario.residual)
+jerfile=parameters.value("jerfile",scenario.jerfile)
 era=parameters.value("era",scenario.era)
 
 # The process needs to be defined AFTER reading sys.argv,
@@ -96,6 +97,7 @@ print " Using fastsim settings: "+str(fastsim)
 print " Running signal uncertainties: "+str(signal)
 if len(jsonfile)>0: print " JSON file applied: "+jsonfile
 if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual else "")
+if len(jerfile)>0: print " JERs applied: "+jerfile
 print " era of this dataset: "+era
 print "************************************************"
 
@@ -116,6 +118,7 @@ process = makeTreeFromMiniAOD(process,
     jsonfile=jsonfile,
     jecfile=jecfile,
     residual=residual,
+    jerfile=jerfile,
     doPDFs=doPDFs,
     fastsim=fastsim,
     signal=signal
