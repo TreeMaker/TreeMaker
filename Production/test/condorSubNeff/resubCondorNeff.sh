@@ -63,7 +63,7 @@ counter=0
 #search for "return value" in condor logs newer than TIME - denotes finished job
 #or "abort" - denotes removed job
 echo -n "Searching logs after $TIME..."
-IFS=$'\n' filelist=($(grep -m1 "return value\|abort" $(find . -name \*.condor -newermt "${TIME}"))); unset IFS
+readarray filelist < <(find . -name \*.condor -newermt "${TIME}" -print0 | xargs -0 -n1 -P4 grep -H -m1 "return value\|abort")
 filelistlen=${#filelist[@]}
 echo " found $filelistlen"
 for ((i=0; i < $filelistlen; i++)); do
