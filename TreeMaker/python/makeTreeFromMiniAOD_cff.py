@@ -324,6 +324,13 @@ signal=False
                 isData=not geninfo, # controls gen met
             )
             METTag = cms.InputTag('slimmedMETs','',process.name_())
+    elif not is74X:
+        # pointless run of MET tool because it is barely functional
+        from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
+        runMetCorAndUncFromMiniAOD(
+            process,
+            isData=not geninfo, # controls gen met
+        )
 
     # JEC uncertainty - after JECs are updated
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
