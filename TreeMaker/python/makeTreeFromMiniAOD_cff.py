@@ -660,6 +660,14 @@ signal=False
             'HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v',
             'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v',
             'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v',
+            'HLT_Mu15_IsoVVVL_PFHT400_v',
+            'HLT_TkMu50_v',
+            'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v',
+            'HLT_Ele15_IsoVVVL_PFHT400_v',
+            'HLT_IsoMu22_v',
+            'HLT_IsoTkMu22_v',
+            'HLT_Mu50_IsoVVVL_PFHT400_v',
+            'HLT_Ele50_IsoVVVL_PFHT400_v',
         )
     process.Baseline += process.TriggerProducer
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])

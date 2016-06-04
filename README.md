@@ -129,7 +129,7 @@ For MC samples, it can also automatically generate the appropriate configuration
 
 Before running the script for the first time, some environment settings are necessary:
 ```
-source /cvmfs/cms.cern.ch/crab3/crab.csh
+source /cvmfs/cms.cern.ch/crab3/crab_light.csh
 ```
 
 To run the script:
@@ -192,6 +192,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `signal`: switch to enable assessment of signal systematics (default=False) (currently unused)
 * `jsonfile`: name of JSON file to apply to data
 * `jecfile`: name of a database file from which to get JECs (default="")
+* `jerfile`: name of a database file from which to get JERs (default="")
 * `residual`: switch to enable residual JECs for data (default=False)
 
 Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py):
