@@ -7,7 +7,7 @@ class Scenario:
         elif sname == "Spring16sig":
             self.set_vars("80X_mcRun2_asymptotic_2016_miniAODv2","PAT",True,False,True,"","data/jec/Spring16_25nsV1_MC",False,"data/jer/Fall15_25nsV2_MC","Run2_25ns")
         elif sname == "2016B":
-            self.set_vars("80X_dataRun2_Prompt_v8","RECO",False,False,False,"data/Cert_271036-273450_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt","",False,"","Run2_25ns") # no JECs yet
+            self.set_vars("80X_dataRun2_Prompt_v8","RECO",False,False,False,"data/Cert_271036-274240_13TeV_PromptReco_Collisions16_JSON.txt","",False,"","Run2_25ns") # no JECs yet
         elif sname == "Spring15v2":
             self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,False,False,"","data/jec/Summer15_25nsV6_MC",False,"","Run2_25ns")
         elif sname == "Spring15v2sig":
