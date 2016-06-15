@@ -668,6 +668,10 @@ signal=False
             'HLT_IsoTkMu22_v',
             'HLT_Mu50_IsoVVVL_PFHT400_v',
             'HLT_Ele50_IsoVVVL_PFHT400_v',
+            'HLT_PFMETNoMu90_PFMHTNoMu90_IDTight_v',
+            'HLT_PFMETNoMu100_PFMHTNoMu100_IDTight_v',
+            'HLT_PFMETNoMu110_PFMHTNoMu110_IDTight_v',
+            'HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_v',
         )
     process.Baseline += process.TriggerProducer
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
