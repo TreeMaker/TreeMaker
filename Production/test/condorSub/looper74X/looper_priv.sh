@@ -20,7 +20,7 @@ fi
 
 ./FScheck.sh ${CHECKARGS}
 
-SCENARIO=Spring15Fastv2
+SCENARIO=Spring15Fastv2sig
 
 #### privately generated T5HH & T1ttbb
 SAMPLES=(

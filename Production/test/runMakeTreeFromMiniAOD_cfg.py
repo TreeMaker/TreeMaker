@@ -14,7 +14,6 @@ outfile=parameters.value("outfile","test_run")
 lostlepton=parameters.value("lostlepton", True)
 hadtau=parameters.value("hadtau", True)
 doZinv=parameters.value("doZinv", True)
-QCD=parameters.value("QCD", True)
 
 # compute the PDF weights
 doPDFs=parameters.value("doPDFs", True);
@@ -37,6 +36,7 @@ signal=parameters.value("signal",scenario.signal)
 jsonfile=parameters.value("jsonfile",scenario.jsonfile)
 jecfile=parameters.value("jecfile",scenario.jecfile)
 residual=parameters.value("residual",scenario.residual)
+jerfile=parameters.value("jerfile",scenario.jerfile)
 era=parameters.value("era",scenario.era)
 
 # The process needs to be defined AFTER reading sys.argv,
@@ -69,8 +69,8 @@ if dataset!=[] :
 
 #temporary redirector fix
 redir="root://cmsxrootd.fnal.gov/"
-#fastsim is phedexed to LPC Tier3
-if fastsim: redir="root://cmseos.fnal.gov/"
+#fastsim signal is phedexed to LPC Tier3
+if fastsim and signal: redir="root://cmseos.fnal.gov/"
 for f,val in enumerate(readFiles):
     if readFiles[f][0:6]=="/store":
         readFiles[f] = redir+readFiles[f]
@@ -83,7 +83,6 @@ print " "
 print " storing lostlepton variables: "+str(lostlepton)
 print " storing hadtau variables: "+str(hadtau)
 print " storing Zinv variables: "+str(doZinv)
-print " storing QCD variables: "+str(QCD)
 print " "
 print " storing PDF weights: "+str(doPDFs)
 print " "
@@ -98,6 +97,7 @@ print " Using fastsim settings: "+str(fastsim)
 print " Running signal uncertainties: "+str(signal)
 if len(jsonfile)>0: print " JSON file applied: "+jsonfile
 if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual else "")
+if len(jerfile)>0: print " JERs applied: "+jerfile
 print " era of this dataset: "+era
 print "************************************************"
 
@@ -110,7 +110,6 @@ process = makeTreeFromMiniAOD(process,
     numevents=numevents,
     hadtau=hadtau,
     lostlepton=lostlepton,
-    QCD=QCD,
     applybaseline=applybaseline,
     doZinv=doZinv,
     debugtracks=debugtracks,
@@ -119,6 +118,7 @@ process = makeTreeFromMiniAOD(process,
     jsonfile=jsonfile,
     jecfile=jecfile,
     residual=residual,
+    jerfile=jerfile,
     doPDFs=doPDFs,
     fastsim=fastsim,
     signal=signal

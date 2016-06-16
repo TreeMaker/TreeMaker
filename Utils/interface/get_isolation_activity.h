@@ -130,7 +130,7 @@ public:
     //nh, ch, ph, pu
     std::vector<double> deadcones(4,0.);
     if(type==electron) {
-      if (fabs(ptcl->eta())>1.479) {deadcones[1] = 0.015; deadcones[2] = 0.015; deadcones[3] = 0.08;}
+      if (fabs(ptcl->eta())>1.479) {deadcones[1] = 0.015; deadcones[2] = 0.08; deadcones[3] = 0.015;}
     } else if(type==muon) {
       deadcones[0] = 0.01; deadcones[1] = 0.0001; deadcones[2] = 0.01; deadcones[3] = 0.01;  
     } else {

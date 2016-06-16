@@ -1,6 +1,27 @@
 # TreeMaker
 
-## Instructions
+## Instructions (80X)
+
+The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 format).
+
+```
+cmsrel CMSSW_8_0_7_patch2
+cd CMSSW_8_0_7_patch2/src/
+cmsenv
+git cms-merge-topic -u kpedro88:METfix807p2
+git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
+scram b -j 8
+cd TreeMaker/Production/test
+```
+
+Several predefined scenarios are available for ease of production.
+These scenarios define various sample-dependent parameters, including:  
+global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
+The available scenarios are:  
+1. `Spring16`: for Spring16 miniAOD (v1) 25ns MC  
+2. `Spring16sig`: for Spring16 miniAOD (v1) 25ns MC (signal)
+
+## Instructions (74X)
 
 The following installation instructions assume the user wants to process Run2015 data or Spring15 MC (miniAOD v2 format).
 
@@ -20,10 +41,11 @@ global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC
 The available scenarios are:  
 1. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
 2. `Spring15v2sig`: for Spring15 re-miniAOD (v2) 25ns MC (signal)  
-3. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
-4. `re2015C`: for 2015C re-reco 25ns data  
-5. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
-6. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
+3. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC  
+4. `Spring15Fastv2sig`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
+5. `re2015C`: for 2015C re-reco 25ns data  
+6. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
+7. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
 
 ## Unit Tests (Interactive Runs)
 
@@ -107,7 +129,7 @@ For MC samples, it can also automatically generate the appropriate configuration
 
 Before running the script for the first time, some environment settings are necessary:
 ```
-source /cvmfs/cms.cern.ch/crab3/crab_gcc493.csh
+source /cvmfs/cms.cern.ch/crab3/crab_light.csh
 ```
 
 To run the script:
@@ -158,13 +180,11 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `lostlepton`: switch to enable the lost lepton background estimation processes (default=False)
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=False)
-* `QCD`: switch to enable the QCD LowDeltaPhi background estimation processes (default=False)
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=False)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
-* `tagandprobe`: switch to enable the tag and probe processes, disables MT cut on isolated tracks (default=False)
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
 * `applybaseline`: switch to apply the baseline HT selection (default=False)
-* `gridcontrol`: switch to apply special settings for CRAB submission (default=False)
+* `gridcontrol`: switch to apply special settings for grid control submission (default=False)
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
 * `tagname`: tag name for collections that can have different tags for data or MC (default="PAT")
 * `geninfo`: switch to enable use of generator information, should only be used for MC (default=True)
@@ -172,6 +192,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `signal`: switch to enable assessment of signal systematics (default=False) (currently unused)
 * `jsonfile`: name of JSON file to apply to data
 * `jecfile`: name of a database file from which to get JECs (default="")
+* `jerfile`: name of a database file from which to get JERs (default="")
 * `residual`: switch to enable residual JECs for data (default=False)
 
 Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py):

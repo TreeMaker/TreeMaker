@@ -41,7 +41,6 @@ def doLostLeptonBkg(process,geninfo,METTag):
     process.LostLepton += process.IDIsoElectronMiniIso
 
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
-    from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationCounter
 
     process.TAPElectronTracks = trackIsolationFilter.clone(
             doTrkIsoVeto        = False,
@@ -91,21 +90,21 @@ def doLostLeptonBkg(process,geninfo,METTag):
             LeptonTag = cms.InputTag('GenLeptons:Muon'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
+            JetTag = cms.InputTag('HTJets')
         )    
         process.LostLepton += process.GenMuonMiniIso
         process.GenElectronMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Electron'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
+            JetTag = cms.InputTag('HTJets')
         )    
         process.LostLepton += process.GenElectronMiniIso
         process.GenTauMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Tau'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
+            JetTag = cms.InputTag('HTJets')
         )    
         process.LostLepton += process.GenTauMiniIso      
     
@@ -117,12 +116,9 @@ def doLostLeptonBkg(process,geninfo,METTag):
     )
     process.LostLepton += process.PTWExtrapolation
         
-    print "Adding LostLepton calculations to final path and tree"
     process.AdditionalSequence += process.LostLepton
     
-    process.TreeMaker2.VectorRecoCand.extend(['IsolatedElectronTracksVeto','IsolatedMuonTracksVeto','IsolatedPionTracksVeto'])
     # may eventually save track isolation, activity
-    process.TreeMaker2.VectorBool.extend(['LeptonsNew:ElecIDMedium(selectedIDElectrons_mediumID)', 'LeptonsNew:ElecIDIsoMedium(selectedIDIsoElectrons_mediumID)'])
     process.TreeMaker2.VectorRecoCand.extend(['LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdElectron(selectedIDElectrons)'])
     process.TreeMaker2.VectorDouble.extend(['LeptonsNew:MuIDMTW(selectedIDMuons_MTW)','LeptonsNew:ElecIDMTW(selectedIDElectrons_MTW)'])
     process.TreeMaker2.VectorDouble.extend(['IDMuonMiniIso:MiniIso(selectedIDMuons_MiniIso)','IDElectronMiniIso:MiniIso(selectedIDElectrons_MiniIso)'])
@@ -130,9 +126,6 @@ def doLostLeptonBkg(process,geninfo,METTag):
     process.TreeMaker2.VectorDouble.extend(['LeptonsNew:MuIDIsoMTW(selectedIDIsoMuons_MTW)','LeptonsNew:ElecIDIsoMTW(selectedIDIsoElectrons_MTW)'])
     process.TreeMaker2.VectorDouble.extend(['PTWExtrapolation:MuPTW(selectedIDIsoMuons_PTW)','PTWExtrapolation:ElecPTW(selectedIDIsoElectrons_PTW)'])
     process.TreeMaker2.VectorDouble.extend(['IDIsoMuonMiniIso:MT2Activity(selectedIDIsoMuons_MT2Activity)','IDIsoElectronMiniIso:MT2Activity(selectedIDIsoElectrons_MT2Activity)'])
-    process.TreeMaker2.VarsInt.extend(['TAPElectronTracks:isoTracks(nTAPElectronTracks)'])
-    process.TreeMaker2.VarsInt.extend(['TAPMuonTracks:isoTracks(nTAPMuonTracks)'])
-    process.TreeMaker2.VarsInt.extend(['TAPPionTracks:isoTracks(nTAPPionTracks)'])
     process.TreeMaker2.VectorTLorentzVector.extend(['TAPElectronTracks:pfcands(TAPElectronTracks)'])
     process.TreeMaker2.VectorDouble.extend(['TAPElectronTracks:pfcandstrkiso(TAPElectronTracks_trkiso)'])
     process.TreeMaker2.VectorDouble.extend(['TAPElectronTracks:pfcandsactivity(TAPElectronTracks_activity)'])
@@ -154,8 +147,8 @@ def doLostLeptonBkg(process,geninfo,METTag):
         process.TreeMaker2.VectorDouble.extend(['GenLeptons:MuonGenRecoD3(GenMu_RecoTrkd3)','GenLeptons:ElectronGenRecoD3(GenElec_RecoTrkd3)'])
         process.TreeMaker2.VectorDouble.extend(['GenLeptons:MuonTrkIso(GenMu_RecoTrkIso)','GenLeptons:ElectronTrkIso(GenElec_RecoTrkIso)'])
         process.TreeMaker2.VectorDouble.extend(['GenLeptons:MuonTrkAct(GenMu_RecoTrkAct)','GenLeptons:ElectronTrkAct(GenElec_RecoTrkAct)'])
-        process.TreeMaker2.VectorRecoCand.extend(['GenLeptons:TauDecayCands(TauDecayCands)','GenLeptons:TauNu(GenTauNu)'])
-        process.TreeMaker2.VectorInt.extend(['GenLeptons:MuonTauDecay(GenMu_GenMuFromTau)','GenLeptons:ElectronTauDecay(GenElec_GenElecFromTau)','GenLeptons:TauHadronic(GenTau_GenTauHad)','GenLeptons:TauDecayCandspdgID(TauDecayCands_pdgID)', 'GenLeptons:TauDecayCandsmomInd(TauDecayCands_momInd)'])
+        process.TreeMaker2.VectorRecoCand.extend(['GenLeptons:TauNu(GenTauNu)'])
+        process.TreeMaker2.VectorBool.extend(['GenLeptons:MuonTauDecay(GenMu_GenMuFromTau)','GenLeptons:ElectronTauDecay(GenElec_GenElecFromTau)','GenLeptons:TauHadronic(GenTau_GenTauHad)'])
         process.TreeMaker2.VectorTLorentzVector.extend(['GenLeptons:TauLeadTrk(GenTauLeadTrk)'])
         process.TreeMaker2.VectorDouble.extend(['GenLeptons:TauLeadTrkGenRecoD3(GenTauLeadRecoTrkd3)', 'GenLeptons:TauLeadTrkIso(GenTauLeadRecoTrkIso)', 'GenLeptons:TauLeadTrkAct(GenTauLeadRecoTrkAct)'])
 

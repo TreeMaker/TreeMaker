@@ -19,6 +19,7 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 class JetUncertaintyProducer : public edm::EDProducer {
 	public:
@@ -38,9 +39,12 @@ JetUncertaintyProducer::JetUncertaintyProducer(const edm::ParameterSet& iConfig)
 	JetType_(iConfig.getParameter<std::string>("JetType")),
 	jecUncDir_(iConfig.getParameter<int>("jecUncDir"))
 {
-	produces<std::vector<pat::Jet>>();
-	produces<std::vector<double>>("jecFactor");
-	produces<std::vector<double>>("jecUnc");
+	if(jecUncDir_==0){
+		produces<edm::ValueMap<float>>("");
+	}
+	else{
+		produces<std::vector<pat::Jet>>();
+	}
 }
 
 void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
@@ -57,8 +61,6 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 
 	std::auto_ptr< std::vector<pat::Jet> > newJets ( new std::vector<pat::Jet>() );
 	newJets->reserve(jets->size());
-	std::auto_ptr< std::vector<double> > jecFactorVec ( new std::vector<double>() );
-	jecFactorVec->reserve(jets->size());
 	std::auto_ptr< std::vector<double> > jecUncVec ( new std::vector<double>() );
 	jecUncVec->reserve(jets->size());
 
@@ -78,6 +80,12 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 		if(uncertainty==-999.) uncertainty = 0;
 		
 		double jesUncScale = 1.0;
+		//no variation - just store scale factor & uncertainty
+		if(jecUncDir_==0){
+			//store JEC unc for this jet
+			jecUncVec->push_back(uncertainty);
+			continue;
+		}
 		//downward variation
 		if(jecUncDir_ < 0){
 			jesUncScale = 1 - uncertainty;
@@ -86,8 +94,6 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 		else if(jecUncDir_ > 0){
 			jesUncScale = 1 + uncertainty;
 		}
-		//no variation
-		else {}
 		
 		//apply variation
 		vjet *= jesUncScale;
@@ -96,24 +102,23 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 		ajet.setP4(vjet);
 		
 		//store varied jet
-		newJets->push_back(ajet);
-		
-		//store JEC unc for this jet
-		jecUncVec->push_back(uncertainty);
-		
-		//store JEC factor for this jet
-		std::vector<std::string> availableJECLevels = jetPtr->availableJECLevels();
-		double scaleRawToFull = jetPtr->jecFactor(availableJECLevels.back())/jetPtr->jecFactor("Uncorrected");
-		jecFactorVec->push_back(scaleRawToFull);
+		newJets->push_back(ajet);		
 	}
 
-	//sort jets in pt
-	std::sort(newJets->begin(), newJets->end(), pTComparator_);
-	//JEC factor and unc are NOT sorted (kept in order of original collection)
+	if(jecUncDir_==0){
+		//store uncertainty as a userfloat
+		std::auto_ptr<edm::ValueMap<float>> out(new edm::ValueMap<float>());
+		typename edm::ValueMap<float>::Filler filler(*out);
+		filler.insert(jets, jecUncVec->begin(), jecUncVec->end());
+		filler.fill();
+		iEvent.put(out,"");
+	}
+	else{
+		//sort jets in pt
+		std::sort(newJets->begin(), newJets->end(), pTComparator_);
 	
-	iEvent.put(newJets);
-	iEvent.put(jecUncVec,"jecUnc");
-	iEvent.put(jecFactorVec,"jecFactor");
+		iEvent.put(newJets);
+	}
 }
 
 DEFINE_FWK_MODULE(JetUncertaintyProducer);
