@@ -21,6 +21,7 @@ jsonfile="",
 jecfile="",
 residual=False,
 jerfile="",
+pufile="",
 doPDFs=False,
 fastsim=False,
 signal=False
@@ -122,7 +123,7 @@ signal=False
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
         process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim and signal)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
-        process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1117.root")
+        process.WeightProducer.FileNamePUDataDistribution = cms.string(pufile)
         process.Baseline += process.WeightProducer
         VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])

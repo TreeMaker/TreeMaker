@@ -323,6 +323,8 @@ void WeightProducer::endJob() {
 // --------------------------------------------------
 double WeightProducer::getPUWeight(double trueint, TH1* pu) const{
   double w = 1.;
+  
+  if(!pu) return w;
 
    //std::cout<<"trueint "<<trueint<<std::endl;
   if (trueint < pu->GetBinLowEdge(pu->GetNbinsX()+1)) {
