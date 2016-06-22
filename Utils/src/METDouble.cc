@@ -109,6 +109,7 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    produces<double>("CaloPhi");
    produces<double>("GenPt");
    produces<double>("GenPhi");
+   produces<double>("PFCaloPtRatio");
 
    produces<std::vector<double> >("PtUp");
    produces<std::vector<double> >("PtDown");
@@ -194,6 +195,8 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(chtp,"CaloPt");
    std::auto_ptr<double> chtp2(new double(calometphi_));
    iEvent.put(chtp2,"CaloPhi");
+   std::auto_ptr<double> chtp3(new double(metpt_/calometpt_));
+   iEvent.put(chtp3,"PFCaloPtRatio");
 
    if(geninfo_){
        std::auto_ptr<double> ghtp(new double(genmetpt_));
