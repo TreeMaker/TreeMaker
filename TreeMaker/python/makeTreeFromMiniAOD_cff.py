@@ -21,6 +21,7 @@ jsonfile="",
 jecfile="",
 residual=False,
 jerfile="",
+pufile="",
 doPDFs=False,
 fastsim=False,
 signal=False
@@ -110,7 +111,8 @@ signal=False
         from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
         process.SusyScan = SusyScanProducer.clone(
             shouldScan = cms.bool(fastsim and signal),
-            debug = cms.bool(False)
+            debug = cms.bool(False),
+            is74X = is74X
         )
         process.Baseline += process.SusyScan
         VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
@@ -122,7 +124,7 @@ signal=False
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
         process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim and signal)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
-        process.WeightProducer.FileNamePUDataDistribution = cms.string("TreeMaker/Production/test/data/PileupHistograms_1117.root")
+        process.WeightProducer.FileNamePUDataDistribution = cms.string(pufile)
         process.Baseline += process.WeightProducer
         VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
@@ -672,6 +674,16 @@ signal=False
             'HLT_PFMETNoMu100_PFMHTNoMu100_IDTight_v',
             'HLT_PFMETNoMu110_PFMHTNoMu110_IDTight_v',
             'HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_v',
+            'HLT_PFHT200_v',
+            'HLT_PFHT250_v',
+            'HLT_PFHT300_v',
+            'HLT_PFHT350_v',
+            'HLT_PFHT400_v',
+            'HLT_PFHT475_v',
+            'HLT_PFHT600_v',
+            'HLT_PFHT650_v',
+            'HLT_IsoMu16_eta2p1_MET30_v',
+            'HLT_Mu45_eta2p1_v'
         )
     process.Baseline += process.TriggerProducer
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
@@ -947,7 +959,7 @@ signal=False
         geninfo = cms.untracked.bool(geninfo),
     )
     process.Baseline += process.MET
-    VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)'])
+    VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)'])
     if geninfo:
         VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
         VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
