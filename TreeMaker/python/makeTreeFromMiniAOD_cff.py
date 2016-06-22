@@ -111,7 +111,8 @@ signal=False
         from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
         process.SusyScan = SusyScanProducer.clone(
             shouldScan = cms.bool(fastsim and signal),
-            debug = cms.bool(False)
+            debug = cms.bool(False),
+            is74X = is74X
         )
         process.Baseline += process.SusyScan
         VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
