@@ -39,12 +39,14 @@ private:
   virtual void endRun(edm::Run&, edm::EventSetup const&);
   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
-	
+  
   // ----------member data ---------------------------
+  edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
+  edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
+
 };
 
-PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) : getterOfProducts_(edm::ProcessMatch("*"), this)
+PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) : getterOfProducts_(edm::ProcessMatch("*"), this), genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
 {
   callWhenNewProductsRegistered(getterOfProducts_);
   produces<std::vector<double> >("ScaleWeights");
@@ -72,23 +74,42 @@ void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   std::vector<double> pdfweights;
   std::vector<int> pdfids;
   
+  bool found_weights = false;
+  
   if(!handles.empty()){
     edm::Handle<LHEEventProduct> LheInfo = handles[0];
     
     std::vector< gen::WeightsInfo > lheweights = LheInfo->weights();
     if(!lheweights.empty()){
+      found_weights = true;
       // these numbers are hard-coded by the LHEEventInfo
       //renormalization/factorization scale weights
       for (unsigned int i = 0; i < 9; i++){
-        // std::cout << "lheweights " << i << " = " << lheweights[i].id << ", " << lheweights[i].wgt/lheweights[9].wgt << std::endl;
         scaleweights.push_back(lheweights[i].wgt/lheweights[0].wgt);
       }
-	  //pdf weights
+      //pdf weights
       for (unsigned int i = 9; i < 110; i++){
-        // std::cout << "lheweights " << i << " = " << lheweights[i].id << ", " << lheweights[i].wgt/lheweights[9].wgt << std::endl;
         pdfweights.push_back(lheweights[i].wgt/lheweights[9].wgt);
         pdfids.push_back(i-9);
       }
+    }
+  }
+  
+  //check GenEventInfoProduct if LHEEventProduct not found or empty
+  if(!found_weights){
+    edm::Handle<GenEventInfoProduct> genHandle;
+    iEvent.getByToken(genProductToken_, genHandle);
+
+	const std::vector<double>& genweights = genHandle->weights();
+    // these numbers are hard-coded by the GenEventInfo (shifted by 1 wrt LHE)
+    //renormalization/factorization scale weights
+    for (unsigned int i = 1; i < 10; i++){
+      scaleweights.push_back(genweights[i]/genweights[1]);
+    }
+    //pdf weights
+    for (unsigned int i = 10; i < 111; i++){
+      pdfweights.push_back(genweights[i]/genweights[10]);
+      pdfids.push_back(i-10);
     }
   }
 
