@@ -93,7 +93,7 @@ def getWeightProducer(fileName,fastsim=False):
         MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 183.1, 10628712), # subtotal = 8415286
         MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 50.49, 9701936), # subtotal = 944458
         MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 50.49, 9701936), # subtotal = 8757478
-        # missing: DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8
+        MCSample("DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1", "RunIISpring16MiniAODv2", "Constant", 6.994, 8317271),
         MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 2.7, 5150414), # subtotal = 1034084
         MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1", "RunIISpring16MiniAODv2", "Constant", 2.7, 5150414), # subtotal = 4116330
         MCSample("DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 6025.2, 49868990),
