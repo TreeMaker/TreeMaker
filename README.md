@@ -136,6 +136,8 @@ A ROOT file containing the data, MC, and data/MC histograms (with uncertainty va
 
 The script [get_py.py](./Production/test/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (disabled with `py=False`).
 For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (disabled with `wp=False`).
+The script can also check to see which sites (if any) have 100% dataset presence for the sample (disabled with `se=False`).
+(You may also need `export SSL_CERT_DIR='/etc/grid-security/certificates'` (bash) or `setenv SSL_CERT_DIR '/etc/pki/tls/certs:/etc/grid-security/certificates'` (tcsh) to avoid the error `SSL: CERTIFICATE_VERIFY_FAILED` from `urllib2`.)
 
 Before running the script for the first time, some environment settings are necessary:
 ```

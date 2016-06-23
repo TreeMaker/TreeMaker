@@ -20,23 +20,16 @@ fi
 
 ./FScheck.sh ${CHECKARGS}
 
-SCENARIO=Spring15v2
+SCENARIO=Spring16Fastsig
 
-#### Spring16 missing samples
+#### Spring16 gluino - fastsim scans
 SAMPLES=(
-Spring15v2.ZJetsToNuNu_HT-400To600_13TeV-madgraph \
+Spring16Fast.SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring16Fast.SMS-T2bb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring16Fast.SMS-T2tt_mStop-400to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 )
 
-for SAMPLE in ${SAMPLES[@]}; do
-  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
-done
-
-SCENARIO=Spring15v2sig
-
-#### Spring16 missing samples
-SAMPLES=(
-Spring15v2.SMS-T1qqqq_mGluino-1400_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-)
+# missing: lots
 
 for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}

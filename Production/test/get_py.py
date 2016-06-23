@@ -1,4 +1,4 @@
-import re,sys
+import re,sys,getopt,urllib2,json
 from dbs.apis.dbsClient import DbsApi
 
 # Read parameters
@@ -8,6 +8,7 @@ dictfile = parameters.value("dict","")
 dict = __import__(dictfile.replace(".py",""))
 makepy = parameters.value("py",True)
 makewp = parameters.value("wp",True)
+makese = parameters.value("se",True)
 
 #interface with DBS
 dbs3api = DbsApi("https://cmsweb.cern.ch/dbs/prod/global/DBSReader")
@@ -23,6 +24,10 @@ if makewp:
     wname = "weights_"+dictfile.replace(".py","")+".txt"
     wfile = open(wname,'w')
 
+if makese:
+    sname = "sites_"+dictfile.replace(".py","")+".txt"
+    sfile = open(sname,'w')
+    
 for fitem in dict.flist:
     ff = fitem[0]
     x = fitem[1]
@@ -56,6 +61,45 @@ for fitem in dict.flist:
                 nevents += fileArray["event_count"]
         nevents_all.append(nevents)
         
+        # check for sites with 100% dataset presence (using PhEDEx API)
+        # refs:
+        # https://github.com/dmwm/DAS/blob/master/src/python/DAS/services/combined/combined_service.py
+        # https://github.com/gutsche/scripts/blob/master/PhEDEx/checkLocation.py
+        if makese:
+            url='https://cmsweb.cern.ch/phedex/datasvc/json/prod/blockreplicas?dataset=' + f
+            jstr = urllib2.urlopen(url).read()
+            jstr = jstr.replace("\n", " ")
+            result = json.loads(jstr)
+            
+            site_list = {}
+            for block in result['phedex']['block']:
+                for replica in block['replica']:
+                    site = replica['node']
+                    addr = replica['se']
+                    #safety checks
+                    if site is None: continue
+                    if addr is None: addr = ""
+                    if (site,addr) not in site_list.keys(): site_list[(site,addr)] = 0
+                    site_list[(site,addr)] += replica['files']
+                
+            # get total number of expected files from DBS
+            nfiles_tot = len(fileArrays)
+            # calculate dataset fraction (presence) in % and check for completion
+            highest_percent = 0
+            for site,addr in site_list:
+                this_percent = float(site_list[(site,addr)])/float(nfiles_tot)*100
+                site_list[(site,addr)] = this_percent
+                if this_percent > highest_percent: highest_percent = this_percent
+        
+            sfile.write(f+"\n")
+            if highest_percent < 100:
+                sfile.write("  !!! No site has complete dataset !!! ( Highest: "+str(highest_percent)+"% )\n")
+            else:
+                for site,addr in site_list:
+                    this_percent = site_list[(site,addr)]
+                    if this_percent==100:
+                        sfile.write("  "+site+" ("+addr+")\n")
+
         if makepy:
             #sort list of files for consistency
             filelist.sort()
