@@ -24,8 +24,8 @@ SCENARIO=Spring15v2
 
 #### Spring16 missing samples
 SAMPLES=(
-Spring15v2.TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
-Spring15v2.DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
+Spring15v2.DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring15v2.DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
 Spring15v2.ZJetsToNuNu_HT-400To600_13TeV-madgraph \
 )
 
@@ -37,7 +37,6 @@ SCENARIO=Spring15v2sig
 
 #### Spring16 missing samples
 SAMPLES=(
-Spring15v2.SMS-T1qqqq_mGluino-1000_mLSP-800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring15v2.SMS-T1qqqq_mGluino-1400_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 )
 

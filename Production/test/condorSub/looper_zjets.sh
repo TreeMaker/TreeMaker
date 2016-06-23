@@ -24,12 +24,15 @@ SCENARIO=Spring16
 
 #### Spring16 backgrounds - zjets
 SAMPLES=(
+Spring16.DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring16.DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
+Spring16.DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring16.DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
-Spring16.DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
+Spring16.DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring16.DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
 Spring16.DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
-Spring16.ZJetsToNuNu_HT-100To200_13TeV-madgraph \
-Spring16.ZJetsToNuNu_HT-200To400_13TeV-madgraph \
+Spring16.ZJetsToNuNu_HT-100To200_13TeV-madgraph_ext1 \
+Spring16.ZJetsToNuNu_HT-200To400_13TeV-madgraph_ext1 \
 Spring16.ZJetsToNuNu_HT-600To800_13TeV-madgraph \
 Spring16.ZJetsToNuNu_HT-800To1200_13TeV-madgraph \
 Spring16.ZJetsToNuNu_HT-1200To2500_13TeV-madgraph \
@@ -41,7 +44,7 @@ Spring16.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 )
 
 #missing:
-#Spring16.DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1 \
+#Spring16.DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 #Spring16.ZJetsToNuNu_HT-400To600_13TeV-madgraph \
 
 for SAMPLE in ${SAMPLES[@]}; do
