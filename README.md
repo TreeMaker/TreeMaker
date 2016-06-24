@@ -2,13 +2,13 @@
 
 ## Instructions (80X)
 
-The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 format).
+The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 or v2 format) or Run2016 data.
 
 ```
-cmsrel CMSSW_8_0_7_patch2
-cd CMSSW_8_0_7_patch2/src/
+cmsrel CMSSW_8_0_12
+cd CMSSW_8_0_12/src/
 cmsenv
-git cms-merge-topic -u kpedro88:METfix807p2
+git cms-merge-topic -u kpedro88:METfix8012
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram b -j 8
 cd TreeMaker/Production/test
