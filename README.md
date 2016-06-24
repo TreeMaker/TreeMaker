@@ -9,6 +9,7 @@ cmsrel CMSSW_8_0_12
 cd CMSSW_8_0_12/src/
 cmsenv
 git cms-merge-topic -u kpedro88:METfix8012
+git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram b -j 8
 cd TreeMaker/Production/test

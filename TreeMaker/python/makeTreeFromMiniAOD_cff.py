@@ -558,6 +558,21 @@ signal=False
                 )
             process.Baseline += process.eeBadScFilter
             VarsInt.extend(['eeBadScFilter'])
+            
+            # some filters need to be rerun
+            process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
+            process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
+            process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+            process.BadChargedCandidateFilter.taggingMode = True
+            process.Baseline += process.BadChargedCandidateFilter
+            VarsBool.extend(['BadChargedCandidateFilter'])
+            
+            process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
+            process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
+            process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+            process.BadPFMuonFilter.taggingMode = True
+            process.Baseline += process.BadPFMuonFilter
+            VarsBool.extend(['BadPFMuonFilter'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
