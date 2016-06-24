@@ -133,7 +133,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     ## PDF weights for PDF systematics
     ## ----------------------------------------------------------------------------------------------
-    if doPDFs:
+    if geninfo and doPDFs:
         process.PDFWeights = cms.EDProducer('PDFWeightProducer')
         process.Baseline += process.PDFWeights
         VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
@@ -513,6 +513,15 @@ signal=False
             )
             process.Baseline += process.CSCTightHaloFilter
             VarsInt.extend(['CSCTightHaloFilter'])
+            
+            process.globalTightHalo2016Filter = filterDecisionProducer.clone(
+                trigTagArg1 = cms.string('TriggerResults'),
+                trigTagArg2 = cms.string(''),
+                trigTagArg3 = cms.string(tagname),
+                filterName  = cms.string("Flag_globalTightHalo2016Filter"),
+            )
+            process.Baseline += process.globalTightHalo2016Filter
+            VarsInt.extend(['globalTightHalo2016Filter'])
             
             process.HBHENoiseFilter = filterDecisionProducer.clone(
                 trigTagArg1 = cms.string('TriggerResults'),
