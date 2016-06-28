@@ -30,6 +30,6 @@ fi
 ./looper_diboson.sh -d "$OUTPUTDIR" "$CHECKARGS"
 ./looper_singletop.sh -d "$OUTPUTDIR" "$CHECKARGS"
 ./looper_tthx.sh -d "$OUTPUTDIR" "$CHECKARGS"
-./looper_74X.sh -d "$OUTPUTDIR" "$CHECKARGS"
-#./looper_fastsim.sh -d "$OUTPUTDIR" "$CHECKARGS"
+#./looper_74X.sh -d "$OUTPUTDIR" "$CHECKARGS"
+./looper_fastsim.sh -d "$OUTPUTDIR" "$CHECKARGS"
 #./looper_priv.sh -d "$OUTPUTDIR" "$CHECKARGS"
