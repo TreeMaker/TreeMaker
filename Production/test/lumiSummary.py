@@ -39,7 +39,7 @@ class sampleInfo :
 def makeJSON(optlist):
     outdir = optlist[0]
     basedir = optlist[1]
-    lastUnblindRun = optlist[2]
+    lastUnblindRun = int(optlist[2])
     name = optlist[3]
     files = optlist[4:]
     s = sampleInfo(name,basedir,files)
