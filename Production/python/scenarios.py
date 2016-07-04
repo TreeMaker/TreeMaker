@@ -3,11 +3,11 @@ class Scenario:
         self.known = True
         ### CURRENT
         if sname == "Spring16":
-            self.set_vars("80X_mcRun2_asymptotic_2016_miniAODv2","PAT",True,False,False,"","data/jec/Spring16_25nsV3_MC",False,"data/jer/Spring16_25nsV1_MC","TreeMaker/Production/test/data/PileupHistograms_0621.root","Run2_25ns")
+            self.set_vars("80X_mcRun2_asymptotic_2016_miniAODv2","PAT",True,False,False,"","data/jec/Spring16_25nsV3_MC",False,"data/jer/Spring16_25nsV1_MC","TreeMaker/Production/test/data/PileupHistograms_0704.root","Run2_25ns")
         elif sname == "Spring16sig":
-            self.set_vars("80X_mcRun2_asymptotic_2016_miniAODv2","PAT",True,False,True,"","data/jec/Spring16_25nsV3_MC",False,"data/jer/Spring16_25nsV1_MC","TreeMaker/Production/test/data/PileupHistograms_0621.root","Run2_25ns")
+            self.set_vars("80X_mcRun2_asymptotic_2016_miniAODv2","PAT",True,False,True,"","data/jec/Spring16_25nsV3_MC",False,"data/jer/Spring16_25nsV1_MC","TreeMaker/Production/test/data/PileupHistograms_0704.root","Run2_25ns")
         elif sname == "Spring16Fastsig":
-            self.set_vars("80X_mcRun2_asymptotic_2016_miniAODv2","PAT",True,True,True,"","data/jec/Spring16_25nsV3_MC",False,"data/jer/Spring16_25nsV1_MC","TreeMaker/Production/test/data/PileupHistograms_0621.root","Run2_25ns")
+            self.set_vars("80X_mcRun2_asymptotic_2016_miniAODv2","PAT",True,True,True,"","data/jec/Spring16_25nsV3_MC",False,"data/jer/Spring16_25nsV1_MC","TreeMaker/Production/test/data/PileupHistograms_0704.root","Run2_25ns")
         elif sname == "2016B":
             self.set_vars("80X_dataRun2_Prompt_v8","RECO",False,False,False,"data/Cert_271036-275125_13TeV_PromptReco_Collisions16_JSON.txt","data/jec/Spring16_25nsV3_DATA",True,"","","Run2_25ns")
         elif sname == "Spring15v2":
