@@ -16,6 +16,7 @@ NPART=$4
 NSTART=$5
 NFILES=$6
 SCENARIO=$7
+REDIR=$8
 
 echo ""
 echo "parameter set:"
@@ -26,6 +27,7 @@ echo "NPART:      $NPART"
 echo "NSTART:     $NSTART"
 echo "NFILES:     $NFILES"
 echo "SCENARIO:   $SCENARIO"
+echo "REDIR:      $REDIR"
 
 tar -xzf ${CMSSWVER}.tar.gz
 cd ${CMSSWVER}
@@ -36,7 +38,11 @@ eval `scramv1 runtime -sh`
 cd -
 
 # run CMSSW
-cmsRun runMakeTreeFromMiniAOD_cfg.py outfile=${SAMPLE}_${NPART} inputFilesConfig=${SAMPLE} nstart=${NSTART} nfiles=${NFILES} scenario=${SCENARIO} 2>&1
+ARGS="outfile=${SAMPLE}_${NPART} inputFilesConfig=${SAMPLE} nstart=${NSTART} nfiles=${NFILES} scenario=${SCENARIO}"
+if [[ -n "$REDIR" ]]; then
+ ARGS="$ARGS redir=${REDIR}"
+fi
+cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1
 
 CMSEXIT=$?
 

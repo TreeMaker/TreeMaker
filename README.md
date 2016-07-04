@@ -214,4 +214,4 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `inputFilesConfig`: name of the python file with a list of ROOT files for a sample, used for Condor production (default="", automatically appended with "_cff.py")
 * `scenarioName`: name of the scenario for the sample, as described above (default="")
 * `era`: CMS detector era for the dataset (default=Run2_50ns)
-
+* `redir`: xrootd redirector or storage element address (default=root://cmsxrootd.fnal.gov/)
