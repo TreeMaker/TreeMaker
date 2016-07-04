@@ -20,8 +20,8 @@ These scenarios define various sample-dependent parameters, including:
 global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
 1. `Spring16`: for Spring16 miniAOD 25ns MC  
-2. `Spring16sig`: for Spring16 miniAOD 25ns MC (signal)
-3. `Spring16sig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)
+2. `Spring16sig`: for Spring16 miniAOD 25ns MC (signal)  
+3. `Spring16Fastsig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)  
 4. `2016B`: for 2016B PromptReco 25ns data
 
 ## Instructions (74X)
@@ -214,4 +214,4 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `inputFilesConfig`: name of the python file with a list of ROOT files for a sample, used for Condor production (default="", automatically appended with "_cff.py")
 * `scenarioName`: name of the scenario for the sample, as described above (default="")
 * `era`: CMS detector era for the dataset (default=Run2_50ns)
-
+* `redir`: xrootd redirector or storage element address (default=root://cmsxrootd.fnal.gov/)

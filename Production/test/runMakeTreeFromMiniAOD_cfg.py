@@ -40,6 +40,10 @@ jerfile=parameters.value("jerfile",scenario.jerfile)
 pufile=parameters.value("pufile",scenario.pufile)
 era=parameters.value("era",scenario.era)
 
+#temporary redirector fix
+#fastsim signal is phedexed to LPC Tier3
+redir=parameters.value("redir", "root://cmseos.fnal.gov/" if fastsim and signal else "root://cmsxrootd.fnal.gov/")
+
 # The process needs to be defined AFTER reading sys.argv,
 # otherwise edmConfigHash fails
 import FWCore.ParameterSet.Config as cms
@@ -68,10 +72,6 @@ if inputFilesConfig!="" :
 if dataset!=[] :    
     readFiles.extend( [dataset] )
 
-#temporary redirector fix
-redir="root://cmsxrootd.fnal.gov/"
-#fastsim signal is phedexed to LPC Tier3
-if fastsim and signal: redir="root://cmseos.fnal.gov/"
 for f,val in enumerate(readFiles):
     if readFiles[f][0:6]=="/store":
         readFiles[f] = redir+readFiles[f]

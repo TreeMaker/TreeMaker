@@ -646,7 +646,8 @@ signal=False
             'HLT_PFHT600_v',
             'HLT_PFHT650_v',
             'HLT_IsoMu16_eta2p1_MET30_v',
-            'HLT_Mu45_eta2p1_v'
+            'HLT_Mu45_eta2p1_v',
+            'HLT_CaloJet500_NoJetID_v'
        )
     )
     process.Baseline += process.TriggerProducer
