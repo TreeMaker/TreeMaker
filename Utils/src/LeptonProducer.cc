@@ -241,8 +241,7 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
               muIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi()));
               float ChgIso=muonHandle->at(m).pfIsolationR04().sumChargedHadronPt;
               float ChgPU=muonHandle->at(m).pfIsolationR04().sumPUPt;
-              float NeuIso=muonHandle->at(m).pfIsolationR04().sumNeutralHadronEt+
-                muonHandle->at(m).pfIsolationR04().sumPhotonEt;
+              float NeuIso=muonHandle->at(m).pfIsolationR04().sumNeutralHadronEt+muonHandle->at(m).pfIsolationR04().sumPhotonEt;
               double dBIsoMu= (ChgIso+std::max(0., NeuIso-0.5*ChgPU))/muonHandle->at(m).pt();
               if(useMiniIsolation_) {
                 double mt2_act = 0.0;
@@ -379,12 +378,12 @@ bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx){
         
   //medium WP + dz/dxy cuts
   bool goodGlob = muon.isGlobalMuon() && 
-    muon.globalTrack()->normalizedChi2() < 3 && 
-                                           muon.combinedQuality().chi2LocalPosition < 12 && 
-                                                                                      muon.combinedQuality().trkKink < 20; 
+                  muon.globalTrack()->normalizedChi2() < 3 && 
+                  muon.combinedQuality().chi2LocalPosition < 12 && 
+                  muon.combinedQuality().trkKink < 20; 
   bool isMedium = muon.isLooseMuon() && 
-                                                                                                                       muon.innerTrack()->validFraction() > 0.8 && 
-                                           muon.segmentCompatibility() > (goodGlob ? 0.303 : 0.451);
+                  muon.innerTrack()->validFraction() > 0.49 && 
+                  muon.segmentCompatibility() > (goodGlob ? 0.303 : 0.451);
   bool isMediumPlus = isMedium && muon.dB() < 0.2 && fabs(muon.muonBestTrack()->dz(vtx.position())) < 0.5;
   return isMediumPlus; 
 }
