@@ -16,5 +16,6 @@ GoodJetsProducer = cms.EDFilter('GoodJetsProducer',
     SaveAllJets = cms.bool(False),
     ExcludeLepIsoTrackPhotons = cms.bool(False),
     JetConeSize = cms.double(0.04),
-    SkipTag = cms.VInputTag()
+    SkipTag = cms.VInputTag(),
+    METTag = cms.InputTag('slimmedMETs'),
 )

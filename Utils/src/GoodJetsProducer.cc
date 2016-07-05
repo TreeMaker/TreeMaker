@@ -30,6 +30,7 @@
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -62,8 +63,10 @@ private:
    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag JetTag_;
    std::vector<edm::InputTag> SkipTag_;
+   edm::InputTag MetTag_;
    edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
    std::vector<edm::EDGetTokenT<edm::View<reco::Candidate>>> SkipTok_;
+   edm::EDGetTokenT<edm::View<pat::MET> > MetTok_;
    double maxEta_;
    double maxNeutralFraction_, maxPhotonFraction_, minChargedFraction_, maxChargedEMFraction_, maxPhotonFractionHF_;
    int minNconstituents_, minNneutrals_, minNcharged_;
@@ -111,10 +114,15 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    
    JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
    for(auto& tag: SkipTag_) SkipTok_.push_back(consumes<edm::View<reco::Candidate>>(tag));
+
+   MetTag_ = iConfig.getParameter<edm::InputTag>("METTag");
+   MetTok_ = consumes<edm::View<pat::MET>>(MetTag_);
+
    
    produces<std::vector<Jet> >();
    produces<bool>("JetID");
    produces<std::vector<bool> >("JetIDMask");
+   produces<bool>("MuonJetFilter");
 }
 
 
@@ -153,10 +161,19 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
       }
    }
+
+   edm::Handle< edm::View<pat::MET> > MET;
+   iEvent.getByToken(MetTok_,MET); 
+   double met_phi(-99.);
+   if(MET.isValid()) {
+     met_phi=MET->at(0).phi();
+   } else std::cout<<"GoodJetsProducer::METTag Invalid Tag: "<<MetTag_.label()<<std::endl;
+   
    
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
    std::auto_ptr<std::vector<bool> > jetsMask(new std::vector<bool>());
    bool result=true;
+   bool noMuonJet=true;
    edm::Handle< edm::View<Jet> > Jets;
    iEvent.getByToken(JetTok_,Jets);
    if(Jets.isValid())
@@ -211,6 +228,10 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
            if(!good && !TagMode_) return false;
            result &= good;
         }
+	//calculate event filter for bad muon jets
+        if (Jets->at(i).pt() > 200. && Jets->at(i).muonEnergyFraction()>0.5) {
+	  if(std::abs(reco::deltaPhi(Jets->at(i).phi(), met_phi)) > (TMath::Pi()-0.4)) noMuonJet = false;
+        }
       }
    }
    // put in the event
@@ -218,6 +239,8 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(jetsMask,"JetIDMask");
    std::auto_ptr<bool> passing(new bool(result));
    iEvent.put(passing,"JetID");
+   std::auto_ptr<bool> muJet(new bool(noMuonJet));
+   iEvent.put(muJet,"MuonJetFilter");
    return true;
    
 }

@@ -715,7 +715,8 @@ signal=False
                           skipGoodJets=False,
                           storeProperties=1,
                           SkipTag=SkipTag,
-                          is74X=is74X
+                          is74X=is74X,
+                          METTag=METTag
     )
     
     # JEC unc down
@@ -733,7 +734,8 @@ signal=False
                           skipGoodJets=False,
                           storeProperties=1,
                           SkipTag=SkipTag,
-                          is74X=is74X
+                          is74X=is74X,
+                          METTag=METTag
     )
     
     if doJERsmearing:
@@ -752,7 +754,8 @@ signal=False
                               skipGoodJets=False,
                               storeProperties=1,
                               SkipTag=SkipTag,
-                              is74X=is74X
+                              is74X=is74X,
+                              METTag=METTag
         )
         
         # JER unc down
@@ -770,7 +773,8 @@ signal=False
                               skipGoodJets=False,
                               storeProperties=1,
                               SkipTag=SkipTag,
-                              is74X=is74X
+                              is74X=is74X,
+                              METTag=METTag
         )
 
         # finally, do central smearing and replace jet tag
@@ -824,7 +828,8 @@ signal=False
                           skipGoodJets=False,
                           storeProperties=2,
                           SkipTag=SkipTag,
-                          is74X=is74X
+                          is74X=is74X,
+                          METTag=METTag
     )
     
     # AK8 jet variables - separate instance of jet properties producer
