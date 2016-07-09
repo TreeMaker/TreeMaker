@@ -22,7 +22,8 @@ The available scenarios are:
 1. `Spring16`: for Spring16 miniAOD 25ns MC  
 2. `Spring16sig`: for Spring16 miniAOD 25ns MC (signal)  
 3. `Spring16Fastsig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)  
-4. `2016B`: for 2016B PromptReco 25ns data
+4. `2016B`: for 2016B PromptReco 25ns data  
+5. `2016CD`: for 2016C and 2016D PromptReco 25ns data
 
 ## Instructions (74X)
 

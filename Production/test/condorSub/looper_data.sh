@@ -34,3 +34,35 @@ Run2016B-PromptReco-v2.SinglePhoton \
 for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
+
+
+#### Run2016C Prompt RECO
+SCENARIO=2016CD
+SAMPLES=(
+Run2016C-PromptReco-v2.HTMHT \
+Run2016C-PromptReco-v2.JetHT \
+Run2016C-PromptReco-v2.MET \
+Run2016C-PromptReco-v2.SingleElectron \
+Run2016C-PromptReco-v2.SingleMuon \
+Run2016C-PromptReco-v2.SinglePhoton \
+)
+
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
+done
+
+#### Run2016D Prompt RECO
+SCENARIO=2016CD
+SAMPLES=(
+Run2016D-PromptReco-v2.HTMHT \
+Run2016D-PromptReco-v2.JetHT \
+Run2016D-PromptReco-v2.MET \
+Run2016D-PromptReco-v2.SingleElectron \
+Run2016D-PromptReco-v2.SingleMuon \
+Run2016D-PromptReco-v2.SinglePhoton \
+)
+
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
+done
+
