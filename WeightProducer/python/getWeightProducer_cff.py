@@ -99,7 +99,7 @@ def getWeightProducer(fileName,fastsim=False):
         MCSample("DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 6025.2, 49868990),
         MCSample("ZJetsToNuNu_HT-100To200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v2", "RunIISpring16MiniAODv1", "Constant", 344.3, 18665303),
         MCSample("ZJetsToNuNu_HT-200To400_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 95.23, 19914665),
-        # missing: ZJetsToNuNu_HT-400To600_13TeV-madgraph
+        MCSample("ZJetsToNuNu_HT-400To600_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 13.19, 1020309),
         # cross sections for new ZJets HT samples: https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/241.html
         MCSample("ZJetsToNuNu_HT-600To800_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 3.221, 5650700),
         MCSample("ZJetsToNuNu_HT-800To1200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 1.474, 2156175),
