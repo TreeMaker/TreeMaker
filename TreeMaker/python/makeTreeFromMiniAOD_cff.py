@@ -714,6 +714,7 @@ signal=False
                           suff='JECup',
                           skipGoodJets=False,
                           storeProperties=1,
+                          geninfo=geninfo,
                           SkipTag=SkipTag,
                           is74X=is74X
     )
@@ -732,6 +733,7 @@ signal=False
                           suff='JECdown',
                           skipGoodJets=False,
                           storeProperties=1,
+                          geninfo=geninfo,
                           SkipTag=SkipTag,
                           is74X=is74X
     )
@@ -751,6 +753,7 @@ signal=False
                               suff='JERup',
                               skipGoodJets=False,
                               storeProperties=1,
+                              geninfo=geninfo,
                               SkipTag=SkipTag,
                               is74X=is74X
         )
@@ -769,6 +772,7 @@ signal=False
                               suff='JERdown',
                               skipGoodJets=False,
                               storeProperties=1,
+                              geninfo=geninfo,
                               SkipTag=SkipTag,
                               is74X=is74X
         )
@@ -823,6 +827,7 @@ signal=False
                           suff='',
                           skipGoodJets=False,
                           storeProperties=2,
+                          geninfo=geninfo,
                           SkipTag=SkipTag,
                           is74X=is74X
     )
