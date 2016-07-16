@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, is74X=False):
+def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, geninfo, SkipTag=cms.VInputTag(), onlyGoodJets=False, is74X=False):
     if hasattr(process,sequence):
         theSequence = getattr(process,sequence)
     else:
@@ -134,6 +134,24 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
     theSequence += getattr(process,"DeltaPhi"+suff)
     process.TreeMaker2.VarsDouble.extend(['DeltaPhi'+suff+':DeltaPhi1(DeltaPhi1'+suff+')','DeltaPhi'+suff+':DeltaPhi2(DeltaPhi2'+suff+')',
                                           'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
+
+    ## ----------------------------------------------------------------------------------------------
+    ## ISR jets
+    ## ----------------------------------------------------------------------------------------------
+    if geninfo:
+        from TreeMaker.Utils.isrjet_cfi import ISRJetProducer
+        ISRJets = ISRJetProducer.clone(
+            JetTag = GoodJetsTag,
+            GenPartTag = cms.InputTag("prunedGenParticles"),
+            MinPt  = cms.double(30),
+            MaxEta = cms.double(2.4),
+        )
+        setattr(process,"ISRJets"+suff,ISRJets)
+        theSequence += getattr(process,"ISRJets"+suff)
+        if storeProperties>0:
+            process.TreeMaker2.VectorBool.extend(['ISRJets'+suff+':SubJetMask(ISRJetsMask'+suff+')'])
+            process.TreeMaker2.VarsInt.extend(['ISRJets'+suff+'(NJetsISR'+suff+')'])
+
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties

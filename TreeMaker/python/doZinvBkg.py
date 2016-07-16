@@ -162,6 +162,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
+        geninfo=geninfo,
         is74X=is74X
     )
 
