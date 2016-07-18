@@ -115,6 +115,7 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    produces<std::vector<Jet> >();
    produces<bool>("JetID");
    produces<std::vector<bool> >("JetIDMask");
+   produces<std::vector<bool> >("JetLeptonMask");
 }
 
 
@@ -156,11 +157,15 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    
    std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
    std::auto_ptr<std::vector<bool> > jetsMask(new std::vector<bool>());
+   std::auto_ptr<std::vector<bool> > leptonMask(new std::vector<bool>());
    bool result=true;
    edm::Handle< edm::View<Jet> > Jets;
    iEvent.getByToken(JetTok_,Jets);
    if(Jets.isValid())
    {
+      prodJets->reserve(Jets->size());
+      jetsMask->reserve(Jets->size());
+      leptonMask->reserve(Jets->size());
       for(unsigned int i=0; i<Jets->size();i++)
       {
          if (std::abs(Jets->at(i).eta())>maxEta_) continue;
@@ -189,9 +194,12 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             {
                prodJets->push_back(Jet(Jets->at(i)));
                jetsMask->push_back(true);
+			   leptonMask->push_back(true);
                continue;
             }
+			else leptonMask->push_back(false);
          }
+		 else leptonMask->push_back(false);
          bool good = true;
          if (std::abs(Jets->at(i).eta()) < 3.0){
             good = neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ && nconstit>minNconstituents_;
@@ -216,6 +224,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    // put in the event
    iEvent.put(prodJets);
    iEvent.put(jetsMask,"JetIDMask");
+   iEvent.put(leptonMask,"JetLeptonMask");
    std::auto_ptr<bool> passing(new bool(result));
    iEvent.put(passing,"JetID");
    return true;

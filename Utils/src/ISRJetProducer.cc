@@ -31,6 +31,8 @@ class ISRJetProducer : public edm::EDProducer {
 		edm::EDGetTokenT<edm::View<reco::GenParticle>> GenPartTok_; 
 		edm::InputTag JetTag_;
 		edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
+		edm::InputTag JetLeptonTag_;
+		edm::EDGetTokenT<std::vector<bool>> JetLeptonTok_;
 		double MinPt_, MaxEta_;
 };
 
@@ -39,6 +41,8 @@ ISRJetProducer::ISRJetProducer(const edm::ParameterSet& iConfig) :
 	GenPartTok_(consumes<edm::View<reco::GenParticle>>(GenPartTag_)),
 	JetTag_(iConfig.getParameter<edm::InputTag>("JetTag")),
 	JetTok_(consumes<edm::View<pat::Jet>>(JetTag_)),
+	JetLeptonTag_(iConfig.getParameter<edm::InputTag>("JetLeptonTag")),
+	JetLeptonTok_(consumes<std::vector<bool>>(JetLeptonTag_)),
 	MinPt_(iConfig.getParameter<double>("MinPt")),
 	MaxEta_(iConfig.getParameter<double>("MaxEta"))
 {
@@ -55,6 +59,11 @@ void ISRJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle<edm::View<pat::Jet>> jets;
 	iEvent.getByToken(JetTok_, jets);
 	
+	//get the mask for jets that are leptons (or isotracks)
+	edm::Handle<std::vector<bool>> leptonMask;
+	iEvent.getByToken(JetLeptonTok_, leptonMask);
+	bool useLeptonMask = leptonMask.isValid();
+	
 	//get the gen particles collection
 	edm::Handle<edm::View<reco::GenParticle> > genParticles;
 	iEvent.getByToken(GenPartTok_, genParticles);
@@ -63,6 +72,7 @@ void ISRJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if(jets.isValid() && genParticles.isValid()){
 		mask->resize(jets->size(),false);
 		for (unsigned ijet=0; ijet<jets->size(); ++ijet){
+			if(useLeptonMask && leptonMask->at(ijet)) continue;
 			bool matched=false;
 			for (unsigned imc=0; imc < genParticles->size(); ++imc){
 				if (matched) break;

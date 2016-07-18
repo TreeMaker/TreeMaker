@@ -39,6 +39,7 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         if storeProperties>0:
             process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
             process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
+            process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(JetLeptonMask'+suff+')'])
         if onlyGoodJets:
             return process
     
@@ -142,6 +143,7 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         from TreeMaker.Utils.isrjet_cfi import ISRJetProducer
         ISRJets = ISRJetProducer.clone(
             JetTag = GoodJetsTag,
+            JetLeptonTag  = cms.InputTag(GoodJetsTag.value()+':JetLeptonMask'),
             GenPartTag = cms.InputTag("prunedGenParticles"),
             MinPt  = cms.double(30),
             MaxEta = cms.double(2.4),
