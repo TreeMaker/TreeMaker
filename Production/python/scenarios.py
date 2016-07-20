@@ -9,9 +9,9 @@ class Scenario:
         elif sname == "Spring16Fastsig":
             self.set_vars("80X_mcRun2_asymptotic_2016_miniAODv2","PAT",True,True,True,"","data/jec/Spring16_25nsFastSimMC_V1",False,"data/jer/Spring16_25nsV6_MC","TreeMaker/Production/test/data/PileupHistograms_0704.root","Run2_25ns")
         elif sname == "2016B":
-            self.set_vars("80X_dataRun2_Prompt_v8","RECO",False,False,False,"data/Cert_271036-276097_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt","data/jec/Spring16_25nsV6_DATA",True,"","","Run2_25ns")
+            self.set_vars("80X_dataRun2_Prompt_v8","RECO",False,False,False,"data/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt","data/jec/Spring16_25nsV6_DATA",True,"","","Run2_25ns")
         elif sname == "2016CD":
-            self.set_vars("80X_dataRun2_Prompt_v9","RECO",False,False,False,"data/Cert_271036-276097_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt","data/jec/Spring16_25nsV6_DATA",True,"","","Run2_25ns")
+            self.set_vars("80X_dataRun2_Prompt_v9","RECO",False,False,False,"data/Cert_271036-276811_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt","data/jec/Spring16_25nsV6_DATA",True,"","","Run2_25ns")
         elif sname == "Spring15v2":
             self.set_vars("74X_mcRun2_asymptotic_v2","PAT",True,False,False,"","data/jec/Summer15_25nsV6_MC",False,"","TreeMaker/Production/test/data/PileupHistograms_1117.root","Run2_25ns")
         elif sname == "Spring15v2sig":
