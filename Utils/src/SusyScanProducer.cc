@@ -166,29 +166,18 @@ void SusyScanProducer::getModelInfo(std::string comment){
 	std::vector<std::string> fields;
 	//underscore-delimited data
 	process(comment,'_',fields);
-	
-	//convert fields 1:n to doubles
-	std::vector<double> dfields;
-	dfields.reserve(fields.size()-1);
-	for(unsigned f = 1; f < fields.size(); ++f){
-		std::stringstream sfield(fields[f]);
-		double tmp = 0;
-		sfield >> tmp;
-		dfields.push_back(tmp);
-	}
 
-	//two options:
+	//several possible formats:
 	//model name_mMother_mLSP (1+2 fields)
 	//model name_xChi_mMother_mLSP (1+3 fields)
+	//model name_name_name_mMother_mLSP (3+2 fields)
+	//just take last two values and convert to doubles
 	
-	if(dfields.size()==2){
-		motherMass_ = dfields[0];
-		lspMass_ = dfields[1];
-	}
-	else if(dfields.size()==3){
-		motherMass_ = dfields[1];
-		lspMass_ = dfields[2];
-	}
+	std::stringstream sfield1(fields.end()[-1]);
+	sfield1 >> lspMass_;
+	
+	std::stringstream sfield2(fields.end()[-2]);
+	sfield2 >> motherMass_;
 }
 
 //generalization for processing a line
