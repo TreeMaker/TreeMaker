@@ -43,7 +43,7 @@ class SusyScanProducer : public edm::EDProducer {
 		// ----------member data ---------------------------
 		edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
 		edm::EDGetTokenT<GenLumiInfoHeader> genLumiHeaderToken_;
-		bool shouldScan_, debug_, is74X_;
+		bool shouldScan_, debug_, isLHE_;
 		double motherMass_, lspMass_;
 };
 
@@ -52,7 +52,7 @@ SusyScanProducer::SusyScanProducer(const edm::ParameterSet& iConfig) :
 	genLumiHeaderToken_(consumes<GenLumiInfoHeader,edm::InLumi>(edm::InputTag("generator"))),
 	shouldScan_(iConfig.getParameter<bool>("shouldScan")),
 	debug_(iConfig.getParameter<bool>("debug")),
-	is74X_(iConfig.getParameter<bool>("is74X")),
+	isLHE_(iConfig.getParameter<bool>("isLHE")),
 	motherMass_(0),
 	lspMass_(0)
 {
@@ -73,7 +73,7 @@ void SusyScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 {
 	using namespace edm;
 
-	if(is74X_ && shouldScan_){
+	if(isLHE_ && shouldScan_){
 		if(debug_) std::cout << "SusyScanProducer: checking LHEEventProduct" << std::endl;
 		std::vector<edm::Handle<LHEEventProduct> > handles;
 		getterOfProducts_.fillHandles(iEvent, handles);
@@ -131,7 +131,7 @@ void
 SusyScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const& iSetup)
 {
 	//new way of getting SUSY scan info
-	if(!is74X_ && shouldScan_){
+	if(!isLHE_ && shouldScan_){
 		if(debug_) std::cout << "SusyScanProducer: checking GenLumiInfoHeader" << std::endl;
 		edm::Handle<GenLumiInfoHeader> gen_header;
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);

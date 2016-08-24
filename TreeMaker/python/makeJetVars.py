@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, geninfo, SkipTag=cms.VInputTag(), onlyGoodJets=False, is74X=False):
+def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, geninfo, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     if hasattr(process,sequence):
         theSequence = getattr(process,sequence)
     else:
@@ -83,9 +83,8 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
     BTags = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-        BTagCutValue = cms.double(0.890)
+        BTagCutValue = cms.double(0.800)
     )
-    if not is74X: BTags.BTagCutValue = cms.double(0.800)
     setattr(process,"BTags"+suff,BTags)
     theSequence += getattr(process,"BTags"+suff)
     process.TreeMaker2.VarsInt.extend(['BTags'+suff])
@@ -93,10 +92,9 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
     from TreeMaker.Utils.btagint_cfi import btagint
     BTagsMVA = btagint.clone(
         JetTag       = HTJetsTag,
-        BTagInputTag = cms.string('pfCombinedMVABJetTags'),
+        BTagInputTag = cms.string('pfCombinedMVAV2BJetTags'),
         BTagCutValue = cms.double(0.185)
     )
-    if not is74X: BTagsMVA.BTagInputTag = cms.string('pfCombinedMVAV2BJetTags')
     setattr(process,"BTagsMVA"+suff,BTagsMVA)
     theSequence += getattr(process,"BTagsMVA"+suff)
     process.TreeMaker2.VarsInt.extend(['BTagsMVA'+suff])
@@ -166,7 +164,7 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
             JetTag       = GoodJetsTag
         )
         # provide extra info where necessary
-        JetsProperties.bDiscriminatorMVA = cms.vstring('pfCombinedMVABJetTags') if is74X else cms.vstring('pfCombinedMVAV2BJetTags')
+        JetsProperties.bDiscriminatorMVA = cms.vstring('pfCombinedMVAV2BJetTags')
         if storeProperties==1: 
             JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","partonFlavor","hadronFlavor")
         setattr(process,"JetsProperties"+suff,JetsProperties)

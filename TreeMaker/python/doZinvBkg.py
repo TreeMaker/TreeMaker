@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
+def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
@@ -22,8 +22,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if residual: jecLevels.append("L2L3Residual")
-    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags']
-    if not is74X: btagDiscs.append('pfCombinedMVAV2BJetTags')
+    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags','pfCombinedMVAV2BJetTags']
     addJetCollection(
        process,
        labelName = 'AK4PFCLEAN'+suff,
@@ -56,36 +55,15 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     # recalculate MET from cleaned candidates and reclustered jets
     postfix="clean"+suff
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-    if is74X:
-        runMetCorAndUncFromMiniAOD(
-            process,
-            isData=not geninfo, # controls gen met
-            jetCollUnskimmed="reclusteredJets"+suff,
-            jetColl='patJetsAK4PFCLEAN'+suff,
-            pfCandColl=cleanedCandidates.value(),
-            repro74X=True, # to recompute without reclustering
-            postfix=postfix
-        )
-        if not residual: #skip residuals for data if not used
-                getattr(process,"patPFMetT1T2Corr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
-                getattr(process,"patPFMetT1T2SmearCorr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
-                getattr(process,"patPFMetT2Corr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
-                getattr(process,"patPFMetT2SmearCorr"+postfix).jetCorrLabelRes = cms.InputTag("L3Absolute")
-                getattr(process,"shiftedPatJetEnDown"+postfix).jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-                getattr(process,"shiftedPatJetEnUp"+postfix).jetCorrLabelUpToL3Res = cms.InputTag("ak4PFCHSL1FastL2L3Corrector")
-        if hasattr(process,"slimmedMETs"+postfix):
-            delattr(getattr(process,"slimmedMETs"+postfix),"caloMET")
-        METTag = cms.InputTag('slimmedMETs'+postfix)
-    else:
-        runMetCorAndUncFromMiniAOD(
-            process,
-            isData=not geninfo, # controls gen met
-            jetCollUnskimmed='patJetsAK4PFCLEAN'+suff,
-            pfCandColl=cleanedCandidates.value(),
-            repro80X=True, # to recompute without reclustering
-            postfix=postfix
-        )
-        METTag = cms.InputTag('slimmedMETs'+postfix)
+    runMetCorAndUncFromMiniAOD(
+        process,
+        isData=not geninfo, # controls gen met
+        jetCollUnskimmed='patJetsAK4PFCLEAN'+suff,
+        pfCandColl=cleanedCandidates.value(),
+        repro80X=True, # to recompute without reclustering
+        postfix=postfix
+    )
+    METTag = cms.InputTag('slimmedMETs'+postfix)
     
     # isolated tracks
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -139,9 +117,9 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     process.TreeMaker2.VarsInt.extend(['IsolatedMuonTracksVetoClean'+suff+':isoTracks(isoMuonTracksclean'+suff+')'])
     process.TreeMaker2.VarsInt.extend(['IsolatedPionTracksVetoClean'+suff+':isoTracks(isoPionTracksclean'+suff+')'])
 
-    # skip all jet smearing for data and for 74X
+    # skip all jet smearing for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
-    doJERsmearing = geninfo and not is74X
+    doJERsmearing = geninfo
     
     if doJERsmearing:
         # do central smearing and replace jet tag
@@ -162,8 +140,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
-        geninfo=geninfo,
-        is74X=is74X
+        geninfo=geninfo
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
@@ -177,7 +154,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, is74X):
     
     return process
 
-def doZinvBkg(process,tagname,geninfo,residual,is74X):
+def doZinvBkg(process,tagname,geninfo,residual):
     process.ZinvClean = cms.Sequence()
 
     ## ----------------------------------------------------------------------------------------------
@@ -250,8 +227,7 @@ def doZinvBkg(process,tagname,geninfo,residual,is74X):
         geninfo,
         residual,
         cms.InputTag("cleanedCandidates"),
-        "",
-        is74X
+        ""
     )
 
     process.AdditionalSequence += process.ZinvClean

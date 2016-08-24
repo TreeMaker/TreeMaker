@@ -36,7 +36,7 @@ def makeJetVarsHadTau(process,sequence,JetTag,suff,storeProperties=0):
     
     return process
 
-def doHadTauBkg(process,geninfo,residual,JetTag,is74X):
+def doHadTauBkg(process,geninfo,residual,JetTag):
     process.load("RecoJets.JetProducers.ak4PFJets_cfi")
     from JetMETCorrections.Configuration.JetCorrectionServices_cff import ak4PFCHSL1FastL2L3,ak4PFCHSL1Fastjet,ak4PFCHSL2Relative,ak4PFCHSL3Absolute
 
@@ -116,11 +116,11 @@ def doHadTauBkg(process,geninfo,residual,JetTag,is74X):
     process.AdditionalSequence += process.jecUncHadTau
     # add userfloat & update tag
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
-    process, JetTagHadTau = addJetInfo(process, "AdditionalSequence", JetTagHadTau, is74X, ['jecUncHadTau'], [])
+    process, JetTagHadTau = addJetInfo(process, "AdditionalSequence", JetTagHadTau, ['jecUncHadTau'], [])
     
-    # skip all jet smearing for data and for 74X
+    # skip all jet smearing for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
-    doJERsmearing = geninfo and not is74X
+    doJERsmearing = geninfo
     
     # JEC unc up
     process, JetTagHadTauJECup = JetDepot(process,
