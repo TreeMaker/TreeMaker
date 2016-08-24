@@ -37,9 +37,11 @@ if __name__ == "__main__":
     probvalue = mix.input.nbPileupEvents.probValue
     
     # generate pileup histograms in data
-    os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(options.minbias)+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2CentralPileupHistogram.root")
-    os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(options.minbias*(1+options.uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2UpPileupHistogram.root")
-    os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(options.minbias*(1-options.uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2DownPileupHistogram.root")
+    minbias = float(options.minbias)
+    uncertainty = float(options.uncertainty)
+    os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias)+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2CentralPileupHistogram.root")
+    os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias*(1+uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2UpPileupHistogram.root")
+    os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias*(1-uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2DownPileupHistogram.root")
     
     # open files
     fc = TFile.Open("RA2CentralPileupHistogram.root","read")
