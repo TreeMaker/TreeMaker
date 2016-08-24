@@ -49,10 +49,8 @@ redir=parameters.value("redir", "root://cmseos.fnal.gov/" if fastsim and signal 
 import FWCore.ParameterSet.Config as cms
 from Configuration.StandardSequences.Eras import eras
 process = cms.Process("RA2EventSelection")
-if era=="Run2_25ns":
-    process = cms.Process("RA2EventSelection",eras.Run2_25ns)
-elif era=="Run2_50ns":
-    process = cms.Process("RA2EventSelection",eras.Run2_50ns)
+if len(era)>0:
+    process = cms.Process("RA2EventSelection",getattr(eras,era))
 
 # configure geometry & conditions
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
@@ -90,7 +88,7 @@ print " "
 print " storing track debugging variables: "+str(debugtracks)
 print " Applying baseline selection filter: "+str(applybaseline)
 print " "
-if scenario.known: print " scenario: "+scenarioName
+print " scenario: "+scenarioName
 print " global tag: "+globaltag
 print " Instance name of tag information: "+tagname
 print " Including gen-level information: "+str(geninfo)

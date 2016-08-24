@@ -1,23 +1,34 @@
-import os
+import subprocess
 
-def makeTest(scenario, name, numevents, shell, dataset="", inputFilesConfig="", nstart=0, nfiles=0):
+def makeTest(scenario, name, numevents, dataset="", inputFilesConfig="", nstart=0, nfiles=0):
     mytest = []
-    mytest.append("cmsRun runMakeTreeFromMiniAOD_cfg.py")
+    mytest.append("cmsRun")
+    mytest.append("runMakeTreeFromMiniAOD_cfg.py")
     mytest.append("scenario="+scenario+"")
     # different methods for input files
     if len(dataset)>0:
-        mytest.append("dataset=\""+dataset+"\"")
+        mytest.append("dataset="+dataset)
     else:
-        mytest.append("inputFilesConfig="+inputFilesConfig+"")
-        mytest.append("nstart="+str(nstart)+" nfiles="+str(nfiles)+"")
+        mytest.append("inputFilesConfig="+inputFilesConfig)
+        mytest.append("nstart="+str(nstart))
+        mytest.append("nfiles="+str(nfiles))
     # different shell commands
-    endstr = "outfile=\""+name+"\" numevents="+str(numevents)
-    if shell=="tcsh":
-        mytest.append(endstr+" >& "+name+".log &")
-    elif shell=="bash" or shell=="sh":
-        mytest.append(endstr+" > "+name+".log 2>&1 &")
+    mytest.append("outfile="+name)
+    mytest.append("numevents="+str(numevents))
+    mytest.append(name+".log")
+
     return mytest
 
+def printTest(mytest, itest, shell):
+    tmp = str(itest)+":\n  "+" \\\n  ".join(mytest[0:-1])+" \\\n "
+    logname = mytest[-1]
+    if shell=="tcsh":
+        tmp += " >& "+logname+" &"
+    elif shell=="bash" or shell=="sh":
+        tmp += " > "+logname+" 2>&1 &"
+    
+    print tmp
+    
 # Read parameters
 from TreeMaker.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
@@ -27,28 +38,27 @@ run=parameters.value("run",False)
 numevents=parameters.value("numevents",100)
 shell=parameters.value("shell","tcsh")
 
+# only set name for a specific test
+if test==-1: name = ""
+
 # list of tests
 mytests = []
-mytests.append(makeTest("Spring16","gjet16" if len(name)==0 else name,numevents,shell,dataset="/store/mc/RunIISpring16MiniAODv1/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/40000/0060A792-DBFC-E511-B178-0CC47A0AD704.root"))
-mytests.append(makeTest("Spring16sig","T1tttt16" if len(name)==0 else name,numevents,shell,dataset="/store/mc/RunIISpring16MiniAODv1/SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/60000/26C76166-0FFE-E511-BA96-0025905D1D60.root"))
-mytests.append(makeTest("Spring16Fastsig","T1ttttFast" if len(name)==0 else name,numevents,shell,dataset="/store/mc/RunIISpring16MiniAODv2/SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/004A27F0-5132-E611-A936-02163E016171.root"))
-mytests.append(makeTest("2016B","HTMHT16B" if len(name)==0 else name,numevents,shell,dataset="/store/data/Run2016B/HTMHT/MINIAOD/PromptReco-v2/000/273/450/00000/4C4E91DA-4A1C-E611-984C-02163E014438.root"))
-mytests.append(makeTest("Spring15v2","gjet" if len(name)==0 else name,numevents,shell,dataset="/store/mc/RunIISpring15MiniAODv2/GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/30000/10B3B366-4C71-E511-8364-00259074AE3C.root"))
-mytests.append(makeTest("Spring15v2","ttbar" if len(name)==0 else name,numevents,shell,dataset="/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/30000/001F4F14-786E-E511-804F-0025905A60FE.root"))
-mytests.append(makeTest("Spring15v2sig","T1tttt" if len(name)==0 else name,numevents,shell,dataset="/store/mc/RunIISpring15MiniAODv2/SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/74X_mcRun2_asymptotic_v2-v1/80000/38C49928-8D72-E511-94A6-001E67579188.root"))
-mytests.append(makeTest("Spring15Fastv2","TTbarFast" if len(name)==0 else name,numevents,shell,dataset="/store/mc/RunIISpring15MiniAODv2/TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/50000/02152095-E27D-E511-B425-00259073E49A.root"))
-mytests.append(makeTest("Spring15Fastv2sig","T1bbbbFast" if len(name)==0 else name,numevents,shell,dataset="/store/mc/RunIISpring15MiniAODv2/SMS-T1bbbb_mGluino-1000-1025_mLSP-1to975-1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/FastAsympt25ns_74X_mcRun2_asymptotic_v2-v1/80000/00B3085A-7D7B-E511-A75B-003048335516.root"))
-mytests.append(makeTest("re2015C","HTMHTreC" if len(name)==0 else name,numevents,shell,inputFilesConfig="Run2015C_25ns-05Oct2015-v1.HTMHT",nstart=0,nfiles=4))
-mytests.append(makeTest("re2015D","HTMHTreD" if len(name)==0 else name,numevents,shell,inputFilesConfig="Run2015D-05Oct2015-v1.HTMHT",nstart=102,nfiles=10))
-mytests.append(makeTest("2015Db","HTMHTDb" if len(name)==0 else name,numevents,shell,dataset="/store/data/Run2015D/HTMHT/MINIAOD/PromptReco-v4/000/258/159/00000/42D9839F-DC6B-E511-82B0-02163E0136EC.root"))
+mytests.append(makeTest("Spring16","gjet16" if len(name)==0 else name,numevents,dataset="/store/mc/RunIISpring16MiniAODv1/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/40000/0060A792-DBFC-E511-B178-0CC47A0AD704.root"))
+mytests.append(makeTest("Spring16sig","T1tttt16" if len(name)==0 else name,numevents,dataset="/store/mc/RunIISpring16MiniAODv1/SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1/60000/26C76166-0FFE-E511-BA96-0025905D1D60.root"))
+mytests.append(makeTest("Spring16Fastsig","T1ttttFast" if len(name)==0 else name,numevents,dataset="/store/mc/RunIISpring16MiniAODv2/SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/004A27F0-5132-E611-A936-02163E016171.root"))
+mytests.append(makeTest("2016B","MET16B" if len(name)==0 else name,numevents,inputFilesConfig="Run2016B-PromptReco-v2.MET",nstart=39,nfiles=2))
+mytests.append(makeTest("2016CD","MET16C" if len(name)==0 else name,numevents,inputFilesConfig="Run2016C-PromptReco-v2.MET",nstart=6,nfiles=3))
+mytests.append(makeTest("2016CD","MET16D" if len(name)==0 else name,numevents,inputFilesConfig="Run2016D-PromptReco-v2.MET",nstart=0,nfiles=3))
 
 if test<0 or test>len(mytests):
     print "Predefined tests:"
     for itest, mytest in enumerate(mytests):
-        print str(itest)+":\n  "+" \\\n  ".join(mytest)
+        printTest(mytest,itest,shell)
 else:
-    print str(test)+":\n  "+" \\\n  ".join(mytests[test])
+    printTest(mytests[test],test,shell)
     if run:
         print "Running test..."
-        os.system(" ".join(mytests[test]))
 
+        # fork the cmsRun process and exit
+        with open(mytests[test][-1],'w') as out:
+            pid = subprocess.Popen(mytests[test][0:-1], stdin=None, stdout=out, stderr=out, close_fds=True).pid
