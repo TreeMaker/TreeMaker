@@ -1,6 +1,6 @@
 # TreeMaker
 
-## Instructions (80X)
+## Instructions
 
 The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 or v2 format) or Run2016 data.
 
@@ -24,33 +24,6 @@ The available scenarios are:
 3. `Spring16Fastsig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)  
 4. `2016B`: for 2016B PromptReco 25ns data  
 5. `2016CD`: for 2016C and 2016D PromptReco 25ns data
-
-## Instructions (74X)
-
-The following installation instructions assume the user wants to process Run2015 data or Spring15 MC (miniAOD v2 format).
-
-```
-cmsrel CMSSW_7_4_15
-cd CMSSW_7_4_15/src/
-cmsenv
-git cms-merge-topic -u kpedro88:METfix7415
-git cms-merge-topic -u kpedro88:backportGenLumiInfoHeader7415
-git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
-scram b -j 8
-cd TreeMaker/Production/test
-```
-
-Several predefined scenarios are available for ease of production.
-These scenarios define various sample-dependent parameters, including:  
-global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
-The available scenarios are:  
-1. `Spring15v2`: for Spring15 re-miniAOD (v2) 25ns MC  
-2. `Spring15v2sig`: for Spring15 re-miniAOD (v2) 25ns MC (signal)  
-3. `Spring15Fastv2`: for Spring15 re-miniAOD (v2) 25ns FastSim MC  
-4. `Spring15Fastv2sig`: for Spring15 re-miniAOD (v2) 25ns FastSim MC (signal scans)  
-5. `re2015C`: for 2015C re-reco 25ns data  
-6. `re2015D`: for 2015D re-miniAOD (v2) 2015D 25ns data (part 1)  
-7. `2015Db`: for 2015D PromptReco 25ns data (part 2)  
 
 ## Unit Tests (Interactive Runs)
 
@@ -145,7 +118,7 @@ The script can also check to see which sites (if any) have 100% dataset presence
 
 Before running the script for the first time, some environment settings are necessary:
 ```
-source /cvmfs/cms.cern.ch/crab3/crab_light.csh
+source /cvmfs/cms.cern.ch/crab3/crab.csh
 ```
 
 To run the script:
@@ -153,9 +126,9 @@ To run the script:
 python get_py.py dict=dict.py
 ```
 
-To check for new samples, consult [production monitoring](https://dmytro.web.cern.ch/dmytro/cmsprodmon/requests.php?campaign=RunIISpring15MiniAODv2) or query DAS (in this case, for Spring15 MC):
+To check for new samples, consult [production monitoring](https://dmytro.web.cern.ch/dmytro/cmsprodmon/requests.php?campaign=RunIISpring16DR80) or query DAS (in this case, for Spring15 MC):
 ```
-das_client.py --query="dataset=/*/RunIISpring15MiniAODv2*/MINIAODSIM" --limit=0 | & less
+das_client.py --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0 | & less
 ```
 
 ### Samples with Negative Weight Events
@@ -214,5 +187,5 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py):
 * `inputFilesConfig`: name of the python file with a list of ROOT files for a sample, used for Condor production (default="", automatically appended with "_cff.py")
 * `scenarioName`: name of the scenario for the sample, as described above (default="")
-* `era`: CMS detector era for the dataset (default=Run2_50ns)
+* `era`: CMS detector era for the dataset
 * `redir`: xrootd redirector or storage element address (default=root://cmsxrootd.fnal.gov/)
