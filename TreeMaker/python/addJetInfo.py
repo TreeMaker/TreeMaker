@@ -1,12 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def addJetInfo(process, sequence, JetTag, userFloats, userInts, suff=""):
-    if hasattr(process,sequence):
-        theSequence = getattr(process,sequence)
-    else:
-        print "Unknown sequence: "+sequence
-        return
-
+def addJetInfo(process, JetTag, userFloats, userInts, suff=""):
     # add userfloats to jet collection
     from PhysicsTools.PatAlgos.producersLayer1.jetUpdater_cff import updatedPatJets as patJetsUpdated
 
@@ -22,6 +16,5 @@ def addJetInfo(process, sequence, JetTag, userFloats, userInts, suff=""):
     patJetsAuxiliary.userData.userFloats.src += userFloats
     patJetsAuxiliary.userData.userInts.src += userInts
     setattr(process,JetTagOut.value(),patJetsAuxiliary)
-    theSequence += getattr(process,JetTagOut.value())
     
     return (process, JetTagOut)
