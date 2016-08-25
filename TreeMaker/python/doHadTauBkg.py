@@ -1,12 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVarsHadTau(process,sequence,JetTag,suff,storeProperties=0):
-    if hasattr(process,sequence):
-        theSequence = getattr(process,sequence)
-    else:
-        print "Unknown sequence: "+sequence
-        return
-
+def makeJetVarsHadTau(process,JetTag,suff,storeProperties=0):
     # clone GoodJetsProducer
     GoodJetsForHadTau = process.GoodJets.clone(
         JetTag = JetTag,
@@ -15,7 +9,6 @@ def makeJetVarsHadTau(process,sequence,JetTag,suff,storeProperties=0):
         ExcludeLepIsoTrackPhotons = cms.bool(False),
     )
     setattr(process,"GoodJetsForHadTau"+suff,GoodJetsForHadTau)
-    theSequence += getattr(process,"GoodJetsForHadTau"+suff)
     GoodJetsTag = cms.InputTag("GoodJetsForHadTau"+suff)
     
     process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(softJets'+suff+')'])
@@ -31,7 +24,6 @@ def makeJetVarsHadTau(process,sequence,JetTag,suff,storeProperties=0):
         # provide extra info where necessary
         JetsProperties.jecUnc = cms.vstring("jecUncHadTau")
         setattr(process,"HadTauJetsProperties"+suff,JetsProperties)
-        theSequence += getattr(process,"HadTauJetsProperties"+suff)
         process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(softJets'+suff+'_jecFactor)','HadTauJetsProperties:jecUnc(softJets'+suff+'_jecUnc)'])
     
     return process
@@ -102,7 +94,6 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
     )
     if geninfo:
         process.JetsForHadTau.MCflag = cms.bool(True)
-    process.AdditionalSequence += process.JetsForHadTau
     JetTagHadTau = cms.InputTag("JetsForHadTau")
 
     # jet uncertainty variations
@@ -113,10 +104,9 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
         JetTag = JetTagHadTau,
         jecUncDir = cms.int32(0)
     )
-    process.AdditionalSequence += process.jecUncHadTau
     # add userfloat & update tag
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
-    process, JetTagHadTau = addJetInfo(process, "AdditionalSequence", JetTagHadTau, ['jecUncHadTau'], [])
+    process, JetTagHadTau = addJetInfo(process, JetTagHadTau, ['jecUncHadTau'], [])
     
     # skip all jet smearing for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
@@ -124,28 +114,24 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
     
     # JEC unc up
     process, JetTagHadTauJECup = JetDepot(process,
-        sequence="AdditionalSequence",
         JetTag=JetTagHadTau,
         jecUncDir=1,
         doSmear=doJERsmearing,
         jerUncDir=0
     )
     process = makeJetVarsHadTau(process,
-        sequence="AdditionalSequence",
         JetTag=JetTagHadTauJECup,
         suff='JECup',
     )
     
     # JEC unc down
     process, JetTagHadTauJECdown = JetDepot(process,
-        sequence="AdditionalSequence",
         JetTag=JetTagHadTau,
         jecUncDir=-1,
         doSmear=doJERsmearing,
         jerUncDir=0
     )
     process = makeJetVarsHadTau(process,
-        sequence="AdditionalSequence",
         JetTag=JetTagHadTauJECdown,
         suff='JECdown',
     )
@@ -153,35 +139,30 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
     if doJERsmearing:
         # JER unc up
         process, JetTagHadTauJERup = JetDepot(process,
-            sequence="AdditionalSequence",
             JetTag=JetTagHadTau,
             jecUncDir=0,
             doSmear=doJERsmearing,
             jerUncDir=1
         )
         process = makeJetVarsHadTau(process,
-            sequence="AdditionalSequence",
             JetTag=JetTagHadTauJERup,
             suff='JERup',
         )
         
         # JER unc down
         process, JetTagHadTauJERdown = JetDepot(process,
-            sequence="AdditionalSequence",
             JetTag=JetTagHadTau,
             jecUncDir=0,
             doSmear=doJERsmearing,
             jerUncDir=-1
         )
         process = makeJetVarsHadTau(process,
-            sequence="AdditionalSequence",
             JetTag=JetTagHadTauJERdown,
             suff='JERdown',
         )
 
         # finally, do central smearing and replace jet tag
         process, JetTagHadTau = JetDepot(process,
-            sequence="AdditionalSequence",
             JetTag=JetTagHadTau,
             jecUncDir=0,
             doSmear=doJERsmearing,
@@ -189,7 +170,6 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
         )
     
     process = makeJetVarsHadTau(process,
-        sequence="AdditionalSequence",
         JetTag=JetTagHadTau,
         suff='',
         storeProperties=1

@@ -68,9 +68,6 @@ signal=False
     VectorString         = cms.vstring()
     VectorInt            = cms.vstring()
     VectorBool           = cms.vstring()
-    
-    # sequence for baseline producers
-    process.Baseline = cms.Sequence()
 
     # configure treemaker
     from TreeMaker.TreeMaker.treeMaker import TreeMaker
@@ -106,7 +103,6 @@ signal=False
             debug = cms.bool(False),
             isLHE = cms.bool(False)
         )
-        process.Baseline += process.SusyScan
         VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
     
     ## ----------------------------------------------------------------------------------------------
@@ -117,7 +113,6 @@ signal=False
         process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim and signal)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string(pufile)
-        process.Baseline += process.WeightProducer
         VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
         VarsInt.extend(['WeightProducer:NumInteractions'])
@@ -127,7 +122,6 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if geninfo and doPDFs:
         process.PDFWeights = cms.EDProducer('PDFWeightProducer')
-        process.Baseline += process.PDFWeights
         VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
         VectorInt.extend(['PDFWeights:PDFids'])
 
@@ -136,7 +130,6 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if geninfo:
         process.MadHT = cms.EDProducer('GenHTProducer')
-        process.Baseline += process.MadHT
         # called madHT, i.e. MadGraph, to distinguish from GenHT from GenJets
         VarsDouble.extend(['MadHT:genHT(madHT)'])
     
@@ -152,13 +145,11 @@ signal=False
     process.NVtx = primaryvertices.clone(
         VertexCollection  = cms.InputTag('goodVertices'),
     )
-    process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
     # also store total number of vertices without quality checks
     process.nAllVertices = primaryvertices.clone(
         VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
     )
-    process.Baseline += process.nAllVertices
     VarsInt.extend(['nAllVertices'])
 
     ## ----------------------------------------------------------------------------------------------
@@ -169,7 +160,6 @@ signal=False
             genCollection = cms.untracked.InputTag("prunedGenParticles"),
             debug = cms.untracked.bool(False)
         )
-        process.Baseline += process.genParticles
         VectorTLorentzVector.append("genParticles(GenParticles)")
         VectorInt.append("genParticles:PdgId(GenParticles_PdgId)")
         VectorInt.append("genParticles:Status(GenParticles_Status)")
@@ -231,8 +221,6 @@ signal=False
             postfix = 'UpdatedJEC',
             jetCorrections = ('AK4PFchs', levels, 'None')
         )
-        process.Baseline += process.patJetCorrFactorsUpdatedJEC
-        process.Baseline += process.updatedPatJetsUpdatedJEC
         
         JetTag = cms.InputTag('updatedPatJetsUpdatedJEC')
         
@@ -244,8 +232,6 @@ signal=False
             postfix = 'UpdatedJEC',
             jetCorrections = ('AK8PFchs', levels, 'None')
         )
-        process.Baseline += process.patJetCorrFactorsAK8UpdatedJEC
-        process.Baseline += process.updatedPatJetsAK8UpdatedJEC
         
         JetAK8Tag = cms.InputTag('updatedPatJetsAK8UpdatedJEC')
         
@@ -270,10 +256,9 @@ signal=False
         JetTag = JetTag,
         jecUncDir = cms.int32(0)
     )
-    process.Baseline += process.jecUnc
     # add userfloat & update tag
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
-    process, JetTag = addJetInfo(process, "Baseline", JetTag, ['jecUnc'], [])
+    process, JetTag = addJetInfo(process, JetTag, ['jecUnc'], [])
 
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
@@ -319,10 +304,6 @@ signal=False
         METTag              = METTag,
     )
 
-    process.Baseline += process.IsolatedElectronTracksVeto
-    process.Baseline += process.IsolatedMuonTracksVeto
-    process.Baseline += process.IsolatedPionTracksVeto
-
     VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronTracks)'])
     VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
     VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
@@ -357,7 +338,6 @@ signal=False
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
         METTag           = METTag, 
     )
-    process.Baseline += process.LeptonsNew
     VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
     VectorInt.extend(['LeptonsNew:MuonCharge(MuonCharge)','LeptonsNew:ElectronCharge(ElectronCharge)'])
 
@@ -383,7 +363,6 @@ signal=False
             trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_CSCTightHalo2015Filter"),
         )
-        process.Baseline += process.CSCTightHaloFilter
         VarsInt.extend(['CSCTightHaloFilter'])
         
         process.globalTightHalo2016Filter = filterDecisionProducer.clone(
@@ -392,7 +371,6 @@ signal=False
             trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_globalTightHalo2016Filter"),
         )
-        process.Baseline += process.globalTightHalo2016Filter
         VarsInt.extend(['globalTightHalo2016Filter'])
         
         process.HBHENoiseFilter = filterDecisionProducer.clone(
@@ -401,7 +379,6 @@ signal=False
             trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_HBHENoiseFilter"),
         )
-        process.Baseline += process.HBHENoiseFilter
         VarsInt.extend(['HBHENoiseFilter'])
         
         process.HBHEIsoNoiseFilter = filterDecisionProducer.clone(
@@ -410,7 +387,6 @@ signal=False
             trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_HBHENoiseIsoFilter"),
         )
-        process.Baseline += process.HBHEIsoNoiseFilter
         VarsInt.extend(['HBHEIsoNoiseFilter'])
         
         process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
@@ -419,7 +395,6 @@ signal=False
             trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
-        process.Baseline += process.EcalDeadCellTriggerPrimitiveFilter
         VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
         
         process.eeBadScFilter = filterDecisionProducer.clone(
@@ -427,8 +402,7 @@ signal=False
             trigTagArg2  = cms.string(''),
             trigTagArg3  = cms.string(tagname),
             filterName  =   cms.string("Flag_eeBadScFilter"),
-            )
-        process.Baseline += process.eeBadScFilter
+        )
         VarsInt.extend(['eeBadScFilter'])
         
         # some filters need to be rerun
@@ -436,14 +410,12 @@ signal=False
         process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
         process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadChargedCandidateFilter.taggingMode = True
-        process.Baseline += process.BadChargedCandidateFilter
         VarsBool.extend(['BadChargedCandidateFilter'])
         
         process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
         process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
         process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadPFMuonFilter.taggingMode = True
-        process.Baseline += process.BadPFMuonFilter
         VarsBool.extend(['BadPFMuonFilter'])
 
     ## ----------------------------------------------------------------------------------------------
@@ -460,6 +432,7 @@ signal=False
     # any matching trigger will be included (default behavior)
 
     from TreeMaker.Utils.triggerproducer_cfi import triggerProducer
+    from TreeMaker.TreeMaker.triggerNameList import triggerNameList as _triggerNameList
     process.TriggerProducer = triggerProducer.clone(
         trigTagArg1     = cms.string('TriggerResults'),
         trigTagArg2     = cms.string(''),
@@ -467,62 +440,8 @@ signal=False
         prescaleTagArg1  = cms.string('patTrigger'),
         prescaleTagArg2  = cms.string(''),
         prescaleTagArg3  = cms.string(''),
-        triggerNameList = cms.vstring( # list of trigger names
-            'HLT_PFMET90_PFMHT90_IDTight_v',
-            'HLT_PFMET100_PFMHT100_IDTight_v',
-            'HLT_PFMET110_PFMHT110_IDTight_v',
-            'HLT_PFMET120_PFMHT120_IDTight_v',
-            'HLT_Ele25_eta2p1_WPTight_v ',
-            'HLT_Ele27_WPTight_v',
-            'HLT_Ele27_eta2p1_WPLoose_v ',
-            'HLT_Ele45_WPLoose_v',
-            'HLT_Ele105_CaloIdVT_GsfTrkIdT_v',
-            'HLT_Ele15_IsoVVVL_PFHT350_PFMET50_v',
-            'HLT_Ele15_IsoVVVL_PFHT600_v',
-            'HLT_Ele15_IsoVVVL_PFHT350_v',
-            'HLT_IsoMu24_v ',
-            'HLT_IsoMu22_eta2p1_v',
-            'HLT_Mu50_v',
-            'HLT_Mu15_IsoVVVL_PFHT350_PFMET50_v',
-            'HLT_Mu15_IsoVVVL_PFHT600_v',
-            'HLT_Mu15_IsoVVVL_PFHT350_v',
-            'HLT_Photon90_CaloIdL_PFHT500_v',
-            'HLT_Photon165_HE10_v',
-            'HLT_Photon175_v',
-            'HLT_PFHT300_PFMET100_v',
-            'HLT_PFHT300_PFMET110_v',
-            'HLT_PFHT800_v',
-            'HLT_PFHT900_v',
-            'HLT_DoubleMu8_Mass8_PFHT300_v',
-            'HLT_DoubleEle8_CaloIdM_TrackIdM_Mass8_PFHT300_v',
-            'HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v',
-            'HLT_Ele23_Ele12_CaloIdL_TrackIdL_IsoVL_DZ_v',
-            'HLT_Mu15_IsoVVVL_PFHT400_v',
-            'HLT_TkMu50_v',
-            'HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v',
-            'HLT_Ele15_IsoVVVL_PFHT400_v',
-            'HLT_IsoMu22_v',
-            'HLT_IsoTkMu22_v',
-            'HLT_Mu50_IsoVVVL_PFHT400_v',
-            'HLT_Ele50_IsoVVVL_PFHT400_v',
-            'HLT_PFMETNoMu90_PFMHTNoMu90_IDTight_v',
-            'HLT_PFMETNoMu100_PFMHTNoMu100_IDTight_v',
-            'HLT_PFMETNoMu110_PFMHTNoMu110_IDTight_v',
-            'HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_v',
-            'HLT_PFHT200_v',
-            'HLT_PFHT250_v',
-            'HLT_PFHT300_v',
-            'HLT_PFHT350_v',
-            'HLT_PFHT400_v',
-            'HLT_PFHT475_v',
-            'HLT_PFHT600_v',
-            'HLT_PFHT650_v',
-            'HLT_IsoMu16_eta2p1_MET30_v',
-            'HLT_Mu45_eta2p1_v',
-            'HLT_CaloJet500_NoJetID_v'
-       )
+        triggerNameList = _triggerNameList
     )
-    process.Baseline += process.TriggerProducer
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
@@ -574,14 +493,12 @@ signal=False
     
     # JEC unc up
     process, JetTagJECup = JetDepot(process,
-        sequence="Baseline",
         JetTag=JetTag,
         jecUncDir=1,
         doSmear=doJERsmearing,
         jerUncDir=0
     )
     process = makeJetVars(process,
-                          sequence="Baseline",
                           JetTag=JetTagJECup,
                           suff='JECup',
                           skipGoodJets=False,
@@ -592,14 +509,12 @@ signal=False
     
     # JEC unc down
     process, JetTagJECdown = JetDepot(process,
-        sequence="Baseline",
         JetTag=JetTag,
         jecUncDir=-1,
         doSmear=doJERsmearing,
         jerUncDir=0
     )
     process = makeJetVars(process,
-                          sequence="Baseline",
                           JetTag=JetTagJECdown,
                           suff='JECdown',
                           skipGoodJets=False,
@@ -611,14 +526,12 @@ signal=False
     if doJERsmearing:
         # JER unc up
         process, JetTagJERup = JetDepot(process,
-            sequence="Baseline",
             JetTag=JetTag,
             jecUncDir=0,
             doSmear=doJERsmearing,
             jerUncDir=1
         )
         process = makeJetVars(process,
-                              sequence="Baseline",
                               JetTag=JetTagJERup,
                               suff='JERup',
                               skipGoodJets=False,
@@ -629,14 +542,12 @@ signal=False
         
         # JER unc down
         process, JetTagJERdown = JetDepot(process,
-            sequence="Baseline",
             JetTag=JetTag,
             jecUncDir=0,
             doSmear=doJERsmearing,
             jerUncDir=-1
         )
         process = makeJetVars(process,
-                              sequence="Baseline",
                               JetTag=JetTagJERdown,
                               suff='JERdown',
                               skipGoodJets=False,
@@ -647,7 +558,6 @@ signal=False
 
         # finally, do central smearing and replace jet tag
         process, JetTag = JetDepot(process,
-            sequence="Baseline",
             JetTag=JetTag,
             jecUncDir=0,
             doSmear=doJERsmearing,
@@ -666,13 +576,11 @@ signal=False
         srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
         useQualityCuts	    = cms.bool(False)
     )
-    process.Baseline += process.QGTagger
     
     # add userfloats & update tag
-    process, JetTag = addJetInfo(process, "Baseline", JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2'], ['QGTagger:mult'])
+    process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2'], ['QGTagger:mult'])
     
     process = makeJetVars(process,
-                          sequence="Baseline",
                           JetTag=JetTag,
                           suff='',
                           skipGoodJets=False,
@@ -701,7 +609,6 @@ signal=False
     process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
     process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.Baseline += process.JetsPropertiesAK8
     VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
     VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
@@ -724,7 +631,6 @@ signal=False
             MinPt  = cms.double(30),
             MaxEta = cms.double(2.4),
         )
-        process.Baseline += process.GenHTJets
         VectorBool.extend(['GenHTJets:SubJetMask(GenHTJetsMask)'])
         
         # make gen HT
@@ -732,7 +638,6 @@ signal=False
         process.GenHT = htdouble.clone(
             JetTag = cms.InputTag("GenHTJets"),
         )
-        process.Baseline += process.GenHT
         VarsDouble.extend(['GenHT'])
         
         process.GenMHTJets = SubGenJetSelection.clone(
@@ -740,7 +645,6 @@ signal=False
             MinPt  = cms.double(30),
             MaxEta = cms.double(5.0),
         )
-        process.Baseline += process.GenMHTJets
         VectorBool.extend(['GenMHTJets:SubJetMask(GenMHTJetsMask)'])
         
         # make gen MHT
@@ -748,12 +652,13 @@ signal=False
         process.GenMHT = mhtdouble.clone(
             JetTag  = cms.InputTag('GenMHTJets'),
         )
-        process.Baseline += process.GenMHT
         VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
     ## ----------------------------------------------------------------------------------------------
+    # sequence for baseline filters
+    process.Baseline = cms.Sequence()
     from TreeMaker.Utils.doublefilter_cfi import DoubleFilter
     process.HTFilter = DoubleFilter.clone(
         DoubleTag = cms.InputTag('HT'),
@@ -777,7 +682,6 @@ signal=False
         JetTag = cms.InputTag('HTJets'),
         geninfo = cms.untracked.bool(geninfo),
     )
-    process.Baseline += process.MET
     VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)'])
     if geninfo:
         VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
@@ -788,7 +692,6 @@ signal=False
                 JetTag  = cms.InputTag('MHTJets'),
                 METTag = METTag
         )
-    process.Baseline += process.Mt2Producer
     VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
     
     ## ----------------------------------------------------------------------------------------------
@@ -797,9 +700,6 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
 
-    # sequence for optional producers
-    process.AdditionalSequence = cms.Sequence()
-    
     ## ----------------------------------------------------------------------------------------------
     ## Hadronic Tau Background
     ## ----------------------------------------------------------------------------------------------
@@ -831,8 +731,6 @@ signal=False
     process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     process.WriteTree = cms.Path(
         process.Baseline *
-        process.AdditionalSequence *
-#        process.dump *
         process.TreeMaker2
     )
     

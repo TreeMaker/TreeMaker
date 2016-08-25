@@ -1,12 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, geninfo, SkipTag=cms.VInputTag(), onlyGoodJets=False):
-    if hasattr(process,sequence):
-        theSequence = getattr(process,sequence)
-    else:
-        print "Unknown sequence: "+sequence
-        return
-
+def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -33,7 +27,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
             SaveAllJets               = True
         )
         setattr(process,"GoodJets"+suff,GoodJets)
-        theSequence += getattr(process,"GoodJets"+suff)
         GoodJetsTag = cms.InputTag("GoodJets"+suff)
         process.TreeMaker2.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
         if storeProperties>0:
@@ -53,7 +46,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         MaxEta = cms.double(2.4),
     )
     setattr(process,"HTJets"+suff,HTJets)
-    theSequence += getattr(process,"HTJets"+suff)
     if storeProperties>0: process.TreeMaker2.VectorBool.extend(['HTJets'+suff+':SubJetMask(HTJetsMask'+suff+')'])
     HTJetsTag = cms.InputTag("HTJets"+suff)
     
@@ -62,7 +54,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         JetTag = HTJetsTag,
     )
     setattr(process,"HT"+suff,HT)
-    theSequence += getattr(process,"HT"+suff)
     process.TreeMaker2.VarsDouble.extend(['HT'+suff])
     
     ## ----------------------------------------------------------------------------------------------
@@ -73,7 +64,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         JetTag = HTJetsTag,
     )
     setattr(process,"NJets"+suff,NJets)
-    theSequence += getattr(process,"NJets"+suff)
     process.TreeMaker2.VarsInt.extend(['NJets'+suff])
     
     ## ----------------------------------------------------------------------------------------------
@@ -86,7 +76,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         BTagCutValue = cms.double(0.800)
     )
     setattr(process,"BTags"+suff,BTags)
-    theSequence += getattr(process,"BTags"+suff)
     process.TreeMaker2.VarsInt.extend(['BTags'+suff])
     
     from TreeMaker.Utils.btagint_cfi import btagint
@@ -96,7 +85,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         BTagCutValue = cms.double(0.185)
     )
     setattr(process,"BTagsMVA"+suff,BTagsMVA)
-    theSequence += getattr(process,"BTagsMVA"+suff)
     process.TreeMaker2.VarsInt.extend(['BTagsMVA'+suff])
     
     ## ----------------------------------------------------------------------------------------------
@@ -109,7 +97,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         MaxEta = cms.double(5.0),
     )
     setattr(process,"MHTJets"+suff,MHTJets)
-    theSequence += getattr(process,"MHTJets"+suff)
     if storeProperties>0: process.TreeMaker2.VectorBool.extend(['MHTJets'+suff+':SubJetMask(MHTJetsMask'+suff+')'])
     MHTJetsTag = cms.InputTag("MHTJets"+suff)
     
@@ -118,7 +105,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         JetTag  = MHTJetsTag,
     )
     setattr(process,"MHT"+suff,MHT)
-    theSequence += getattr(process,"MHT"+suff)
     process.TreeMaker2.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHTPhi'+suff+')'])
 
     ## ----------------------------------------------------------------------------------------------
@@ -130,7 +116,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         MHTJets      = MHTJetsTag,
     )
     setattr(process,"DeltaPhi"+suff,DeltaPhi)
-    theSequence += getattr(process,"DeltaPhi"+suff)
     process.TreeMaker2.VarsDouble.extend(['DeltaPhi'+suff+':DeltaPhi1(DeltaPhi1'+suff+')','DeltaPhi'+suff+':DeltaPhi2(DeltaPhi2'+suff+')',
                                           'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
 
@@ -147,7 +132,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
             MaxEta = cms.double(2.4),
         )
         setattr(process,"ISRJets"+suff,ISRJets)
-        theSequence += getattr(process,"ISRJets"+suff)
         if storeProperties>0:
             process.TreeMaker2.VectorBool.extend(['ISRJets'+suff+':SubJetMask(ISRJetsMask'+suff+')'])
             process.TreeMaker2.VarsInt.extend(['ISRJets'+suff+'(NJetsISR'+suff+')'])
@@ -168,7 +152,6 @@ def makeJetVars(process, sequence, JetTag, suff, skipGoodJets, storeProperties, 
         if storeProperties==1: 
             JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","partonFlavor","hadronFlavor")
         setattr(process,"JetsProperties"+suff,JetsProperties)
-        theSequence += getattr(process,"JetsProperties"+suff)
         process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
                                                 'JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)'])
         process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',

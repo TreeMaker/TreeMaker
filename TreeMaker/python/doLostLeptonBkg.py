@@ -1,15 +1,12 @@
 import FWCore.ParameterSet.Config as cms
 
 def doLostLeptonBkg(process,geninfo,METTag):
-    process.LostLepton = cms.Sequence()
-
     if geninfo:
         from TreeMaker.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
         process.GenLeptons = genLeptonRecoCand.clone(
             PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
             pfCandsTag  = cms.InputTag('packedPFCandidates')
         )
-        process.LostLepton += process.GenLeptons
 
     from TreeMaker.Utils.isolationproducer_cfi import isolationproducer
     process.IDMuonMiniIso = isolationproducer.clone(
@@ -17,8 +14,7 @@ def doLostLeptonBkg(process,geninfo,METTag):
         LeptonType = cms.string('muon'),
         PFCandTag = cms.InputTag('packedPFCandidates'),
         JetTag = cms.InputTag('HTJets')
-    )    
-    process.LostLepton += process.IDMuonMiniIso
+    )
     process.IDElectronMiniIso = isolationproducer.clone(
         LeptonTag = cms.InputTag('LeptonsNew:IdElectron'), 
         LeptonType = cms.string('electron'),
@@ -30,15 +26,13 @@ def doLostLeptonBkg(process,geninfo,METTag):
         LeptonType = cms.string('muon'),
         PFCandTag = cms.InputTag('packedPFCandidates'),
         JetTag = cms.InputTag('HTJets')
-    )    
-    process.LostLepton += process.IDIsoMuonMiniIso
+    )
     process.IDIsoElectronMiniIso = isolationproducer.clone(
         LeptonTag = cms.InputTag('LeptonsNew:IdIsoElectron'), 
         LeptonType = cms.string('electron'),
         PFCandTag = cms.InputTag('packedPFCandidates'),
         JetTag = cms.InputTag('HTJets')
-    )    
-    process.LostLepton += process.IDIsoElectronMiniIso
+    )
 
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
 
@@ -80,43 +74,32 @@ def doLostLeptonBkg(process,geninfo,METTag):
             mTCut               = 0.,
             METTag              = METTag
             )
-    process.LostLepton += process.TAPElectronTracks
-    process.LostLepton += process.TAPMuonTracks
-    process.LostLepton += process.TAPPionTracks
-    
-    
+
     if geninfo:
         process.GenMuonMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Muon'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
             JetTag = cms.InputTag('HTJets')
-        )    
-        process.LostLepton += process.GenMuonMiniIso
+        )
         process.GenElectronMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Electron'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
             JetTag = cms.InputTag('HTJets')
-        )    
-        process.LostLepton += process.GenElectronMiniIso
+        )
         process.GenTauMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Tau'), 
             LeptonType = cms.string('gen'),
             PFCandTag = cms.InputTag('packedPFCandidates'),
             JetTag = cms.InputTag('HTJets')
-        )    
-        process.LostLepton += process.GenTauMiniIso      
-    
-        
+        )
+
     from TreeMaker.Utils.extrapolationproducer_cfi import extrapolationproducer
     process.PTWExtrapolation = extrapolationproducer.clone(
         MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'), # these are the leptons that pass ID and isolation
         ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron')
     )
-    process.LostLepton += process.PTWExtrapolation
-        
-    process.AdditionalSequence += process.LostLepton
     
     # may eventually save track isolation, activity
     process.TreeMaker2.VectorRecoCand.extend(['LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdElectron(selectedIDElectrons)'])
