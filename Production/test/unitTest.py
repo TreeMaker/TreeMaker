@@ -1,4 +1,4 @@
-import subprocess
+import os, subprocess
 
 def makeTest(scenario, name, numevents, dataset="", inputFilesConfig="", nstart=0, nfiles=0):
     mytest = []
@@ -57,8 +57,11 @@ if test<0 or test>len(mytests):
 else:
     printTest(mytests[test],test,shell)
     if run:
-        print "Running test..."
-
         # fork the cmsRun process and exit
-        with open(mytests[test][-1],'w') as out:
-            pid = subprocess.Popen(mytests[test][0:-1], stdin=None, stdout=out, stderr=out, close_fds=True).pid
+        fork_pid = os.fork()
+        if fork_pid == 0:
+            with open(mytests[test][-1],'w') as out:
+                p = subprocess.Popen(mytests[test][0:-1], stdin=None, stdout=out, stderr=out, close_fds=True)
+                print "\nRunning test... ["+str(p.pid)+"]"
+                sts = os.waitpid(p.pid, 0)[1]
+                print "\nTest is done! ["+str(p.pid)+"]"
