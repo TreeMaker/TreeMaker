@@ -95,11 +95,11 @@ void SusyScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	}
 	//otherwise, values are picked up in beginLuminosityBlock()
 
-	std::auto_ptr<double > motherMass(new double(motherMass_));
-	iEvent.put(motherMass, "SusyMotherMass");
+	auto motherMass = std::make_unique<double>(motherMass_);
+	iEvent.put(std::move(motherMass), "SusyMotherMass");
 	
-	std::auto_ptr<double > lspMass(new double(lspMass_));
-	iEvent.put(lspMass, "SusyLSPMass");
+	auto lspMass = std::make_unique<double>(lspMass_);
+	iEvent.put(std::move(lspMass), "SusyLSPMass");
 	
 }
 

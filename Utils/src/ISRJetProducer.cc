@@ -53,7 +53,7 @@ ISRJetProducer::ISRJetProducer(const edm::ParameterSet& iConfig) :
 void ISRJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	int nisr = 0;
-	std::auto_ptr<std::vector<bool> > mask(new std::vector<bool>());
+	auto mask = std::make_unique<std::vector<bool>>();
 	
 	//get the input jet collection
 	edm::Handle<edm::View<pat::Jet>> jets;
@@ -101,9 +101,9 @@ void ISRJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		} // Loop over jets
 	}
 	
-	std::auto_ptr<int> htp(new int(nisr));
-	iEvent.put(htp);
-	iEvent.put(mask,"SubJetMask");
+	auto htp = std::make_unique<int>(nisr);
+	iEvent.put(std::move(htp));
+	iEvent.put(std::move(mask),"SubJetMask");
 }
 
 DEFINE_FWK_MODULE(ISRJetProducer);

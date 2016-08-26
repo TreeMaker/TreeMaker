@@ -279,33 +279,33 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
         _PUSysUp = getPUWeight(_TrueNumInt,pu_up);
         _PUSysDown = getPUWeight(_TrueNumInt,pu_down);
 
-        std::auto_ptr<double> puOut1(new double(_PUweightFactor));
-        iEvent.put(puOut1, "PUweight");
+        auto puOut1 = std::make_unique<double>(_PUweightFactor);
+        iEvent.put(std::move(puOut1), "PUweight");
         
-        std::auto_ptr<double> puOut2(new double(_PUSysUp));
-        iEvent.put(puOut2, "PUSysUp");
+        auto puOut2 = std::make_unique<double>(_PUSysUp);
+        iEvent.put(std::move(puOut2), "PUSysUp");
         
-        std::auto_ptr<double> puOut3(new double(_PUSysDown));
-        iEvent.put(puOut3, "PUSysDown");
+        auto puOut3 = std::make_unique<double>(_PUSysDown);
+        iEvent.put(std::move(puOut3), "PUSysDown");
         
-        std::auto_ptr<int> puOut4(new int(_NumInt));
-        iEvent.put(puOut4, "NumInteractions");
+        auto puOut4 = std::make_unique<int>(_NumInt);
+        iEvent.put(std::move(puOut4), "NumInteractions");
         
-        std::auto_ptr<double> puOut5(new double(_TrueNumInt));
-        iEvent.put(puOut5, "TrueNumInteractions");
+        auto puOut5 = std::make_unique<double>(_TrueNumInt);
+        iEvent.put(std::move(puOut5), "TrueNumInteractions");
    }
 
    //---------------------------------------------------------------------------
 
    // put weight into the Event
-   std::auto_ptr<double> pOut(new double(resultWeight));
-   iEvent.put(pOut, "weight");
+   auto pOut = std::make_unique<double>(resultWeight);
+   iEvent.put(std::move(pOut), "weight");
    
-   std::auto_ptr<double> pOutX(new double(_xs));
-   iEvent.put(pOutX, "xsec");
+   auto pOutX = std::make_unique<double>(_xs);
+   iEvent.put(std::move(pOutX), "xsec");
 
-   std::auto_ptr<double> pOutN(new double(_NumberEvents));
-   iEvent.put(pOutN, "nevents");
+   auto pOutN = std::make_unique<double>(_NumberEvents);
+   iEvent.put(std::move(pOutN), "nevents");
 }
 
 // ------------ method called once each job just before starting event loop  ------------

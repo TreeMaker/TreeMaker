@@ -35,7 +35,7 @@ ZProducer::ZProducer(const edm::ParameterSet& iConfig)
 
 void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-   std::auto_ptr<pat::CompositeCandidateCollection> ZCandidates(new pat::CompositeCandidateCollection());
+   auto ZCandidates = std::make_unique<pat::CompositeCandidateCollection>();
 
    // make candidates from electrons
    edm::Handle<std::vector<pat::Electron>> electronHandle;
@@ -74,7 +74,7 @@ void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
 
    // add the Z candidates to the event
-   iEvent.put(ZCandidates, std::string("ZCandidates"));
+   iEvent.put(std::move(ZCandidates), std::string("ZCandidates"));
 }
 
 //define this as a plug-in

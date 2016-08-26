@@ -119,8 +119,8 @@ HTDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
 	}
 	else std::cout<<"HTDouble::Invalid Tag: "<<JetTag_.label()<<std::endl;
-	std::auto_ptr<double> htp(new double(ht_));
-	iEvent.put(htp);
+	auto htp = std::make_unique<double>(ht_);
+	iEvent.put(std::move(htp));
 	
 }
 

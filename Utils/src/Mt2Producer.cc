@@ -237,8 +237,8 @@ Mt2Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   //cout << "MT2="<<Mt2<<endl;
 
-  std::auto_ptr<double > Mt2Final(new double(Mt2));
-  iEvent.put(Mt2Final,"mt2");
+  auto Mt2Final = std::make_unique<double>(Mt2);
+  iEvent.put(std::move(Mt2Final),"mt2");
  
 }
 

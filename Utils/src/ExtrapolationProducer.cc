@@ -117,10 +117,10 @@ void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
  
   using namespace edm;
 		
-  std::auto_ptr<std::vector<double> > muPTW(new std::vector<double>());
-  std::auto_ptr<std::vector<double> > muCDTT(new std::vector<double>());
-  std::auto_ptr<std::vector<double> > elecPTW(new std::vector<double>());
-  std::auto_ptr<std::vector<double> > elecCDTT(new std::vector<double>());
+  auto muPTW = std::make_unique<std::vector<double>>();
+  auto muCDTT = std::make_unique<std::vector<double>>();
+  auto elecPTW = std::make_unique<std::vector<double>>();
+  auto elecCDTT = std::make_unique<std::vector<double>>();
 
   edm::Handle < double > mhtHandle ;
   iEvent.getByToken(MHTPtTok_,mhtHandle);
@@ -155,11 +155,11 @@ void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
     }
 
 
-  iEvent.put(muPTW,"MuPTW");
-  iEvent.put(muCDTT,"MuCDTT");
+  iEvent.put(std::move(muPTW),"MuPTW");
+  iEvent.put(std::move(muCDTT),"MuCDTT");
   
-  iEvent.put(elecPTW,"ElecPTW");
-  iEvent.put(elecCDTT,"ElecCDTT");
+  iEvent.put(std::move(elecPTW),"ElecPTW");
+  iEvent.put(std::move(elecCDTT),"ElecCDTT");
 
 }
 

@@ -187,24 +187,24 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
  
   using namespace edm;
         
-  std::auto_ptr<std::vector<int> > MuonCharge(new std::vector<int>());
-  std::auto_ptr<std::vector<int> > ElectronCharge(new std::vector<int>());
+  auto MuonCharge = std::make_unique<std::vector<int>>();
+  auto ElectronCharge = std::make_unique<std::vector<int>>();
         
-  std::auto_ptr<std::vector<double> > muIDMTW(new std::vector<double>());
-  std::auto_ptr<std::vector<double> > muIDIsoMTW(new std::vector<double>());
-  std::auto_ptr<std::vector<double> > elecIDMTW(new std::vector<double>());
-  std::auto_ptr<std::vector<double> > elecIDIsoMTW(new std::vector<double>());
-  std::auto_ptr<std::vector<bool> > elecIDMedium(new std::vector<bool>());
-  std::auto_ptr<std::vector<bool> > elecIDIsoMedium(new std::vector<bool>());
-  // std::auto_ptr<std::vector<double> > muIDActRA2(new std::vector<double>());
-  // std::auto_ptr<std::vector<double> > muIDIsoActRA2(new std::vector<double>());
-  // std::auto_ptr<std::vector<double> > muIDActMT2(new std::vector<double>());
-  // std::auto_ptr<std::vector<double> > muIDIsoActMT2(new std::vector<double>());
+  auto muIDMTW = std::make_unique<std::vector<double>>();
+  auto muIDIsoMTW = std::make_unique<std::vector<double>>();
+  auto elecIDMTW = std::make_unique<std::vector<double>>();
+  auto elecIDIsoMTW = std::make_unique<std::vector<double>>();
+  auto elecIDMedium = std::make_unique<std::vector<bool>>();
+  auto elecIDIsoMedium = std::make_unique<std::vector<bool>>();
+  // auto muIDActRA2 = std::make_unique<std::vector<double>>();
+  // auto muIDIsoActRA2 = std::make_unique<std::vector<double>>();
+  // auto muIDActMT2 = std::make_unique<std::vector<double>>();
+  // auto muIDIsoActMT2 = std::make_unique<std::vector<double>>();
 
-  // std::auto_ptr<std::vector<double> > elecIDActRA2(new std::vector<double>());
-  // std::auto_ptr<std::vector<double> > elecIDIsoActRA2(new std::vector<double>());
-  // std::auto_ptr<std::vector<double> > elecIDActMT2(new std::vector<double>());
-  // std::auto_ptr<std::vector<double> > elecIDIsoActMT2(new std::vector<double>());
+  // auto elecIDActRA2 = std::make_unique<std::vector<double>>();
+  // auto elecIDIsoActRA2 = std::make_unique<std::vector<double>>();
+  // auto elecIDActMT2 = std::make_unique<std::vector<double>>();
+  // auto elecIDIsoActMT2 = std::make_unique<std::vector<double>>();
 
   edm::Handle< edm::View<pat::MET> > MET;
   iEvent.getByToken(metTok_,MET); 
@@ -297,27 +297,27 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   const std::string string3("IdElectron");
   const std::string string4("IdIsoElectron");
         
-  std::auto_ptr<int> htp(new int(Leptons));
-  iEvent.put(htp);
-  std::auto_ptr<std::vector<pat::Muon> > htp1(new std::vector<pat::Muon>(idMuons_));
-  iEvent.put(htp1,string1);
-  std::auto_ptr<std::vector<pat::Muon> > htp2(new std::vector<pat::Muon>(isoMuons_));
-  iEvent.put(htp2,string2);
+  auto htp = std::make_unique<int>(Leptons);
+  iEvent.put(std::move(htp));
+  auto htp1 = std::make_unique<std::vector<pat::Muon>>(idMuons_);
+  iEvent.put(std::move(htp1),string1);
+  auto htp2 = std::make_unique<std::vector<pat::Muon>>(isoMuons_);
+  iEvent.put(std::move(htp2),string2);
         
-  std::auto_ptr<std::vector<pat::Electron> > htp3(new std::vector<pat::Electron>(idElectrons_));
-  iEvent.put(htp3,string3);
-  std::auto_ptr<std::vector<pat::Electron> > htp4(new std::vector<pat::Electron>(isoElectrons_));
-  iEvent.put(htp4,string4);
+  auto htp3 = std::make_unique<std::vector<pat::Electron>>(idElectrons_);
+  iEvent.put(std::move(htp3),string3);
+  auto htp4 = std::make_unique<std::vector<pat::Electron>>(isoElectrons_);
+  iEvent.put(std::move(htp4),string4);
         
-  iEvent.put(ElectronCharge,"ElectronCharge");
-  iEvent.put(MuonCharge,"MuonCharge");
+  iEvent.put(std::move(ElectronCharge),"ElectronCharge");
+  iEvent.put(std::move(MuonCharge),"MuonCharge");
         
-  iEvent.put(muIDMTW,"MuIDMTW");
-  iEvent.put(muIDIsoMTW,"MuIDIsoMTW");
-  iEvent.put(elecIDMTW,"ElecIDMTW");
-  iEvent.put(elecIDIsoMTW,"ElecIDIsoMTW");
-  iEvent.put(elecIDMedium,"ElecIDMedium");
-  iEvent.put(elecIDIsoMedium,"ElecIDIsoMedium");
+  iEvent.put(std::move(muIDMTW),"MuIDMTW");
+  iEvent.put(std::move(muIDIsoMTW),"MuIDIsoMTW");
+  iEvent.put(std::move(elecIDMTW),"ElecIDMTW");
+  iEvent.put(std::move(elecIDIsoMTW),"ElecIDIsoMTW");
+  iEvent.put(std::move(elecIDMedium),"ElecIDMedium");
+  iEvent.put(std::move(elecIDIsoMedium),"ElecIDIsoMedium");
 }
 
 // ------------ method called once each job just before starting event loop  ------------

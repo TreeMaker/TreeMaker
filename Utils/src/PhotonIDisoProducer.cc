@@ -100,22 +100,22 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   using namespace edm;
   
-  std::auto_ptr< std::vector< pat::Photon > > goodPhotons ( new std::vector< pat::Photon >() );
-  std::auto_ptr< std::vector< double > > photon_isEB( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_genMatched( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_hadTowOverEM( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_sigmaIetaIeta( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_pfGammaIso( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_pfChargedIso( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_pfNeutralIso( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_pfGammaIsoRhoCorr( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_pfChargedIsoRhoCorr( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_pfNeutralIsoRhoCorr( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_hasPixelSeed( new std::vector< double > () );
-  std::auto_ptr< std::vector< double > > photon_passElectronVeto( new std::vector< double > () );
-  std::auto_ptr< std::vector< bool > >   photon_hadronization( new std::vector< bool > () );
-  std::auto_ptr< std::vector< bool > >   photon_nonPrompt ( new std::vector< bool > () );
-  std::auto_ptr< std::vector< bool > >   photon_fullID ( new std::vector< bool > () );
+  auto goodPhotons  = std::make_unique<std::vector<pat::Photon>>();
+  auto photon_isEB = std::make_unique<std::vector<double>>();
+  auto photon_genMatched = std::make_unique<std::vector<double>>();
+  auto photon_hadTowOverEM = std::make_unique<std::vector<double>>();
+  auto photon_sigmaIetaIeta = std::make_unique<std::vector<double>>();
+  auto photon_pfGammaIso = std::make_unique<std::vector<double>>();
+  auto photon_pfChargedIso = std::make_unique<std::vector<double>>();
+  auto photon_pfNeutralIso = std::make_unique<std::vector<double>>();
+  auto photon_pfGammaIsoRhoCorr = std::make_unique<std::vector<double>>();
+  auto photon_pfChargedIsoRhoCorr = std::make_unique<std::vector<double>>();
+  auto photon_pfNeutralIsoRhoCorr = std::make_unique<std::vector<double>>();
+  auto photon_hasPixelSeed = std::make_unique<std::vector<double>>();
+  auto photon_passElectronVeto = std::make_unique<std::vector<double>>();
+  auto   photon_hadronization = std::make_unique<std::vector<bool>>();
+  auto   photon_nonPrompt  = std::make_unique<std::vector<bool>>();
+  auto   photon_fullID  = std::make_unique<std::vector<bool>>();
 
   if( debug ){
     std::cout << "new events" << std::endl;
@@ -296,21 +296,21 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }//pure photons
 
   }// end loop over candidate photons
-  iEvent.put(goodPhotons); 
-  iEvent.put(photon_isEB , "isEB" );
-  iEvent.put(photon_genMatched , "genMatched" );
-  iEvent.put(photon_hadTowOverEM , "hadTowOverEM" );
-  iEvent.put(photon_sigmaIetaIeta , "sigmaIetaIeta" );
-  iEvent.put(photon_pfChargedIso , "pfChargedIso" );
-  iEvent.put(photon_pfNeutralIso , "pfNeutralIso" );
-  iEvent.put(photon_pfGammaIso , "pfGammaIso" );
-  iEvent.put(photon_pfChargedIsoRhoCorr , "pfChargedIsoRhoCorr" );
-  iEvent.put(photon_pfNeutralIsoRhoCorr , "pfNeutralIsoRhoCorr" );
-  iEvent.put(photon_pfGammaIsoRhoCorr , "pfGammaIsoRhoCorr" );
-  iEvent.put(photon_hasPixelSeed , "hasPixelSeed" );
-  iEvent.put(photon_passElectronVeto , "passElectronVeto" );
-  iEvent.put(photon_nonPrompt , "nonPrompt" );
-  iEvent.put(photon_fullID , "fullID" );
+  iEvent.put(std::move(goodPhotons)); 
+  iEvent.put(std::move(photon_isEB ), "isEB" );
+  iEvent.put(std::move(photon_genMatched ), "genMatched" );
+  iEvent.put(std::move(photon_hadTowOverEM ), "hadTowOverEM" );
+  iEvent.put(std::move(photon_sigmaIetaIeta ), "sigmaIetaIeta" );
+  iEvent.put(std::move(photon_pfChargedIso ), "pfChargedIso" );
+  iEvent.put(std::move(photon_pfNeutralIso ), "pfNeutralIso" );
+  iEvent.put(std::move(photon_pfGammaIso ), "pfGammaIso" );
+  iEvent.put(std::move(photon_pfChargedIsoRhoCorr ), "pfChargedIsoRhoCorr" );
+  iEvent.put(std::move(photon_pfNeutralIsoRhoCorr ), "pfNeutralIsoRhoCorr" );
+  iEvent.put(std::move(photon_pfGammaIsoRhoCorr ), "pfGammaIsoRhoCorr" );
+  iEvent.put(std::move(photon_hasPixelSeed ), "hasPixelSeed" );
+  iEvent.put(std::move(photon_passElectronVeto ), "passElectronVeto" );
+  iEvent.put(std::move(photon_nonPrompt ), "nonPrompt" );
+  iEvent.put(std::move(photon_fullID ), "fullID" );
 
  
 }

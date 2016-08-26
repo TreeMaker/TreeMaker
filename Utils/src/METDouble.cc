@@ -186,32 +186,32 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    else if(!GenMET.isValid()) std::cout<<"METDouble::Invalid Tag: "<<genMetTag_.label()<<std::endl;
    
-   std::auto_ptr<double> htp(new double(metpt_));
-   iEvent.put(htp,"Pt");
-   std::auto_ptr<double> htp2(new double(metphi_));
-   iEvent.put(htp2,"Phi");
+   auto htp = std::make_unique<double>(metpt_);
+   iEvent.put(std::move(htp),"Pt");
+   auto htp2 = std::make_unique<double>(metphi_);
+   iEvent.put(std::move(htp2),"Phi");
 
-   std::auto_ptr<double> chtp(new double(calometpt_));
-   iEvent.put(chtp,"CaloPt");
-   std::auto_ptr<double> chtp2(new double(calometphi_));
-   iEvent.put(chtp2,"CaloPhi");
-   std::auto_ptr<double> chtp3(new double(metpt_/calometpt_));
-   iEvent.put(chtp3,"PFCaloPtRatio");
+   auto chtp = std::make_unique<double>(calometpt_);
+   iEvent.put(std::move(chtp),"CaloPt");
+   auto chtp2 = std::make_unique<double>(calometphi_);
+   iEvent.put(std::move(chtp2),"CaloPhi");
+   auto chtp3 = std::make_unique<double>(metpt_/calometpt_);
+   iEvent.put(std::move(chtp3),"PFCaloPtRatio");
 
    if(geninfo_){
-       std::auto_ptr<double> ghtp(new double(genmetpt_));
-       iEvent.put(ghtp,"GenPt");
-       std::auto_ptr<double> ghtp2(new double(genmetphi_));
-       iEvent.put(ghtp2,"GenPhi");
+       auto ghtp = std::make_unique<double>(genmetpt_);
+       iEvent.put(std::move(ghtp),"GenPt");
+       auto ghtp2 = std::make_unique<double>(genmetphi_);
+       iEvent.put(std::move(ghtp2),"GenPhi");
 
-       std::auto_ptr<std::vector<double> > uncp1(new std::vector<double>(metPtUp_));
-       iEvent.put(uncp1,"PtUp");
-       std::auto_ptr<std::vector<double> > uncp2(new std::vector<double>(metPtDown_));
-       iEvent.put(uncp2,"PtDown");
-       std::auto_ptr<std::vector<double> > uncp3(new std::vector<double>(metPhiUp_));
-       iEvent.put(uncp3,"PhiUp");
-       std::auto_ptr<std::vector<double> > uncp4(new std::vector<double>(metPhiDown_));
-       iEvent.put(uncp4,"PhiDown");
+       auto uncp1 = std::make_unique<std::vector<double>>(metPtUp_);
+       iEvent.put(std::move(uncp1),"PtUp");
+       auto uncp2 = std::make_unique<std::vector<double>>(metPtDown_);
+       iEvent.put(std::move(uncp2),"PtDown");
+       auto uncp3 = std::make_unique<std::vector<double>>(metPhiUp_);
+       iEvent.put(std::move(uncp3),"PhiUp");
+       auto uncp4 = std::make_unique<std::vector<double>>(metPhiDown_);
+       iEvent.put(std::move(uncp4),"PhiDown");
    }
 
    if( Jets.isValid() ) {
@@ -225,18 +225,18 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
       }// end loop over jets
    }// end Jets.isValid()
-   std::auto_ptr<double> htp3(new double(dpnhat[0]));
-   iEvent.put(htp3,"DeltaPhiN1");
-   std::auto_ptr<double> htp4(new double(dpnhat[1]));
-   iEvent.put(htp4,"DeltaPhiN2");
-   std::auto_ptr<double> htp5(new double(dpnhat[2]));
-   iEvent.put(htp5,"DeltaPhiN3");
+   auto htp3 = std::make_unique<double>(dpnhat[0]);
+   iEvent.put(std::move(htp3),"DeltaPhiN1");
+   auto htp4 = std::make_unique<double>(dpnhat[1]);
+   iEvent.put(std::move(htp4),"DeltaPhiN2");
+   auto htp5 = std::make_unique<double>(dpnhat[2]);
+   iEvent.put(std::move(htp5),"DeltaPhiN3");
    float mindpn=9999;
    for(int i=0; i<3; ++i){
       if(mindpn>fabs(dpnhat[i]))mindpn=fabs(dpnhat[i]);
    }
-   std::auto_ptr<double> htp6(new double(mindpn));
-   iEvent.put(htp6,"minDeltaPhiN");
+   auto htp6 = std::make_unique<double>(mindpn);
+   iEvent.put(std::move(htp6),"minDeltaPhiN");
 }
 
 // ------------ method called once each job just before starting event loop  ------------

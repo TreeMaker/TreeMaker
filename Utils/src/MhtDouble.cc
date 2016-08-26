@@ -121,10 +121,10 @@ MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
   }
   else std::cout<<"MHTDouble::Invalid Tag: "<<JetTag_.label()<<std::endl;
-	std::auto_ptr<double > Pt(new double(mhtLorentz.pt()));
-	std::auto_ptr<double > Phi(new double(mhtLorentz.phi()));
-	iEvent.put(Pt,"Pt");
-	iEvent.put(Phi,"Phi");
+	auto Pt = std::make_unique<double>(mhtLorentz.pt());
+	auto Phi = std::make_unique<double>(mhtLorentz.phi());
+	iEvent.put(std::move(Pt),"Pt");
+	iEvent.put(std::move(Phi),"Phi");
  
 }
 

@@ -53,15 +53,15 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 	edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;
 	iSetup.get<JetCorrectionsRecord>().get(JetType_,JetCorParColl); 
 	JetCorrectorParameters const & JetCorPar = (*JetCorParColl)["Uncertainty"];
-	std::auto_ptr<JetCorrectionUncertainty> jecUnc( new JetCorrectionUncertainty(JetCorPar) );
+	auto jecUnc = std::make_unique<JetCorrectionUncertainty>(JetCorPar);
 
 	//get the input jet collection (nominal JECs already applied)
 	edm::Handle<edm::View<pat::Jet>> jets;
 	iEvent.getByToken(JetTok_, jets);
 
-	std::auto_ptr< std::vector<pat::Jet> > newJets ( new std::vector<pat::Jet>() );
+	auto newJets  = std::make_unique<std::vector<pat::Jet>>();
 	newJets->reserve(jets->size());
-	std::auto_ptr< std::vector<double> > jecUncVec ( new std::vector<double>() );
+	auto jecUncVec  = std::make_unique<std::vector<double>>();
 	jecUncVec->reserve(jets->size());
 
 	for (edm::View<pat::Jet>::const_iterator itJet = jets->begin(); itJet != jets->end(); itJet++) {
@@ -107,17 +107,17 @@ void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 
 	if(jecUncDir_==0){
 		//store uncertainty as a userfloat
-		std::auto_ptr<edm::ValueMap<float>> out(new edm::ValueMap<float>());
+		auto out = std::make_unique<edm::ValueMap<float>>();
 		typename edm::ValueMap<float>::Filler filler(*out);
 		filler.insert(jets, jecUncVec->begin(), jecUncVec->end());
 		filler.fill();
-		iEvent.put(out,"");
+		iEvent.put(std::move(out),"");
 	}
 	else{
 		//sort jets in pt
 		std::sort(newJets->begin(), newJets->end(), pTComparator_);
 	
-		iEvent.put(newJets);
+		iEvent.put(std::move(newJets));
 	}
 }
 

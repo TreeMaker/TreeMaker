@@ -52,13 +52,13 @@ class NamedPtr {
 	public:
 		//constructor
 		NamedPtr() : name("") {}
-		NamedPtr(std::string name_, edm::EDProducer* edprod) : name(name_), ptr(new std::vector<T>()) {
+		NamedPtr(std::string name_, edm::EDProducer* edprod) : name(name_), ptr(std::make_unique<std::vector<T>>()) {
 			edprod->produces<std::vector<T>>(name).setBranchAlias(name);
 		}
 		//destructor
 		virtual ~NamedPtr() {}
 		//accessors
-		void put(edm::Event& iEvent) { iEvent.put(ptr,name); }
+		void put(edm::Event& iEvent) { iEvent.put(std::move(ptr),name); }
 		void reset() { ptr.reset(new std::vector<T>()); }
 		void push_back(T tmp) { ptr->push_back(tmp); }
 		void setExtraInfo(const std::vector<std::string>& extraInfo_) { extraInfo = extraInfo_; }
@@ -66,7 +66,7 @@ class NamedPtr {
 	
 		//member variables
 		std::string name;
-		std::auto_ptr< std::vector<T> > ptr;
+		std::unique_ptr<std::vector<T>> ptr;
 		std::vector<std::string> extraInfo;
 };
 

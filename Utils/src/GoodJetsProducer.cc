@@ -155,9 +155,9 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
    }
    
-   std::auto_ptr<std::vector<Jet> > prodJets(new std::vector<Jet>());
-   std::auto_ptr<std::vector<bool> > jetsMask(new std::vector<bool>());
-   std::auto_ptr<std::vector<bool> > leptonMask(new std::vector<bool>());
+   auto prodJets = std::make_unique<std::vector<Jet>>();
+   auto jetsMask = std::make_unique<std::vector<bool>>();
+   auto leptonMask = std::make_unique<std::vector<bool>>();
    bool result=true;
    edm::Handle< edm::View<Jet> > Jets;
    iEvent.getByToken(JetTok_,Jets);
@@ -222,11 +222,11 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
    }
    // put in the event
-   iEvent.put(prodJets);
-   iEvent.put(jetsMask,"JetIDMask");
-   iEvent.put(leptonMask,"JetLeptonMask");
-   std::auto_ptr<bool> passing(new bool(result));
-   iEvent.put(passing,"JetID");
+   iEvent.put(std::move(prodJets));
+   iEvent.put(std::move(jetsMask),"JetIDMask");
+   iEvent.put(std::move(leptonMask),"JetLeptonMask");
+   auto passing = std::make_unique<bool>(result);
+   iEvent.put(std::move(passing),"JetID");
    return true;
    
 }
