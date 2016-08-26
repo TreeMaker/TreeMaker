@@ -141,7 +141,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   if (MCflag_) iEvent.getByToken(GenPartTok_,pruned);
 
   // finalJets should only contain low pT reclustered Jets
-  std::auto_ptr<std::vector<Jet> > finalJets(new std::vector<Jet>());
+  auto finalJets = std::make_unique<std::vector<Jet>>();
 
   if (useReclusteredJets_){
   if (debug_) std::cout << "Jets and reclusJets isValid:" << Jets.isValid() << " " << reclusJets.isValid() << std::endl;
@@ -250,7 +250,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   } // useReclusteredJets_
 
   // put in the event
-  iEvent.put(finalJets);
+  iEvent.put(std::move(finalJets));
   
 }
 

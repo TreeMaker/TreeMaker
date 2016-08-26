@@ -52,12 +52,12 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   using namespace edm;
 
-  std::auto_ptr< std::vector< TLorentzVector > > genParticle_vec( new std::vector< TLorentzVector > () );
-  std::auto_ptr< std::vector< int > > PdgId_vec( new std::vector< int > () );
-  std::auto_ptr< std::vector< int > > Status_vec( new std::vector< int > () );
-  std::auto_ptr< std::vector< int > > Parent_vec( new std::vector< int > () );
-  std::auto_ptr< std::vector< int > > ParentId_vec( new std::vector< int > () );
-  std::auto_ptr< std::vector< TLorentzVector > > parents( new std::vector< TLorentzVector > () );//not stored
+  auto genParticle_vec = std::make_unique<std::vector<TLorentzVector>>();
+  auto PdgId_vec = std::make_unique<std::vector<int>>();
+  auto Status_vec = std::make_unique<std::vector<int>>();
+  auto Parent_vec = std::make_unique<std::vector<int>>();
+  auto ParentId_vec = std::make_unique<std::vector<int>>();
+  auto parents = std::make_unique<std::vector<TLorentzVector>>();
 
   std::unordered_set<int> typicalChildIds({1,2,3,4,5,11,12,13,14,15,16,22});
   std::unordered_set<int> typicalParentIds(
@@ -134,11 +134,11 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
     }
 
-  iEvent.put(genParticle_vec); 
-  iEvent.put(PdgId_vec  , "PdgId" );
-  iEvent.put(Status_vec , "Status" );
-  iEvent.put(ParentId_vec , "ParentId" );
-  iEvent.put(Parent_vec , "Parent" );
+  iEvent.put(std::move(genParticle_vec)); 
+  iEvent.put(std::move(PdgId_vec  ), "PdgId" );
+  iEvent.put(std::move(Status_vec ), "Status" );
+  iEvent.put(std::move(ParentId_vec ), "ParentId" );
+  iEvent.put(std::move(Parent_vec ), "Parent" );
  
 }
 

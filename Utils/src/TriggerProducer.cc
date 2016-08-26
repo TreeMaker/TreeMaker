@@ -128,9 +128,9 @@ TriggerProducer::GetInputTag(edm::InputTag& tag, std::string arg1, std::string a
 void
 TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  std::auto_ptr<std::vector<int> > passTrigVec(new std::vector<int>(parsedTrigNamesVec.size(),-1));
-  std::auto_ptr<std::vector<int> > trigPrescaleVec(new std::vector<int>(parsedTrigNamesVec.size(),1));
-  std::auto_ptr<std::vector<std::string> > trigNamesVec(new std::vector<std::string>(parsedTrigNamesVec.size(),""));
+  auto passTrigVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),-1);
+  auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
+  auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec.size(),"");
 
   //int passesTrigger;
   edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
@@ -155,9 +155,9 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
 
-  iEvent.put(passTrigVec,"TriggerPass");
-  iEvent.put(trigPrescaleVec,"TriggerPrescales");
-  iEvent.put(trigNamesVec,"TriggerNames");
+  iEvent.put(std::move(passTrigVec),"TriggerPass");
+  iEvent.put(std::move(trigPrescaleVec),"TriggerPrescales");
+  iEvent.put(std::move(trigNamesVec),"TriggerNames");
 }
 
 

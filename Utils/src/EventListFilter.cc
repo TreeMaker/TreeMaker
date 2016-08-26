@@ -127,8 +127,8 @@ EventListFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 	//events pass if not in the list
 	if(TagMode_){
-		std::auto_ptr<bool> pass(new bool(itr==eventList_.end()));
-		iEvent.put(pass);
+		auto pass = std::make_unique<bool>(itr==eventList_.end());
+		iEvent.put(std::move(pass));
 		return true;
 	}
 	else {

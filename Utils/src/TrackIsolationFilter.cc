@@ -105,13 +105,13 @@ TrackIsolationFilter::~TrackIsolationFilter() {
 bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
 
-	auto_ptr<vector<TLorentzVector> > pfcands(new vector<TLorentzVector>);
-	auto_ptr<vector<double> >  pfcands_activity(new vector<double>);
-	auto_ptr<vector<double> >  pfcands_trkiso(new vector<double>);
-	auto_ptr<vector<double> >  pfcands_dzpv  (new vector<double>);
-	auto_ptr<vector<double> >  pfcands_mT    (new vector<double>);
-	auto_ptr<vector<int>   >  pfcands_chg    (new vector<int>  );
-	auto_ptr<vector<int>   >  pfcands_id     (new vector<int>  );
+	auto pfcands = std::make_unique<vector<TLorentzVector>>();
+	auto  pfcands_activity = std::make_unique<vector<double>>();
+	auto  pfcands_trkiso = std::make_unique<vector<double>>();
+	auto  pfcands_dzpv   = std::make_unique<vector<double>>();
+	auto  pfcands_mT     = std::make_unique<vector<double>>();
+	auto  pfcands_chg     = std::make_unique<vector<int>>();
+	auto  pfcands_id      = std::make_unique<vector<int>>();
 	
 	edm::Handle< edm::View<pat::MET> > MET;
 	iEvent.getByToken(MetInputTok_,MET);
@@ -142,7 +142,7 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	// for neutral PFCandidates, store trkiso = 999 and dzpv = 999
 	//-------------------------------------------------------------------------------------------------
 	
-	std::auto_ptr<std::vector<pat::PackedCandidate> > prodminiAOD(new std::vector<pat::PackedCandidate>());
+	auto prodminiAOD = std::make_unique<std::vector<pat::PackedCandidate>>();
    
     // miniAOD
     for(size_t i=0; i<pfCandidates->size();i++)
@@ -221,19 +221,19 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	bool result = (doTrkIsoVeto_ ? (prodminiAOD->size() == 0) : true);
 	
 	int isoTracks=prodminiAOD->size();
-	std::auto_ptr<int> htp(new int(isoTracks));
-	iEvent.put(htp,"isoTracks" );
+	auto htp = std::make_unique<int>(isoTracks);
+	iEvent.put(std::move(htp),"isoTracks" );
 	
 	// put candidate values back into event
-	iEvent.put(pfcands       ,"pfcands"      );
-	iEvent.put(pfcands_trkiso,"pfcandstrkiso");
-	iEvent.put(pfcands_activity,"pfcandsactivity");
-	iEvent.put(pfcands_dzpv  ,"pfcandsdzpv"  );
-	iEvent.put(pfcands_mT    ,"pfcandsmT"    );
-	iEvent.put(pfcands_chg   ,"pfcandschg"   );
-	iEvent.put(pfcands_id    ,"pfcandsid"    );
+	iEvent.put(std::move(pfcands       ),"pfcands"      );
+	iEvent.put(std::move(pfcands_trkiso),"pfcandstrkiso");
+	iEvent.put(std::move(pfcands_activity),"pfcandsactivity");
+	iEvent.put(std::move(pfcands_dzpv  ),"pfcandsdzpv"  );
+	iEvent.put(std::move(pfcands_mT    ),"pfcandsmT"    );
+	iEvent.put(std::move(pfcands_chg   ),"pfcandschg"   );
+	iEvent.put(std::move(pfcands_id    ),"pfcandsid"    );
 	
-	iEvent.put(prodminiAOD); 
+	iEvent.put(std::move(prodminiAOD)); 
 	return result;
 }
 

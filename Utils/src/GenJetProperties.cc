@@ -100,7 +100,7 @@ GenJetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
   using namespace edm;
 	
-  std::auto_ptr< std::vector<double> > invisibleEnergy(new std::vector<double>);
+  auto invisibleEnergy = std::make_unique<std::vector<double>>();
   using namespace edm;
   using namespace reco;
   edm::Handle< edm::View<reco::GenJet> > GenJets;
@@ -113,7 +113,7 @@ GenJetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
   const std::string string0("invisibleEnergy");
-  iEvent.put(invisibleEnergy,string0);
+  iEvent.put(std::move(invisibleEnergy),string0);
 }
 
 // ------------ method called once each job just before starting event loop  ------------

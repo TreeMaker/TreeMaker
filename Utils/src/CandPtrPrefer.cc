@@ -47,7 +47,7 @@ CandPtrPrefer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup)
   Handle<View<reco::Candidate> > secondGroup;
   iEvent.getByToken(secondSrcToken_, secondGroup);
 
-  std::auto_ptr<PtrVector<reco::Candidate> > result(new PtrVector<reco::Candidate>());
+  auto result = std::make_unique<PtrVector<reco::Candidate>>();
   if(firstGroup->size()==0){
     for(size_t i = 0; i< secondGroup->size();  ++i) {
         result->push_back(secondGroup->ptrAt(i));
@@ -58,7 +58,7 @@ CandPtrPrefer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup)
         result->push_back(firstGroup->ptrAt(i));
     }
   }
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 }
 
 void CandPtrPrefer::endJob()

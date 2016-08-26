@@ -101,9 +101,9 @@ void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
  
   using namespace edm;
         
-  std::auto_ptr<std::vector<double> > mini_iso(new std::vector<double>());
-  std::auto_ptr<std::vector<double> > ra2_activity(new std::vector<double>());
-  std::auto_ptr<std::vector<double> > mt2_activity(new std::vector<double>());
+  auto mini_iso = std::make_unique<std::vector<double>>();
+  auto ra2_activity = std::make_unique<std::vector<double>>();
+  auto mt2_activity = std::make_unique<std::vector<double>>();
 
   
   edm::Handle<pat::PackedCandidateCollection> pfcands;
@@ -153,9 +153,9 @@ void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   }
 
-  iEvent.put(mini_iso,"MiniIso");
-  iEvent.put(ra2_activity,"RA2Activity");
-  iEvent.put(mt2_activity,"MT2Activity");
+  iEvent.put(std::move(mini_iso),"MiniIso");
+  iEvent.put(std::move(ra2_activity),"RA2Activity");
+  iEvent.put(std::move(mt2_activity),"MT2Activity");
   
 }
 

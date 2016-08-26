@@ -51,7 +51,7 @@ PackedCandPtrProjector::produce(edm::Event & iEvent, const edm::EventSetup & iSe
   Handle<View<reco::Candidate> > vetos;
   iEvent.getByToken(vetoSrcToken_, vetos);
 
-  std::auto_ptr<PtrVector<pat::PackedCandidate> > result(new PtrVector<pat::PackedCandidate>());
+  auto result = std::make_unique<PtrVector<pat::PackedCandidate>>();
   std::set<reco::CandidatePtr> vetoedPtrs;
   for(size_t i = 0; i< vetos->size();  ++i) {
    for(size_t j=0,n=(*vetos)[i].numberOfSourceCandidatePtrs(); j<n;j++ )    {
@@ -65,7 +65,7 @@ PackedCandPtrProjector::produce(edm::Event & iEvent, const edm::EventSetup & iSe
       result->push_back(packedCands->ptrAt(i));
     }
   }
-  iEvent.put(result);
+  iEvent.put(std::move(result));
 }
 
 void PackedCandPtrProjector::endJob()

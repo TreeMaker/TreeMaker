@@ -145,8 +145,8 @@ FilterDecisionProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   if(trigNames.triggerIndex(filterName_) < trigResults->size())
     passesTrigger=trigResults->accept(trigNames.triggerIndex(filterName_));
 
-  std::auto_ptr<int> htp(new int(passesTrigger));
-  iEvent.put(htp);
+  auto htp = std::make_unique<int>(passesTrigger);
+  iEvent.put(std::move(htp));
 	
 }
 

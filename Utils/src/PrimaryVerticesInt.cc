@@ -120,8 +120,8 @@ PrimaryVerticesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		nVertices = vertices->size();
 	}
 	else std::cout<<"Warning VertexCollection Tag not valid: "<<vertexCollectionTag_.label()<<std::endl;
-	std::auto_ptr<int> htp(new int(nVertices));
-	iEvent.put(htp);
+	auto htp = std::make_unique<int>(nVertices);
+	iEvent.put(std::move(htp));
 	
 }
 

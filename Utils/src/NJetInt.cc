@@ -120,8 +120,8 @@ NJetInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
 	}
 	else std::cout<<"NJetInt::Invalid Tag: "<<JetTag_.label()<<std::endl;
-	std::auto_ptr<int> htp(new int(NJets));
-	iEvent.put(htp);
+	auto htp = std::make_unique<int>(NJets);
+	iEvent.put(std::move(htp));
 	
 }
 

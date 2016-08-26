@@ -113,14 +113,14 @@ void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
     }
   }
 
-  std::auto_ptr<std::vector<double> > scaleweights_(new std::vector<double>(scaleweights));
-  iEvent.put(scaleweights_,"ScaleWeights");
+  auto scaleweights_ = std::make_unique<std::vector<double>>(scaleweights);
+  iEvent.put(std::move(scaleweights_),"ScaleWeights");
   
-  std::auto_ptr<std::vector<double> > pdfweights_(new std::vector<double>(pdfweights));
-  iEvent.put(pdfweights_,"PDFweights");
+  auto pdfweights_ = std::make_unique<std::vector<double>>(pdfweights);
+  iEvent.put(std::move(pdfweights_),"PDFweights");
   
-  std::auto_ptr<std::vector<int> > pdfids_(new std::vector<int>(pdfids));
-  iEvent.put(pdfids_,"PDFids");
+  auto pdfids_ = std::make_unique<std::vector<int>>(pdfids);
+  iEvent.put(std::move(pdfids_),"PDFids");
   
 }
 

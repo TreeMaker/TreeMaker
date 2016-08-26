@@ -122,8 +122,8 @@ LeptonInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		else std::cout<<"LeptonIntProducer::Error tag invalid: "<<leptonTag_[i]<<std::endl;
 	}
 
-	std::auto_ptr<int> htp(new int(Leptons));
-	iEvent.put(htp);
+	auto htp = std::make_unique<int>(Leptons);
+	iEvent.put(std::move(htp));
 	
 }
 

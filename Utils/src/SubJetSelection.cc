@@ -113,8 +113,8 @@ template <class T>
 void SubJetSelectionT<T>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
-   std::auto_ptr<std::vector<T> > prodJets(new std::vector<T>());
-   std::auto_ptr<std::vector<bool> > mask(new std::vector<bool>());
+   auto prodJets = std::make_unique<std::vector<T>>();
+   auto mask = std::make_unique<std::vector<bool>>();
 
    edm::Handle< edm::View<T> > Jets;
    iEvent.getByToken(JetTok_,Jets);
@@ -128,8 +128,8 @@ void SubJetSelectionT<T>::produce(edm::Event& iEvent, const edm::EventSetup& iSe
       }
    }
    // put in the event
-   iEvent.put(prodJets);
-   iEvent.put(mask,"SubJetMask");
+   iEvent.put(std::move(prodJets));
+   iEvent.put(std::move(mask),"SubJetMask");
    
 }
 

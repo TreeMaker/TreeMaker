@@ -94,8 +94,8 @@ void GenHTProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
 
-  std::auto_ptr<double > genHT_(new double(genHT));
-  iEvent.put(genHT_, "genHT");
+  auto genHT_ = std::make_unique<double>(genHT);
+  iEvent.put(std::move(genHT_), "genHT");
   
 }
 

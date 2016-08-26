@@ -183,32 +183,32 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    }
    else std::cout<<"DeltaPhiDouble::Invlide DeltaPhiJets Jet Tag: "<<DeltaPhiJetTag_.label()<<std::endl;
    
-   std::auto_ptr<double> htp1a(new double(jet1pt));
-   iEvent.put(htp1a,"Jet1Pt");
-   std::auto_ptr<double> htp1b(new double(jet1eta));
-   iEvent.put(htp1b,"Jet1Eta");
-   std::auto_ptr<double> htp1c(new double(deltaphi1));
-   iEvent.put(htp1c,"DeltaPhi1");
-   std::auto_ptr<double> htp2a(new double(jet2pt));
-   iEvent.put(htp2a,"Jet2Pt");
-   std::auto_ptr<double> htp2b(new double(jet2eta));
-   iEvent.put(htp2b,"Jet2Eta");
-   std::auto_ptr<double> htp2c(new double(deltaphi2));
-   iEvent.put(htp2c,"DeltaPhi2");
-   std::auto_ptr<double> htp3a(new double(jet3pt));
-   iEvent.put(htp3a,"Jet3Pt");
-   std::auto_ptr<double> htp3b(new double(jet3eta));
-   iEvent.put(htp3b,"Jet3Eta");
-   std::auto_ptr<double> htp3c(new double(deltaphi3));
-   iEvent.put(htp3c,"DeltaPhi3");
-   std::auto_ptr<double> htp4a(new double(jet4pt));
-   iEvent.put(htp4a,"Jet4Pt");
-   std::auto_ptr<double> htp4b(new double(jet4eta));
-   iEvent.put(htp4b,"Jet4Eta");
-   std::auto_ptr<double> htp4d(new double(deltaphi4));
-   iEvent.put(htp4d,"DeltaPhi4");   
-   std::auto_ptr<double> htp4c(new double(minDeltaPhi));
-   iEvent.put(htp4c,"minDeltaPhi");
+   auto htp1a = std::make_unique<double>(jet1pt);
+   iEvent.put(std::move(htp1a),"Jet1Pt");
+   auto htp1b = std::make_unique<double>(jet1eta);
+   iEvent.put(std::move(htp1b),"Jet1Eta");
+   auto htp1c = std::make_unique<double>(deltaphi1);
+   iEvent.put(std::move(htp1c),"DeltaPhi1");
+   auto htp2a = std::make_unique<double>(jet2pt);
+   iEvent.put(std::move(htp2a),"Jet2Pt");
+   auto htp2b = std::make_unique<double>(jet2eta);
+   iEvent.put(std::move(htp2b),"Jet2Eta");
+   auto htp2c = std::make_unique<double>(deltaphi2);
+   iEvent.put(std::move(htp2c),"DeltaPhi2");
+   auto htp3a = std::make_unique<double>(jet3pt);
+   iEvent.put(std::move(htp3a),"Jet3Pt");
+   auto htp3b = std::make_unique<double>(jet3eta);
+   iEvent.put(std::move(htp3b),"Jet3Eta");
+   auto htp3c = std::make_unique<double>(deltaphi3);
+   iEvent.put(std::move(htp3c),"DeltaPhi3");
+   auto htp4a = std::make_unique<double>(jet4pt);
+   iEvent.put(std::move(htp4a),"Jet4Pt");
+   auto htp4b = std::make_unique<double>(jet4eta);
+   iEvent.put(std::move(htp4b),"Jet4Eta");
+   auto htp4d = std::make_unique<double>(deltaphi4);
+   iEvent.put(std::move(htp4d),"DeltaPhi4");   
+   auto htp4c = std::make_unique<double>(minDeltaPhi);
+   iEvent.put(std::move(htp4c),"minDeltaPhi");
 }
 
 // ------------ method called once each job just before starting event loop  ------------
