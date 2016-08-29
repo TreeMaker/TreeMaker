@@ -140,9 +140,9 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   iEvent.getByToken(ElecTok_, electron);
   if (MCflag_) iEvent.getByToken(GenPartTok_,pruned);
 
-  // finalJets should only contain low pT reclustered Jets
-  auto finalJets = std::make_unique<std::vector<Jet>>();
-
+  // finalJets should contain all jets (high-pt duplicates will be discarded after JER smearing)
+  auto finalJets = std::make_unique<std::vector<Jet>>(*Jets);
+  
   if (useReclusteredJets_){
   if (debug_) std::cout << "Jets and reclusJets isValid:" << Jets.isValid() << " " << reclusJets.isValid() << std::endl;
   if(Jets.isValid() && reclusJets.isValid() )
@@ -151,7 +151,6 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 //.................................////.................................//
     
     // Check which ones to keep
-    int cntJetPassPtCut = 0;
     if (debug_) std::cout << "Jets and reclusJets size:" << Jets->size() << " " << reclusJets->size() << std::endl;
     for(unsigned int io=0; io < reclusJets->size(); io++){
        const double otjet_pt = reclusJets->at(io).pt(), otjet_eta = reclusJets->at(io).eta(), otjet_phi = reclusJets->at(io).phi();
@@ -170,9 +169,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
              cntFound ++;
           }
        }
-       if( otjet_pt >= jetPtCut_miniAOD_ ){
-
-          cntJetPassPtCut ++;
+       if( otjet_pt > jetPtCut_miniAOD_ ){
           if( cntFound != 1 && debug_ ){
             std::cout<<"WARNING ... jet mis-matching between reclusJets and jets for pt > "<<jetPtCut_miniAOD_<<"  matchedIdx: "<<matchedIdx<<"  cntFound: "<<cntFound<<std::endl;
             std::cout<<"otjet_pt : "<<otjet_pt<<"  otjet_eta : "<<otjet_eta<<"  otjet_phi : "<<otjet_phi<<std::endl;
@@ -240,7 +237,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	     //
 	     //
 	     //
-             if( otjet_pt>0 && otjet_pt < 14000 &&  cntgenMatch ){
+             if( otjet_pt>0 && otjet_pt <= jetPtCut_miniAOD_ &&  cntgenMatch ){
               finalJets->push_back(reclusJets->at(io));          
              }
           }

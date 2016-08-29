@@ -24,7 +24,8 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
             ExcludeLepIsoTrackPhotons = cms.bool(True),
             JetConeSize               = cms.double(0.4),
             SkipTag                   = SkipTag,
-            SaveAllJets               = True
+            SaveAllJetsId             = True,
+            SaveAllJetsPt             = False, # exclude low pt jets from good collection
         )
         setattr(process,"GoodJets"+suff,GoodJets)
         GoodJetsTag = cms.InputTag("GoodJets"+suff)

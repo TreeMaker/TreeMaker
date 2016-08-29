@@ -4,8 +4,10 @@ def makeJetVarsHadTau(process,JetTag,suff,storeProperties=0):
     # clone GoodJetsProducer
     GoodJetsForHadTau = process.GoodJets.clone(
         JetTag = JetTag,
-        jetPtFilter = cms.double(0),
-        SaveAllJets = cms.bool(True),
+        jetPtFilter = cms.double(30),
+        invertJetPtFilter = cms.bool(True),
+        SaveAllJetsId = cms.bool(True),
+        SaveAllJetsPt = cms.bool(False), # save only jets *below* pt cut
         ExcludeLepIsoTrackPhotons = cms.bool(False),
     )
     setattr(process,"GoodJetsForHadTau"+suff,GoodJetsForHadTau)
@@ -90,7 +92,8 @@ def doHadTauBkg(process,geninfo,residual,JetTag):
         JetTag                 = JetTag,
         reclusJetTag           = cms.InputTag('patJetsAK4PFCHS'),
         maxJetEta              = cms.double(5.0), 
-        MCflag                 = cms.bool(False)
+        MCflag                 = cms.bool(False),
+        jetPtCut_analysis      = cms.double(30),
     )
     if geninfo:
         process.JetsForHadTau.MCflag = cms.bool(True)

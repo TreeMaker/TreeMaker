@@ -250,6 +250,8 @@ signal=False
             isData=not geninfo, # controls gen met
         )
 
+    # keep jets before any further modifications for hadtau
+    JetTagBeforeSmearing = JetTag
     # JEC uncertainty - after JECs are updated
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
     process.jecUnc = JetUncertaintyProducer.clone(
@@ -705,7 +707,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
-        process = doHadTauBkg(process,geninfo,residual,JetTag)
+        process = doHadTauBkg(process,geninfo,residual,JetTagBeforeSmearing)
 
     ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background
