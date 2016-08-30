@@ -489,49 +489,48 @@ signal=False
 
         process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
-    # skip all jet smearing for data
+    # skip all jet smearing and uncertainties for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
-    doJERsmearing = geninfo
     
-    # JEC unc up
-    process, JetTagJECup = JetDepot(process,
-        JetTag=JetTag,
-        jecUncDir=1,
-        doSmear=doJERsmearing,
-        jerUncDir=0
-    )
-    process = makeJetVars(process,
-                          JetTag=JetTagJECup,
-                          suff='JECup',
-                          skipGoodJets=False,
-                          storeProperties=1,
-                          geninfo=geninfo,
-                          SkipTag=SkipTag
-    )
-    
-    # JEC unc down
-    process, JetTagJECdown = JetDepot(process,
-        JetTag=JetTag,
-        jecUncDir=-1,
-        doSmear=doJERsmearing,
-        jerUncDir=0
-    )
-    process = makeJetVars(process,
-                          JetTag=JetTagJECdown,
-                          suff='JECdown',
-                          skipGoodJets=False,
-                          storeProperties=1,
-                          geninfo=geninfo,
-                          SkipTag=SkipTag
-    )
-    
-    if doJERsmearing:
+    if geninfo:
+        # JEC unc up
+        process, JetTagJECup = JetDepot(process,
+            JetTag=JetTag,
+            jecUncDir=1,
+            doSmear=True,
+            jerUncDir=0
+        )
+        process = makeJetVars(process,
+                              JetTag=JetTagJECup,
+                              suff='JECup',
+                              skipGoodJets=False,
+                              storeProperties=1,
+                              geninfo=geninfo,
+                              SkipTag=SkipTag
+        )
+        
+        # JEC unc down
+        process, JetTagJECdown = JetDepot(process,
+            JetTag=JetTag,
+            jecUncDir=-1,
+            doSmear=True,
+            jerUncDir=0
+        )
+        process = makeJetVars(process,
+                              JetTag=JetTagJECdown,
+                              suff='JECdown',
+                              skipGoodJets=False,
+                              storeProperties=1,
+                              geninfo=geninfo,
+                              SkipTag=SkipTag
+        )
+
         # JER unc up
         process, JetTagJERup = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=1
         )
         process = makeJetVars(process,
@@ -547,7 +546,7 @@ signal=False
         process, JetTagJERdown = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=-1
         )
         process = makeJetVars(process,
@@ -563,7 +562,7 @@ signal=False
         process, JetTag = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=0
         )
         

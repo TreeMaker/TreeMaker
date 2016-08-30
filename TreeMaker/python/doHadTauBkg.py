@@ -114,40 +114,38 @@ def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
     process, JetTagHadTau = addJetInfo(process, JetTagHadTau, ['jecUncHadTau'], [])
     
-    # skip all jet smearing for data
+    # skip all jet smearing and uncertainties for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
-    doJERsmearing = geninfo
+    if geninfo:        
+        # JEC unc up
+        process, JetTagHadTauJECup = JetDepot(process,
+            JetTag=JetTagHadTau,
+            jecUncDir=1,
+            doSmear=True,
+            jerUncDir=0
+        )
+        process = makeJetVarsHadTau(process,
+            JetTag=JetTagHadTauJECup,
+            suff='JECup',
+        )
+        
+        # JEC unc down
+        process, JetTagHadTauJECdown = JetDepot(process,
+            JetTag=JetTagHadTau,
+            jecUncDir=-1,
+            doSmear=True,
+            jerUncDir=0
+        )
+        process = makeJetVarsHadTau(process,
+            JetTag=JetTagHadTauJECdown,
+            suff='JECdown',
+        )
     
-    # JEC unc up
-    process, JetTagHadTauJECup = JetDepot(process,
-        JetTag=JetTagHadTau,
-        jecUncDir=1,
-        doSmear=doJERsmearing,
-        jerUncDir=0
-    )
-    process = makeJetVarsHadTau(process,
-        JetTag=JetTagHadTauJECup,
-        suff='JECup',
-    )
-    
-    # JEC unc down
-    process, JetTagHadTauJECdown = JetDepot(process,
-        JetTag=JetTagHadTau,
-        jecUncDir=-1,
-        doSmear=doJERsmearing,
-        jerUncDir=0
-    )
-    process = makeJetVarsHadTau(process,
-        JetTag=JetTagHadTauJECdown,
-        suff='JECdown',
-    )
-    
-    if doJERsmearing:
         # JER unc up
         process, JetTagHadTauJERup = JetDepot(process,
             JetTag=JetTagHadTau,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=1
         )
         process = makeJetVarsHadTau(process,
@@ -159,7 +157,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
         process, JetTagHadTauJERdown = JetDepot(process,
             JetTag=JetTagHadTau,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=-1
         )
         process = makeJetVarsHadTau(process,
@@ -171,7 +169,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
         process, JetTagHadTau = JetDepot(process,
             JetTag=JetTagHadTau,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=0
         )
     
