@@ -43,22 +43,24 @@
 
 class JetsForHadTauProducer : public edm::EDProducer {
 public:
-	explicit JetsForHadTauProducer(const edm::ParameterSet&);
-	~JetsForHadTauProducer();
-	
-	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-	
+    explicit JetsForHadTauProducer(const edm::ParameterSet&);
+    ~JetsForHadTauProducer();
+    
+    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+    
 private:
-	virtual void beginJob() ;
-	virtual void produce(edm::Event&, const edm::EventSetup&);
-	virtual void endJob() ;
-	
-	virtual void beginRun(edm::Run&, edm::EventSetup const&);
-	virtual void endRun(edm::Run&, edm::EventSetup const&);
-	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+    virtual void beginJob() ;
+    virtual void produce(edm::Event&, const edm::EventSetup&);
+    virtual void endJob() ;
+
+    virtual void beginRun(edm::Run&, edm::EventSetup const&);
+    virtual void endRun(edm::Run&, edm::EventSetup const&);
+    virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
     const reco::GenParticle* TauFound(const reco::GenParticle * particle);
+    bool matchJetLepton(const pat::Jet* otjet, const edm::Handle<edm::View<reco::GenParticle> >& pruned,
+                        const edm::Handle<edm::View<pat::Muon> >& muon, const edm::Handle<edm::View<pat::Electron> >& electron);
 
     edm::InputTag JetTag_, reclusJetTag_, MuonTag_, ElecTag_, GenPartTag_;
     edm::EDGetTokenT<edm::View<pat::Muon>> MuonTok_;
@@ -67,10 +69,10 @@ private:
     edm::EDGetTokenT<edm::View<reco::GenParticle>> GenPartTok_;
     double jetPtCut_miniAOD_, genMatch_dR_;
     double relPt_for_xCheck_, dR_for_xCheck_;
-    bool debug_;	
+    bool debug_;
     bool MCflag_;
     bool useReclusteredJets_;
-	// ----------member data ---------------------------
+    // ----------member data ---------------------------
 };
 
 //
@@ -88,7 +90,7 @@ private:
 using namespace pat;
 JetsForHadTauProducer::JetsForHadTauProducer(const edm::ParameterSet& iConfig)
 {
-	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
+    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
     reclusJetTag_ = iConfig.getParameter<edm::InputTag>("reclusJetTag");
     jetPtCut_miniAOD_ = iConfig.getParameter<double>("jetPtCut_miniAOD");
     genMatch_dR_ = iConfig.getParameter<double>("genMatch_dR");
@@ -97,17 +99,17 @@ JetsForHadTauProducer::JetsForHadTauProducer(const edm::ParameterSet& iConfig)
     MCflag_ = iConfig.getParameter<bool>("MCflag");
     useReclusteredJets_ = iConfig.getParameter<bool>("useReclusteredJets");
     debug_ = iConfig.getParameter<bool>("debug");
-	MuonTag_ = edm::InputTag("slimmedMuons");
-	ElecTag_ = edm::InputTag("slimmedElectrons");
-	GenPartTag_ = edm::InputTag("prunedGenParticles");
-	
-	MuonTok_ = consumes<edm::View<pat::Muon>>(MuonTag_);
-	ElecTok_ = consumes<edm::View<pat::Electron>>(ElecTag_);
-	JetTok_ = consumes<std::vector<pat::Jet>>(JetTag_);
-	reclusJetTok_ = consumes<std::vector<pat::Jet>>(reclusJetTag_);
-	GenPartTok_ = consumes<edm::View<reco::GenParticle>>(GenPartTag_);
-        
-	produces<std::vector<Jet> >();	
+    MuonTag_ = edm::InputTag("slimmedMuons");
+    ElecTag_ = edm::InputTag("slimmedElectrons");
+    GenPartTag_ = edm::InputTag("prunedGenParticles");
+    
+    MuonTok_ = consumes<edm::View<pat::Muon>>(MuonTag_);
+    ElecTok_ = consumes<edm::View<pat::Electron>>(ElecTag_);
+    JetTok_ = consumes<std::vector<pat::Jet>>(JetTag_);
+    reclusJetTok_ = consumes<std::vector<pat::Jet>>(reclusJetTag_);
+    GenPartTok_ = consumes<edm::View<reco::GenParticle>>(GenPartTag_);
+
+    produces<std::vector<Jet> >();
 }
 
 
@@ -140,8 +142,15 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   iEvent.getByToken(ElecTok_, electron);
   if (MCflag_) iEvent.getByToken(GenPartTok_,pruned);
 
+  auto finalJets = std::make_unique<std::vector<Jet>>();
+  
   // finalJets should contain all jets (high-pt duplicates will be discarded after JER smearing)
-  auto finalJets = std::make_unique<std::vector<Jet>>(*Jets);
+  // use lepton matching to save space
+  if(Jets.isValid()){
+    for(unsigned int ij=0; ij< Jets->size(); ij++){
+      if(matchJetLepton(&(Jets->at(ij)),pruned,muon,electron)) finalJets->push_back(Jets->at(ij));
+    }
+  }
   
   if (useReclusteredJets_){
   if (debug_) std::cout << "Jets and reclusJets isValid:" << Jets.isValid() << " " << reclusJets.isValid() << std::endl;
@@ -181,64 +190,8 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
              std::cout<<"otjet_pt : "<<otjet_pt<<"  otjet_eta : "<<otjet_eta<<"  otjet_phi : "<<otjet_phi<<std::endl;
              std::cout<<"  jet_pt : "<<Jets->at(matchedIdx).pt()<<"    jet_eta : "<<Jets->at(matchedIdx).eta()<<"    jet_phi : "<<Jets->at(matchedIdx).phi()<<std::endl;
           }else{
-             int cntgenMatch = 0;
-	     //
-	     // Check gen leptons
-	     //
-	     if (MCflag_){
-	     if (pruned.isValid()) { // this matching check is done only if pruned particle collection exists
-             for(unsigned int ig=0; ig<pruned->size(); ig++){
-               // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
-               if(  abs((*pruned)[ig].pdgId())==11 || abs((*pruned)[ig].pdgId())==13 || abs((*pruned)[ig].pdgId())==15  ){
-                  TLorentzVector genLVec; genLVec.SetPtEtaPhiE((*pruned)[ig].pt(),(*pruned)[ig].eta(),(*pruned)[ig].phi(),(*pruned)[ig].energy());
-                  double perdeltaR = perLVec.DeltaR(genLVec);
-                  if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
-               
-                  // Sometimes the nutrinos of tau are so energetic that gen. tau and it hadronic daughter are 
-                  // in two different directions. We would like to store those type of jets as well.
-                  if(abs((*pruned)[ig].pdgId())==15){		    
-		    const reco::GenParticle * FinalTauDecay = TauFound(&(*pruned)[ig]);
-		    TLorentzVector genNuLVec,TauMinusNuLVec;
-                    for(unsigned int igg=0; igg<FinalTauDecay->numberOfDaughters(); igg++){
-                      if( abs( FinalTauDecay->daughter(igg)->pdgId() )==16 ){
-                        genNuLVec.SetPtEtaPhiE(FinalTauDecay->daughter(igg)->pt(),FinalTauDecay->daughter(igg)->eta(),FinalTauDecay->daughter(igg)->phi(),FinalTauDecay->daughter(igg)->energy());
-                        TauMinusNuLVec = genLVec - genNuLVec;
-                        perdeltaR = perLVec.DeltaR(TauMinusNuLVec);
-                        if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
-                      }  
-                    }
-                  }
-                }
-             }
-	     } // pruned.isValid()
-	     } // MC flag
-	     //
-	     // Check reco muons
-	     //
-	     if (muon.isValid()){
-             for(unsigned int ig=0; ig<muon->size(); ig++){
-               // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
-                TLorentzVector muLVec; muLVec.SetPtEtaPhiE((*muon)[ig].pt(),(*muon)[ig].eta(),(*muon)[ig].phi(),(*muon)[ig].energy());
-                double perdeltaR = perLVec.DeltaR(muLVec);
-                if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
-             }
-	     }
-	     //
-	     // Check reco electrons
-	     //
-	     if (electron.isValid()){
-             for(unsigned int ig=0; ig<electron->size(); ig++){
-               // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
-                TLorentzVector muLVec; muLVec.SetPtEtaPhiE((*electron)[ig].pt(),(*electron)[ig].eta(),(*electron)[ig].phi(),(*electron)[ig].energy());
-                double perdeltaR = perLVec.DeltaR(muLVec);
-                if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
-             }
-	     }
-	     //
-	     //
-	     //
-             if( otjet_pt>0 && otjet_pt <= jetPtCut_miniAOD_ &&  cntgenMatch ){
-              finalJets->push_back(reclusJets->at(io));          
+             if( otjet_pt>0 && otjet_pt <= jetPtCut_miniAOD_ && matchJetLepton(&(reclusJets->at(io)),pruned,muon,electron) ){
+              finalJets->push_back(reclusJets->at(io));
              }
           }
        } // above or below jetPtCut_miniAOD_
@@ -304,6 +257,68 @@ const reco::GenParticle* JetsForHadTauProducer::TauFound(const reco::GenParticle
         }
         return particle;
         
+}
+
+bool JetsForHadTauProducer::matchJetLepton(const pat::Jet* otjet, const edm::Handle<edm::View<reco::GenParticle> >& pruned,
+                                           const edm::Handle<edm::View<pat::Muon> >& muon, const edm::Handle<edm::View<pat::Electron> >& electron)
+{
+    const double otjet_pt = otjet->pt(), otjet_eta = otjet->eta(), otjet_phi = otjet->phi();
+    TLorentzVector perLVec; perLVec.SetPtEtaPhiE(otjet_pt, otjet_eta, otjet_phi, otjet->energy());
+    int cntgenMatch = 0;
+    //
+    // Check gen leptons
+    //
+    if (MCflag_ && pruned.isValid()) { // this matching check is done only if pruned particle collection exists
+        for(unsigned int ig=0; ig<pruned->size(); ig++){
+          // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
+          if(  abs((*pruned)[ig].pdgId())==11 || abs((*pruned)[ig].pdgId())==13 || abs((*pruned)[ig].pdgId())==15  ){
+             TLorentzVector genLVec; genLVec.SetPtEtaPhiE((*pruned)[ig].pt(),(*pruned)[ig].eta(),(*pruned)[ig].phi(),(*pruned)[ig].energy());
+             double perdeltaR = perLVec.DeltaR(genLVec);
+             if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
+          
+             // Sometimes the nutrinos of tau are so energetic that gen. tau and it hadronic daughter are 
+             // in two different directions. We would like to store those type of jets as well.
+             if(abs((*pruned)[ig].pdgId())==15){
+               const reco::GenParticle * FinalTauDecay = TauFound(&(*pruned)[ig]);
+               TLorentzVector genNuLVec,TauMinusNuLVec;
+               for(unsigned int igg=0; igg<FinalTauDecay->numberOfDaughters(); igg++){
+                 if( abs( FinalTauDecay->daughter(igg)->pdgId() )==16 ){
+                   genNuLVec.SetPtEtaPhiE(FinalTauDecay->daughter(igg)->pt(),FinalTauDecay->daughter(igg)->eta(),FinalTauDecay->daughter(igg)->phi(),FinalTauDecay->daughter(igg)->energy());
+                   TauMinusNuLVec = genLVec - genNuLVec;
+                   perdeltaR = perLVec.DeltaR(TauMinusNuLVec);
+                   if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
+                 }  
+               }
+             }
+           }
+        }
+    } // MC flag
+    //
+    // Check reco muons
+    //
+    if (muon.isValid()){
+        for(unsigned int ig=0; ig<muon->size(); ig++){
+          // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
+           TLorentzVector muLVec; muLVec.SetPtEtaPhiE((*muon)[ig].pt(),(*muon)[ig].eta(),(*muon)[ig].phi(),(*muon)[ig].energy());
+           double perdeltaR = perLVec.DeltaR(muLVec);
+           if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
+        }
+    }
+    //
+    // Check reco electrons
+    //
+    if (electron.isValid()){
+        for(unsigned int ig=0; ig<electron->size(); ig++){
+          // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
+           TLorentzVector muLVec; muLVec.SetPtEtaPhiE((*electron)[ig].pt(),(*electron)[ig].eta(),(*electron)[ig].phi(),(*electron)[ig].energy());
+           double perdeltaR = perLVec.DeltaR(muLVec);
+           if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
+        }
+    }
+    //
+    //
+    //
+	return cntgenMatch;
 }
 
 //define this as a plug-in
