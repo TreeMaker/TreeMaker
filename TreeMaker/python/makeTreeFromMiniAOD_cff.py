@@ -12,6 +12,7 @@ globaltag="",
 numevents=1000,
 lostlepton=False,
 hadtau=False,
+hadtaurecluster=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
@@ -707,7 +708,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
-        process = doHadTauBkg(process,geninfo,residual,JetTagBeforeSmearing)
+        process = doHadTauBkg(process,geninfo,residual,JetTagBeforeSmearing,hadtaurecluster)
 
     ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background
