@@ -103,6 +103,9 @@ def doLostLeptonBkg(process,geninfo,METTag):
     
     # may eventually save track isolation, activity
     process.TreeMaker2.VectorRecoCand.extend(['LeptonsNew:IdMuon(selectedIDMuons)','LeptonsNew:IdElectron(selectedIDElectrons)'])
+    process.TreeMaker2.VectorBool.extend(['LeptonsNew:IdMuonTightID(selectedIDMuons_tightID)','LeptonsNew:IdIsoMuonTightID(selectedIDIsoMuons_tightID)'])
+    process.TreeMaker2.VectorBool.extend(['LeptonsNew:IdElectronMediumID(selectedIDElectrons_mediumID)','LeptonsNew:IdIsoElectronMediumID(selectedIDIsoElectrons_mediumID)'])
+    process.TreeMaker2.VectorBool.extend(['LeptonsNew:IdElectronTightID(selectedIDElectrons_tightID)','LeptonsNew:IdIsoElectronTightID(selectedIDIsoElectrons_tightID)'])
     process.TreeMaker2.VectorDouble.extend(['LeptonsNew:MuIDMTW(selectedIDMuons_MTW)','LeptonsNew:ElecIDMTW(selectedIDElectrons_MTW)'])
     process.TreeMaker2.VectorDouble.extend(['IDMuonMiniIso:MiniIso(selectedIDMuons_MiniIso)','IDElectronMiniIso:MiniIso(selectedIDElectrons_MiniIso)'])
     process.TreeMaker2.VectorDouble.extend(['IDMuonMiniIso:MT2Activity(selectedIDMuons_MT2Activity)','IDElectronMiniIso:MT2Activity(selectedIDElectrons_MT2Activity)'])
