@@ -8,6 +8,9 @@ The following installation instructions assume the user wants to process Spring1
 cmsrel CMSSW_8_0_12
 cd CMSSW_8_0_12/src/
 cmsenv
+git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
+git fetch btv-cmssw BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
+git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
 git cms-merge-topic -u kpedro88:METfix8012
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
