@@ -33,7 +33,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
         if storeProperties>0:
             process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
             process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
-            process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(JetLeptonMask'+suff+')'])
+            if len(SkipTag)>0: process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(JetLeptonMask'+suff+')'])
         if onlyGoodJets:
             return process
     

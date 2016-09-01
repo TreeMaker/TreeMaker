@@ -605,6 +605,16 @@ signal=False
     # add discriminator and update tag
     process, JetAK8Tag = addJetInfo(process, JetAK8Tag, [], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
     
+    # apply jet ID
+    process = makeJetVars(process,
+                          JetTag=JetAK8Tag,
+                          suff='AK8',
+                          skipGoodJets=False,
+                          storeProperties=1,
+                          geninfo=geninfo,
+                          onlyGoodJets=True
+    )
+    
     # AK8 jet variables - separate instance of jet properties producer
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
     process.JetsPropertiesAK8 = jetproperties.clone(
@@ -629,7 +639,7 @@ signal=False
     process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
-    VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
+    #VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
     VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
