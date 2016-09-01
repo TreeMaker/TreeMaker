@@ -617,6 +617,8 @@ signal=False
             "bDiscriminatorSubjet1",
             "bDiscriminatorSubjet2",
             "bDiscriminatorCSV"    ,
+            "NumBhadrons"          ,
+            "NumChadrons"          ,
         )
     )
     #specify userfloats
@@ -635,6 +637,8 @@ signal=False
                          'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
                          'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
                          'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
+    VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
+                      'JetsPropertiesAK8:NumChadrons(JetsAK8_NumChadrons)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables
