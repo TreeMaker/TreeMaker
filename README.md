@@ -5,8 +5,8 @@
 The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 or v2 format) or Run2016 data.
 
 ```
-cmsrel CMSSW_8_0_12
-cd CMSSW_8_0_12/src/
+cmsrel CMSSW_8_0_18
+cd CMSSW_8_0_18/src/
 cmsenv
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch btv-cmssw BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
