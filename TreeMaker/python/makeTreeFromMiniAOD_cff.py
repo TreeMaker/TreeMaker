@@ -664,7 +664,7 @@ signal=False
             MinPt  = cms.double(30),
             MaxEta = cms.double(2.4),
         )
-        VectorBool.extend(['GenHTJets:SubJetMask(GenHTJetsMask)'])
+        VectorBool.extend(['GenHTJets:SubJetMask(GenJets_HTMask)'])
         
         # make gen HT
         from TreeMaker.Utils.htdouble_cfi import htdouble
@@ -678,7 +678,7 @@ signal=False
             MinPt  = cms.double(30),
             MaxEta = cms.double(5.0),
         )
-        VectorBool.extend(['GenMHTJets:SubJetMask(GenMHTJetsMask)'])
+        VectorBool.extend(['GenMHTJets:SubJetMask(GenJets_MHTMask)'])
         
         # make gen MHT
         from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
