@@ -316,12 +316,12 @@ signal=False
         #do not turn on unless you really want to save all the isotrack quantities!!!
         #just store the full set of isotrack quantities once
         process.IsolatedPionTracksVeto.debug = cms.bool(True)
-        VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(pfcands)'])
-        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(pfcands_trkiso)'])
-        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(pfcands_dzpv)'])
-        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsmT(pfcands_mT)'])
-        VectorInt.extend(['IsolatedPionTracksVeto:pfcandschg(pfcands_chg)'])
-        VectorInt.extend(['IsolatedPionTracksVeto:pfcandsid(pfcands_id)'])
+        VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(PFCands)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(PFCands_trkiso)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(PFCands_dzpv)'])
+        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsmT(PFCands_mT)'])
+        VectorInt.extend(['IsolatedPionTracksVeto:pfcandschg(PFCands_charge)'])
+        VectorInt.extend(['IsolatedPionTracksVeto:pfcandsid(PFCands_id)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## Electrons/Muons
@@ -342,7 +342,7 @@ signal=False
         METTag           = METTag, 
     )
     VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
-    VectorInt.extend(['LeptonsNew:MuonCharge(MuonCharge)','LeptonsNew:ElectronCharge(ElectronCharge)'])
+    VectorInt.extend(['LeptonsNew:MuonCharge(Muons_charge)','LeptonsNew:ElectronCharge(Electrons_charge)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
