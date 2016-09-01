@@ -24,7 +24,8 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
             ExcludeLepIsoTrackPhotons = cms.bool(True),
             JetConeSize               = cms.double(0.4),
             SkipTag                   = SkipTag,
-            SaveAllJets               = True
+            SaveAllJetsId             = True,
+            SaveAllJetsPt             = False, # exclude low pt jets from good collection
         )
         setattr(process,"GoodJets"+suff,GoodJets)
         GoodJetsTag = cms.InputTag("GoodJets"+suff)
@@ -32,7 +33,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
         if storeProperties>0:
             process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
             process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
-            process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(JetLeptonMask'+suff+')'])
+            if len(SkipTag)>0: process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(JetLeptonMask'+suff+')'])
         if onlyGoodJets:
             return process
     
@@ -150,16 +151,16 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
         # provide extra info where necessary
         JetsProperties.bDiscriminatorMVA = cms.vstring('pfCombinedMVAV2BJetTags')
         if storeProperties==1: 
-            JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","partonFlavor","hadronFlavor")
+            JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","muonEnergyFraction","partonFlavor","hadronFlavor")
         setattr(process,"JetsProperties"+suff,JetsProperties)
         process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
-                                                'JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)'])
+                                                'JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
+                                                'JetsProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)'])
         process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
                                              'JetsProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)'])
         if storeProperties>1:
             process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
                                                     'JetsProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
-                                                    'JetsProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
                                                     'JetsProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',

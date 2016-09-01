@@ -68,7 +68,7 @@ private:
    double maxNeutralFraction_, maxPhotonFraction_, minChargedFraction_, maxChargedEMFraction_, maxPhotonFractionHF_;
    int minNconstituents_, minNneutrals_, minNcharged_;
    double jetPtFilter_;
-   bool saveAll_, ExcludeLeptonIsoTrackPhotons_, TagMode_;
+   bool saveAllId_, saveAllPt_, ExcludeLeptonIsoTrackPhotons_, TagMode_, invertJetPtFilter_;
    double JetConeSize_;
    double deltaR(double eta1, double phi1, double eta2, double phi2);
 
@@ -103,7 +103,9 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
    maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
    jetPtFilter_ = iConfig.getParameter <double> ("jetPtFilter");
-   saveAll_ = iConfig.getParameter <bool> ("SaveAllJets");  
+   invertJetPtFilter_ = iConfig.getParameter <bool> ("invertJetPtFilter");
+   saveAllId_ = iConfig.getParameter <bool> ("SaveAllJetsId");
+   saveAllPt_ = iConfig.getParameter <bool> ("SaveAllJetsPt");
    
    ExcludeLeptonIsoTrackPhotons_ = iConfig.getParameter <bool> ("ExcludeLepIsoTrackPhotons");
    SkipTag_  = iConfig.getParameter<std::vector<edm::InputTag>>("SkipTag");
@@ -169,6 +171,9 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
       for(unsigned int i=0; i<Jets->size();i++)
       {
          if (std::abs(Jets->at(i).eta())>maxEta_) continue;
+         if (!saveAllPt_ &&
+              ( (!invertJetPtFilter_ && Jets->at(i).pt() <= jetPtFilter_) ||
+                (invertJetPtFilter_ && Jets->at(i).pt() > jetPtFilter_) ) ) continue;
          float neufrac=Jets->at(i).neutralHadronEnergyFraction();//gives raw energy in the denominator
          float phofrac=Jets->at(i).neutralEmEnergyFraction();//gives raw energy in the denominator
          float chgfrac=Jets->at(i).chargedHadronEnergyFraction();
@@ -208,13 +213,14 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             good = phofrac<maxPhotonFractionHF_ && neumulti>minNneutrals_;
          }
 
-        //save all good jets regardless of pt
-        if (good || saveAll_) {
+        //save good jets, potentially regardless of id or pt
+        if (good || saveAllId_) {
            prodJets->push_back(Jet(Jets->at(i)));
            jetsMask->push_back(good);
         } 
         //calculate event filter only for jets that pass pT cut
-        if (Jets->at(i).pt() > jetPtFilter_) {
+        if ( (!invertJetPtFilter_ && Jets->at(i).pt() > jetPtFilter_) ||
+                (invertJetPtFilter_ && Jets->at(i).pt() <= jetPtFilter_) ) {
            //std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
            if(!good && !TagMode_) return false;
            result &= good;

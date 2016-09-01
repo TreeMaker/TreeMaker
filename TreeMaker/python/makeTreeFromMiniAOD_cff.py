@@ -12,6 +12,7 @@ globaltag="",
 numevents=1000,
 lostlepton=False,
 hadtau=False,
+hadtaurecluster=False,
 applybaseline=False,
 doZinv=False,
 debugtracks=False,
@@ -250,6 +251,8 @@ signal=False
             isData=not geninfo, # controls gen met
         )
 
+    # keep jets before any further modifications for hadtau
+    JetTagBeforeSmearing = JetTag
     # JEC uncertainty - after JECs are updated
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
     process.jecUnc = JetUncertaintyProducer.clone(
@@ -486,49 +489,48 @@ signal=False
 
         process.es_prefer_jer = cms.ESPrefer('PoolDBESSource', 'jer')
 
-    # skip all jet smearing for data
+    # skip all jet smearing and uncertainties for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
-    doJERsmearing = geninfo
     
-    # JEC unc up
-    process, JetTagJECup = JetDepot(process,
-        JetTag=JetTag,
-        jecUncDir=1,
-        doSmear=doJERsmearing,
-        jerUncDir=0
-    )
-    process = makeJetVars(process,
-                          JetTag=JetTagJECup,
-                          suff='JECup',
-                          skipGoodJets=False,
-                          storeProperties=1,
-                          geninfo=geninfo,
-                          SkipTag=SkipTag
-    )
-    
-    # JEC unc down
-    process, JetTagJECdown = JetDepot(process,
-        JetTag=JetTag,
-        jecUncDir=-1,
-        doSmear=doJERsmearing,
-        jerUncDir=0
-    )
-    process = makeJetVars(process,
-                          JetTag=JetTagJECdown,
-                          suff='JECdown',
-                          skipGoodJets=False,
-                          storeProperties=1,
-                          geninfo=geninfo,
-                          SkipTag=SkipTag
-    )
-    
-    if doJERsmearing:
+    if geninfo:
+        # JEC unc up
+        process, JetTagJECup = JetDepot(process,
+            JetTag=JetTag,
+            jecUncDir=1,
+            doSmear=True,
+            jerUncDir=0
+        )
+        process = makeJetVars(process,
+                              JetTag=JetTagJECup,
+                              suff='JECup',
+                              skipGoodJets=False,
+                              storeProperties=1,
+                              geninfo=geninfo,
+                              SkipTag=SkipTag
+        )
+        
+        # JEC unc down
+        process, JetTagJECdown = JetDepot(process,
+            JetTag=JetTag,
+            jecUncDir=-1,
+            doSmear=True,
+            jerUncDir=0
+        )
+        process = makeJetVars(process,
+                              JetTag=JetTagJECdown,
+                              suff='JECdown',
+                              skipGoodJets=False,
+                              storeProperties=1,
+                              geninfo=geninfo,
+                              SkipTag=SkipTag
+        )
+
         # JER unc up
         process, JetTagJERup = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=1
         )
         process = makeJetVars(process,
@@ -544,7 +546,7 @@ signal=False
         process, JetTagJERdown = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=-1
         )
         process = makeJetVars(process,
@@ -560,7 +562,7 @@ signal=False
         process, JetTag = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
-            doSmear=doJERsmearing,
+            doSmear=True,
             jerUncDir=0
         )
         
@@ -589,6 +591,30 @@ signal=False
                           SkipTag=SkipTag
     )
     
+    # get double b-tagger (w/ miniAOD customizations)
+    process.load("RecoBTag.ImpactParameter.pfImpactParameterAK8TagInfos_cfi")
+    process.pfImpactParameterAK8TagInfos.primaryVertex = cms.InputTag("offlineSlimmedPrimaryVertices")
+    process.pfImpactParameterAK8TagInfos.candidates = cms.InputTag("packedPFCandidates")
+    process.pfImpactParameterAK8TagInfos.jets = JetAK8Tag
+    process.load("RecoBTag.SecondaryVertex.pfInclusiveSecondaryVertexFinderAK8TagInfos_cfi")
+    process.pfInclusiveSecondaryVertexFinderAK8TagInfos.extSVCollection = cms.InputTag("slimmedSecondaryVertices")
+    process.pfInclusiveSecondaryVertexFinderAK8TagInfos.trackIPTagInfos = cms.InputTag("pfImpactParameterAK8TagInfos")
+    process.load("RecoBTag.SecondaryVertex.candidateBoostedDoubleSecondaryVertexAK8Computer_cfi")
+    process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSecondaryVertexAK8BJetTags_cfi")
+    
+    # add discriminator and update tag
+    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, [], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
+    
+    # apply jet ID
+    process = makeJetVars(process,
+                          JetTag=JetAK8Tag,
+                          suff='AK8',
+                          skipGoodJets=False,
+                          storeProperties=1,
+                          geninfo=geninfo,
+                          onlyGoodJets=True
+    )
+    
     # AK8 jet variables - separate instance of jet properties producer
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
     process.JetsPropertiesAK8 = jetproperties.clone(
@@ -600,6 +626,9 @@ signal=False
             "NsubjettinessTau3"    ,
             "bDiscriminatorSubjet1",
             "bDiscriminatorSubjet2",
+            "bDiscriminatorCSV"    ,
+            "NumBhadrons"          ,
+            "NumChadrons"          ,
         )
     )
     #specify userfloats
@@ -609,13 +638,17 @@ signal=False
     process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
     process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
+    process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
+    #VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
     VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
+                         'JetsPropertiesAK8:bDiscriminatorCSV(JetsAK8_doubleBDiscriminator)',
                          'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
                          'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
                          'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
+    VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
+                      'JetsPropertiesAK8:NumChadrons(JetsAK8_NumChadrons)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables
@@ -705,7 +738,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
-        process = doHadTauBkg(process,geninfo,residual,JetTag)
+        process = doHadTauBkg(process,geninfo,residual,JetTagBeforeSmearing,hadtaurecluster)
 
     ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background

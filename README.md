@@ -5,9 +5,12 @@
 The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 or v2 format) or Run2016 data.
 
 ```
-cmsrel CMSSW_8_0_12
-cd CMSSW_8_0_12/src/
+cmsrel CMSSW_8_0_18
+cd CMSSW_8_0_18/src/
 cmsenv
+git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
+git fetch btv-cmssw BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
+git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
 git cms-merge-topic -u kpedro88:METfix8012
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
@@ -168,6 +171,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `outfile`: name of the ROOT output file that will be created by the TFileService (automatically appended with "_RA2AnalysisTree.root" when passed from [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
 * `lostlepton`: switch to enable the lost lepton background estimation processes (default=False)
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
+* `hadtaurecluster`: switch to enable the hadronic tau reclustering to include jets with pT < 10 GeV (default=False)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=False)
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=False)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]

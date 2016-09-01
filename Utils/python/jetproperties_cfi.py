@@ -2,6 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 jetproperties = cms.EDProducer('JetProperties',
     JetTag       = cms.InputTag('slimmedJets'),
+    debug = cms.bool(False),
     properties = cms.vstring(
         "chargedHadronMultiplicity",
         "neutralHadronMultiplicity",
