@@ -53,7 +53,7 @@ class NamedPtr {
 		//constructor
 		NamedPtr() : name("") {}
 		NamedPtr(std::string name_, edm::EDProducer* edprod) : name(name_), ptr(std::make_unique<std::vector<T>>()) {
-			edprod->produces<std::vector<T>>(name).setBranchAlias(name);
+			edprod->produces<std::vector<T>>(name);
 		}
 		//destructor
 		virtual ~NamedPtr() {}
@@ -151,6 +151,7 @@ private:
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	std::vector<NamedPtr<int>*> IntPtrs_;
 	std::vector<NamedPtr<double>*> DoublePtrs_;
+	bool debug;
 };
 
 //
@@ -160,6 +161,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 {
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
+	debug = iConfig.getParameter<bool>("debug");
 
 	//get lists of desired properties
 	std::vector<std::string> props = iConfig.getParameter<std::vector<std::string>> ("properties");
@@ -239,9 +241,18 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 				DoublePtrs_[ip]->get_property(&(*Jet));
 			}
-			//for debugging: print out available subjet collections
-			//std::vector<std::string> labels = Jet->subjetCollectionNames();
-			//std::copy(labels.begin(), labels.end(), std::ostream_iterator<std::string>(std::cout, " "));
+			//for debugging: print out available subjet collections & btag discriminators
+			if(debug){
+				const auto& subjetLabels = Jet->subjetCollectionNames();
+				std::cout << "subjetCollectionNames: ";
+				std::copy(subjetLabels.begin(), subjetLabels.end(), std::ostream_iterator<std::string>(std::cout, " "));
+				std::cout << std::endl;
+				
+				const auto& btagLabels = Jet->getPairDiscri();
+				std::cout << "btagDiscriminatorNames: ";
+				for(const auto& bt : btagLabels) std::cout << bt.first << " ";
+				std::cout << std::endl;
+			}
 		}
 	}
 
