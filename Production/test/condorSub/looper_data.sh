@@ -66,3 +66,47 @@ for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
 
+#### Run2016E Prompt RECO
+SCENARIO=2016EF
+SAMPLES=(
+Run2016E-PromptReco-v2.HTMHT \
+Run2016E-PromptReco-v2.JetHT \
+Run2016E-PromptReco-v2.MET \
+Run2016E-PromptReco-v2.SingleElectron \
+Run2016E-PromptReco-v2.SingleMuon \
+Run2016E-PromptReco-v2.SinglePhoton \
+)
+
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
+done
+
+#### Run2016F Prompt RECO
+SCENARIO=2016EF
+SAMPLES=(
+Run2016F-PromptReco-v1.HTMHT \
+Run2016F-PromptReco-v1.JetHT \
+Run2016F-PromptReco-v1.MET \
+Run2016F-PromptReco-v1.SingleElectron \
+Run2016F-PromptReco-v1.SingleMuon \
+Run2016F-PromptReco-v1.SinglePhoton \
+)
+
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
+done
+
+#### Run2016G Prompt RECO
+SCENARIO=2016G
+SAMPLES=(
+Run2016G-PromptReco-v1.HTMHT \
+Run2016G-PromptReco-v1.JetHT \
+Run2016G-PromptReco-v1.MET \
+Run2016G-PromptReco-v1.SingleElectron \
+Run2016G-PromptReco-v1.SingleMuon \
+Run2016G-PromptReco-v1.SinglePhoton \
+)
+
+for SAMPLE in ${SAMPLES[@]}; do
+  python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
+done
