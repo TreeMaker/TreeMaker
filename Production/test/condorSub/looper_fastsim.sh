@@ -34,9 +34,10 @@ Spring16Fast.SMS-T1bbbb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring16Fast.SMS-T1qqqq_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring16Fast.SMS-T5qqqqVV_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring16Fast.SMS-T2qq_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring16Fast.SMS-TChiHH_HToBB_HToBB_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 )
 
-# missing: T2qq, T1ttbb
+# missing: T1ttbb
 
 for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE}
