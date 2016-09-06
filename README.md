@@ -8,6 +8,7 @@ The following installation instructions assume the user wants to process Spring1
 cmsrel CMSSW_8_0_18
 cd CMSSW_8_0_18/src/
 cmsenv
+git cms-init
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch btv-cmssw BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
