@@ -181,6 +181,12 @@ def doZinvBkg(process,tagname,geninfo,residual):
     process.TreeMaker2.VectorBool.append("goodPhotons:nonPrompt(photon_nonPrompt)")
     process.TreeMaker2.VectorBool.append("goodPhotons:fullID(photon_fullID)")
 
+    ## add MadGraph-level deltaR between photon or Z and partons
+    ## mainly used to make GJets and GJets0p4 MC samples orthogonal
+    ## if no photon is found (Zinv/DY MC) the Z boson is chosen
+    process.madMinPhotonDeltaR = cms.EDProducer("MinDeltaRDouble")
+    process.TreeMaker2.VarsDouble.extend(['madMinPhotonDeltaR'])
+
     from TreeMaker.Utils.zproducer_cfi import ZProducer
     process.makeTheZs = ZProducer.clone(
         ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
