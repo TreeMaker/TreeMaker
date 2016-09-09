@@ -49,6 +49,9 @@ mytests.append(makeTest("Spring16Fastsig","T1ttttFast" if len(name)==0 else name
 mytests.append(makeTest("2016B","MET16B" if len(name)==0 else name,numevents,inputFilesConfig="Run2016B-PromptReco-v2.MET",nstart=39,nfiles=2))
 mytests.append(makeTest("2016CD","MET16C" if len(name)==0 else name,numevents,inputFilesConfig="Run2016C-PromptReco-v2.MET",nstart=6,nfiles=3))
 mytests.append(makeTest("2016CD","MET16D" if len(name)==0 else name,numevents,inputFilesConfig="Run2016D-PromptReco-v2.MET",nstart=0,nfiles=3))
+mytests.append(makeTest("2016EF","MET16E" if len(name)==0 else name,numevents,inputFilesConfig="Run2016E-PromptReco-v2.MET",nstart=2,nfiles=10))
+mytests.append(makeTest("2016EF","MET16F" if len(name)==0 else name,numevents,inputFilesConfig="Run2016F-PromptReco-v1.MET",nstart=23,nfiles=2))
+mytests.append(makeTest("2016G","MET16G" if len(name)==0 else name,numevents,inputFilesConfig="Run2016G-PromptReco-v1.MET",nstart=21,nfiles=1))
 
 if test<0 or test>len(mytests):
     print "Predefined tests:"
