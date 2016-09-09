@@ -32,6 +32,8 @@ def makeJetVarsHadTau(process,JetTag,suff,storeProperties=0):
 
 def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
     if recluster:
+        print "Reclustering for hadtau"
+        
         process.load("RecoJets.JetProducers.ak4PFJets_cfi")
         from JetMETCorrections.Configuration.JetCorrectionServices_cff import ak4PFCHSL1FastL2L3,ak4PFCHSL1Fastjet,ak4PFCHSL2Relative,ak4PFCHSL3Absolute
 
