@@ -76,18 +76,7 @@ If the `-d` flag is used with [generateSubmission.py](./Production/test/condorSu
 
 Because of the large number of events in the Spring15 MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
 
-Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. The script [resubCondor.sh](./Production/test/condorSub/resubCondor.sh) can identify the failed jobs and prepare them for resubmission by checking the Condor logs.
-The existing JDL files are listed for resubmission in the output script. If the script finds a failed job, it automatically checks to see if any newer instances of that job were successful (to account for multiple rounds of job submission from the same production folder).
-```
-./resubCondor.sh -t "YYYY-MM-DD HH:MM" -o myResub.sh
-./myResub.sh
-```
-
-These are the parameters for the script:
-* `-o` : output script name, default = "resub.sh"
-* `-t` : search for logs modified after this time (in specified format)
-* `-f` : search for logs modified after this file
-* if neither `-t` nor `-f` is given, all logs will be searched
+Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. Failed jobs are placed in "held" status in the Condor queue. This enables the job output and parameters to be examined. The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/manageJobs.py). Consult the `--help` option for the script to view the available functions.
 
 ## Calculate Integrated Luminosity
 
