@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, fastsim, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -27,6 +27,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
             SaveAllJetsId             = True,
             SaveAllJetsPt             = False, # exclude low pt jets from good collection
         )
+        if fastsim: GoodJets.jetPtFilter = cms.double(20)
         setattr(process,"GoodJets"+suff,GoodJets)
         GoodJetsTag = cms.InputTag("GoodJets"+suff)
         process.TreeMaker2.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])

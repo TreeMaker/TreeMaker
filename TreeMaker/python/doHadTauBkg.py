@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVarsHadTau(process,JetTag,suff,storeProperties=0):
+def makeJetVarsHadTau(process,JetTag,suff,fastsim,storeProperties=0):
     # clone GoodJetsProducer
     GoodJetsForHadTau = process.GoodJets.clone(
         JetTag = JetTag,
@@ -10,6 +10,7 @@ def makeJetVarsHadTau(process,JetTag,suff,storeProperties=0):
         SaveAllJetsPt = cms.bool(False), # save only jets *below* pt cut
         ExcludeLepIsoTrackPhotons = cms.bool(False),
     )
+    if fastsim: GoodJetsForHadTau.jetPtFilter = cms.double(20)
     setattr(process,"GoodJetsForHadTau"+suff,GoodJetsForHadTau)
     GoodJetsTag = cms.InputTag("GoodJetsForHadTau"+suff)
     
@@ -30,7 +31,7 @@ def makeJetVarsHadTau(process,JetTag,suff,storeProperties=0):
     
     return process
 
-def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
+def doHadTauBkg(process,geninfo,residual,JetTag,fastsim,recluster):
     if recluster:
         print "Reclustering for hadtau"
         
@@ -129,6 +130,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
         process = makeJetVarsHadTau(process,
             JetTag=JetTagHadTauJECup,
             suff='JECup',
+            fastsim=fastsim,
         )
         
         # JEC unc down
@@ -141,6 +143,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
         process = makeJetVarsHadTau(process,
             JetTag=JetTagHadTauJECdown,
             suff='JECdown',
+            fastsim=fastsim,
         )
     
         # JER unc up
@@ -153,6 +156,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
         process = makeJetVarsHadTau(process,
             JetTag=JetTagHadTauJERup,
             suff='JERup',
+            fastsim=fastsim,
         )
         
         # JER unc down
@@ -165,6 +169,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
         process = makeJetVarsHadTau(process,
             JetTag=JetTagHadTauJERdown,
             suff='JERdown',
+            fastsim=fastsim,
         )
 
         # finally, do central smearing and replace jet tag
@@ -178,6 +183,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag,recluster):
     process = makeJetVarsHadTau(process,
         JetTag=JetTagHadTau,
         suff='',
+        fastsim=fastsim,
         storeProperties=1
     )
     
