@@ -507,6 +507,7 @@ signal=False
                               skipGoodJets=False,
                               storeProperties=1,
                               geninfo=geninfo,
+                              fastsim=fastsim,
                               SkipTag=SkipTag
         )
         
@@ -523,6 +524,7 @@ signal=False
                               skipGoodJets=False,
                               storeProperties=1,
                               geninfo=geninfo,
+                              fastsim=fastsim,
                               SkipTag=SkipTag
         )
 
@@ -539,6 +541,7 @@ signal=False
                               skipGoodJets=False,
                               storeProperties=1,
                               geninfo=geninfo,
+                              fastsim=fastsim,
                               SkipTag=SkipTag
         )
         
@@ -555,6 +558,7 @@ signal=False
                               skipGoodJets=False,
                               storeProperties=1,
                               geninfo=geninfo,
+                              fastsim=fastsim,
                               SkipTag=SkipTag
         )
 
@@ -588,6 +592,7 @@ signal=False
                           skipGoodJets=False,
                           storeProperties=2,
                           geninfo=geninfo,
+                          fastsim=fastsim,
                           SkipTag=SkipTag
     )
     
@@ -612,6 +617,7 @@ signal=False
                           skipGoodJets=False,
                           storeProperties=1,
                           geninfo=geninfo,
+                          fastsim=fastsim,
                           onlyGoodJets=True
     )
     
@@ -738,7 +744,12 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if hadtau:
         from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
-        process = doHadTauBkg(process,geninfo,residual,JetTagBeforeSmearing,hadtaurecluster)
+        dorecluster = False
+        if hadtaurecluster==0: dorecluster = False
+        elif hadtaurecluster==1: dorecluster = ("TTJets" in process.source.fileNames[0] or "WJets" in process.source.fileNames[0])
+        elif hadtaurecluster==2: dorecluster = geninfo
+        elif hadtaurecluster==3: dorecluster = True
+        process = doHadTauBkg(process,geninfo,residual,JetTagBeforeSmearing,fastsim,dorecluster)
 
     ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background
@@ -752,7 +763,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,tagname,geninfo,residual)
+        process = doZinvBkg(process,tagname,geninfo,residual,fastsim)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

@@ -13,5 +13,5 @@ notification = Never
 x509userproxy = $ENV(X509_USER_PROXY)
 Arguments = CMSSWVER OUTDIR SAMPLE NPART NSTART NFILES SCENARIO
 on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
-on_exit_hold = (NumJobStarts > 2) && ( (ExitBySignal == True) || (ExitCode != 0) )
+on_exit_hold = ( (ExitBySignal == True) || (ExitCode != 0) )
 Queue 1

@@ -13,7 +13,7 @@ outfile=parameters.value("outfile","test_run")
 # background estimations on by default
 lostlepton=parameters.value("lostlepton", True)
 hadtau=parameters.value("hadtau", True)
-hadtaurecluster=parameters.value("hadtaurecluster", True)
+hadtaurecluster=parameters.value("hadtaurecluster", 1)
 doZinv=parameters.value("doZinv", True)
 
 # compute the PDF weights
@@ -81,7 +81,7 @@ print " dataset: "+str(readFiles)
 print " outfile: "+outfile+"_RA2AnalysisTree"
 print " "
 print " storing lostlepton variables: "+str(lostlepton)
-print " storing hadtau variables: "+str(hadtau)+(" w/ reclustering" if hadtaurecluster else "")
+print " storing hadtau variables: "+str(hadtau)+" w/ reclustering "+str(hadtaurecluster)
 print " storing Zinv variables: "+str(doZinv)
 print " "
 print " storing PDF weights: "+str(doPDFs)

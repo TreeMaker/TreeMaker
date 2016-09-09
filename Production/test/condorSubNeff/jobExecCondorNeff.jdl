@@ -1,8 +1,8 @@
 universe = vanilla
 Executable = jobExecCondorNeff.sh
 Requirements = OpSys == "LINUX" && (Arch != "DUMMY" )
-request_disk = 10000000
-request_memory = 2100
+request_disk = 1000000
+request_memory = 199
 Should_Transfer_Files = YES
 WhenToTransferOutput = ON_EXIT_OR_EVICT
 Transfer_Input_Files = jobExecCondorNeff.sh, ../nefffinder_cfg.py, CMSSWVER.tar.gz
@@ -13,5 +13,5 @@ notification = Never
 x509userproxy = $ENV(X509_USER_PROXY)
 Arguments = CMSSWVER SAMPLE NSTART NFILES
 on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
-on_exit_hold = (NumJobStarts > 2) && ( (ExitBySignal == True) || (ExitCode != 0) )
+on_exit_hold = ( (ExitBySignal == True) || (ExitCode != 0) )
 Queue 1

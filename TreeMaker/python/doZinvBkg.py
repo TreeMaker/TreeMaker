@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
+def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim):
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
@@ -135,7 +135,8 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
-        geninfo=geninfo
+        geninfo=geninfo,
+        fastsim=fastsim
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
@@ -148,7 +149,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff):
     
     return process
 
-def doZinvBkg(process,tagname,geninfo,residual):
+def doZinvBkg(process,tagname,geninfo,residual,fastsim):
     ## ----------------------------------------------------------------------------------------------
     ## Photons
     ## ----------------------------------------------------------------------------------------------
@@ -184,8 +185,9 @@ def doZinvBkg(process,tagname,geninfo,residual):
     ## add MadGraph-level deltaR between photon or Z and partons
     ## mainly used to make GJets and GJets0p4 MC samples orthogonal
     ## if no photon is found (Zinv/DY MC) the Z boson is chosen
-    process.madMinPhotonDeltaR = cms.EDProducer("MinDeltaRDouble")
-    process.TreeMaker2.VarsDouble.extend(['madMinPhotonDeltaR'])
+    if geninfo:
+        process.madMinPhotonDeltaR = cms.EDProducer("MinDeltaRDouble")
+        process.TreeMaker2.VarsDouble.extend(['madMinPhotonDeltaR'])
 
     from TreeMaker.Utils.zproducer_cfi import ZProducer
     process.makeTheZs = ZProducer.clone(
@@ -220,7 +222,8 @@ def doZinvBkg(process,tagname,geninfo,residual):
         geninfo,
         residual,
         cms.InputTag("cleanedCandidates"),
-        ""
+        "",
+        fastsim
     )
     
     return process

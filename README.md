@@ -76,18 +76,7 @@ If the `-d` flag is used with [generateSubmission.py](./Production/test/condorSu
 
 Because of the large number of events in the Spring15 MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
 
-Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. The script [resubCondor.sh](./Production/test/condorSub/resubCondor.sh) can identify the failed jobs and prepare them for resubmission by checking the Condor logs.
-The existing JDL files are listed for resubmission in the output script. If the script finds a failed job, it automatically checks to see if any newer instances of that job were successful (to account for multiple rounds of job submission from the same production folder).
-```
-./resubCondor.sh -t "YYYY-MM-DD HH:MM" -o myResub.sh
-./myResub.sh
-```
-
-These are the parameters for the script:
-* `-o` : output script name, default = "resub.sh"
-* `-t` : search for logs modified after this time (in specified format)
-* `-f` : search for logs modified after this file
-* if neither `-t` nor `-f` is given, all logs will be searched
+Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. Failed jobs are placed in "held" status in the Condor queue. This enables the job output and parameters to be examined. The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/manageJobs.py). Consult the `--help` option for the script to view the available functions.
 
 ## Calculate Integrated Luminosity
 
@@ -172,7 +161,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `outfile`: name of the ROOT output file that will be created by the TFileService (automatically appended with "_RA2AnalysisTree.root" when passed from [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
 * `lostlepton`: switch to enable the lost lepton background estimation processes (default=False)
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
-* `hadtaurecluster`: switch to enable the hadronic tau reclustering to include jets with pT < 10 GeV (default=False)
+* `hadtaurecluster`: switch to enable the hadronic tau reclustering to include jets with pT < 10 GeV, options: 0 = never, 1 = only TTJets/WJets MC, 2 = all MC, 3 = always (default=1)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=False)
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=False)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]

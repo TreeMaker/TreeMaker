@@ -110,10 +110,10 @@ def getWeightProducer(fileName,fastsim=False):
         MCSample("GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 2300, 10296521),
         MCSample("GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 277.4, 2528414),
         MCSample("GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 93.38, 2459255),
-        MCSample("GJets_DR-0p4_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 9226, 15405933),
-        MCSample("GJets_DR-0p4_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 2300, 58878539),
-        MCSample("GJets_DR-0p4_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 277.4, 18698921),
-        MCSample("GJets_DR-0p4_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 93.38, 21493273),
+        MCSample("GJets_DR-0p4_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 5000, 15405933),
+        MCSample("GJets_DR-0p4_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 1079, 58878539),
+        MCSample("GJets_DR-0p4_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 125.9, 18698921),
+        MCSample("GJets_DR-0p4_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 43.36, 21493273),
         # rare backgrounds
         MCSample("ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 3.34, 622990), # straight total = 1000000
         MCSample("ST_t-channel_antitop_4f_leptonDecays_13TeV-powheg-pythia8_TuneCUETP8M1", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 26.23, 1666000),
