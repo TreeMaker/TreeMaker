@@ -1,4 +1,4 @@
-import sys,os,subprocess
+import sys,os,subprocess,glob,shutil
 from optparse import OptionParser
 
 class CondorJob:
@@ -8,7 +8,7 @@ class CondorJob:
         self.num = stdout.split('_')[-1]+".0"
         self.schedd = schedd
 
-def getJobs(options, schedd=""):
+def makeJobQuery(options, prop, schedd=""):
     #make query
     cmd = "condor_q "
     if len(schedd)>0: cmd += "-name "+schedd+" "
@@ -16,10 +16,14 @@ def getJobs(options, schedd=""):
     if options.held: cmd += "-hold "
     if options.running: cmd += "-run "
     cmd += "-long "
-    cmd += "| grep \"stdout\" "
+    cmd += "| grep \""+prop+"\" "
     if len(options.grep)>0: cmd += "| grep \""+options.grep+"\" "
     if len(options.vgrep)>0: cmd += "| grep -v \""+options.vgrep+"\" "
     cmd += "| sort"
+    return cmd
+        
+def getJobs(options, schedd=""):
+    cmd = makeJobQuery(options,"stdout",schedd)
 
     #get info for selected jobs
     joblist = filter(None,subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].split('\n'))
@@ -49,6 +53,7 @@ parser.add_option("-o", "--stdout", dest="stdout", default=False, action="store_
 parser.add_option("-e", "--edit", dest="edit", default="", help="edit the redirector of the job (default = %default)")
 parser.add_option("-s", "--resubmit", dest="resubmit", default=False, action="store_true", help="resubmit the selected jobs (default = %default)")
 parser.add_option("-k", "--kill", dest="kill", default=False, action="store_true", help="remove the selected jobs (default = %default)")
+parser.add_option("-d", "--dir", dest="dir", default="", help="directory for stdout files (used for backup when resubmitting) (default = %default)")
 parser.add_option("--help", dest="help", action="store_true", default=False, help='show this help message')
 (options, args) = parser.parse_args()
 
@@ -82,7 +87,25 @@ else:
 
 #resubmit jobs
 if options.resubmit:
+    #create backup dir if desired
+    backup_dir = ""
+    if len(options.dir)>0:
+        backup_dir = options.dir+"/backup"
+        if not os.path.isdir(backup_dir):
+            os.mkdir(backup_dir)
+
     for j in jobs:
+        #backup log
+        if len(options.dir)>0:
+            prev_logs = glob.glob(backup_dir+"/"+j.stdout+"_*")
+            num_logs = 0
+            #increment log number if job has been resubmitted before
+            print prev_logs
+            if len(prev_logs)>0:
+                num_logs = max([int(log.split("_")[-1].replace(".stdout","")) for log in prev_logs])+1
+            #copy logfile
+            print num_logs
+            shutil.copy2(options.dir+"/"+j.stdout+".stdout",backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
         #edit redirector
         if len(options.edit)>0:
             cmd1 = "condor_q -long "+j.num+" | grep \"Args\""
