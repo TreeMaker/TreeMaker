@@ -379,23 +379,23 @@ bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vert
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
 
   // barrel electrons
-  double eb_ieta_cut[4] = {0.0114, 0.0103, 0.0101, 0.0101};
-  double eb_deta_cut[4] = {0.0152, 0.0105, 0.0103, 0.00926};
-  double eb_dphi_cut[4] = {0.216, 0.115, 0.0336, 0.0336};
-  double eb_hovere_cut[4] = {0.181, 0.104, 0.0876, 0.0597};
-  double eb_ooeminusoop_cut[4] = {0.207, 0.102, 0.0174, 0.012};
-  double eb_d0_cut[4] = {0.0564, 0.0261, 0.0118, 0.0111};
-  double eb_dz_cut[4] = {0.472, 0.41, 0.373, 0.0466};
-  int eb_misshits_cut[4] = {2, 2, 2, 2};
+  double eb_ieta_cut[4] = {0.0115, 0.011, 0.00998, 0.00998};
+  double eb_deta_cut[4] = {0.00749, 0.00477, 0.00311, 0.00308};
+  double eb_dphi_cut[4] = {0.228, 0.222, 0.103, 0.0816};
+  double eb_hovere_cut[4] = {0.356, 0.298, 0.253, 0.0414};
+  double eb_ooeminusoop_cut[4] = {0.299, 0.241, 0.134, 0.0129};
+  double eb_d0_cut[4] = {0.05, 0.05, 0.05, 0.05};
+  double eb_dz_cut[4] = {0.10, 0.10, 0.10, 0.10};
+  int eb_misshits_cut[4] = {2, 1, 1, 1};
 
   // endcap electrons
-  double ee_ieta_cut[4] = {0.0352, 0.0301, 0.0283, 0.0279};
-  double ee_deta_cut[4] = {0.0113, 0.00814, 0.00733, 0.00724};
-  double ee_dphi_cut[4] = {0.237, 0.182, 0.114, 0.0918};
-  double ee_hovere_cut[4] = {0.116, 0.0897, 0.0678, 0.0615};
-  double ee_ooeminusoop_cut[4] = {0.174, 0.126, 0.0898, 0.00999};
-  double ee_d0_cut[4] = {0.222, 0.118, 0.0739, 0.0351};
-  double ee_dz_cut[4] = {0.921, 0.822, 0.602, 0.417};
+  double ee_ieta_cut[4] = {0.037, 0.0314, 0.0298, 0.0292};
+  double ee_deta_cut[4] = {0.00895, 0.00868, 0.00609, 0.00605};
+  double ee_dphi_cut[4] = {0.213, 0.213, 0.045, 0.0394};
+  double ee_hovere_cut[4] = {0.211, 0.101, 0.0878, 0.0641};
+  double ee_ooeminusoop_cut[4] = {0.15, 0.14, 0.13, 0.0129};
+  double ee_d0_cut[4] = {0.10, 0.10, 0.10, 0.10};
+  double ee_dz_cut[4] = {0.20, 0.20, 0.20, 0.20};
   int ee_misshits_cut[4] = {3, 1, 1, 1};
 
   // common
