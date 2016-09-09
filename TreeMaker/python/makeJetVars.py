@@ -33,7 +33,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
         if storeProperties>0:
             process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
             process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
-            if len(SkipTag)>0: process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(JetLeptonMask'+suff+')'])
+            if len(SkipTag)>0: process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(Jets'+suff+'_LeptonMask)'])
         if onlyGoodJets:
             return process
     
@@ -47,7 +47,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
         MaxEta = cms.double(2.4),
     )
     setattr(process,"HTJets"+suff,HTJets)
-    if storeProperties>0: process.TreeMaker2.VectorBool.extend(['HTJets'+suff+':SubJetMask(HTJetsMask'+suff+')'])
+    if storeProperties>0: process.TreeMaker2.VectorBool.extend(['HTJets'+suff+':SubJetMask(Jets'+suff+'_HTMask)'])
     HTJetsTag = cms.InputTag("HTJets"+suff)
     
     from TreeMaker.Utils.htdouble_cfi import htdouble
@@ -98,7 +98,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
         MaxEta = cms.double(5.0),
     )
     setattr(process,"MHTJets"+suff,MHTJets)
-    if storeProperties>0: process.TreeMaker2.VectorBool.extend(['MHTJets'+suff+':SubJetMask(MHTJetsMask'+suff+')'])
+    if storeProperties>0: process.TreeMaker2.VectorBool.extend(['MHTJets'+suff+':SubJetMask(Jets'+suff+'_MHTMask)'])
     MHTJetsTag = cms.InputTag("MHTJets"+suff)
     
     from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
@@ -134,7 +134,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, S
         )
         setattr(process,"ISRJets"+suff,ISRJets)
         if storeProperties>0:
-            process.TreeMaker2.VectorBool.extend(['ISRJets'+suff+':SubJetMask(ISRJetsMask'+suff+')'])
+            process.TreeMaker2.VectorBool.extend(['ISRJets'+suff+':SubJetMask(Jets'+suff+'_ISRMask)'])
             process.TreeMaker2.VarsInt.extend(['ISRJets'+suff+'(NJetsISR'+suff+')'])
 
 

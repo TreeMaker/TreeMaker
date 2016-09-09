@@ -13,8 +13,8 @@ def makeJetVarsHadTau(process,JetTag,suff,storeProperties=0):
     setattr(process,"GoodJetsForHadTau"+suff,GoodJetsForHadTau)
     GoodJetsTag = cms.InputTag("GoodJetsForHadTau"+suff)
     
-    process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(softJets'+suff+')'])
-    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau'+suff+':JetIDMask(softJets'+suff+'_ID)'])
+    process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(SoftJets'+suff+')'])
+    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau'+suff+':JetIDMask(SoftJets'+suff+'_ID)'])
     
     if storeProperties>0:
         # make jet properties producer
@@ -26,7 +26,7 @@ def makeJetVarsHadTau(process,JetTag,suff,storeProperties=0):
         # provide extra info where necessary
         JetsProperties.jecUnc = cms.vstring("jecUncHadTau")
         setattr(process,"HadTauJetsProperties"+suff,JetsProperties)
-        process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(softJets'+suff+'_jecFactor)','HadTauJetsProperties:jecUnc(softJets'+suff+'_jecUnc)'])
+        process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(SoftJets'+suff+'_jecFactor)','HadTauJetsProperties:jecUnc(SoftJets'+suff+'_jecUnc)'])
     
     return process
 
