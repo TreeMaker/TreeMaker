@@ -35,6 +35,7 @@ Spring16Fast.SMS-T1qqqq_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring16Fast.SMS-T5qqqqVV_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring16Fast.SMS-T2qq_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 Spring16Fast.SMS-TChiHH_HToBB_HToBB_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
+Spring16Fast.SMS-T1ttbb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8 \
 )
 
 # missing: T1ttbb
