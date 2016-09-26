@@ -36,7 +36,7 @@ GenParticlesProducer::GenParticlesProducer(const edm::ParameterSet& iConfig):
 
 GenParticlesProducer::~GenParticlesProducer()
 {
-  // do anything here that needs to be done at desctruction time
+  // do anything here that needs to be done at destruction time
   // (e.g. close files, deallocate resources etc.)
 }
 
@@ -77,8 +77,8 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart)
     {
-      bool typicalChild=!(std::find(typicalChildIds.begin(),typicalChildIds.end(),abs(iPart->pdgId()))==typicalChildIds.end());
-      bool typicalParent=!(std::find(typicalParentIds.begin(),typicalParentIds.end(),abs(iPart->pdgId()))==typicalParentIds.end());
+      bool typicalChild=(typicalChildIds.find(abs(iPart->pdgId()))!=typicalChildIds.end());
+      bool typicalParent=(typicalParentIds.find(abs(iPart->pdgId()))!=typicalParentIds.end());
       if (!(typicalChild || typicalParent)) continue;
 
       int status = abs(iPart->status());
