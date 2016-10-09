@@ -421,6 +421,7 @@ signal=False
         process.BadPFMuonFilter.taggingMode = True
         VarsBool.extend(['BadPFMuonFilter'])
 
+        
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
     ## ----------------------------------------------------------------------------------------------
@@ -448,6 +449,14 @@ signal=False
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
+    # prescale weight for chained HT sample (not the same as trigger prescale)
+    from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
+    process.PrescaleWeightProducer = prescaleweightProducer.clone()
+    VarsDouble.extend(['PrescaleWeightProducer:weight(HtSample_PrescaleWeight)'])
+    VarsDouble.extend(['PrescaleWeightProducer:ht(Online_Ht)'])
+    VarsDouble.extend(['PrescaleWeightProducer:mht(Online_Mht)'])
+
+    
     ## ----------------------------------------------------------------------------------------------
     ## JER smearing, various uncertainties
     ## ----------------------------------------------------------------------------------------------
