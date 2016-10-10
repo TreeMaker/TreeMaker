@@ -449,12 +449,11 @@ signal=False
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
-    # prescale weight for chained HT sample (not the same as trigger prescale)
     from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
     process.PrescaleWeightProducer = prescaleweightProducer.clone()
-    VarsDouble.extend(['PrescaleWeightProducer:weight(HtSample_PrescaleWeight)'])
-    VarsDouble.extend(['PrescaleWeightProducer:ht(Online_Ht)'])
-    VarsDouble.extend(['PrescaleWeightProducer:mht(Online_Mht)'])
+    VarsDouble.extend(['PrescaleWeightProducer:weight(PrescaleWeightHT)'])
+    VarsDouble.extend(['PrescaleWeightProducer:ht(HTOnline)'])
+    VarsDouble.extend(['PrescaleWeightProducer:mht(MHTOnline)'])
 
     
     ## ----------------------------------------------------------------------------------------------
