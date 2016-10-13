@@ -51,12 +51,6 @@ private:
   virtual void beginJob();
   virtual void endJob();
   virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  const double _startWeight;
-  const double _LumiScale;
-  const double _PrescaleCut;
-  const bool _PFHTWeights;
-  edm::InputTag _weightName;
-  string _processName;
 
   edm::EDGetTokenT<edm::TriggerResults> _triggerBits;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> _triggerObjects;
@@ -64,20 +58,15 @@ private:
 };
 
 PrescaleWeightProducer::PrescaleWeightProducer(const edm::ParameterSet& iConfig) :
-  _startWeight(iConfig.getParameter<double> ("weight")), _LumiScale(iConfig.getParameter<double> ("LumiScale")), _PrescaleCut(iConfig.getParameter<double> ("PrescaleCut")), _PFHTWeights(iConfig.getParameter<bool> ("PFHTWeights")), _weightName(iConfig.getParameter<edm::InputTag> ("weightName")), _processName(iConfig.getParameter<string> ("HLTProcess")), _triggerBits(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("bits"))), _triggerObjects(consumes<pat::TriggerObjectStandAloneCollection>(iConfig.getParameter<edm::InputTag>("objects"))), _triggerPrescales(consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescales"))) 
+  _triggerBits(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("bits"))), 
+  _triggerObjects(consumes<pat::TriggerObjectStandAloneCollection>(iConfig.getParameter<edm::InputTag>("objects"))), 
+  _triggerPrescales(consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescales"))) 
 {
-  if (_startWeight >= 0) {
-    cout << "PrescaleWeightProducer: Using constant event weight of " << _startWeight << endl;
-  } else {
-    cout << "PrescaleWeightProducer: Using weight from event" << endl;
-  }
-  if (_LumiScale != 1.) {
-    cout << "PrescaleWeightProducer: Scaling event weights by factor " << _LumiScale << endl;
-  }
 
   produces<double> ("weight");
   produces<double> ("ht");
   produces<double> ("mht");
+
 }
 
 PrescaleWeightProducer::~PrescaleWeightProducer() {
@@ -86,15 +75,7 @@ PrescaleWeightProducer::~PrescaleWeightProducer() {
 void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
   double resultWeight = 1.;
-  if (_startWeight >= 0) {
-    resultWeight = _startWeight;
-  } else {
-    edm::Handle<double> event_weight;
-    iEvent.getByLabel(_weightName, event_weight);
-    resultWeight = (event_weight.isValid() ? (*event_weight) : 1.0);
-  }
 
-  resultWeight *= _LumiScale;
   edm::Handle<edm::TriggerResults> triggerBits;
   iEvent.getByToken(_triggerBits, triggerBits);
   edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
@@ -110,52 +91,52 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   int finalPrescale = 0;
   double ht = 0.0;
   double mht = 0.0;
-  if( _PFHTWeights ) {
-    for (unsigned int i = 0; i < triggerBits->size(); i++) {
-      const string trigName = trigNames.triggerName(i);
-      size_t found;
-      found = trigName.find("HLT_PFHT");
-      if (found == string::npos)
-	continue;
-      found = trigName.find("0_v");
-      if (found != 10)
-	continue;
-      bool pass = triggerBits->accept(i);
-      int ps = triggerPrescales->getPrescaleForIndex(i);
-      string strthr = trigName.substr(8, 3);
-      int thresh = int(atof(strthr.c_str()));
-      trigNameVec.push_back(trigName);
-      trigPassVec.push_back(pass);
-      trigThresholdVec.push_back(thresh);
-      trigPrescaleVec.push_back(ps);
-    }   
 
-    int gotht = 0; int gotmht = 0;
-    for (pat::TriggerObjectStandAlone obj : *triggerObjects) 
-      {
-	obj.unpackPathNames(trigNames);
-	if (!(obj.collection() == "hltPFHT::HLT")) continue;
-	if ( abs(obj.filterIds()[0]) == 89) 
-	  {
-	    ht = obj.pt();
-	    gotht = 1;
-	    continue;
-	  }
-	if ( abs((obj.filterIds()[0]) == 90) )
-	  {
-	    mht = obj.pt(); 
-	    gotmht = 1;
-	    continue;
-	  }
-	if (gotht+gotmht>1.5)
-	  {
+  for (unsigned int i = 0; i < triggerBits->size(); i++) {
+    const string trigName = trigNames.triggerName(i);
+    size_t found;
+    found = trigName.find("HLT_PFHT");
+    if (found == string::npos)
+      continue;
+    found = trigName.find("0_v");
+    if (found != 10)
+      continue;
+    bool pass = triggerBits->accept(i);
+    int ps = triggerPrescales->getPrescaleForIndex(i);
+    string strthr = trigName.substr(8, 3);
+    int thresh = int(atof(strthr.c_str()));
+    trigNameVec.push_back(trigName);
+    trigPassVec.push_back(pass);
+    trigThresholdVec.push_back(thresh);
+    trigPrescaleVec.push_back(ps);
+  }   
+
+  int gotht = 0; int gotmht = 0;
+  for (pat::TriggerObjectStandAlone obj : *triggerObjects) 
+    {
+      obj.unpackPathNames(trigNames);
+      if (!(obj.collection() == "hltPFHT::HLT")) continue;
+      if ( abs(obj.filterIds()[0]) == 89) 
+	{
+	  ht = obj.pt();
+	  gotht = 1;
+	  continue;
+	}
+      if ( abs((obj.filterIds()[0]) == 90) )
+	{
+	  mht = obj.pt(); 
+	  gotmht = 1;
+	  continue;
+	}
+      if (gotht+gotmht>1.5)
+	{
 	  break;
-	  }
-      }
+	}
+    }
 
-    int requiredTrigThreshold = 0;
-    int requiredTrigIndex = -1;
-    for(unsigned int t=0; t<trigNameVec.size();t++)
+  int requiredTrigThreshold = 0;
+  int requiredTrigIndex = -1;
+  for(unsigned int t=0; t<trigNameVec.size();t++)
       {
 	if(trigThresholdVec[t]>requiredTrigThreshold && trigThresholdVec[t]<ht)
 	  {
@@ -168,7 +149,7 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
       finalPrescale = 0;
     else
       finalPrescale = trigPrescaleVec[requiredTrigIndex];
-  }
+
 
   resultWeight*=finalPrescale;
 
