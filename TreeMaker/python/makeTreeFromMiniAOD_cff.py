@@ -449,11 +449,12 @@ signal=False
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
-    from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
-    process.PrescaleWeightProducer = prescaleweightProducer.clone()
-    VarsDouble.extend(['PrescaleWeightProducer:weight(PrescaleWeightHT)'])
-    VarsDouble.extend(['PrescaleWeightProducer:ht(HTOnline)'])
-    VarsDouble.extend(['PrescaleWeightProducer:mht(MHTOnline)'])
+    if not geninfo:
+        from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
+        process.PrescaleWeightProducer = prescaleweightProducer.clone()
+        VarsDouble.extend(['PrescaleWeightProducer:weight(PrescaleWeightHT)'])
+        VarsDouble.extend(['PrescaleWeightProducer:ht(HTOnline)'])
+        VarsDouble.extend(['PrescaleWeightProducer:mht(MHTOnline)'])
 
     
     ## ----------------------------------------------------------------------------------------------
