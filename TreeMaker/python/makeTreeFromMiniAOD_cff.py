@@ -25,7 +25,8 @@ jerfile="",
 pufile="",
 doPDFs=False,
 fastsim=False,
-signal=False
+signal=False,
+pmssm=False
 ):
 
     ## ----------------------------------------------------------------------------------------------
@@ -94,7 +95,7 @@ signal=False
     ## ----------------------------------------------------------------------------------------------
     ## SUSY scan info
     ## ----------------------------------------------------------------------------------------------
-    if geninfo :
+    if geninfo:
         # mother and LSP masses for SUSY signal scans
         # branches always added, but only have values for fastsim samples
         # needed for WeightProducer
@@ -106,6 +107,7 @@ signal=False
         )
         VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
 
+    if pmssm:
         # pMSSM ID for identifying the pMSSM model point
         from TreeMaker.Utils.pmssm_cfi import PmssmProducer
         process.Pmssm = PmssmProducer.clone(

@@ -32,6 +32,7 @@ scenario = Scenario(scenarioName)
 globaltag=parameters.value("globaltag",scenario.globaltag)
 tagname=parameters.value("tagname",scenario.tagname)
 geninfo=parameters.value("geninfo",scenario.geninfo)
+pmssm=parameters.value("pmssm",scenario.pmssm)
 fastsim=parameters.value("fastsim",scenario.fastsim)
 signal=parameters.value("signal",scenario.signal)
 jsonfile=parameters.value("jsonfile",scenario.jsonfile)
@@ -93,6 +94,7 @@ print " scenario: "+scenarioName
 print " global tag: "+globaltag
 print " Instance name of tag information: "+tagname
 print " Including gen-level information: "+str(geninfo)
+print " Including pMSSM-related information: "+str(pmssm)
 print " Using fastsim settings: "+str(fastsim)
 print " Running signal uncertainties: "+str(signal)
 if len(jsonfile)>0: print " JSON file applied: "+jsonfile
@@ -116,6 +118,7 @@ process = makeTreeFromMiniAOD(process,
     doZinv=doZinv,
     debugtracks=debugtracks,
     geninfo=geninfo,
+    pmssm=pmssm,
     tagname=tagname,
     jsonfile=jsonfile,
     jecfile=jecfile,
