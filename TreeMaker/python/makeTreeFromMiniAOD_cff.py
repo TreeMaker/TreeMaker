@@ -107,11 +107,10 @@ pmssm=False
         )
         VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
 
-    if pmssm:
         # pMSSM ID for identifying the pMSSM model point
         from TreeMaker.Utils.pmssm_cfi import PmssmProducer
         process.Pmssm = PmssmProducer.clone(
-            shouldScan = cms.bool(fastsim),
+            shouldScan = cms.bool(pmssm),
             debug = cms.bool(False)
         )
         VectorString.extend(['Pmssm:PmssmId'])
