@@ -66,13 +66,8 @@ if options.held and options.running:
     parser.error("Can't use -h and -r together, pick one!")
 if options.resubmit and options.kill:
     parser.error("Can't use -s and -k together, pick one!")
-if options.running and options.resubmit:
-    parser.error("Can't use -r and -s together, pick one!")
 if options.all and (options.kill or options.resubmit):
     parser.error("Can't use -s or -k with -a.")
-
-#can only resubmit held jobs (via release)
-if options.resubmit: options.held = True
 
 jobs = []
 if options.all:
@@ -95,16 +90,18 @@ if options.resubmit:
             os.mkdir(backup_dir)
 
     for j in jobs:
+        #hold running jobs first (in case hung)
+        if options.running:
+            cmdh = "condor_hold "+j.num
+            subprocess.Popen(cmdh, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         #backup log
         if len(options.dir)>0:
             prev_logs = glob.glob(backup_dir+"/"+j.stdout+"_*")
             num_logs = 0
             #increment log number if job has been resubmitted before
-            print prev_logs
             if len(prev_logs)>0:
                 num_logs = max([int(log.split("_")[-1].replace(".stdout","")) for log in prev_logs])+1
             #copy logfile
-            print num_logs
             shutil.copy2(options.dir+"/"+j.stdout+".stdout",backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
         #edit redirector
         if len(options.edit)>0:
