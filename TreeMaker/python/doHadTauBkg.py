@@ -22,12 +22,12 @@ def makeJetVarsHadTau(process,JetTag,suff,fastsim,storeProperties=0):
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetsProperties = jetproperties.clone(
             JetTag       = GoodJetsTag,
-            properties   = cms.vstring("jecFactor","jecUnc")
+            properties   = cms.vstring("jecFactor","jecUnc","bDiscriminatorCSV")
         )
         # provide extra info where necessary
         JetsProperties.jecUnc = cms.vstring("jecUncHadTau")
         setattr(process,"HadTauJetsProperties"+suff,JetsProperties)
-        process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(SoftJets'+suff+'_jecFactor)','HadTauJetsProperties:jecUnc(SoftJets'+suff+'_jecUnc)'])
+        process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(SoftJets'+suff+'_jecFactor)','HadTauJetsProperties:jecUnc(SoftJets'+suff+'_jecUnc)','HadTauJetsProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)'])
     
     return process
 
