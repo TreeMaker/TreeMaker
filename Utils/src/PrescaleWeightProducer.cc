@@ -153,14 +153,14 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 
   resultWeight*=finalPrescale;
 
-  auto_ptr<double> pOut(new double(resultWeight));
-  iEvent.put(pOut, "weight");
+  auto pOut = std::make_unique<double>(resultWeight);
+  iEvent.put(std::move(pOut), "weight");
 
-  auto_ptr<double> htOut(new double(ht));
-  iEvent.put(htOut, "ht");
+  auto htOut = std::make_unique<double>((ht));
+  iEvent.put(std::move(htOut), "ht");
 
-  auto_ptr<double> mhtOut(new double(mht));
-  iEvent.put(mhtOut, "mht");
+  auto mhtOut = std::make_unique<double>((mht));
+  iEvent.put(std::move(mhtOut), "mht");
   
 }
 

@@ -84,11 +84,11 @@ void PmssmProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		}
 	}
 
-	std::auto_ptr<std::vector<std::string> > pmssmId_(new std::vector<std::string>(pmssmId));
-	iEvent.put(pmssmId_, "PmssmId");
+	auto pmssmId_ = std::make_unique<std::vector<std::string> >(pmssmId);
+	iEvent.put(std::move(pmssmId_), "PmssmId");
 	
-	std::auto_ptr<double > pmssmXsec_(new double(pmssmXsec));
-	iEvent.put(pmssmXsec_, "PmssmXsec");
+	auto pmssmXsec_ = std::make_unique<double>(pmssmXsec);
+	iEvent.put(std::move(pmssmXsec_), "PmssmXsec");
 	
 }
 
