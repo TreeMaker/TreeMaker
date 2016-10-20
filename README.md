@@ -87,11 +87,11 @@ python calcLumi.py
 ```
 
 The script [lumiSummary.py](./Production/test/lumiSummary.py) loops over a list of data samples (by default, a list of Run2015C and Run2015D samples) and creates a JSON
-file for each sample consisting of the lumisections which were actually processed. Run `python lumiSummaryTest.py --help` to see the available options.
+file for each sample consisting of the lumisections which were actually processed. Run `python lumiSummary.py --help` to see the available options.
 (This script is based on the CRAB3 client job report scripts.)
 
 The resulting JSON file can be run through [brilcalc](http://cms-service-lumi.web.cern.ch/cms-service-lumi/brilwsdoc.html) using [calcLumi.py](./Production/test/calcLumi.py)
-to determine the integrated luminosity for the dataset. (NB: this only works on lxplus with brilcalc installed.)
+to determine the integrated luminosity for the dataset. Run `python calcLumi.py --help` to see the available options. (NB: this only works on lxplus with brilcalc installed.)
 
 ## Calculate Pileup Corrections
 
