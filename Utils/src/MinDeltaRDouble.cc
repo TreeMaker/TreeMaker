@@ -31,26 +31,47 @@ void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    edm::Handle<std::vector<reco::GenParticle>> pruned;
    iEvent.getByToken(genParticlesToken_, pruned);
    if (pruned.isValid()) {
-      for (auto iG1 = pruned->begin(); iG1 != pruned->end(); ++iG1) {
-         if (iG1->isHardProcess() && (iG1->pdgId()==22 || iG1->pdgId()==23)) {
-            for (auto iG2 = pruned->begin(); iG2 != pruned->end(); ++iG2) {
-               if (iG2->isHardProcess()) {
-                  int tempID = std::abs(iG2->pdgId());
-                  if ((tempID>=1 && tempID<=6) || tempID==21) {
-                     double tempDR = deltaR(iG1->p4(), iG2->p4());
-                     if (tempDR < minDR) minDR = tempDR;
-                  }
+      reco::GenParticle gen;
+      // target GJets, DY, and Zinv MC
+      bool haveGen = false;
+      for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
+         if (iG->status()==23 && (iG->pdgId()==22 || iG->pdgId()==23)) {
+            gen = *iG;
+            haveGen = true;
+            break;
+         }
+      }
+      // target QCD MC (or anything else really)
+      if (!haveGen) {
+         double maxPt = 0.;
+         for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
+            if (iG->pdgId()==22) {
+               if (iG->pt() > maxPt) {
+                  gen = *iG;
+                  maxPt = iG->pt();
+                  haveGen = true;
                }
             }
          }
       }
+      // now calculate deltaR
+      if (haveGen) {
+         for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
+            if (iG->status()==23) {
+               int tempID = std::abs(iG->pdgId());
+               if ((tempID>=1 && tempID<=6) || tempID==21) {
+                  double tempDR = deltaR(gen.p4(), iG->p4());
+                  if (tempDR < minDR) minDR = tempDR;
+               }
+            }
+         }
+      } 
    } else {
       std::cout << "MinPhotonDeltaRDouble::Error tag invalid: " << "prunedGenParticles" << std::endl;
    }
 
    auto htp = std::make_unique<double>(minDR);
-   iEvent.put(std::move(htp));
-  
+   iEvent.put(std::move(htp)); 
 }
 
 //define this as a plug-in
