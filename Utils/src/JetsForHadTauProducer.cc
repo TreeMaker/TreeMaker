@@ -72,6 +72,7 @@ private:
     bool debug_;
     bool MCflag_;
     bool useReclusteredJets_;
+    bool requireLeptonMatch_;
     // ----------member data ---------------------------
 };
 
@@ -98,6 +99,7 @@ JetsForHadTauProducer::JetsForHadTauProducer(const edm::ParameterSet& iConfig)
     relPt_for_xCheck_ = iConfig.getParameter<double>("relPt_for_xCheck");
     MCflag_ = iConfig.getParameter<bool>("MCflag");
     useReclusteredJets_ = iConfig.getParameter<bool>("useReclusteredJets");
+    requireLeptonMatch_ = iConfig.getParameter<bool>("requireLeptonMatch");
     debug_ = iConfig.getParameter<bool>("debug");
     MuonTag_ = edm::InputTag("slimmedMuons");
     ElecTag_ = edm::InputTag("slimmedElectrons");
@@ -148,7 +150,7 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   // use lepton matching to save space
   if(Jets.isValid()){
     for(unsigned int ij=0; ij< Jets->size(); ij++){
-      if(matchJetLepton(&(Jets->at(ij)),pruned,muon,electron)) finalJets->push_back(Jets->at(ij));
+      if(!requireLeptonMatch_ || matchJetLepton(&(Jets->at(ij)),pruned,muon,electron)) finalJets->push_back(Jets->at(ij));
     }
   }
   

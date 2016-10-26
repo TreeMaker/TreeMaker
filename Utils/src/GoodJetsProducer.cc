@@ -66,7 +66,7 @@ private:
    std::vector<edm::EDGetTokenT<edm::View<reco::Candidate>>> SkipTok_;
    double maxEta_;
    double maxNeutralFraction_, maxPhotonFraction_, minChargedFraction_, maxChargedEMFraction_, maxPhotonFractionHF_;
-   int minNconstituents_, minNneutrals_, minNcharged_;
+   int minNconstituents_, minNneutralsHE_, minNneutralsHF_, minNcharged_;
    double jetPtFilter_;
    bool saveAllId_, saveAllPt_, ExcludeLeptonIsoTrackPhotons_, TagMode_, invertJetPtFilter_;
    double JetConeSize_;
@@ -95,7 +95,8 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
    maxEta_ = iConfig.getParameter <double> ("maxJetEta");
    minNconstituents_ = iConfig.getParameter <int> ("minNconstituents");
-   minNneutrals_ = iConfig.getParameter <int> ("minNneutrals");
+   minNneutralsHE_ = iConfig.getParameter <int> ("minNneutralsHE");
+   minNneutralsHF_ = iConfig.getParameter <int> ("minNneutralsHF");
    minNcharged_ = iConfig.getParameter <int> ("minNcharged");
    maxNeutralFraction_ = iConfig.getParameter <double> ("maxNeutralFraction");
    maxPhotonFraction_ = iConfig.getParameter <double> ("maxPhotonFraction");
@@ -199,20 +200,23 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             {
                prodJets->push_back(Jet(Jets->at(i)));
                jetsMask->push_back(true);
-			   leptonMask->push_back(true);
+               leptonMask->push_back(true);
                continue;
             }
-			else leptonMask->push_back(false);
+            else leptonMask->push_back(false);
          }
-		 else leptonMask->push_back(false);
+         else leptonMask->push_back(false);
          bool good = true;
-         if (std::abs(Jets->at(i).eta()) < 3.0){
+         if (std::abs(Jets->at(i).eta()) <= 2.7){
             good = neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ && nconstit>minNconstituents_;
             if(std::abs(Jets->at(i).eta()) < 2.4) good &= chgfrac>minChargedFraction_ && chgmulti>minNcharged_ && chgEMfrac<maxChargedEMFraction_;
-         } else {
-            good = phofrac<maxPhotonFractionHF_ && neumulti>minNneutrals_;
          }
-
+         else if(std::abs(Jets->at(i).eta()) <= 3.0){
+            good = phofrac<maxPhotonFractionHF_ && neumulti>minNneutralsHE_;
+         }
+         else {
+            good = phofrac<maxPhotonFractionHF_ && neumulti>minNneutralsHF_;
+         }
         //save good jets, potentially regardless of id or pt
         if (good || saveAllId_) {
            prodJets->push_back(Jet(Jets->at(i)));
