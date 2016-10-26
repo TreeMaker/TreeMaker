@@ -90,22 +90,25 @@ def getWeightProducer(fileName,fastsim=False):
         MCSample("QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 25.24, 6040004), # subtotal = 1992472
         MCSample("QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v2", "RunIISpring16MiniAODv1", "Constant", 25.24, 6040004), # subtotal = 4047532
         # DY/Z: k-factor of 1.23 applied, available extensions included
-        MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 183.1, 10628712), # subtotal = 2213426
-        MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 183.1, 10628712), # subtotal = 8415286
-        MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 50.49, 9701936), # subtotal = 944458
-        MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 50.49, 9701936), # subtotal = 8757478
-        MCSample("DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1", "RunIISpring16MiniAODv2", "Constant", 6.994, 8317271),
-        MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 2.7, 5150414), # subtotal = 1034084
-        MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1", "RunIISpring16MiniAODv2", "Constant", 2.7, 5150414), # subtotal = 4116330
+        MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 181.302, 10628712), # subtotal = 2213426
+        MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 181.302, 10628712), # subtotal = 8415286
+        MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 50.4177, 9701936), # subtotal = 944458
+        MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 50.4177, 9701936), # subtotal = 8757478
+        MCSample("DYJetsToLL_M-50_HT-400to600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1", "RunIISpring16MiniAODv2", "Constant", 6.98394, 8317271),
+        MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 2.70354, 5150414), # subtotal = 1034084
+        MCSample("DYJetsToLL_M-50_HT-600toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0_ext1-v1", "RunIISpring16MiniAODv2", "Constant", 2.70354, 5150414), # subtotal = 4116330
+        MCSample("DYJetsToLL_M-50_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 1.68141, 8232153),
+        MCSample("DYJetsToLL_M-50_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 0.775392, 2650775),
+        MCSample("DYJetsToLL_M-50_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 0.186222, 616612),
+        MCSample("DYJetsToLL_M-50_HT-2500toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 0.00438495, 376260),
         MCSample("DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 6025.2, 49868990),
-        MCSample("ZJetsToNuNu_HT-100To200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v2", "RunIISpring16MiniAODv1", "Constant", 344.3, 18665303),
-        MCSample("ZJetsToNuNu_HT-200To400_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 95.23, 19914665),
-        MCSample("ZJetsToNuNu_HT-400To600_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 13.19, 1020309),
-        # cross sections for new ZJets HT samples: https://hypernews.cern.ch/HyperNews/CMS/get/susy-interpretations/241.html
-        MCSample("ZJetsToNuNu_HT-600To800_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 3.221, 5650700),
-        MCSample("ZJetsToNuNu_HT-800To1200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 1.474, 2156175),
-        MCSample("ZJetsToNuNu_HT-1200To2500_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 0.3586, 365216),
-        MCSample("ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 0.008203, 405752),
+        MCSample("ZJetsToNuNu_HT-100To200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v2", "RunIISpring16MiniAODv1", "Constant", 344.8305, 18665303),
+        MCSample("ZJetsToNuNu_HT-200To400_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3_ext1-v1", "RunIISpring16MiniAODv1", "Constant", 95.5341, 19914665),
+        MCSample("ZJetsToNuNu_HT-400To600_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1", "RunIISpring16MiniAODv2", "Constant", 13.1979, 1020309),
+        MCSample("ZJetsToNuNu_HT-600To800_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 3.14757, 5650700),
+        MCSample("ZJetsToNuNu_HT-800To1200_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 1.450908, 2156175),
+        MCSample("ZJetsToNuNu_HT-1200To2500_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 0.3546459, 365216),
+        MCSample("ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 0.00854235, 405752),
         MCSample("GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v2", "RunIISpring16MiniAODv1", "Constant", 9226, 5142782),
         MCSample("GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 2300, 10296521),
         MCSample("GJets_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUSpring16_80X_mcRun2_asymptotic_2016_v3-v1", "RunIISpring16MiniAODv1", "Constant", 277.4, 2528414),
