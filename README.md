@@ -14,6 +14,7 @@ git fetch btv-cmssw BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
 git cms-merge-topic -u kpedro88:METfix8012
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
+git cms-merge-topic -u kpedro88:storeJERFactor8022
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram b -j 8
 cd TreeMaker/Production/test
@@ -26,10 +27,11 @@ The available scenarios are:
 1. `Spring16`: for Spring16 miniAOD 25ns MC  
 2. `Spring16sig`: for Spring16 miniAOD 25ns MC (signal)  
 3. `Spring16Fastsig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)  
-4. `2016B`: for 2016B PromptReco 25ns data  
-5. `2016CD`: for 2016C and 2016D PromptReco 25ns data
-6. `2016EF`: for 2016E and 2016F PromptReco 25ns data
-7. `2016G`: for 2016G PromptReco 25ns data
+4. `Spring16Pmssm`: for Spring16 miniAOD 25ns PMSSM MC scan (signal)  
+5. `2016B`: for 2016B PromptReco 25ns data  
+6. `2016CD`: for 2016C and 2016D PromptReco 25ns data  
+7. `2016EF`: for 2016E and 2016F PromptReco 25ns data  
+8. `2016G`: for 2016G PromptReco 25ns data
 
 ## Unit Tests (Interactive Runs)
 
