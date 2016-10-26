@@ -43,7 +43,7 @@ class CommandLineParams:
         """
         if hasattr(sys,"argv"):
             for arg in sys.argv:
-                val = arg.split('=')
+                val = arg.split('=',1)
                 if len(val)==2:
                     vlist = val[1].split(',')
                     if len(vlist)==1:
