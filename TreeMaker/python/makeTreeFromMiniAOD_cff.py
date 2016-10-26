@@ -270,21 +270,26 @@ pmssm=False
         JetTag = JetTag,
         jecUncDir = cms.int32(0)
     )
-    # JER uncertainty - up and down
+    # JER factors - central, up, down
     from TreeMaker.Utils.smearedpatjet_cfi import SmearedPATJetProducer
-    process.jerUncUp = SmearedPATJetProducer.clone(
+    process.jerFactor = SmearedPATJetProducer.clone(
+        src = JetTag,
+        variation = cms.int32(0),
+        store_factor = cms.bool(True)
+    )
+    process.jerFactorUp = SmearedPATJetProducer.clone(
         src = JetTag,
         variation = cms.int32(1),
         store_factor = cms.bool(True)
     )
-    process.jerUncDown = SmearedPATJetProducer.clone(
+    process.jerFactorDown = SmearedPATJetProducer.clone(
         src = JetTag,
         variation = cms.int32(-1),
         store_factor = cms.bool(True)
     )
     # add userfloat & update tag
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
-    process, JetTag = addJetInfo(process, JetTag, ['jecUnc','jerUncUp','jerUncDown'], [])
+    process, JetTag = addJetInfo(process, JetTag, ['jecUnc','jerFactor','jerFactorUp','jerFactorDown'], [])
 
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
