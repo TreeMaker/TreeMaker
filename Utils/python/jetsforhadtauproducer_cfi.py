@@ -10,4 +10,5 @@ relPt_for_xCheck=cms.double(1e-2),
 useReclusteredJets=cms.bool(True),
 MCflag=cms.bool(False),
 debug=cms.bool(False),
+requireLeptonMatch=cms.bool(True),
 )

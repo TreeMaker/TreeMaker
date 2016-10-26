@@ -95,20 +95,16 @@ def doHadTauBkg(process,geninfo,residual,JetTag,fastsim,recluster):
         JetTag                 = JetTag,
         reclusJetTag           = cms.InputTag('patJetsAK4PFCHS'),
         maxJetEta              = cms.double(5.0), 
-        MCflag                 = cms.bool(False),
-        jetPtCut_analysis      = cms.double(30),
+        MCflag                 = cms.bool(geninfo),
+        useReclusteredJets     = cms.bool(recluster),
+        requireLeptonMatch     = cms.bool(False)
     )
-    if geninfo:
-        process.JetsForHadTau.MCflag = cms.bool(True)
-    if not recluster:
-        process.JetsForHadTau.reclusJetTag = JetTag
-        process.JetsForHadTau.useReclusteredJets = cms.bool(False)
     JetTagHadTau = cms.InputTag("JetsForHadTau")
 
     # jet uncertainty variations
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
     
-    #JEC uncertainty
+    # JEC uncertainty
     process.jecUncHadTau = JetUncertaintyProducer.clone(
         JetTag = JetTagHadTau,
         jecUncDir = cms.int32(0)
@@ -120,59 +116,7 @@ def doHadTauBkg(process,geninfo,residual,JetTag,fastsim,recluster):
     # skip all jet smearing and uncertainties for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
     if geninfo:        
-        # JEC unc up
-        process, JetTagHadTauJECup = JetDepot(process,
-            JetTag=JetTagHadTau,
-            jecUncDir=1,
-            doSmear=True,
-            jerUncDir=0
-        )
-        process = makeJetVarsHadTau(process,
-            JetTag=JetTagHadTauJECup,
-            suff='JECup',
-            fastsim=fastsim,
-        )
-        
-        # JEC unc down
-        process, JetTagHadTauJECdown = JetDepot(process,
-            JetTag=JetTagHadTau,
-            jecUncDir=-1,
-            doSmear=True,
-            jerUncDir=0
-        )
-        process = makeJetVarsHadTau(process,
-            JetTag=JetTagHadTauJECdown,
-            suff='JECdown',
-            fastsim=fastsim,
-        )
-    
-        # JER unc up
-        process, JetTagHadTauJERup = JetDepot(process,
-            JetTag=JetTagHadTau,
-            jecUncDir=0,
-            doSmear=True,
-            jerUncDir=1
-        )
-        process = makeJetVarsHadTau(process,
-            JetTag=JetTagHadTauJERup,
-            suff='JERup',
-            fastsim=fastsim,
-        )
-        
-        # JER unc down
-        process, JetTagHadTauJERdown = JetDepot(process,
-            JetTag=JetTagHadTau,
-            jecUncDir=0,
-            doSmear=True,
-            jerUncDir=-1
-        )
-        process = makeJetVarsHadTau(process,
-            JetTag=JetTagHadTauJERdown,
-            suff='JERdown',
-            fastsim=fastsim,
-        )
-
-        # finally, do central smearing and replace jet tag
+        # do central smearing and replace jet tag
         process, JetTagHadTau = JetDepot(process,
             JetTag=JetTagHadTau,
             jecUncDir=0,
