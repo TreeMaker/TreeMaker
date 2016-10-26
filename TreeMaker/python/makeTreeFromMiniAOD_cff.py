@@ -611,6 +611,28 @@ pmssm=False
     ## Jet variables
     ## ----------------------------------------------------------------------------------------------
 
+    # get updated QG training
+    QGPatch = cms.string('sqlite_file:data/QGL_80X.db')
+    if os.getenv('GC_CONF'): 
+        QGPatch = cms.string('sqlite_file:../src/data/QGL_80X.db')
+
+    process.qgdb = cms.ESSource("PoolDBESSource",CondDBSetup,
+        connect = QGPatch,
+        toGet   = cms.VPSet(
+            cms.PSet(
+                record = cms.string('QGLikelihoodRcd'),
+                tag    = cms.string('QGLikelihoodObject_80X_AK4PFchs'),
+                label  = cms.untracked.string('QGL_AK4PFchs')
+            ),
+            cms.PSet(
+                record = cms.string('QGLikelihoodRcd'),
+                tag    = cms.string('QGLikelihoodObject_80X_AK4PFchs_antib'),
+                label  = cms.untracked.string('QGL_AK4PFchs_antib')
+            ),
+        )
+    )
+    process.es_prefer_qg = cms.ESPrefer("PoolDBESSource","qgdb")
+    
     # get QG tagging discriminant
     process.QGTagger = cms.EDProducer('QGTagger',
         srcJets	            = JetTag,
