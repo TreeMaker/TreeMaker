@@ -199,38 +199,36 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
     
     // apply id cuts
-    if(isBarrelPhoton){
-      if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0107){//id criterias barrel
-        passID=true;
-      }//id criterias barrel
-      if(iPhoton->hadTowOverEm() < 0.028 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position())){//id criterias barrel (loose, no sieie cut)
-        passIDLoose=true;
-      }//id criterias barrel (loose)
-    } 
-    else if(isEndcapPhoton){
-      if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) && sieie < 0.0272){//id criteria endcap
-        passID=true;
-      }//id criterias endcap
-      if(iPhoton->hadTowOverEm() < 0.093 && !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position())){//id criteria endcap (loose, no sieie cut)
-        passIDLoose=true;
-      }//id criterias endcap (loose)
+    if (isBarrelPhoton) {
+      if (iPhoton->hadTowOverEm() < 0.05 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+         passIDLoose = true;
+         if (sieie < 0.0102) {
+            passID = true;
+         }
+      }
+    } else if (isEndcapPhoton) {
+      if (iPhoton->hadTowOverEm() < 0.05 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+         passIDLoose = true;
+         if (sieie < 0.0274) {
+            passID = true;
+         }
+      }
     }
  
     // apply isolation cuts
-    if(isBarrelPhoton){
-      if(chIso <2.67 && nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){
-        passIso=true;      
+    if (isBarrelPhoton) {
+      if (nuIso < (1.92 + 0.014*iPhoton->pt() + 0.000019*iPhoton->pt()*iPhoton->pt()) && gamIso < (0.81 + 0.0053*iPhoton->pt())) {
+        passIsoLoose = true;
+        if (chIso < 3.32) {
+           passIso = true;
+        }
       }
-      if(nuIso <  (7.23 + TMath::Exp(0.0028*(iPhoton->pt()+0.5408)))  && gamIso < ( 2.11 + 0.0014*(iPhoton->pt())) ){//loose, no charged iso cut
-        passIsoLoose=true;      
-      }
-    }
-    else if(isEndcapPhoton){
-      if(chIso <1.79 && nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){
-        passIso=true;
-      }
-      if(nuIso <  (8.89 + 0.01725*(iPhoton->pt()))  && gamIso < ( 3.09 + 0.0091*(iPhoton->pt())) ){//loose, no charged iso cut
-        passIsoLoose=true;
+    } else if (isEndcapPhoton) {
+      if (nuIso < (11.86 + 0.0139*iPhoton->pt() + 0.000025*iPhoton->pt()*iPhoton->pt())  && gamIso < (0.83 + 0.0034*iPhoton->pt())) {
+        passIsoLoose = true;
+        if (chIso < 1.97) {
+          passIso = true;
+        }
       }
     }
 
