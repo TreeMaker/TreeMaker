@@ -5,8 +5,8 @@
 The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 or v2 format) or Run2016 data.
 
 ```
-cmsrel CMSSW_8_0_18
-cd CMSSW_8_0_18/src/
+cmsrel CMSSW_8_0_22
+cd CMSSW_8_0_22/src/
 cmsenv
 git cms-init
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
@@ -28,6 +28,8 @@ The available scenarios are:
 3. `Spring16Fastsig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)  
 4. `2016B`: for 2016B PromptReco 25ns data  
 5. `2016CD`: for 2016C and 2016D PromptReco 25ns data
+6. `2016EF`: for 2016E and 2016F PromptReco 25ns data
+7. `2016G`: for 2016G PromptReco 25ns data
 
 ## Unit Tests (Interactive Runs)
 
