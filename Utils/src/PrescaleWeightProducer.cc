@@ -115,7 +115,7 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   for (pat::TriggerObjectStandAlone obj : *triggerObjects) 
     {
       obj.unpackPathNames(trigNames);
-      if (!(obj.collection() == "hltPFHT::HLT")) continue;
+      if (!(obj.collection() == "hltPFHTJet30::HLT")) continue;//hltPFHT::HLT
       if ( abs(obj.filterIds()[0]) == 89) 
 	{
 	  ht = obj.pt();
