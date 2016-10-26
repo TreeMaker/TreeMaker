@@ -270,9 +270,26 @@ pmssm=False
         JetTag = JetTag,
         jecUncDir = cms.int32(0)
     )
+    # JER factors - central, up, down
+    from TreeMaker.Utils.smearedpatjet_cfi import SmearedPATJetProducer
+    process.jerFactor = SmearedPATJetProducer.clone(
+        src = JetTag,
+        variation = cms.int32(0),
+        store_factor = cms.bool(True)
+    )
+    process.jerFactorUp = SmearedPATJetProducer.clone(
+        src = JetTag,
+        variation = cms.int32(1),
+        store_factor = cms.bool(True)
+    )
+    process.jerFactorDown = SmearedPATJetProducer.clone(
+        src = JetTag,
+        variation = cms.int32(-1),
+        store_factor = cms.bool(True)
+    )
     # add userfloat & update tag
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
-    process, JetTag = addJetInfo(process, JetTag, ['jecUnc'], [])
+    process, JetTag = addJetInfo(process, JetTag, ['jecUnc','jerFactor','jerFactorUp','jerFactorDown'], [])
 
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
@@ -624,6 +641,7 @@ pmssm=False
     process.load("RecoBTag.SecondaryVertex.pfInclusiveSecondaryVertexFinderAK8TagInfos_cfi")
     process.pfInclusiveSecondaryVertexFinderAK8TagInfos.extSVCollection = cms.InputTag("slimmedSecondaryVertices")
     process.pfInclusiveSecondaryVertexFinderAK8TagInfos.trackIPTagInfos = cms.InputTag("pfImpactParameterAK8TagInfos")
+    process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSVAK8TagInfos_cfi")
     process.load("RecoBTag.SecondaryVertex.candidateBoostedDoubleSecondaryVertexAK8Computer_cfi")
     process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSecondaryVertexAK8BJetTags_cfi")
     

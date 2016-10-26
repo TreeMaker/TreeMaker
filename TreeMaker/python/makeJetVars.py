@@ -167,6 +167,9 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
                                                     'JetsProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
                                                     'JetsProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
                                                     'JetsProperties'+suff+':jecUnc(Jets'+suff+'_jecUnc)',
+                                                    'JetsProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
+                                                    'JetsProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
+                                                    'JetsProperties'+suff+':jerFactorDown(Jets'+suff+'_jerFactorDown)',
                                                     'JetsProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
                                                     'JetsProperties'+suff+':qgPtD(Jets'+suff+'_qgPtD)',
                                                     'JetsProperties'+suff+':qgAxis2(Jets'+suff+'_qgAxis2)'])

@@ -22,12 +22,20 @@ def makeJetVarsHadTau(process,JetTag,suff,fastsim,storeProperties=0):
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetsProperties = jetproperties.clone(
             JetTag       = GoodJetsTag,
-            properties   = cms.vstring("jecFactor","jecUnc","bDiscriminatorCSV")
+            properties   = cms.vstring("jecFactor","jecUnc","jerFactor","jerFactorUp","jerFactorDown","bDiscriminatorCSV")
         )
         # provide extra info where necessary
         JetsProperties.jecUnc = cms.vstring("jecUncHadTau")
+        JetsProperties.jerFactor = cms.vstring("jerFactorHadTau")
+        JetsProperties.jerFactorUp = cms.vstring("jerFactorUpHadTau")
+        JetsProperties.jerFactorDown = cms.vstring("jerFactorDownHadTau")
         setattr(process,"HadTauJetsProperties"+suff,JetsProperties)
-        process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(SoftJets'+suff+'_jecFactor)','HadTauJetsProperties:jecUnc(SoftJets'+suff+'_jecUnc)','HadTauJetsProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)'])
+        process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(SoftJets'+suff+'_jecFactor)',
+                                                'HadTauJetsProperties:jecUnc(SoftJets'+suff+'_jecUnc)',
+                                                'HadTauJetsProperties:jerFactor(SoftJets'+suff+'_jerFactor)',
+                                                'HadTauJetsProperties:jerFactorUp(SoftJets'+suff+'_jerFactorUp)',
+                                                'HadTauJetsProperties:jerFactorDown(SoftJets'+suff+'_jerFactorDown)',
+                                                'HadTauJetsProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)'])
     
     return process
 
@@ -109,9 +117,26 @@ def doHadTauBkg(process,geninfo,residual,JetTag,fastsim,recluster):
         JetTag = JetTagHadTau,
         jecUncDir = cms.int32(0)
     )
-    # add userfloat & update tag
+    # JER factors - central, up, down
+    from TreeMaker.Utils.smearedpatjet_cfi import SmearedPATJetProducer
+    process.jerFactorHadTau = SmearedPATJetProducer.clone(
+        src = JetTagHadTau,
+        variation = cms.int32(0),
+        store_factor = cms.bool(True)
+    )
+    process.jerFactorUpHadTau = SmearedPATJetProducer.clone(
+        src = JetTagHadTau,
+        variation = cms.int32(1),
+        store_factor = cms.bool(True)
+    )
+    process.jerFactorDownHadTau = SmearedPATJetProducer.clone(
+        src = JetTagHadTau,
+        variation = cms.int32(-1),
+        store_factor = cms.bool(True)
+    )
+    # add userfloats & update tag
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
-    process, JetTagHadTau = addJetInfo(process, JetTagHadTau, ['jecUncHadTau'], [])
+    process, JetTagHadTau = addJetInfo(process, JetTagHadTau, ['jecUncHadTau','jerFactorHadTau','jerFactorUpHadTau','jerFactorDownHadTau'], [])
     
     # skip all jet smearing and uncertainties for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
