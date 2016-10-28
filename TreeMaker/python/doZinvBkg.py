@@ -182,12 +182,11 @@ def doZinvBkg(process,tagname,geninfo,residual,fastsim):
     process.TreeMaker2.VectorBool.append("goodPhotons:nonPrompt(Photons_nonPrompt)")
     process.TreeMaker2.VectorBool.append("goodPhotons:fullID(Photons_fullID)")
 
-    ## add MadGraph-level deltaR between photon or Z and partons
-    ## mainly used to make GJets and GJets0p4 MC samples orthogonal
-    ## if no photon is found (Zinv/DY MC) the Z boson is chosen
+    ## add MadGraph-level deltaR between photon or Z and status 23 partons
     if geninfo:
         process.madMinPhotonDeltaR = cms.EDProducer("MinDeltaRDouble")
-        process.TreeMaker2.VarsDouble.extend(['madMinPhotonDeltaR'])
+        process.TreeMaker2.VarsDouble.extend(['madMinPhotonDeltaR:madMinPhotonDeltaR(madMinPhotonDeltaR)'])
+        process.TreeMaker2.VarsInt.extend([   'madMinPhotonDeltaR:madMinDeltaRStatus(madMinDeltaRStatus)'])
 
     from TreeMaker.Utils.zproducer_cfi import ZProducer
     process.makeTheZs = ZProducer.clone(
