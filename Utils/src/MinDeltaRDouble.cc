@@ -21,35 +21,53 @@ private:
 MinDeltaRDouble::MinDeltaRDouble(const edm::ParameterSet& iConfig)
 {
    genParticlesToken_ = consumes<std::vector<reco::GenParticle>>(edm::InputTag("prunedGenParticles"));
-   produces<double>("");
+   produces<double>("madMinPhotonDeltaR");
+   produces<int>("madMinDeltaRStatus");
 }
 
 void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    double minDR = 999.;
+   int status = 0;
    
    edm::Handle<std::vector<reco::GenParticle>> pruned;
    iEvent.getByToken(genParticlesToken_, pruned);
    if (pruned.isValid()) {
-      reco::GenParticle gen;
-      // target GJets, DY, and Zinv MC
+      reco::GenParticle * gen;
+      // try to get the hard process photon or Z (DY/Zinv/GJets MC)
       bool haveGen = false;
       for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
-         if (iG->status()==23 && (iG->pdgId()==22 || iG->pdgId()==23)) {
-            gen = *iG;
+         if ((iG->pdgId()==22&&iG->status()==23) || (iG->pdgId()==23&&iG->status()==22)) {
+            gen = iG->clone();
             haveGen = true;
+            status = gen->status();
             break;
          }
       }
-      // target QCD MC (or anything else really)
+      // try to get the highest pT photon with a quark/lepton as mother (QCD)
+      if (!haveGen) {
+         double maxPt = 0.;
+         for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
+            if (iG->pdgId()==22 && std::abs(iG->mother()->pdgId())>=1 && std::abs(iG->mother()->pdgId())<=6) {
+               if (iG->pt() > maxPt) {
+                  gen = iG->clone();
+                  haveGen = true;
+                  status = gen->status();
+                  maxPt = iG->pt();
+               }
+            }
+         }
+      }
+      // try to get the highest pT photon
       if (!haveGen) {
          double maxPt = 0.;
          for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
             if (iG->pdgId()==22) {
                if (iG->pt() > maxPt) {
-                  gen = *iG;
-                  maxPt = iG->pt();
+                  gen = iG->clone();
                   haveGen = true;
+                  status = -gen->status();
+                  maxPt = iG->pt();
                }
             }
          }
@@ -60,7 +78,7 @@ void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             if (iG->status()==23) {
                int tempID = std::abs(iG->pdgId());
                if ((tempID>=1 && tempID<=6) || tempID==21) {
-                  double tempDR = deltaR(gen.p4(), iG->p4());
+                  double tempDR = deltaR(gen->p4(), iG->p4());
                   if (tempDR < minDR) minDR = tempDR;
                }
             }
@@ -70,8 +88,11 @@ void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       std::cout << "MinPhotonDeltaRDouble::Error tag invalid: " << "prunedGenParticles" << std::endl;
    }
 
-   auto htp = std::make_unique<double>(minDR);
-   iEvent.put(std::move(htp)); 
+   auto htp0 = std::make_unique<double>(minDR);
+   iEvent.put(std::move(htp0), "madMinPhotonDeltaR");
+
+   auto htp1 = std::make_unique<int>(status);
+   iEvent.put(std::move(htp1), "madMinDeltaRStatus");
 }
 
 //define this as a plug-in
