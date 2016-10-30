@@ -12,6 +12,22 @@ Log = JOBNAME_$(Cluster).condor
 notification = Never
 x509userproxy = $ENV(X509_USER_PROXY)
 Arguments = CMSSWVER OUTDIR SAMPLE NPART NSTART NFILES SCENARIO
+ONE_DAY = 864000
+periodic_hold = (\
+	( JobUniverse == 5 && JobStatus == 2 && CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 1.75 ) || \
+	( JobRunCount > 8 ) || \
+	( JobStatus == 5 && CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 6 ) || \
+	( DiskUsage > 38000000 ) || \
+	( ResidentSetSize > RequestMemory * 950 ) )
+periodic_hold_reason = strcat("Job held by PERIODIC_HOLD due to ", \
+	ifThenElse(( JobUniverse == 5 && JobStatus == 2 && CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 1.75 ), "runtime longer than 1.75 days", \
+	ifThenElse(( JobRunCount > 8 ), "JobRunCount greater than 8", \
+	ifThenElse(( JobStatus == 5 && CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 6 ), "hold time longer than 6 days", \
+	ifThenElse(( DiskUsage > 38000000 ), "disk usage greater than 38GB", \
+				"memory usage greater than 2GB")))), ".")
 on_exit_remove = (ExitBySignal == False) && (ExitCode == 0)
 on_exit_hold = ( (ExitBySignal == True) || (ExitCode != 0) )
+on_exit_hold_reason = strcat("Job held by ON_EXIT_HOLD due to ",\
+	ifThenElse((ExitBySignal == True), "exit by signal", \
+				strcat("exit code ",ExitCode)), ".")
 Queue 1

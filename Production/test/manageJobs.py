@@ -2,11 +2,12 @@ import sys,os,subprocess,glob,shutil
 from optparse import OptionParser
 
 class CondorJob:
-    def __init__(self, stdout, schedd):
+    def __init__(self, stdout, schedd, why):
         self.stdout = stdout
         self.name = "_".join(stdout.split('_')[:-1])
         self.num = stdout.split('_')[-1]+".0"
         self.schedd = schedd
+        self.why = why
 
 def makeJobQuery(options, prop, schedd=""):
     #make query
@@ -31,16 +32,21 @@ def getJobs(options, schedd=""):
     jobs = []
     if len(schedd)>0 and len(joblist)>0: print schedd
     for j in joblist:
-        jobs.append(CondorJob(j,schedd))
+        jtmp = CondorJob(j,schedd,"")
+        if options.why:
+            cmdw = "condor_q "+jtmp.num+" -long "+("-name "+jtmp.schedd if len(jtmp.schedd)>0 else "")+' | grep "^HoldReason = "'
+            holdreason = filter(None,subprocess.Popen(cmdw, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].split('\n'))
+            if len(holdreason)>0: jtmp = CondorJob(j,schedd,holdreason[0].replace("HoldReason = ",""))
+        jobs.append(jtmp)
     return jobs
         
 def printJobs(jobs, stdout=False):
     if len(jobs)==0: return
     
     if stdout:
-        print "\n".join([j.stdout for j in jobs])
+        print "\n".join([j.stdout+(" : "+j.why if len(j.why)>0 else "") for j in jobs])
     else:
-        print "\n".join([j.name for j in jobs])
+        print "\n".join([j.name+(" : "+j.why if len(j.why)>0 else "") for j in jobs])
 
 parser = OptionParser(add_help_option=False)
 parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs from this user (submitter) (default = %default)")
@@ -54,6 +60,7 @@ parser.add_option("-e", "--edit", dest="edit", default="", help="edit the redire
 parser.add_option("-s", "--resubmit", dest="resubmit", default=False, action="store_true", help="resubmit the selected jobs (default = %default)")
 parser.add_option("-k", "--kill", dest="kill", default=False, action="store_true", help="remove the selected jobs (default = %default)")
 parser.add_option("-d", "--dir", dest="dir", default="", help="directory for stdout files (used for backup when resubmitting) (default = %default)")
+parser.add_option("-w", "--why", dest="why", default=False, action="store_true", help="show why a job was held (default = %default)")
 parser.add_option("--help", dest="help", action="store_true", default=False, help='show this help message')
 (options, args) = parser.parse_args()
 
@@ -64,10 +71,14 @@ if options.help:
 #check for exclusive options
 if options.held and options.running:
     parser.error("Can't use -h and -r together, pick one!")
+if options.why and not options.held:
+    parser.error("Can only use -w with -h.")
 if options.resubmit and options.kill:
     parser.error("Can't use -s and -k together, pick one!")
 if options.all and (options.kill or options.resubmit):
     parser.error("Can't use -s or -k with -a.")
+if len(options.edit)>0 and options.edit[0:6] != "root://":
+    parser.error("Improper xrootd address: "+options.edit)
 
 jobs = []
 if options.all:
@@ -103,6 +114,9 @@ if options.resubmit:
                 num_logs = max([int(log.split("_")[-1].replace(".stdout","")) for log in prev_logs])+1
             #copy logfile
             shutil.copy2(options.dir+"/"+j.stdout+".stdout",backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
+        #reset counts to avoid removal
+        cmd3 = "condor_qedit "+j.num+" JobRunCount 0 NumJobStarts 0 NumShadowStarts 0"
+        subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         #edit redirector
         if len(options.edit)>0:
             cmd1 = "condor_q -long "+j.num+" | grep \"Args\""
@@ -112,7 +126,8 @@ if options.resubmit:
             if "root:" not in args[-1]: args.append(options.edit)
             else: args[-1] = options.edit
             cmd2 = "condor_qedit "+j.num+" Args '\""+" ".join(args[:])+"\"'"
-            subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()        subprocess.Popen(["condor_release",j.num], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+            subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        subprocess.Popen(["condor_release",j.num], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
 #or remove jobs
 elif options.kill:
     for j in jobs:
