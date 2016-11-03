@@ -56,7 +56,8 @@ parser.add_option("-r", "--running", dest="running", default=False, action="stor
 parser.add_option("-g", "--grep", dest="grep", default="", help="view jobs with [string] in the job name (default = %default)")
 parser.add_option("-v", "--vgrep", dest="vgrep", default="", help="view jobs without [string] in the job name (default = %default)")
 parser.add_option("-o", "--stdout", dest="stdout", default=False, action="store_true", help="print stdout filenames instead of job names (default = %default)")
-parser.add_option("-e", "--edit", dest="edit", default="", help="edit the redirector of the job (default = %default)")
+parser.add_option("-x", "--xrootd", dest="xrootd", default="", help="edit the xrootd redirector of the job (default = %default)")
+parser.add_option("-e", "--edit", dest="edit", default="", help="edit the ClassAds of the job (default = %default)")
 parser.add_option("-s", "--resubmit", dest="resubmit", default=False, action="store_true", help="resubmit the selected jobs (default = %default)")
 parser.add_option("-k", "--kill", dest="kill", default=False, action="store_true", help="remove the selected jobs (default = %default)")
 parser.add_option("-d", "--dir", dest="dir", default="", help="directory for stdout files (used for backup when resubmitting) (default = %default)")
@@ -77,9 +78,11 @@ if options.resubmit and options.kill:
     parser.error("Can't use -s and -k together, pick one!")
 if options.all and (options.kill or options.resubmit):
     parser.error("Can't use -s or -k with -a.")
-if len(options.edit)>0 and options.edit[0:6] != "root://":
-    parser.error("Improper xrootd address: "+options.edit)
-
+if len(options.xrootd)>0 and options.xrootd[0:7] != "root://":
+    parser.error("Improper xrootd address: "+options.xrootd)
+if len(options.xrootd)>0 and options.xrootd[-1]!='/':
+    options.xrootd += '/'
+    
 jobs = []
 if options.all:
     #loop over schedulers    
@@ -95,14 +98,24 @@ else:
 if options.resubmit:
     #create backup dir if desired
     backup_dir = ""
+    tmp_dir = ""
     if len(options.dir)>0:
         backup_dir = options.dir+"/backup"
         if not os.path.isdir(backup_dir):
             os.mkdir(backup_dir)
-
+        tmp_dir = options.dir+"/tmp"
+        if not os.path.isdir(tmp_dir):
+            os.mkdir(tmp_dir)
     for j in jobs:
+        logfile = options.dir+"/"+j.stdout+".stdout"
         #hold running jobs first (in case hung)
         if options.running:
+            if len(options.dir)>0:
+                logfile = tmp_dir+"/"+j.stdout+".stdout"
+                #generate a backup log from condor_tail
+                cmdt = "condor_tail -maxbytes 10000000 "+j.num
+                with open(logfile,'w') as logf:
+                    subprocess.Popen(cmdt, shell=True, stdout=logf, stderr=subprocess.PIPE).communicate()
             cmdh = "condor_hold "+j.num
             subprocess.Popen(cmdh, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         #backup log
@@ -113,18 +126,22 @@ if options.resubmit:
             if len(prev_logs)>0:
                 num_logs = max([int(log.split("_")[-1].replace(".stdout","")) for log in prev_logs])+1
             #copy logfile
-            shutil.copy2(options.dir+"/"+j.stdout+".stdout",backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
+            shutil.copy2(logfile,backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
         #reset counts to avoid removal
         cmd3 = "condor_qedit "+j.num+" JobRunCount 0 NumJobStarts 0 NumShadowStarts 0"
         subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-        #edit redirector
+        #any other classad edits
         if len(options.edit)>0:
+            cmd4 = "condor_qedit "+j.num+" "+options.edit
+            subprocess.Popen(cmd4, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+        #edit redirector
+        if len(options.xrootd)>0:
             cmd1 = "condor_q -long "+j.num+" | grep \"Args\""
             args = filter(None,subprocess.Popen(cmd1, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()[0].split('\n'))
             args = args[0].split(' ')[2:]
             args = [a.replace("\"","").rstrip() for a in args]
-            if "root:" not in args[-1]: args.append(options.edit)
-            else: args[-1] = options.edit
+            if "root:" not in args[-1]: args.append(options.xrootd)
+            else: args[-1] = options.xrootd
             cmd2 = "condor_qedit "+j.num+" Args '\""+" ".join(args[:])+"\"'"
             subprocess.Popen(cmd2, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
         subprocess.Popen(["condor_release",j.num], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
