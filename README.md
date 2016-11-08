@@ -12,7 +12,7 @@ git cms-init
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch btv-cmssw BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV3-WithWeightFiles-v1_from-CMSSW_8_0_8_patch1
-git cms-merge-topic -u kpedro88:METfix8012
+git cms-merge-topic -u kpedro88:METfix8022
 git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
 git cms-merge-topic -u kpedro88:storeJERFactor8022
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
@@ -31,7 +31,9 @@ The available scenarios are:
 5. `2016B`: for 2016B PromptReco 25ns data  
 6. `2016CD`: for 2016C and 2016D PromptReco 25ns data  
 7. `2016EF`: for 2016E and 2016F PromptReco 25ns data  
-8. `2016G`: for 2016G PromptReco 25ns data
+8. `2016G`: for 2016G PromptReco 25ns data  
+9. `2016H`: for 2016H PromptReco 25ns data  
+10. `2016ReReco23Sep`: for 2016 ReReco (23Sep) 25ns data, periods B-G
 
 ## Unit Tests (Interactive Runs)
 
@@ -176,6 +178,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `tagname`: tag name for collections that can have different tags for data or MC (default="PAT")
 * `geninfo`: switch to enable use of generator information, should only be used for MC (default=True)
 * `fastsim`: switch to enable special settings for SUSY signal scans produced with FastSim (default=False)
+* `pmssm`: switch to enable special settings for pMSSM signal scans (default=False)
 * `signal`: switch to enable assessment of signal systematics (default=False) (currently unused)
 * `jsonfile`: name of JSON file to apply to data
 * `jecfile`: name of a database file from which to get JECs (default="")
