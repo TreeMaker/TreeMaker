@@ -19,6 +19,8 @@ class Scenario:
             self.set_vars("80X_dataRun2_Prompt_v11","RECO",False,False,False,False,"data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt","data/jec/Spring16_25nsV6_DATA",True,"","","Run2_25ns")
         elif sname == "2016H":
             self.set_vars("80X_dataRun2_Prompt_v14","RECO",False,False,False,False,"data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt","data/jec/Spring16_25nsV6_DATA",False,"","","Run2_25ns")
+        elif sname == "2016ReReco23Sep":
+            self.set_vars("80X_dataRun2_2016SeptRepro_v3","RECO",False,False,False,False,"data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON_NoL1T.txt","data/jec/Spring16_25nsV6_DATA",False,"","","Run2_25ns")
         else: #if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 

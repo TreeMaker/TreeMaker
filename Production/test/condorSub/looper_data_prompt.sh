@@ -20,17 +20,15 @@ fi
 
 ./FScheck.sh ${CHECKARGS}
 
-#### global ReReco scenario
-SCENARIO=2016ReReco23Sep
-
-#### Run2016B ReReco
+#### Run2016B Prompt RECO
+SCENARIO=2016B
 SAMPLES=(
-Run2016B-23Sep2016-v2.HTMHT \
-Run2016B-23Sep2016-v2.JetHT \
-Run2016B-23Sep2016-v3.MET \
-Run2016B-23Sep2016-v3.SingleElectron \
-Run2016B-23Sep2016-v2.SingleMuon \
-Run2016B-23Sep2016-v2.SinglePhoton \
+Run2016B-PromptReco-v2.HTMHT \
+Run2016B-PromptReco-v2.JetHT \
+Run2016B-PromptReco-v2.MET \
+Run2016B-PromptReco-v2.SingleElectron \
+Run2016B-PromptReco-v2.SingleMuon \
+Run2016B-PromptReco-v2.SinglePhoton \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
@@ -38,70 +36,75 @@ for SAMPLE in ${SAMPLES[@]}; do
 done
 
 
-#### Run2016C ReReco
+#### Run2016C Prompt RECO
+SCENARIO=2016CD
 SAMPLES=(
-Run2016C-23Sep2016-v1.HTMHT \
-Run2016C-23Sep2016-v1.JetHT \
-Run2016C-23Sep2016-v1.MET \
-Run2016C-23Sep2016-v1.SingleElectron \
-Run2016C-23Sep2016-v1.SingleMuon \
-Run2016C-23Sep2016-v1.SinglePhoton \
+Run2016C-PromptReco-v2.HTMHT \
+Run2016C-PromptReco-v2.JetHT \
+Run2016C-PromptReco-v2.MET \
+Run2016C-PromptReco-v2.SingleElectron \
+Run2016C-PromptReco-v2.SingleMuon \
+Run2016C-PromptReco-v2.SinglePhoton \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
 
-#### Run2016D ReReco
+#### Run2016D Prompt RECO
+SCENARIO=2016CD
 SAMPLES=(
-Run2016D-23Sep2016-v1.HTMHT \
-Run2016D-23Sep2016-v1.JetHT \
-Run2016D-23Sep2016-v1.MET \
-Run2016D-23Sep2016-v1.SingleElectron \
-Run2016D-23Sep2016-v1.SingleMuon \
-Run2016D-23Sep2016-v1.SinglePhoton \
+Run2016D-PromptReco-v2.HTMHT \
+Run2016D-PromptReco-v2.JetHT \
+Run2016D-PromptReco-v2.MET \
+Run2016D-PromptReco-v2.SingleElectron \
+Run2016D-PromptReco-v2.SingleMuon \
+Run2016D-PromptReco-v2.SinglePhoton \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
 
-#### Run2016E ReReco
+#### Run2016E Prompt RECO
+SCENARIO=2016EF
 SAMPLES=(
-Run2016E-23Sep2016-v1.HTMHT \
-Run2016E-23Sep2016-v1.JetHT \
-Run2016E-23Sep2016-v1.MET \
-Run2016E-23Sep2016-v1.SingleElectron \
-Run2016E-23Sep2016-v1.SingleMuon \
-Run2016E-23Sep2016-v1.SinglePhoton \
+Run2016E-PromptReco-v2.HTMHT \
+Run2016E-PromptReco-v2.JetHT \
+Run2016E-PromptReco-v2.MET \
+Run2016E-PromptReco-v2.SingleElectron \
+Run2016E-PromptReco-v2.SingleMuon \
+Run2016E-PromptReco-v2.SinglePhoton \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
 
-#### Run2016F ReReco
+#### Run2016F Prompt RECO
+SCENARIO=2016EF
 SAMPLES=(
-Run2016F-23Sep2016-v1.HTMHT \
-Run2016F-23Sep2016-v1.JetHT \
-Run2016F-23Sep2016-v1.MET \
-Run2016F-23Sep2016-v1.SingleElectron \
-Run2016F-23Sep2016-v1.SingleMuon \
-Run2016F-23Sep2016-v1.SinglePhoton \
+Run2016F-PromptReco-v1.HTMHT \
+Run2016F-PromptReco-v1.JetHT \
+Run2016F-PromptReco-v1.MET \
+Run2016F-PromptReco-v1.SingleElectron \
+Run2016F-PromptReco-v1.SingleMuon \
+Run2016F-PromptReco-v1.SinglePhoton \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do
   python generateSubmission.py -n 1 -s -o ${OUTPUTDIR} -c ${SCENARIO} -f ${SAMPLE} -d
 done
 
-#### Run2016G ReReco
+#### Run2016G Prompt RECO
+SCENARIO=2016G
 SAMPLES=(
-Run2016G-23Sep2016-v1.HTMHT \
-Run2016G-23Sep2016-v1.JetHT \
-Run2016G-23Sep2016-v1.MET \
-Run2016G-23Sep2016-v1.SingleElectron \
-Run2016G-23Sep2016-v1.SingleMuon \
-Run2016G-23Sep2016-v1.SinglePhoton \
+Run2016G-PromptReco-v1.HTMHT \
+Run2016G-PromptReco-v1.JetHT \
+Run2016G-PromptReco-v1.MET \
+Run2016G-PromptReco-v1.SingleElectron \
+Run2016G-PromptReco-v1.SingleMuon \
+Run2016G-PromptReco-v1.SinglePhoton \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do

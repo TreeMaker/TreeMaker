@@ -54,6 +54,8 @@ mytests.append(makeTest("2016CD","MET16D" if len(name)==0 else name,numevents,co
 mytests.append(makeTest("2016EF","MET16E" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016E-PromptReco-v2.MET",nstart=2,nfiles=10))
 mytests.append(makeTest("2016EF","MET16F" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016F-PromptReco-v1.MET",nstart=23,nfiles=2))
 mytests.append(makeTest("2016G","MET16G" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016G-PromptReco-v1.MET",nstart=21,nfiles=1))
+mytests.append(makeTest("2016H","MET16H" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016H-PromptReco-v2.MET",nstart=30,nfiles=2))
+mytests.append(makeTest("2016ReReco23Sep","MET16ReReco" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016C-23Sep2016-v1.MET",nstart=0,nfiles=10))
 
 if test<0 or test>len(mytests):
     print "Predefined tests:"
