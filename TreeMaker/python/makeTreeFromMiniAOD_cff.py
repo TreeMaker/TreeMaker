@@ -270,26 +270,29 @@ pmssm=False
         JetTag = JetTag,
         jecUncDir = cms.int32(0)
     )
-    # JER factors - central, up, down
-    from TreeMaker.Utils.smearedpatjet_cfi import SmearedPATJetProducer
-    process.jerFactor = SmearedPATJetProducer.clone(
-        src = JetTag,
-        variation = cms.int32(0),
-        store_factor = cms.bool(True)
-    )
-    process.jerFactorUp = SmearedPATJetProducer.clone(
-        src = JetTag,
-        variation = cms.int32(1),
-        store_factor = cms.bool(True)
-    )
-    process.jerFactorDown = SmearedPATJetProducer.clone(
-        src = JetTag,
-        variation = cms.int32(-1),
-        store_factor = cms.bool(True)
-    )
+    _infosToAdd = ['jecUnc']
+    if geninfo:
+        # JER factors - central, up, down
+        from TreeMaker.Utils.smearedpatjet_cfi import SmearedPATJetProducer
+        process.jerFactor = SmearedPATJetProducer.clone(
+            src = JetTag,
+            variation = cms.int32(0),
+            store_factor = cms.bool(True)
+        )
+        process.jerFactorUp = SmearedPATJetProducer.clone(
+            src = JetTag,
+            variation = cms.int32(1),
+            store_factor = cms.bool(True)
+        )
+        process.jerFactorDown = SmearedPATJetProducer.clone(
+            src = JetTag,
+            variation = cms.int32(-1),
+            store_factor = cms.bool(True)
+        )
+        _infosToAdd.extend(['jerFactor','jerFactorUp','jerFactorDown'])
     # add userfloat & update tag
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
-    process, JetTag = addJetInfo(process, JetTag, ['jecUnc','jerFactor','jerFactorUp','jerFactorDown'], [])
+    process, JetTag = addJetInfo(process, JetTag, _infosToAdd, [])
 
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks

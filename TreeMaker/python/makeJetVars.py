@@ -153,6 +153,8 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
         JetsProperties.bDiscriminatorMVA = cms.vstring('pfCombinedMVAV2BJetTags')
         if storeProperties==1: 
             JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","muonEnergyFraction","chargedHadronEnergyFraction","partonFlavor","hadronFlavor")
+        if storeProperties>1 and geninfo:
+            JetsProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
         setattr(process,"JetsProperties"+suff,JetsProperties)
         process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
                                                 'JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
@@ -167,12 +169,14 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
                                                     'JetsProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
                                                     'JetsProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
                                                     'JetsProperties'+suff+':jecUnc(Jets'+suff+'_jecUnc)',
-                                                    'JetsProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
-                                                    'JetsProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
-                                                    'JetsProperties'+suff+':jerFactorDown(Jets'+suff+'_jerFactorDown)',
                                                     'JetsProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
                                                     'JetsProperties'+suff+':qgPtD(Jets'+suff+'_qgPtD)',
                                                     'JetsProperties'+suff+':qgAxis2(Jets'+suff+'_qgAxis2)'])
+            if geninfo:
+                process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
+                                                        'JetsProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
+                                                        'JetsProperties'+suff+':jerFactorDown(Jets'+suff+'_jerFactorDown)'])
+
             process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
                                                  'JetsProperties'+suff+':electronMultiplicity(Jets'+suff+'_electronMultiplicity)',
                                                  'JetsProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
