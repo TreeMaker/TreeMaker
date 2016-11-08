@@ -12,6 +12,7 @@ Log = JOBNAME_$(Cluster).condor
 notification = Never
 x509userproxy = $ENV(X509_USER_PROXY)
 Arguments = CMSSWVER OUTDIR SAMPLE NPART NSTART NFILES SCENARIO
+want_graceful_removal = true
 ONE_DAY = 864000
 periodic_hold = (\
 	( JobUniverse == 5 && JobStatus == 2 && CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 1.75 ) || \
