@@ -25,12 +25,12 @@ SCENARIO=2016ReReco23Sep
 
 #### Run2016B ReReco
 SAMPLES=(
-Run2016B-23Sep2016-v2.HTMHT \
-Run2016B-23Sep2016-v2.JetHT \
+Run2016B-23Sep2016-v3.HTMHT \
+Run2016B-23Sep2016-v3.JetHT \
 Run2016B-23Sep2016-v3.MET \
 Run2016B-23Sep2016-v3.SingleElectron \
-Run2016B-23Sep2016-v2.SingleMuon \
-Run2016B-23Sep2016-v2.SinglePhoton \
+Run2016B-23Sep2016-v3.SingleMuon \
+Run2016B-23Sep2016-v3.SinglePhoton \
 )
 
 for SAMPLE in ${SAMPLES[@]}; do

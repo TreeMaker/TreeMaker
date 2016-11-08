@@ -1,11 +1,11 @@
 dataSamples = [
     # 2016B datasets: prompt reco
-    [ "HTMHT_2016B",          "Run2016B-23Sep2016-v2.HTMHT_*"] ,
-    [ "JetHT_2016B",          "Run2016B-23Sep2016-v2.JetHT_*"] ,
+    [ "HTMHT_2016B",          "Run2016B-23Sep2016-v3.HTMHT_*"] ,
+    [ "JetHT_2016B",          "Run2016B-23Sep2016-v3.JetHT_*"] ,
     [ "MET_2016B",            "Run2016B-23Sep2016-v3.MET_*"] ,
     [ "SingleElectron_2016B", "Run2016B-23Sep2016-v3.SingleElectron_*"] ,
-    [ "SingleMuon_2016B",     "Run2016B-23Sep2016-v2.SingleMuon_*"] ,
-    [ "SinglePhoton_2016B",   "Run2016B-23Sep2016-v2.SinglePhoton_*"] ,
+    [ "SingleMuon_2016B",     "Run2016B-23Sep2016-v3.SingleMuon_*"] ,
+    [ "SinglePhoton_2016B",   "Run2016B-23Sep2016-v3.SinglePhoton_*"] ,
     # 2016C datasets: prompt reco
     [ "HTMHT_2016C",          "Run2016C-23Sep2016-v1.HTMHT_*"] ,
     [ "JetHT_2016C",          "Run2016C-23Sep2016-v1.JetHT_*"] ,
