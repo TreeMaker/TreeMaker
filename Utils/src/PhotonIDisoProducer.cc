@@ -144,14 +144,15 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   // for rho corrections to the photon isolation
   // variables. 
   // - - - - - - - - - - - - - - - - - - - - 
+  //addEffA(etaLow_, etaHigh_, effA_pfCh_, effA_pfNu_, effA_pfGa_); 
   effArea effAreas;
-  effAreas.addEffA( 0.0, 1.0, 0.0234, 0.0053, 0.078 );
-  effAreas.addEffA( 1.0, 1.479, 0.0189, 0.0130, 0.0629 );
-  effAreas.addEffA( 1.479, 2.0, 0.0171, 0.0057, 0.0264 );
-  effAreas.addEffA( 2.0, 2.2, 0.0129, 0.0070, 0.0462 );
-  effAreas.addEffA( 2.2, 2.3, 0.0110, 0.0152, 0.0740 );
-  effAreas.addEffA( 2.3, 2.4, 0.0074, 0.0232, 0.0924 );
-  effAreas.addEffA( 2.4, 99., 0.0035, 0.1709, 0.1484 );
+  effAreas.addEffA(0.,    1.0,   0.0, 0.0599, 0.1271);
+  effAreas.addEffA(1.0,   1.479, 0.0, 0.0819, 0.1101);
+  effAreas.addEffA(1.479, 2.0,   0.0, 0.0696, 0.0756);
+  effAreas.addEffA(2.0,   2.2,   0.0, 0.0360, 0.1175);
+  effAreas.addEffA(2.2,   2.3,   0.0, 0.0360, 0.1498);
+  effAreas.addEffA(2.3,   2.4,   0.0, 0.0462, 0.1857);
+  effAreas.addEffA(2.4,   99.,   0.0, 0.0656, 0.2183);
 
   /// setup cluster tools
   noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
