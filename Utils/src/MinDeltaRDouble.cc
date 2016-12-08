@@ -44,16 +44,19 @@ void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             break;
          }
       }
-      // try to get the highest pT photon with a quark/lepton as mother (QCD)
+      // try to get the highest pT photon with a parton mother (QCD)
       if (!haveGen) {
          double maxPt = 0.;
          for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
-            if (iG->pdgId()==22 && std::abs(iG->mother()->pdgId())>=1 && std::abs(iG->mother()->pdgId())<=6) {
-               if (iG->pt() > maxPt) {
-                  gen = iG->clone();
-                  haveGen = true;
-                  status = gen->status();
-                  maxPt = iG->pt();
+            if (iG->pdgId()==22) {
+               const int motherID = std::abs(iG->mother()->pdgId());
+               if ((motherID>=1 && motherID<=6) || motherID==21) {
+                  if (iG->pt() > maxPt) {
+                     gen = iG->clone();
+                     haveGen = true;
+                     status = gen->status();
+                     maxPt = iG->pt();
+                  }
                }
             }
          }
@@ -76,7 +79,7 @@ void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (haveGen) {
          for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
             if (iG->status()==23) {
-               int tempID = std::abs(iG->pdgId());
+               const int tempID = std::abs(iG->pdgId());
                if ((tempID>=1 && tempID<=6) || tempID==21) {
                   double tempDR = deltaR(gen->p4(), iG->p4());
                   if (tempDR < minDR) minDR = tempDR;
