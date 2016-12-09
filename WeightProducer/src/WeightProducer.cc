@@ -90,23 +90,21 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
    _genEvtTag(edm::InputTag("generator")),
    _puInfoTag(edm::InputTag("slimmedAddPileupInfo")),
-   _SusyMotherTag(edm::InputTag("SusyScan:SusyMotherMass")),
+   ////_SusyMotherTag(edm::InputTag("SusyScan:SusyMotherMass")),
+   _SusyMotherTag(iConfig.getParameter<edm::InputTag> ("modelIdentifier")),
    pu_central(0), pu_up(0), pu_down(0), _weightingMethod(other)
 {
-
    // Option 1: weight constant, as defined in cfg file
    if (_startWeight >= 0) {
       _weightingMethod = StartWeight;
       std::cout << "WeightProducer: Using constant event weight of " << _startWeight << std::endl;
    }
-
    // Option 2: weight from event
    else if (_weightingMethodName == "FromEvent") {
       _weightingMethod = FromEvent;
       std::cout << "WeightProducer: Using weight from event" << std::endl;
       _weightTok = consumes<double>(_weightName);
    }
-
    // Option 3: compute new weight
    else if (_weightingMethodName == "Constant") {
       _weightingMethod = Constant;
@@ -117,7 +115,6 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       std::cout << "          Number of events : " << _NumberEvents << std::endl;
       _genEvtTok = consumes<GenEventInfoProduct>(_genEvtTag);
    }
-   
    // Option 4: assign cross section for FastSim
    else if (_weightingMethodName == "FastSim") {
       _weightingMethod = FastSim;
@@ -125,7 +122,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       std::cout << "  Target luminosity (1/pb) : " << _lumi << std::endl;
       std::cout << "          Number of events : " << _NumberEvents << std::endl;
       _SusyMotherTok = consumes<double>(_SusyMotherTag);
-     
+      std::cout << "entered the weight producer E" << std::endl;
       //setup xsec map
       std::string inputXsecName = iConfig.getParameter<std::string> ("XsecFile");
 	  bool foundXsec = true;
@@ -142,11 +139,9 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
                   double mass_tmp;
                   std::stringstream s0(items[0]);
                   s0 >> mass_tmp;
-                  
                   double xsec_tmp;
                   std::stringstream s1(items[1]);
                   s1 >> xsec_tmp;
-                  
                   //insert into map
                   _FastSimXsec.emplace(mass_tmp,xsec_tmp);
                }
@@ -155,13 +150,11 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
          else foundXsec = false;
       }
       else foundXsec = false;
-      
       if(!foundXsec) {
          std::cout << "WARNING: WeightProducer: Could not open FastSim xsec file: " << inputXsecName << std::endl;
          _weightingMethod = other;
       }
    }
-
    // No option specified
    else {
       std::cerr << "WARNING: WeightProducer: No weighting option specified. Using event weights of 1" << std::endl;
@@ -216,7 +209,6 @@ WeightProducer::~WeightProducer() {
 void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
 
    double resultWeight = 1.;
-
    //Option 1: constant start weight from config file
    if (_weightingMethod == StartWeight) {
       resultWeight = _startWeight;
@@ -232,7 +224,6 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    //Option 3: weighting from lumi, xs, and num evts
    else if (_weightingMethod == Constant) {
       resultWeight = _weightFactor;
-      
       //account for negative weights
       edm::Handle<GenEventInfoProduct> genEvtInfoHandle;
       iEvent.getByToken(_genEvtTok, genEvtInfoHandle);

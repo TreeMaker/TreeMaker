@@ -1,5 +1,4 @@
 import FWCore.ParameterSet.Config as cms
-
 #Three options to define/calculate an event weight:
 weightProducer = cms.EDProducer('WeightProducer',
    #Option 1:
@@ -13,9 +12,10 @@ weightProducer = cms.EDProducer('WeightProducer',
    XS = cms.double(1.),                  # XS in pb
    NumberEvts = cms.double(-1.),         
    Lumi = cms.double(1.),              # Lumi in 1/pb
-
+   
    #Option 4: text file of mother mass -> xsec for FastSim
    XsecFile = cms.string(""),
+   modelIdentifier = cms.InputTag("SusyScan:SusyMotherMass"),
    
    # Data PU distribution. If a file name is specified,
    # a multiplicative PU weight factor is applied.
