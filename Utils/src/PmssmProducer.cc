@@ -68,7 +68,7 @@ double PmssmProducer::getXsec(double pmssmid)
 {
   double xsec = -1;
   std::ifstream fileInput;
-  std::string line;//use a sprintf with pmssmid
+  std::string line;
   char search [30];
   sprintf (search, "%d", int(pmssmid));
   fileInput.open(_xsecFilename.c_str());
@@ -102,8 +102,7 @@ void PmssmProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if(comment.back()=='\n') comment.pop_back();
 	std::vector<std::string> nameblocks;
 	process(comment, '_', nameblocks);
-	char character_string [30];
-	sprintf (character_string, "%s%s", nameblocks[2].c_str(),nameblocks[3].c_str());
+	std::string character_string = nameblocks[2]+nameblocks[3];
 	std::stringstream s0(character_string);
 	s0 >> pmssmId;
 	if(debug_) std::cout << comment << std::endl;

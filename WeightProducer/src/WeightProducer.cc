@@ -90,7 +90,6 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
    _genEvtTag(edm::InputTag("generator")),
    _puInfoTag(edm::InputTag("slimmedAddPileupInfo")),
-   ////_SusyMotherTag(edm::InputTag("SusyScan:SusyMotherMass")),
    _SusyMotherTag(iConfig.getParameter<edm::InputTag> ("modelIdentifier")),
    pu_central(0), pu_up(0), pu_down(0), _weightingMethod(other)
 {
@@ -122,7 +121,6 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       std::cout << "  Target luminosity (1/pb) : " << _lumi << std::endl;
       std::cout << "          Number of events : " << _NumberEvents << std::endl;
       _SusyMotherTok = consumes<double>(_SusyMotherTag);
-      std::cout << "entered the weight producer E" << std::endl;
       //setup xsec map
       std::string inputXsecName = iConfig.getParameter<std::string> ("XsecFile");
 	  bool foundXsec = true;
