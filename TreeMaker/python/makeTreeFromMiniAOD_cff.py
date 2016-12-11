@@ -112,11 +112,9 @@ pmssm=False
         process.Pmssm = PmssmProducer.clone(
             shouldScan = cms.bool(pmssm),
             debug = cms.bool(False),
-            do_xsec = cms.bool(False),#Set to True when using this producer to get the cross section
             xsecFilename = cms.string('data/pmssm-xsecs-scan1.txt'),
         )
         VarsDouble.extend(['Pmssm:PmssmId'])
-        #VarsDouble.extend(['Pmssm:PmssmXsec'])#uncomment when using this producer to get the xsec
 
 
     ## ----------------------------------------------------------------------------------------------
