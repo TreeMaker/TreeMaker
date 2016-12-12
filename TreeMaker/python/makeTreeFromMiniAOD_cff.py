@@ -101,28 +101,28 @@ pmssm=False
         # needed for WeightProducer
         from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
         process.SusyScan = SusyScanProducer.clone(
-            shouldScan = cms.bool(fastsim and signal),
+            shouldScan = cms.bool(fastsim and signal and (not pmssm)),
             debug = cms.bool(False),
             isLHE = cms.bool(False)
         )
         VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
-
+        
         # pMSSM ID for identifying the pMSSM model point
         from TreeMaker.Utils.pmssm_cfi import PmssmProducer
         process.Pmssm = PmssmProducer.clone(
             shouldScan = cms.bool(pmssm),
-            debug = cms.bool(False)
+            debug = cms.bool(False),
+            xsecFilename = cms.string('data/pmssm-xsecs-scan1.txt'),
         )
-        VectorString.extend(['Pmssm:PmssmId'])
-        #VarsDouble.extend(['Pmssm:PmssmXsec'])#this to be uncommented shortly after a Prospino scan.
+        VarsDouble.extend(['Pmssm:PmssmId'])
 
-    
+
     ## ----------------------------------------------------------------------------------------------
     ## WeightProducer
     ## ----------------------------------------------------------------------------------------------
     if geninfo:
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
-        process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim and signal)
+        process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim and signal, pmssm)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string(pufile)
         VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
