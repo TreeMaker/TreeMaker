@@ -353,7 +353,7 @@ bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx){
                   muon.combinedQuality().chi2LocalPosition < 12 && 
                   muon.combinedQuality().trkKink < 20; 
   bool isMedium = muon.isLooseMuon() && 
-                  muon.innerTrack()->validFraction() > 0.49 && 
+                  muon.innerTrack()->validFraction() > 0.8 && 
                   muon.segmentCompatibility() > (goodGlob ? 0.303 : 0.451);
   bool isMediumPlus = isMedium && muon.dB() < 0.2 && fabs(muon.muonBestTrack()->dz(vtx.position())) < 0.5;
   return isMediumPlus; 
