@@ -47,7 +47,7 @@ private:
 PmssmProducer::PmssmProducer(const edm::ParameterSet& iConfig) : 
   getterOfProducts_(edm::ProcessMatch("*"), this), 
   shouldScan_(iConfig.getParameter<bool>("shouldScan")), 
-  debug_(iConfig.getParameter<bool>("debug")),
+  debug_(iConfig.getParameter<bool>("debug"))
 {
   callWhenNewProductsRegistered(getterOfProducts_);
   produces<double >("PmssmId");

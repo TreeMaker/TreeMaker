@@ -126,7 +126,8 @@ if options.resubmit:
             if len(prev_logs)>0:
                 num_logs = max([int(log.split("_")[-1].replace(".stdout","")) for log in prev_logs])+1
             #copy logfile
-            shutil.copy2(logfile,backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
+            if os.path.isfile(logfile):
+                shutil.copy2(logfile,backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
         #reset counts to avoid removal
         cmd3 = "condor_qedit "+j.num+" JobRunCount 0 NumJobStarts 0 NumShadowStarts 0"
         subprocess.Popen(cmd3, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
