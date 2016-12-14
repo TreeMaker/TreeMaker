@@ -5,6 +5,9 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 readFiles.extend( [
+       '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/120000/0E414D75-06B9-E611-8B4D-0CC47A78A4A0.root',
+       '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/120000/52CE9056-06B9-E611-BBFE-0CC47A4D7600.root',
+       '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/120000/EA5D4B7E-06B9-E611-93EC-0025905A48D8.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/001B31C0-248C-E611-B7BD-0025905B860E.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/001C375D-098B-E611-9453-0025905B85E8.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/0072CC9F-4E8B-E611-B724-90B11C28232B.root',
@@ -257,11 +260,11 @@ readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/42FDF249-6F8B-E611-A284-0242AC130003.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/4407BA19-818B-E611-A1B5-38EAA7A0EEF8.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/445E67C1-3D8C-E611-9742-0CC47A7C3420.root',
+] )
+readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/4471945A-B48C-E611-97CD-0025905A612C.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/44B41E0B-5A87-E611-B2C5-00259073E51E.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/44C7F4C8-228B-E611-9C89-001E67792576.root',
-] )
-readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/44E9F7E1-B08C-E611-8D2F-0CC47A4C8F18.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/44EF9581-098C-E611-B31F-90B11C27E141.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/4601E0FA-418B-E611-9D56-0242AC130005.root',
@@ -514,11 +517,11 @@ readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8C42FC40-BC8B-E611-863F-008CFA1979BC.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8C4AC946-F18A-E611-8F0D-0CC47A7C3472.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8C6E0982-B98C-E611-AE29-0025905A48F2.root',
+] )
+readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8C7756EF-5F8C-E611-851F-0242AC130003.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8C89CC3E-248C-E611-A602-003048CB7DA2.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8C8CB9A9-A08C-E611-8670-0242AC130003.root',
-] )
-readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8C8FB983-748B-E611-863B-0CC47A4C8E64.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8E2513B3-2F87-E611-AE73-FA163ECBC3A4.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/8E35C300-008B-E611-B006-0025905C42F2.root',
@@ -771,11 +774,11 @@ readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D6AA125A-3487-E611-8287-0025905C96A6.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D6B91B28-C38A-E611-8D9B-0025905A48F0.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D81ACBE6-788B-E611-89C3-0242AC130004.root',
+] )
+readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D83072F0-2987-E611-A821-FA163E8F8452.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D839A2EE-268A-E611-BD6A-0025905745E8.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D839D2A9-258C-E611-A86F-0CC47A78A458.root',
-] )
-readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D8541EDE-2D89-E611-B64B-0CC47A4D768C.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D8564040-228C-E611-B7B6-0CC47A4D75F0.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/50000/D85A0F68-E68B-E611-96CF-FA163EC5FCBC.root',
@@ -962,7 +965,6 @@ readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/70000/16DF1B32-D58B-E611-9CC3-901B0E5427B0.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/70000/244F69EF-9687-E611-8D0E-02163E013BF0.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/70000/24F45DA4-178B-E611-88D2-0CC47A4C8E8A.root',
-       '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/70000/285AB153-918B-E611-9D18-008CFAF2931E.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/70000/2C6EB48F-D987-E611-B3D0-485B39897242.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/70000/2E0C92A0-158B-E611-9261-001E67E6F5EE.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/70000/303DE9CD-C68B-E611-A9E0-44A842CFC9B2.root',
@@ -1028,11 +1030,11 @@ readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/0A60E331-4E90-E611-8F32-0CC47A4D762E.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/0C40370E-5090-E611-841A-0025905A608C.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/10A7FB01-5090-E611-B736-0CC47A4C8EC8.root',
+] )
+readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/167DB913-4F90-E611-9E02-0025905B85EE.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/1C227701-4E90-E611-912E-0CC47A7C3638.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/224BA738-4E90-E611-895E-0025905A608E.root',
-] )
-readFiles.extend( [
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/2629D730-4E90-E611-8FEB-0CC47A4D7616.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/26340E35-4E90-E611-B0C2-0025905A6104.root',
        '/store/data/Run2016C/SingleElectron/MINIAOD/23Sep2016-v1/80000/2CDA4B17-5090-E611-9853-0CC47A78A45A.root',
