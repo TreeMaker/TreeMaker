@@ -65,7 +65,7 @@ private:
    edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
    std::vector<edm::EDGetTokenT<edm::View<reco::Candidate>>> SkipTok_;
    double maxEta_;
-   double maxNeutralFraction_, maxPhotonFraction_, minChargedFraction_, maxChargedEMFraction_, maxPhotonFractionHF_;
+   double maxNeutralFraction_, maxNeutralFractionHE_, maxPhotonFraction_, minPhotonFractionHE_, maxPhotonFractionHF_, minChargedFraction_, maxChargedEMFraction_;
    int minNconstituents_, minNneutralsHE_, minNneutralsHF_, minNcharged_;
    double jetPtFilter_;
    bool saveAllId_, saveAllPt_, ExcludeLeptonIsoTrackPhotons_, TagMode_, invertJetPtFilter_;
@@ -99,7 +99,9 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    minNneutralsHF_ = iConfig.getParameter <int> ("minNneutralsHF");
    minNcharged_ = iConfig.getParameter <int> ("minNcharged");
    maxNeutralFraction_ = iConfig.getParameter <double> ("maxNeutralFraction");
+   maxNeutralFractionHE_ = iConfig.getParameter <double> ("maxNeutralFractionHE");
    maxPhotonFraction_ = iConfig.getParameter <double> ("maxPhotonFraction");
+   minPhotonFractionHE_ = iConfig.getParameter <double> ("minPhotonFractionHE");
    maxPhotonFractionHF_ = iConfig.getParameter <double> ("maxPhotonFractionHF");
    minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
    maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
@@ -212,7 +214,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             if(std::abs(Jets->at(i).eta()) < 2.4) good &= chgfrac>minChargedFraction_ && chgmulti>minNcharged_ && chgEMfrac<maxChargedEMFraction_;
          }
          else if(std::abs(Jets->at(i).eta()) <= 3.0){
-            good = phofrac<maxPhotonFractionHF_ && neumulti>minNneutralsHE_;
+            good = phofrac>minPhotonFractionHE_ && neufrac<maxNeutralFractionHE_ && neumulti>minNneutralsHE_;
          }
          else {
             good = phofrac<maxPhotonFractionHF_ && neumulti>minNneutralsHF_;
