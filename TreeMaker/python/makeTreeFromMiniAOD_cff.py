@@ -177,6 +177,20 @@ pmssm=False
         VectorInt.append("genParticles:Status(GenParticles_Status)")
         VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
         VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
+        
+        # for ttbar pT reweighting
+        # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
+        process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
+        process.initSubset.src = cms.InputTag("prunedGenParticles")
+        process.decaySubset.src = cms.InputTag("prunedGenParticles")
+        process.decaySubset.runMode = cms.string("Run2")
+        process.genTops = cms.EDProducer("GenTopProducer",
+            genEvent = cms.InputTag("genEvt"),
+            a = cms.double(0.0615),
+            b = cms.double(-0.0005)
+        )
+        VectorRecoCand.append("genTops(GenTops)")
+        VarsDouble.append("genTops:weight(GenTopWeight)")
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
