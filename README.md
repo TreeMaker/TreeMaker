@@ -190,3 +190,4 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `scenarioName`: name of the scenario for the sample, as described above (default="")
 * `era`: CMS detector era for the dataset
 * `redir`: xrootd redirector or storage element address (default=root://cmsxrootd.fnal.gov/)
+* `dump`: equivalent to `edmConfigDump`, but accounts for all command-line settings; exits without running (default=False)
