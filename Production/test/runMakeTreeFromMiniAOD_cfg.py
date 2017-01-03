@@ -1,3 +1,5 @@
+import sys
+
 # Read parameters
 from TreeMaker.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
@@ -9,6 +11,7 @@ nfiles = parameters.value("nfiles",-1)
 numevents=parameters.value("numevents",-1)
 reportfreq=parameters.value("reportfreq",1000)
 outfile=parameters.value("outfile","test_run")
+dump=parameters.value("dump",False)
 
 # background estimations on by default
 lostlepton=parameters.value("lostlepton", True)
@@ -133,3 +136,8 @@ process = makeTreeFromMiniAOD(process,
 # final tweaks to process
 process.options.SkipEvent = cms.untracked.vstring('ProductNotFound')
 process.TFileService.closeFileFast = cms.untracked.bool(True)
+
+# if requested, dump and exit
+if dump:
+    print process.dumpPython()
+    sys.exit(0)
