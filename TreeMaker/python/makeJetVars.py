@@ -75,7 +75,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
     BTags = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-        BTagCutValue = cms.double(0.800)
+        BTagCutValue = cms.double(0.8484)
     )
     setattr(process,"BTags"+suff,BTags)
     process.TreeMaker2.VarsInt.extend(['BTags'+suff])
@@ -84,7 +84,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
     BTagsMVA = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfCombinedMVAV2BJetTags'),
-        BTagCutValue = cms.double(0.185)
+        BTagCutValue = cms.double(0.4432)
     )
     setattr(process,"BTagsMVA"+suff,BTagsMVA)
     process.TreeMaker2.VarsInt.extend(['BTagsMVA'+suff])
