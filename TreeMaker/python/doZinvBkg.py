@@ -181,6 +181,8 @@ def doZinvBkg(process,tagname,geninfo,residual,fastsim):
     process.TreeMaker2.VectorDouble.append("goodPhotons:sigmaIetaIeta(Photons_sigmaIetaIeta)")
     process.TreeMaker2.VectorBool.append("goodPhotons:nonPrompt(Photons_nonPrompt)")
     process.TreeMaker2.VectorBool.append("goodPhotons:fullID(Photons_fullID)")
+    process.TreeMaker2.VectorBool.append("goodPhotons:electronFakes(Photons_electronFakes)")
+    process.TreeMaker2.VarsBool.append("goodPhotons:hasGenPromptPhoton(hasGenPromptPhoton)")
 
     ## add MadGraph-level deltaR between photon or Z and status 23 partons
     if geninfo:
