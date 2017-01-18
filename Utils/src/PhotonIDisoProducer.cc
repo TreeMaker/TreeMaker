@@ -261,10 +261,10 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         for( View<reco::GenParticle>::const_iterator iGen = genParticles->begin();
              iGen != genParticles->end();
              ++iGen){
-        
+	  
           // check for non-prompt photons ----------------------
           if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
-        
+	    
             TLorentzVector gen( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
             TLorentzVector photon( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
         
@@ -321,7 +321,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	 ++iGen){  
       if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
 	TLorentzVector gen( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
-	if( gen.Pt() > 10.0 && (abs(iGen->mother()->pdgId()) <= 100 || abs(iGen->mother()->pdgId()) == 2212 ) ){
+	if( gen.Pt() > 40.0 && (abs(iGen->mother()->pdgId()) <= 100 || abs(iGen->mother()->pdgId()) == 2212 ) ){
 	  foundGenPrompt = true;
 	  //	  cout<<gen.Pt()<<" "<<abs(iGen->mother()->pdgId())<<" pdg: "<<iGen->pdgId()<<endl;
 	  break;
