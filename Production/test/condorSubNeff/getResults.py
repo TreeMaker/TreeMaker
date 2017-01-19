@@ -18,19 +18,24 @@ for result in results:
         print "failed: "+rfile
         continue
     
-    rname = rsplit[1]
-    # initialize
-    if rname not in rdict.keys():
-        rdict[rname] = {"eff":0,"pos":0,"neg":0,"tot":0}
-    
     # structure of output:
     # file:NeffFinder: name : #eff (pos = #pos, neg = #neg, tot = #tot)
+    rname = rsplit[1]
     rtmp = {
         "eff": int(rsplit[3]),
         "pos": int(rsplit[6].replace(",","")),
         "neg": int(rsplit[9].replace(",","")),
         "tot": int(rsplit[12].replace(")",""))
     }
+    
+    # check for job that finished but didn't do anything
+    if rtmp["tot"]==0:
+        print "failed: "+rfile
+        continue
+    
+    # initialize
+    if rname not in rdict.keys():
+        rdict[rname] = {"eff":0,"pos":0,"neg":0,"tot":0}
     
     # sum up
     for num in rtmp.keys():
