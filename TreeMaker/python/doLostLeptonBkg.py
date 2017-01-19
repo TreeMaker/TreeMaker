@@ -134,7 +134,7 @@ def doLostLeptonBkg(process,geninfo,METTag):
         process.TreeMaker2.VectorDouble.extend(['GenLeptons:MuonTrkIso(GenMuons_RecoTrkIso)','GenLeptons:ElectronTrkIso(GenElectrons_RecoTrkIso)'])
         process.TreeMaker2.VectorDouble.extend(['GenLeptons:MuonTrkAct(GenMuons_RecoTrkAct)','GenLeptons:ElectronTrkAct(GenElectrons_RecoTrkAct)'])
         process.TreeMaker2.VectorRecoCand.extend(['GenLeptons:TauNu(GenTaus_Nu)'])
-        process.TreeMaker2.VectorInt.extend(['GenLeptons:TauNProngs(GenTaus_NProngs)'])
+        process.TreeMaker2.VectorInt.extend(['GenLeptons:TauNProngs(GenTaus_NProngs)','GenLeptons:TauNNHads(GenTaus_NNeutralHadrons)'])
         process.TreeMaker2.VectorBool.extend(['GenLeptons:MuonTauDecay(GenMuons_fromTau)','GenLeptons:ElectronTauDecay(GenElectrons_fromTau)','GenLeptons:TauHadronic(GenTaus_had)'])
         process.TreeMaker2.VectorTLorentzVector.extend(['GenLeptons:TauLeadTrk(GenTaus_LeadTrk)'])
         process.TreeMaker2.VectorDouble.extend(['GenLeptons:TauLeadTrkGenRecoD3(GenTaus_LeadRecoTrkd3)', 'GenLeptons:TauLeadTrkIso(GenTaus_LeadRecoTrkIso)', 'GenLeptons:TauLeadTrkAct(GenTaus_LeadRecoTrkAct)'])
