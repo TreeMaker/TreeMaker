@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, fastsim, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, fastsim, SkipTag=cms.VInputTag(), onlyGoodJets=False, makeJetBranch=True):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -32,7 +32,8 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
         GoodJetsTag = cms.InputTag("GoodJets"+suff)
         process.TreeMaker2.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
         if storeProperties>0:
-            process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
+            if makeJetBranch :
+                process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
             process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
             if len(SkipTag)>0: process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(Jets'+suff+'_LeptonMask)'])
         if onlyGoodJets:

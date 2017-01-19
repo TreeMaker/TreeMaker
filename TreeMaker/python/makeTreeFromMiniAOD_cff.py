@@ -695,41 +695,36 @@ pmssm=False
                           storeProperties=1,
                           geninfo=geninfo,
                           fastsim=fastsim,
-                          onlyGoodJets=True
+                          onlyGoodJets=True,
+                          makeJetBranch=False
     )
-    
+
+    # puppi jet producer - gets tau variables and softdrop mass from puppi collections
+    from TreeMaker.Utils.puppijetsak8producer_cfi import *
+    process.PuppiJetsAK8Producer = PuppiJetsAK8Producer.clone()
+
     # AK8 jet variables - separate instance of jet properties producer
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
-    process.JetsPropertiesAK8 = jetproperties.clone(
-        JetTag       = JetAK8Tag,
-        properties = cms.vstring(
-            "prunedMass"           ,
-            "NsubjettinessTau1"    ,
-            "NsubjettinessTau2"    ,
-            "NsubjettinessTau3"    ,
-            "bDiscriminatorSubjet1",
-            "bDiscriminatorSubjet2",
-            "bDiscriminatorCSV"    ,
-            "NumBhadrons"          ,
-            "NumChadrons"          ,
-        )
-    )
+    process.JetsPropertiesAK8 = jetproperties.clone(JetTag       = JetAK8Tag,
+                                                    properties = cms.vstring("bDiscriminatorSubjet1",
+                                                                             "bDiscriminatorSubjet2",
+                                                                             "bDiscriminatorCSV"    ,
+                                                                             "NumBhadrons"          ,
+                                                                             "NumChadrons")
+                                                    )
     #specify userfloats
-    process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
-    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
-    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
-    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
     process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
     #VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
-    VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
+    VectorTLorentzVector.extend(['PuppiJetsAK8Producer(JetsAK8)'])
+    VectorDouble.extend(['PuppiJetsAK8Producer:softDropMass(JetsAK8_softDropMass)',
+                         'PuppiJetsAK8Producer:tau1(JetsAK8_tau1)',
+                         'PuppiJetsAK8Producer:tau2(JetsAK8_tau2)',
+                         'PuppiJetsAK8Producer:tau3(JetsAK8_tau3)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
-                         'JetsPropertiesAK8:bDiscriminatorCSV(JetsAK8_doubleBDiscriminator)',
-                         'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
-                         'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
-                         'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
+                         'JetsPropertiesAK8:bDiscriminatorCSV(JetsAK8_doubleBDiscriminator)'])
     VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
                       'JetsPropertiesAK8:NumChadrons(JetsAK8_NumChadrons)'])
 
