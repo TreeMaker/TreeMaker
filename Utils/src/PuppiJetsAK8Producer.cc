@@ -77,9 +77,6 @@ PuppiJetsAK8Producer::PuppiJetsAK8Producer(const edm::ParameterSet& iConfig)
 	debug = iConfig.getParameter<bool>("debug");
 
     produces< std::vector< TLorentzVector > >();
-    produces< std::vector< double > >("tau3");
-    produces< std::vector< double > >("tau2");
-    produces< std::vector< double > >("tau1");
     produces< std::vector< double > >("softDropMass");
     
 }
@@ -103,9 +100,6 @@ PuppiJetsAK8Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 
     auto puppiJets = std::make_unique<std::vector<TLorentzVector> >();
-    auto puppiTau1 = std::make_unique<std::vector<double> >();
-    auto puppiTau2 = std::make_unique<std::vector<double> >();
-    auto puppiTau3 = std::make_unique<std::vector<double> >();
     auto puppiSoftDropMass = std::make_unique<std::vector<double> >();
 
     TLorentzVector tempJet(0.,0.,0.,0.);
@@ -121,9 +115,6 @@ PuppiJetsAK8Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                                  );
             
             puppiJets->push_back(tempJet);
-            puppiTau1->push_back(Jet->userFloat("ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau1"));
-            puppiTau2->push_back(Jet->userFloat("ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau2"));
-            puppiTau3->push_back(Jet->userFloat("ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau3"));
 
             TLorentzVector puppi_softdrop, puppi_softdrop_subjet;
             auto const & sdSubjetsPuppi = Jet->subjets("SoftDropPuppi");
@@ -136,9 +127,6 @@ PuppiJetsAK8Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 
     iEvent.put(std::move(puppiJets));
-    iEvent.put(std::move(puppiTau1),"tau1");
-    iEvent.put(std::move(puppiTau2),"tau2");
-    iEvent.put(std::move(puppiTau3),"tau3");
     iEvent.put(std::move(puppiSoftDropMass),"softDropMass");
 }
 
