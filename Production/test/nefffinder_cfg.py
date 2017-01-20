@@ -4,6 +4,7 @@ parameters = CommandLineParams()
 name = parameters.value("name","")
 nstart = parameters.value("nstart",0)
 nfiles = parameters.value("nfiles",-1)
+redir = parameters.value("redir","root://cmsxrootd.fnal.gov/")
 
 import FWCore.ParameterSet.Config as cms
 from Configuration.StandardSequences.Eras import eras
@@ -28,7 +29,6 @@ else:
     )
 
 #temporary redirector fix
-redir="root://cmsxrootd.fnal.gov/"
 for f,val in enumerate(process.source.fileNames):
     if process.source.fileNames[f][0:6]=="/store":
         process.source.fileNames[f] = redir+process.source.fileNames[f]

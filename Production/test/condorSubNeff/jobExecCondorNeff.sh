@@ -13,6 +13,7 @@ CMSSWVER=$1
 SAMPLE=$2
 NSTART=$3
 NFILES=$4
+REDIR=$5
 
 echo ""
 echo "parameter set:"
@@ -20,6 +21,7 @@ echo "CMSSWVER:   $CMSSWVER"
 echo "SAMPLE:     $SAMPLE"
 echo "NSTART:     $NSTART"
 echo "NFILES:     $NFILES"
+echo "REDIR:      $REDIR"
 
 tar -xzf ${CMSSWVER}.tar.gz
 cd ${CMSSWVER}
@@ -30,11 +32,8 @@ eval `scramv1 runtime -sh`
 cd -
 
 # run CMSSW
-cmsRun nefffinder_cfg.py name=${SAMPLE} nstart=${NSTART} nfiles=${NFILES} 2>&1
-
-CMSEXIT=$?
-
-if [[ $CMSEXIT -ne 0 ]]; then
-  echo "exit code $CMSEXIT in cmsRun"
-  exit $CMSEXIT
+ARGS="name=${SAMPLE} nstart=${NSTART} nfiles=${NFILES}"
+if [[ -n "$REDIR" ]]; then
+ ARGS="$ARGS redir=${REDIR}"
 fi
+cmsRun nefffinder_cfg.py ${ARGS} 2>&1

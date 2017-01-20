@@ -94,11 +94,10 @@ for fitem in dict.flist:
             sfile.write(f+"\n")
             if highest_percent < 100:
                 sfile.write("  !!! No site has complete dataset !!! ( Highest: "+str(highest_percent)+"% )\n")
-            else:
-                for site,addr in site_list:
-                    this_percent = site_list[(site,addr)]
-                    if this_percent==100:
-                        sfile.write("  "+site+" ("+addr+")\n")
+            for site,addr in site_list:
+                this_percent = site_list[(site,addr)]
+                if this_percent==highest_percent:
+                    sfile.write("  "+site+" ("+addr+")\n")
 
         if makepy:
             #sort list of files for consistency

@@ -13,7 +13,7 @@ git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch btv-cmssw BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
 git cms-merge-topic -u kpedro88:METfix8022
-git cms-merge-topic -u cms-met:CMSSW_8_0_X-METFilterUpdate
+git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
 git cms-merge-topic -u kpedro88:storeJERFactor8022
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram b -j 8
@@ -110,10 +110,15 @@ A ROOT file containing the data, MC, and data/MC histograms (with uncertainty va
 
 ## Info for New Samples
 
+The script [get_mcm.py](./Production/test/get_mcm.py) can search the McM database for given samples (with wildcard support) to discern the status of the sample (whether it has finished running), the generator cross section, and the full dataset path for the sample ("/X/Y/Z" format).
+Command line options exist to specify campaign names and other information, which can be viewed with the `--help` option.
+An example dictionary of samples and extensions to check can be found at [dict_mcm.py](./Production/test/dict_mcm.py).
+This script can only be run on lxplus due to the need for [cern-get-sso-cookie](http://linux.web.cern.ch/linux/docs/cernssocookie.shtml) to access the McM database.
+
 The script [get_py.py](./Production/test/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (disabled with `py=False`).
 For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (disabled with `wp=False`).
 The script can also check to see which sites (if any) have 100% dataset presence for the sample (disabled with `se=False`).
-(You may also need `export SSL_CERT_DIR='/etc/grid-security/certificates'` (bash) or `setenv SSL_CERT_DIR '/etc/pki/tls/certs:/etc/grid-security/certificates'` (tcsh) to avoid the error `SSL: CERTIFICATE_VERIFY_FAILED` from `urllib2`.)
+(You may also need `export SSL_CERT_DIR='/etc/pki/tls/certs:/etc/grid-security/certificates'` (bash) or `setenv SSL_CERT_DIR '/etc/pki/tls/certs:/etc/grid-security/certificates'` (tcsh) to avoid the error `SSL: CERTIFICATE_VERIFY_FAILED` from `urllib2`.)
 
 Before running the script for the first time, some environment settings are necessary:
 ```
@@ -147,11 +152,8 @@ cp -r condorSubNeff myNeff
 cd myNeff
 ./looperNeff.sh
 (after jobs are finished)
-./getFailures.sh
-./removeFailures.sh
-./getResults.sh
+python getResults.py
 ```
-(The script [./removeFailures.sh](./Production/test/condorSubNeff/removeFailures.sh) renames the output files from the failed jobs so they do not get picked up by [./getResults.sh](./Production/test/condorSubNeff/getResults.sh).)
 
 Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines.
 ```
