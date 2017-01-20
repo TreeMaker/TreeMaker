@@ -77,6 +77,8 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   produces< std::vector< bool > >("hadronization");
   produces< std::vector< bool > >("nonPrompt");
   produces< std::vector< bool > >("fullID");
+  produces< std::vector< bool > >("electronFakes");
+  produces< bool >("hasGenPromptPhoton");
 }
 
 
@@ -116,6 +118,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   auto   photon_hadronization = std::make_unique<std::vector<bool>>();
   auto   photon_nonPrompt  = std::make_unique<std::vector<bool>>();
   auto   photon_fullID  = std::make_unique<std::vector<bool>>();
+  auto   photon_electronFakes  = std::make_unique<std::vector<bool>>();
 
   if( debug ){
     std::cout << "new events" << std::endl;
@@ -254,22 +257,33 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         // loop over gen particles and find nonprompt and hadronization photons
         int matchedGenPrompt = 0;
         int matchedGenNonPrompt = 0 ;
-        
+	bool photonMatchGenE = false;        
         for( View<reco::GenParticle>::const_iterator iGen = genParticles->begin();
              iGen != genParticles->end();
              ++iGen){
-        
+	  
           // check for non-prompt photons ----------------------
           if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
-        
+	    
             TLorentzVector gen( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
             TLorentzVector photon( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
         
             if( gen.DeltaR(photon) < 0.2 ){ /// I LEFT OFF HERE!!!!!!
-              if( abs(iGen->mother()->pdgId()) > 100 && abs(iGen->mother()->pdgId()) != 2212 ) matchedGenNonPrompt++ ;
-              if( abs(iGen->mother()->pdgId()) <= 22 || abs(iGen->mother()->pdgId()) == 2212 ) matchedGenPrompt++ ;
-            }
+              if( abs(iGen->mother()->pdgId()) > 100 && abs(iGen->mother()->pdgId()) < 1000000 && abs(iGen->mother()->pdgId()) != 2212 ) matchedGenNonPrompt++ ;
+              if( abs(iGen->mother()->pdgId()) <= 100 || abs(iGen->mother()->pdgId()) == 2212 ){
+		if( gen.Pt()/photon.Pt() > 0.5 && gen.Pt()/photon.Pt() < 1.5 )
+		  matchedGenPrompt++ ;
+	      }//for prmopt photons
+            }//gen matching
           }
+	  //check wheather photon has matched to a gen electron or not
+	  if( abs(iGen->pdgId()) == 11 && iGen->status() == 1 ){
+	    TLorentzVector genE( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
+            TLorentzVector photon( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
+	    if( genE.DeltaR(photon) < 0.2 ){
+	      photonMatchGenE = true;
+	    }
+	  }
         
           // ----------------------------------------------------
         
@@ -289,12 +303,33 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         if( matchedGenPrompt > 0 || matchedGenNonPrompt == 0 ) photon_nonPrompt->push_back(false);
         else if( matchedGenNonPrompt > 0 ) photon_nonPrompt->push_back(true);
         else photon_nonPrompt->push_back(false);
+	//check if photon is fake or not.
+	if( matchedGenPrompt == 0 && photonMatchGenE )//make sure that photon is matched to gen electron and not matched to any gen prompt photon
+	  photon_electronFakes->push_back(true);
+	else
+	  photon_electronFakes->push_back(false);
       }//gen level stuff
     //photon_hadronization->push_back( isHadronization );
 
     }//pure photons
 
   }// end loop over candidate photons
+  bool foundGenPrompt = false;
+  if (genParticles.isValid()){
+    for( View<reco::GenParticle>::const_iterator iGen = genParticles->begin();
+	 iGen != genParticles->end();
+	 ++iGen){  
+      if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
+	TLorentzVector gen( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
+	if( gen.Pt() > 40.0 && (abs(iGen->mother()->pdgId()) <= 100 || abs(iGen->mother()->pdgId()) == 2212 ) ){
+	  foundGenPrompt = true;
+	  //	  cout<<gen.Pt()<<" "<<abs(iGen->mother()->pdgId())<<" pdg: "<<iGen->pdgId()<<endl;
+	  break;
+	}//if there is a photon with pt > 10 and its parent PdgID <=100, then consider the event as having a hard scattered photon.
+      }
+    }// end of loop over gen particles
+  }
+  
   iEvent.put(std::move(goodPhotons)); 
   iEvent.put(std::move(photon_isEB ), "isEB" );
   iEvent.put(std::move(photon_genMatched ), "genMatched" );
@@ -310,7 +345,9 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(std::move(photon_passElectronVeto ), "passElectronVeto" );
   iEvent.put(std::move(photon_nonPrompt ), "nonPrompt" );
   iEvent.put(std::move(photon_fullID ), "fullID" );
-
+  iEvent.put(std::move(photon_electronFakes ), "electronFakes" );
+  auto hasGenPromptPhoton = std::make_unique<bool>(foundGenPrompt);  
+  iEvent.put(std::move(hasGenPromptPhoton ), "hasGenPromptPhoton" );
  
 }
 
