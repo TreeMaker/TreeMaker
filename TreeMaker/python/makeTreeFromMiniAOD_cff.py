@@ -703,7 +703,7 @@ pmssm=False
     process.JetsPropertiesAK8 = jetproperties.clone(
         JetTag       = JetAK8Tag,
         properties = cms.vstring(
-            "prunedMass"           ,
+            "PuppiSoftDropMass"    ,
             "NsubjettinessTau1"    ,
             "NsubjettinessTau2"    ,
             "NsubjettinessTau3"    ,
@@ -715,15 +715,15 @@ pmssm=False
         )
     )
     #specify userfloats
-    process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
-    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
-    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
-    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
+    process.JetsPropertiesAK8.PuppiSoftDropMass = cms.vstring('SoftDropPuppi') # pass the desired subjet collection
+    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau1')
+    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau2')
+    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('ak8PFJetsPuppiValueMap:NjettinessAK8PuppiTau3')
     process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
     #VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
-    VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
+    VectorDouble.extend(['JetsPropertiesAK8:PuppiSoftDropMass(JetsAK8_puppiSoftDropMass)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
                          'JetsPropertiesAK8:bDiscriminatorCSV(JetsAK8_doubleBDiscriminator)',
