@@ -63,7 +63,7 @@ mkdir -p removed
 #search for "return value" in condor logs newer than TIME - denotes finished job
 #or "abort" - denotes removed job
 echo -n "Searching logs after $TIME..."
-readarray filelist < <(find . -maxdepth 1 -name \*.condor -newermt "${TIME}" -print0 | xargs -0 -n1 -P4 grep -l -m1 "SYSTEM_PERIODIC_REMOVE")
+readarray filelist < <(find . -maxdepth 1 -name \*.condor -newermt "${TIME}" -print0 | xargs -0 -n1 -P4 grep -l -m1 "abort")
 filelistlen=${#filelist[@]}
 echo " found $filelistlen"
 for ((i=0; i < $filelistlen; i++)); do
