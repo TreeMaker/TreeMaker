@@ -278,11 +278,8 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
           }
 	  //check wheather photon has matched to a gen electron or not
 	  if( abs(iGen->pdgId()) == 11 && iGen->status() == 1 ){
-	    TLorentzVector genE( iGen->px() , iGen->py() , iGen->pz() , iGen->energy() );
-            TLorentzVector photon( iPhoton->px() , iPhoton->py() , iPhoton->pz() , iPhoton->energy() );
-	    if( genE.DeltaR(photon) < 0.2 ){
+	    if( (deltaR(iGen->p4(), iPhoton->p4())) < 0.2)
 	      photonMatchGenE = true;
-	    }
 	  }
         
           // ----------------------------------------------------
