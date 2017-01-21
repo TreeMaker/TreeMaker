@@ -17,9 +17,6 @@
 //
 //
 
-// root include files
-#include "TLorentzVector.h"
-
 // system include files
 #include <memory>
 #include <string>
@@ -39,6 +36,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
+
+typedef math::XYZTLorentzVector LorentzVector;
 
 //enum lists of properties
 enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyFraction, d_chargedEmEnergyFraction, d_neutralEmEnergyFraction,
@@ -105,11 +105,10 @@ template<> void NamedPtrD<d_jecFactor>::get_property(const pat::Jet* Jet)       
 template<> void NamedPtrD<d_bDiscriminatorSubjet1>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 0 ? Jet->subjets(extraInfo.at(0)).at(0)->bDiscriminator(extraInfo.at(1)) : -10.); }
 template<> void NamedPtrD<d_bDiscriminatorSubjet2>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 1 ? Jet->subjets(extraInfo.at(0)).at(1)->bDiscriminator(extraInfo.at(1)) : -10.); }
 template<> void NamedPtrD<d_PuppiSoftDropMass>::get_property(const pat::Jet* Jet)           { 
-    TLorentzVector fatJet, subjet;
+    LorentzVector fatJet;
     auto const & subjets = Jet->subjets(extraInfo.at(0));
     for ( auto const & it : subjets ) {
-        subjet.SetPtEtaPhiM(it->correctedP4(0).pt(),it->correctedP4(0).eta(),it->correctedP4(0).phi(),it->correctedP4(0).mass());
-        fatJet+=subjet;
+        fatJet += it->correctedP4(0);
     }
     push_back(fatJet.M());
 }

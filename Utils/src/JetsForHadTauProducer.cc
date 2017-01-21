@@ -36,7 +36,6 @@
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "PhysicsTools/PatAlgos/plugins/PATJetProducer.h"
 
-#include "TLorentzVector.h"
 //
 // class declaration
 //
@@ -118,7 +117,7 @@ JetsForHadTauProducer::JetsForHadTauProducer(const edm::ParameterSet& iConfig)
 JetsForHadTauProducer::~JetsForHadTauProducer()
 {
 	
-	// do anything here that needs to be done at desctruction time
+	// do anything here that needs to be done at destruction time
 	// (e.g. close files, deallocate resources etc.)
 	
 }
@@ -165,12 +164,10 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
     if (debug_) std::cout << "Jets and reclusJets size:" << Jets->size() << " " << reclusJets->size() << std::endl;
     for(unsigned int io=0; io < reclusJets->size(); io++){
        const double otjet_pt = reclusJets->at(io).pt(), otjet_eta = reclusJets->at(io).eta(), otjet_phi = reclusJets->at(io).phi();
-       TLorentzVector perLVec; perLVec.SetPtEtaPhiE(otjet_pt, otjet_eta, otjet_phi, reclusJets->at(io).energy());
        int cntFound = 0, matchedIdx = -1;
        double minDR = 999.0;
        for(unsigned int ij=0; ij< Jets->size(); ij++){
-          const double jet_eta = Jets->at(ij).eta(), jet_phi = Jets->at(ij).phi();
-          const double dR = reco::deltaR(otjet_eta, otjet_phi, jet_eta, jet_phi);
+          const double dR = deltaR(reclusJets->at(io).p4(),Jets->at(ij).p4());
           if( minDR > dR ){
              minDR = dR; matchedIdx = ij;
           }
@@ -264,8 +261,6 @@ const reco::GenParticle* JetsForHadTauProducer::TauFound(const reco::GenParticle
 bool JetsForHadTauProducer::matchJetLepton(const pat::Jet* otjet, const edm::Handle<edm::View<reco::GenParticle> >& pruned,
                                            const edm::Handle<edm::View<pat::Muon> >& muon, const edm::Handle<edm::View<pat::Electron> >& electron)
 {
-    const double otjet_pt = otjet->pt(), otjet_eta = otjet->eta(), otjet_phi = otjet->phi();
-    TLorentzVector perLVec; perLVec.SetPtEtaPhiE(otjet_pt, otjet_eta, otjet_phi, otjet->energy());
     int cntgenMatch = 0;
     //
     // Check gen leptons
@@ -273,21 +268,19 @@ bool JetsForHadTauProducer::matchJetLepton(const pat::Jet* otjet, const edm::Han
     if (MCflag_ && pruned.isValid()) { // this matching check is done only if pruned particle collection exists
         for(unsigned int ig=0; ig<pruned->size(); ig++){
           // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
-          if(  abs((*pruned)[ig].pdgId())==11 || abs((*pruned)[ig].pdgId())==13 || abs((*pruned)[ig].pdgId())==15  ){
-             TLorentzVector genLVec; genLVec.SetPtEtaPhiE((*pruned)[ig].pt(),(*pruned)[ig].eta(),(*pruned)[ig].phi(),(*pruned)[ig].energy());
-             double perdeltaR = perLVec.DeltaR(genLVec);
+          const reco::GenParticle* genPart = &(*pruned)[ig];
+          if(  abs(genPart->pdgId())==11 || abs(genPart->pdgId())==13 || abs(genPart->pdgId())==15  ){
+             double perdeltaR = deltaR(otjet->p4(),genPart->p4());
              if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
           
              // Sometimes the nutrinos of tau are so energetic that gen. tau and it hadronic daughter are 
              // in two different directions. We would like to store those type of jets as well.
-             if(abs((*pruned)[ig].pdgId())==15){
-               const reco::GenParticle * FinalTauDecay = TauFound(&(*pruned)[ig]);
-               TLorentzVector genNuLVec,TauMinusNuLVec;
+             if(abs(genPart->pdgId())==15){
+               const reco::GenParticle* FinalTauDecay = TauFound(genPart);
                for(unsigned int igg=0; igg<FinalTauDecay->numberOfDaughters(); igg++){
                  if( abs( FinalTauDecay->daughter(igg)->pdgId() )==16 ){
-                   genNuLVec.SetPtEtaPhiE(FinalTauDecay->daughter(igg)->pt(),FinalTauDecay->daughter(igg)->eta(),FinalTauDecay->daughter(igg)->phi(),FinalTauDecay->daughter(igg)->energy());
-                   TauMinusNuLVec = genLVec - genNuLVec;
-                   perdeltaR = perLVec.DeltaR(TauMinusNuLVec);
+                   auto TauMinusNuLVec = genPart->p4() - FinalTauDecay->daughter(igg)->p4();
+                   perdeltaR = deltaR(otjet->p4(),TauMinusNuLVec);
                    if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
                  }  
                }
@@ -301,8 +294,7 @@ bool JetsForHadTauProducer::matchJetLepton(const pat::Jet* otjet, const edm::Han
     if (muon.isValid()){
         for(unsigned int ig=0; ig<muon->size(); ig++){
           // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
-           TLorentzVector muLVec; muLVec.SetPtEtaPhiE((*muon)[ig].pt(),(*muon)[ig].eta(),(*muon)[ig].phi(),(*muon)[ig].energy());
-           double perdeltaR = perLVec.DeltaR(muLVec);
+           double perdeltaR = deltaR(otjet->p4(),(*muon)[ig].p4());
            if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
         }
     }
@@ -312,8 +304,7 @@ bool JetsForHadTauProducer::matchJetLepton(const pat::Jet* otjet, const edm::Han
     if (electron.isValid()){
         for(unsigned int ig=0; ig<electron->size(); ig++){
           // Only keep the jet if it matches one of the gen or reco leptons // this is to save disk space
-           TLorentzVector muLVec; muLVec.SetPtEtaPhiE((*electron)[ig].pt(),(*electron)[ig].eta(),(*electron)[ig].phi(),(*electron)[ig].energy());
-           double perdeltaR = perLVec.DeltaR(muLVec);
+		   double perdeltaR = deltaR(otjet->p4(),(*electron)[ig].p4());
            if( perdeltaR < genMatch_dR_ ) cntgenMatch ++;
         }
     }
