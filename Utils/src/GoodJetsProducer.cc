@@ -70,7 +70,6 @@ private:
    double jetPtFilter_;
    bool saveAllId_, saveAllPt_, ExcludeLeptonIsoTrackPhotons_, TagMode_, invertJetPtFilter_;
    double JetConeSize_;
-   double deltaR(double eta1, double phi1, double eta2, double phi2);
 
    
    // ----------member data ---------------------------
@@ -190,7 +189,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             for(unsigned h=0; h<excludeHandles.size(); ++h){
                 for(unsigned ih=0; ih<excludeHandles[h]->size(); ++ih){
                     if(std::abs(Jets->at(i).pt() - excludeHandles[h]->at(ih).pt() ) / excludeHandles[h]->at(ih).pt() < 1 && 
-                       deltaR(Jets->at(i).eta(),Jets->at(i).phi(),excludeHandles[h]->at(ih).eta(),excludeHandles[h]->at(ih).phi()) < JetConeSize_ )
+                       deltaR(Jets->at(i).p4(),excludeHandles[h]->at(ih).p4()) < JetConeSize_ )
                     {
                        skip=true;
                        break;
@@ -286,12 +285,6 @@ GoodJetsProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
    edm::ParameterSetDescription desc;
    desc.setUnknown();
    descriptions.addDefault(desc);
-}
-double GoodJetsProducer::deltaR(double eta1, double phi1, double eta2, double phi2)
-{
-   double deta = eta1-eta2;
-   double dphi = TVector2::Phi_mpi_pi(phi1-phi2);
-   return sqrt(deta * deta + dphi *dphi); 
 }
 
 //define this as a plug-in

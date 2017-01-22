@@ -17,9 +17,6 @@
 //
 //
 
-// root include files
-#include "TLorentzVector.h"
-
 // system include files
 #include <memory>
 #include <string>
@@ -39,6 +36,9 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
+
+typedef math::XYZTLorentzVector LorentzVector;
 
 //enum lists of properties
 enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyFraction, d_chargedEmEnergyFraction, d_neutralEmEnergyFraction,
@@ -105,11 +105,10 @@ template<> void NamedPtrD<d_jecFactor>::get_property(const pat::Jet* Jet)       
 template<> void NamedPtrD<d_bDiscriminatorSubjet1>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 0 ? Jet->subjets(extraInfo.at(0)).at(0)->bDiscriminator(extraInfo.at(1)) : -10.); }
 template<> void NamedPtrD<d_bDiscriminatorSubjet2>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 1 ? Jet->subjets(extraInfo.at(0)).at(1)->bDiscriminator(extraInfo.at(1)) : -10.); }
 template<> void NamedPtrD<d_PuppiSoftDropMass>::get_property(const pat::Jet* Jet)           { 
-    TLorentzVector fatJet, subjet;
+    LorentzVector fatJet;
     auto const & subjets = Jet->subjets(extraInfo.at(0));
     for ( auto const & it : subjets ) {
-        subjet.SetPtEtaPhiM(it->correctedP4(0).pt(),it->correctedP4(0).eta(),it->correctedP4(0).phi(),it->correctedP4(0).mass());
-        fatJet+=subjet;
+        fatJet += it->correctedP4(0);
     }
     push_back(fatJet.M());
 }
@@ -204,7 +203,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="qgPtD"                      ) { DoublePtrs_.push_back(new NamedPtrD<d_qgPtD>                      ("qgPtD",this)                      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="qgAxis2"                    ) { DoublePtrs_.push_back(new NamedPtrD<d_qgAxis2>                    ("qgAxis2",this)                    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="prunedMass"                 ) { DoublePtrs_.push_back(new NamedPtrD<d_prunedMass>                 ("prunedMass",this)                 ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
-        else if(p=="PuppiSoftDropMass"          ) { DoublePtrs_.push_back(new NamedPtrD<d_PuppiSoftDropMass>          ("PuppiSoftDropMass",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="PuppiSoftDropMass"          ) { DoublePtrs_.push_back(new NamedPtrD<d_PuppiSoftDropMass>          ("PuppiSoftDropMass",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau1"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau1>          ("NsubjettinessTau1",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau2"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau2>          ("NsubjettinessTau2",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau3"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau3>          ("NsubjettinessTau3",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
@@ -260,6 +259,16 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				const auto& btagLabels = Jet->getPairDiscri();
 				std::cout << "btagDiscriminatorNames: ";
 				for(const auto& bt : btagLabels) std::cout << bt.first << " ";
+				std::cout << std::endl;
+				
+				const auto& floatLabels = Jet->userFloatNames();
+				std::cout << "userFloatNames: ";
+				std::copy(floatLabels.begin(), floatLabels.end(), std::ostream_iterator<std::string>(std::cout, " "));
+				std::cout << std::endl;
+
+				const auto& intLabels = Jet->userIntNames();
+				std::cout << "userIntNames: ";
+				std::copy(intLabels.begin(), intLabels.end(), std::ostream_iterator<std::string>(std::cout, " "));
 				std::cout << std::endl;
 			}
 		}

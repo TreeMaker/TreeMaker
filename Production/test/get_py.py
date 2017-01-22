@@ -1,14 +1,22 @@
 import re,sys,getopt,urllib2,json
 from dbs.apis.dbsClient import DbsApi
+from optparse import OptionParser
 
 # Read parameters
-from TreeMaker.Utils.CommandLineParams import CommandLineParams
-parameters = CommandLineParams()
-dictfile = parameters.value("dict","")
-dict = __import__(dictfile.replace(".py",""))
-makepy = parameters.value("py",True)
-makewp = parameters.value("wp",True)
-makese = parameters.value("se",True)
+parser = OptionParser()
+parser.add_option("-d", "--dict", dest="dict", default="", help="check for samples listed in this dict (default = %default)")
+parser.add_option("-p", "--py", dest="py", default=False, action="store_true", help="generate python w/ list of files (default = %default)")
+parser.add_option("-w", "--wp", dest="wp", default=False, action="store_true", help="generate WeightProducer lines (default = %default)")
+parser.add_option("-s", "--se", dest="se", default=False, action="store_true", help="make list of sites with 100% hosting (default = %default)")
+(options, args) = parser.parse_args()
+
+dictname = options.dict.replace(".py","");
+flist = __import__(dictname).flist
+makepy = options.py
+makewp = options.wp
+makese = options.se
+if not makepy and not makewp and not makese:
+    parser.error("No operations selected!")
 
 #interface with DBS
 dbs3api = DbsApi("https://cmsweb.cern.ch/dbs/prod/global/DBSReader")
@@ -21,14 +29,14 @@ dbs3api = DbsApi("https://cmsweb.cern.ch/dbs/prod/global/DBSReader")
 #MC w/ negative weights (amcatnlo) + extended sample: [['sample','sample_ext'] , [xsec, neff, neff_ext]]
 
 if makewp:
-    wname = "weights_"+dictfile.replace(".py","")+".txt"
+    wname = "weights_"+dictname+".txt"
     wfile = open(wname,'w')
 
 if makese:
-    sname = "sites_"+dictfile.replace(".py","")+".txt"
+    sname = "sites_"+dictname+".txt"
     sfile = open(sname,'w')
     
-for fitem in dict.flist:
+for fitem in flist:
     ff = fitem[0]
     x = fitem[1]
     nevents_all = []

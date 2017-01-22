@@ -18,7 +18,6 @@ def DtoF(file,get):
 # ------------------------------------------------------------
 # ------------------------------------------------------------
 
-
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-o", "--outname", dest="outname", default="PileupHistograms.root", help="output filename for PU histos (default = %default)")
@@ -39,8 +38,11 @@ if __name__ == "__main__":
     # generate pileup histograms in data
     minbias = float(options.minbias)
     uncertainty = float(options.uncertainty)
+    print "Calculating central value"
     os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias)+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2CentralPileupHistogram.root")
+    print "Calculating upward variation"
     os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias*(1+uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2UpPileupHistogram.root")
+    print "Calculating downward variation"
     os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias*(1-uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2DownPileupHistogram.root")
     
     # open files
