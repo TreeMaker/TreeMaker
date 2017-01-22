@@ -115,9 +115,9 @@ Command line options exist to specify campaign names and other information, whic
 An example dictionary of samples and extensions to check can be found at [dict_mcm.py](./Production/test/dict_mcm.py).
 This script can only be run on lxplus due to the need for [cern-get-sso-cookie](http://linux.web.cern.ch/linux/docs/cernssocookie.shtml) to access the McM database.
 
-The script [get_py.py](./Production/test/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (disabled with `py=False`).
-For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (disabled with `wp=False`).
-The script can also check to see which sites (if any) have 100% dataset presence for the sample (disabled with `se=False`).
+The script [get_py.py](./Production/test/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (enabled with `-p`).
+For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (enabled with `-w`).
+The script can also check to see which sites (if any) have 100% dataset presence for the sample (enabled with `-s`).
 (You may also need `export SSL_CERT_DIR='/etc/pki/tls/certs:/etc/grid-security/certificates'` (bash) or `setenv SSL_CERT_DIR '/etc/pki/tls/certs:/etc/grid-security/certificates'` (tcsh) to avoid the error `SSL: CERTIFICATE_VERIFY_FAILED` from `urllib2`.)
 
 Before running the script for the first time, some environment settings are necessary:
@@ -127,7 +127,7 @@ source /cvmfs/cms.cern.ch/crab3/crab.csh
 
 To run the script:
 ```
-python get_py.py dict=dict.py
+python get_py.py -d dict.py [options]
 ```
 
 To check for new samples, consult [production monitoring](https://dmytro.web.cern.ch/dmytro/cmsprodmon/requests.php?campaign=RunIISpring16DR80) or query DAS (in this case, for Spring15 MC):
