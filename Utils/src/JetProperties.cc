@@ -260,6 +260,16 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				std::cout << "btagDiscriminatorNames: ";
 				for(const auto& bt : btagLabels) std::cout << bt.first << " ";
 				std::cout << std::endl;
+				
+				const auto& floatLabels = Jet->userFloatNames();
+				std::cout << "userFloatNames: ";
+				std::copy(floatLabels.begin(), floatLabels.end(), std::ostream_iterator<std::string>(std::cout, " "));
+				std::cout << std::endl;
+
+				const auto& intLabels = Jet->userIntNames();
+				std::cout << "userIntNames: ";
+				std::copy(intLabels.begin(), intLabels.end(), std::ostream_iterator<std::string>(std::cout, " "));
+				std::cout << std::endl;
 			}
 		}
 	}
