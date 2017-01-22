@@ -203,7 +203,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="qgPtD"                      ) { DoublePtrs_.push_back(new NamedPtrD<d_qgPtD>                      ("qgPtD",this)                      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="qgAxis2"                    ) { DoublePtrs_.push_back(new NamedPtrD<d_qgAxis2>                    ("qgAxis2",this)                    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="prunedMass"                 ) { DoublePtrs_.push_back(new NamedPtrD<d_prunedMass>                 ("prunedMass",this)                 ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
-        else if(p=="PuppiSoftDropMass"          ) { DoublePtrs_.push_back(new NamedPtrD<d_PuppiSoftDropMass>          ("PuppiSoftDropMass",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="PuppiSoftDropMass"          ) { DoublePtrs_.push_back(new NamedPtrD<d_PuppiSoftDropMass>          ("PuppiSoftDropMass",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau1"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau1>          ("NsubjettinessTau1",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau2"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau2>          ("NsubjettinessTau2",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau3"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau3>          ("NsubjettinessTau3",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
