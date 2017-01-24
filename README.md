@@ -2,7 +2,8 @@
 
 ## Instructions
 
-The following installation instructions assume the user wants to process Spring16 MC (miniAOD v1 or v2 format) or Run2016 data.
+The following installation instructions assume the user wants to process Summer16 MC (miniAOD v2 format) or Run2016 23Sep ReReco data.
+(Spring16 MC and Run2016 PromptReco data are also supported, but only in limited cases.)
 
 ```
 cmsrel CMSSW_8_0_25
@@ -24,16 +25,12 @@ Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
 global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
-1. `Spring16`: for Spring16 miniAOD 25ns MC  
-2. `Spring16sig`: for Spring16 miniAOD 25ns MC (signal)  
-3. `Spring16Fastsig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)  
-4. `Spring16Pmssm`: for Spring16 miniAOD 25ns PMSSM MC scan (signal)  
-5. `2016B`: for 2016B PromptReco 25ns data  
-6. `2016CD`: for 2016C and 2016D PromptReco 25ns data  
-7. `2016EF`: for 2016E and 2016F PromptReco 25ns data  
-8. `2016G`: for 2016G PromptReco 25ns data  
-9. `2016H`: for 2016H PromptReco 25ns data  
-10. `2016ReReco23Sep`: for 2016 ReReco (23Sep) 25ns data, periods B-G
+1. `Spring16Fastsig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)  
+2. `Spring16Pmssm`: for Spring16 miniAOD 25ns PMSSM MC scan (signal)  
+3. `Summer16`: for Summer16 miniAOD 25ns MC  
+4. `Summer16sig`: for Summer16 miniAOD 25ns MC (signal)  
+5. `2016H`: for 2016H PromptReco 25ns data  
+6. `2016ReReco23Sep`: for 2016 ReReco (23Sep) 25ns data, periods B-G
 
 ## Unit Tests (Interactive Runs)
 
@@ -80,7 +77,7 @@ To get the number of the first new job, just use `len(readFiles)` from the pytho
 
 If the `-d` flag is used with [generateSubmission.py](./Production/test/condorSub/generateSubmission.py) when submitting jobs, each data file will be checked to see if the run it contains is certified in the corresponding JSON file. The JSON file is taken by default from the scenario; an alternative can be specified with the `--json` option, e.g. if the JSON is updated and you want to submit jobs only for the newly certified runs. (Use [compareJSON.py](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/FWCore/PythonUtilities/scripts/compareJSON.py) to subtract one JSON list from another, following [this twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#How_to_compare_Good_Luminosity_f).)
 
-Because of the large number of events in the Spring15 MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
+Because of the large number of events in the MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
 
 Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. Failed jobs are placed in "held" status in the Condor queue. This enables the job output and parameters to be examined. The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/manageJobs.py). Consult the `--help` option for the script to view the available functions.
 
@@ -130,7 +127,7 @@ To run the script:
 python get_py.py -d dict.py [options]
 ```
 
-To check for new samples, consult [production monitoring](https://dmytro.web.cern.ch/dmytro/cmsprodmon/requests.php?campaign=RunIISpring16DR80) or query DAS (in this case, for Spring15 MC):
+To check for new samples, use the above script [get_mcm.py](./Production/test/get_mcm.py) or query DAS, e.g.:
 ```
 das_client.py --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0 | & less
 ```
