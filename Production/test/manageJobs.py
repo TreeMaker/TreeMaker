@@ -8,7 +8,7 @@ class CondorJob:
         self.name = "_".join(self.stdout.split('_')[:-1])
         self.num = str(result["ClusterId"])+"."+str(result["ProcId"])
         self.schedd = schedd
-        self.why = result["HoldReason"]
+        self.why = result["HoldReason"] if "HoldReason" in result.keys() else ""
         self.args = result["Args"]
         self.status = result["JobStatus"] # 2 is running, 5 is held
 
@@ -18,18 +18,17 @@ def getJobs(options, scheddurl=""):
     if options.held: constraint += ' && JobStatus==5'
     elif options.running: constraint += ' && JobStatus==2'
 
-    schedd = None
     if len(scheddurl)>0:
-        coll = htcondor.Collector("cmssrv120.fnal.gov")
+        if len(options.coll)>0: coll = htcondor.Collector(options.coll)
+        else: coll = htcondor.Collector() # defaults to local
         scheddAd = coll.locate(htcondor.DaemonTypes.Schedd, scheddurl)
         schedd = htcondor.Schedd(scheddAd)
     else:
         schedd = htcondor.Schedd() # defaults to local
 
     # get info for selected jobs
-    results = schedd.query(constraint,["ClusterId","ProcId","HoldReason","Out","Args","JobStatus"])
     jobs = []
-    for result in results:
+    for result in schedd.xquery(constraint,["ClusterId","ProcId","HoldReason","Out","Args","JobStatus"]):
         # check greps
         if len(options.grep)>0 and not options.grep in result["Out"]: continue
         if len(options.vgrep)>0 and options.vgrep in result["Out"]: continue
@@ -46,7 +45,7 @@ def printJobs(jobs, stdout=False, why=False):
         print "\n".join([j.name+(" : "+j.why if why and len(j.why)>0 else "") for j in jobs])
 
 parser = OptionParser(add_help_option=False)
-parser.add_option("-c", "--coll", dest="coll", default="cmssrv120.fnal.gov", help="view jobs from this collector (default = %default)")
+parser.add_option("-c", "--coll", dest="coll", default="", help="view jobs from this collector (default = %default)")
 parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs from this user (submitter) (default = %default)")
 parser.add_option("-a", "--all", dest="all", default=False, action="store_true", help="view jobs from all schedulers (default = %default)")
 parser.add_option("-h", "--held", dest="held", default=False, action="store_true", help="view only held jobs (default = %default)")
