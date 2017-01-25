@@ -10,9 +10,9 @@ class Scenario:
         elif sname == "Summer16sig":
             self.set_vars("80X_mcRun2_asymptotic_2016_TrancheIV_v6","PAT",True,False,True,False,"","data/jec/Summer16_23Sep2016V2_MC",False,"data/jer/Spring16_25nsV6_MC","TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root","Run2_25ns")
         elif sname == "2016H":
-            self.set_vars("80X_dataRun2_Prompt_v14","RECO",False,False,False,False,"data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt","data/jec/Summer16_23Sep2016V2_DATA",False,"","","Run2_25ns")
+            self.set_vars("80X_dataRun2_Prompt_v14","RECO",False,False,False,False,"data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt","data/jec/Summer16_23Sep2016AllV2_DATA",False,"","","Run2_25ns")
         elif sname == "2016ReReco23Sep":
-            self.set_vars("80X_dataRun2_2016SeptRepro_v3","RECO",False,False,False,False,"data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt","data/jec/Summer16_23Sep2016V2_DATA",False,"","","Run2_25ns")
+            self.set_vars("80X_dataRun2_2016SeptRepro_v3","RECO",False,False,False,False,"data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt","data/jec/Summer16_23Sep2016AllV2_DATA",False,"","","Run2_25ns")
         else: #if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
