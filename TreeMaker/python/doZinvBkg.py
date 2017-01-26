@@ -1,6 +1,91 @@
 import FWCore.ParameterSet.Config as cms
 
 def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim):
+    
+    ### AK8 detour
+
+    # https://twiki.cern.ch/CMS/JetToolbox
+    from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+    listBTagInfos = ['pfInclusiveSecondaryVertexFinderTagInfos'] 
+    listBtagDiscriminatorsAK8 = [
+        'pfCombinedInclusiveSecondaryVertexV2BJetTags',
+        'pfBoostedDoubleSecondaryVertexAK8BJetTags'
+    ]
+    jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
+    if residual: jecLevels.append("L2L3Residual")
+    jetToolbox(process,
+        'ak8',
+        'jetSequence',
+        'out',
+        PUMethod = 'CHS',
+        miniAOD = True,
+        runOnMC = geninfo,
+        postFix='Clean',
+        newPFCollection = True,
+        nameNewPFCollection = cleanedCandidates.value(),
+        Cut = 'pt>170.',
+        addPruning = True,
+        #addSoftDropSubjets = True,
+        addNsub = True,
+        maxTau = 3,
+        bTagInfos = listBTagInfos, 
+        bTagDiscriminators = listBtagDiscriminatorsAK8,
+        JETCorrLevels = jecLevels,
+        subJETCorrLevels = jecLevels,
+    )
+    JetAK8CleanTag = cms.InputTag("selectedPatJetsAK8PFCHSClean")
+
+    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
+    makeJetVars(process,
+        JetTag=JetAK8CleanTag,
+        suff='AK8Clean',
+        skipGoodJets=False,
+        storeProperties=1,
+        geninfo=geninfo,
+        fastsim=fastsim,
+        onlyGoodJets=True
+    )
+    
+    from TreeMaker.Utils.jetproperties_cfi import jetproperties
+    process.JetsPropertiesAK8Clean = jetproperties.clone(
+        JetTag       = JetAK8CleanTag,
+        debug = cms.bool(False),
+        properties = cms.vstring(
+            "prunedMass"    ,
+            "NsubjettinessTau1"    ,
+            "NsubjettinessTau2"    ,
+            "NsubjettinessTau3"    ,
+            #"bDiscriminatorSubjet1",
+            #"bDiscriminatorSubjet2",
+            "bDiscriminatorCSV"    ,
+            "NumBhadrons"          ,
+            "NumChadrons"          ,
+        )
+    )
+    
+    process.JetsPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsCHSCleanPrunedMass')
+    process.JetsPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
+    process.JetsPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
+    process.JetsPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8CHSClean:tau3')
+    #process.JetsPropertiesAK8Clean.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    #process.JetsPropertiesAK8Clean.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    process.JetsPropertiesAK8Clean.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
+    process.TreeMaker2.VectorDouble.extend([
+        'JetsPropertiesAK8Clean:prunedMass(JetsAK8Clean_prunedMass)',
+        'JetsPropertiesAK8Clean:NsubjettinessTau1(JetsAK8Clean_NsubjettinessTau1)',
+        'JetsPropertiesAK8Clean:NsubjettinessTau2(JetsAK8Clean_NsubjettinessTau2)',
+        'JetsPropertiesAK8Clean:NsubjettinessTau3(JetsAK8Clean_NsubjettinessTau3)',
+        #'JetsPropertiesAK8Clean:bDiscriminatorSubjet1(JetsAK8Clean_bDiscriminatorSubjet1CSV)',
+        #'JetsPropertiesAK8Clean:bDiscriminatorSubjet2(JetsAK8Clean_bDiscriminatorSubjet2CSV)',
+        'JetsPropertiesAK8Clean:bDiscriminatorCSV(JetsAK8Clean_doubleBDiscriminator)'
+    ])
+    process.TreeMaker2.VectorInt.extend([
+        'JetsPropertiesAK8Clean:NumBhadrons(JetsAK8Clean_NumBhadrons)',
+        'JetsPropertiesAK8Clean:NumChadrons(JetsAK8Clean_NumChadrons)'
+    ])
+
+    ### end AK8 detour
+
     # do CHS for jet clustering
     cleanedCandidatesCHS = cms.EDFilter("CandPtrSelector",
         src = cleanedCandidates,
