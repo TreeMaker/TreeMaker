@@ -470,7 +470,7 @@ pmssm=False
         process.BadGlobalMuonTagger = cms.EDFilter("BadGlobalMuonTagger",
             muons = cms.InputTag("slimmedMuons"),
             vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
-            muonPtCut = cms.double(20),
+            muonPtCut = cms.double(0), # store leading pt
             selectClones = cms.bool(False),
             taggingMode = cms.bool(True),
             verbose = cms.untracked.bool(False)
@@ -479,6 +479,7 @@ pmssm=False
             selectClones = cms.bool(True)
         )
         VarsBool.extend(['BadGlobalMuonTagger:bad(BadGlobalMuon)','BadGlobalMuonTagger:badTrk(BadTrkGlobalMuon)','DupGlobalMuonTagger:dup(DupGlobalMuon)'])
+        VarsDouble.extend(['BadGlobalMuonTagger:badLeadPt(BadGlobalMuonLeadPt)','BadGlobalMuonTagger:badTrkLeadPt(BadTrkGlobalMuonLeadPt)','DupGlobalMuonTagger:dupLeadPt(DupGlobalMuonLeadPt)'])
 
         
     ## ----------------------------------------------------------------------------------------------
