@@ -465,6 +465,21 @@ pmssm=False
         process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadPFMuonFilter.taggingMode = True
         VarsBool.extend(['BadPFMuonFilter'])
+        
+        # bad muon crap
+        process.BadGlobalMuonTagger = cms.EDFilter("BadGlobalMuonTagger",
+            muons = cms.InputTag("slimmedMuons"),
+            vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
+            muonPtCut = cms.double(0), # store leading pt
+            selectClones = cms.bool(False),
+            taggingMode = cms.bool(True),
+            verbose = cms.untracked.bool(False)
+        )
+        process.DupGlobalMuonTagger = process.BadGlobalMuonTagger.clone(
+            selectClones = cms.bool(True)
+        )
+        VarsBool.extend(['BadGlobalMuonTagger:bad(BadGlobalMuon)','BadGlobalMuonTagger:badTrk(BadTrkGlobalMuon)','DupGlobalMuonTagger:dup(DupGlobalMuon)'])
+        VarsDouble.extend(['BadGlobalMuonTagger:badLeadPt(BadGlobalMuonLeadPt)','BadGlobalMuonTagger:badTrkLeadPt(BadTrkGlobalMuonLeadPt)','DupGlobalMuonTagger:dupLeadPt(DupGlobalMuonLeadPt)'])
 
         
     ## ----------------------------------------------------------------------------------------------

@@ -166,7 +166,10 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 		//-------------------------------------------------------------------------------------
 		// only consider charged tracks
 		//-------------------------------------------------------------------------------------
-		if (pfCand.charge() == 0) continue;
+		if (pfCand.charge() == 0) {
+			if(debug_) goodCand &= false;
+			else continue;
+		}
 		//-------------------------------------------------------------------------------------
 		// only store PFCandidate values if PFCandidate.pdgId() == pdgId_
 		//-------------------------------------------------------------------------------------
@@ -189,8 +192,8 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 		// cut on mT of track and MET
 		//-------------------------------------------------------------------------------------
 		if(mTCut_>0.01 && mT>mTCut_) {
-		  if(debug_) goodCand &= false;
-		  else continue;
+			if(debug_) goodCand &= false;
+			else continue;
 		}
 		//----------------------------------------------------------------------------
 		// now make cuts on isolation and dz
@@ -199,9 +202,15 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 		float activity = 0.;
 		GetTrkIso(pfCandidates, i, trkiso, activity);
 		float dz_it = pfCand.dz();
-		if( debug_ && !goodCand) continue;
-		if( isoCut_>0 && trkiso > isoCut_ ) continue;
-		if( std::abs(dz_it) > dzcut_ ) continue;
+
+		if( isoCut_>0 && trkiso > isoCut_ ) {
+			if(debug_) goodCand &= false;
+			else continue;
+		}
+		if( std::abs(dz_it) > dzcut_ ) {
+			if(debug_) goodCand &= false;
+			else continue;
+		}
 		
 		//store candidate values
 		//(all values stored in debug case, otherwise just good candidates are stored)
@@ -213,9 +222,9 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 		pfcands_trkiso->push_back(trkiso);
 		pfcands_activity->push_back(activity);
 		pfcands_dzpv->push_back(dz_it);
+
+		if( debug_ && !goodCand) continue;
 		prodminiAOD->push_back( pfCand );
-		
-		
 	}
 
 	bool result = (doTrkIsoVeto_ ? (prodminiAOD->size() == 0) : true);

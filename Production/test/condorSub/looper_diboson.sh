@@ -24,6 +24,8 @@ SCENARIO=Summer16
 
 #### Summer16 rare backgrounds - diboson
 SAMPLES=(
+Summer16.WGJets_MonoPhoton_PtG-40to130_TuneCUETP8M1_13TeV-madgraph \
+Summer16.WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph \
 Summer16.WWTo2L2Nu_13TeV-powheg \
 Summer16.WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8 \
 Summer16.WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8 \

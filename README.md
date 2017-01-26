@@ -16,6 +16,7 @@ git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_fr
 git cms-merge-topic -u kpedro88:METfix8022
 git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
 git cms-merge-topic -u kpedro88:storeJERFactor8022
+git cms-merge-topic -u kpedro88:badMuonFilters_80X_v2_RA2
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram b -j 8
@@ -80,7 +81,7 @@ If the `-d` flag is used with [generateSubmission.py](./Production/test/condorSu
 
 Because of the large number of events in the MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
 
-Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. Failed jobs are placed in "held" status in the Condor queue. This enables the job output and parameters to be examined. The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/manageJobs.py). Consult the `--help` option for the script to view the available functions.
+Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. Failed jobs are placed in "held" status in the Condor queue. This enables the job output and parameters to be examined. The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/manageJobs.py). Consult the `--help` option for the script to view the available functions. This script uses the [Condor Python bindings](https://research.cs.wisc.edu/htcondor/manual/current/6_7Python_Bindings.html), which require `/usr/lib64/python2.6/site-packages` to be in the `PYTHONPATH` environment variable.
 
 ## Calculate Integrated Luminosity
 
