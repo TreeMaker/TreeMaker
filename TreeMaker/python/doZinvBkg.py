@@ -11,7 +11,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim):
         'pfCombinedInclusiveSecondaryVertexV2BJetTags',
         'pfBoostedDoubleSecondaryVertexAK8BJetTags'
     ]
-    jecLevels = ['L2Relative', 'L3Absolute']
+    jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if residual: jecLevels.append("L2L3Residual")
     jetToolbox(process,
         'ak8',
@@ -22,7 +22,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim):
         runOnMC = geninfo,
         postFix='Clean',
         newPFCollection = True,
-        nameNewPFCollection = 'cleanedCandidates',
+        nameNewPFCollection = cleanedCandidates.value(),
         Cut = 'pt>170.',
         addPruning = True,
         #addSoftDropSubjets = True,
