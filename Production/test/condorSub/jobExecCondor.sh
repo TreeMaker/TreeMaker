@@ -9,6 +9,9 @@ echo "Running on " `uname -a` #Only to display the machine where the job is runn
 echo "System release " `cat /etc/redhat-release` #And the system release
 echo "CMSSW on Condor"
 
+# to get condor-chirp from CMSSW
+PATH="/usr/libexec/condor:$PATH"
+
 CMSSWVER=$1
 OUTDIR=$2
 SAMPLE=$3
