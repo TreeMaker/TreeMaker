@@ -30,8 +30,10 @@ def getJobs(options, scheddurl=""):
     jobs = []
     for result in schedd.xquery(constraint,["ClusterId","ProcId","HoldReason","Out","Args","JobStatus"]):
         # check greps
-        if len(options.grep)>0 and not options.grep in result["Out"]: continue
-        if len(options.vgrep)>0 and options.vgrep in result["Out"]: continue
+        checkstring = result["Out"]
+        if "HoldReason" in result.keys(): checkstring += " "+result["HoldReason"]
+        if len(options.grep)>0 and not options.grep in checkstring: continue
+        if len(options.vgrep)>0 and options.vgrep in checkstring: continue
         jobs.append(CondorJob(result,scheddurl))
 
     return jobs
@@ -144,7 +146,7 @@ if options.resubmit:
             schedd.edit([j.num],str(editname),'"'+str(editval)+'"')
         # edit redirector
         if len(options.xrootd)>0:
-            args = j.args.split(' ')[2:]
+            args = j.args.split(' ')
             args = [a.replace("\"","").rstrip() for a in args]
             if "root:" not in args[-1]: args.append(options.xrootd)
             else: args[-1] = options.xrootd
