@@ -1,6 +1,15 @@
 import sys,os,subprocess,glob,shutil,json
 from optparse import OptionParser
 import htcondor,classad
+has_paramiko = True
+try:
+    import paramiko
+except:
+    has_paramiko = False
+try:
+    import gssapi
+except:
+    has_paramiko = False
 
 class CondorJob:
     def __init__(self, result, schedd):
@@ -61,6 +70,7 @@ parser.add_option("-s", "--resubmit", dest="resubmit", default=False, action="st
 parser.add_option("-k", "--kill", dest="kill", default=False, action="store_true", help="remove the selected jobs (default = %default)")
 parser.add_option("-d", "--dir", dest="dir", default="", help="directory for stdout files (used for backup when resubmitting) (default = %default)")
 parser.add_option("-w", "--why", dest="why", default=False, action="store_true", help="show why a job was held (default = %default)")
+parser.add_option("--ssh", dest="ssh", action="store_true", default=False, help='internal option if script is run recursively over ssh')
 parser.add_option("--help", dest="help", action="store_true", default=False, help='show this help message')
 (options, args) = parser.parse_args()
 
@@ -73,12 +83,14 @@ if options.held and options.running:
     parser.error("Can't use -h and -r together, pick one!")
 if options.resubmit and options.kill:
     parser.error("Can't use -s and -k together, pick one!")
-if options.all and (options.kill or options.resubmit):
-    parser.error("Can't use job modification options (-s, -k) with -a.")
+if options.all and not has_paramiko and (options.kill or options.resubmit):
+    parser.error("Can't use job modification options (-s, -k) with -a without paramiko and gssapi.")
 if len(options.xrootd)>0 and options.xrootd[0:7] != "root://":
     parser.error("Improper xrootd address: "+options.xrootd)
 if len(options.xrootd)>0 and options.xrootd[-1]!='/':
     options.xrootd += '/'
+if options.ssh:
+    options.all = False
     
 jobs = []
 if options.all:
@@ -87,9 +99,27 @@ if options.all:
     all_nodes.append(41)
     for sch in ["cmslpc"+str(schnum)+".fnal.gov" for schnum in all_nodes]:
         jobs_tmp = getJobs(options,sch)
-        if len(jobs_tmp)>0: print sch
-        printJobs(jobs_tmp,options.stdout,options.why)
-        jobs.extend(jobs_tmp)
+        if len(jobs_tmp)>0:
+            print sch
+            if options.resubmit:
+                # ssh to local for modification access to scheduler
+                client = paramiko.SSHClient()
+                # use kerberos authentication
+                client.connect(sch,gss_host=sch,gss_auth=True,gss_kex=True)
+                # recursive run
+                cwd = os.getcwd()
+                myname = sys.argv[0]
+                if not cwd in myname: myname = cwd+"/"+myname
+                stdin, stdout, stderr = client.exec_command("python "+myname+" --ssh "+' '.join(sys.argv[1:]))
+                stdoutlines = stdout.readlines()
+                stderrlines = stderr.readlines()
+                print ''.join(stdoutlines)
+                if len(stderrlines)>0: print ''.join(stderrlines)
+                client.close()
+            else:
+                printJobs(jobs_tmp,options.stdout,options.why)
+    # end here
+    sys.exit()
 else:
     jobs = getJobs(options)
     printJobs(jobs,options.stdout,options.why)

@@ -81,7 +81,13 @@ If the `-d` flag is used with [generateSubmission.py](./Production/test/condorSu
 
 Because of the large number of events in the MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
 
-Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems. Failed jobs are placed in "held" status in the Condor queue. This enables the job output and parameters to be examined. The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/manageJobs.py). Consult the `--help` option for the script to view the available functions. This script uses the [Condor Python bindings](https://research.cs.wisc.edu/htcondor/manual/current/6_7Python_Bindings.html), which require `/usr/lib64/python2.6/site-packages` to be in the `PYTHONPATH` environment variable.
+Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems.
+Failed jobs are placed in "held" status in the Condor queue.
+This enables the job output and parameters to be examined.
+The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/manageJobs.py).
+Consult the `--help` option for the script to view the available functions.
+This script uses the [Condor Python bindings](https://research.cs.wisc.edu/htcondor/manual/current/6_7Python_Bindings.html), which require `/usr/lib64/python2.6/site-packages` to be in the `PYTHONPATH` environment variable.
+For full functionality, the Python packages `paramiko` and `python-gssapi` are also required.
 
 ## Calculate Integrated Luminosity
 
