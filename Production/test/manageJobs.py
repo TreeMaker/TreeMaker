@@ -19,7 +19,7 @@ class CondorJob:
         self.schedd = schedd
         self.why = result["HoldReason"] if "HoldReason" in result.keys() else ""
         self.args = result["Args"]
-        self.status = result["JobStatus"] # 2 is running, 5 is held
+        self.status = int(result["JobStatus"]) # 2 is running, 5 is held
 
 def getJobs(options, scheddurl=""):
     constraint = ""
@@ -37,12 +37,19 @@ def getJobs(options, scheddurl=""):
 
     # get info for selected jobs
     jobs = []
-    for result in schedd.xquery(constraint,["ClusterId","ProcId","HoldReason","Out","Args","JobStatus"]):
+    for result in schedd.xquery(constraint,["ClusterId","ProcId","HoldReason","Out","Args","JobStatus","ServerTime","ChirpCMSSWLastUpdate"]):
         # check greps
         checkstring = result["Out"]
         if "HoldReason" in result.keys(): checkstring += " "+result["HoldReason"]
         if len(options.grep)>0 and not options.grep in checkstring: continue
         if len(options.vgrep)>0 and options.vgrep in checkstring: continue
+        if options.stuck:
+            time = int(result["ServerTime"]) if "ServerTime" in result.keys() else 0
+            update = int(result["ChirpCMSSWLastUpdate"]) if "ChirpCMSSWLastUpdate" in result.keys() else 0
+            # look for jobs not updating for 12 hours
+            tdiff = time - update
+            if time>0 and update>0 and tdiff>43200: result["HoldReason"] = "Job stuck for "+str(tdiff/3600)+" hours"
+            else: continue
         jobs.append(CondorJob(result,scheddurl))
 
     return jobs
@@ -61,6 +68,7 @@ parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs
 parser.add_option("-a", "--all", dest="all", default=False, action="store_true", help="view jobs from all schedulers (default = %default)")
 parser.add_option("-h", "--held", dest="held", default=False, action="store_true", help="view only held jobs (default = %default)")
 parser.add_option("-r", "--running", dest="running", default=False, action="store_true", help="view only running jobs (default = %default)")
+parser.add_option("-t", "--stuck", dest="stuck", default=False, action="store_true", help="view only stuck jobs (subset of running) (default = %default)")
 parser.add_option("-g", "--grep", dest="grep", default="", help="view jobs with [string] in the job name (default = %default)")
 parser.add_option("-v", "--vgrep", dest="vgrep", default="", help="view jobs without [string] in the job name (default = %default)")
 parser.add_option("-o", "--stdout", dest="stdout", default=False, action="store_true", help="print stdout filenames instead of job names (default = %default)")
@@ -79,6 +87,8 @@ if options.help:
    sys.exit()
 
 # check for exclusive options
+if options.stuck:
+    options.running = True
 if options.held and options.running:
     parser.error("Can't use -h and -r together, pick one!")
 if options.resubmit and options.kill:
@@ -106,15 +116,24 @@ if options.all:
                 client = paramiko.SSHClient()
                 # use kerberos authentication
                 client.connect(sch,gss_host=sch,gss_auth=True,gss_kex=True)
+                # sanitize arguments
+                if "-e" in sys.argv:
+                    eindex = sys.argv.index("-e")+1
+                    sys.argv[eindex] = "'"+sys.argv[eindex]+"'"
+                if "-g" in sys.argv:
+                    gindex = sys.argv.index("-g")+1
+                    sys.argv[gindex] = "'"+sys.argv[gindex]+"'"
+                if "-v" in sys.argv:
+                    vindex = sys.argv.index("-v")+1
+                    sys.argv[vindex] = "'"+sys.argv[vindex]+"'"
                 # recursive run
-                cwd = os.getcwd()
-                myname = sys.argv[0]
-                if not cwd in myname: myname = cwd+"/"+myname
-                stdin, stdout, stderr = client.exec_command("python "+myname+" --ssh "+' '.join(sys.argv[1:]))
+                client.exec_command("cd "+os.getcwd())
+                stdin, stdout, stderr = client.exec_command("python "+sys.argv[0]+" --ssh "+' '.join(sys.argv[1:]))
                 stdoutlines = stdout.readlines()
                 stderrlines = stderr.readlines()
                 print ''.join(stdoutlines)
-                if len(stderrlines)>0: print ''.join(stderrlines)
+                stderrlinesjoined = ''.join(stderrlines)
+                if len(stderrlinesjoined)>1: print stderrlinesjoined
                 client.close()
             else:
                 printJobs(jobs_tmp,options.stdout,options.why)
@@ -168,9 +187,9 @@ if options.resubmit:
             if os.path.isfile(logfile):
                 shutil.copy2(logfile,backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
         # reset counts to avoid removal
-        schedd.edit([j.num],"JobRunCount","0")
-        schedd.edit([j.num],"NumJobStarts","0")
         schedd.edit([j.num],"NumShadowStarts","0")
+        schedd.edit([j.num],"NumJobStarts","0")
+        schedd.edit([j.num],"JobRunCount","0")
         # any other classad edits
         for editname,editval in edits.iteritems():
             schedd.edit([j.num],str(editname),'"'+str(editval)+'"')
