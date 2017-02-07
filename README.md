@@ -55,7 +55,9 @@ python unitTest.py test=2 run=True
 
 Note that all of the background estimation processes (and some processes necessary to estimate systematic uncertainties) are turned *ON* by default in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py).
 
-## Submit Production to Condor (@ LPC)
+## Submit Production to Condor
+
+Condor submission on the LPC batch system is supported. Support for submission to the global pool via [CMS Connect](https://connect.uscms.org/) is preliminary.
 
 To reduce the size of the CMSSW tarball sent to the Condor worker node, there are a few standard directories that can be marked as cached using the script [cache_all.sh](./Production/test/cache_all.sh):
 ```
@@ -63,31 +65,33 @@ To reduce the size of the CMSSW tarball sent to the Condor worker node, there ar
 ```
 
 The [test/condorSub](./Production/test/condorSub/) directory contains all of the relevant scripts.
-If you copy this to another directory and run the [looper.sh](./Production/test/condorSub/looper.sh) script, it will submit one job per file to condor for all of the relevant samples. Example:
+If you copy this to another directory and run the [looper.py](./Production/test/condorSub/looper.py) script, it will submit one job per file to condor for all of the relevant samples. Example:
 ```
 cp -r condorSub myProduction
 cd myProduction
-./looper.sh -d root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction
+python looper.py -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction -s
 ```
+Consult the `--help` option to view the available options.
 
-The jobs open the files over xrootd, so [looper.sh](./Production/test/condorSub/looper.sh) will check that you have a valid grid proxy. 
+The jobs open the files over xrootd, so [looper.py](./Production/test/condorSub/looper.py) will check that you have a valid grid proxy. 
 It will also make a tarball of the current CMSSW working directory to send to the worker node. 
 If you want to reuse an existing CMSSW tarball (no important changes have been made since the last time you submitted jobs), add the argument `-k`.
 
-When the python file list for a given sample is updated, it may be desirable to submit jobs only for the new files. [looper_data_update.sh](./Production/test/condorSub/looper_data_update.sh) shows an example of how to do this.
+When the python file list for a given sample (usually data) is updated, it may be desirable to submit jobs only for the new files.
+The input dictionary format for [looper.py](./Production/test/condorSub/looper.py) optionally allows a (non-zero) starting number to be placed after the sample name.
 To get the number of the first new job, just use `len(readFiles)` from the python file list *before* updating it.
 
-If the `-d` flag is used with [generateSubmission.py](./Production/test/condorSub/generateSubmission.py) when submitting jobs, each data file will be checked to see if the run it contains is certified in the corresponding JSON file. The JSON file is taken by default from the scenario; an alternative can be specified with the `--json` option, e.g. if the JSON is updated and you want to submit jobs only for the newly certified runs. (Use [compareJSON.py](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/FWCore/PythonUtilities/scripts/compareJSON.py) to subtract one JSON list from another, following [this twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#How_to_compare_Good_Luminosity_f).)
-
-Because of the large number of events in the MC, there are now a number of looper_*.sh scripts for signal, data, and various background categories.
+When submitting jobs for prompt data, each data file will be checked to see if the run it contains is certified in the corresponding JSON file. The JSON file is taken by default from the scenario; an alternative can be specified with the `--json` option, e.g. if the JSON is updated and you want to submit jobs only for the newly certified runs. (Use [compareJSON.py](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/FWCore/PythonUtilities/scripts/compareJSON.py) to subtract one JSON list from another, following [this twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#How_to_compare_Good_Luminosity_f).)
 
 Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems.
 Failed jobs are placed in "held" status in the Condor queue.
 This enables the job output and parameters to be examined.
-The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/manageJobs.py).
+The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/condorSub/manageJobs.py).
 Consult the `--help` option for the script to view the available functions.
 This script uses the [Condor Python bindings](https://research.cs.wisc.edu/htcondor/manual/current/6_7Python_Bindings.html), which require `/usr/lib64/python2.6/site-packages` to be in the `PYTHONPATH` environment variable.
 For full functionality, the Python packages `paramiko` and `python-gssapi` are also required.
+
+[looper.py](./Production/test/condorSub/looper.py) can check for jobs which were completely removed from the queue and make a resubmission list.
 
 ## Calculate Integrated Luminosity
 

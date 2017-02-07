@@ -11,6 +11,8 @@ try:
 except:
     has_paramiko = False
 
+from collectors import collectors
+    
 class CondorJob:
     def __init__(self, result, schedd):
         self.stdout = result["Out"].replace(".stdout","")
@@ -86,6 +88,8 @@ if options.help:
    parser.print_help()
    sys.exit()
 
+uname = os.uname()
+
 # check for exclusive options
 if options.stuck:
     options.running = True
@@ -99,15 +103,14 @@ if len(options.xrootd)>0 and options.xrootd[0:7] != "root://":
     parser.error("Improper xrootd address: "+options.xrootd)
 if len(options.xrootd)>0 and options.xrootd[-1]!='/':
     options.xrootd += '/'
-if options.ssh:
+if options.ssh or uname[1]=="login.uscms.org": # sometimes "all" shouldn't be used
     options.all = False
     
 jobs = []
 if options.all:
     # loop over schedulers
-    all_nodes = list(xrange(23,39))
-    all_nodes.append(41)
-    for sch in ["cmslpc"+str(schnum)+".fnal.gov" for schnum in all_nodes]:
+    all_nodes = collectors[0][1]
+    for sch in all_nodes:
         jobs_tmp = getJobs(options,sch)
         if len(jobs_tmp)>0:
             print sch
