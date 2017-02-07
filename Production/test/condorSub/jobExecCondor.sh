@@ -11,6 +11,7 @@ echo "CMSSW on Condor"
 
 # to get condor-chirp from CMSSW
 PATH="/usr/libexec/condor:$PATH"
+source /cvmfs/cms.cern.ch/cmsset_default.sh
 
 CMSSWVER=$1
 OUTDIR=$2
@@ -35,7 +36,6 @@ echo "REDIR:      $REDIR"
 tar -xzf ${CMSSWVER}.tar.gz
 cd ${CMSSWVER}
 scram b ProjectRename
-source /cvmfs/cms.cern.ch/cmsset_default.sh
 # cmsenv
 eval `scramv1 runtime -sh`
 cd -
