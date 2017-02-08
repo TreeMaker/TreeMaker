@@ -73,7 +73,9 @@ for f in jsonfiles:
                         keys.append(key)
     else:
         # just run bril
-        runBril(output,"all",pd,section,f,options.normtag)
+        key = runBril(output,"all",pd,section,f,options.normtag)
+        if not key in keys:
+            keys.append(key)
 
 # organized print
 
