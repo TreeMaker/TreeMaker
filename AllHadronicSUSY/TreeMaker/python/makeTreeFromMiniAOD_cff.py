@@ -119,6 +119,7 @@ residual=False,
     )
     process.Baseline += process.NVtx
     VarsInt.extend(['NVtx'])
+    VarsInt.extend(['NVtx:nAllVertices'])
 
     process.nAllVertices = primaryvertices.clone(
     VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),

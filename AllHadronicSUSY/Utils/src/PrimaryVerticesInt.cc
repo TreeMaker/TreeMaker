@@ -56,7 +56,11 @@ private:
 	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag vertexCollectionTag_;
-	
+
+        bool   checkFake_;
+        int    maxNdof_;
+        double maxZ_;
+        double maxRho_;
 	
 	// ----------member data ---------------------------
 };
@@ -77,8 +81,14 @@ PrimaryVerticesInt::PrimaryVerticesInt(const edm::ParameterSet& iConfig)
 {
 	//register your produc
 	vertexCollectionTag_ = iConfig.getParameter<edm::InputTag>("VertexCollection");
+
+	checkFake_ = iConfig.getParameter <bool>   ("checkFake");
+	maxNdof_   = iConfig.getParameter <int>    ("maxVertexNdof");
+	maxZ_      = iConfig.getParameter <double> ("maxVertexZ");
+	maxRho_    = iConfig.getParameter <double> ("maxVertexRho");
 	
-	produces<int>("");
+	produces<int>();
+	produces<int>("nAllVertices");
 	/* Examples
 	 *   produces<ExampleData2>();
 	 * 
@@ -112,14 +122,27 @@ PrimaryVerticesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	using namespace edm;
 	int nVertices=0;
+	int nGoodVertices=0;
 	edm::Handle<reco::VertexCollection> vertices;
 	iEvent.getByLabel(vertexCollectionTag_,vertices);
 	if( vertices.isValid() ) {
-		nVertices = vertices->size();
+
+	  nVertices = vertices->size();
+	  
+	  for(reco::VertexCollection::const_iterator vitr = vertices->begin(); vitr != vertices->end(); vitr++){
+	    if(checkFake_ && vitr->isFake())          continue;
+	    if(vitr->ndof() <= maxNdof_)              continue;
+	    if(fabs(vitr->z()) > maxZ_)               continue;
+	    if(fabs(vitr->position().Rho())>maxRho_)  continue;
+	    nGoodVertices++;
+	  } //Good Vertices
+	  
 	}
 	else std::cout<<"Warning VertexCollection Tag not valid: "<<vertexCollectionTag_.label()<<std::endl;
-	std::auto_ptr<int> htp(new int(nVertices));
+	std::auto_ptr<int> htp(new int(nGoodVertices));
 	iEvent.put(htp);
+	std::auto_ptr<int> htpAll(new int(nVertices));
+	iEvent.put(htpAll,"nAllVertices");
 	
 }
 
