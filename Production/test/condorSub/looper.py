@@ -98,11 +98,11 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
         os.system("sed -e 's|CMSSWVER|'${CMSSW_VERSION}'|g' "\
                      +"-e 's~OUTDIR~"+options.outputDir+"~g' "\
                      +"-e 's|JOBNAME|"+jobname+"|g' "\
-                     +"-e 's|SAMPLE|"+options.filesConfig+"|g' "\
+                     +"-e 's|SAMPLE|"+filesConfig+"|g' "\
                      +"-e 's|NPART|"+str(iJob)+"|g' "\
                      +"-e 's|NSTART|"+str(nstart)+"|g' "\
                      +"-e 's|NFILES|"+str(options.nFiles)+"|g' "\
-                     +"-e 's|SCENARIO|"+options.scenario+"|g' "\
+                     +"-e 's|SCENARIO|"+scenario+"|g' "\
                      +"< jobExecCondor.jdl > jobExecCondor_"+jobname+".jdl")
         
         # submit jobs to condor, if -s was specified

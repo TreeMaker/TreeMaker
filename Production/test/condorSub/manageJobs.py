@@ -195,7 +195,7 @@ if options.resubmit:
         schedd.edit([j.num],"JobRunCount","0")
         # any other classad edits
         for editname,editval in edits.iteritems():
-            schedd.edit([j.num],str(editname),'"'+str(editval)+'"')
+            schedd.edit([j.num],str(editname),str(editval))
         # edit redirector
         if len(options.xrootd)>0:
             args = j.args.split(' ')

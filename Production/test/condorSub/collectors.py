@@ -22,10 +22,10 @@ collectors = [
             'cmslpc41.fnal.gov',
         ]
     ],
-#    [
-#        "login.uscms.org",
-#        [
-#            "login.uscms.org",
-#        ]
-#    ],
+    [
+        "login.uscms.org",
+        [
+            "login.uscms.org",
+        ]
+    ],
 ]
