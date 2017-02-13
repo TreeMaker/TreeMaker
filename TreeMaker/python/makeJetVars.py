@@ -1,6 +1,35 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, fastsim, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff):
+    from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
+    MHTJets = SubJetSelection.clone(
+        JetTag = JetTag,
+        MinPt  = cms.double(30),
+        MaxEta = cms.double(5.0),
+    )
+    setattr(process,"MHTJets"+MHTsuff+suff,MHTJets)
+    if storeProperties>0: process.TreeMaker2.VectorBool.extend(['MHTJets'+MHTsuff+suff+':SubJetMask(Jets'+suff+'_MHT'+MHTsuff+'Mask)'])
+    MHTJetsTag = cms.InputTag("MHTJets"+MHTsuff+suff)
+    
+    from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
+    MHT = mhtdouble.clone(
+        JetTag  = MHTJetsTag,
+    )
+    setattr(process,"MHT"+MHTsuff+suff,MHT)
+    process.TreeMaker2.VarsDouble.extend(['MHT'+MHTsuff+suff+':Pt(MHT'+MHTsuff+suff+')','MHT'+MHTsuff+suff+':Phi(MHTPhi'+MHTsuff+suff+')'])
+    
+    from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
+    DeltaPhi = deltaphidouble.clone(
+        DeltaPhiJets = HTJetsTag,
+        MHTJets      = MHTJetsTag,
+    )
+    setattr(process,"DeltaPhi"+MHTsuff+suff,DeltaPhi)
+    process.TreeMaker2.VarsDouble.extend(['DeltaPhi'+MHTsuff+suff+':DeltaPhi1(DeltaPhi1'+MHTsuff+suff+')','DeltaPhi'+MHTsuff+suff+':DeltaPhi2(DeltaPhi2'+MHTsuff+suff+')',
+                                          'DeltaPhi'+MHTsuff+suff+':DeltaPhi3(DeltaPhi3'+MHTsuff+suff+')','DeltaPhi'+MHTsuff+suff+':DeltaPhi4(DeltaPhi4'+MHTsuff+suff+')'])
+    
+    return process
+
+def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, fastsim, scenario, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -88,38 +117,21 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
     )
     setattr(process,"BTagsMVA"+suff,BTagsMVA)
     process.TreeMaker2.VarsInt.extend(['BTagsMVA'+suff])
-    
-    ## ----------------------------------------------------------------------------------------------
-    ## MHT
-    ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
-    MHTJets = SubJetSelection.clone(
-        JetTag = GoodJetsTag,
-        MinPt  = cms.double(30),
-        MaxEta = cms.double(5.0),
-    )
-    setattr(process,"MHTJets"+suff,MHTJets)
-    if storeProperties>0: process.TreeMaker2.VectorBool.extend(['MHTJets'+suff+':SubJetMask(Jets'+suff+'_MHTMask)'])
-    MHTJetsTag = cms.InputTag("MHTJets"+suff)
-    
-    from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
-    MHT = mhtdouble.clone(
-        JetTag  = MHTJetsTag,
-    )
-    setattr(process,"MHT"+suff,MHT)
-    process.TreeMaker2.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHTPhi'+suff+')'])
 
     ## ----------------------------------------------------------------------------------------------
-    ## DeltaPhi
+    ## MHT, DeltaPhi
     ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
-    DeltaPhi = deltaphidouble.clone(
-        DeltaPhiJets = HTJetsTag,
-        MHTJets      = MHTJetsTag,
-    )
-    setattr(process,"DeltaPhi"+suff,DeltaPhi)
-    process.TreeMaker2.VarsDouble.extend(['DeltaPhi'+suff+':DeltaPhi1(DeltaPhi1'+suff+')','DeltaPhi'+suff+':DeltaPhi2(DeltaPhi2'+suff+')',
-                                          'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
+    # MHT, DeltaPhi moved to separate fn (above) because of stupid egamma slew corrections
+    MHTOrig = ""
+    if scenario=="2016ReMiniAOD03Feb":
+        MHTOrig = "Orig"
+        from TreeMaker.Utils.patjetfix_cfi import patjetfix
+        PatJetFix = patjetfix.clone(
+            jets = GoodJetsTag
+        )
+        setattr(process,"PatJetFix"+suff,PatJetFix)
+        process = makeMHTVars(process, cms.InputTag("PatJetFix"+suff), HTJetsTag, storeProperties, suff, "")
+    process = makeMHTVars(process, GoodJetsTag, HTJetsTag, storeProperties, suff, MHTOrig)
 
     ## ----------------------------------------------------------------------------------------------
     ## ISR jets
@@ -137,7 +149,6 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
         if storeProperties>0:
             process.TreeMaker2.VectorBool.extend(['ISRJets'+suff+':SubJetMask(Jets'+suff+'_ISRMask)'])
             process.TreeMaker2.VarsInt.extend(['ISRJets'+suff+'(NJetsISR'+suff+')'])
-
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties

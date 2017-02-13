@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim):
+def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, scenario):
     
     ### AK8 detour
 
@@ -43,6 +43,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim):
         storeProperties=1,
         geninfo=geninfo,
         fastsim=fastsim,
+        scenario=scenario,
         onlyGoodJets=True
     )
     
@@ -221,7 +222,8 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim):
         skipGoodJets=False,
         storeProperties=1,
         geninfo=geninfo,
-        fastsim=fastsim
+        fastsim=fastsim,
+        scenario=scenario,
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
@@ -234,7 +236,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim):
     
     return process
 
-def doZinvBkg(process,tagname,geninfo,residual,fastsim):
+def doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario):
     ## ----------------------------------------------------------------------------------------------
     ## Photons
     ## ----------------------------------------------------------------------------------------------
@@ -309,7 +311,8 @@ def doZinvBkg(process,tagname,geninfo,residual,fastsim):
         residual,
         cms.InputTag("cleanedCandidates"),
         "",
-        fastsim
+        fastsim,
+        scenario
     )
     
     return process

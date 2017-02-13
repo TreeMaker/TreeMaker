@@ -579,6 +579,7 @@ scenario=""
                               storeProperties=1,
                               geninfo=geninfo,
                               fastsim=fastsim,
+                              scenario=scenario,
                               SkipTag=SkipTag
         )
         
@@ -596,6 +597,7 @@ scenario=""
                               storeProperties=1,
                               geninfo=geninfo,
                               fastsim=fastsim,
+                              scenario=scenario,
                               SkipTag=SkipTag
         )
 
@@ -613,6 +615,7 @@ scenario=""
                               storeProperties=1,
                               geninfo=geninfo,
                               fastsim=fastsim,
+                              scenario=scenario,
                               SkipTag=SkipTag
         )
         
@@ -630,6 +633,7 @@ scenario=""
                               storeProperties=1,
                               geninfo=geninfo,
                               fastsim=fastsim,
+                              scenario=scenario,
                               SkipTag=SkipTag
         )
 
@@ -686,6 +690,7 @@ scenario=""
                           storeProperties=2,
                           geninfo=geninfo,
                           fastsim=fastsim,
+                          scenario=scenario,
                           SkipTag=SkipTag
     )
     
@@ -706,13 +711,14 @@ scenario=""
     
     # apply jet ID
     process = makeJetVars(process,
-                          JetTag=JetAK8Tag,
-                          suff='AK8',
-                          skipGoodJets=False,
-                          storeProperties=1,
-                          geninfo=geninfo,
-                          fastsim=fastsim,
-                          onlyGoodJets=True
+        JetTag=JetAK8Tag,
+        suff='AK8',
+        skipGoodJets=False,
+        storeProperties=1,
+        geninfo=geninfo,
+        fastsim=fastsim,
+        scenario=scenario,
+        onlyGoodJets=True
     )
     
     # AK8 jet variables - separate instance of jet properties producer
@@ -857,7 +863,7 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,tagname,geninfo,residual,fastsim)
+        process = doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
