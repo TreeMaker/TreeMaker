@@ -26,7 +26,8 @@ pufile="",
 doPDFs=False,
 fastsim=False,
 signal=False,
-pmssm=False
+pmssm=False,
+scenario=""
 ):
 
     ## ----------------------------------------------------------------------------------------------
@@ -203,6 +204,7 @@ pmssm=False
     JetTag = cms.InputTag('slimmedJets')
     JetAK8Tag = cms.InputTag('slimmedJetsAK8')
     METTag = cms.InputTag('slimmedMETs')
+    if scenario=="2016ReMiniAOD03Feb": METTag = cms.InputTag('slimmedMETsMuEGClean')
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
