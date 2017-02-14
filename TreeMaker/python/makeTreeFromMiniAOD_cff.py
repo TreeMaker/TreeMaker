@@ -482,7 +482,29 @@ scenario=""
         )
         VarsBool.extend(['BadGlobalMuonTagger:bad(BadGlobalMuon)','BadGlobalMuonTagger:badTrk(BadTrkGlobalMuon)','DupGlobalMuonTagger:dup(DupGlobalMuon)'])
         VarsDouble.extend(['BadGlobalMuonTagger:badLeadPt(BadGlobalMuonLeadPt)','BadGlobalMuonTagger:badTrkLeadPt(BadTrkGlobalMuonLeadPt)','DupGlobalMuonTagger:dupLeadPt(DupGlobalMuonLeadPt)'])
-
+        
+        # more bad muon crap
+        process.duplicateMuonsFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(tagname),
+            filterName  =   cms.string("Flag_duplicateMuons"),
+        )
+        VarsInt.extend(['duplicateMuonsFilter'])
+        process.badMuonsFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(tagname),
+            filterName  =   cms.string("Flag_badMuons"),
+        )
+        VarsInt.extend(['badMuonsFilter'])
+        process.noBadMuonsFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(tagname),
+            filterName  =   cms.string("Flag_noBadMuons"),
+        )
+        VarsInt.extend(['noBadMuonsFilter'])
         
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
