@@ -12,7 +12,11 @@ except:
     has_paramiko = False
 
 from collectors import collectors
-    
+
+def list_callback(option, opt, value, parser):
+    if value is None: return
+    setattr(parser.values, option.dest, value.split(','))
+
 class CondorJob:
     def __init__(self, result, schedd):
         self.stdout = result["Out"].replace(".stdout","")
@@ -22,6 +26,7 @@ class CondorJob:
         self.why = result["HoldReason"] if "HoldReason" in result.keys() else ""
         self.args = result["Args"]
         self.status = int(result["JobStatus"]) # 2 is running, 5 is held
+        self.sites = result["DESIRED_Sites"] if "DESIRED_Sites" in result.keys() else ""
 
 def getJobs(options, scheddurl=""):
     constraint = ""
@@ -39,7 +44,7 @@ def getJobs(options, scheddurl=""):
 
     # get info for selected jobs
     jobs = []
-    for result in schedd.xquery(constraint,["ClusterId","ProcId","HoldReason","Out","Args","JobStatus","ServerTime","ChirpCMSSWLastUpdate"]):
+    for result in schedd.xquery(constraint,["ClusterId","ProcId","HoldReason","Out","Args","JobStatus","ServerTime","ChirpCMSSWLastUpdate","DESIRED_Sites"]):
         # check greps
         checkstring = result["Out"]
         if "HoldReason" in result.keys(): checkstring += " "+result["HoldReason"]
@@ -80,6 +85,8 @@ parser.add_option("-s", "--resubmit", dest="resubmit", default=False, action="st
 parser.add_option("-k", "--kill", dest="kill", default=False, action="store_true", help="remove the selected jobs (default = %default)")
 parser.add_option("-d", "--dir", dest="dir", default="", help="directory for stdout files (used for backup when resubmitting) (default = %default)")
 parser.add_option("-w", "--why", dest="why", default=False, action="store_true", help="show why a job was held (default = %default)")
+parser.add_option("--add-sites", dest="addsites", default=[], type="string", action="callback", callback=list_callback, help='comma-separated list of global pool sites to add (default = %default)')
+parser.add_option("--rm-sites", dest="rmsites", default=[], type="string", action="callback", callback=list_callback, help='comma-separated list of global pool sites to remove (default = %default)')
 parser.add_option("--ssh", dest="ssh", action="store_true", default=False, help='internal option if script is run recursively over ssh')
 parser.add_option("--help", dest="help", action="store_true", default=False, help='show this help message')
 (options, args) = parser.parse_args()
@@ -193,6 +200,14 @@ if options.resubmit:
         schedd.edit([j.num],"NumShadowStarts","0")
         schedd.edit([j.num],"NumJobStarts","0")
         schedd.edit([j.num],"JobRunCount","0")
+        # change sites if desired
+        if len(options.addsites)>0 or len(options.rmsites)>0:
+            sitelist = j.sites.split(',')
+            for addsite in options.addsites:
+                if not addsite in sitelist: sitelist.append(addsite)
+            for rmsite in options.rmsites:
+                if rmsite in sitelist: del sitelist[sitelist.index(rmsite)]
+            schedd.edit([j.num],"DESIRED_Sites",','.join(sitelist))
         # any other classad edits
         for editname,editval in edits.iteritems():
             schedd.edit([j.num],str(editname),str(editval))

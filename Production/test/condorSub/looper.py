@@ -94,15 +94,35 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
         if options.count:
             continue
             
+        if os.uname()[1]=="login.uscms.org":
+            extras = ("+DESIRED_Sites = "+options.sites) if len(options.sites)>0 else ""
+        else:
+            extras = (
+                r'ONE_DAY = 864000\n'
+                r'periodic_hold = (\\\n'
+                r'    ( JobUniverse == 5 \&\& JobStatus == 2 \&\& CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 1.75 ) || \\\n'
+                r'    ( JobRunCount > 8 ) || \\\n'
+                r'    ( JobStatus == 5 \&\& CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 6 ) || \\\n'
+                r'    ( DiskUsage > 38000000 ) || \\\n'
+                r'    ( ResidentSetSize > RequestMemory * 950 ) )\n'
+                r'periodic_hold_reason = strcat("Job held by PERIODIC_HOLD due to ", \\\n'
+                r'    ifThenElse(( JobUniverse == 5 \&\& JobStatus == 2 \&\& CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 1.75 ), "runtime longer than 1.75 days", \\\n'
+                r'    ifThenElse(( JobRunCount > 8 ), "JobRunCount greater than 8", \\\n'
+                r'    ifThenElse(( JobStatus == 5 \&\& CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 6 ), "hold time longer than 6 days", \\\n'
+                r'    ifThenElse(( DiskUsage > 38000000 ), "disk usage greater than 38GB", \\\n'
+                r'                strcat("memory usage ",ResidentSetSize," greater than requested ",RequestMemory*1000))))), ".")'
+            )
+
         # replace placeholders in template files
-        os.system("sed -e 's|CMSSWVER|'${CMSSW_VERSION}'|g' "\
-                     +"-e 's~OUTDIR~"+options.outputDir+"~g' "\
-                     +"-e 's|JOBNAME|"+jobname+"|g' "\
-                     +"-e 's|SAMPLE|"+filesConfig+"|g' "\
-                     +"-e 's|NPART|"+str(iJob)+"|g' "\
-                     +"-e 's|NSTART|"+str(nstart)+"|g' "\
-                     +"-e 's|NFILES|"+str(options.nFiles)+"|g' "\
-                     +"-e 's|SCENARIO|"+scenario+"|g' "\
+        os.system("sed -e 's|CMSSWVER|'${CMSSW_VERSION}'|g' "
+                     +"-e 's~OUTDIR~"+options.outputDir+"~g' "
+                     +"-e 's|JOBNAME|"+jobname+"|g' "
+                     +"-e 's|SAMPLE|"+filesConfig+"|g' "
+                     +"-e 's|NPART|"+str(iJob)+"|g' "
+                     +"-e 's|NSTART|"+str(nstart)+"|g' "
+                     +"-e 's|NFILES|"+str(options.nFiles)+"|g' "
+                     +"-e 's|SCENARIO|"+scenario+"|g' "
+                     +"-e 's~EXTRASTUFF~"+extras+"~g' "
                      +"< jobExecCondor.jdl > jobExecCondor_"+jobname+".jdl")
         
         # submit jobs to condor, if -s was specified
@@ -136,6 +156,7 @@ parser.add_option("-m", "--missing", dest="missing", default=False, action="stor
 parser.add_option("-r", "--resub", dest="resub", default="", help="make a resub script with specified name (default = %default)")
 parser.add_option("-j", "--json", dest="json", default="", help="manually specified json file to check data (override scenario) (default = %default)")
 parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs from this user (submitter) (default = %default)")
+parser.add_option("--sites", dest="sites", default="", help="comma-separated list of sites for global pool running (default = %default)")
 (options, args) = parser.parse_args()
 
 # check for option errors
