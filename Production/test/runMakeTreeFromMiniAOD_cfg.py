@@ -130,7 +130,8 @@ process = makeTreeFromMiniAOD(process,
     pufile=pufile,
     doPDFs=doPDFs,
     fastsim=fastsim,
-    signal=signal
+    signal=signal,
+    scenario=scenarioName
 )
 
 # final tweaks to process

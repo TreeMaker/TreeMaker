@@ -52,6 +52,7 @@ mytests.append(makeTest("Spring16Fastsig","T1ttttFast" if len(name)==0 else name
 mytests.append(makeTest("Spring16Pmssm","PmssmFast" if len(name)==0 else name,numevents,command,dataset="/store/mc/RunIISpring16MiniAODv2/pMSSM_MCMC1_mH-120to130_batch1_TuneCUETP8M1_13TeV-pythia8/MINIAODSIM/pLHE_PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/008EDC58-EDA2-E611-9608-FA163E1F94C5.root"))
 mytests.append(makeTest("2016H","MET16H" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016H-PromptReco-v2.MET",nstart=30,nfiles=2))
 mytests.append(makeTest("2016ReReco23Sep","MET16ReReco" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016C-23Sep2016-v1.MET",nstart=0,nfiles=10))
+mytests.append(makeTest("2016ReMiniAOD03Feb","MET16ReMiniAOD" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016C-03Feb2017-v1.MET",nstart=0,nfiles=10))
 
 if test<0 or test>len(mytests):
     print "Predefined tests:"

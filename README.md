@@ -32,7 +32,8 @@ The available scenarios are:
 3. `Summer16`: for Summer16 miniAOD 25ns MC  
 4. `Summer16sig`: for Summer16 miniAOD 25ns MC (signal)  
 5. `2016H`: for 2016H PromptReco 25ns data  
-6. `2016ReReco23Sep`: for 2016 ReReco (23Sep) 25ns data, periods B-G
+6. `2016ReReco23Sep`: for 2016 ReReco (23Sep) 25ns data, periods B-G  
+7. `2016ReMiniAOD03Feb`: for 2016 ReMiniAOD (03Feb) 25ns data, periods B-H
 
 ## Unit Tests (Interactive Runs)
 
@@ -195,6 +196,7 @@ Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/pyt
 * `jecfile`: name of a database file from which to get JECs (default="")
 * `jerfile`: name of a database file from which to get JERs (default="")
 * `residual`: switch to enable residual JECs for data (default=False)
+* `scenario`: the scenario name, in case of special requirements (default="")
 
 Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py):
 * `inputFilesConfig`: name of the python file with a list of ROOT files for a sample, used for Condor production (default="", automatically appended with "_cff.py")

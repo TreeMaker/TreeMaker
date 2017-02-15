@@ -26,7 +26,8 @@ pufile="",
 doPDFs=False,
 fastsim=False,
 signal=False,
-pmssm=False
+pmssm=False,
+scenario=""
 ):
 
     ## ----------------------------------------------------------------------------------------------
@@ -203,6 +204,7 @@ pmssm=False
     JetTag = cms.InputTag('slimmedJets')
     JetAK8Tag = cms.InputTag('slimmedJetsAK8')
     METTag = cms.InputTag('slimmedMETs')
+    if scenario=="2016ReMiniAOD03Feb": METTag = cms.InputTag('slimmedMETsMuEGClean')
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
@@ -480,7 +482,29 @@ pmssm=False
         )
         VarsBool.extend(['BadGlobalMuonTagger:bad(BadGlobalMuon)','BadGlobalMuonTagger:badTrk(BadTrkGlobalMuon)','DupGlobalMuonTagger:dup(DupGlobalMuon)'])
         VarsDouble.extend(['BadGlobalMuonTagger:badLeadPt(BadGlobalMuonLeadPt)','BadGlobalMuonTagger:badTrkLeadPt(BadTrkGlobalMuonLeadPt)','DupGlobalMuonTagger:dupLeadPt(DupGlobalMuonLeadPt)'])
-
+        
+        # more bad muon crap
+        process.duplicateMuonsFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(tagname),
+            filterName  =   cms.string("Flag_duplicateMuons"),
+        )
+        VarsInt.extend(['duplicateMuonsFilter'])
+        process.badMuonsFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(tagname),
+            filterName  =   cms.string("Flag_badMuons"),
+        )
+        VarsInt.extend(['badMuonsFilter'])
+        process.noBadMuonsFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(tagname),
+            filterName  =   cms.string("Flag_noBadMuons"),
+        )
+        VarsInt.extend(['noBadMuonsFilter'])
         
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
@@ -577,6 +601,7 @@ pmssm=False
                               storeProperties=1,
                               geninfo=geninfo,
                               fastsim=fastsim,
+                              scenario=scenario,
                               SkipTag=SkipTag
         )
         
@@ -594,6 +619,7 @@ pmssm=False
                               storeProperties=1,
                               geninfo=geninfo,
                               fastsim=fastsim,
+                              scenario=scenario,
                               SkipTag=SkipTag
         )
 
@@ -611,6 +637,7 @@ pmssm=False
                               storeProperties=1,
                               geninfo=geninfo,
                               fastsim=fastsim,
+                              scenario=scenario,
                               SkipTag=SkipTag
         )
         
@@ -628,6 +655,7 @@ pmssm=False
                               storeProperties=1,
                               geninfo=geninfo,
                               fastsim=fastsim,
+                              scenario=scenario,
                               SkipTag=SkipTag
         )
 
@@ -684,6 +712,7 @@ pmssm=False
                           storeProperties=2,
                           geninfo=geninfo,
                           fastsim=fastsim,
+                          scenario=scenario,
                           SkipTag=SkipTag
     )
     
@@ -704,13 +733,14 @@ pmssm=False
     
     # apply jet ID
     process = makeJetVars(process,
-                          JetTag=JetAK8Tag,
-                          suff='AK8',
-                          skipGoodJets=False,
-                          storeProperties=1,
-                          geninfo=geninfo,
-                          fastsim=fastsim,
-                          onlyGoodJets=True
+        JetTag=JetAK8Tag,
+        suff='AK8',
+        skipGoodJets=False,
+        storeProperties=1,
+        geninfo=geninfo,
+        fastsim=fastsim,
+        scenario=scenario,
+        onlyGoodJets=True
     )
     
     # AK8 jet variables - separate instance of jet properties producer
@@ -855,7 +885,7 @@ pmssm=False
     ## ----------------------------------------------------------------------------------------------
     if doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,tagname,geninfo,residual,fastsim)
+        process = doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
