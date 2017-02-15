@@ -20,6 +20,8 @@ triggerNameList = cms.vstring(
 	'HLT_Mu15_IsoVVVL_PFHT600_v',
 	'HLT_Mu15_IsoVVVL_PFHT350_v',
 	'HLT_Photon90_CaloIdL_PFHT500_v',
+        'HLT_Photon90_CaloIdL_PFHT600_v',
+        'HLT_Photon135_PFMET100_v',
 	'HLT_Photon165_HE10_v',
 	'HLT_Photon175_v',
 	'HLT_PFHT300_PFMET100_v',
