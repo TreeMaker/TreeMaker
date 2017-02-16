@@ -50,8 +50,18 @@ def getJobs(options, scheddurl=""):
         # check greps
         checkstring = result["Out"]
         if "HoldReason" in result.keys(): checkstring += " "+result["HoldReason"]
-        if len(options.grep)>0 and not options.grep in checkstring: continue
-        if len(options.vgrep)>0 and options.vgrep in checkstring: continue
+        gfound = False
+        for gcheck in options.grep:
+            if gcheck in checkstring:
+                gfound = True
+                break
+        if len(options.grep)>0 and not gfound: continue
+        vfound = False
+        for vcheck in options.vgrep:
+            if vcheck in checkstring:
+                vfound = True
+                break
+        if len(options.vgrep)>0 and vfound: continue
         if options.stuck:
             time = int(result["ServerTime"]) if "ServerTime" in result.keys() else 0
             update = int(result["ChirpCMSSWLastUpdate"]) if "ChirpCMSSWLastUpdate" in result.keys() else 0
@@ -79,8 +89,8 @@ parser.add_option("-h", "--held", dest="held", default=False, action="store_true
 parser.add_option("-r", "--running", dest="running", default=False, action="store_true", help="view only running jobs (default = %default)")
 parser.add_option("-i", "--idle", dest="idle", default=False, action="store_true", help="view only idle jobs (default = %default)")
 parser.add_option("-t", "--stuck", dest="stuck", default=False, action="store_true", help="view only stuck jobs (subset of running) (default = %default)")
-parser.add_option("-g", "--grep", dest="grep", default="", help="view jobs with [string] in the job name (default = %default)")
-parser.add_option("-v", "--vgrep", dest="vgrep", default="", help="view jobs without [string] in the job name (default = %default)")
+parser.add_option("-g", "--grep", dest="grep", default=[], type="string", action="callback", callback=list_callback, help="view jobs with [comma-separated list of strings] in the job name (default = %default)")
+parser.add_option("-v", "--vgrep", dest="vgrep", default=[], type="string", action="callback", callback=list_callback, help="view jobs without [comma-separated list of string] in the job name (default = %default)")
 parser.add_option("-o", "--stdout", dest="stdout", default=False, action="store_true", help="print stdout filenames instead of job names (default = %default)")
 parser.add_option("-x", "--xrootd", dest="xrootd", default="", help="edit the xrootd redirector of the job (default = %default)")
 parser.add_option("-e", "--edit", dest="edit", default="", help="edit the ClassAds of the job (JSON dict format) (default = %default)")
