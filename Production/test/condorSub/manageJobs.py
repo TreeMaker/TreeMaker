@@ -25,14 +25,16 @@ class CondorJob:
         self.schedd = schedd
         self.why = result["HoldReason"] if "HoldReason" in result.keys() else ""
         self.args = result["Args"]
-        self.status = int(result["JobStatus"]) # 2 is running, 5 is held
+        self.status = int(result["JobStatus"]) # 2 is running, 5 is held, 1 is idle
         self.sites = result["DESIRED_Sites"] if "DESIRED_Sites" in result.keys() else ""
+        if self.sites==classad.Value.Undefined: self.sites = ""
 
 def getJobs(options, scheddurl=""):
     constraint = ""
     if len(options.user)>0: constraint += 'Owner=="'+options.user+'"'
     if options.held: constraint += ' && JobStatus==5'
     elif options.running: constraint += ' && JobStatus==2'
+    elif options.idle: constraint += ' && JobStatus==1'
 
     if len(scheddurl)>0:
         if len(options.coll)>0: coll = htcondor.Collector(options.coll)
@@ -48,8 +50,18 @@ def getJobs(options, scheddurl=""):
         # check greps
         checkstring = result["Out"]
         if "HoldReason" in result.keys(): checkstring += " "+result["HoldReason"]
-        if len(options.grep)>0 and not options.grep in checkstring: continue
-        if len(options.vgrep)>0 and options.vgrep in checkstring: continue
+        gfound = False
+        for gcheck in options.grep:
+            if gcheck in checkstring:
+                gfound = True
+                break
+        if len(options.grep)>0 and not gfound: continue
+        vfound = False
+        for vcheck in options.vgrep:
+            if vcheck in checkstring:
+                vfound = True
+                break
+        if len(options.vgrep)>0 and vfound: continue
         if options.stuck:
             time = int(result["ServerTime"]) if "ServerTime" in result.keys() else 0
             update = int(result["ChirpCMSSWLastUpdate"]) if "ChirpCMSSWLastUpdate" in result.keys() else 0
@@ -75,9 +87,10 @@ parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs
 parser.add_option("-a", "--all", dest="all", default=False, action="store_true", help="view jobs from all schedulers (default = %default)")
 parser.add_option("-h", "--held", dest="held", default=False, action="store_true", help="view only held jobs (default = %default)")
 parser.add_option("-r", "--running", dest="running", default=False, action="store_true", help="view only running jobs (default = %default)")
+parser.add_option("-i", "--idle", dest="idle", default=False, action="store_true", help="view only idle jobs (default = %default)")
 parser.add_option("-t", "--stuck", dest="stuck", default=False, action="store_true", help="view only stuck jobs (subset of running) (default = %default)")
-parser.add_option("-g", "--grep", dest="grep", default="", help="view jobs with [string] in the job name (default = %default)")
-parser.add_option("-v", "--vgrep", dest="vgrep", default="", help="view jobs without [string] in the job name (default = %default)")
+parser.add_option("-g", "--grep", dest="grep", default=[], type="string", action="callback", callback=list_callback, help="view jobs with [comma-separated list of strings] in the job name (default = %default)")
+parser.add_option("-v", "--vgrep", dest="vgrep", default=[], type="string", action="callback", callback=list_callback, help="view jobs without [comma-separated list of string] in the job name (default = %default)")
 parser.add_option("-o", "--stdout", dest="stdout", default=False, action="store_true", help="print stdout filenames instead of job names (default = %default)")
 parser.add_option("-x", "--xrootd", dest="xrootd", default="", help="edit the xrootd redirector of the job (default = %default)")
 parser.add_option("-e", "--edit", dest="edit", default="", help="edit the ClassAds of the job (JSON dict format) (default = %default)")
@@ -100,8 +113,8 @@ uname = os.uname()
 # check for exclusive options
 if options.stuck:
     options.running = True
-if options.held and options.running:
-    parser.error("Can't use -h and -r together, pick one!")
+if options.held and (options.running or options.idle) or (options.running and options.idle):
+    parser.error("Options -h, -r, -i are exclusive, pick one!")
 if options.resubmit and options.kill:
     parser.error("Can't use -s and -k together, pick one!")
 if options.all and not has_paramiko and (options.kill or options.resubmit):
@@ -186,6 +199,31 @@ if options.resubmit:
                 with open(logfile,'w') as logf:
                     subprocess.Popen(cmdt, shell=True, stdout=logf, stderr=subprocess.PIPE).communicate()
             schedd.act(htcondor.JobAction.Hold,[j.num])
+        # reset counts to avoid removal
+        schedd.edit([j.num],"NumShadowStarts","0")
+        schedd.edit([j.num],"NumJobStarts","0")
+        schedd.edit([j.num],"JobRunCount","0")
+        # change sites if desired
+        if len(options.addsites)>0 or len(options.rmsites)>0:
+            sitelist = filter(None,j.sites.split(','))
+            for addsite in options.addsites:
+                if not addsite in sitelist: sitelist.append(addsite)
+            for rmsite in options.rmsites:
+                if rmsite in sitelist: del sitelist[sitelist.index(rmsite)]
+            schedd.edit([j.num],"DESIRED_Sites",'"'+','.join(sitelist)+'"')
+        # any other classad edits
+        for editname,editval in edits.iteritems():
+            schedd.edit([j.num],str(editname),str(editval))
+        # edit redirector
+        if len(options.xrootd)>0:
+            args = j.args.split(' ')
+            args = [a.replace('"','').rstrip() for a in args]
+            if "root:" not in args[-1]: args.append(options.xrootd)
+            else: args[-1] = options.xrootd
+            schedd.edit([j.num],"Args",'"'+" ".join(args[:])+'"')
+        # end here if editing idle job - no need to release or backup
+        if options.idle:
+            continue
         # backup log
         if len(options.dir)>0:
             prev_logs = glob.glob(backup_dir+"/"+j.stdout+"_*")
@@ -196,28 +234,6 @@ if options.resubmit:
             # copy logfile
             if os.path.isfile(logfile):
                 shutil.copy2(logfile,backup_dir+"/"+j.stdout+"_"+str(num_logs)+".stdout")
-        # reset counts to avoid removal
-        schedd.edit([j.num],"NumShadowStarts","0")
-        schedd.edit([j.num],"NumJobStarts","0")
-        schedd.edit([j.num],"JobRunCount","0")
-        # change sites if desired
-        if len(options.addsites)>0 or len(options.rmsites)>0:
-            sitelist = j.sites.split(',')
-            for addsite in options.addsites:
-                if not addsite in sitelist: sitelist.append(addsite)
-            for rmsite in options.rmsites:
-                if rmsite in sitelist: del sitelist[sitelist.index(rmsite)]
-            schedd.edit([j.num],"DESIRED_Sites",','.join(sitelist))
-        # any other classad edits
-        for editname,editval in edits.iteritems():
-            schedd.edit([j.num],str(editname),str(editval))
-        # edit redirector
-        if len(options.xrootd)>0:
-            args = j.args.split(' ')
-            args = [a.replace("\"","").rstrip() for a in args]
-            if "root:" not in args[-1]: args.append(options.xrootd)
-            else: args[-1] = options.xrootd
-            schedd.edit([j.num],"Args",'"'+" ".join(args[:])+'"')
         # release job
         schedd.act(htcondor.JobAction.Release,[j.num])
 # or remove jobs

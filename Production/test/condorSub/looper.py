@@ -95,7 +95,7 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
             continue
             
         if os.uname()[1]=="login.uscms.org":
-            extras = ("+DESIRED_Sites = "+options.sites) if len(options.sites)>0 else ""
+            extras = ("+DESIRED_Sites = \""+options.sites+"\"") if len(options.sites)>0 else ""
         else:
             extras = (
                 r'ONE_DAY = 864000\n'
