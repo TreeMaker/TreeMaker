@@ -53,7 +53,8 @@ scenario=""
         input = cms.untracked.int32(numevents)
     )
     process.source = cms.Source("PoolSource",
-        fileNames = cms.untracked.vstring(dataset)
+        fileNames = cms.untracked.vstring(dataset),
+        inputCommands = cms.untracked.vstring('drop LHERunInfoProduct_*_*_*'),
     )
     if len(jsonfile)>0: process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
 
