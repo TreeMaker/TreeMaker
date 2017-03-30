@@ -204,3 +204,4 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `era`: CMS detector era for the dataset
 * `redir`: xrootd redirector or storage element address (default=root://cmsxrootd.fnal.gov/)
 * `dump`: equivalent to `edmConfigDump`, but accounts for all command-line settings; exits without running (default=False)
+* `mp`: enable igprof hooks for memory profiling (default=False)
