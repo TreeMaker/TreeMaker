@@ -12,6 +12,7 @@ numevents=parameters.value("numevents",-1)
 reportfreq=parameters.value("reportfreq",1000)
 outfile=parameters.value("outfile","test_run")
 dump=parameters.value("dump",False)
+mp=parameters.value("mp",False)
 
 # background estimations on by default
 lostlepton=parameters.value("lostlepton", True)
@@ -137,6 +138,14 @@ process = makeTreeFromMiniAOD(process,
 # final tweaks to process
 process.options.SkipEvent = cms.untracked.vstring('ProductNotFound')
 process.TFileService.closeFileFast = cms.untracked.bool(True)
+if mp:
+    process.IgProfService = cms.Service("IgProfService",
+        reportEventInterval = cms.untracked.int32(1),
+        reportFirstEvent = cms.untracked.int32(1),
+        reportToFileAtPostEndJob = cms.untracked.string('| gzip -c > '+outfile+'___memory___%I_EndOfJob.gz'),
+        reportToFileAtPostEvent = cms.untracked.string('| gzip -c > '+outfile+'___memory___%I.gz')
+    )
+
 
 # if requested, dump and exit
 if dump:

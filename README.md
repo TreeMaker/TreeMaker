@@ -59,6 +59,8 @@ Note that all of the background estimation processes (and some processes necessa
 ## Submit Production to Condor
 
 Condor submission on the LPC batch system is supported. Support for submission to the global pool via [CMS Connect](https://connect.uscms.org/) is preliminary.
+The scripts in this section use the [Condor Python bindings](https://research.cs.wisc.edu/htcondor/manual/current/6_7Python_Bindings.html), which require `/usr/lib64/python2.6/site-packages` to be in the `PYTHONPATH` environment variable.
+For full functionality, the Python packages `paramiko` and `python-gssapi` are also required.
 
 To reduce the size of the CMSSW tarball sent to the Condor worker node, there are a few standard directories that can be marked as cached using the script [cache_all.sh](./Production/test/cache_all.sh):
 ```
@@ -73,6 +75,7 @@ cd myProduction
 python looper.py -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction -s
 ```
 Consult the `--help` option to view the available options.
+[looper.py](./Production/test/condorSub/looper.py) can also check for jobs which were completely removed from the queue and make a resubmission list.
 
 The jobs open the files over xrootd, so [looper.py](./Production/test/condorSub/looper.py) will check that you have a valid grid proxy. 
 It will also make a tarball of the current CMSSW working directory to send to the worker node. 
@@ -89,10 +92,6 @@ Failed jobs are placed in "held" status in the Condor queue.
 This enables the job output and parameters to be examined.
 The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/condorSub/manageJobs.py).
 Consult the `--help` option for the script to view the available functions.
-This script uses the [Condor Python bindings](https://research.cs.wisc.edu/htcondor/manual/current/6_7Python_Bindings.html), which require `/usr/lib64/python2.6/site-packages` to be in the `PYTHONPATH` environment variable.
-For full functionality, the Python packages `paramiko` and `python-gssapi` are also required.
-
-[looper.py](./Production/test/condorSub/looper.py) can check for jobs which were completely removed from the queue and make a resubmission list.
 
 ## Calculate Integrated Luminosity
 
@@ -204,3 +203,4 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `era`: CMS detector era for the dataset
 * `redir`: xrootd redirector or storage element address (default=root://cmsxrootd.fnal.gov/)
 * `dump`: equivalent to `edmConfigDump`, but accounts for all command-line settings; exits without running (default=False)
+* `mp`: enable igprof hooks for memory profiling (default=False)
