@@ -146,7 +146,8 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
         isData=not geninfo, # controls gen met
         jetCollUnskimmed='patJetsAK4PFCLEAN'+suff,
         pfCandColl=cleanedCandidates.value(),
-        repro80X=True, # to recompute without reclustering
+        recoMetFromPFCs=True, # to recompute
+        reclusterJets=False, # without reclustering
         postfix=postfix
     )
     METTag = cms.InputTag('slimmedMETs'+postfix)

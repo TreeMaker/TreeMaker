@@ -2,19 +2,17 @@
 
 ## Instructions
 
-The following installation instructions assume the user wants to process Summer16 MC (miniAOD v2 format) or Run2016 23Sep ReReco data.
+The following installation instructions assume the user wants to process Summer16 MC (miniAOD v2 format), or Run2016 23Sep ReReco or 03Feb ReMiniAOD data.
 (Spring16 MC and Run2016 PromptReco data are also supported, but only in limited cases.)
 
 ```
-cmsrel CMSSW_8_0_25
-cd CMSSW_8_0_25/src/
+cmsrel CMSSW_8_0_28
+cd CMSSW_8_0_28/src/
 cmsenv
 git cms-init
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch btv-cmssw BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
-git cms-merge-topic -u kpedro88:METfix8022
-git cms-merge-topic -u cms-met:fromCMSSW_8_0_20_postICHEPfilter
 git cms-merge-topic -u kpedro88:storeJERFactor8022
 git cms-merge-topic -u kpedro88:badMuonFilters_80X_v2_RA2
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
