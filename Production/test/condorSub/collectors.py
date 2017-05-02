@@ -16,10 +16,11 @@ collectors = [
             'cmslpc34.fnal.gov',
             'cmslpc35.fnal.gov',
             'cmslpc36.fnal.gov',
-#            'cmslpc37.fnal.gov',
+            'cmslpc37.fnal.gov',
             'cmslpc38.fnal.gov',
             'cmslpc39.fnal.gov',
             'cmslpc41.fnal.gov',
+            'cmslpc42.fnal.gov',
         ]
     ],
     [
