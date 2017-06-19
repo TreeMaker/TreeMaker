@@ -15,6 +15,7 @@ git fetch btv-cmssw refs/tags/BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CM
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
 git cms-merge-topic -u kpedro88:storeJERFactor8022
 git cms-merge-topic -u kpedro88:badMuonFilters_80X_v2_RA2
+git cms-merge-topic -u kpedro88:FixMetSigData8028
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram b -j 8
