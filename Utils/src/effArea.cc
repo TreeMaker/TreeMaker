@@ -39,7 +39,7 @@ public:
     // find the relevant eta range
     for( unsigned int i = 0 ; i < etaHigh.size() ; i++ ){
 
-      if( fabs(eta) < etaHigh[i] && fabs(eta) > etaLow[i] ){
+      if( fabs(eta) < etaHigh[i] && fabs(eta) >= etaLow[i] ){
 	iEta = i;
 	break;
       }
