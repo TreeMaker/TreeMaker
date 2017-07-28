@@ -168,7 +168,7 @@ PatJetFix::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     Handle<edm::View<pat::Jet> >PFJets;
     iEvent.getByToken(JetTok_, PFJets);
 
-    std::auto_ptr< std::vector<pat::Jet> > patJets ( new std::vector<pat::Jet>() );
+    auto patJets = std::make_unique<std::vector<pat::Jet>>();
     patJets->reserve(PFJets->size());
     if(fabs((PFCorrMET->at(0).pt()-PFMET->at(0).pt()))<0.00001){
         for(auto Jet = PFJets->begin(); Jet != PFJets->end(); ++Jet){
@@ -177,7 +177,7 @@ PatJetFix::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
             pat::Jet ajet(jetRef);
             patJets->push_back(ajet);
         }
-        iEvent.put(patJets);//Just a copy of the original collection
+        iEvent.put(std::move(patJets));//Just a copy of the original collection
         return;
     }
 
@@ -289,7 +289,7 @@ PatJetFix::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         patJets->push_back(ajet);
     }
     
-    iEvent.put(patJets);
+    iEvent.put(std::move(patJets));
 }
 
 // ------------ method called once each stream before processing any runs, lumis or events  ------------
