@@ -894,12 +894,16 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
 
+    # dump everything into a task so it can run unscheduled
+    process.myTask = cms.Task()
+    process.myTask.add(*[getattr(process,prod) for prod in process.producers_()])
+    process.myTask.add(*[getattr(process,filt) for filt in process.filters_()])
     # create the process path
-    process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     process.WriteTree = cms.Path(
         process.Baseline *
         process.TreeMaker2
     )
+    process.WriteTree.associate(process.myTask)
     
     return process
 
