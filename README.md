@@ -2,22 +2,17 @@
 
 ## Instructions
 
-The following installation instructions assume the user wants to process Summer16 MC (miniAOD v2 format), or Run2016 23Sep ReReco or 03Feb ReMiniAOD data.
-(Spring16 MC and Run2016 PromptReco data are also supported, but only in limited cases.)
+The following installation instructions assume the user wants to process Run2017 PromptReco data.
 
 ```
-cmsrel CMSSW_8_0_28
-cd CMSSW_8_0_28/src/
+cmsrel CMSSW_9_2_7_patch1
+cd CMSSW_9_2_7_patch1/src/
 cmsenv
 git cms-init
-git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
-git fetch btv-cmssw refs/tags/BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
-git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
-git cms-merge-topic -u kpedro88:storeJERFactor8022
-git cms-merge-topic -u kpedro88:badMuonFilters_80X_v2_RA2
-git cms-merge-topic -u kpedro88:FixMetSigData8028
-git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
-git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
+git cms-merge-topic -u kpedro88:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_2_7_patch1
+git cms-merge-topic -u kpedro88:storeJERFactor927patch1
+git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_91X_v1
+git clone git@github.com:TreeMaker/TreeMaker.git -b Run2_2017
 scram b -j 8
 cd TreeMaker/Production/test
 ```
