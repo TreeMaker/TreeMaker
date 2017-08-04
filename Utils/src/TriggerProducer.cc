@@ -149,7 +149,7 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         trigNamesVec->at(parsedIndex) = testTriggerName;
         passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
         trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
-        //std::cout << "Matched: " << testTriggerName << std::endl;
+        std::cout << "Matched: " << testTriggerName << std::endl;
         break; //We only match one trigger to each trigger name fragment passed
       }
     }

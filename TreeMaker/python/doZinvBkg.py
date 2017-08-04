@@ -118,7 +118,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
        svSource = cms.InputTag('slimmedSecondaryVertices'),
        algo = 'AK',
        rParam = 0.4,
-       getJetMCFlavour = True, # seems to be enough for hadronFlavour()
+       getJetMCFlavour = False, # seems to be enough for hadronFlavour()
        #genJetCollection = cms.InputTag('slimmedGenJets'),
        genParticles = cms.InputTag('prunedGenParticles'), # likely needed for hadronFlavour()....
        jetCorrections = ('AK4PFchs', jecLevels, 'None'),

@@ -495,7 +495,7 @@ scenario=""
     )
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
-
+    
     if not geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
         process.PrescaleWeightProducer = prescaleweightProducer.clone()
