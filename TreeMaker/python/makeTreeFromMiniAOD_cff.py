@@ -407,6 +407,7 @@ scenario=""
     if not fastsim: # MET filters are not run for fastsim samples
 
         from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
+        ''' 
         
         process.CSCTightHaloFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
@@ -447,15 +448,14 @@ scenario=""
             filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
         VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
-        
         process.eeBadScFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg1  = cms.string("TriggerResults"),
             trigTagArg2  = cms.string(''),
             trigTagArg3  = cms.string(tagname),
             filterName  =   cms.string("Flag_eeBadScFilter"),
         )
         VarsInt.extend(['eeBadScFilter'])
-        
+        '''
         # some filters need to be rerun
         process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
         process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")

@@ -6,6 +6,6 @@ prescaleweightProducer = cms.EDProducer('PrescaleWeightProducer',
 
    prescales = cms.InputTag("patTrigger"),
 
-   objects = cms.InputTag("selectedPatTrigger"),
+   objects = cms.InputTag("slimmedPatTrigger"),
                                         
 )
