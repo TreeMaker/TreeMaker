@@ -129,7 +129,8 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
     # turn on/off GEN matching (different than hadronFlavour()?)
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenPartonMatch = cms.bool(False)
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenJetMatch = cms.bool(False)
-
+    getattr(process,'patJetsAK4PFCLEAN'+suff).genJetMatch = cms.InputTag("")
+    getattr(process,'patJetsAK4PFCLEAN'+suff).genPartonMatch = cms.InputTag("")
     # apply pt cut to final jet collection (done in slimmedJets)
     reclusteredJets = cms.EDFilter("PATJetSelector",
         src = cms.InputTag("patJetsAK4PFCLEAN"+suff),
@@ -244,7 +245,7 @@ def doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario):
     process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
         photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
         electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
-        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
+        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",'RECO'),
         beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
         ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),

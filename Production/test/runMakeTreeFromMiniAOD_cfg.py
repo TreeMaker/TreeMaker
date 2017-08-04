@@ -18,7 +18,7 @@ mp=parameters.value("mp",False)
 lostlepton=parameters.value("lostlepton", True)
 hadtau=parameters.value("hadtau", True)
 hadtaurecluster=parameters.value("hadtaurecluster", 1)
-doZinv=parameters.value("doZinv", False)
+doZinv=parameters.value("doZinv", True)
 # compute the PDF weights
 doPDFs=parameters.value("doPDFs", True);
 
