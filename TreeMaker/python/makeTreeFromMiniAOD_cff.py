@@ -469,44 +469,6 @@ scenario=""
         process.BadPFMuonFilter.taggingMode = True
         VarsBool.extend(['BadPFMuonFilter'])
         
-        # bad muon crap
-        process.BadGlobalMuonTagger = cms.EDFilter("BadGlobalMuonTagger",
-            muons = cms.InputTag("slimmedMuons"),
-            vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
-            muonPtCut = cms.double(0), # store leading pt
-            selectClones = cms.bool(False),
-            taggingMode = cms.bool(True),
-            verbose = cms.untracked.bool(False)
-        )
-        process.DupGlobalMuonTagger = process.BadGlobalMuonTagger.clone(
-            selectClones = cms.bool(True)
-        )
-        VarsBool.extend(['BadGlobalMuonTagger:bad(BadGlobalMuon)','BadGlobalMuonTagger:badTrk(BadTrkGlobalMuon)','DupGlobalMuonTagger:dup(DupGlobalMuon)'])
-        VarsDouble.extend(['BadGlobalMuonTagger:badLeadPt(BadGlobalMuonLeadPt)','BadGlobalMuonTagger:badTrkLeadPt(BadTrkGlobalMuonLeadPt)','DupGlobalMuonTagger:dupLeadPt(DupGlobalMuonLeadPt)'])
-        
-        # more bad muon crap
-        process.duplicateMuonsFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string('TriggerResults'),
-            trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(tagname),
-            filterName  =   cms.string("Flag_duplicateMuons"),
-        )
-        VarsInt.extend(['duplicateMuonsFilter'])
-        process.badMuonsFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string('TriggerResults'),
-            trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(tagname),
-            filterName  =   cms.string("Flag_badMuons"),
-        )
-        VarsInt.extend(['badMuonsFilter'])
-        process.noBadMuonsFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string('TriggerResults'),
-            trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(tagname),
-            filterName  =   cms.string("Flag_noBadMuons"),
-        )
-        VarsInt.extend(['noBadMuonsFilter'])
-        
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
     ## ----------------------------------------------------------------------------------------------
@@ -894,12 +856,16 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
 
+    # dump everything into a task so it can run unscheduled
+    process.myTask = cms.Task()
+    process.myTask.add(*[getattr(process,prod) for prod in process.producers_()])
+    process.myTask.add(*[getattr(process,filt) for filt in process.filters_()])
     # create the process path
-    process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     process.WriteTree = cms.Path(
         process.Baseline *
         process.TreeMaker2
     )
+    process.WriteTree.associate(process.myTask)
     
     return process
 
