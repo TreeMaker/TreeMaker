@@ -62,7 +62,7 @@ class Scenario:
                           era="Run2_25ns")
         elif sname == "2017PromptCollisions":
             self.set_vars(globaltag="92X_dataRun2_Prompt_v8",
-                          tagname="PAT",
+                          tagname="RECO",
                           jsonfile="data/Cert_294927-299042_13TeV_PromptReco_Collisions17_JSON.txt",
                           jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                           residual=True,

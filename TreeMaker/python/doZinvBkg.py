@@ -63,7 +63,6 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
             "NumChadrons"          ,
         )
     )
-    
     process.JetsPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsCHSCleanPrunedMass')
     process.JetsPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
     process.JetsPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
@@ -245,7 +244,7 @@ def doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario):
     process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
         photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
         electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
-        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",'RECO'),
+        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
         beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
         ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),

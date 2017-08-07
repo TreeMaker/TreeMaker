@@ -204,6 +204,7 @@ scenario=""
     # default miniAOD tags
     JetTag = cms.InputTag('slimmedJets')
     JetAK8Tag = cms.InputTag('slimmedJetsAK8')
+    #JetAK8Tag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked')
     METTag = cms.InputTag('slimmedMETs')
     if scenario=="2016ReMiniAOD03Feb": METTag = cms.InputTag('slimmedMETsMuEGClean')
     
@@ -411,7 +412,7 @@ scenario=""
         process.CSCTightHaloFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string('RECO'),
+            trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_CSCTightHalo2015Filter"),
         )
         VarsInt.extend(['CSCTightHaloFilter'])
@@ -419,7 +420,7 @@ scenario=""
         process.globalTightHalo2016Filter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string('RECO'),
+            trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_globalTightHalo2016Filter"),
         )
         VarsInt.extend(['globalTightHalo2016Filter'])
@@ -427,7 +428,7 @@ scenario=""
         process.HBHENoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string('RECO'),
+            trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_HBHENoiseFilter"),
         )
         VarsInt.extend(['HBHENoiseFilter'])
@@ -435,7 +436,7 @@ scenario=""
         process.HBHEIsoNoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string('RECO'),
+            trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_HBHENoiseIsoFilter"),
         )
         VarsInt.extend(['HBHEIsoNoiseFilter'])
@@ -443,14 +444,14 @@ scenario=""
         process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string('RECO'),
+            trigTagArg3 = cms.string(tagname),
             filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
         VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
         process.eeBadScFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string("TriggerResults"),
             trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string('RECO'),
+            trigTagArg3  = cms.string(tagname),
             filterName  =   cms.string("Flag_eeBadScFilter"),
         )
         VarsInt.extend(['eeBadScFilter'])
@@ -706,10 +707,11 @@ scenario=""
     
     # AK8 jet variables - separate instance of jet properties producer
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
+    #JetAK8Tag = cms.InputTag('slimmedJetsAK8')
     process.JetsPropertiesAK8 = jetproperties.clone(
         JetTag       = JetAK8Tag,
         properties = cms.vstring(
-            #"PuppiSoftDropMass"    ,
+            "prunedMass"    ,
             "NsubjettinessTau1"    ,
             "NsubjettinessTau2"    ,
             "NsubjettinessTau3"    ,
@@ -720,24 +722,24 @@ scenario=""
             "NumChadrons"          ,
         )
     )
-    #specify userfloats
-    #process.JetsPropertiesAK8.PuppiSoftDropMass = cms.vstring('ak8PFJetsPuppiSoftDropMass')
-    #process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
-    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
-    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
-    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
+    #specify userfloat
+    #process.JetsPropertiesAK8.prunedMass = cms.vstring('prunedMass')
+    process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass')
+    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1')
+    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('ak8PFJetsCHSValueMap:NjettinessAK8CHSTau2')
+    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('ak8PFJetsCHSValueMap:NjettinessAK8CHSTau3')
     #process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     #process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
+    process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('SoftDrop','pfBoostedDoubleSecondaryVertexAK8BJetTags')
     #VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
-    VectorDouble.extend([ #'JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
-		         #'JetsPropertiesAK8:PuppiSoftDropMass(JetsAK8_SoftDropMass)',
+    VectorDouble.extend([ 'JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
                          #'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
                          #'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
                          'JetsPropertiesAK8:bDiscriminatorCSV(JetsAK8_doubleBDiscriminator)',
                          'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
                          'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
-                         'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
+                         'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'
+			])
     VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
                       'JetsPropertiesAK8:NumChadrons(JetsAK8_NumChadrons)'])
 
