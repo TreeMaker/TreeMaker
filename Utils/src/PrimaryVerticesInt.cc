@@ -24,10 +24,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -119,7 +118,7 @@ PrimaryVerticesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	if( vertices.isValid() ) {
 		nVertices = vertices->size();
 	}
-	else std::cout<<"Warning VertexCollection Tag not valid: "<<vertexCollectionTag_.label()<<std::endl;
+	else edm::LogWarning("TreeMaker")<<"Warning VertexCollection Tag not valid: "<<vertexCollectionTag_.label();
 	auto htp = std::make_unique<int>(nVertices);
 	iEvent.put(std::move(htp));
 	

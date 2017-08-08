@@ -23,11 +23,11 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
@@ -76,7 +76,7 @@ private:
 	edm::InputTag IntTag_;
 	edm::EDGetTokenT<int> IntTok_;
 	double CutValue_;
-	int CutTyp_;
+	int CutType_;
 };
 
 //
@@ -95,7 +95,7 @@ IntFilter::IntFilter(const edm::ParameterSet& iConfig)
 	//now do what ever initialization is needed
 	IntTag_ = iConfig.getParameter<edm::InputTag>("IntTag");
 	CutValue_ = iConfig.getParameter <double> ("CutValue");
-	CutTyp_ = iConfig.getParameter <int> ("CutTyp");
+	CutType_ = iConfig.getParameter <int> ("CutType");
 	IntTok_ = consumes<int>(IntTag_);
 }
 
@@ -119,23 +119,23 @@ IntFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
 	edm::Handle<int> var;	
 	iEvent.getByToken(IntTok_,var);
-	if(CutTyp_==0)
+	if(CutType_==0)
 	{
 	  if(*var<CutValue_) return false;
 	}
-	else if(CutTyp_==1){
+	else if(CutType_==1){
 	  
 	  if(*var>CutValue_) return false;
 	}
-	else if(CutTyp_==2){
+	else if(CutType_==2){
 	  
 	  if(*var<=CutValue_) return false;
 	  }
-	else if(CutTyp_==3){
+	else if(CutType_==3){
 	  
 	  if(*var>=CutValue_) return false;
 	  }
-	else std::cout<<"IntFilter: CutTyp: "<<CutTyp_<<" not defined!"<<std::endl;
+	else edm::LogWarning("TreeMaker")<<"IntFilter: CutType: "<<CutType_<<" not defined!";
 	
 	return true;
 }

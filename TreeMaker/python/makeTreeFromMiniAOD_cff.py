@@ -42,6 +42,11 @@ scenario=""
     # log output
     process.load("FWCore.MessageService.MessageLogger_cfi")
     process.MessageLogger.cerr.FwkReport.reportEvery = reportfreq
+    process.MessageLogger.categories.append('TreeMaker')
+    process.MessageLogger.cerr.TreeMaker = cms.untracked.PSet(
+        optionalPSet = cms.untracked.bool(True),
+        limit = cms.untracked.int32(10000000),
+    )
     process.options = cms.untracked.PSet(
         allowUnscheduled = cms.untracked.bool(True),
 #        wantSummary = cms.untracked.bool(True) # off by default

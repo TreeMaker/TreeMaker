@@ -12,6 +12,7 @@
 #include "FWCore/Framework/interface/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
 
@@ -93,7 +94,7 @@ EventListFilter::EventListFilter(const edm::ParameterSet& iConfig) :
 			}
 		}
 		else {
-			std::cout << "EventListFilter: could not open file: " << inputFileList_ << std::endl;
+			edm::LogWarning("TreeMaker") << "EventListFilter: could not open file: " << inputFileList_;
 		}
 	}
 	

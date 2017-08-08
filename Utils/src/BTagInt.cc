@@ -23,10 +23,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
@@ -124,7 +123,7 @@ BTagInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  if(Jets->at(i).bDiscriminator(btagname_) >btagvalue_)BTags++;
 		}
 	}
-	else std::cout<<"BTagInt::Invalid Tag: "<<JetTag_.label()<<std::endl;
+	else edm::LogWarning("TreeMaker")<<"BTagInt::Invalid Tag: "<<JetTag_.label();
 	auto htp = std::make_unique<int>(BTags);
 	iEvent.put(std::move(htp));
 	

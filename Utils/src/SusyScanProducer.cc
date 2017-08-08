@@ -5,6 +5,7 @@
 #include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
@@ -74,7 +75,7 @@ void SusyScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	using namespace edm;
 
 	if(isLHE_ && shouldScan_){
-		if(debug_) std::cout << "SusyScanProducer: checking LHEEventProduct" << std::endl;
+		if(debug_) edm::LogInfo("TreeMaker") << "SusyScanProducer: checking LHEEventProduct";
 		std::vector<edm::Handle<LHEEventProduct> > handles;
 		getterOfProducts_.fillHandles(iEvent, handles);
 
@@ -132,7 +133,7 @@ SusyScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::E
 {
 	//new way of getting SUSY scan info
 	if(!isLHE_ && shouldScan_){
-		if(debug_) std::cout << "SusyScanProducer: checking GenLumiInfoHeader" << std::endl;
+		if(debug_) edm::LogInfo("TreeMaker") << "SusyScanProducer: checking GenLumiInfoHeader";
 		edm::Handle<GenLumiInfoHeader> gen_header;
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);
 		std::string model = gen_header->configDescription();
@@ -161,7 +162,7 @@ void SusyScanProducer::getModelInfo(std::string comment){
 	//strip newline
 	if(comment.back()=='\n') comment.pop_back();
 	
-	if(debug_) std::cout << comment << std::endl;
+	if(debug_) edm::LogInfo("TreeMaker") << comment;
 	
 	std::vector<std::string> fields;
 	//underscore-delimited data

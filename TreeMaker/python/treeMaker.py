@@ -4,8 +4,6 @@ TreeMaker = cms.EDProducer(
 'TreeMaker',
 # Name of the output tree
 TreeName          = cms.string('RA2Tree'),
-## might help if something isn't working, will produce couts
-debug = cms.bool(False),
 #default: output RecoCands as vector<TLorentzVector>
 #switches to vector<double> pt, eta, phi, energy if false
 doLorentz = cms.bool(True),

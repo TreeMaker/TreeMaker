@@ -20,7 +20,7 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 
-//#define debug
+//#define EDM_ML_DEBUG
 
 class ISRJetProducer : public edm::EDProducer {
 	public:
@@ -84,7 +84,7 @@ void ISRJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 				for (unsigned idau=0; idau < mc.numberOfDaughters(); ++idau) {
 					float dR = deltaR(jets->at(ijet).p4(), mc.daughter(idau)->p4());
 					if(dR<0.3){
-#ifdef debug
+#ifdef EDM_ML_DEBUG
 						std::cout<<"Jet: ("<<clean_jets[ijet].pt()<<", "<<clean_jets[ijet].eta()<<", "<<clean_jets[ijet].phi()
 							<<"), MC: ("<<mc.daughter(idau)->pt()<<", "<<mc.daughter(idau)->eta()<<", "<<mc.daughter(idau)->phi()<<"), ID "<<mc.daughter(idau)->pdgId()<<". dR "<<dR <<std::endl;
 #endif

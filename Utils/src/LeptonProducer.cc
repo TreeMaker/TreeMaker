@@ -26,13 +26,11 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
-
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -159,8 +157,6 @@ LeptonProducer::~LeptonProducer()
 // ------------ method called to produce the data  ------------
 void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  //  std::cout<<"Running LeptonProducer"<<std::endl;
- 
   using namespace edm;
 
   auto isoElectrons = std::make_unique<std::vector<pat::Electron>>();
@@ -188,7 +184,7 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if(MET.isValid() )
     {
       metLorentz=MET->at(0).p4();
-    } else std::cout<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label()<<std::endl;
+    } else edm::LogWarning("TreeMaker")<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label();
 
   int Leptons=0;
   edm::Handle<pat::PackedCandidateCollection> pfcands;
@@ -227,7 +223,6 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   isoMuons->push_back(muonHandle->at(m));
                   muIDIsoTight->push_back(MuonIDtight(muonHandle->at(m),vtx_h->at(0)));
                   muIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi()));
-                  //        std::cout<<"muIDIsoMTW: "<<MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi())<<"\n";
                   MuonCharge->push_back(muonHandle->at(m).charge());
                 }
             }

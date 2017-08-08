@@ -5,13 +5,11 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
-
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -113,8 +111,6 @@ ExtrapolationProducer::~ExtrapolationProducer()
 
 void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  //  std::cout<<"Running ExtrapolationProducer"<<std::endl;
- 
   using namespace edm;
 		
   auto muPTW = std::make_unique<std::vector<double>>();
@@ -131,7 +127,7 @@ void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
   TVector2 mhtVec(0,0);
   if (mhtHandle.isValid() && mhtPhiHandle.isValid()) {
     mhtVec.SetMagPhi(MHT, MHTPhi);
-  } else std::cout<<"ExtrapolationProducer can't find MHT"<<std::endl;
+  } else edm::LogWarning("TreeMaker")<<"ExtrapolationProducer can't find MHT";
 
   edm::Handle<edm::View<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonTok_, muonHandle);

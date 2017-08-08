@@ -5,6 +5,7 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 // new includes
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -88,7 +89,7 @@ void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
       } 
    } else {
-      std::cout << "MinPhotonDeltaRDouble::Error tag invalid: " << "prunedGenParticles" << std::endl;
+      edm::LogWarning("TreeMaker") << "MinPhotonDeltaRDouble::Error tag invalid: " << "prunedGenParticles";
    }
 
    auto htp0 = std::make_unique<double>(minDR);

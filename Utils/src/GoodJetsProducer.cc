@@ -24,10 +24,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDFilter.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -154,7 +153,7 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
             excludeHandles.push_back(cleanCands);
          }
          else {
-             std::cout<<"Warning: skip tag not valid in GoodJetsProducer: "<<SkipTag_[iC]<<std::endl;
+             edm::LogWarning("TreeMaker")<<"Warning: skip tag not valid in GoodJetsProducer: "<<SkipTag_[iC];
          }
       }
    }
@@ -226,7 +225,6 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
         //calculate event filter only for jets that pass pT cut
         if ( (!invertJetPtFilter_ && Jets->at(i).pt() > jetPtFilter_) ||
                 (invertJetPtFilter_ && Jets->at(i).pt() <= jetPtFilter_) ) {
-           //std::cout << "Filtered jet pT, eta: " << Jets->at(i).pt() << ", " << Jets->at(i).eta() << std::endl;
            if(!good && !TagMode_) return false;
            result &= good;
         }

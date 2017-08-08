@@ -24,10 +24,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -154,14 +153,14 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   }
   
   if (useReclusteredJets_){
-  if (debug_) std::cout << "Jets and reclusJets isValid:" << Jets.isValid() << " " << reclusJets.isValid() << std::endl;
+  if (debug_) edm::LogWarning("TreeMaker") << "Jets and reclusJets isValid:" << Jets.isValid() << " " << reclusJets.isValid();
   if(Jets.isValid() && reclusJets.isValid() )
   {
 
 //.................................////.................................//
     
     // Check which ones to keep
-    if (debug_) std::cout << "Jets and reclusJets size:" << Jets->size() << " " << reclusJets->size() << std::endl;
+    if (debug_) edm::LogWarning("TreeMaker") << "Jets and reclusJets size:" << Jets->size() << " " << reclusJets->size();
     for(unsigned int io=0; io < reclusJets->size(); io++){
        const double otjet_pt = reclusJets->at(io).pt(), otjet_eta = reclusJets->at(io).eta(), otjet_phi = reclusJets->at(io).phi();
        int cntFound = 0, matchedIdx = -1;
@@ -179,15 +178,17 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
        }
        if( otjet_pt > jetPtCut_miniAOD_ ){
           if( cntFound != 1 && debug_ ){
-            std::cout<<"WARNING ... jet mis-matching between reclusJets and jets for pt > "<<jetPtCut_miniAOD_<<"  matchedIdx: "<<matchedIdx<<"  cntFound: "<<cntFound<<std::endl;
-            std::cout<<"otjet_pt : "<<otjet_pt<<"  otjet_eta : "<<otjet_eta<<"  otjet_phi : "<<otjet_phi<<std::endl;
-            if( matchedIdx != -1 ) std::cout<<"  jet_pt : "<<Jets->at(matchedIdx).pt()<<"    jet_eta : "<<Jets->at(matchedIdx).eta()<<"    jet_phi : "<<Jets->at(matchedIdx).phi()<<std::endl;
+            std::stringstream stmp;
+            if( matchedIdx != -1 ) stmp <<"\n  jet_pt : "<<Jets->at(matchedIdx).pt()<<"    jet_eta : "<<Jets->at(matchedIdx).eta()<<"    jet_phi : "<<Jets->at(matchedIdx).phi();
+            edm::LogWarning("TreeMaker")<<"WARNING ... jet mis-matching between reclusJets and jets for pt > "<<jetPtCut_miniAOD_<<"  matchedIdx: "<<matchedIdx<<"  cntFound: "<<cntFound<<"\n"
+              <<"otjet_pt : "<<otjet_pt<<"  otjet_eta : "<<otjet_eta<<"  otjet_phi : "<<otjet_phi
+              << stmp.str();
           }
        }else{
           if( cntFound && debug_ ){
-             std::cout<<"WARNING ... otjet with pt : "<<otjet_pt<<"  matching to one of the jets for pt > "<<jetPtCut_miniAOD_<<" ?!"<<std::endl;
-             std::cout<<"otjet_pt : "<<otjet_pt<<"  otjet_eta : "<<otjet_eta<<"  otjet_phi : "<<otjet_phi<<std::endl;
-             std::cout<<"  jet_pt : "<<Jets->at(matchedIdx).pt()<<"    jet_eta : "<<Jets->at(matchedIdx).eta()<<"    jet_phi : "<<Jets->at(matchedIdx).phi()<<std::endl;
+             edm::LogWarning("TreeMaker")<<"WARNING ... otjet with pt : "<<otjet_pt<<"  matching to one of the jets for pt > "<<jetPtCut_miniAOD_<<" ?!"<<"\n"
+               <<"otjet_pt : "<<otjet_pt<<"  otjet_eta : "<<otjet_eta<<"  otjet_phi : "<<otjet_phi<<"\n"
+               <<"  jet_pt : "<<Jets->at(matchedIdx).pt()<<"    jet_eta : "<<Jets->at(matchedIdx).eta()<<"    jet_phi : "<<Jets->at(matchedIdx).phi();
           }else{
              if( otjet_pt>0 && otjet_pt <= jetPtCut_miniAOD_ && matchJetLepton(&(reclusJets->at(io)),pruned,muon,electron) ){
               finalJets->push_back(reclusJets->at(io));

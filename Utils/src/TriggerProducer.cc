@@ -11,11 +11,13 @@
 // system include files
 #include <memory>
 #include <algorithm>
+#include <sstream>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -73,10 +75,12 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   //sort the trigger names
   std::sort(parsedTrigNamesVec.begin(), parsedTrigNamesVec.end());
   //print triggers
-  std::cout << "List of stored triggers:" << std::endl;
+  std::stringstream message;
+  message << "List of stored triggers:" << "\n";
   for(unsigned t = 0; t < parsedTrigNamesVec.size(); ++t){
-    std::cout << t << ": " << parsedTrigNamesVec[t] << std::endl;
+    message << t << ": " << parsedTrigNamesVec[t] << "\n";
   }
+  edm::LogInfo("TreeMaker") << message.str();
   
   GetInputTag(trigResultsTag_,
               iConfig.getParameter <std::string> ("trigTagArg1"),
@@ -149,7 +153,6 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         trigNamesVec->at(parsedIndex) = testTriggerName;
         passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
         trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
-        //std::cout << "Matched: " << testTriggerName << std::endl;
         break; //We only match one trigger to each trigger name fragment passed
       }
     }

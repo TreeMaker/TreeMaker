@@ -172,7 +172,6 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
 
   void PrescaleWeightProducer::beginRun(edm::Run& iRun, edm::EventSetup const& iSetup) {
 
-    cout << "beginning run" << endl;
   }
 
   void PrescaleWeightProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {

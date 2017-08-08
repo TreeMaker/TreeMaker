@@ -152,8 +152,6 @@ GenLeptonRecoCand::~GenLeptonRecoCand()
 void
 GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  //  std::cout<<"Running GenLeptonRecoCand"<<std::endl;
-
   using namespace edm;	
   auto selectedBoson = std::make_unique<std::vector<reco::GenParticle>>();
   auto selectedBosonPDGId = std::make_unique<std::vector<int>>();
@@ -293,10 +291,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			  hadTauDecay=0;
 			}
 		      // store all decay productes of the tau in a new colleciton
-
-						
-		      // 						else std::cout<<"No lep decay tau with daughters["<<iii<<"]: "<<FinalTauDecay->daughter(iii)->pdgId()<<std::endl;
-		    }
+          }
 		  selectedTauHadronic->push_back(hadTauDecay);
 		}
 	    }
@@ -361,8 +356,6 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
   
-  //  std::cout<<"Putting stuff back into event"<<std::endl;
-
   iEvent.put(std::move(selectedBoson),"Boson");
   iEvent.put(std::move(selectedBosonPDGId),"BosonPDGId");
   iEvent.put(std::move(selectedMuon),"Muon");
@@ -388,8 +381,6 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(std::move(selectedTauNNHads),"TauNNHads");
   iEvent.put(std::move(selectedTauNu),"TauNu");
 
-  //  std::cout<<"DONE!"<<std::endl;
- 
 }
 
 // ------------ method called once each job just before starting event loop  ------------

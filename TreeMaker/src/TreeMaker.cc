@@ -33,13 +33,13 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 {
 	// general parameters
 	treeName = iConfig.getParameter<string>("TreeName");
-	debug = iConfig.getParameter<bool>("debug");
 	doLorentz = iConfig.getParameter<bool>("doLorentz");
 	sortBranches = iConfig.getParameter<bool>("sortBranches");
 	//loop over all var type names to initialize TreeObjects
+	stringstream message;
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
 		vector<string> VarNames = iConfig.getParameter< vector<string> >(VarTypeNames.at(v));
-		cout << VarTypeNames.at(v) << ":" << endl;
+		message << VarTypeNames.at(v) << ":" << "\n";
 		for(unsigned t = 0; t < VarNames.size(); ++t){
 			//check for the right type
 			TreeObjectBase* tmp = NULL;
@@ -58,11 +58,13 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 			}
 			//if a known type was found, initialize and store the object
 			if(tmp) {
-				tmp->Initialize(nameCache,consumesCollector());
+				tmp->Initialize(nameCache,consumesCollector(),message);
 				variables.push_back(tmp);
 			}
 		}
 	}
+	//print info
+	edm::LogInfo("TreeMaker") << message.str();
 }
 
 TreeMaker::~TreeMaker() {}
@@ -92,7 +94,6 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 	
 	tree->Fill();
-	if(debug) cout << "Done filling tree" << endl;
 }
 
 // ------------ method called once each job just before starting event loop  ------------

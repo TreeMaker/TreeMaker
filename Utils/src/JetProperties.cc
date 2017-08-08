@@ -21,7 +21,7 @@
 #include <memory>
 #include <string>
 #include <vector>
-#include <iostream>
+#include <sstream>
 #include <algorithm>
 #include <iterator>
 #include <map>
@@ -29,10 +29,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
@@ -209,7 +208,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="NsubjettinessTau3"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau3>          ("NsubjettinessTau3",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="bDiscriminatorSubjet1"      ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSubjet1>      ("bDiscriminatorSubjet1",this)      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="bDiscriminatorSubjet2"      ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSubjet2>      ("bDiscriminatorSubjet2",this)      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
-		else std::cout << "JetsProperties: unknown property " << p << std::endl;
+		else edm::LogWarning("TreeMaker") << "JetsProperties: unknown property " << p;
 	}	
 }
 
@@ -217,7 +216,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 JetProperties::~JetProperties()
 {
 	
-	// do anything here that needs to be done at desctruction time
+	// do anything here that needs to be done at destruction time
 	// (e.g. close files, deallocate resources etc.)
 	
 }
@@ -251,25 +250,28 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			}
 			//for debugging: print out available subjet collections & btag discriminators
 			if(debug){
+				std::stringstream message;
 				const auto& subjetLabels = Jet->subjetCollectionNames();
-				std::cout << "subjetCollectionNames: ";
-				std::copy(subjetLabels.begin(), subjetLabels.end(), std::ostream_iterator<std::string>(std::cout, " "));
-				std::cout << std::endl;
+				message << "subjetCollectionNames: ";
+				std::copy(subjetLabels.begin(), subjetLabels.end(), std::ostream_iterator<std::string>(message, " "));
+				message << "\n";
 				
 				const auto& btagLabels = Jet->getPairDiscri();
-				std::cout << "btagDiscriminatorNames: ";
-				for(const auto& bt : btagLabels) std::cout << bt.first << " ";
-				std::cout << std::endl;
+				message << "btagDiscriminatorNames: ";
+				for(const auto& bt : btagLabels) message << bt.first << " ";
+				message << "\n";
 				
 				const auto& floatLabels = Jet->userFloatNames();
-				std::cout << "userFloatNames: ";
-				std::copy(floatLabels.begin(), floatLabels.end(), std::ostream_iterator<std::string>(std::cout, " "));
-				std::cout << std::endl;
+				message << "userFloatNames: ";
+				std::copy(floatLabels.begin(), floatLabels.end(), std::ostream_iterator<std::string>(message, " "));
+				message << "\n";
 
 				const auto& intLabels = Jet->userIntNames();
-				std::cout << "userIntNames: ";
-				std::copy(intLabels.begin(), intLabels.end(), std::ostream_iterator<std::string>(std::cout, " "));
-				std::cout << std::endl;
+				message << "userIntNames: ";
+				std::copy(intLabels.begin(), intLabels.end(), std::ostream_iterator<std::string>(message, " "));
+				message << "\n";
+
+				edm::LogInfo("TreeMaker") << message.str();
 			}
 		}
 	}

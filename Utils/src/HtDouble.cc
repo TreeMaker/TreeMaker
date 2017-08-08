@@ -23,10 +23,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -72,7 +71,7 @@ private:
 //
 HTDouble::HTDouble(const edm::ParameterSet& iConfig)
 {
-	//register your produc
+	//register your products
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 	JetTok_ = consumes<reco::CandidateView>(JetTag_);
 	
@@ -118,7 +117,7 @@ HTDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			ht_ +=Jets->at(i).pt();
 		}
 	}
-	else std::cout<<"HTDouble::Invalid Tag: "<<JetTag_.label()<<std::endl;
+	else edm::LogWarning("TreeMaker")<<"HTDouble::Invalid Tag: "<<JetTag_.label();
 	auto htp = std::make_unique<double>(ht_);
 	iEvent.put(std::move(htp));
 	

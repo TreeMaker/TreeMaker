@@ -60,8 +60,6 @@ GenHTProducer::~GenHTProducer()
 
 void GenHTProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  //  std::cout<<"Running GenHTProducer"<<std::endl;
- 
   using namespace edm;
 
   // first calculate genHT

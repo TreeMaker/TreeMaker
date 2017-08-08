@@ -29,10 +29,9 @@
 //
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
@@ -172,7 +171,7 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         metPhiDown_[u] = MET->at(0).shiftedPhi(uncDownList[u], pat::MET::Type1);
       }
    }
-   else std::cout<<"METDouble::Invalid Tag: "<<metTag_.label()<<std::endl;
+   else edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<metTag_.label();
 
    //GenMET is really the original MET collection from the event (re-correction zeroes out some values)
    if(GenMET.isValid()){
@@ -184,7 +183,7 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       calometpt_=GenMET->at(0).caloMETPt();
       calometphi_=GenMET->at(0).caloMETPhi();      
    }
-   else if(!GenMET.isValid()) std::cout<<"METDouble::Invalid Tag: "<<genMetTag_.label()<<std::endl;
+   else if(!GenMET.isValid()) edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<genMetTag_.label();
    
    auto htp = std::make_unique<double>(metpt_);
    iEvent.put(std::move(htp),"Pt");

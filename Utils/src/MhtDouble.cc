@@ -23,10 +23,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -120,7 +119,7 @@ MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		mhtLorentz -=Jets->at(i).p4();
 		}
   }
-  else std::cout<<"MHTDouble::Invalid Tag: "<<JetTag_.label()<<std::endl;
+  else edm::LogWarning("TreeMaker")<<"MHTDouble::Invalid Tag: "<<JetTag_.label();
 	auto Pt = std::make_unique<double>(mhtLorentz.pt());
 	auto Phi = std::make_unique<double>(mhtLorentz.phi());
 	iEvent.put(std::move(Pt),"Pt");

@@ -5,6 +5,7 @@
 #include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 
@@ -80,7 +81,7 @@ void PmssmProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	std::string character_string = nameblocks[2]+nameblocks[3];
 	std::stringstream s0(character_string);
 	s0 >> pmssmId;
-	if(debug_) std::cout << comment << std::endl;
+	if(debug_) edm::LogInfo("TreeMaker") << comment;
 	break;//finished with this event
       }
     }

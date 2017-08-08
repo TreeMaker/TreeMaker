@@ -124,7 +124,6 @@ double Mt2Producer::computeMT2(TLorentzVector visaVec, TLorentzVector visbVec, T
 double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVec){
   if(!(jets.size()>=2))
     {
-      //cout << "oops"<< endl;
       return -1;
     }
   vector<float> pxvec;
@@ -182,33 +181,8 @@ double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVe
     mt2=computeMT2(tlv1,tlv2,metVec);
   else
     mt2=computeMT2(tlv2,tlv1,metVec);
-  //cout << "jet1,2,met="<<tlv1.Pt()<<", "<<tlv2.Pt()<<", "<<metVec.Pt()<<endl;
-  //cout << "mt2="<<mt2<<endl;
   return mt2;
 }
-
-  
-// double Mt2Producer::getMT2AKT(vector<reco::Particle::LorentzVector >jets, TLorentzVector metVec){
-//   if (!(jets.size()>=2))
-//     {
-//       cout << "problemo" << endl;
-//       return -1;
-//     }
-//   vector<reco::Particle::LorentzVector > objects;
-//   for (unsigned int j=0;j<jets.size();j++)
-//     {objects.push_back(jets[j]);}
-//   heppy::ReclusterJets hemisphereViaKt(objects, 1.,50.0);
-//   vector< ROOT::Math::LorentzVector > groupingViaKt = hemisphereViaKt.getGroupingExclusive(2);
-//   if (!(groupingViaKt.size()>=2))
-//     {
-//       cout << "problemo" << endl;
-//       return -1;
-//     }
-//   return computeMT2(groupingViaKt[0], groupingViaKt[2], met);
-// }
-
-
-
 
 // ------------ method called to produce the data  ------------
 void
@@ -235,8 +209,6 @@ Mt2Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   
   double Mt2 = getMT2Hemi( jets, metvec);
   
-  //cout << "MT2="<<Mt2<<endl;
-
   auto Mt2Final = std::make_unique<double>(Mt2);
   iEvent.put(std::move(Mt2Final),"mt2");
  

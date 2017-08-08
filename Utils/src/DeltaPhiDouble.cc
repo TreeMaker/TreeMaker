@@ -24,10 +24,9 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -146,7 +145,7 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          mhtLorentz -=MHTJets->at(i).p4();
       }
    }
-   else std::cout<<"DeltaPhiDouble::Invlide MHT Jet Tag: "<<MHTJetTag_.label()<<std::endl;
+   else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Jet Tag: "<<MHTJetTag_.label();
    edm::Handle< edm::View<reco::Candidate> > DeltaPhiJets;
    iEvent.getByToken(DeltaPhiJetTok_,DeltaPhiJets);
    float minDeltaPhi=99;
@@ -181,7 +180,7 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          if(count==4) break;
       }
    }
-   else std::cout<<"DeltaPhiDouble::Invlide DeltaPhiJets Jet Tag: "<<DeltaPhiJetTag_.label()<<std::endl;
+   else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid DeltaPhiJets Jet Tag: "<<DeltaPhiJetTag_.label();
    
    auto htp1a = std::make_unique<double>(jet1pt);
    iEvent.put(std::move(htp1a),"Jet1Pt");

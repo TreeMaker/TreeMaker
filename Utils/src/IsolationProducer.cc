@@ -5,13 +5,11 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
-
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -78,7 +76,7 @@ IsolationProducer::IsolationProducer(const edm::ParameterSet& iConfig)
   else if(LeptonTypeName_=="track") LeptonType_ = track; 
   else {
     LeptonType_ = other;
-    std::cout << "IsolationProducer Error: " << LeptonTypeName_ << " is not a valid collection." << std::endl;
+    edm::LogWarning("TreeMaker") << "IsolationProducer Error: " << LeptonTypeName_ << " is not a valid collection.";
   }
 
   produces<std::vector<double> >("MiniIso");
@@ -97,8 +95,6 @@ IsolationProducer::~IsolationProducer()
 
 void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-  //  std::cout<<"Running IsolationProducer"<<std::endl;
- 
   using namespace edm;
         
   auto mini_iso = std::make_unique<std::vector<double>>();
@@ -117,7 +113,6 @@ void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   double rho = *rho_;
 
   if(LeptonType_ != other){
-    //std::cout << "Computing mini isolation for " << LeptonTag_.label() << ":" << LeptonTag_.instance() << std::endl;
     edm::Handle<edm::View<reco::Candidate> > lepHandle;
     iEvent.getByToken(LeptonTok_, lepHandle);
     if(lepHandle.isValid())

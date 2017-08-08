@@ -11,6 +11,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
@@ -72,8 +73,8 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //Filter out unwanted gen particles and store 4-vector, pdgid, status, and parentID:
   if( debug ){
-    std::cout<< "======new event============"<<std::endl;
-    std::cout<<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t"<<std::endl;
+    edm::LogInfo("TreeMaker")<< "======new event============"<<"\n"
+      <<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t";
   }
   for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart)
     {
@@ -101,14 +102,14 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
           if(!(Parent)) break;
           if( debug ){
             if(abs(PdgId_vec->back())==24) 
-              std::cout << "W parent Id, status ="<< Parent->pdgId()<<", "<<Parent->status()<<",px="<<Parent->px()<<",py="<<Parent->py()<<",phi="<<Parent->phi()<<std::endl;
+              edm::LogInfo("TreeMaker") << "W parent Id, status ="<< Parent->pdgId()<<", "<<Parent->status()<<",px="<<Parent->px()<<",py="<<Parent->py()<<",phi="<<Parent->phi();
           }
           if(Parent->isLastCopy() || Parent->status()==21)
             {
               parentid = Parent->pdgId();
               parent.SetPxPyPzE(Parent->px(), Parent->py(), Parent->pz(), Parent->energy());
               if( debug ){
-                if(abs(PdgId_vec->back())==24) std:: cout << "planning to keep this mother"<<std::endl;
+                if(abs(PdgId_vec->back())==24) edm::LogInfo("TreeMaker") << "planning to keep this mother";
               }
               break;
             }
@@ -129,8 +130,8 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (itlv == genParticle_vec->end()) parentIndex = -1;
       Parent_vec->push_back(parentIndex);
       if( debug ){
-        std::cout<<g<<"\t"<<PdgId_vec->at(g)<<"\t"<<Status_vec->at(g)<<"\t"<<ParentId_vec->at(g)<<"\t"<<Parent_vec->at(g)<<std::endl;//", eta="<<  parents->at(g).Eta() <<"phi="<< parents->at(g).Phi() <<std::endl;
-        std::cout<< "eta="<< parents->at(g).Eta() << std::endl;
+        edm::LogInfo("TreeMaker")<<g<<"\t"<<PdgId_vec->at(g)<<"\t"<<Status_vec->at(g)<<"\t"<<ParentId_vec->at(g)<<"\t"<<Parent_vec->at(g)<<"\n" //<<", eta="<<  parents->at(g).Eta() <<"phi="<< parents->at(g).Phi() <<"\n"
+          << "eta="<< parents->at(g).Eta();
       }
     }
 

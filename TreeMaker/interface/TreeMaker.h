@@ -3,6 +3,7 @@
 #include "FWCore/Framework/interface/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/Utilities/interface/EDMException.h"
@@ -55,7 +56,7 @@ class TreeMaker : public edm::EDProducer {
 		// ----------member data ---------------------------
 		string treeName;
 		TTree* tree;	
-		bool debug, doLorentz, sortBranches;
+		bool doLorentz, sortBranches;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
 		map<string,unsigned> nameCache;
@@ -76,20 +77,20 @@ class TreeObjectBase {
 		virtual ~TreeObjectBase() {}
 		//functions
 		virtual string GetNameInTree() { return nameInTree; }
-		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC) {}
+		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) {}
 		virtual void SetTree(TTree* tree_) { tree = tree_; }
 		virtual void AddBranch() {}
 		virtual void SetDefault() {}
 		virtual void FillTree(edm::Event& iEvent) {}
 		
 		//common helper function
-		virtual void FinalizeName(map<string,unsigned>& nameCache){
+		virtual void FinalizeName(map<string,unsigned>& nameCache, stringstream& message){
 			auto nameIt = nameCache.find(nameInTree);
 			if(nameIt != nameCache.end()){
 				stringstream ss;
 				ss << nameInTree << "_" << nameIt->second;
 				nameInTree = ss.str();
-				cout << "Warning: name in tree already defined, alternating name... " << nameInTree << endl;
+				message << "Warning: name in tree already defined, alternating name... " << nameInTree << "\n";
 				//increment count for this name
 				nameIt->second++;
 			}
@@ -129,7 +130,7 @@ class TreeObject : public TreeObjectBase {
 		//destructor
 		virtual ~TreeObject() {}
 		//functions
-		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC) {
+		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) {
 			//case 1: x      -> tag = x,   name = x
 			//case 2: x:y    -> tag = x:y, name = y
 			//case 3: x(y)   -> tag = x,   name = y
@@ -152,13 +153,13 @@ class TreeObject : public TreeObjectBase {
 			//(constructor assumes this case by default)
 			else { }
 			
-			cout << "full name: " << tempFull << " -> tag: " << tagName << " nameInTree: " << nameInTree << endl;
+			message << "full name: " << tempFull << " -> tag: " << tagName << " nameInTree: " << nameInTree << "\n";
 			//make tag
 			tag = edm::InputTag(tagName);
 			SetConsumes(std::move(iC));
 			
 			//finalize name to avoid duplicates
-			FinalizeName(nameCache);
+			FinalizeName(nameCache,message);
 		}
 		virtual void SetConsumes(edm::ConsumesCollector && iC){
 			tok = iC.consumes<T>(tag);
@@ -171,7 +172,7 @@ class TreeObject : public TreeObjectBase {
 				value = *var;
 			}
 			else {
-				cout << "WARNING ... " << tagName << " is NOT valid?!" << endl;
+				edm::LogWarning("TreeMaker") << "WARNING ... " << tagName << " is NOT valid?!";
 			}
 		}
 		//these will be implemented below for specializations
@@ -267,7 +268,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 				}
 			}
 			else {
-				cout << "WARNING ... " << tagName << " is NOT valid?!" << endl;
+				edm::LogWarning("TreeMaker") << "WARNING ... " << tagName << " is NOT valid?!";
 			}
 		}
 		virtual void AddBranch() {
