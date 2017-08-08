@@ -53,7 +53,7 @@ mytests.append(makeTest("Spring16Pmssm","PmssmFast" if len(name)==0 else name,nu
 mytests.append(makeTest("2016H","MET16H" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016H-PromptReco-v2.MET",nstart=30,nfiles=2))
 mytests.append(makeTest("2016ReReco23Sep","MET16ReReco" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016C-23Sep2016-v1.MET",nstart=0,nfiles=10))
 mytests.append(makeTest("2016ReMiniAOD03Feb","MET16ReMiniAOD" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016C-03Feb2017-v1.MET",nstart=0,nfiles=10))
-
+mytests.append(makeTest("2017BC","MET17Prompt" if len(name)==0 else name,numevents,command,dataset="/store/data/Run2017B/MET/MINIAOD/PromptReco-v2/000/299/178/00000/96D1BD40-E56B-E711-BF3A-02163E0135FC.root"))
 if test<0 or test>len(mytests):
     print "Predefined tests:"
     for itest, mytest in enumerate(mytests):

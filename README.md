@@ -28,7 +28,7 @@ The available scenarios are:
 5. `2016H`: for 2016H PromptReco 25ns data  
 6. `2016ReReco23Sep`: for 2016 ReReco (23Sep) 25ns data, periods B-G  
 7. `2016ReMiniAOD03Feb`: for 2016 ReMiniAOD (03Feb) 25ns data, periods B-H
-
+8. `2017BC` : For the early 2017 Collision data periods B-C
 ## Unit Tests (Interactive Runs)
 
 Several predefined run commands (at least one for each scenario) are defined in a script called [unitTest.py](./Production/test/unitTest.py). It has several parameters:
