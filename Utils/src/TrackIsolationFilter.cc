@@ -86,13 +86,13 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	
 	produces<std::vector<pat::PackedCandidate> >(""); 
 	produces<vector<TLorentzVector> >("pfcands");
-	produces<vector<double> >("pfcandsactivity").setBranchAlias("pfcands_activity");
-	produces<vector<double> >("pfcandstrkiso").setBranchAlias("pfcands_trkiso");
-	produces<vector<double> >("pfcandsdzpv"  ).setBranchAlias("pfcands_dzpv");
-	produces<vector<double> >("pfcandsmT"    ).setBranchAlias("pfcands_mT");
-	produces<vector<int>   >("pfcandschg"    ).setBranchAlias("pfcands_chg");
-	produces<vector<int>   >("pfcandsid"     ).setBranchAlias("pfcands_id");
-	produces<int>("isoTracks").setBranchAlias("isoTracks");
+	produces<vector<double> >("pfcandsactivity");
+	produces<vector<double> >("pfcandstrkiso");
+	produces<vector<double> >("pfcandsdzpv"  );
+	produces<vector<double> >("pfcandsmT"    );
+	produces<vector<int>   >("pfcandschg"    );
+	produces<vector<int>   >("pfcandsid"     );
+	produces<int>("isoTracks");
 
 }
 

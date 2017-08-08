@@ -75,8 +75,7 @@ GenJetProperties::GenJetProperties(const edm::ParameterSet& iConfig)
    */
   //now do what ever other initialization is needed
   //register your products
-  const std::string string0("invisibleEnergy");
-  produces<std::vector<double> > (string0).setBranchAlias(string0);
+  produces<std::vector<double>>("invisibleEnergy");
 
 }
 
@@ -112,8 +111,7 @@ GenJetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       }
   }
 
-  const std::string string0("invisibleEnergy");
-  iEvent.put(std::move(invisibleEnergy),string0);
+  iEvent.put(std::move(invisibleEnergy),"invisibleEnergy");
 }
 
 // ------------ method called once each job just before starting event loop  ------------
