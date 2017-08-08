@@ -47,7 +47,7 @@ era=parameters.value("era",scenario.era)
 
 #temporary redirector fix
 #fastsim signal is phedexed to LPC Tier3
-redir=parameters.value("redir", "root://eoscms.cern.ch/" if fastsim and signal else "root://eoscms.cern.ch/")
+redir=parameters.value("redir", "root://cmsxrootd.fnal.gov/" if fastsim and signal else "root://cmsxrootd.fnal.gov/")
 
 # The process needs to be defined AFTER reading sys.argv,
 # otherwise edmConfigHash fails
