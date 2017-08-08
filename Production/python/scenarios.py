@@ -60,13 +60,13 @@ class Scenario:
                           jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                           residual=True,
                           era="Run2_25ns")
-        elif sname == "2017PromptCollisions":
+        elif sname == "2017BC":
             self.set_vars(globaltag="92X_dataRun2_Prompt_v8",
                           tagname="RECO",
                           jsonfile="data/Cert_294927-299649_13TeV_PromptReco_Collisions17_JSON.txt",
-                          jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
+                          jecfile="",
                           residual=True,
-                          era="Run2_25ns")
+                          era="Run2_2017")
         else: #if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 

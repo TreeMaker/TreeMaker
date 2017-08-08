@@ -204,7 +204,6 @@ scenario=""
     # default miniAOD tags
     JetTag = cms.InputTag('slimmedJets')
     JetAK8Tag = cms.InputTag('slimmedJetsAK8')
-    #JetAK8Tag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked')
     METTag = cms.InputTag('slimmedMETs')
     if scenario=="2016ReMiniAOD03Feb": METTag = cms.InputTag('slimmedMETsMuEGClean')
     
@@ -449,7 +448,7 @@ scenario=""
         )
         VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
         process.eeBadScFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string("TriggerResults"),
+            trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
             trigTagArg3  = cms.string(tagname),
             filterName  =   cms.string("Flag_eeBadScFilter"),
@@ -707,7 +706,6 @@ scenario=""
     
     # AK8 jet variables - separate instance of jet properties producer
     from TreeMaker.Utils.jetproperties_cfi import jetproperties
-    #JetAK8Tag = cms.InputTag('slimmedJetsAK8')
     process.JetsPropertiesAK8 = jetproperties.clone(
         JetTag       = JetAK8Tag,
         properties = cms.vstring(

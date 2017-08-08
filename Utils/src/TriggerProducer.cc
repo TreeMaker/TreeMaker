@@ -141,12 +141,10 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   //Find the matching triggers
   std::string testTriggerName;
-  //std::cout<<"Total Trigger Indices "<<parsedTrigNamesVec.size()<<std::endl;
   for(unsigned int parsedIndex = 0; parsedIndex < parsedTrigNamesVec.size(); parsedIndex++){
     trigNamesVec->at(parsedIndex) = parsedTrigNamesVec[parsedIndex];
     for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
       testTriggerName = trigNames.triggerName(trigIndex);
-    //std::cout<<"Trigger Name/ index "<<testTriggerName<<" "<<trigIndex<<std::endl;;
       if(testTriggerName.find(parsedTrigNamesVec.at(parsedIndex)) != std::string::npos){
         trigNamesVec->at(parsedIndex) = testTriggerName;
         passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
