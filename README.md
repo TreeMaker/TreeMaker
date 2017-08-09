@@ -21,14 +21,7 @@ Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
 global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
-1. `Spring16Fastsig`: for Spring16 miniAOD 25ns FastSim MC (signal scans)  
-2. `Spring16Pmssm`: for Spring16 miniAOD 25ns PMSSM MC scan (signal)  
-3. `Summer16`: for Summer16 miniAOD 25ns MC  
-4. `Summer16sig`: for Summer16 miniAOD 25ns MC (signal)  
-5. `2016H`: for 2016H PromptReco 25ns data  
-6. `2016ReReco23Sep`: for 2016 ReReco (23Sep) 25ns data, periods B-G  
-7. `2016ReMiniAOD03Feb`: for 2016 ReMiniAOD (03Feb) 25ns data, periods B-H
-8. `2017BC` : For the early 2017 Collision data periods B-C
+1. `2017BC` : For the early 2017 Collision data periods B-C
 ## Unit Tests (Interactive Runs)
 
 Several predefined run commands (at least one for each scenario) are defined in a script called [unitTest.py](./Production/test/unitTest.py). It has several parameters:
