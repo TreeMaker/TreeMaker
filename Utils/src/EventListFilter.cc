@@ -9,7 +9,7 @@
 #include <tuple>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/global/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -35,7 +35,7 @@ typedef std::unordered_set<Triple,triple_hash> TripleSet;
 // class declaration
 //
 
-class EventListFilter : public edm::EDFilter {
+class EventListFilter : public edm::global::EDFilter<> {
 public:
 	explicit EventListFilter(const edm::ParameterSet&);
 	~EventListFilter();
@@ -43,17 +43,10 @@ public:
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual void beginJob() ;
-	virtual bool filter(edm::Event&, const edm::EventSetup&);
-	virtual void endJob() ;
-	
-	virtual bool beginRun(edm::Run&, edm::EventSetup const&);
-	virtual bool endRun(edm::Run&, edm::EventSetup const&);
-	virtual bool beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	virtual bool endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	
-	// ----------member data ---------------------------
+	virtual bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;	
 	void process(std::string line, char delim, std::vector<std::string>& fields);
+
+	// ----------member data ---------------------------
 	std::string inputFileList_;
 	bool TagMode_;
 	TripleSet eventList_;
@@ -115,7 +108,7 @@ EventListFilter::~EventListFilter()
 
 // ------------ method called on each new Event  ------------
 bool
-EventListFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
+EventListFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 	// Event information
 	edm::EventAuxiliary aux = iEvent.eventAuxiliary();
@@ -136,30 +129,6 @@ EventListFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		return (itr==eventList_.end());
 	}
 }
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-EventListFilter::beginJob() { }
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-EventListFilter::endJob() { }
-
-// ------------ method called when starting to processes a run  ------------
-bool 
-EventListFilter::beginRun(edm::Run&, edm::EventSetup const&) { return true; }
-
-// ------------ method called when ending the processing of a run  ------------
-bool 
-EventListFilter::endRun(edm::Run&, edm::EventSetup const&) { return true; }
-
-// ------------ method called when starting to processes a luminosity block  ------------
-bool 
-EventListFilter::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&) { return true; }
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-bool 
-EventListFilter::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&) { return true; }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void

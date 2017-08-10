@@ -23,22 +23,19 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/JetReco/interface/Jet.h"
-#include "DataFormats/PatCandidates/interface/MET.h"
-#include <DataFormats/Math/interface/deltaR.h>
-#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
-#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 //
 // class declaration
 //
 
-class PrimaryVerticesInt : public edm::EDProducer {
+class PrimaryVerticesInt : public edm::global::EDProducer<> {
 public:
 	explicit PrimaryVerticesInt(const edm::ParameterSet&);
 	~PrimaryVerticesInt();
@@ -46,51 +43,23 @@ public:
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual void beginJob() ;
-	virtual void produce(edm::Event&, const edm::EventSetup&);
-	virtual void endJob() ;
-	
-	virtual void beginRun(edm::Run&, edm::EventSetup const&);
-	virtual void endRun(edm::Run&, edm::EventSetup const&);
-	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+	virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+
+	// ----------member data ---------------------------
 	edm::InputTag vertexCollectionTag_;
 	edm::EDGetTokenT<reco::VertexCollection> vertexCollectionTok_;
-	
-	
-	// ----------member data ---------------------------
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
 //
 PrimaryVerticesInt::PrimaryVerticesInt(const edm::ParameterSet& iConfig)
 {
-	//register your produc
+	//register your products
 	vertexCollectionTag_ = iConfig.getParameter<edm::InputTag>("VertexCollection");
 	vertexCollectionTok_ = consumes<reco::VertexCollection>(vertexCollectionTag_);
 	
 	produces<int>("");
-	/* Examples
-	 *   produces<ExampleData2>();
-	 * 
-	 *   //if do put with a label
-	 *   produces<ExampleData2>("label");
-	 * 
-	 *   //if you want to put into the Run
-	 *   produces<ExampleData2,InRun>();
-	 */
-	//now do what ever other initialization is needed
-	
 }
 
 
@@ -109,7 +78,7 @@ PrimaryVerticesInt::~PrimaryVerticesInt()
 
 // ------------ method called to produce the data  ------------
 void
-PrimaryVerticesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+PrimaryVerticesInt::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 	using namespace edm;
 	int nVertices=0;
@@ -122,41 +91,6 @@ PrimaryVerticesInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	auto htp = std::make_unique<int>(nVertices);
 	iEvent.put(std::move(htp));
 	
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-PrimaryVerticesInt::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-PrimaryVerticesInt::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-PrimaryVerticesInt::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-PrimaryVerticesInt::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-PrimaryVerticesInt::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-PrimaryVerticesInt::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

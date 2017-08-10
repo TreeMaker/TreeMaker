@@ -10,7 +10,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -23,7 +23,7 @@
 // class declaration
 //
 
-class GenJetProperties : public edm::EDProducer {
+class GenJetProperties : public edm::global::EDProducer<> {
 public:
   explicit GenJetProperties(const edm::ParameterSet&);
   ~GenJetProperties();
@@ -31,14 +31,8 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag GenJetTag;
   edm::EDGetTokenT<edm::View<reco::GenJet>> GenJetTok;
 
@@ -95,7 +89,7 @@ GenJetProperties::~GenJetProperties()
 
 // ------------ method called to produce the data  ------------
 void
-GenJetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
   using namespace edm;
 	
@@ -112,41 +106,6 @@ GenJetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
 
   iEvent.put(std::move(invisibleEnergy),"invisibleEnergy");
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-GenJetProperties::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-GenJetProperties::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-GenJetProperties::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-GenJetProperties::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-GenJetProperties::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-GenJetProperties::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

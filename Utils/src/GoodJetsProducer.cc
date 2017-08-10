@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/global/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -43,7 +43,7 @@
 // class declaration
 //
 
-class GoodJetsProducer : public edm::EDFilter {
+class GoodJetsProducer : public edm::global::EDFilter<> {
 public:
    explicit GoodJetsProducer(const edm::ParameterSet&);
    ~GoodJetsProducer();
@@ -51,14 +51,8 @@ public:
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
-   virtual void beginJob() override;
-   virtual bool filter(edm::Event&, const edm::EventSetup&) override;
-   virtual void endJob() override;
+   virtual bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    
-   virtual void beginRun(edm::Run&, edm::EventSetup const&);
-   virtual void endRun(edm::Run&, edm::EventSetup const&);
-   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag JetTag_;
    std::vector<edm::InputTag> SkipTag_;
    edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
@@ -137,7 +131,7 @@ GoodJetsProducer::~GoodJetsProducer()
 
 // ------------ method called to produce the data  ------------
 bool
-GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
+GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
    using namespace edm;
    // load to be excluded leptons, isotracks and photons
@@ -238,41 +232,6 @@ GoodJetsProducer::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(std::move(passing),"JetID");
    return true;
    
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void
-GoodJetsProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void
-GoodJetsProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void
-GoodJetsProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void
-GoodJetsProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void
-GoodJetsProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void
-GoodJetsProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

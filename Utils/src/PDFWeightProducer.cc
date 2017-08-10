@@ -4,7 +4,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/GetterOfProducts.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -23,7 +23,7 @@
 
 
 
-class PDFWeightProducer : public edm::EDProducer {
+class PDFWeightProducer : public edm::global::EDProducer<> {
 public:
   explicit PDFWeightProducer(const edm::ParameterSet&);
   ~PDFWeightProducer();
@@ -31,14 +31,7 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
-	
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   // ----------member data ---------------------------
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
@@ -62,7 +55,7 @@ PDFWeightProducer::~PDFWeightProducer()
 	
 }
 
-void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 
   using namespace edm;
@@ -122,41 +115,6 @@ void PDFWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   auto pdfids_ = std::make_unique<std::vector<int>>(pdfids);
   iEvent.put(std::move(pdfids_),"PDFids");
   
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void
-PDFWeightProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-PDFWeightProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-PDFWeightProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-PDFWeightProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-PDFWeightProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-PDFWeightProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

@@ -14,7 +14,7 @@
 #include <sstream>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -32,7 +32,7 @@
 // class declaration
 //
 
-class TriggerProducer : public edm::EDProducer {
+class TriggerProducer : public edm::global::EDProducer<> {
 public:
   explicit TriggerProducer(const edm::ParameterSet&);
   ~TriggerProducer();
@@ -40,22 +40,14 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  
+  // ----------member data ---------------------------
   void GetInputTag(edm::InputTag& tag, std::string arg1, std::string arg2, std::string arg3, std::string arg1_default);
   edm::InputTag trigResultsTag_, trigPrescalesTag_;
   edm::EDGetTokenT<edm::TriggerResults> trigResultsTok_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> trigPrescalesTok_;
   std::vector<std::string> parsedTrigNamesVec;
-	
-  // ----------member data ---------------------------
 };
 
 //
@@ -130,7 +122,7 @@ TriggerProducer::GetInputTag(edm::InputTag& tag, std::string arg1, std::string a
 
 // ------------ method called to produce the data  ------------
 void
-TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
   auto passTrigVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),-1);
   auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
@@ -161,42 +153,6 @@ TriggerProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(std::move(passTrigVec),"TriggerPass");
   iEvent.put(std::move(trigPrescaleVec),"TriggerPrescales");
   iEvent.put(std::move(trigNamesVec),"TriggerNames");
-}
-
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-TriggerProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-TriggerProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-TriggerProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-TriggerProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-TriggerProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-TriggerProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

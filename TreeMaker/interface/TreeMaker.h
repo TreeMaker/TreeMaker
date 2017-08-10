@@ -1,6 +1,6 @@
 // CMSSW headers
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -43,7 +43,7 @@ class TreeObjectBase;
 // class declaration
 //
 
-class TreeMaker : public edm::EDProducer {
+class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 	public:
 		explicit TreeMaker(const edm::ParameterSet&);
 		~TreeMaker();
@@ -51,9 +51,10 @@ class TreeMaker : public edm::EDProducer {
 
 	private:
 		virtual void beginJob() override;
-		virtual void produce(edm::Event&, const edm::EventSetup&) override;
+		virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
 		virtual void endJob() override;
 		// ----------member data ---------------------------
+		edm::Service<TFileService> fs;
 		string treeName;
 		TTree* tree;	
 		bool doLorentz, sortBranches;
@@ -76,12 +77,12 @@ class TreeObjectBase {
 		//destructor
 		virtual ~TreeObjectBase() {}
 		//functions
-		virtual string GetNameInTree() { return nameInTree; }
+		virtual string GetNameInTree() const { return nameInTree; }
 		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) {}
 		virtual void SetTree(TTree* tree_) { tree = tree_; }
 		virtual void AddBranch() {}
 		virtual void SetDefault() {}
-		virtual void FillTree(edm::Event& iEvent) {}
+		virtual void FillTree(const edm::Event& iEvent) {}
 		
 		//common helper function
 		virtual void FinalizeName(map<string,unsigned>& nameCache, stringstream& message){
@@ -110,7 +111,7 @@ class TreeObjectBase {
 //comparator (case-insensitive sort)
 class TreeObjectComp {
 	public:
-		bool operator() (TreeObjectBase* b1, TreeObjectBase* b2){
+		bool operator() (TreeObjectBase* b1, TreeObjectBase* b2) const {
 			string s1 = b1->GetNameInTree();
 			transform(s1.begin(),s1.end(),s1.begin(),::tolower);
 			string s2 = b2->GetNameInTree();
@@ -164,7 +165,7 @@ class TreeObject : public TreeObjectBase {
 		virtual void SetConsumes(edm::ConsumesCollector && iC){
 			tok = iC.consumes<T>(tag);
 		}
-		virtual void FillTree(edm::Event& iEvent){
+		virtual void FillTree(const edm::Event& iEvent){
 			SetDefault();
 			edm::Handle<T> var;
 			iEvent.getByToken(tok,var);
@@ -243,7 +244,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 		virtual void SetConsumes(edm::ConsumesCollector && iC){
 			candTok = iC.consumes<edm::View<reco::Candidate>>(tag);
 		}
-		virtual void FillTree(edm::Event& iEvent){
+		virtual void FillTree(const edm::Event& iEvent){
 			SetDefault();
 			edm::Handle< edm::View<reco::Candidate> > cands;
 			iEvent.getByToken(candTok,cands);

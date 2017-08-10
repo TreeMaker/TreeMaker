@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -42,7 +42,7 @@
 // class declaration
 //
 
-class GenLeptonRecoCand : public edm::EDProducer {
+class GenLeptonRecoCand : public edm::global::EDProducer<> {
 public:
   explicit GenLeptonRecoCand(const edm::ParameterSet&);
   ~GenLeptonRecoCand();
@@ -50,26 +50,19 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag PrunedGenParticleTag_;
   edm::InputTag pfCandsTag_;
   edm::EDGetTokenT<edm::View<reco::GenParticle>> PrunedGenParticleTok_;
   edm::EDGetTokenT<pat::PackedCandidateCollection> pfCandsTok_;
-  int pdgID_;
 	
-  const reco::GenParticle* BosonFound(const reco::GenParticle * particle);
-  const reco::GenParticle* TauFound(const reco::GenParticle * particle);
+  const reco::GenParticle* BosonFound(const reco::GenParticle * particle) const;
+  const reco::GenParticle* TauFound(const reco::GenParticle * particle) const;
 
-  void GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity);
-  const int MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track);
-  const double GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track);
+  void GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+  const int MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) const;
+  const double GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track) const;
 	
 	
   // ----------member data ---------------------------
@@ -150,7 +143,7 @@ GenLeptonRecoCand::~GenLeptonRecoCand()
 
 // ------------ method called to produce the data  ------------
 void
-GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
   using namespace edm;	
   auto selectedBoson = std::make_unique<std::vector<reco::GenParticle>>();
@@ -383,41 +376,6 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-void 
-GenLeptonRecoCand::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-GenLeptonRecoCand::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-GenLeptonRecoCand::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-GenLeptonRecoCand::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-GenLeptonRecoCand::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-GenLeptonRecoCand::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 GenLeptonRecoCand::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
@@ -427,7 +385,8 @@ GenLeptonRecoCand::fillDescriptions(edm::ConfigurationDescriptions& descriptions
   desc.setUnknown();
   descriptions.addDefault(desc);
 }
-const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle * particle)
+
+const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle * particle) const
 {
   for(size_t i=0;i< particle->numberOfDaughters();i++)
     {
@@ -437,7 +396,7 @@ const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle *
 	
 }
 
-const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * particle)
+const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * particle) const
 {
   for(size_t i=0;i< particle->numberOfDaughters();i++)
     {
@@ -448,7 +407,7 @@ const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * p
 }
 
 
-void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) {
+void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
   if (tkInd>pfcands->size()) {
 	  trkiso = -999.;
 	  activity = -999.;
@@ -473,7 +432,7 @@ void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pf
   activity = activity/pfcands->at(tkInd).pt();
 }
 
-const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) {
+const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) const {
   int pdgId=abs(gen_track->pdgId());
   if (pdgId!=11&&pdgId!=13) pdgId=211;
   double mind3=99999.;
@@ -493,7 +452,7 @@ const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateColle
   return matched_track;
 }
 
-const double GenLeptonRecoCand::GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track) {
+const double GenLeptonRecoCand::GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track) const {
   if (tkInd<0||tkInd>(int)pfcands->size()) return -999.;
   const pat::PackedCandidate &pfc = pfcands->at(tkInd);
   TVector3 genTrk3(gen_track->px(), gen_track->py(), gen_track->pz());

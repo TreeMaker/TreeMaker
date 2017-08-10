@@ -1,6 +1,6 @@
 // Producer class to pull the pMSSM point ID from the LHEEventProduct
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/GetterOfProducts.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -22,23 +22,16 @@
 // class declaration
 //
 
-class PmssmProducer : public edm::EDProducer {
+class PmssmProducer : public edm::global::EDProducer<> {
 public:
   explicit PmssmProducer(const edm::ParameterSet&);
   ~PmssmProducer();
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void beginJob();
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob();
-		
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-		
-  void process(std::string line, char delim, std::vector<std::string>& fields);
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+
+  void process(std::string line, char delim, std::vector<std::string>& fields) const;
 		
   // ----------member data ---------------------------
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
@@ -61,7 +54,7 @@ PmssmProducer::~PmssmProducer()
   // (e.g. close files, deallocate resources etc.)
 }
 
-void PmssmProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void PmssmProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 
   using namespace edm;
@@ -93,41 +86,6 @@ void PmssmProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-void
-PmssmProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-PmssmProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-PmssmProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-PmssmProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-PmssmProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-PmssmProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 PmssmProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
@@ -140,7 +98,7 @@ PmssmProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 
 //generalization for processing a line
 void
-PmssmProducer::process(std::string line, char delim, std::vector<std::string>& fields){
+PmssmProducer::process(std::string line, char delim, std::vector<std::string>& fields) const {
   std::stringstream ss(line);
   std::string field;
   while(std::getline(ss,field,delim)){

@@ -28,7 +28,7 @@
 // user include files
 //
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -42,7 +42,7 @@
 // class declaration
 //
 
-class METDouble : public edm::EDProducer {
+class METDouble : public edm::global::EDProducer<> {
 public:
    explicit METDouble(const edm::ParameterSet&);
    ~METDouble();
@@ -50,33 +50,17 @@ public:
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
-   virtual void beginJob() ;
-   virtual void produce(edm::Event&, const edm::EventSetup&);
-   virtual double DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets );
-   virtual void endJob() ;
+   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+   virtual double DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets ) const;
    
-   virtual void beginRun(edm::Run&, edm::EventSetup const&);
-   virtual void endRun(edm::Run&, edm::EventSetup const&);
-   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+   // ----------member data ---------------------------
    edm::InputTag metTag_, genMetTag_, JetTag_;
    edm::EDGetTokenT<edm::View<pat::MET>> metTok_, genMetTok_;
    edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
    double MinJetPt_,MaxJetEta_;
    bool geninfo_;
    std::vector<pat::MET::METUncertainty> uncUpList, uncDownList;
-   
-   // ----------member data ---------------------------
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
@@ -132,7 +116,7 @@ METDouble::~METDouble()
 
 // ------------ method called to produce the data  ------------
 void
-METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
    using namespace edm;
    double metpt_=0, metphi_=0;
@@ -238,14 +222,8 @@ METDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(std::move(htp6),"minDeltaPhiN");
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-void
-METDouble::beginJob()
-{
-}
-
 // ------------ helper method to calculate DeltaT ------------
-double METDouble::DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets ){
+double METDouble::DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets ) const {
    
    double deltaT=0;
    float jres=0.1;
@@ -260,35 +238,6 @@ double METDouble::DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets
    }
    
    return deltaT;
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void
-METDouble::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void
-METDouble::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void
-METDouble::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void
-METDouble::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void
-METDouble::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

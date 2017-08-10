@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -36,7 +36,7 @@
 // class declaration
 //
 
-class DeltaPhiDouble : public edm::EDProducer {
+class DeltaPhiDouble : public edm::global::EDProducer<> {
 public:
    explicit DeltaPhiDouble(const edm::ParameterSet&);
    ~DeltaPhiDouble();
@@ -44,14 +44,8 @@ public:
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
-   virtual void beginJob() ;
-   virtual void produce(edm::Event&, const edm::EventSetup&);
-   virtual void endJob() ;
+   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    
-   virtual void beginRun(edm::Run&, edm::EventSetup const&);
-   virtual void endRun(edm::Run&, edm::EventSetup const&);
-   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
    edm::InputTag MHTJetTag_, DeltaPhiJetTag_;
    edm::EDGetTokenT<edm::View<reco::Candidate>> MHTJetTok_, DeltaPhiJetTok_;
    
@@ -121,7 +115,7 @@ DeltaPhiDouble::~DeltaPhiDouble()
 
 // ------------ method called to produce the data  ------------
 void
-DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+DeltaPhiDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
    using namespace edm;
    double jet1pt=0;
@@ -208,41 +202,6 @@ DeltaPhiDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
    iEvent.put(std::move(htp4d),"DeltaPhi4");   
    auto htp4c = std::make_unique<double>(minDeltaPhi);
    iEvent.put(std::move(htp4c),"minDeltaPhi");
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void
-DeltaPhiDouble::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void
-DeltaPhiDouble::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void
-DeltaPhiDouble::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void
-DeltaPhiDouble::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void
-DeltaPhiDouble::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void
-DeltaPhiDouble::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

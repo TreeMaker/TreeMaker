@@ -1,5 +1,5 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -11,7 +11,7 @@
 #include <vector>
 #include <cmath>
 
-class GenTopProducer : public edm::EDProducer {
+class GenTopProducer : public edm::global::EDProducer<> {
 
 public:
   explicit GenTopProducer(const edm::ParameterSet&);
@@ -20,15 +20,8 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
 private:
-  double getSF(const reco::GenParticle& part);
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
-  
-  virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-  virtual void endRun(edm::Run const&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+  double getSF(const reco::GenParticle& part) const;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   // ----------member data ---------------------------
   
@@ -58,13 +51,13 @@ GenTopProducer::~GenTopProducer()
 //
 
 //helper
-double GenTopProducer::getSF(const reco::GenParticle& part){
+double GenTopProducer::getSF(const reco::GenParticle& part) const {
   return exp(a+b*part.pt());
 }
 
 // ------------ method called for each event  ------------
 void
-GenTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+GenTopProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
   edm::Handle<TtGenEvent> genEvt;
   iEvent.getByToken(genEvtTok, genEvt);
@@ -86,43 +79,6 @@ GenTopProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   iEvent.put(std::move(genTop_vec));
   iEvent.put(std::move(pWeight),"weight");
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-
-GenTopProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-GenTopProducer::endJob() 
-{
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-GenTopProducer::beginRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-GenTopProducer::endRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-GenTopProducer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-GenTopProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

@@ -10,7 +10,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -22,11 +22,11 @@
 
 //#define EDM_ML_DEBUG
 
-class ISRJetProducer : public edm::EDProducer {
+class ISRJetProducer : public edm::global::EDProducer<> {
 	public:
 		explicit ISRJetProducer(const edm::ParameterSet&);
 	private:
-		virtual void produce(edm::Event&, const edm::EventSetup&);
+		virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 		edm::InputTag GenPartTag_; 
 		edm::EDGetTokenT<edm::View<reco::GenParticle>> GenPartTok_; 
 		edm::InputTag JetTag_;
@@ -50,7 +50,7 @@ ISRJetProducer::ISRJetProducer(const edm::ParameterSet& iConfig) :
 	produces<int>("");
 }
 
-void ISRJetProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void ISRJetProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 	int nisr = 0;
 	auto mask = std::make_unique<std::vector<bool>>();

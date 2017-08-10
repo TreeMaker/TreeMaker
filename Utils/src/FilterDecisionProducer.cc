@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -42,7 +42,7 @@
 // class declaration
 //
 
-class FilterDecisionProducer : public edm::EDProducer {
+class FilterDecisionProducer : public edm::global::EDProducer<> {
 public:
   explicit FilterDecisionProducer(const edm::ParameterSet&);
   ~FilterDecisionProducer();
@@ -50,23 +50,15 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+  // ----------member data ---------------------------
   edm::InputTag trigResultsTag_;
   edm::EDGetTokenT<edm::TriggerResults> trigResultsTok_;
   std::string trigTagArg1_;
   std::string trigTagArg2_;
   std::string trigTagArg3_;
   std::string filterName_;
-	
-	
-  // ----------member data ---------------------------
 };
 
 //
@@ -134,7 +126,7 @@ FilterDecisionProducer::~FilterDecisionProducer()
 
 // ------------ method called to produce the data  ------------
 void
-FilterDecisionProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+FilterDecisionProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 
   int passesTrigger = -1;
@@ -148,41 +140,6 @@ FilterDecisionProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   auto htp = std::make_unique<int>(passesTrigger);
   iEvent.put(std::move(htp));
 	
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-FilterDecisionProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-FilterDecisionProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-FilterDecisionProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-FilterDecisionProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-FilterDecisionProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-FilterDecisionProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

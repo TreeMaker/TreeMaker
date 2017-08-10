@@ -24,37 +24,19 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDFilter.h"
+#include "FWCore/Framework/interface/global/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
-#include "FWCore/Utilities/interface/EDMException.h"
-
-
-#include <DataFormats/PatCandidates/interface/Jet.h>
-#include <DataFormats/PatCandidates/interface/MET.h>
-#include <DataFormats/PatCandidates/interface/Muon.h>
-#include <DataFormats/PatCandidates/interface/Electron.h>
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "DataFormats/Common/interface/View.h"
-#include "FWCore/ServiceRegistry/interface/Service.h"
-#include "TH2.h"
-#include <utility>
-#include <vector>
-#include "TString.h"
-#include "TTree.h"
-
-#include "DataFormats/Candidate/interface/CandMatchMap.h"
 
 //
 // class declaration
 //
 
-class IntFilter : public edm::EDFilter {
+class IntFilter : public edm::global::EDFilter<> {
 public:
 	explicit IntFilter(const edm::ParameterSet&);
 	~IntFilter();
@@ -62,14 +44,7 @@ public:
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual void beginJob() ;
-	virtual bool filter(edm::Event&, const edm::EventSetup&);
-	virtual void endJob() ;
-	
-	virtual bool beginRun(edm::Run&, edm::EventSetup const&);
-	virtual bool endRun(edm::Run&, edm::EventSetup const&);
-	virtual bool beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	virtual bool endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+	virtual bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
 	// ----------member data ---------------------------
 	
@@ -78,14 +53,6 @@ private:
 	double CutValue_;
 	int CutType_;
 };
-
-//
-// constants, enums and typedefs
-//
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
@@ -115,7 +82,7 @@ IntFilter::~IntFilter()
 
 // ------------ method called on each new Event  ------------
 bool
-IntFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
+IntFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 	edm::Handle<int> var;	
 	iEvent.getByToken(IntTok_,var);
@@ -137,45 +104,6 @@ IntFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	  }
 	else edm::LogWarning("TreeMaker")<<"IntFilter: CutType: "<<CutType_<<" not defined!";
 	
-	return true;
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-IntFilter::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-IntFilter::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-bool 
-IntFilter::beginRun(edm::Run&, edm::EventSetup const&)
-{ 
-	return true;
-}
-
-// ------------ method called when ending the processing of a run  ------------
-bool 
-IntFilter::endRun(edm::Run&, edm::EventSetup const&)
-{
-	return true;
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-bool 
-IntFilter::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-	return true;
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-bool 
-IntFilter::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 	return true;
 }
 

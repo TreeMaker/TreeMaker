@@ -31,6 +31,8 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
   VarTypeNames{"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorRecoCand"},
   VarTypes{t_bool,t_int,t_double,t_string,t_lorentz,t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_recocand}
 {
+	usesResource("TFileService");
+
 	// general parameters
 	treeName = iConfig.getParameter<string>("TreeName");
 	doLorentz = iConfig.getParameter<bool>("doLorentz");
@@ -75,7 +77,7 @@ TreeMaker::~TreeMaker() {}
 
 // ------------ method called to produce the data  ------------
 void
-TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+TreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 { 
     //set variables to default
 	runNum = 0;
@@ -100,7 +102,6 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 void 
 TreeMaker::beginJob()
 {
-	edm::Service<TFileService> fs;
 	if( !fs ) {
 		throw edm::Exception(edm::errors::Configuration, "TFile Service is not registered in cfg file");
 	}

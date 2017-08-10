@@ -22,20 +22,63 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 
-#include "../interface/PhotonIDisoProducer.h"
-#include "effArea.cc"
+#include "TreeMaker/Utils/interface/effArea.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include <DataFormats/ParticleFlowCandidate/interface/PFCandidate.h>
+#include <DataFormats/PatCandidates/interface/Photon.h>
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
+#include <DataFormats/PatCandidates/interface/Electron.h>
+#include <DataFormats/EgammaCandidates/interface/Conversion.h>
+#include "RecoEcal/EgammaCoreTools/interface/EcalClusterLazyTools.h"
+#include <DataFormats/BeamSpot/interface/BeamSpot.h>
+#include "RecoEgamma/EgammaTools/interface/ConversionTools.h"
 
 #include <vector>
+
+class PhotonIDisoProducer : public edm::global::EDProducer<> {
+
+public:
+  explicit PhotonIDisoProducer(const edm::ParameterSet&);
+  ~PhotonIDisoProducer();
+  
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+
+private:
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  
+  bool hasMatchedPromptElectron(const reco::SuperClusterRef &sc, const edm::Handle<std::vector<pat::Electron> > &eleCol,
+				const edm::Handle<reco::ConversionCollection> &convCol, const math::XYZPoint &beamspot,
+				float lxyMin=2.0, float probMin=1e-6, unsigned int nHitsBeforeVtxMax=0) const;
+
+  // ----------member data ---------------------------
+  edm::InputTag photonCollection; 
+  edm::InputTag electronCollection; 
+  edm::InputTag conversionCollection; 
+  edm::InputTag beamspotCollection; 
+  edm::InputTag ecalRecHitsInputTag_EE_;
+  edm::InputTag ecalRecHitsInputTag_EB_;
+  edm::InputTag rhoCollection;
+  edm::InputTag genParCollection;
+  edm::EDGetTokenT<edm::View<pat::Photon>> photonTok_;
+  edm::EDGetTokenT<pat::ElectronCollection> electronTok_;
+  edm::EDGetTokenT<std::vector<reco::Conversion>> conversionTok_;
+  edm::EDGetTokenT<reco::BeamSpot> beamspotTok_;
+  edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EE_Token_;
+  edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EB_Token_;
+  edm::EDGetTokenT<double> rhoTok_;
+  edm::EDGetTokenT<edm::View<reco::GenParticle>> genParTok_;
+  bool debug;
+};
+
 
 PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   photonCollection(iConfig.getUntrackedParameter<edm::InputTag>("photonCollection")),
@@ -96,7 +139,7 @@ PhotonIDisoProducer::~PhotonIDisoProducer()
 
 // ------------ method called for each event  ------------
 void
-PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 
   using namespace edm;
@@ -337,7 +380,7 @@ PhotonIDisoProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 //and not matching any conversion in the collection passing the quality cuts
 bool PhotonIDisoProducer::hasMatchedPromptElectron(const reco::SuperClusterRef &sc, const edm::Handle<std::vector<pat::Electron> > &eleCol,
                                                    const edm::Handle<reco::ConversionCollection> &convCol, const math::XYZPoint &beamspot,
-                                                   float lxyMin, float probMin, unsigned int nHitsBeforeVtxMax)
+                                                   float lxyMin, float probMin, unsigned int nHitsBeforeVtxMax) const
 {
   if (sc.isNull()) return false;
   for (std::vector<pat::Electron>::const_iterator it = eleCol->begin(); it!=eleCol->end(); ++it) {
@@ -351,44 +394,6 @@ bool PhotonIDisoProducer::hasMatchedPromptElectron(const reco::SuperClusterRef &
   }
   return false;
 }
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-
-PhotonIDisoProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-PhotonIDisoProducer::endJob() 
-{
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-PhotonIDisoProducer::beginRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-PhotonIDisoProducer::endRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-PhotonIDisoProducer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-PhotonIDisoProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void

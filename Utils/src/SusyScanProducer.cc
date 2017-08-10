@@ -1,6 +1,6 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/GetterOfProducts.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
@@ -22,23 +22,18 @@
 // class declaration
 //
 
-class SusyScanProducer : public edm::EDProducer {
+class SusyScanProducer : public edm::stream::EDProducer<> {
 	public:
 		explicit SusyScanProducer(const edm::ParameterSet&);
 		~SusyScanProducer();
 		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 	private:
-		virtual void beginJob();
-		virtual void produce(edm::Event&, const edm::EventSetup&);
-		virtual void endJob();
+		virtual void produce(edm::Event&, const edm::EventSetup&) override;
 		
-		virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-		virtual void endRun(edm::Run const&, edm::EventSetup const&);
-		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-		virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 		
-		void process(std::string line, char delim, std::vector<std::string>& fields);
+		void process(std::string line, char delim, std::vector<std::string>& fields) const;
 		void getModelInfo(std::string comment);
 		
 		// ----------member data ---------------------------
@@ -104,29 +99,6 @@ void SusyScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-void
-SusyScanProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-SusyScanProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-SusyScanProducer::beginRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-SusyScanProducer::endRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
 // ------------ method called when starting to processes a luminosity block  ------------
 void 
 SusyScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const& iSetup)
@@ -139,12 +111,6 @@ SusyScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::E
 		std::string model = gen_header->configDescription();
 		getModelInfo(model);
 	}
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-SusyScanProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
@@ -183,7 +149,7 @@ void SusyScanProducer::getModelInfo(std::string comment){
 
 //generalization for processing a line
 void
-SusyScanProducer::process(std::string line, char delim, std::vector<std::string>& fields){
+SusyScanProducer::process(std::string line, char delim, std::vector<std::string>& fields) const {
 	std::stringstream ss(line);
 	std::string field;
 	while(std::getline(ss,field,delim)){

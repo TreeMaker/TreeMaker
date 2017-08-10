@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -39,7 +39,7 @@
 // class declaration
 //
 
-class JetsForHadTauProducer : public edm::EDProducer {
+class JetsForHadTauProducer : public edm::global::EDProducer<> {
 public:
     explicit JetsForHadTauProducer(const edm::ParameterSet&);
     ~JetsForHadTauProducer();
@@ -47,19 +47,13 @@ public:
     static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
     
 private:
-    virtual void beginJob() ;
-    virtual void produce(edm::Event&, const edm::EventSetup&);
-    virtual void endJob() ;
+    virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
-    virtual void beginRun(edm::Run&, edm::EventSetup const&);
-    virtual void endRun(edm::Run&, edm::EventSetup const&);
-    virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-    virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-
-    const reco::GenParticle* TauFound(const reco::GenParticle * particle);
+    const reco::GenParticle* TauFound(const reco::GenParticle * particle) const;
     bool matchJetLepton(const pat::Jet* otjet, const edm::Handle<edm::View<reco::GenParticle> >& pruned,
-                        const edm::Handle<edm::View<pat::Muon> >& muon, const edm::Handle<edm::View<pat::Electron> >& electron);
+                        const edm::Handle<edm::View<pat::Muon> >& muon, const edm::Handle<edm::View<pat::Electron> >& electron) const;
 
+    // ----------member data ---------------------------
     edm::InputTag JetTag_, reclusJetTag_, MuonTag_, ElecTag_, GenPartTag_;
     edm::EDGetTokenT<edm::View<pat::Muon>> MuonTok_;
     edm::EDGetTokenT<edm::View<pat::Electron>> ElecTok_;
@@ -71,17 +65,7 @@ private:
     bool MCflag_;
     bool useReclusteredJets_;
     bool requireLeptonMatch_;
-    // ----------member data ---------------------------
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
@@ -128,7 +112,7 @@ JetsForHadTauProducer::~JetsForHadTauProducer()
 
 // ------------ method called to produce the data  ------------
 void
-JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+JetsForHadTauProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
   using namespace edm;
   edm::Handle<std::vector<pat::Jet> > Jets,reclusJets; 
@@ -204,41 +188,6 @@ JetsForHadTauProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-void 
-JetsForHadTauProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-JetsForHadTauProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-JetsForHadTauProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-JetsForHadTauProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-JetsForHadTauProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-JetsForHadTauProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 JetsForHadTauProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
@@ -249,7 +198,7 @@ JetsForHadTauProducer::fillDescriptions(edm::ConfigurationDescriptions& descript
 	descriptions.addDefault(desc);
 }
 
-const reco::GenParticle* JetsForHadTauProducer::TauFound(const reco::GenParticle * particle)
+const reco::GenParticle* JetsForHadTauProducer::TauFound(const reco::GenParticle * particle) const
 {
         for(size_t i=0;i< particle->numberOfDaughters();i++)
         {
@@ -260,7 +209,7 @@ const reco::GenParticle* JetsForHadTauProducer::TauFound(const reco::GenParticle
 }
 
 bool JetsForHadTauProducer::matchJetLepton(const pat::Jet* otjet, const edm::Handle<edm::View<reco::GenParticle> >& pruned,
-                                           const edm::Handle<edm::View<pat::Muon> >& muon, const edm::Handle<edm::View<pat::Electron> >& electron)
+                                           const edm::Handle<edm::View<pat::Muon> >& muon, const edm::Handle<edm::View<pat::Electron> >& electron) const
 {
     int cntgenMatch = 0;
     //

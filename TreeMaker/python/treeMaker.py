@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-TreeMaker = cms.EDProducer(
+TreeMaker = cms.EDAnalyzer(
 'TreeMaker',
 # Name of the output tree
 TreeName          = cms.string('RA2Tree'),

@@ -28,7 +28,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -53,7 +53,7 @@ class NamedPtr {
 	public:
 		//constructor
 		NamedPtr() : name("") {}
-		NamedPtr(std::string name_, edm::EDProducer* edprod) : name(name_), ptr(std::make_unique<std::vector<T>>()) {
+		NamedPtr(std::string name_, edm::stream::EDProducer<>* edprod) : name(name_), ptr(std::make_unique<std::vector<T>>()) {
 			edprod->produces<std::vector<T>>(name);
 		}
 		//destructor
@@ -128,7 +128,7 @@ template<> void NamedPtrI<i_hadronFlavor>::get_property(const pat::Jet* Jet)    
 // class declaration
 //
 
-class JetProperties : public edm::EDProducer {
+class JetProperties : public edm::stream::EDProducer<> {
 public:
 	explicit JetProperties(const edm::ParameterSet&);
 	~JetProperties();
@@ -136,14 +136,7 @@ public:
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual void beginJob() ;
-	virtual void produce(edm::Event&, const edm::EventSetup&);
-	virtual void endJob() ;
-	
-	virtual void beginRun(edm::Run&, edm::EventSetup const&);
-	virtual void endRun(edm::Run&, edm::EventSetup const&);
-	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+	virtual void produce(edm::Event&, const edm::EventSetup&) override;
 	
 	template <class T>
 	void checkExtraInfo(const edm::ParameterSet& iConfig, const std::string& name, T ptr){
@@ -215,10 +208,15 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 
 JetProperties::~JetProperties()
 {
-	
-	// do anything here that needs to be done at destruction time
-	// (e.g. close files, deallocate resources etc.)
-	
+	//memory management
+	for(unsigned ip = 0; ip < IntPtrs_.size(); ++ip){
+		delete (IntPtrs_[ip]);
+	}
+	IntPtrs_.clear();
+	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
+		delete (DoublePtrs_[ip]);
+	}
+	DoublePtrs_.clear();
 }
 
 
@@ -284,50 +282,6 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		DoublePtrs_[ip]->put(iEvent);
 	}
 
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-JetProperties::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-JetProperties::endJob() {
-	//memory management
-	for(unsigned ip = 0; ip < IntPtrs_.size(); ++ip){
-		delete (IntPtrs_[ip]);
-	}
-	IntPtrs_.clear();
-	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
-		delete (DoublePtrs_[ip]);
-	}
-	DoublePtrs_.clear();
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-JetProperties::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-JetProperties::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-JetProperties::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-JetProperties::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

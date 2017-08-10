@@ -1,3 +1,6 @@
+#ifndef effArea_h
+#define effArea_h
+
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <vector>
 #include <iostream>
@@ -33,7 +36,7 @@ public:
 
   };
 
-  double rhoCorrectedIso(isoType isoType_, double isoVal, double eta, double rho){
+  double rhoCorrectedIso(isoType isoType_, double isoVal, double eta, double rho) const {
 
     int iEta = -1;
 
@@ -58,3 +61,5 @@ public:
   };
 
 };
+
+#endif

@@ -34,7 +34,7 @@
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -48,15 +48,13 @@
 // class declaration
 //
 
-class WeightProducer: public edm::EDProducer {
+class WeightProducer: public edm::global::EDProducer<> {
 public:
   explicit WeightProducer(const edm::ParameterSet&);
   ~WeightProducer();
   
 private:
-  //  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob();
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, FastSim = 3, other = 4 };
   
@@ -75,7 +73,7 @@ private:
   weight_method _weightingMethod;
   std::unordered_map<double,double> _FastSimXsec;
   
-  void process(std::string line, char delim, std::vector<std::string>& fields);
+  void process(std::string line, char delim, std::vector<std::string>& fields) const;
   double getPUWeight(double trueint, TH1* pu) const;
 };
 
@@ -203,9 +201,11 @@ WeightProducer::~WeightProducer() {
 }
 
 // ------------ method called to produce the data  ------------
-void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void WeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 
    double resultWeight = 1.;
+   double xsEvt = _xs;
+
    //Option 1: constant start weight from config file
    if (_weightingMethod == StartWeight) {
       resultWeight = _startWeight;
@@ -232,14 +232,14 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    
    //Option 4: get cross section from input file
    else if (_weightingMethod == FastSim) {
-      _xs = 0;
+      xsEvt = 0;
       edm::Handle<double> SusyMotherHandle;
       iEvent.getByToken(_SusyMotherTok, SusyMotherHandle);
       if (SusyMotherHandle.isValid()){
          auto itr = _FastSimXsec.find(*SusyMotherHandle);
-         if(itr!=_FastSimXsec.end()) _xs = itr->second;
+         if(itr!=_FastSimXsec.end()) xsEvt = itr->second;
       }
-      resultWeight = _xs * _NumberEvents * _lumi;
+      resultWeight = xsEvt * _NumberEvents * _lumi;
    }
 
    // Optionally, include PU weight
@@ -289,27 +289,17 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    auto pOut = std::make_unique<double>(resultWeight);
    iEvent.put(std::move(pOut), "weight");
    
-   auto pOutX = std::make_unique<double>(_xs);
+   auto pOutX = std::make_unique<double>(xsEvt);
    iEvent.put(std::move(pOutX), "xsec");
 
    auto pOutN = std::make_unique<double>(_NumberEvents);
    iEvent.put(std::move(pOutN), "nevents");
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-//void
-//WeightProducer::beginJob()
-//{
-//}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void WeightProducer::endJob() {
-}
-
 // Get weight factor dependent on true number of
 // added PU interactions
 // --------------------------------------------------
-double WeightProducer::getPUWeight(double trueint, TH1* pu) const{
+double WeightProducer::getPUWeight(double trueint, TH1* pu) const {
   double w = 1.;
   
   if(!pu) return w;
@@ -325,7 +315,7 @@ double WeightProducer::getPUWeight(double trueint, TH1* pu) const{
 }
 
 //generalization for processing a line
-void WeightProducer::process(std::string line, char delim, std::vector<std::string>& fields){
+void WeightProducer::process(std::string line, char delim, std::vector<std::string>& fields) const {
 	std::stringstream ss(line);
 	std::string field;
 	while(getline(ss,field,delim)){

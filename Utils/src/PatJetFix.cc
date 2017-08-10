@@ -22,8 +22,7 @@
 #include <algorithm>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/stream/EDProducer.h"
-
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
@@ -49,7 +48,7 @@
 // class declaration
 //
 
-class PatJetFix : public edm::stream::EDProducer<> {
+class PatJetFix : public edm::global::EDProducer<> {
     public:
         explicit PatJetFix(const edm::ParameterSet&);
         ~PatJetFix();
@@ -57,10 +56,9 @@ class PatJetFix : public edm::stream::EDProducer<> {
         static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
     private:
-        virtual void beginStream(edm::StreamID) override;
-        virtual void produce(edm::Event&, const edm::EventSetup&) override;
-        virtual void endStream() override;
-        //static bool greaterPt( const reco::Candidate& a, const reco::Candidate& b ){ return a.pt()>b.pt();};
+        virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+
+        // ----------member data ---------------------------
         edm::InputTag met_;
         edm::InputTag metFix_;
         edm::InputTag pho_;
@@ -79,22 +77,7 @@ class PatJetFix : public edm::stream::EDProducer<> {
         edm::InputTag METFix_;
         edm::InputTag eleFix_;
         edm::InputTag pCand_;
-        //virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
-        //virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
-        //virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
-        //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
-
-        // ----------member data ---------------------------
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
@@ -102,16 +85,6 @@ class PatJetFix : public edm::stream::EDProducer<> {
 PatJetFix::PatJetFix(const edm::ParameterSet& iConfig)
 {
     //register your products
-/* Examples
-    produces<ExampleData2>();
-
-    //if do put with a label
-    produces<ExampleData2>("label");
- 
-    //if you want to put into the Run
-    produces<ExampleData2,InRun>();
-*/
-    //now do what ever other initialization is needed
     //now do what ever initialization is needed
     MET_=iConfig.getParameter<edm::InputTag>("MET");
     METFix_=iConfig.getParameter<edm::InputTag>("METCorr");
@@ -147,7 +120,7 @@ PatJetFix::~PatJetFix()
 
 // ------------ method called to produce the data  ------------
 void
-PatJetFix::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+PatJetFix::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
     using namespace edm;
 
@@ -292,49 +265,6 @@ PatJetFix::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     iEvent.put(patJets);
 }
 
-// ------------ method called once each stream before processing any runs, lumis or events  ------------
-void
-PatJetFix::beginStream(edm::StreamID)
-{
-}
-
-// ------------ method called once each stream after processing all runs, lumis and events  ------------
-void
-PatJetFix::endStream() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-/*
-void
-PatJetFix::beginRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-*/
- 
-// ------------ method called when ending the processing of a run  ------------
-/*
-void
-PatJetFix::endRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-*/
- 
-// ------------ method called when starting to processes a luminosity block  ------------
-/*
-void
-PatJetFix::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-*/
- 
-// ------------ method called when ending the processing of a luminosity block  ------------
-/*
-void
-PatJetFix::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-*/
- 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 PatJetFix::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {

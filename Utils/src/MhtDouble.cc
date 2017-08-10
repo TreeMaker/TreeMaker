@@ -22,7 +22,7 @@
 #include <memory>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -35,7 +35,7 @@
 // class declaration
 //
 
-class MhtDouble : public edm::EDProducer {
+class MhtDouble : public edm::global::EDProducer<> {
    public:
       explicit MhtDouble(const edm::ParameterSet&);
       ~MhtDouble();
@@ -43,29 +43,12 @@ class MhtDouble : public edm::EDProducer {
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
    private:
-      virtual void beginJob() ;
-      virtual void produce(edm::Event&, const edm::EventSetup&);
-      virtual void endJob() ;
+      virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
       
-      virtual void beginRun(edm::Run&, edm::EventSetup const&);
-      virtual void endRun(edm::Run&, edm::EventSetup const&);
-      virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-      virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+      // ----------member data ---------------------------
       edm::InputTag JetTag_;
 	  edm::EDGetTokenT<reco::CandidateView> JetTok_;
-
-
-      // ----------member data ---------------------------
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
@@ -78,17 +61,6 @@ MhtDouble::MhtDouble(const edm::ParameterSet& iConfig)
 
 	 produces<double>("Pt");
 	 produces<double>("Phi");
-/* Examples
-   produces<ExampleData2>();
-
-   //if do put with a label
-   produces<ExampleData2>("label");
- 
-   //if you want to put into the Run
-   produces<ExampleData2,InRun>();
-*/
-   //now do what ever other initialization is needed
-  
 }
 
 
@@ -107,7 +79,7 @@ MhtDouble::~MhtDouble()
 
 // ------------ method called to produce the data  ------------
 void
-MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+MhtDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
   using namespace edm;
   edm::Handle< reco::CandidateView > Jets;
@@ -125,41 +97,6 @@ MhtDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.put(std::move(Pt),"Pt");
 	iEvent.put(std::move(Phi),"Phi");
  
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-MhtDouble::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-MhtDouble::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-MhtDouble::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-MhtDouble::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-MhtDouble::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-MhtDouble::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
