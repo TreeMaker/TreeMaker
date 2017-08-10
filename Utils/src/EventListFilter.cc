@@ -15,6 +15,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Provenance/interface/EventAuxiliary.h"
+#include "TreeMaker/Utils/interface/parse.h"
 
 //
 // constants, enums and typedefs
@@ -44,7 +45,6 @@ public:
 	
 private:
 	virtual bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;	
-	void process(std::string line, char delim, std::vector<std::string>& fields);
 
 	// ----------member data ---------------------------
 	std::string inputFileList_;
@@ -66,7 +66,7 @@ EventListFilter::EventListFilter(const edm::ParameterSet& iConfig) :
 			std::string line;
 			while(getline(infile,line)){
 				std::vector<std::string> items;
-				process(line,':',items);
+				parse::process(line,':',items);
 				//convert input to proper types
 				if(items.size()==3){
 					unsigned run_tmp;
@@ -138,15 +138,6 @@ EventListFilter::fillDescriptions(edm::ConfigurationDescriptions& descriptions) 
 	edm::ParameterSetDescription desc;
 	desc.setUnknown();
 	descriptions.addDefault(desc);
-}
-
-//generalization for processing a line
-void EventListFilter::process(std::string line, char delim, std::vector<std::string>& fields){
-	std::stringstream ss(line);
-	std::string field;
-	while(getline(ss,field,delim)){
-		fields.push_back(field);
-	}
 }
 
 //define this as a plug-in

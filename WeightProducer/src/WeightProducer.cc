@@ -42,7 +42,7 @@
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
-
+#include "TreeMaker/Utils/interface/parse.h"
 
 //
 // class declaration
@@ -73,7 +73,6 @@ private:
   weight_method _weightingMethod;
   std::unordered_map<double,double> _FastSimXsec;
   
-  void process(std::string line, char delim, std::vector<std::string>& fields) const;
   double getPUWeight(double trueint, TH1* pu) const;
 };
 
@@ -129,7 +128,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
             std::string line;
             while(getline(infile,line)){
                std::vector<std::string> items;
-               process(line,'\t',items);
+               parse::process(line,'\t',items);
                //convert input to proper types
                if(items.size()==2){
                   double mass_tmp;
@@ -312,15 +311,6 @@ double WeightProducer::getPUWeight(double trueint, TH1* pu) const {
   }
 
    return w;
-}
-
-//generalization for processing a line
-void WeightProducer::process(std::string line, char delim, std::vector<std::string>& fields) const {
-	std::stringstream ss(line);
-	std::string field;
-	while(getline(ss,field,delim)){
-		fields.push_back(field);
-	}
 }
 
 //define this as a plug-in

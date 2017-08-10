@@ -8,6 +8,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
+#include "TreeMaker/Utils/interface/parse.h"
 
 // STL include files
 #include <memory>
@@ -31,8 +32,6 @@ public:
 private:
   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
-  void process(std::string line, char delim, std::vector<std::string>& fields) const;
-		
   // ----------member data ---------------------------
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   bool shouldScan_, debug_;
@@ -70,7 +69,7 @@ void PmssmProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventS
 	std::string comment = (*cit).substr(1,(*cit).find(".slha")-1);
 	if(comment.back()=='\n') comment.pop_back();
 	std::vector<std::string> nameblocks;
-	process(comment, '_', nameblocks);
+	parse::process(comment, '_', nameblocks);
 	std::string character_string = nameblocks[2]+nameblocks[3];
 	std::stringstream s0(character_string);
 	s0 >> pmssmId;
@@ -94,16 +93,6 @@ PmssmProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   desc.setUnknown();
   descriptions.addDefault(desc);
-}
-
-//generalization for processing a line
-void
-PmssmProducer::process(std::string line, char delim, std::vector<std::string>& fields) const {
-  std::stringstream ss(line);
-  std::string field;
-  while(std::getline(ss,field,delim)){
-    fields.push_back(field);
-  }
 }
 
 //define this as a plug-in

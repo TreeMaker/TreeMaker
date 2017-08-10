@@ -9,6 +9,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
+#include "TreeMaker/Utils/interface/parse.h"
 
 // STL include files
 #include <memory>
@@ -33,7 +34,6 @@ class SusyScanProducer : public edm::stream::EDProducer<> {
 		
 		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 		
-		void process(std::string line, char delim, std::vector<std::string>& fields) const;
 		void getModelInfo(std::string comment);
 		
 		// ----------member data ---------------------------
@@ -132,7 +132,7 @@ void SusyScanProducer::getModelInfo(std::string comment){
 	
 	std::vector<std::string> fields;
 	//underscore-delimited data
-	process(comment,'_',fields);
+	parse::process(comment,'_',fields);
 
 	//several possible formats:
 	//model name_mMother_mLSP (1+2 fields)
@@ -145,16 +145,6 @@ void SusyScanProducer::getModelInfo(std::string comment){
 	
 	std::stringstream sfield2(fields.end()[-2]);
 	sfield2 >> motherMass_;
-}
-
-//generalization for processing a line
-void
-SusyScanProducer::process(std::string line, char delim, std::vector<std::string>& fields) const {
-	std::stringstream ss(line);
-	std::string field;
-	while(std::getline(ss,field,delim)){
-		fields.push_back(field);
-	}
 }
 
 //define this as a plug-in
