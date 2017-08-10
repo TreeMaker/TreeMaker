@@ -447,7 +447,6 @@ scenario=""
             filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
         VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
-        
         process.eeBadScFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
@@ -455,7 +454,6 @@ scenario=""
             filterName  =   cms.string("Flag_eeBadScFilter"),
         )
         VarsInt.extend(['eeBadScFilter'])
-        
         # some filters need to be rerun
         process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
         process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
@@ -495,7 +493,7 @@ scenario=""
     )
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
-
+    
     if not geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
         process.PrescaleWeightProducer = prescaleweightProducer.clone()
@@ -715,29 +713,31 @@ scenario=""
             "NsubjettinessTau1"    ,
             "NsubjettinessTau2"    ,
             "NsubjettinessTau3"    ,
-            "bDiscriminatorSubjet1",
-            "bDiscriminatorSubjet2",
+            #"bDiscriminatorSubjet1",
+            #"bDiscriminatorSubjet2",
             "bDiscriminatorCSV"    ,
             "NumBhadrons"          ,
             "NumChadrons"          ,
         )
     )
-    #specify userfloats
-    process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
-    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
-    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
-    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
-    process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
+    #specify userfloat
+    #process.JetsPropertiesAK8.prunedMass = cms.vstring('prunedMass')
+    process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass')
+    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('ak8PFJetsCHSValueMap:NjettinessAK8CHSTau1')
+    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('ak8PFJetsCHSValueMap:NjettinessAK8CHSTau2')
+    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('ak8PFJetsCHSValueMap:NjettinessAK8CHSTau3')
+    #process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    #process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('SoftDrop','pfBoostedDoubleSecondaryVertexAK8BJetTags')
     #VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
-    VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
-                         'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
-                         'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
+    VectorDouble.extend([ 'JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
+                         #'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
+                         #'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
                          'JetsPropertiesAK8:bDiscriminatorCSV(JetsAK8_doubleBDiscriminator)',
                          'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
                          'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
-                         'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
+                         'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'
+			])
     VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
                       'JetsPropertiesAK8:NumChadrons(JetsAK8_NumChadrons)'])
 
@@ -786,11 +786,11 @@ scenario=""
     from TreeMaker.Utils.doublefilter_cfi import DoubleFilter
     process.HTFilter = DoubleFilter.clone(
         DoubleTag = cms.InputTag('HT'),
-        CutValue  = cms.double('500'),
+        CutValue  = cms.double(500),
     )
     process.MHTFilter = DoubleFilter.clone(
         DoubleTag = cms.InputTag('MHT:Pt'),
-        CutValue  = cms.double('200'),
+        CutValue  = cms.double(200),
     )
     if applybaseline:
         process.Baseline += process.HTFilter

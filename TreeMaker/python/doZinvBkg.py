@@ -63,7 +63,6 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
             "NumChadrons"          ,
         )
     )
-    
     process.JetsPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsCHSCleanPrunedMass')
     process.JetsPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
     process.JetsPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
@@ -118,7 +117,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
        svSource = cms.InputTag('slimmedSecondaryVertices'),
        algo = 'AK',
        rParam = 0.4,
-       getJetMCFlavour = True, # seems to be enough for hadronFlavour()
+       getJetMCFlavour = False, # seems to be enough for hadronFlavour()
        #genJetCollection = cms.InputTag('slimmedGenJets'),
        genParticles = cms.InputTag('prunedGenParticles'), # likely needed for hadronFlavour()....
        jetCorrections = ('AK4PFchs', jecLevels, 'None'),
@@ -129,7 +128,8 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
     # turn on/off GEN matching (different than hadronFlavour()?)
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenPartonMatch = cms.bool(False)
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenJetMatch = cms.bool(False)
-
+    getattr(process,'patJetsAK4PFCLEAN'+suff).genJetMatch = cms.InputTag("")
+    getattr(process,'patJetsAK4PFCLEAN'+suff).genPartonMatch = cms.InputTag("")
     # apply pt cut to final jet collection (done in slimmedJets)
     reclusteredJets = cms.EDFilter("PATJetSelector",
         src = cms.InputTag("patJetsAK4PFCLEAN"+suff),
