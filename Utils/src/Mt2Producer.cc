@@ -59,7 +59,7 @@ private:
 //
 Mt2Producer::Mt2Producer(const edm::ParameterSet& iConfig)
 {
-  //register your produc
+  //register your products
   JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
   JetTok_ = consumes<reco::CandidateView>(JetTag_);
 
@@ -176,8 +176,12 @@ Mt2Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& i
 	jets.push_back(jet);
       }
   }
-  
+
+  //disable stupid couts from heppy
+  streambuf* orig_buf = std::cout.rdbuf();
+  std::cout.rdbuf(NULL);
   double Mt2 = getMT2Hemi( jets, metvec);
+  std::cout.rdbuf(orig_buf);
   
   auto Mt2Final = std::make_unique<double>(Mt2);
   iEvent.put(std::move(Mt2Final),"mt2");
