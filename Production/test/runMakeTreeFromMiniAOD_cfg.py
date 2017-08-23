@@ -15,6 +15,7 @@ dump=parameters.value("dump",False)
 mp=parameters.value("mp",False)
 threads=parameters.value("threads",1)
 streams=parameters.value("streams",0)
+tmi=parameters.value("tmi",False)
 
 # background estimations on by default
 lostlepton=parameters.value("lostlepton", True)
@@ -161,3 +162,10 @@ if threads>1:
 if dump:
     print process.dumpPython()
     sys.exit(0)
+
+#process.add_(cms.Service("StallMonitor", fileName = cms.untracked.string("stallMonitor.log")))
+#process.add_(cms.Service("Tracer", printTimestamps = cms.untracked.bool(True)))
+
+if tmi:
+    from Validation.Performance.TimeMemoryInfo import customise
+    process = customise(process)
