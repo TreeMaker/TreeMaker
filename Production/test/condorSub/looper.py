@@ -122,6 +122,7 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
                      +"-e 's|NSTART|"+str(nstart)+"|g' "
                      +"-e 's|NFILES|"+str(options.nFiles)+"|g' "
                      +"-e 's|SCENARIO|"+scenario+"|g' "
+                     +"-e 's|THREADS|"+options.threads+"|g' "
                      +"-e 's~EXTRASTUFF~"+extras+"~g' "
                      +"< jobExecCondor.jdl > jobExecCondor_"+jobname+".jdl")
         
@@ -156,6 +157,7 @@ parser.add_option("-m", "--missing", dest="missing", default=False, action="stor
 parser.add_option("-r", "--resub", dest="resub", default="", help="make a resub script with specified name (default = %default)")
 parser.add_option("-j", "--json", dest="json", default="", help="manually specified json file to check data (override scenario) (default = %default)")
 parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs from this user (submitter) (default = %default)")
+parser.add_option("-t", "--threads", dest="threads", default=1, help="specify number of CPU threads per job (default = %default)")
 parser.add_option("--sites", dest="sites", default="", help="comma-separated list of sites for global pool running (default = %default)")
 (options, args) = parser.parse_args()
 
@@ -166,6 +168,8 @@ if options.input is None or len(options.input)==0:
     parser.error("Required option: -i [dict]")
 if len(options.outputDir)==0:
     parser.error("Required option: -o [directory]")
+if options.threads<1:
+	options.threads = 1
 
 # special settings
 verbose = True
