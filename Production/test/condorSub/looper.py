@@ -148,7 +148,8 @@ parser.add_option("-k", "--keep", dest="keep", default=False, action="store_true
 parser.add_option("-n", "--nFiles", dest="nFiles", default=1, help="number of files to process per job (default = %default)")
 parser.add_option("-i", "--input", dest="input", type="string", action="callback", callback=dict_callback,
     help="comma-separated list of input dicts; each prefixed by dict_ and contains scenario + list of samples (default = %default)",
-    default=["2016B","2016C","2016D","2016E","2016F","2016G","2016H","sig","qcd","wjets","ttbar","dyjets","zjets","gjets","singlet","diboson","tth","fast"])
+    default=["2017B-v1","2017B-v2","2016C-v1","2016C-v2"])
+
 parser.add_option("-o", "--outputDir", dest="outputDir", default="", help="path to ouput directory in which root files will be stored (required)")
 parser.add_option("-s", "--submit", dest="submit", default=False, action="store_true", help="submit jobs to condor once they are configured (default = %default)")
 parser.add_option("-c", "--count", dest="count", default=False, action="store_true", help="count the expected number of jobs (default = %default)")
