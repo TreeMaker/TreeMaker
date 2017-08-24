@@ -1,5 +1,5 @@
 flist = {
-    "scenario": "2017PromptCollisions",
+    "scenario": "2017BC",
     "samples": [
         ['Run2017B-PromptReco-v2.HTMHT'],
         ['Run2017B-PromptReco-v2.JetHT'],
