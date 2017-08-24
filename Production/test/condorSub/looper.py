@@ -65,6 +65,8 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
     # start loop over N jobs
     nActualJobs = 0
     jobSet = set()
+    jobNums = []
+    discontinuousJobs = (firstJob>0)
     for iJob in range( int(firstJob), nJobs ) :
         # get starting file number
         nstart = iJob*int(options.nFiles)
@@ -75,6 +77,7 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
             readFileSplit = readFiles[iJob].split('/')
             # some filenames don't have the run in them
             if len(readFileSplit)==12:
+                discontinuousJobs = True
                 readFileRun = readFileSplit[8]+readFileSplit[9]
                 i = bisect.bisect_left(runlist,readFileRun)
                 # skip this file if the run was not found
@@ -82,8 +85,8 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
                     if verbose: print "skipping run "+readFileRun
                     continue
         
-        jobname = filesConfig
-        if nJobs>1: jobname = jobname+"_"+str(iJob)
+        jobname = filesConfig+"_"+str(iJob)
+        jobNums.append(str(iJob))
         
         # keep list of jobs
         if options.missing:
@@ -94,6 +97,12 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
         if options.count:
             continue
             
+        # write job options to file - will be transferred with job
+        with open("input/args_"+jobname+".txt",'w') as argfile:
+            args = "outfile="+jobname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(options.nFiles)+" scenario="+scenario
+            argfile.write(args)
+
+    if not options.count and not options.missing:
         if os.uname()[1]=="login.uscms.org":
             extras = ("+DESIRED_Sites = \""+options.sites+"\"") if len(options.sites)>0 else ""
         else:
@@ -116,19 +125,22 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
         # replace placeholders in template files
         os.system("sed -e 's|CMSSWVER|'${CMSSW_VERSION}'|g' "
                      +"-e 's~OUTDIR~"+options.outputDir+"~g' "
-                     +"-e 's|JOBNAME|"+jobname+"|g' "
                      +"-e 's|SAMPLE|"+filesConfig+"|g' "
-                     +"-e 's|NPART|"+str(iJob)+"|g' "
-                     +"-e 's|NSTART|"+str(nstart)+"|g' "
-                     +"-e 's|NFILES|"+str(options.nFiles)+"|g' "
-                     +"-e 's|SCENARIO|"+scenario+"|g' "
                      +"-e 's|THREADS|"+options.threads+"|g' "
                      +"-e 's~EXTRASTUFF~"+extras+"~g' "
-                     +"< jobExecCondor.jdl > jobExecCondor_"+jobname+".jdl")
+                     +"< jobExecCondor.jdl > jobExecCondor_"+filesConfig+".jdl")
+                     
+        # append queue comment
+        queuecmd = "-queue "+str(nActualJobs)
+        if discontinuousJobs: queuecmd = "-queue Process in "+','.join(jobNums)
+        with open("jobExecCondor_"+filesConfig+".jdl",'a') as jdlfile:
+            jdlfile.write("# "+queuecmd.replace("-queue","Queue")+"\n")
         
         # submit jobs to condor, if -s was specified
         if options.submit:
-            os.system("condor_submit jobExecCondor_"+jobname+".jdl")
+            submitcmd = "condor_submit jobExecCondor_"+filesConfig+".jdl "+queuecmd
+            if verbose: print submitcmd
+            os.system(submitcmd)
 
     if verbose and data: print "("+str(nActualJobs)+" actual jobs)"
 
@@ -234,7 +246,9 @@ if options.missing:
             with open(options.resub,'w') as rfile:
                 rfile.write("#!/bin/bash\n\n")
                 for dtmp in sorted(diffList):
-                    rfile.write('condor_submit jobExecCondor_'+dtmp+'.jdl\n')
+                    stmp = '_'.join(dtmp.split('_')[:-1])
+                    ntmp = dtmp.split('_')[-1]
+                    rfile.write('condor_submit jobExecCondor_'+stmp+'.jdl -queue Process in '+ntmp+'\n')
                 # make executable
                 st = os.stat(rfile.name)
                 os.chmod(rfile.name, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
