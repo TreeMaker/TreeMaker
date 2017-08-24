@@ -5,7 +5,7 @@
 */
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/RefToBaseVector.h"
@@ -14,13 +14,12 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
-class PackedCandPtrProjector : public edm::EDProducer{
+class PackedCandPtrProjector : public edm::global::EDProducer<> {
   public:
     explicit PackedCandPtrProjector(const edm::ParameterSet & iConfig);
     ~PackedCandPtrProjector();
 
-    virtual void produce(edm::Event & iEvent, const edm::EventSetup& iSetup) override;
-    virtual void endJob() override;
+    virtual void produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup& iSetup) const override;
 
   private:
     edm::EDGetTokenT<edm::View<pat::PackedCandidate> > packedCandSrcToken_;
@@ -41,7 +40,7 @@ PackedCandPtrProjector::~PackedCandPtrProjector()
 }
 
 void
-PackedCandPtrProjector::produce(edm::Event & iEvent, const edm::EventSetup & iSetup)
+PackedCandPtrProjector::produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const
 {
   using namespace edm;
   Handle<View<pat::PackedCandidate> > packedCands;
@@ -66,10 +65,6 @@ PackedCandPtrProjector::produce(edm::Event & iEvent, const edm::EventSetup & iSe
     }
   }
   iEvent.put(std::move(result));
-}
-
-void PackedCandPtrProjector::endJob()
-{
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

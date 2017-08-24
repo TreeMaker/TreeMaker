@@ -4,14 +4,12 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
-
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
-
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -25,14 +23,14 @@
 
 
 
-class ExtrapolationProducer : public edm::EDProducer {
+class ExtrapolationProducer : public edm::global::EDProducer<> {
 public:
   explicit ExtrapolationProducer(const edm::ParameterSet&);
   ~ExtrapolationProducer();
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
-  TVector2 GetWVec(double met, double met_phi, double lep_pt, double lep_phi) {
+  TVector2 GetWVec(double met, double met_phi, double lep_pt, double lep_phi) const {
     TVector2 nu;
     nu.SetMagPhi(met, met_phi);
     TVector2 lep;
@@ -42,12 +40,12 @@ public:
     return W;
   }
 
-  double GetMTW(double met, double met_phi, double lep_pt, double lep_phi) {
+  double GetMTW(double met, double met_phi, double lep_pt, double lep_phi) const {
     double deltaPhi =TVector2::Phi_mpi_pi(lep_phi-met_phi);
     return sqrt(2*lep_pt*met*(1-cos(deltaPhi)) );
   }
 
-  double GetCDTT(double met, double met_phi, double lep_pt, double lep_phi) {
+  double GetCDTT(double met, double met_phi, double lep_pt, double lep_phi) const {
     TVector2 w_lab_vec = GetWVec(met, met_phi, lep_pt, lep_phi);
     double pt_lab_w = w_lab_vec.Mod();
 
@@ -67,14 +65,8 @@ public:
   }
 
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag MuonTag_, ElecTag_, MHTPtTag_, MHTPhiTag_;
   edm::EDGetTokenT<edm::View<pat::Muon>> MuonTok_;
   edm::EDGetTokenT<edm::View<pat::Electron>> ElecTok_;
@@ -86,7 +78,7 @@ private:
 
 ExtrapolationProducer::ExtrapolationProducer(const edm::ParameterSet& iConfig)
 {
-  //register your producer
+  //register your products
   MuonTag_ 				= 	iConfig.getParameter<edm::InputTag >("MuonTag");
   ElecTag_ 				= 	iConfig.getParameter<edm::InputTag >("ElectronTag");
   MHTPtTag_ = edm::InputTag("MHT","Pt");
@@ -111,10 +103,8 @@ ExtrapolationProducer::~ExtrapolationProducer()
 	
 }
 
-void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void ExtrapolationProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
-  //  std::cout<<"Running ExtrapolationProducer"<<std::endl;
- 
   using namespace edm;
 		
   auto muPTW = std::make_unique<std::vector<double>>();
@@ -131,7 +121,7 @@ void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
   TVector2 mhtVec(0,0);
   if (mhtHandle.isValid() && mhtPhiHandle.isValid()) {
     mhtVec.SetMagPhi(MHT, MHTPhi);
-  } else std::cout<<"ExtrapolationProducer can't find MHT"<<std::endl;
+  } else edm::LogWarning("TreeMaker")<<"ExtrapolationProducer can't find MHT";
 
   edm::Handle<edm::View<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonTok_, muonHandle);
@@ -161,41 +151,6 @@ void ExtrapolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& i
   iEvent.put(std::move(elecPTW),"ElecPTW");
   iEvent.put(std::move(elecCDTT),"ElecCDTT");
 
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void
-ExtrapolationProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-ExtrapolationProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-ExtrapolationProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-ExtrapolationProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-ExtrapolationProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-ExtrapolationProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

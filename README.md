@@ -13,7 +13,7 @@ git cms-init
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
 git fetch btv-cmssw refs/tags/BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
 git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
-git cms-merge-topic -u kpedro88:storeJERFactor8022
+git cms-merge-topic -u kpedro88:storeJERFactor8028
 git cms-merge-topic -u kpedro88:badMuonFilters_80X_v2_RA2
 git cms-merge-topic -u kpedro88:FixMetSigData8028
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
@@ -121,7 +121,7 @@ A ROOT file containing the data, MC, and data/MC histograms (with uncertainty va
 The script [get_mcm.py](./Production/test/get_mcm.py) can search the McM database for given samples (with wildcard support) to discern the status of the sample (whether it has finished running), the generator cross section, and the full dataset path for the sample ("/X/Y/Z" format).
 Command line options exist to specify campaign names and other information, which can be viewed with the `--help` option.
 An example dictionary of samples and extensions to check can be found at [dict_mcm.py](./Production/test/dict_mcm.py).
-This script can only be run on lxplus due to the need for [cern-get-sso-cookie](http://linux.web.cern.ch/linux/docs/cernssocookie.shtml) to access the McM database.
+This script requires [cern-get-sso-cookie](http://linux.web.cern.ch/linux/docs/cernssocookie.shtml) to access the McM database, which is installed on lxplus and cmslpc.
 
 The script [get_py.py](./Production/test/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (enabled with `-p`).
 For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (enabled with `-w`).
@@ -173,7 +173,7 @@ python get_py.py dict=dictNLO.py py=False
 Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/python/makeTreeFromMiniAOD_cff.py)
 * `dataset`: name of the miniAOD input file(s)
 * `numevents`: number of input events to process, -1 processes all events (default=1000)
-* `reportfreq`: frequency of CMSSW log output (default=10)
+* `reportfreq`: frequency of CMSSW log output (default=1000)
 * `outfile`: name of the ROOT output file that will be created by the TFileService (automatically appended with "_RA2AnalysisTree.root" when passed from [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
 * `lostlepton`: switch to enable the lost lepton background estimation processes (default=False)
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
@@ -203,3 +203,6 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `redir`: xrootd redirector or storage element address (default=root://cmsxrootd.fnal.gov/)
 * `dump`: equivalent to `edmConfigDump`, but accounts for all command-line settings; exits without running (default=False)
 * `mp`: enable igprof hooks for memory profiling (default=False)
+* `threads`: run in multithreaded mode w/ specified number of threads (default=1)
+* `streams`: run w/ specified number of streams (default=0 -> streams=threads)
+* `tmi`: enable [TimeMemoryInfo](https://github.com/cms-sw/cmssw/blob/master/Validation/Performance/python/TimeMemoryInfo.py) for simple profiling (default=False)

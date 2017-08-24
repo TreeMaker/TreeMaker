@@ -4,10 +4,10 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDAnalyzer.h"
-
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
@@ -16,7 +16,7 @@
 // class declaration
 //
 
-class NeffFinder: public edm::EDAnalyzer {
+class NeffFinder: public edm::one::EDAnalyzer<> {
 	public:
 		explicit NeffFinder(const edm::ParameterSet&);
 		~NeffFinder();
@@ -27,11 +27,6 @@ class NeffFinder: public edm::EDAnalyzer {
 		virtual void analyze(const edm::Event&, const edm::EventSetup&);
 		virtual void endJob();
 	
-		virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-		virtual void endRun(edm::Run const&, edm::EventSetup const&);
-		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-		virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-
 		//member variables
 		std::string name;
 		unsigned long pos, neg;
@@ -64,24 +59,8 @@ NeffFinder::beginJob() { }
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 NeffFinder::endJob() {
-	std::cout << "NeffFinder: " << name << " : " << pos-neg << "" << " (pos = " << pos << ", neg = " << neg << ", tot = " << pos+neg << ")" << std::endl;
+	edm::LogInfo("TreeMaker") << "NeffFinder: " << name << " : " << pos-neg << "" << " (pos = " << pos << ", neg = " << neg << ", tot = " << pos+neg << ")";
 }
-
-// ------------ method called when starting to processes a run  ------------
-void 
-NeffFinder::beginRun(edm::Run const&, edm::EventSetup const&) { }
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-NeffFinder::endRun(edm::Run const&, edm::EventSetup const&) { }
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-NeffFinder::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) { }
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-NeffFinder::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) { }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void

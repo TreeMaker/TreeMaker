@@ -13,6 +13,9 @@ reportfreq=parameters.value("reportfreq",1000)
 outfile=parameters.value("outfile","test_run")
 dump=parameters.value("dump",False)
 mp=parameters.value("mp",False)
+threads=parameters.value("threads",1)
+streams=parameters.value("streams",0)
+tmi=parameters.value("tmi",False)
 
 # background estimations on by default
 lostlepton=parameters.value("lostlepton", True)
@@ -106,6 +109,10 @@ if len(jecfile)>0: print " JECs applied: "+jecfile+(" (residuals)" if residual e
 if len(jerfile)>0: print " JERs applied: "+jerfile
 if len(pufile)>0: print " PU weights stored: "+pufile
 print " era of this dataset: "+era
+if mp: print " running memory profile"
+if threads>1:
+    print " threads: "+str(threads)
+    if streams>0: print " streams: "+str(streams)
 print "************************************************"
 
 from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
@@ -146,8 +153,19 @@ if mp:
         reportToFileAtPostEvent = cms.untracked.string('| gzip -c > '+outfile+'___memory___%I.gz')
     )
 
+# multithreading options
+if threads>1:
+    process.options.numberOfThreads = cms.untracked.uint32(threads)
+    process.options.numberOfStreams = cms.untracked.uint32(streams if streams>0 else 0)
 
 # if requested, dump and exit
 if dump:
     print process.dumpPython()
     sys.exit(0)
+
+#process.add_(cms.Service("StallMonitor", fileName = cms.untracked.string("stallMonitor.log")))
+#process.add_(cms.Service("Tracer", printTimestamps = cms.untracked.bool(True)))
+
+if tmi:
+    from Validation.Performance.TimeMemoryInfo import customise
+    process = customise(process)

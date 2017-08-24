@@ -15,7 +15,7 @@
 
 #include <memory>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -29,16 +29,13 @@
 #include "PhysicsTools/Heppy/interface/Davismt2.h"
 #include "PhysicsTools/Heppy/interface/Hemisphere.h"
 #include "PhysicsTools/Heppy/interface/ReclusterJets.h"
-//#include "PhysicsTools/Heppy/src/classes.h"
-//#include <ReclusterJets.h>
-//#include <Hemisphere.h>
 //
 // class declaration
 //
 
 using namespace std;
 
-class Mt2Producer : public edm::EDProducer {
+class Mt2Producer : public edm::global::EDProducer<> {
 public:
   explicit Mt2Producer(const edm::ParameterSet&);
   ~Mt2Producer();
@@ -46,42 +43,23 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
       
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag MetTag_, JetTag_;
   edm::EDGetTokenT<reco::CandidateView> JetTok_;
   edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
 
-  heppy::Davismt2 davismt2_;
-  vector<TLorentzVector> getHemispheres(vector<TLorentzVector> jets);
-  double getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVec);
-  double computeMT2(TLorentzVector visaVec, TLorentzVector visbVec, TLorentzVector metVec);
-  //double getMT2AKT(vector<reco::Particle::LorentzVector >jets, TLorentzVector metVec);
-
-  // ----------member data ---------------------------
+  vector<TLorentzVector> getHemispheres(vector<TLorentzVector> jets) const;
+  double getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVec) const;
+  double computeMT2(TLorentzVector visaVec, TLorentzVector visbVec, TLorentzVector metVec) const;
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
 //
 Mt2Producer::Mt2Producer(const edm::ParameterSet& iConfig)
 {
-  //register your produc
+  //register your products
   JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
   JetTok_ = consumes<reco::CandidateView>(JetTag_);
 
@@ -101,30 +79,21 @@ Mt2Producer::~Mt2Producer()
 //
 
 
-//take one for the team
-///sdfsdf
-
-
-double Mt2Producer::computeMT2(TLorentzVector visaVec, TLorentzVector visbVec, TLorentzVector metVec)
+double Mt2Producer::computeMT2(TLorentzVector visaVec, TLorentzVector visbVec, TLorentzVector metVec) const
 {  
   double metVector[3]={0,metVec.Px(),metVec.Py()};
   double visaVector[3]={0,visaVec.Px(),visaVec.Py()};
   double visbVector[3]={0,visbVec.Px(),visbVec.Py()};
-  //metVector = array.array('d',[0.,metVec.Px(), metVec.Py()]);
-  //visaVector = array.array('d',[0.,visaVec.Px(), visaVec.Py()]);
-  //visbVector = array.array('d',[0.,visbVec.Px(), visbVec.Py()]);
+
+  heppy::Davismt2 davismt2_;
   davismt2_.set_momenta(visaVector,visbVector,metVector);
   davismt2_.set_mn(0);
   return davismt2_.get_mt2();
 }
-  
 
-
-
-double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVec){
+double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVec) const {
   if(!(jets.size()>=2))
     {
-      //cout << "oops"<< endl;
       return -1;
     }
   vector<float> pxvec;
@@ -182,37 +151,12 @@ double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVe
     mt2=computeMT2(tlv1,tlv2,metVec);
   else
     mt2=computeMT2(tlv2,tlv1,metVec);
-  //cout << "jet1,2,met="<<tlv1.Pt()<<", "<<tlv2.Pt()<<", "<<metVec.Pt()<<endl;
-  //cout << "mt2="<<mt2<<endl;
   return mt2;
 }
 
-  
-// double Mt2Producer::getMT2AKT(vector<reco::Particle::LorentzVector >jets, TLorentzVector metVec){
-//   if (!(jets.size()>=2))
-//     {
-//       cout << "problemo" << endl;
-//       return -1;
-//     }
-//   vector<reco::Particle::LorentzVector > objects;
-//   for (unsigned int j=0;j<jets.size();j++)
-//     {objects.push_back(jets[j]);}
-//   heppy::ReclusterJets hemisphereViaKt(objects, 1.,50.0);
-//   vector< ROOT::Math::LorentzVector > groupingViaKt = hemisphereViaKt.getGroupingExclusive(2);
-//   if (!(groupingViaKt.size()>=2))
-//     {
-//       cout << "problemo" << endl;
-//       return -1;
-//     }
-//   return computeMT2(groupingViaKt[0], groupingViaKt[2], met);
-// }
-
-
-
-
 // ------------ method called to produce the data  ------------
 void
-Mt2Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+Mt2Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
   using namespace edm;
   edm::Handle< reco::CandidateView > Jets;
@@ -232,49 +176,16 @@ Mt2Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	jets.push_back(jet);
       }
   }
-  
-  double Mt2 = getMT2Hemi( jets, metvec);
-  
-  //cout << "MT2="<<Mt2<<endl;
 
+  //disable stupid couts from heppy
+  streambuf* orig_buf = std::cout.rdbuf();
+  std::cout.rdbuf(NULL);
+  double Mt2 = getMT2Hemi( jets, metvec);
+  std::cout.rdbuf(orig_buf);
+  
   auto Mt2Final = std::make_unique<double>(Mt2);
   iEvent.put(std::move(Mt2Final),"mt2");
  
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-Mt2Producer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-Mt2Producer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-Mt2Producer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-Mt2Producer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-Mt2Producer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-Mt2Producer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

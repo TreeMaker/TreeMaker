@@ -1,13 +1,15 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/GetterOfProducts.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
+#include "TreeMaker/Utils/interface/parse.h"
 
 // STL include files
 #include <memory>
@@ -21,23 +23,17 @@
 // class declaration
 //
 
-class SusyScanProducer : public edm::EDProducer {
+class SusyScanProducer : public edm::stream::EDProducer<> {
 	public:
 		explicit SusyScanProducer(const edm::ParameterSet&);
 		~SusyScanProducer();
 		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 	private:
-		virtual void beginJob();
-		virtual void produce(edm::Event&, const edm::EventSetup&);
-		virtual void endJob();
+		virtual void produce(edm::Event&, const edm::EventSetup&) override;
 		
-		virtual void beginRun(edm::Run const&, edm::EventSetup const&);
-		virtual void endRun(edm::Run const&, edm::EventSetup const&);
-		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
-		virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&);
+		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 		
-		void process(std::string line, char delim, std::vector<std::string>& fields);
 		void getModelInfo(std::string comment);
 		
 		// ----------member data ---------------------------
@@ -74,7 +70,7 @@ void SusyScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	using namespace edm;
 
 	if(isLHE_ && shouldScan_){
-		if(debug_) std::cout << "SusyScanProducer: checking LHEEventProduct" << std::endl;
+		if(debug_) edm::LogInfo("TreeMaker") << "SusyScanProducer: checking LHEEventProduct";
 		std::vector<edm::Handle<LHEEventProduct> > handles;
 		getterOfProducts_.fillHandles(iEvent, handles);
 
@@ -103,47 +99,18 @@ void SusyScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-void
-SusyScanProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-SusyScanProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-SusyScanProducer::beginRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-SusyScanProducer::endRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
 // ------------ method called when starting to processes a luminosity block  ------------
 void 
 SusyScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const& iSetup)
 {
 	//new way of getting SUSY scan info
 	if(!isLHE_ && shouldScan_){
-		if(debug_) std::cout << "SusyScanProducer: checking GenLumiInfoHeader" << std::endl;
+		if(debug_) edm::LogInfo("TreeMaker") << "SusyScanProducer: checking GenLumiInfoHeader";
 		edm::Handle<GenLumiInfoHeader> gen_header;
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);
 		std::string model = gen_header->configDescription();
 		getModelInfo(model);
 	}
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-SusyScanProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
@@ -161,11 +128,11 @@ void SusyScanProducer::getModelInfo(std::string comment){
 	//strip newline
 	if(comment.back()=='\n') comment.pop_back();
 	
-	if(debug_) std::cout << comment << std::endl;
+	if(debug_) edm::LogInfo("TreeMaker") << comment;
 	
 	std::vector<std::string> fields;
 	//underscore-delimited data
-	process(comment,'_',fields);
+	parse::process(comment,'_',fields);
 
 	//several possible formats:
 	//model name_mMother_mLSP (1+2 fields)
@@ -178,16 +145,6 @@ void SusyScanProducer::getModelInfo(std::string comment){
 	
 	std::stringstream sfield2(fields.end()[-2]);
 	sfield2 >> motherMass_;
-}
-
-//generalization for processing a line
-void
-SusyScanProducer::process(std::string line, char delim, std::vector<std::string>& fields){
-	std::stringstream ss(line);
-	std::string field;
-	while(std::getline(ss,field,delim)){
-		fields.push_back(field);
-	}
 }
 
 //define this as a plug-in

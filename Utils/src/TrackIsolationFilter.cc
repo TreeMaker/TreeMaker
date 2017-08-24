@@ -20,12 +20,11 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDFilter.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-
 
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "RecoParticleFlow/PFProducer/interface/PFMuonAlgo.h"
@@ -41,15 +40,16 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
-#include "TreeMaker/Utils/interface/TrackIsolationFilter.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
+#include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
+#include "Math/VectorUtil.h"
 #include "TMath.h"
 #include "TLorentzVector.h"
 #include "TTree.h"
 // miniAOD
-//#include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
@@ -58,8 +58,38 @@ using namespace edm;
 using namespace std;
 
 //
-// class decleration
+// class declaration
 //
+
+class TrackIsolationFilter : public edm::global::EDFilter<> {
+public:
+     explicit TrackIsolationFilter (const edm::ParameterSet&);
+     ~TrackIsolationFilter();
+
+private:
+  virtual bool filter(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const override;
+
+  // ----------member data ---------------------------
+  double dR_;
+  double dzcut_;
+  double minPt_;
+  double maxEta_;
+  double isoCut_;
+  double mTCut_;
+  bool doTrkIsoVeto_;
+  int pdgId_;
+  bool debug_;
+
+  edm::InputTag pfCandidatesTag_;
+  edm::InputTag vertexInputTag_;
+  edm::InputTag MetInputTag_;
+  edm::EDGetTokenT<edm::View<pat::PackedCandidate>> pfCandidatesTok_;
+  edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
+  edm::EDGetTokenT<edm::View<pat::MET>> MetInputTok_;
+
+  void GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+
+};
 
 //
 // constructors and destructor
@@ -86,13 +116,13 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	
 	produces<std::vector<pat::PackedCandidate> >(""); 
 	produces<vector<TLorentzVector> >("pfcands");
-	produces<vector<double> >("pfcandsactivity").setBranchAlias("pfcands_activity");
-	produces<vector<double> >("pfcandstrkiso").setBranchAlias("pfcands_trkiso");
-	produces<vector<double> >("pfcandsdzpv"  ).setBranchAlias("pfcands_dzpv");
-	produces<vector<double> >("pfcandsmT"    ).setBranchAlias("pfcands_mT");
-	produces<vector<int>   >("pfcandschg"    ).setBranchAlias("pfcands_chg");
-	produces<vector<int>   >("pfcandsid"     ).setBranchAlias("pfcands_id");
-	produces<int>("isoTracks").setBranchAlias("isoTracks");
+	produces<vector<double> >("pfcandsactivity");
+	produces<vector<double> >("pfcandstrkiso");
+	produces<vector<double> >("pfcandsdzpv"  );
+	produces<vector<double> >("pfcandsmT"    );
+	produces<vector<int>   >("pfcandschg"    );
+	produces<vector<int>   >("pfcandsid"     );
+	produces<int>("isoTracks");
 
 }
 
@@ -101,9 +131,7 @@ TrackIsolationFilter::~TrackIsolationFilter() {
 }
 
 // ------------ method called to produce the data  ------------
-
-bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSetup) {
-
+bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 
 	auto pfcands = std::make_unique<vector<TLorentzVector>>();
 	auto  pfcands_activity = std::make_unique<vector<double>>();
@@ -133,7 +161,6 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByToken(vertexInputTok_, vertices);
-	vtxSize = vertices->size();
 	bool hasGoodVtx = false;
 	if(vertices->size() > 0) hasGoodVtx = true;
 	
@@ -246,7 +273,7 @@ bool TrackIsolationFilter::filter(edm::Event& iEvent, const edm::EventSetup& iSe
 	return result;
 }
 
-void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) {
+void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
   if (tkInd>pfcands->size()) {
 	  trkiso = -999.;
 	  activity = -999.;

@@ -1,3 +1,7 @@
+#ifndef effArea_h
+#define effArea_h
+
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include <vector>
 #include <iostream>
 #include <cmath>
@@ -32,7 +36,7 @@ public:
 
   };
 
-  double rhoCorrectedIso(isoType isoType_, double isoVal, double eta, double rho){
+  double rhoCorrectedIso(isoType isoType_, double isoVal, double eta, double rho) const {
 
     int iEta = -1;
 
@@ -48,7 +52,7 @@ public:
 
     if( iEta < 0 ){
 
-      std::cout << "AHHHHH: couldn't match eta region... eta=" << fabs(eta) << std::endl;
+      edm::LogWarning("TreeMaker") << "AHHHHH: couldn't match eta region... eta=" << fabs(eta);
       return 99999. ;
 
     }else 
@@ -57,3 +61,5 @@ public:
   };
 
 };
+
+#endif

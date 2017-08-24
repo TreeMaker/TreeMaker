@@ -5,7 +5,7 @@
 */
 
 #include "FWCore/Framework/interface/Event.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Common/interface/RefToBaseVector.h"
@@ -14,13 +14,12 @@
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
-class CandPtrPrefer : public edm::EDProducer{
+class CandPtrPrefer : public edm::global::EDProducer<> {
   public:
     explicit CandPtrPrefer(const edm::ParameterSet & iConfig);
     ~CandPtrPrefer();
 
-    virtual void produce(edm::Event & iEvent, const edm::EventSetup& iSetup) override;
-    virtual void endJob() override;
+    virtual void produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup& iSetup) const override;
 
   private:
     edm::EDGetTokenT<edm::View<reco::Candidate> > firstSrcToken_;
@@ -39,7 +38,7 @@ CandPtrPrefer::~CandPtrPrefer()
 }
 
 void
-CandPtrPrefer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup)
+CandPtrPrefer::produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const
 {
   using namespace edm;
   Handle<View<reco::Candidate> > firstGroup;
@@ -59,10 +58,6 @@ CandPtrPrefer::produce(edm::Event & iEvent, const edm::EventSetup & iSetup)
     }
   }
   iEvent.put(std::move(result));
-}
-
-void CandPtrPrefer::endJob()
-{
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"

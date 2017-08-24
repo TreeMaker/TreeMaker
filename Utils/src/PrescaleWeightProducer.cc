@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -40,17 +40,14 @@ using namespace trigger;
 using namespace edm;
 
 
-class PrescaleWeightProducer: public edm::EDProducer {
+class PrescaleWeightProducer: public edm::global::EDProducer<> {
 public:
   explicit PrescaleWeightProducer(const edm::ParameterSet&);
   ~PrescaleWeightProducer();
-  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);//Van
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void beginJob();
-  virtual void endJob();
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
   edm::EDGetTokenT<edm::TriggerResults> _triggerBits;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> _triggerObjects;
@@ -72,7 +69,7 @@ PrescaleWeightProducer::PrescaleWeightProducer(const edm::ParameterSet& iConfig)
 PrescaleWeightProducer::~PrescaleWeightProducer() {
 }
 
-void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 
   double resultWeight = 1.;
 
@@ -164,21 +161,11 @@ void PrescaleWeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& 
   
 }
 
-  void PrescaleWeightProducer::beginJob() {
-  }
 
-  void PrescaleWeightProducer::endJob() {
-  }
+void PrescaleWeightProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
+  edm::ParameterSetDescription desc;
+  desc.setUnknown();
+  descriptions.addDefault(desc);
+}
 
-  void PrescaleWeightProducer::beginRun(edm::Run& iRun, edm::EventSetup const& iSetup) {
-
-    cout << "beginning run" << endl;
-  }
-
-  void PrescaleWeightProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
-    edm::ParameterSetDescription desc;
-    desc.setUnknown();
-    descriptions.addDefault(desc);
-  }
-
-  DEFINE_FWK_MODULE( PrescaleWeightProducer);
+DEFINE_FWK_MODULE( PrescaleWeightProducer);

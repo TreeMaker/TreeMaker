@@ -9,22 +9,52 @@
 #include <iostream>
 #include <unordered_set>
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/InputTag.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
-#include "TreeMaker/Utils/interface/GenParticlesProducer.h"
 #include "TLorentzVector.h"
 #include <DataFormats/ParticleFlowCandidate/interface/PFCandidate.h>
 #include <DataFormats/HepMCCandidate/interface/GenParticle.h>
+#include <DataFormats/PatCandidates/interface/Photon.h>
+
 #include <vector>
+
+class GenParticlesProducer : public edm::global::EDProducer<> {
+
+public:
+  explicit GenParticlesProducer(const edm::ParameterSet&);
+  ~GenParticlesProducer();
+
+  static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+
+private:
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+
+  // ----------member data ---------------------------
+
+  edm::InputTag genCollection;
+  edm::EDGetTokenT<edm::View<reco::GenParticle>> genCollectionTok;
+  bool        debug;
+  std::unordered_set<int> typicalChildIds, typicalParentIds;
+
+};
 
 
 GenParticlesProducer::GenParticlesProducer(const edm::ParameterSet& iConfig):
   genCollection(iConfig.getUntrackedParameter<edm::InputTag>("genCollection")),
   genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
-  debug(iConfig.getUntrackedParameter<bool>("debug",true))
+  debug(iConfig.getUntrackedParameter<bool>("debug",true)),
+  typicalChildIds({1,2,3,4,5,11,12,13,14,15,16,22}),
+  typicalParentIds(
+    {1,2,1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
+     1000001,1000002,1000003,1000004,1000005,1000006,
+     2000001,2000002,2000003,2000004,2000005,2000006,
+     6, 23, 24, 25}
+  )
 {
   produces< std::vector< TLorentzVector > >(""); 
   produces< std::vector< int > >("PdgId");
@@ -47,7 +77,7 @@ GenParticlesProducer::~GenParticlesProducer()
 
 // ------------ method called for each event  ------------
 void
-GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+GenParticlesProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 
   using namespace edm;
@@ -59,21 +89,13 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   auto ParentId_vec = std::make_unique<std::vector<int>>();
   auto parents = std::make_unique<std::vector<TLorentzVector>>();
 
-  std::unordered_set<int> typicalChildIds({1,2,3,4,5,11,12,13,14,15,16,22});
-  std::unordered_set<int> typicalParentIds(
-                                           {1,2,1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
-                                            1000001,1000002,1000003,1000004,1000005,1000006,
-                                            2000001,2000002,2000003,2000004,2000005,2000006,
-                                            6, 23, 24, 25}
-                                        );
-  
   edm::Handle< View<reco::GenParticle> > genPartCands;
   iEvent.getByToken(genCollectionTok, genPartCands);
 
   //Filter out unwanted gen particles and store 4-vector, pdgid, status, and parentID:
   if( debug ){
-    std::cout<< "======new event============"<<std::endl;
-    std::cout<<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t"<<std::endl;
+    edm::LogInfo("TreeMaker")<< "======new event============"<<"\n"
+      <<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t";
   }
   for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart)
     {
@@ -101,14 +123,14 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
           if(!(Parent)) break;
           if( debug ){
             if(abs(PdgId_vec->back())==24) 
-              std::cout << "W parent Id, status ="<< Parent->pdgId()<<", "<<Parent->status()<<",px="<<Parent->px()<<",py="<<Parent->py()<<",phi="<<Parent->phi()<<std::endl;
+              edm::LogInfo("TreeMaker") << "W parent Id, status ="<< Parent->pdgId()<<", "<<Parent->status()<<",px="<<Parent->px()<<",py="<<Parent->py()<<",phi="<<Parent->phi();
           }
           if(Parent->isLastCopy() || Parent->status()==21)
             {
               parentid = Parent->pdgId();
               parent.SetPxPyPzE(Parent->px(), Parent->py(), Parent->pz(), Parent->energy());
               if( debug ){
-                if(abs(PdgId_vec->back())==24) std:: cout << "planning to keep this mother"<<std::endl;
+                if(abs(PdgId_vec->back())==24) edm::LogInfo("TreeMaker") << "planning to keep this mother";
               }
               break;
             }
@@ -129,8 +151,8 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
       if (itlv == genParticle_vec->end()) parentIndex = -1;
       Parent_vec->push_back(parentIndex);
       if( debug ){
-        std::cout<<g<<"\t"<<PdgId_vec->at(g)<<"\t"<<Status_vec->at(g)<<"\t"<<ParentId_vec->at(g)<<"\t"<<Parent_vec->at(g)<<std::endl;//", eta="<<  parents->at(g).Eta() <<"phi="<< parents->at(g).Phi() <<std::endl;
-        std::cout<< "eta="<< parents->at(g).Eta() << std::endl;
+        edm::LogInfo("TreeMaker")<<g<<"\t"<<PdgId_vec->at(g)<<"\t"<<Status_vec->at(g)<<"\t"<<ParentId_vec->at(g)<<"\t"<<Parent_vec->at(g)<<"\n" //<<", eta="<<  parents->at(g).Eta() <<"phi="<< parents->at(g).Phi() <<"\n"
+          << "eta="<< parents->at(g).Eta();
       }
     }
 
@@ -141,45 +163,6 @@ GenParticlesProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   iEvent.put(std::move(Parent_vec ), "Parent" );
  
 }
-
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-
-GenParticlesProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-GenParticlesProducer::endJob() 
-{
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-GenParticlesProducer::beginRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-GenParticlesProducer::endRun(edm::Run const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-GenParticlesProducer::beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-GenParticlesProducer::endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&)
-{
-}
-
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void

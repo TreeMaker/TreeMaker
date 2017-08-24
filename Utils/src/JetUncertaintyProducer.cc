@@ -9,7 +9,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -21,11 +21,11 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Common/interface/ValueMap.h"
 
-class JetUncertaintyProducer : public edm::EDProducer {
+class JetUncertaintyProducer : public edm::global::EDProducer<> {
 	public:
 		explicit JetUncertaintyProducer(const edm::ParameterSet&);
 	private:
-		virtual void produce(edm::Event&, const edm::EventSetup&);
+		virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 		GreaterByPt<pat::Jet> pTComparator_;
 		edm::InputTag JetTag_;
 		edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
@@ -47,7 +47,7 @@ JetUncertaintyProducer::JetUncertaintyProducer(const edm::ParameterSet& iConfig)
 	}
 }
 
-void JetUncertaintyProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 	//get the JEC uncertainties
 	edm::ESHandle<JetCorrectorParametersCollection> JetCorParColl;

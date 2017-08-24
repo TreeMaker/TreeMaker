@@ -2,19 +2,20 @@
 #include <memory>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 // new includes
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
-class MinDeltaRDouble : public edm::EDProducer {
+class MinDeltaRDouble : public edm::global::EDProducer<> {
 public:
 	explicit MinDeltaRDouble(const edm::ParameterSet&);
 private:
-   virtual void produce(edm::Event&, const edm::EventSetup&);
+   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    edm::EDGetTokenT<std::vector<reco::GenParticle>> genParticlesToken_;
 };
 
@@ -25,7 +26,7 @@ MinDeltaRDouble::MinDeltaRDouble(const edm::ParameterSet& iConfig)
    produces<int>("madMinDeltaRStatus");
 }
 
-void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void MinDeltaRDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
    double minDR = 999.;
    int status = 0;
@@ -88,7 +89,7 @@ void MinDeltaRDouble::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
          }
       } 
    } else {
-      std::cout << "MinPhotonDeltaRDouble::Error tag invalid: " << "prunedGenParticles" << std::endl;
+      edm::LogWarning("TreeMaker") << "MinPhotonDeltaRDouble::Error tag invalid: " << "prunedGenParticles";
    }
 
    auto htp0 = std::make_unique<double>(minDR);

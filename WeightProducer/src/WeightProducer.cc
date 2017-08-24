@@ -33,32 +33,28 @@
 // user include files
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
-
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
-
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/ParameterSet/interface/FileInPath.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
-
+#include "TreeMaker/Utils/interface/parse.h"
 
 //
 // class declaration
 //
 
-class WeightProducer: public edm::EDProducer {
+class WeightProducer: public edm::global::EDProducer<> {
 public:
   explicit WeightProducer(const edm::ParameterSet&);
   ~WeightProducer();
   
 private:
-  //  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob();
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, FastSim = 3, other = 4 };
   
@@ -77,7 +73,6 @@ private:
   weight_method _weightingMethod;
   std::unordered_map<double,double> _FastSimXsec;
   
-  void process(std::string line, char delim, std::vector<std::string>& fields);
   double getPUWeight(double trueint, TH1* pu) const;
 };
 
@@ -96,30 +91,32 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    // Option 1: weight constant, as defined in cfg file
    if (_startWeight >= 0) {
       _weightingMethod = StartWeight;
-      std::cout << "WeightProducer: Using constant event weight of " << _startWeight << std::endl;
+      edm::LogInfo("TreeMaker") << "WeightProducer: Using constant event weight of " << _startWeight;
    }
    // Option 2: weight from event
    else if (_weightingMethodName == "FromEvent") {
       _weightingMethod = FromEvent;
-      std::cout << "WeightProducer: Using weight from event" << std::endl;
+      edm::LogInfo("TreeMaker") << "WeightProducer: Using weight from event";
       _weightTok = consumes<double>(_weightName);
    }
    // Option 3: compute new weight
    else if (_weightingMethodName == "Constant") {
       _weightingMethod = Constant;
       _weightFactor = _lumi * _xs / _NumberEvents;
-      std::cout << "WeightProducer: Using constant event weight of " << _weightFactor << std::endl;
-      std::cout << "  Target luminosity (1/pb) : " << _lumi << std::endl;
-      std::cout << "        Cross section (pb) : " << _xs << std::endl;
-      std::cout << "          Number of events : " << _NumberEvents << std::endl;
+      edm::LogInfo("TreeMaker")
+        << "WeightProducer: Using constant event weight of " << _weightFactor << "\n"
+        << "  Target luminosity (1/pb) : " << _lumi << "\n"
+        << "        Cross section (pb) : " << _xs << "\n"
+        << "          Number of events : " << _NumberEvents;
       _genEvtTok = consumes<GenEventInfoProduct>(_genEvtTag);
    }
    // Option 4: assign cross section for FastSim
    else if (_weightingMethodName == "FastSim") {
       _weightingMethod = FastSim;
-      std::cout << "WeightProducer: Finding cross sections for FastSim" << std::endl;
-      std::cout << "  Target luminosity (1/pb) : " << _lumi << std::endl;
-      std::cout << "          Number of events : " << _NumberEvents << std::endl;
+      edm::LogInfo("TreeMaker")
+        << "WeightProducer: Finding cross sections for FastSim" << "\n"
+        << "  Target luminosity (1/pb) : " << _lumi << "\n"
+        << "          Number of events : " << _NumberEvents;
       _SusyMotherTok = consumes<double>(_SusyMotherTag);
       //setup xsec map
       std::string inputXsecName = iConfig.getParameter<std::string> ("XsecFile");
@@ -131,7 +128,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
             std::string line;
             while(getline(infile,line)){
                std::vector<std::string> items;
-               process(line,'\t',items);
+               parse::process(line,'\t',items);
                //convert input to proper types
                if(items.size()==2){
                   double mass_tmp;
@@ -149,13 +146,13 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       }
       else foundXsec = false;
       if(!foundXsec) {
-         std::cout << "WARNING: WeightProducer: Could not open FastSim xsec file: " << inputXsecName << std::endl;
+         edm::LogWarning("TreeMaker") << "WARNING: WeightProducer: Could not open FastSim xsec file: " << inputXsecName;
          _weightingMethod = other;
       }
    }
    // No option specified
    else {
-      std::cerr << "WARNING: WeightProducer: No weighting option specified. Using event weights of 1" << std::endl;
+      edm::LogWarning("TreeMaker") << "WARNING: WeightProducer: No weighting option specified. Using event weights of 1";
    }
 
    // Optionally, compute multiplicative weight factors for PU reweighting
@@ -167,8 +164,8 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       _applyPUWeights = true;
       edm::FileInPath filePUDataDistr(fileNamePU);
 
-      std::cout << "WeightProducer: Applying multiplicative PU weights" << std::endl;
-      std::cout << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'" << std::endl;
+      edm::LogInfo("TreeMaker") << "WeightProducer: Applying multiplicative PU weights" << "\n"
+        << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'";
       TFile* file = TFile::Open(filePUDataDistr.fullPath().c_str(), "READ");
       pu_central = (TH1*)file->Get("pu_weights_central");
       if(pu_central) pu_central->SetDirectory(0);
@@ -178,8 +175,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       if(pu_down) pu_down->SetDirectory(0);
 
       if(!pu_central || !pu_up || !pu_down) {
-         std::cerr << "ERROR in WeightProducer: Pileup histograms missing from file '"
-               << filePUDataDistr.fullPath() << std::endl;
+         edm::LogWarning("TreeMaker") << "ERROR in WeightProducer: Pileup histograms missing from file '" << filePUDataDistr.fullPath();
          _applyPUWeights = false;
       }
       file->Close();
@@ -204,9 +200,11 @@ WeightProducer::~WeightProducer() {
 }
 
 // ------------ method called to produce the data  ------------
-void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+void WeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 
    double resultWeight = 1.;
+   double xsEvt = _xs;
+
    //Option 1: constant start weight from config file
    if (_weightingMethod == StartWeight) {
       resultWeight = _startWeight;
@@ -233,14 +231,14 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    
    //Option 4: get cross section from input file
    else if (_weightingMethod == FastSim) {
-      _xs = 0;
+      xsEvt = 0;
       edm::Handle<double> SusyMotherHandle;
       iEvent.getByToken(_SusyMotherTok, SusyMotherHandle);
       if (SusyMotherHandle.isValid()){
          auto itr = _FastSimXsec.find(*SusyMotherHandle);
-         if(itr!=_FastSimXsec.end()) _xs = itr->second;
+         if(itr!=_FastSimXsec.end()) xsEvt = itr->second;
       }
-      resultWeight = _xs * _NumberEvents * _lumi;
+      resultWeight = xsEvt * _NumberEvents * _lumi;
    }
 
    // Optionally, include PU weight
@@ -290,50 +288,29 @@ void WeightProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) 
    auto pOut = std::make_unique<double>(resultWeight);
    iEvent.put(std::move(pOut), "weight");
    
-   auto pOutX = std::make_unique<double>(_xs);
+   auto pOutX = std::make_unique<double>(xsEvt);
    iEvent.put(std::move(pOutX), "xsec");
 
    auto pOutN = std::make_unique<double>(_NumberEvents);
    iEvent.put(std::move(pOutN), "nevents");
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-//void
-//WeightProducer::beginJob()
-//{
-//}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void WeightProducer::endJob() {
-}
-
 // Get weight factor dependent on true number of
 // added PU interactions
 // --------------------------------------------------
-double WeightProducer::getPUWeight(double trueint, TH1* pu) const{
+double WeightProducer::getPUWeight(double trueint, TH1* pu) const {
   double w = 1.;
   
   if(!pu) return w;
 
-   //std::cout<<"trueint "<<trueint<<std::endl;
   if (trueint < pu->GetBinLowEdge(pu->GetNbinsX()+1)) {
         w = pu->GetBinContent(pu->GetXaxis()->FindBin(trueint));
   } else {
-    std::cerr << "WARNING in WeightProducer::getPUWeight: Number of interactions = " << trueint
-              << " out of histogram binning." << std::endl;
+    edm::LogWarning("TreeMaker") << "WARNING in WeightProducer::getPUWeight: Number of interactions = " << trueint << " out of histogram binning.";
     w = pu->GetBinContent(pu->GetNbinsX());
   }
 
    return w;
-}
-
-//generalization for processing a line
-void WeightProducer::process(std::string line, char delim, std::vector<std::string>& fields){
-	std::stringstream ss(line);
-	std::string field;
-	while(getline(ss,field,delim)){
-		fields.push_back(field);
-	}
 }
 
 //define this as a plug-in
