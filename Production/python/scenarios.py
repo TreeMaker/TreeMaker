@@ -4,7 +4,7 @@ class Scenario:
         if sname == "2017BC":
             self.set_vars(globaltag="92X_dataRun2_Prompt_v8",
                           tagname="RECO",
-                          jsonfile="data/Cert_294927-299649_13TeV_PromptReco_Collisions17_JSON.txt",
+                          jsonfile="data/Cert_294927-300575_13TeV_PromptReco_Collisions17_JSON.txt",
                           jecfile="",
                           residual=True,
                           era="Run2_2017")
