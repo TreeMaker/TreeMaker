@@ -100,7 +100,7 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
             
         # write job options to file - will be transferred with job
         with open("input/args_"+jobname+".txt",'w') as argfile:
-            args = "outfile="+jobname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(options.nFiles)+" scenario="+scenario
+            args = (options.args+" " if len(options.args)>0 else "")+"outfile="+jobname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(options.nFiles)+" scenario="+scenario
             argfile.write(args)
 
     if not options.count and not options.missing:
@@ -171,6 +171,7 @@ parser.add_option("-r", "--resub", dest="resub", default="", help="make a resub 
 parser.add_option("-j", "--json", dest="json", default="", help="manually specified json file to check data (override scenario) (default = %default)")
 parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs from this user (submitter) (default = %default)")
 parser.add_option("-t", "--threads", dest="threads", default=1, help="specify number of CPU threads per job (default = %default)")
+parser.add_option("-a", "--args", dest="args", default="", help="additional common args to use for all jobs (default = %default)")
 parser.add_option("--sites", dest="sites", default="", help="comma-separated list of sites for global pool running (default = %default)")
 (options, args) = parser.parse_args()
 
