@@ -4,10 +4,7 @@ from collections import defaultdict
 import htcondor,classad
 from FWCore.PythonUtilities.LumiList import LumiList
 from TreeMaker.Production.scenarios import Scenario
-
-def dict_callback(option, opt, value, parser):
-    if value is None: return
-    setattr(parser.values, option.dest, value.split(','))
+from parseConfig import list_callback, parser_dict
 
 def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,runSet):
     # fix malformed options
@@ -156,20 +153,19 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
 
     return (nActualJobs,diffList)
 
-# define options
+# define options (get some defaults from config file)
 parser = OptionParser()
 parser.add_option("-k", "--keep", dest="keep", default=False, action="store_true", help="keep existing tarball for job submission (default = %default)")
 parser.add_option("-n", "--nFiles", dest="nFiles", default=1, help="number of files to process per job (default = %default)")
-parser.add_option("-i", "--input", dest="input", type="string", action="callback", callback=dict_callback,
-    help="comma-separated list of input dicts; each prefixed by dict_ and contains scenario + list of samples (default = %default)",
-    default=["2016B","2016C","2016D","2016E","2016F","2016G","2016H","sig","qcd","wjets","ttbar","dyjets","zjets","gjets","singlet","diboson","tth","fast"])
+parser.add_option("-i", "--input", dest="input", type="string", action="callback", callback=list_callback, default=parser_dict["looper"]["input"],
+    help="comma-separated list of input dicts; each prefixed by dict_ and contains scenario + list of samples (default = %default)")
 parser.add_option("-o", "--outputDir", dest="outputDir", default="", help="path to ouput directory in which root files will be stored (required)")
 parser.add_option("-s", "--submit", dest="submit", default=False, action="store_true", help="submit jobs to condor once they are configured (default = %default)")
 parser.add_option("-c", "--count", dest="count", default=False, action="store_true", help="count the expected number of jobs (default = %default)")
 parser.add_option("-m", "--missing", dest="missing", default=False, action="store_true", help="check for missing jobs (default = %default)")
 parser.add_option("-r", "--resub", dest="resub", default="", help="make a resub script with specified name (default = %default)")
 parser.add_option("-j", "--json", dest="json", default="", help="manually specified json file to check data (override scenario) (default = %default)")
-parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs from this user (submitter) (default = %default)")
+parser.add_option("-u", "--user", dest="user", default=parser_dict["common"]["user"], help="view jobs from this user (submitter) (default = %default)")
 parser.add_option("-t", "--threads", dest="threads", default=1, help="specify number of CPU threads per job (default = %default)")
 parser.add_option("-a", "--args", dest="args", default="", help="additional common args to use for all jobs (default = %default)")
 parser.add_option("--sites", dest="sites", default="", help="comma-separated list of sites for global pool running (default = %default)")

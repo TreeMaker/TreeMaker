@@ -1,0 +1,4 @@
+[manage]
+dir = .
+[looper]
+input = 2016B,2016C,2016D,2016E,2016F,2016G,2016H,sig,qcd,wjets,ttbar,dyjets,zjets,gjets,singlet,diboson,tth,fast

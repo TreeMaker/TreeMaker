@@ -12,10 +12,7 @@ except:
     has_paramiko = False
 
 from collectors import collectors
-
-def list_callback(option, opt, value, parser):
-    if value is None: return
-    setattr(parser.values, option.dest, value.split(','))
+from parseConfig import list_callback, parser_dict
 
 class CondorJob:
     def __init__(self, result, schedd):
@@ -83,7 +80,7 @@ def printJobs(jobs, num=False, stdout=False, why=False):
 
 parser = OptionParser(add_help_option=False)
 parser.add_option("-c", "--coll", dest="coll", default="", help="view jobs from this collector (default = %default)")
-parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs from this user (submitter) (default = %default)")
+parser.add_option("-u", "--user", dest="user", default=parser_dict["common"]["user"], help="view jobs from this user (submitter) (default = %default)")
 parser.add_option("-a", "--all", dest="all", default=False, action="store_true", help="view jobs from all schedulers (default = %default)")
 parser.add_option("-h", "--held", dest="held", default=False, action="store_true", help="view only held jobs (default = %default)")
 parser.add_option("-r", "--running", dest="running", default=False, action="store_true", help="view only running jobs (default = %default)")
@@ -97,7 +94,7 @@ parser.add_option("-x", "--xrootd", dest="xrootd", default="", help="edit the xr
 parser.add_option("-e", "--edit", dest="edit", default="", help="edit the ClassAds of the job (JSON dict format) (default = %default)")
 parser.add_option("-s", "--resubmit", dest="resubmit", default=False, action="store_true", help="resubmit the selected jobs (default = %default)")
 parser.add_option("-k", "--kill", dest="kill", default=False, action="store_true", help="remove the selected jobs (default = %default)")
-parser.add_option("-d", "--dir", dest="dir", default="", help="directory for stdout files (used for backup when resubmitting) (default = %default)")
+parser.add_option("-d", "--dir", dest="dir", default=parser_dict["manage"]["dir"], help="directory for stdout files (used for backup when resubmitting) (default = %default)")
 parser.add_option("-w", "--why", dest="why", default=False, action="store_true", help="show why a job was held (default = %default)")
 parser.add_option("--add-sites", dest="addsites", default=[], type="string", action="callback", callback=list_callback, help='comma-separated list of global pool sites to add (default = %default)')
 parser.add_option("--rm-sites", dest="rmsites", default=[], type="string", action="callback", callback=list_callback, help='comma-separated list of global pool sites to remove (default = %default)')
