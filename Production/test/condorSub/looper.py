@@ -1,5 +1,6 @@
 import os, bisect, stat, subprocess, sys
 from optparse import OptionParser
+from collections import defaultdict
 import htcondor,classad
 from FWCore.PythonUtilities.LumiList import LumiList
 from TreeMaker.Production.scenarios import Scenario
@@ -245,10 +246,13 @@ if options.missing:
         if len(options.resub)>0:
             with open(options.resub,'w') as rfile:
                 rfile.write("#!/bin/bash\n\n")
+                diffDict = defaultdict(list)
                 for dtmp in sorted(diffList):
                     stmp = '_'.join(dtmp.split('_')[:-1])
                     ntmp = dtmp.split('_')[-1]
-                    rfile.write('condor_submit jobExecCondor_'+stmp+'.jdl -queue Process in '+ntmp+'\n')
+                    diffDict[stmp].append(ntmp)
+                for stmp in sorted(diffDict):
+                    rfile.write('condor_submit jobExecCondor_'+stmp+'.jdl -queue Process in '+','.join(diffDict[stmp])+'\n')
                 # make executable
                 st = os.stat(rfile.name)
                 os.chmod(rfile.name, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)
