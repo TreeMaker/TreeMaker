@@ -35,6 +35,7 @@ scram b ProjectRename
 # cmsenv
 eval `scramv1 runtime -sh`
 cd -
+ln -s ${CMSSWVER}/src/TreeMaker/Production/test/data
 
 # run CMSSW
 ARGS=$(cat args_${SAMPLE}_${PROCESS}.txt)
