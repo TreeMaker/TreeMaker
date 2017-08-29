@@ -92,6 +92,19 @@ This enables the job output and parameters to be examined.
 The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/condorSub/manageJobs.py).
 Consult the `--help` option for the script to view the available functions.
 
+The scripts [looper.py](./Production/test/condorSub/looper.py) and [manageJobs.py](./Production/test/condorSub/manageJobs.py) can be configured
+by a file called [.tmconfig](./Production/test/condorSub/.tmconfig) (using Python ConfigParser syntax). The config parser first looks for
+`.tmconfig` in the directory where the script is located (typically `Production/test/condorSub`), and then looks in the user's `$HOME` directory.
+Currently, the allowed values are:
+```
+[common]
+user = ...
+[looper]
+input = ...
+[manage]
+dir = ...
+```
+
 ## Calculate Integrated Luminosity
 
 Scripts are available to calculate the integrated luminosity from data ntuples (produced with TreeMaker):

@@ -1,12 +1,10 @@
 import os, bisect, stat, subprocess, sys
 from optparse import OptionParser
+from collections import defaultdict
 import htcondor,classad
 from FWCore.PythonUtilities.LumiList import LumiList
 from TreeMaker.Production.scenarios import Scenario
-
-def dict_callback(option, opt, value, parser):
-    if value is None: return
-    setattr(parser.values, option.dest, value.split(','))
+from parseConfig import list_callback, parser_dict
 
 def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,runSet):
     # fix malformed options
@@ -65,6 +63,8 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
     # start loop over N jobs
     nActualJobs = 0
     jobSet = set()
+    jobNums = []
+    discontinuousJobs = (firstJob>0)
     for iJob in range( int(firstJob), nJobs ) :
         # get starting file number
         nstart = iJob*int(options.nFiles)
@@ -75,6 +75,7 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
             readFileSplit = readFiles[iJob].split('/')
             # some filenames don't have the run in them
             if len(readFileSplit)==12:
+                discontinuousJobs = True
                 readFileRun = readFileSplit[8]+readFileSplit[9]
                 i = bisect.bisect_left(runlist,readFileRun)
                 # skip this file if the run was not found
@@ -82,8 +83,8 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
                     if verbose: print "skipping run "+readFileRun
                     continue
         
-        jobname = filesConfig
-        if nJobs>1: jobname = jobname+"_"+str(iJob)
+        jobname = filesConfig+"_"+str(iJob)
+        jobNums.append(str(iJob))
         
         # keep list of jobs
         if options.missing:
@@ -94,6 +95,12 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
         if options.count:
             continue
             
+        # write job options to file - will be transferred with job
+        with open("input/args_"+jobname+".txt",'w') as argfile:
+            args = (options.args+" " if len(options.args)>0 else "")+"outfile="+jobname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(options.nFiles)+" scenario="+scenario
+            argfile.write(args)
+
+    if not options.count and not options.missing:
         if os.uname()[1]=="login.uscms.org":
             extras = ("+DESIRED_Sites = \""+options.sites+"\"") if len(options.sites)>0 else ""
         else:
@@ -116,19 +123,22 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
         # replace placeholders in template files
         os.system("sed -e 's|CMSSWVER|'${CMSSW_VERSION}'|g' "
                      +"-e 's~OUTDIR~"+options.outputDir+"~g' "
-                     +"-e 's|JOBNAME|"+jobname+"|g' "
                      +"-e 's|SAMPLE|"+filesConfig+"|g' "
-                     +"-e 's|NPART|"+str(iJob)+"|g' "
-                     +"-e 's|NSTART|"+str(nstart)+"|g' "
-                     +"-e 's|NFILES|"+str(options.nFiles)+"|g' "
-                     +"-e 's|SCENARIO|"+scenario+"|g' "
                      +"-e 's|THREADS|"+options.threads+"|g' "
                      +"-e 's~EXTRASTUFF~"+extras+"~g' "
-                     +"< jobExecCondor.jdl > jobExecCondor_"+jobname+".jdl")
+                     +"< jobExecCondor.jdl > jobExecCondor_"+filesConfig+".jdl")
+                     
+        # append queue comment
+        queuecmd = "-queue "+str(nActualJobs)
+        if discontinuousJobs: queuecmd = "-queue Process in "+','.join(jobNums)
+        with open("jobExecCondor_"+filesConfig+".jdl",'a') as jdlfile:
+            jdlfile.write("# "+queuecmd.replace("-queue","Queue")+"\n")
         
         # submit jobs to condor, if -s was specified
         if options.submit:
-            os.system("condor_submit jobExecCondor_"+jobname+".jdl")
+            submitcmd = "condor_submit jobExecCondor_"+filesConfig+".jdl "+queuecmd
+            if verbose: print submitcmd
+            os.system(submitcmd)
 
     if verbose and data: print "("+str(nActualJobs)+" actual jobs)"
 
@@ -143,21 +153,21 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
 
     return (nActualJobs,diffList)
 
-# define options
+# define options (get some defaults from config file)
 parser = OptionParser()
 parser.add_option("-k", "--keep", dest="keep", default=False, action="store_true", help="keep existing tarball for job submission (default = %default)")
 parser.add_option("-n", "--nFiles", dest="nFiles", default=1, help="number of files to process per job (default = %default)")
-parser.add_option("-i", "--input", dest="input", type="string", action="callback", callback=dict_callback,
-    help="comma-separated list of input dicts; each prefixed by dict_ and contains scenario + list of samples (default = %default)",
-    default=["2016B","2016C","2016D","2016E","2016F","2016G","2016H","sig","qcd","wjets","ttbar","dyjets","zjets","gjets","singlet","diboson","tth","fast"])
+parser.add_option("-i", "--input", dest="input", type="string", action="callback", callback=list_callback, default=parser_dict["looper"]["input"],
+    help="comma-separated list of input dicts; each prefixed by dict_ and contains scenario + list of samples (default = %default)")
 parser.add_option("-o", "--outputDir", dest="outputDir", default="", help="path to ouput directory in which root files will be stored (required)")
 parser.add_option("-s", "--submit", dest="submit", default=False, action="store_true", help="submit jobs to condor once they are configured (default = %default)")
 parser.add_option("-c", "--count", dest="count", default=False, action="store_true", help="count the expected number of jobs (default = %default)")
 parser.add_option("-m", "--missing", dest="missing", default=False, action="store_true", help="check for missing jobs (default = %default)")
 parser.add_option("-r", "--resub", dest="resub", default="", help="make a resub script with specified name (default = %default)")
 parser.add_option("-j", "--json", dest="json", default="", help="manually specified json file to check data (override scenario) (default = %default)")
-parser.add_option("-u", "--user", dest="user", default="pedrok", help="view jobs from this user (submitter) (default = %default)")
+parser.add_option("-u", "--user", dest="user", default=parser_dict["common"]["user"], help="view jobs from this user (submitter) (default = %default)")
 parser.add_option("-t", "--threads", dest="threads", default=1, help="specify number of CPU threads per job (default = %default)")
+parser.add_option("-a", "--args", dest="args", default="", help="additional common args to use for all jobs (default = %default)")
 parser.add_option("--sites", dest="sites", default="", help="comma-separated list of sites for global pool running (default = %default)")
 (options, args) = parser.parse_args()
 
@@ -233,8 +243,13 @@ if options.missing:
         if len(options.resub)>0:
             with open(options.resub,'w') as rfile:
                 rfile.write("#!/bin/bash\n\n")
+                diffDict = defaultdict(list)
                 for dtmp in sorted(diffList):
-                    rfile.write('condor_submit jobExecCondor_'+dtmp+'.jdl\n')
+                    stmp = '_'.join(dtmp.split('_')[:-1])
+                    ntmp = dtmp.split('_')[-1]
+                    diffDict[stmp].append(ntmp)
+                for stmp in sorted(diffDict):
+                    rfile.write('condor_submit jobExecCondor_'+stmp+'.jdl -queue Process in '+','.join(diffDict[stmp])+'\n')
                 # make executable
                 st = os.stat(rfile.name)
                 os.chmod(rfile.name, st.st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH)

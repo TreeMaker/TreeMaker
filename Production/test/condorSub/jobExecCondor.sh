@@ -16,22 +16,16 @@ source /cvmfs/cms.cern.ch/cmsset_default.sh
 CMSSWVER=$1
 OUTDIR=$2
 SAMPLE=$3
-NPART=$4
-NSTART=$5
-NFILES=$6
-SCENARIO=$7
-THREADS=$8
-REDIR=$9
+PROCESS=$4
+THREADS=$5
+REDIR=$6
 
 echo ""
 echo "parameter set:"
 echo "CMSSWVER:   $CMSSWVER"
 echo "OUTDIR:     $OUTDIR"
 echo "SAMPLE:     $SAMPLE"
-echo "NPART:      $NPART"
-echo "NSTART:     $NSTART"
-echo "NFILES:     $NFILES"
-echo "SCENARIO:   $SCENARIO"
+echo "PROCESS:    $PROCESS"
 echo "THREADS:    $THREADS"
 echo "REDIR:      $REDIR"
 
@@ -41,12 +35,15 @@ scram b ProjectRename
 # cmsenv
 eval `scramv1 runtime -sh`
 cd -
+ln -s ${CMSSWVER}/src/TreeMaker/Production/test/data
 
 # run CMSSW
-ARGS="outfile=${SAMPLE}_${NPART} inputFilesConfig=${SAMPLE} nstart=${NSTART} nfiles=${NFILES} scenario=${SCENARIO} threads=${THREADS}"
+ARGS=$(cat args_${SAMPLE}_${PROCESS}.txt)
+ARGS="$ARGS threads=${THREADS}"
 if [[ -n "$REDIR" ]]; then
  ARGS="$ARGS redir=${REDIR}"
 fi
+echo "cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1"
 cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1
 
 CMSEXIT=$?
