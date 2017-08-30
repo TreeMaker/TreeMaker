@@ -423,6 +423,14 @@ scenario=""
             filterName  = cms.string("Flag_globalTightHalo2016Filter"),
         )
         VarsInt.extend(['globalTightHalo2016Filter'])
+
+        process.globalSuperTightHalo2016Filter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(tagname),
+            filterName  = cms.string("Flag_globalSuperTightHalo2016Filter"),
+        )
+        VarsInt.extend(['globalSuperTightHalo2016Filter'])
         
         process.HBHENoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
