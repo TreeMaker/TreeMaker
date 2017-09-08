@@ -158,14 +158,11 @@ if threads>1:
     process.options.numberOfThreads = cms.untracked.uint32(threads)
     process.options.numberOfStreams = cms.untracked.uint32(streams if streams>0 else 0)
 
+if tmi:
+    from Validation.Performance.TimeMemoryInfo import customise
+    process = customise(process)
+
 # if requested, dump and exit
 if dump:
     print process.dumpPython()
     sys.exit(0)
-
-#process.add_(cms.Service("StallMonitor", fileName = cms.untracked.string("stallMonitor.log")))
-#process.add_(cms.Service("Tracer", printTimestamps = cms.untracked.bool(True)))
-
-if tmi:
-    from Validation.Performance.TimeMemoryInfo import customise
-    process = customise(process)
