@@ -3,32 +3,7 @@
 
 import FWCore.ParameterSet.Config as cms
 import sys,os
-def makeTreeFromMiniAOD(
-process,
-outfile,
-reportfreq=10,
-dataset="",
-globaltag="",
-numevents=1000,
-lostlepton=False,
-hadtau=False,
-hadtaurecluster=False,
-applybaseline=False,
-doZinv=False,
-debugtracks=False,
-geninfo=False,
-tagname="RECO",
-jsonfile="",
-jecfile="",
-residual=False,
-jerfile="",
-pufile="",
-doPDFs=False,
-fastsim=False,
-signal=False,
-pmssm=False,
-scenario=""
-):
+def makeTreeFromMiniAOD(self,process):
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
@@ -36,36 +11,21 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     
-    process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
-    process.GlobalTag.globaltag = globaltag
-
-    # log output
-    process.load("FWCore.MessageService.MessageLogger_cfi")
-    process.MessageLogger.cerr.FwkReport.reportEvery = reportfreq
-    process.MessageLogger.categories.append('TreeMaker')
-    process.MessageLogger.cerr.TreeMaker = cms.untracked.PSet(
-        optionalPSet = cms.untracked.bool(True),
-        limit = cms.untracked.int32(10000000),
-    )
-    process.options = cms.untracked.PSet(
-        allowUnscheduled = cms.untracked.bool(True),
-#        wantSummary = cms.untracked.bool(True) # off by default
-    )
-
     # files to process
     import FWCore.PythonUtilities.LumiList as LumiList
     process.maxEvents = cms.untracked.PSet(
-        input = cms.untracked.int32(numevents)
+        input = cms.untracked.int32(self.numevents)
     )
     process.source = cms.Source("PoolSource",
-        fileNames = cms.untracked.vstring(dataset),
+        fileNames = cms.untracked.vstring(self.dataset),
         inputCommands = cms.untracked.vstring('keep *','drop LHERunInfoProduct_*_*_*'),
     )
-    if len(jsonfile)>0: process.source.lumisToProcess = LumiList.LumiList(filename = jsonfile).getVLuminosityBlockRange()
+    if len(self.jsonfile)>0: process.source.lumisToProcess = LumiList.LumiList(filename = self.jsonfile).getVLuminosityBlockRange()
 
     # output file
     process.TFileService = cms.Service("TFileService",
-        fileName = cms.string(outfile+".root")
+        fileName = cms.string(self.outfile+".root"),
+        closeFileFast = cms.untracked.bool(True),
     )
     # branches for treemaker
     VectorRecoCand       = cms.vstring() 
@@ -81,7 +41,7 @@ scenario=""
     # configure treemaker
     from TreeMaker.TreeMaker.treeMaker import TreeMaker
     process.TreeMaker2 = TreeMaker.clone(
-        TreeName             = cms.string("PreSelection"),
+        TreeName             = cms.string(self.treename),
         VectorRecoCand       = VectorRecoCand, 
         VarsDouble           = VarsDouble,
         VarsInt              = VarsInt,
@@ -102,13 +62,13 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## SUSY scan info
     ## ----------------------------------------------------------------------------------------------
-    if geninfo:
+    if self.geninfo:
         # mother and LSP masses for SUSY signal scans
         # branches always added, but only have values for fastsim samples
         # needed for WeightProducer
         from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
         process.SusyScan = SusyScanProducer.clone(
-            shouldScan = cms.bool(fastsim and signal and (not pmssm)),
+            shouldScan = cms.bool(self.fastsim and self.signal and (not self.pmssm)),
             debug = cms.bool(False),
             isLHE = cms.bool(False)
         )
@@ -117,7 +77,7 @@ scenario=""
         # pMSSM ID for identifying the pMSSM model point
         from TreeMaker.Utils.pmssm_cfi import PmssmProducer
         process.Pmssm = PmssmProducer.clone(
-            shouldScan = cms.bool(pmssm),
+            shouldScan = cms.bool(self.pmssm),
             debug = cms.bool(False),
             xsecFilename = cms.string('data/pmssm-xsecs-scan1.txt'),
         )
@@ -127,11 +87,11 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## WeightProducer
     ## ----------------------------------------------------------------------------------------------
-    if geninfo:
+    if self.geninfo:
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
-        process.WeightProducer = getWeightProducer(process.source.fileNames[0],fastsim and signal, pmssm)
+        process.WeightProducer = getWeightProducer(process.source.fileNames[0],self.fastsim and self.signal, self.pmssm)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
-        process.WeightProducer.FileNamePUDataDistribution = cms.string(pufile)
+        process.WeightProducer.FileNamePUDataDistribution = cms.string(self.pufile)
         VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
         VarsInt.extend(['WeightProducer:NumInteractions'])
@@ -139,7 +99,7 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## PDF weights for PDF systematics
     ## ----------------------------------------------------------------------------------------------
-    if geninfo and doPDFs:
+    if self.geninfo and self.doPDFs:
         process.PDFWeights = cms.EDProducer('PDFWeightProducer')
         VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
         VectorInt.extend(['PDFWeights:PDFids'])
@@ -147,7 +107,7 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples
     ## ----------------------------------------------------------------------------------------------
-    if geninfo:
+    if self.geninfo:
         process.MadHT = cms.EDProducer('GenHTProducer')
         # called madHT, i.e. MadGraph, to distinguish from GenHT from GenJets
         VarsDouble.extend(['MadHT:genHT(madHT)'])
@@ -174,7 +134,7 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## GenParticles
     ## ----------------------------------------------------------------------------------------------
-    if geninfo :
+    if self.geninfo:
         process.genParticles = cms.EDProducer("GenParticlesProducer",
             genCollection = cms.untracked.InputTag("prunedGenParticles"),
             debug = cms.untracked.bool(False)
@@ -210,17 +170,15 @@ scenario=""
     JetTag = cms.InputTag('slimmedJets')
     JetAK8Tag = cms.InputTag('slimmedJetsAK8')
     METTag = cms.InputTag('slimmedMETs')
-    if scenario=="2016ReMiniAOD03Feb": METTag = cms.InputTag('slimmedMETsMuEGClean')
+    if self.scenarioName=="2016ReMiniAOD03Feb": METTag = cms.InputTag('slimmedMETsMuEGClean')
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
     # https://twiki.cern.ch/twiki/bin/viewauth/CMS/JECDataMC
-    if len(jecfile)>0:
+    if len(self.jecfile)>0:
         #get name of JECs without any directories
-        JECera = jecfile.split('/')[-1]
-        JECPatch = cms.string('sqlite_file:'+jecfile+'.db')
-        if os.getenv('GC_CONF'): 
-            JECPatch = cms.string('sqlite_file:../src/'+jecfile+'.db')
+        JECera = self.jecfile.split('/')[-1]
+        JECPatch = cms.string('sqlite_file:'+self.jecfile+'.db')
 
         process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
             connect = JECPatch,
@@ -245,7 +203,7 @@ scenario=""
         process.es_prefer_jec = cms.ESPrefer("PoolDBESSource","jec")
         
         levels  = ['L1FastJet','L2Relative','L3Absolute']
-        if residual: levels.append('L2L3Residual')
+        if self.residual: levels.append('L2L3Residual')
         
         from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
         
@@ -273,7 +231,7 @@ scenario=""
         from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
         runMetCorAndUncFromMiniAOD(
             process,
-            isData=not geninfo, # controls gen met
+            isData=not self.geninfo, # controls gen met
         )
         METTag = cms.InputTag('slimmedMETs','',process.name_())
     else:
@@ -281,7 +239,7 @@ scenario=""
         from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
         runMetCorAndUncFromMiniAOD(
             process,
-            isData=not geninfo, # controls gen met
+            isData=not self.geninfo, # controls gen met
         )
 
     # keep jets before any further modifications for hadtau
@@ -293,7 +251,7 @@ scenario=""
         jecUncDir = cms.int32(0)
     )
     _infosToAdd = ['jecUnc']
-    if geninfo:
+    if self.geninfo:
         # JER factors - central, up, down
         from TreeMaker.Utils.smearedpatjet_cfi import SmearedPATJetProducer
         process.jerFactor = SmearedPATJetProducer.clone(
@@ -364,10 +322,10 @@ scenario=""
     VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
     VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
 
-    if debugtracks:
-        #NB: this increases the runtime and size of ntuples by ~10x
-        #do not turn on unless you really want to save all the isotrack quantities!!!
-        #just store the full set of isotrack quantities once
+    if self.debugtracks:
+        # NB: this increases the runtime and size of ntuples by ~10x
+        # do not turn on unless you really want to save all the isotrack quantities!!!
+        # just store the full set of isotrack quantities once
         process.IsolatedPionTracksVeto.debug = cms.bool(True)
         VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(PFCands)'])
         VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(PFCands_trkiso)'])
@@ -409,14 +367,14 @@ scenario=""
     # The decision was made to include the filter decision flags
     # as individual branches in the tree
     
-    if not fastsim: # MET filters are not run for fastsim samples
+    if not self.fastsim: # MET filters are not run for fastsim samples
 
         from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
         
         process.CSCTightHaloFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
+            trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_CSCTightHalo2015Filter"),
         )
         VarsInt.extend(['CSCTightHaloFilter'])
@@ -424,7 +382,7 @@ scenario=""
         process.globalTightHalo2016Filter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
+            trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_globalTightHalo2016Filter"),
         )
         VarsInt.extend(['globalTightHalo2016Filter'])
@@ -432,7 +390,7 @@ scenario=""
         process.HBHENoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
+            trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_HBHENoiseFilter"),
         )
         VarsInt.extend(['HBHENoiseFilter'])
@@ -440,7 +398,7 @@ scenario=""
         process.HBHEIsoNoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
+            trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_HBHENoiseIsoFilter"),
         )
         VarsInt.extend(['HBHEIsoNoiseFilter'])
@@ -448,7 +406,7 @@ scenario=""
         process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
-            trigTagArg3 = cms.string(tagname),
+            trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
         VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
@@ -456,7 +414,7 @@ scenario=""
         process.eeBadScFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(tagname),
+            trigTagArg3  = cms.string(self.tagname),
             filterName  =   cms.string("Flag_eeBadScFilter"),
         )
         VarsInt.extend(['eeBadScFilter'])
@@ -493,21 +451,21 @@ scenario=""
         process.duplicateMuonsFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(tagname),
+            trigTagArg3  = cms.string(self.tagname),
             filterName  =   cms.string("Flag_duplicateMuons"),
         )
         VarsInt.extend(['duplicateMuonsFilter'])
         process.badMuonsFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(tagname),
+            trigTagArg3  = cms.string(self.tagname),
             filterName  =   cms.string("Flag_badMuons"),
         )
         VarsInt.extend(['badMuonsFilter'])
         process.noBadMuonsFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(tagname),
+            trigTagArg3  = cms.string(self.tagname),
             filterName  =   cms.string("Flag_noBadMuons"),
         )
         VarsInt.extend(['noBadMuonsFilter'])
@@ -539,7 +497,7 @@ scenario=""
     VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     VectorString.extend(['TriggerProducer:TriggerNames'])
 
-    if not geninfo:
+    if not self.geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
         process.PrescaleWeightProducer = prescaleweightProducer.clone()
         VarsDouble.extend(['PrescaleWeightProducer:weight(PrescaleWeightHT)'])
@@ -563,12 +521,10 @@ scenario=""
     # get the JERs (disabled by default)
     # this requires the user to download the .db file from this github
     # https://github.com/cms-jet/JRDatabase
-    if len(jerfile)>0:
+    if len(self.jerfile)>0:
         #get name of JERs without any directories
-        JERera = jerfile.split('/')[-1]
-        JERPatch = cms.string('sqlite_file:'+jerfile+'.db')
-        if os.getenv('GC_CONF'): 
-            JERPatch = cms.string('sqlite_file:../src/'+jerfile+'.db')
+        JERera = self.jerfile.split('/')[-1]
+        JERPatch = cms.string('sqlite_file:'+self.jerfile+'.db')
     
         process.jer = cms.ESSource("PoolDBESSource",CondDBSetup,
             connect = JERPatch,
@@ -592,7 +548,7 @@ scenario=""
     from TreeMaker.TreeMaker.JetDepot import JetDepot
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     
-    if geninfo:
+    if self.geninfo:
         # JEC unc up
         process, JetTagJECup = JetDepot(process,
             JetTag=JetTag,
@@ -600,14 +556,11 @@ scenario=""
             doSmear=True,
             jerUncDir=0
         )
-        process = makeJetVars(process,
+        process = self.makeJetVars(process,
                               JetTag=JetTagJECup,
                               suff='JECup',
                               skipGoodJets=False,
                               storeProperties=1,
-                              geninfo=geninfo,
-                              fastsim=fastsim,
-                              scenario=scenario,
                               SkipTag=SkipTag
         )
         
@@ -618,14 +571,11 @@ scenario=""
             doSmear=True,
             jerUncDir=0
         )
-        process = makeJetVars(process,
+        process = self.makeJetVars(process,
                               JetTag=JetTagJECdown,
                               suff='JECdown',
                               skipGoodJets=False,
                               storeProperties=1,
-                              geninfo=geninfo,
-                              fastsim=fastsim,
-                              scenario=scenario,
                               SkipTag=SkipTag
         )
 
@@ -636,14 +586,11 @@ scenario=""
             doSmear=True,
             jerUncDir=1
         )
-        process = makeJetVars(process,
+        process = self.makeJetVars(process,
                               JetTag=JetTagJERup,
                               suff='JERup',
                               skipGoodJets=False,
                               storeProperties=1,
-                              geninfo=geninfo,
-                              fastsim=fastsim,
-                              scenario=scenario,
                               SkipTag=SkipTag
         )
         
@@ -654,14 +601,11 @@ scenario=""
             doSmear=True,
             jerUncDir=-1
         )
-        process = makeJetVars(process,
+        process = self.makeJetVars(process,
                               JetTag=JetTagJERdown,
                               suff='JERdown',
                               skipGoodJets=False,
                               storeProperties=1,
-                              geninfo=geninfo,
-                              fastsim=fastsim,
-                              scenario=scenario,
                               SkipTag=SkipTag
         )
 
@@ -711,14 +655,11 @@ scenario=""
     # add userfloats & update tag
     process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2'], ['QGTagger:mult'])
     
-    process = makeJetVars(process,
+    process = self.makeJetVars(process,
                           JetTag=JetTag,
                           suff='',
                           skipGoodJets=False,
                           storeProperties=2,
-                          geninfo=geninfo,
-                          fastsim=fastsim,
-                          scenario=scenario,
                           SkipTag=SkipTag
     )
     
@@ -738,14 +679,11 @@ scenario=""
     process, JetAK8Tag = addJetInfo(process, JetAK8Tag, [], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
     
     # apply jet ID
-    process = makeJetVars(process,
+    process = self.makeJetVars(process,
         JetTag=JetAK8Tag,
         suff='AK8',
         skipGoodJets=False,
         storeProperties=1,
-        geninfo=geninfo,
-        fastsim=fastsim,
-        scenario=scenario,
         onlyGoodJets=True
     )
     
@@ -765,7 +703,7 @@ scenario=""
             "NumChadrons"          ,
         )
     )
-    #specify userfloats
+    # specify userfloats
     process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
     process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
     process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
@@ -773,7 +711,6 @@ scenario=""
     process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
-    #VectorRecoCand.extend([JetAK8Tag.value()+'(JetsAK8)'])
     VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
@@ -787,7 +724,7 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables
     ## ----------------------------------------------------------------------------------------------
-    if geninfo:
+    if self.geninfo:
         # store all genjets
         VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
     
@@ -827,15 +764,15 @@ scenario=""
     # sequence for baseline filters
     process.Baseline = cms.Sequence()
     from TreeMaker.Utils.doublefilter_cfi import DoubleFilter
-    process.HTFilter = DoubleFilter.clone(
-        DoubleTag = cms.InputTag('HT'),
-        CutValue  = cms.double('500'),
-    )
-    process.MHTFilter = DoubleFilter.clone(
-        DoubleTag = cms.InputTag('MHT:Pt'),
-        CutValue  = cms.double('200'),
-    )
-    if applybaseline:
+    if self.applybaseline:
+        process.HTFilter = DoubleFilter.clone(
+            DoubleTag = cms.InputTag('HT'),
+            CutValue  = cms.double('500'),
+        )
+        process.MHTFilter = DoubleFilter.clone(
+            DoubleTag = cms.InputTag('MHT:Pt'),
+            CutValue  = cms.double('200'),
+        )
         process.Baseline += process.HTFilter
         #process.Baseline += process.MHTFilter
     
@@ -845,12 +782,12 @@ scenario=""
     from TreeMaker.Utils.metdouble_cfi import metdouble
     process.MET = metdouble.clone(
         METTag = METTag,
-        GenMETTag = cms.InputTag("slimmedMETs","",tagname), #original collection used deliberately here
+        GenMETTag = cms.InputTag("slimmedMETs","",self.tagname), #original collection used deliberately here
         JetTag = cms.InputTag('HTJets'),
-        geninfo = cms.untracked.bool(geninfo),
+        geninfo = cms.untracked.bool(self.geninfo),
     )
     VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)'])
-    if geninfo:
+    if self.geninfo:
         VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
         VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
 
@@ -870,28 +807,26 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
     ## Hadronic Tau Background
     ## ----------------------------------------------------------------------------------------------
-    if hadtau:
-        from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg
+    if self.hadtau:
         dorecluster = False
-        if hadtaurecluster==0: dorecluster = False
-        elif hadtaurecluster==1: dorecluster = ("TTJets" in process.source.fileNames[0] or "WJets" in process.source.fileNames[0])
-        elif hadtaurecluster==2: dorecluster = geninfo
-        elif hadtaurecluster==3: dorecluster = True
-        process = doHadTauBkg(process,geninfo,residual,JetTagBeforeSmearing,fastsim,dorecluster)
+        if self.hadtaurecluster==0: dorecluster = False
+        elif self.hadtaurecluster==1: dorecluster = ("TTJets" in process.source.fileNames[0] or "WJets" in process.source.fileNames[0])
+        elif self.hadtaurecluster==2: dorecluster = geninfo
+        elif self.hadtaurecluster==3: dorecluster = True
+        process = self.doHadTauBkg(process,JetTagBeforeSmearing,dorecluster)
 
     ## ----------------------------------------------------------------------------------------------
     ## Lost Lepton Background
     ## ----------------------------------------------------------------------------------------------
-    if lostlepton:
-        from TreeMaker.TreeMaker.doLostLeptonBkg import doLostLeptonBkg
-        process = doLostLeptonBkg(process,geninfo,METTag)
+    if self.lostlepton:
+        process = self.doLostLeptonBkg(process,METTag)
 
     ## ----------------------------------------------------------------------------------------------
     ## Zinv Background
     ## ----------------------------------------------------------------------------------------------
-    if doZinv:
+    if self.doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
-        process = doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario)
+        process = self.doZinvBkg(process)
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
@@ -900,7 +835,6 @@ scenario=""
     ## ----------------------------------------------------------------------------------------------
 
     # create the process path
-    process.dump = cms.EDAnalyzer("EventContentAnalyzer")
     process.WriteTree = cms.Path(
         process.Baseline *
         process.TreeMaker2
