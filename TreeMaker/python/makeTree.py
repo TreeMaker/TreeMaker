@@ -74,7 +74,7 @@ class makeTree:
         setattr(self,param,parameters.value(param,default))
         
     def printSetup(self):
-        print " dataset: "+str(self.readFiles)
+        print " readFiles: "+str(self.readFiles)
         print " outfile: "+self.outfile
         print " treename: "+self.treename
         print " "

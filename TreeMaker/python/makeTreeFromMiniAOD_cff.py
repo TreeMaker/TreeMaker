@@ -17,7 +17,7 @@ def makeTreeFromMiniAOD(self,process):
         input = cms.untracked.int32(self.numevents)
     )
     process.source = cms.Source("PoolSource",
-        fileNames = cms.untracked.vstring(self.dataset),
+        fileNames = cms.untracked.vstring(self.readFiles),
         inputCommands = cms.untracked.vstring('keep *','drop LHERunInfoProduct_*_*_*'),
     )
     if len(self.jsonfile)>0: process.source.lumisToProcess = LumiList.LumiList(filename = self.jsonfile).getVLuminosityBlockRange()
