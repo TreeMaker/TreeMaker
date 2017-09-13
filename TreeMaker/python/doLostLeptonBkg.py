@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
-def doLostLeptonBkg(process,geninfo,METTag):
-    if geninfo:
+def doLostLeptonBkg(self,process,METTag):
+    if self.geninfo:
         from TreeMaker.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
         process.GenLeptons = genLeptonRecoCand.clone(
             PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
@@ -75,7 +75,7 @@ def doLostLeptonBkg(process,geninfo,METTag):
             METTag              = METTag
             )
 
-    if geninfo:
+    if self.geninfo:
         process.GenMuonMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Muon'), 
             LeptonType = cms.string('gen'),
@@ -127,7 +127,7 @@ def doLostLeptonBkg(process,geninfo,METTag):
     process.TreeMaker2.VectorDouble.extend(['TAPPionTracks:pfcandsactivity(TAPPionTracks_activity)'])
     process.TreeMaker2.VectorDouble.extend(['TAPPionTracks:pfcandsmT(TAPPionTracks_mT)'])
     process.TreeMaker2.VectorInt.extend(['TAPPionTracks:pfcandschg(TAPPionTracks_charge)'])
-    if geninfo: # gen information on leptons
+    if self.geninfo: # gen information on leptons
         process.TreeMaker2.VectorRecoCand.extend(['GenLeptons:Muon(GenMuons)','GenLeptons:Electron(GenElectrons)','GenLeptons:Tau(GenTaus)'])
         process.TreeMaker2.VectorDouble.extend(['GenMuonMiniIso:MT2Activity(GenMuons_MT2Activity)','GenElectronMiniIso:MT2Activity(GenElectrons_MT2Activity)', 'GenTauMiniIso:MT2Activity(GenTaus_MT2Activity)'])
         process.TreeMaker2.VectorDouble.extend(['GenLeptons:MuonGenRecoD3(GenMuons_RecoTrkd3)','GenLeptons:ElectronGenRecoD3(GenElectrons_RecoTrkd3)'])

@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, scenario):
+def reclusterZinv(self, process, cleanedCandidates, suff):
     
     ### AK8 detour
 
@@ -12,14 +12,14 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
         'pfBoostedDoubleSecondaryVertexAK8BJetTags'
     ]
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
-    if residual: jecLevels.append("L2L3Residual")
+    if self.residual: jecLevels.append("L2L3Residual")
     jetToolbox(process,
         'ak8',
         'jetSequence',
         'out',
         PUMethod = 'CHS',
         miniAOD = True,
-        runOnMC = geninfo,
+        runOnMC = self.geninfo,
         postFix='Clean',
         newPFCollection = True,
         nameNewPFCollection = cleanedCandidates.value(),
@@ -36,14 +36,11 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
     JetAK8CleanTag = cms.InputTag("selectedPatJetsAK8PFCHSClean")
 
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
-    makeJetVars(process,
+    process = self.makeJetVars(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
         skipGoodJets=False,
         storeProperties=1,
-        geninfo=geninfo,
-        fastsim=fastsim,
-        scenario=scenario,
         onlyGoodJets=True
     )
     
@@ -107,7 +104,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
     # PhysicsTools/PatAlgos/python/tools/jetTools.py
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
-    if residual: jecLevels.append("L2L3Residual")
+    if self.residual: jecLevels.append("L2L3Residual")
     btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags','pfCombinedMVAV2BJetTags']
     addJetCollection(
        process,
@@ -143,7 +140,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
     runMetCorAndUncFromMiniAOD(
         process,
-        isData=not geninfo, # controls gen met
+        isData=not self.geninfo, # controls gen met
         jetCollUnskimmed='patJetsAK4PFCLEAN'+suff,
         pfCandColl=cleanedCandidates.value(),
         recoMetFromPFCs=True, # to recompute
@@ -203,7 +200,7 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
 
     # skip all jet smearing for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
-    doJERsmearing = geninfo
+    doJERsmearing = self.geninfo
     
     if doJERsmearing:
         # do central smearing and replace jet tag
@@ -215,16 +212,12 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
         )
     
     # make the event variables
-    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
-    process = makeJetVars(
+    process = self.makeJetVars(
         process,
         JetTag = JetTagClean,
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
-        geninfo=geninfo,
-        fastsim=fastsim,
-        scenario=scenario,
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
@@ -237,19 +230,19 @@ def reclusterZinv(process, geninfo, residual, cleanedCandidates, suff, fastsim, 
     
     return process
 
-def doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario):
+def doZinvBkg(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## Photons
     ## ----------------------------------------------------------------------------------------------
     process.goodPhotons = cms.EDProducer("PhotonIDisoProducer",
         photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
         electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
-        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",tagname),
+        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",self.tagname),
         beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
         ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
         rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
-        genParCollection = cms.untracked.InputTag("prunedGenParticles"), 
+        genParCollection       = cms.untracked.InputTag("prunedGenParticles"), 
         debug                  = cms.untracked.bool(False)
     )
     
@@ -273,7 +266,7 @@ def doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario):
     process.TreeMaker2.VarsBool.append("goodPhotons:hasGenPromptPhoton(hasGenPromptPhoton)")
 
     ## add MadGraph-level deltaR between photon or Z and status 23 partons
-    if geninfo:
+    if self.geninfo:
         process.madMinPhotonDeltaR = cms.EDProducer("MinDeltaRDouble")
         process.TreeMaker2.VarsDouble.extend(['madMinPhotonDeltaR:madMinPhotonDeltaR(madMinPhotonDeltaR)'])
         process.TreeMaker2.VarsInt.extend([   'madMinPhotonDeltaR:madMinDeltaRStatus(madMinDeltaRStatus)'])
@@ -306,14 +299,10 @@ def doZinvBkg(process,tagname,geninfo,residual,fastsim,scenario):
     )
     
     # make reclustered jets
-    process = reclusterZinv(
+    process = self.reclusterZinv(
         process,
-        geninfo,
-        residual,
         cms.InputTag("cleanedCandidates"),
         "",
-        fastsim,
-        scenario
     )
     
     return process

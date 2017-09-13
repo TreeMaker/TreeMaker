@@ -29,7 +29,7 @@ def makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff):
     
     return process
 
-def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, fastsim, scenario, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -56,7 +56,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
             SaveAllJetsId             = True,
             SaveAllJetsPt             = False, # exclude low pt jets from good collection
         )
-        if fastsim: GoodJets.jetPtFilter = cms.double(20)
+        if self.fastsim: GoodJets.jetPtFilter = cms.double(20)
         setattr(process,"GoodJets"+suff,GoodJets)
         GoodJetsTag = cms.InputTag("GoodJets"+suff)
         process.TreeMaker2.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
@@ -123,7 +123,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
     ## ----------------------------------------------------------------------------------------------
     # MHT, DeltaPhi moved to separate fn (above) because of stupid egamma slew corrections
     MHTOrig = ""
-    if scenario=="2016ReMiniAOD03Feb":
+    if self.scenario=="2016ReMiniAOD03Feb":
         MHTOrig = "Orig"
         from TreeMaker.Utils.patjetfix_cfi import patjetfix
         PatJetFix = patjetfix.clone(
@@ -136,7 +136,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
     ## ----------------------------------------------------------------------------------------------
     ## ISR jets
     ## ----------------------------------------------------------------------------------------------
-    if geninfo:
+    if self.geninfo:
         from TreeMaker.Utils.isrjet_cfi import ISRJetProducer
         ISRJets = ISRJetProducer.clone(
             JetTag = GoodJetsTag,
@@ -164,7 +164,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
         JetsProperties.bDiscriminatorMVA = cms.vstring('pfCombinedMVAV2BJetTags')
         if storeProperties==1: 
             JetsProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","muonEnergyFraction","chargedHadronEnergyFraction","partonFlavor","hadronFlavor")
-        if storeProperties>1 and geninfo:
+        if storeProperties>1 and self.geninfo:
             JetsProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
         setattr(process,"JetsProperties"+suff,JetsProperties)
         process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
@@ -183,7 +183,7 @@ def makeJetVars(process, JetTag, suff, skipGoodJets, storeProperties, geninfo, f
                                                     'JetsProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
                                                     'JetsProperties'+suff+':qgPtD(Jets'+suff+'_qgPtD)',
                                                     'JetsProperties'+suff+':qgAxis2(Jets'+suff+'_qgAxis2)'])
-            if geninfo:
+            if self.geninfo:
                 process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
                                                         'JetsProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
                                                         'JetsProperties'+suff+':jerFactorDown(Jets'+suff+'_jerFactorDown)'])

@@ -183,37 +183,40 @@ python get_py.py dict=dictNLO.py py=False
 
 ## Options
 
-Brief explanation of the options in [makeTreeFromMiniAOD_cff.py](./TreeMaker/python/makeTreeFromMiniAOD_cff.py)
-* `dataset`: name of the miniAOD input file(s)
-* `numevents`: number of input events to process, -1 processes all events (default=1000)
-* `reportfreq`: frequency of CMSSW log output (default=1000)
-* `outfile`: name of the ROOT output file that will be created by the TFileService (automatically appended with "_RA2AnalysisTree.root" when passed from [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
-* `lostlepton`: switch to enable the lost lepton background estimation processes (default=False)
-* `hadtau`: switch to enable the hadronic tau background estimation processes (default=False)
+Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py)
+* `scenario`: the scenario name, in case of special requirements (default="")
+* `inputFilesConfig`: name of the python file with a list of ROOT files for a sample, used for Condor production (automatically appended with "_cff") (default="")
+* `nstart`: first file to use in above file list (default=0)
+* `nfiles`: number of files to use in above file list, -1 includes all files (default=-1)
+* `dataset`: direct list of input files (alternative to above 3 parameters) (default=[])
+* `numevents`: number of input events to process, -1 processes all events (default=-1)
+* `outfile`: name of the ROOT output file that will be created by the TFileService (appended with `outfilesuff` below) (default="test_run")
+* `outfilesuff`: suffix to append to `outfile` above (default="_RA2AnalysisTree")
+* `treename`: name of output ROOT TTree (default="PreSelection")
+* `lostlepton`: switch to enable the lost lepton background estimation processes (default=True)
+* `hadtau`: switch to enable the hadronic tau background estimation processes (default=True)
 * `hadtaurecluster`: switch to enable the hadronic tau reclustering to include jets with pT < 10 GeV, options: 0 = never, 1 = only TTJets/WJets MC, 2 = all MC, 3 = always (default=1)
-* `doZinv`: switch to enable the Z->invisible background estimation processes (default=False)
-* `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=False)  
+* `doZinv`: switch to enable the Z->invisible background estimation processes (default=True)
+* `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
 * `applybaseline`: switch to apply the baseline HT selection (default=False)
-* `gridcontrol`: switch to apply special settings for grid control submission (default=False)
+The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
-* `tagname`: tag name for collections that can have different tags for data or MC (default="PAT")
-* `geninfo`: switch to enable use of generator information, should only be used for MC (default=True)
-* `fastsim`: switch to enable special settings for SUSY signal scans produced with FastSim (default=False)
-* `pmssm`: switch to enable special settings for pMSSM signal scans (default=False)
-* `signal`: switch to enable assessment of signal systematics (default=False) (currently unused)
+* `tagname`: tag name for collections that can have different tags for data or MC
+* `geninfo`: switch to enable use of generator information, should only be used for MC
+* `fastsim`: switch to enable special settings for SUSY signal scans produced with FastSim
+* `pmssm`: switch to enable special settings for pMSSM signal scans
+* `signal`: switch to enable assessment of signal systematics (currently unused)
 * `jsonfile`: name of JSON file to apply to data
-* `jecfile`: name of a database file from which to get JECs (default="")
-* `jerfile`: name of a database file from which to get JERs (default="")
-* `residual`: switch to enable residual JECs for data (default=False)
-* `scenario`: the scenario name, in case of special requirements (default="")
+* `jecfile`: name of a database file from which to get JECs
+* `jerfile`: name of a database file from which to get JERs
+* `residual`: switch to enable residual JECs for data
+* `era`: CMS detector era for the dataset
+* `redir`: xrootd redirector or storage element address (default="root://cmsxrootd.fnal.gov/") (`fastsim` default="root://cmseos.fnal.gov/")
 
 Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py):
-* `inputFilesConfig`: name of the python file with a list of ROOT files for a sample, used for Condor production (default="", automatically appended with "_cff.py")
-* `scenarioName`: name of the scenario for the sample, as described above (default="")
-* `era`: CMS detector era for the dataset
-* `redir`: xrootd redirector or storage element address (default=root://cmsxrootd.fnal.gov/)
+* `reportfreq`: frequency of CMSSW log output (default=1000)
 * `dump`: equivalent to `edmConfigDump`, but accounts for all command-line settings; exits without running (default=False)
 * `mp`: enable igprof hooks for memory profiling (default=False)
 * `threads`: run in multithreaded mode w/ specified number of threads (default=1)
