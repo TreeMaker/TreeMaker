@@ -9,51 +9,53 @@ from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg, reclusterZinv
 
 class makeTree:
     def __init__(self,parameters):
+        self.parameters = parameters
+    
         # auto configuration for different scenarios
-        self.scenarioName=parameters.value("scenario","")
+        self.scenarioName=self.parameters.value("scenario","")
         from TreeMaker.Production.scenarios import Scenario
         self.scenario = Scenario(self.scenarioName)
         
-        self.getParamDefault(parameters,"inputFilesConfig","")
-        self.getParamDefault(parameters,"dataset",[])
-        self.getParamDefault(parameters,"nstart",0)
-        self.getParamDefault(parameters,"nfiles",-1)
-        self.getParamDefault(parameters,"numevents",-1)
-        self.getParamDefault(parameters,"outfile","test_run")
-        outfilesuff=parameters.value("outfilesuff","_RA2AnalysisTree")
+        self.getParamDefault("inputFilesConfig","")
+        self.getParamDefault("dataset",[])
+        self.getParamDefault("nstart",0)
+        self.getParamDefault("nfiles",-1)
+        self.getParamDefault("numevents",-1)
+        self.getParamDefault("outfile","test_run")
+        outfilesuff=self.parameters.value("outfilesuff","_RA2AnalysisTree")
         self.outfile += outfilesuff
-        self.getParamDefault(parameters,"treename","PreSelection")
+        self.getParamDefault("treename","PreSelection")
         
         # background estimations on by default
-        self.getParamDefault(parameters,"lostlepton", True)
-        self.getParamDefault(parameters,"hadtau", True)
-        self.getParamDefault(parameters,"hadtaurecluster", 1)
-        self.getParamDefault(parameters,"doZinv", True)
+        self.getParamDefault("lostlepton", True)
+        self.getParamDefault("hadtau", True)
+        self.getParamDefault("hadtaurecluster", 1)
+        self.getParamDefault("doZinv", True)
         
         # compute the PDF weights
-        self.getParamDefault(parameters,"doPDFs", True);
+        self.getParamDefault("doPDFs", True);
         
         # other options off by default
-        self.getParamDefault(parameters,"debugtracks", False)
-        self.getParamDefault(parameters,"applybaseline", False)
+        self.getParamDefault("debugtracks", False)
+        self.getParamDefault("applybaseline", False)
         
         # take command line input (w/ defaults from scenario if specified)
-        self.getParamDefault(parameters,"globaltag",self.scenario.globaltag)
-        self.getParamDefault(parameters,"tagname",self.scenario.tagname)
-        self.getParamDefault(parameters,"geninfo",self.scenario.geninfo)
-        self.getParamDefault(parameters,"pmssm",self.scenario.pmssm)
-        self.getParamDefault(parameters,"fastsim",self.scenario.fastsim)
-        self.getParamDefault(parameters,"signal",self.scenario.signal)
-        self.getParamDefault(parameters,"jsonfile",self.scenario.jsonfile)
-        self.getParamDefault(parameters,"jecfile",self.scenario.jecfile)
-        self.getParamDefault(parameters,"residual",self.scenario.residual)
-        self.getParamDefault(parameters,"jerfile",self.scenario.jerfile)
-        self.getParamDefault(parameters,"pufile",self.scenario.pufile)
-        self.getParamDefault(parameters,"era",self.scenario.era)
+        self.getParamDefault("globaltag",self.scenario.globaltag)
+        self.getParamDefault("tagname",self.scenario.tagname)
+        self.getParamDefault("geninfo",self.scenario.geninfo)
+        self.getParamDefault("pmssm",self.scenario.pmssm)
+        self.getParamDefault("fastsim",self.scenario.fastsim)
+        self.getParamDefault("signal",self.scenario.signal)
+        self.getParamDefault("jsonfile",self.scenario.jsonfile)
+        self.getParamDefault("jecfile",self.scenario.jecfile)
+        self.getParamDefault("residual",self.scenario.residual)
+        self.getParamDefault("jerfile",self.scenario.jerfile)
+        self.getParamDefault("pufile",self.scenario.pufile)
+        self.getParamDefault("era",self.scenario.era)
         
         # temporary redirector fix
         # fastsim signal is phedexed to LPC Tier3
-        self.getParamDefault(parameters,"redir", "root://cmseos.fnal.gov/" if self.fastsim and self.signal else "root://cmsxrootd.fnal.gov/")
+        self.getParamDefault("redir", "root://cmseos.fnal.gov/" if self.fastsim and self.signal else "root://cmsxrootd.fnal.gov/")
         
         # Load input files
         self.readFiles = cms.untracked.vstring()
@@ -70,8 +72,8 @@ class makeTree:
 
         self.readFiles = [(self.redir if val[0:6]=="/store" else "")+val for val in self.readFiles]
         
-    def getParamDefault(self,parameters,param,default):
-        setattr(self,param,parameters.value(param,default))
+    def getParamDefault(self,param,default):
+        setattr(self,param,self.parameters.value(param,default))
         
     def printSetup(self):
         print " readFiles: "+str(self.readFiles)
