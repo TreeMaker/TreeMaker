@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 # import functions to be assigned as class methods
 from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
-from TreeMaker.TreeMaker.makeJetVars import makeJetVars
+from TreeMaker.TreeMaker.makeJetVars import makeJetVars, makeMHTVars
 from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg, makeJetVarsHadTau
 from TreeMaker.TreeMaker.doLostLeptonBkg import doLostLeptonBkg
 from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg, reclusterZinv
@@ -72,6 +72,18 @@ class makeTree:
 
         self.readFiles = [(self.redir if val[0:6]=="/store" else "")+val for val in self.readFiles]
         
+        # branches for treemaker
+        self.VectorRecoCand             = cms.vstring()
+        self.VarsDouble                 = cms.vstring()
+        self.VarsInt                    = cms.vstring()
+        self.VarsBool                   = cms.vstring()
+        self.VectorTLorentzVector       = cms.vstring()
+        self.VectorDouble               = cms.vstring()
+        self.VectorString               = cms.vstring()
+        self.VectorInt                  = cms.vstring()
+        self.VectorBool                 = cms.vstring()
+        self.VectorVectorTLorentzVector = cms.vstring()
+
     def getParamDefault(self,param,default):
         setattr(self,param,self.parameters.value(param,default))
         
@@ -105,6 +117,7 @@ class makeTree:
     # assign class methods from functions
     makeTreeFromMiniAOD = makeTreeFromMiniAOD
     makeJetVars = makeJetVars
+    makeMHTVars = makeMHTVars
     doHadTauBkg = doHadTauBkg
     makeJetVarsHadTau = makeJetVarsHadTau
     doLostLeptonBkg = doLostLeptonBkg

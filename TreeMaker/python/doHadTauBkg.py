@@ -14,8 +14,8 @@ def makeJetVarsHadTau(self,process,JetTag,suff,storeProperties=0):
     setattr(process,"GoodJetsForHadTau"+suff,GoodJetsForHadTau)
     GoodJetsTag = cms.InputTag("GoodJetsForHadTau"+suff)
     
-    process.TreeMaker2.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(SoftJets'+suff+')'])
-    process.TreeMaker2.VectorBool.extend(['GoodJetsForHadTau'+suff+':JetIDMask(SoftJets'+suff+'_ID)'])
+    self.VectorRecoCand.extend(['GoodJetsForHadTau'+suff+'(SoftJets'+suff+')'])
+    self.VectorBool.extend(['GoodJetsForHadTau'+suff+':JetIDMask(SoftJets'+suff+'_ID)'])
     
     if storeProperties>0:
         # make jet properties producer
@@ -32,11 +32,11 @@ def makeJetVarsHadTau(self,process,JetTag,suff,storeProperties=0):
         JetsProperties.jerFactorUp = cms.vstring("jerFactorUpHadTau")
         JetsProperties.jerFactorDown = cms.vstring("jerFactorDownHadTau")
         setattr(process,"HadTauJetsProperties"+suff,JetsProperties)
-        process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jecFactor(SoftJets'+suff+'_jecFactor)',
+        self.VectorDouble.extend(['HadTauJetsProperties:jecFactor(SoftJets'+suff+'_jecFactor)',
                                                 'HadTauJetsProperties:jecUnc(SoftJets'+suff+'_jecUnc)',
                                                 'HadTauJetsProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)'])
         if self.geninfo:
-            process.TreeMaker2.VectorDouble.extend(['HadTauJetsProperties:jerFactor(SoftJets'+suff+'_jerFactor)',
+            self.VectorDouble.extend(['HadTauJetsProperties:jerFactor(SoftJets'+suff+'_jerFactor)',
                                                     'HadTauJetsProperties:jerFactorUp(SoftJets'+suff+'_jerFactorUp)',
                                                     'HadTauJetsProperties:jerFactorDown(SoftJets'+suff+'_jerFactorDown)'])
     

@@ -27,32 +27,21 @@ def makeTreeFromMiniAOD(self,process):
         fileName = cms.string(self.outfile+".root"),
         closeFileFast = cms.untracked.bool(True),
     )
-    # branches for treemaker
-    VectorRecoCand       = cms.vstring() 
-    VarsDouble           = cms.vstring()
-    VarsInt              = cms.vstring()
-    VarsBool             = cms.vstring()
-    VectorTLorentzVector = cms.vstring()
-    VectorDouble         = cms.vstring()
-    VectorString         = cms.vstring()
-    VectorInt            = cms.vstring()
-    VectorBool           = cms.vstring()
-    VectorVectorTLorentzVector = cms.vstring()
 
     # configure treemaker
     from TreeMaker.TreeMaker.treeMaker import TreeMaker
     process.TreeMaker2 = TreeMaker.clone(
-        TreeName             = cms.string(self.treename),
-        VectorRecoCand       = VectorRecoCand, 
-        VarsDouble           = VarsDouble,
-        VarsInt              = VarsInt,
-        VarsBool             = VarsBool,
-        VectorTLorentzVector = VectorTLorentzVector,
-        VectorDouble         = VectorDouble,
-        VectorInt            = VectorInt,
-        VectorString         = VectorString,
-        VectorBool           = VectorBool,
-        VectorVectorTLorentzVector = VectorVectorTLorentzVector,
+        TreeName                   = cms.string(self.treename),
+        VectorRecoCand             = self.VectorRecoCand, 
+        VarsDouble                 = self.VarsDouble,
+        VarsInt                    = self.VarsInt,
+        VarsBool                   = self.VarsBool,
+        VectorTLorentzVector       = self.VectorTLorentzVector,
+        VectorDouble               = self.VectorDouble,
+        VectorInt                  = self.VectorInt,
+        VectorString               = self.VectorString,
+        VectorBool                 = self.VectorBool,
+        VectorVectorTLorentzVector = self.VectorVectorTLorentzVector,
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -74,7 +63,7 @@ def makeTreeFromMiniAOD(self,process):
             debug = cms.bool(False),
             isLHE = cms.bool(False)
         )
-        VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
+        self.VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
         
         # pMSSM ID for identifying the pMSSM model point
         from TreeMaker.Utils.pmssm_cfi import PmssmProducer
@@ -83,7 +72,7 @@ def makeTreeFromMiniAOD(self,process):
             debug = cms.bool(False),
             xsecFilename = cms.string('data/pmssm-xsecs-scan1.txt'),
         )
-        VarsDouble.extend(['Pmssm:PmssmId'])
+        self.VarsDouble.extend(['Pmssm:PmssmId'])
 
 
     ## ----------------------------------------------------------------------------------------------
@@ -94,17 +83,17 @@ def makeTreeFromMiniAOD(self,process):
         process.WeightProducer = getWeightProducer(process.source.fileNames[0],self.fastsim and self.signal, self.pmssm)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string(self.pufile)
-        VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
+        self.VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
-        VarsInt.extend(['WeightProducer:NumInteractions'])
+        self.VarsInt.extend(['WeightProducer:NumInteractions'])
 
     ## ----------------------------------------------------------------------------------------------
     ## PDF weights for PDF systematics
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo and self.doPDFs:
         process.PDFWeights = cms.EDProducer('PDFWeightProducer')
-        VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
-        VectorInt.extend(['PDFWeights:PDFids'])
+        self.VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
+        self.VectorInt.extend(['PDFWeights:PDFids'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples
@@ -112,7 +101,7 @@ def makeTreeFromMiniAOD(self,process):
     if self.geninfo:
         process.MadHT = cms.EDProducer('GenHTProducer')
         # called madHT, i.e. MadGraph, to distinguish from GenHT from GenJets
-        VarsDouble.extend(['MadHT:genHT(madHT)'])
+        self.VarsDouble.extend(['MadHT:genHT(madHT)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## PrimaryVertices
@@ -126,12 +115,12 @@ def makeTreeFromMiniAOD(self,process):
     process.NVtx = primaryvertices.clone(
         VertexCollection  = cms.InputTag('goodVertices'),
     )
-    VarsInt.extend(['NVtx'])
+    self.VarsInt.extend(['NVtx'])
     # also store total number of vertices without quality checks
     process.nAllVertices = primaryvertices.clone(
         VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
     )
-    VarsInt.extend(['nAllVertices'])
+    self.VarsInt.extend(['nAllVertices'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenParticles
@@ -141,11 +130,11 @@ def makeTreeFromMiniAOD(self,process):
             genCollection = cms.untracked.InputTag("prunedGenParticles"),
             debug = cms.untracked.bool(False)
         )
-        VectorTLorentzVector.append("genParticles(GenParticles)")
-        VectorInt.append("genParticles:PdgId(GenParticles_PdgId)")
-        VectorInt.append("genParticles:Status(GenParticles_Status)")
-        VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
-        VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
+        self.VectorTLorentzVector.append("genParticles(GenParticles)")
+        self.VectorInt.append("genParticles:PdgId(GenParticles_PdgId)")
+        self.VectorInt.append("genParticles:Status(GenParticles_Status)")
+        self.VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
+        self.VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
         
         # for ttbar pT reweighting
         # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
@@ -158,8 +147,8 @@ def makeTreeFromMiniAOD(self,process):
             a = cms.double(0.0615),
             b = cms.double(-0.0005)
         )
-        VectorRecoCand.append("genTops(GenTops)")
-        VarsDouble.append("genTops:weight(GenTopWeight)")
+        self.VectorRecoCand.append("genTops(GenTops)")
+        self.VarsDouble.append("genTops:weight(GenTopWeight)")
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
@@ -320,21 +309,21 @@ def makeTreeFromMiniAOD(self,process):
         METTag              = METTag,
     )
 
-    VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronTracks)'])
-    VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
-    VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
+    self.VarsInt.extend(['IsolatedElectronTracksVeto:isoTracks(isoElectronTracks)'])
+    self.VarsInt.extend(['IsolatedMuonTracksVeto:isoTracks(isoMuonTracks)'])
+    self.VarsInt.extend(['IsolatedPionTracksVeto:isoTracks(isoPionTracks)'])
 
     if self.debugtracks:
         # NB: this increases the runtime and size of ntuples by ~10x
         # do not turn on unless you really want to save all the isotrack quantities!!!
         # just store the full set of isotrack quantities once
         process.IsolatedPionTracksVeto.debug = cms.bool(True)
-        VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(PFCands)'])
-        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(PFCands_trkiso)'])
-        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(PFCands_dzpv)'])
-        VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsmT(PFCands_mT)'])
-        VectorInt.extend(['IsolatedPionTracksVeto:pfcandschg(PFCands_charge)'])
-        VectorInt.extend(['IsolatedPionTracksVeto:pfcandsid(PFCands_id)'])
+        self.VectorTLorentzVector.extend(['IsolatedPionTracksVeto:pfcands(PFCands)'])
+        self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandstrkiso(PFCands_trkiso)'])
+        self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(PFCands_dzpv)'])
+        self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsmT(PFCands_mT)'])
+        self.VectorInt.extend(['IsolatedPionTracksVeto:pfcandschg(PFCands_charge)'])
+        self.VectorInt.extend(['IsolatedPionTracksVeto:pfcandsid(PFCands_id)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## Electrons/Muons
@@ -354,8 +343,8 @@ def makeTreeFromMiniAOD(self,process):
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
         METTag           = METTag, 
     )
-    VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
-    VectorInt.extend(['LeptonsNew:MuonCharge(Muons_charge)','LeptonsNew:ElectronCharge(Electrons_charge)'])
+    self.VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
+    self.VectorInt.extend(['LeptonsNew:MuonCharge(Muons_charge)','LeptonsNew:ElectronCharge(Electrons_charge)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
@@ -379,7 +368,7 @@ def makeTreeFromMiniAOD(self,process):
             trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_CSCTightHalo2015Filter"),
         )
-        VarsInt.extend(['CSCTightHaloFilter'])
+        self.VarsInt.extend(['CSCTightHaloFilter'])
         
         process.globalTightHalo2016Filter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
@@ -387,7 +376,7 @@ def makeTreeFromMiniAOD(self,process):
             trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_globalTightHalo2016Filter"),
         )
-        VarsInt.extend(['globalTightHalo2016Filter'])
+        self.VarsInt.extend(['globalTightHalo2016Filter'])
         
         process.HBHENoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
@@ -395,7 +384,7 @@ def makeTreeFromMiniAOD(self,process):
             trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_HBHENoiseFilter"),
         )
-        VarsInt.extend(['HBHENoiseFilter'])
+        self.VarsInt.extend(['HBHENoiseFilter'])
         
         process.HBHEIsoNoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
@@ -403,7 +392,7 @@ def makeTreeFromMiniAOD(self,process):
             trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_HBHENoiseIsoFilter"),
         )
-        VarsInt.extend(['HBHEIsoNoiseFilter'])
+        self.VarsInt.extend(['HBHEIsoNoiseFilter'])
         
         process.EcalDeadCellTriggerPrimitiveFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
@@ -411,7 +400,7 @@ def makeTreeFromMiniAOD(self,process):
             trigTagArg3 = cms.string(self.tagname),
             filterName  = cms.string("Flag_EcalDeadCellTriggerPrimitiveFilter"),
         )
-        VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
+        self.VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
         
         process.eeBadScFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
@@ -419,20 +408,20 @@ def makeTreeFromMiniAOD(self,process):
             trigTagArg3  = cms.string(self.tagname),
             filterName  =   cms.string("Flag_eeBadScFilter"),
         )
-        VarsInt.extend(['eeBadScFilter'])
+        self.VarsInt.extend(['eeBadScFilter'])
         
         # some filters need to be rerun
         process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
         process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
         process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadChargedCandidateFilter.taggingMode = True
-        VarsBool.extend(['BadChargedCandidateFilter'])
+        self.VarsBool.extend(['BadChargedCandidateFilter'])
         
         process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
         process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
         process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadPFMuonFilter.taggingMode = True
-        VarsBool.extend(['BadPFMuonFilter'])
+        self.VarsBool.extend(['BadPFMuonFilter'])
         
         # bad muon crap
         process.BadGlobalMuonTagger = cms.EDFilter("BadGlobalMuonTagger",
@@ -446,8 +435,8 @@ def makeTreeFromMiniAOD(self,process):
         process.DupGlobalMuonTagger = process.BadGlobalMuonTagger.clone(
             selectClones = cms.bool(True)
         )
-        VarsBool.extend(['BadGlobalMuonTagger:bad(BadGlobalMuon)','BadGlobalMuonTagger:badTrk(BadTrkGlobalMuon)','DupGlobalMuonTagger:dup(DupGlobalMuon)'])
-        VarsDouble.extend(['BadGlobalMuonTagger:badLeadPt(BadGlobalMuonLeadPt)','BadGlobalMuonTagger:badTrkLeadPt(BadTrkGlobalMuonLeadPt)','DupGlobalMuonTagger:dupLeadPt(DupGlobalMuonLeadPt)'])
+        self.VarsBool.extend(['BadGlobalMuonTagger:bad(BadGlobalMuon)','BadGlobalMuonTagger:badTrk(BadTrkGlobalMuon)','DupGlobalMuonTagger:dup(DupGlobalMuon)'])
+        self.VarsDouble.extend(['BadGlobalMuonTagger:badLeadPt(BadGlobalMuonLeadPt)','BadGlobalMuonTagger:badTrkLeadPt(BadTrkGlobalMuonLeadPt)','DupGlobalMuonTagger:dupLeadPt(DupGlobalMuonLeadPt)'])
         
         # more bad muon crap
         process.duplicateMuonsFilter = filterDecisionProducer.clone(
@@ -456,21 +445,21 @@ def makeTreeFromMiniAOD(self,process):
             trigTagArg3  = cms.string(self.tagname),
             filterName  =   cms.string("Flag_duplicateMuons"),
         )
-        VarsInt.extend(['duplicateMuonsFilter'])
+        self.VarsInt.extend(['duplicateMuonsFilter'])
         process.badMuonsFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
             trigTagArg3  = cms.string(self.tagname),
             filterName  =   cms.string("Flag_badMuons"),
         )
-        VarsInt.extend(['badMuonsFilter'])
+        self.VarsInt.extend(['badMuonsFilter'])
         process.noBadMuonsFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
             trigTagArg3  = cms.string(self.tagname),
             filterName  =   cms.string("Flag_noBadMuons"),
         )
-        VarsInt.extend(['noBadMuonsFilter'])
+        self.VarsInt.extend(['noBadMuonsFilter'])
         
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
@@ -496,15 +485,15 @@ def makeTreeFromMiniAOD(self,process):
         prescaleTagArg3  = cms.string(''),
         triggerNameList = _triggerNameList
     )
-    VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
-    VectorString.extend(['TriggerProducer:TriggerNames'])
+    self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
+    self.VectorString.extend(['TriggerProducer:TriggerNames'])
 
     if not self.geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
         process.PrescaleWeightProducer = prescaleweightProducer.clone()
-        VarsDouble.extend(['PrescaleWeightProducer:weight(PrescaleWeightHT)'])
-        VarsDouble.extend(['PrescaleWeightProducer:ht(HTOnline)'])
-        VarsDouble.extend(['PrescaleWeightProducer:mht(MHTOnline)'])
+        self.VarsDouble.extend(['PrescaleWeightProducer:weight(PrescaleWeightHT)'])
+        self.VarsDouble.extend(['PrescaleWeightProducer:ht(HTOnline)'])
+        self.VarsDouble.extend(['PrescaleWeightProducer:mht(MHTOnline)'])
 
     
     ## ----------------------------------------------------------------------------------------------
@@ -713,14 +702,14 @@ def makeTreeFromMiniAOD(self,process):
     process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
-    VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
+    self.VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
                          'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
                          'JetsPropertiesAK8:bDiscriminatorCSV(JetsAK8_doubleBDiscriminator)',
                          'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
                          'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
                          'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
-    VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
+    self.VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
                       'JetsPropertiesAK8:NumChadrons(JetsAK8_NumChadrons)'])
 
     ## ----------------------------------------------------------------------------------------------
@@ -728,7 +717,7 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo:
         # store all genjets
-        VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
+        self.VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
     
         from TreeMaker.Utils.subJetSelection_cfi import SubGenJetSelection
         
@@ -737,28 +726,28 @@ def makeTreeFromMiniAOD(self,process):
             MinPt  = cms.double(30),
             MaxEta = cms.double(2.4),
         )
-        VectorBool.extend(['GenHTJets:SubJetMask(GenJets_HTMask)'])
+        self.VectorBool.extend(['GenHTJets:SubJetMask(GenJets_HTMask)'])
         
         # make gen HT
         from TreeMaker.Utils.htdouble_cfi import htdouble
         process.GenHT = htdouble.clone(
             JetTag = cms.InputTag("GenHTJets"),
         )
-        VarsDouble.extend(['GenHT'])
+        self.VarsDouble.extend(['GenHT'])
         
         process.GenMHTJets = SubGenJetSelection.clone(
             JetTag = cms.InputTag('slimmedGenJets'),
             MinPt  = cms.double(30),
             MaxEta = cms.double(5.0),
         )
-        VectorBool.extend(['GenMHTJets:SubJetMask(GenJets_MHTMask)'])
+        self.VectorBool.extend(['GenMHTJets:SubJetMask(GenJets_MHTMask)'])
         
         # make gen MHT
         from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
         process.GenMHT = mhtdouble.clone(
             JetTag  = cms.InputTag('GenMHTJets'),
         )
-        VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
+        self.VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
@@ -788,17 +777,17 @@ def makeTreeFromMiniAOD(self,process):
         JetTag = cms.InputTag('HTJets'),
         geninfo = cms.untracked.bool(self.geninfo),
     )
-    VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)'])
+    self.VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)'])
     if self.geninfo:
-        VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
-        VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
+        self.VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
+        self.VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
 
     from TreeMaker.Utils.mt2producer_cfi import mt2Producer
     process.Mt2Producer = mt2Producer.clone(
                 JetTag  = cms.InputTag('MHTJets'),
                 METTag = METTag
         )
-    VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
+    self.VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff):
+def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff):
     from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
     MHTJets = SubJetSelection.clone(
         JetTag = JetTag,
@@ -8,7 +8,7 @@ def makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff):
         MaxEta = cms.double(5.0),
     )
     setattr(process,"MHTJets"+MHTsuff+suff,MHTJets)
-    if storeProperties>0: process.TreeMaker2.VectorBool.extend(['MHTJets'+MHTsuff+suff+':SubJetMask(Jets'+suff+'_MHT'+MHTsuff+'Mask)'])
+    if storeProperties>0: self.VectorBool.extend(['MHTJets'+MHTsuff+suff+':SubJetMask(Jets'+suff+'_MHT'+MHTsuff+'Mask)'])
     MHTJetsTag = cms.InputTag("MHTJets"+MHTsuff+suff)
     
     from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
@@ -16,7 +16,7 @@ def makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff):
         JetTag  = MHTJetsTag,
     )
     setattr(process,"MHT"+MHTsuff+suff,MHT)
-    process.TreeMaker2.VarsDouble.extend(['MHT'+MHTsuff+suff+':Pt(MHT'+MHTsuff+suff+')','MHT'+MHTsuff+suff+':Phi(MHTPhi'+MHTsuff+suff+')'])
+    self.VarsDouble.extend(['MHT'+MHTsuff+suff+':Pt(MHT'+MHTsuff+suff+')','MHT'+MHTsuff+suff+':Phi(MHTPhi'+MHTsuff+suff+')'])
     
     from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
     DeltaPhi = deltaphidouble.clone(
@@ -24,7 +24,7 @@ def makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff):
         MHTJets      = MHTJetsTag,
     )
     setattr(process,"DeltaPhi"+MHTsuff+suff,DeltaPhi)
-    process.TreeMaker2.VarsDouble.extend(['DeltaPhi'+MHTsuff+suff+':DeltaPhi1(DeltaPhi1'+MHTsuff+suff+')','DeltaPhi'+MHTsuff+suff+':DeltaPhi2(DeltaPhi2'+MHTsuff+suff+')',
+    self.VarsDouble.extend(['DeltaPhi'+MHTsuff+suff+':DeltaPhi1(DeltaPhi1'+MHTsuff+suff+')','DeltaPhi'+MHTsuff+suff+':DeltaPhi2(DeltaPhi2'+MHTsuff+suff+')',
                                           'DeltaPhi'+MHTsuff+suff+':DeltaPhi3(DeltaPhi3'+MHTsuff+suff+')','DeltaPhi'+MHTsuff+suff+':DeltaPhi4(DeltaPhi4'+MHTsuff+suff+')'])
     
     return process
@@ -59,11 +59,11 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         if self.fastsim: GoodJets.jetPtFilter = cms.double(20)
         setattr(process,"GoodJets"+suff,GoodJets)
         GoodJetsTag = cms.InputTag("GoodJets"+suff)
-        process.TreeMaker2.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
+        self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
         if storeProperties>0:
-            process.TreeMaker2.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
-            process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
-            if len(SkipTag)>0: process.TreeMaker2.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(Jets'+suff+'_LeptonMask)'])
+            self.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
+            self.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
+            if len(SkipTag)>0: self.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(Jets'+suff+'_LeptonMask)'])
         if onlyGoodJets:
             return process
     
@@ -77,7 +77,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         MaxEta = cms.double(2.4),
     )
     setattr(process,"HTJets"+suff,HTJets)
-    if storeProperties>0: process.TreeMaker2.VectorBool.extend(['HTJets'+suff+':SubJetMask(Jets'+suff+'_HTMask)'])
+    if storeProperties>0: self.VectorBool.extend(['HTJets'+suff+':SubJetMask(Jets'+suff+'_HTMask)'])
     HTJetsTag = cms.InputTag("HTJets"+suff)
     
     from TreeMaker.Utils.htdouble_cfi import htdouble
@@ -85,7 +85,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         JetTag = HTJetsTag,
     )
     setattr(process,"HT"+suff,HT)
-    process.TreeMaker2.VarsDouble.extend(['HT'+suff])
+    self.VarsDouble.extend(['HT'+suff])
     
     ## ----------------------------------------------------------------------------------------------
     ## NJets
@@ -95,7 +95,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         JetTag = HTJetsTag,
     )
     setattr(process,"NJets"+suff,NJets)
-    process.TreeMaker2.VarsInt.extend(['NJets'+suff])
+    self.VarsInt.extend(['NJets'+suff])
     
     ## ----------------------------------------------------------------------------------------------
     ## BTags
@@ -107,7 +107,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         BTagCutValue = cms.double(0.8484)
     )
     setattr(process,"BTags"+suff,BTags)
-    process.TreeMaker2.VarsInt.extend(['BTags'+suff])
+    self.VarsInt.extend(['BTags'+suff])
     
     from TreeMaker.Utils.btagint_cfi import btagint
     BTagsMVA = btagint.clone(
@@ -116,7 +116,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         BTagCutValue = cms.double(0.4432)
     )
     setattr(process,"BTagsMVA"+suff,BTagsMVA)
-    process.TreeMaker2.VarsInt.extend(['BTagsMVA'+suff])
+    self.VarsInt.extend(['BTagsMVA'+suff])
 
     ## ----------------------------------------------------------------------------------------------
     ## MHT, DeltaPhi
@@ -130,8 +130,8 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
             jets = GoodJetsTag
         )
         setattr(process,"PatJetFix"+suff,PatJetFix)
-        process = makeMHTVars(process, cms.InputTag("PatJetFix"+suff), HTJetsTag, storeProperties, suff, "")
-    process = makeMHTVars(process, GoodJetsTag, HTJetsTag, storeProperties, suff, MHTOrig)
+        process = self.makeMHTVars(process, cms.InputTag("PatJetFix"+suff), HTJetsTag, storeProperties, suff, "")
+    process = self.makeMHTVars(process, GoodJetsTag, HTJetsTag, storeProperties, suff, MHTOrig)
 
     ## ----------------------------------------------------------------------------------------------
     ## ISR jets
@@ -147,8 +147,8 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         )
         setattr(process,"ISRJets"+suff,ISRJets)
         if storeProperties>0:
-            process.TreeMaker2.VectorBool.extend(['ISRJets'+suff+':SubJetMask(Jets'+suff+'_ISRMask)'])
-            process.TreeMaker2.VarsInt.extend(['ISRJets'+suff+'(NJetsISR'+suff+')'])
+            self.VectorBool.extend(['ISRJets'+suff+':SubJetMask(Jets'+suff+'_ISRMask)'])
+            self.VarsInt.extend(['ISRJets'+suff+'(NJetsISR'+suff+')'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties
@@ -167,14 +167,14 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         if storeProperties>1 and self.geninfo:
             JetsProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
         setattr(process,"JetsProperties"+suff,JetsProperties)
-        process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
+        self.VectorDouble.extend(['JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
                                                 'JetsProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
                                                 'JetsProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
                                                 'JetsProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',])
-        process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
+        self.VectorInt.extend(['JetsProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
                                              'JetsProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)'])
         if storeProperties>1:
-            process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
+            self.VectorDouble.extend(['JetsProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
                                                     'JetsProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
                                                     'JetsProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
@@ -184,11 +184,11 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                                                     'JetsProperties'+suff+':qgPtD(Jets'+suff+'_qgPtD)',
                                                     'JetsProperties'+suff+':qgAxis2(Jets'+suff+'_qgAxis2)'])
             if self.geninfo:
-                process.TreeMaker2.VectorDouble.extend(['JetsProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
+                self.VectorDouble.extend(['JetsProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
                                                         'JetsProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
                                                         'JetsProperties'+suff+':jerFactorDown(Jets'+suff+'_jerFactorDown)'])
 
-            process.TreeMaker2.VectorInt.extend(['JetsProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
+            self.VectorInt.extend(['JetsProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
                                                  'JetsProperties'+suff+':electronMultiplicity(Jets'+suff+'_electronMultiplicity)',
                                                  'JetsProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
                                                  'JetsProperties'+suff+':neutralHadronMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
