@@ -31,6 +31,10 @@ class makeTree:
         self.getParamDefault("hadtau", True)
         self.getParamDefault("hadtaurecluster", 1)
         self.getParamDefault("doZinv", True)
+
+        # special signal stuff
+        self.getParamDefault("systematics",True);
+        self.getParamDefault("semivisible",False);
         
         # compute the PDF weights
         self.getParamDefault("doPDFs", True);

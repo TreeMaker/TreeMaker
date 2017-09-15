@@ -539,7 +539,7 @@ def makeTreeFromMiniAOD(self,process):
     from TreeMaker.TreeMaker.JetDepot import JetDepot
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     
-    if self.geninfo:
+    if self.geninfo and self.systematics:
         # JEC unc up
         process, JetTagJECup = JetDepot(process,
             JetTag=JetTag,
@@ -600,6 +600,7 @@ def makeTreeFromMiniAOD(self,process):
                               SkipTag=SkipTag
         )
 
+    if self.geninfo:
         # finally, do central smearing and replace jet tag
         process, JetTag = JetDepot(process,
             JetTag=JetTag,
@@ -818,6 +819,39 @@ def makeTreeFromMiniAOD(self,process):
     if self.doZinv:
         from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg
         process = self.doZinvBkg(process)
+
+    ## ----------------------------------------------------------------------------------------------
+    ## Semi-visible jets
+    ## ----------------------------------------------------------------------------------------------
+    if self.semivisible:
+        process.BasicSubstructure = cms.EDProducer("BasicSubstructureProducer",
+            JetTag = JetAK8Tag
+        )
+        self.VectorVectorTLorentzVector.extend(['BasicSubstructure:jetConstituents(JetsAK8_constituents)'])
+        self.VectorDouble.extend([
+            'BasicSubstructure:overflow(JetsAK8_overflow)',
+            'BasicSubstructure:girth(JetsAK8_girth)',
+            'BasicSubstructure:momenthalf(JetsAK8_momenthalf)',
+            'BasicSubstructure:ptD(JetsAK8_ptD)',
+            'BasicSubstructure:axismajor(JetsAK8_axismajor)',
+            'BasicSubstructure:axisminor(JetsAK8_axisminor)',
+        ])
+        self.VectorInt.extend(['BasicSubstructure:multiplicity(JetsAK8_multiplicity)'])
+
+        process.HiddenSector = cms.EDProducer("HiddenSectorProducer",
+            JetTag = JetAK8Tag,
+            MetTag = METTag,
+            GenTag = cms.InputTag("prunedGenParticles"),
+            DarkIDs = cms.vuint32(4900211),
+        )
+        self.VarsDouble.extend([
+            'HiddenSector:MJJ(MJJ_AK8)',
+            'HiddenSector:Mmc(Mmc_AK8)',
+            'HiddenSector:MT(MT_AK8)',
+            'HiddenSector:DeltaPhi1(DeltaPhi1_AK8)',
+            'HiddenSector:DeltaPhi2(DeltaPhi2_AK8)',
+            'HiddenSector:DeltaPhiMin(DeltaPhiMin_AK8)',
+        ])
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

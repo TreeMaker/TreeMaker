@@ -49,12 +49,13 @@ GenParticlesProducer::GenParticlesProducer(const edm::ParameterSet& iConfig):
   genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
   debug(iConfig.getUntrackedParameter<bool>("debug",true)),
   typicalChildIds({1,2,3,4,5,11,12,13,14,15,16,22}),
-  typicalParentIds(
-    {1,2,1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
-     1000001,1000002,1000003,1000004,1000005,1000006,
-     2000001,2000002,2000003,2000004,2000005,2000006,
-     6, 23, 24, 25}
-  )
+  typicalParentIds({
+    1,2,1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
+    1000001,1000002,1000003,1000004,1000005,1000006,
+    2000001,2000002,2000003,2000004,2000005,2000006,
+    6, 23, 24, 25,
+    4900023, 4900101, 4900111, 4900211
+  })
 {
   produces< std::vector< TLorentzVector > >(""); 
   produces< std::vector< int > >("PdgId");
