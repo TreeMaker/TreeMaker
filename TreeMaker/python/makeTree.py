@@ -99,7 +99,9 @@ class makeTree:
         print " storing lostlepton variables: "+str(self.lostlepton)
         print " storing hadtau variables: "+str(self.hadtau)+" w/ reclustering "+str(self.hadtaurecluster)
         print " storing Zinv variables: "+str(self.doZinv)
+        print " storing semi-visible jet variables: "+str(self.semivisible)
         print " "
+        print " storing JEC/JER systematics: "+str(self.systematics)
         print " storing PDF weights: "+str(self.doPDFs)
         print " "
         print " storing track debugging variables: "+str(self.debugtracks)
