@@ -127,8 +127,16 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo:
         process.genParticles = cms.EDProducer("GenParticlesProducer",
-            genCollection = cms.untracked.InputTag("prunedGenParticles"),
-            debug = cms.untracked.bool(False)
+            genCollection = cms.InputTag("prunedGenParticles"),
+            debug = cms.bool(False),
+            childIds = cms.vint32(1,2,3,4,5,11,12,13,14,15,16,22),
+            parentIds = cms.vint32(
+                1,2,6,23,24,25,
+                1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
+                1000001,1000002,1000003,1000004,1000005,1000006,
+                2000001,2000002,2000003,2000004,2000005,2000006,
+                4900023,4900101,4900111,4900211,
+            ),
         )
         self.VectorTLorentzVector.append("genParticles(GenParticles)")
         self.VectorInt.append("genParticles:PdgId(GenParticles_PdgId)")
