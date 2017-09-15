@@ -20,5 +20,6 @@ VectorInt = cms.vstring(),
 VectorFloat = cms.vstring(),
 VectorString = cms.vstring(),
 VectorTLorentzVector = cms.vstring(),
+VectorVectorTLorentzVector = cms.vstring(),
 VectorRecoCand = cms.vstring(),
 )

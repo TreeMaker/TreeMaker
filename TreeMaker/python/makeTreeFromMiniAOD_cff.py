@@ -37,6 +37,7 @@ def makeTreeFromMiniAOD(self,process):
     VectorString         = cms.vstring()
     VectorInt            = cms.vstring()
     VectorBool           = cms.vstring()
+    VectorVectorTLorentzVector = cms.vstring()
 
     # configure treemaker
     from TreeMaker.TreeMaker.treeMaker import TreeMaker
@@ -51,6 +52,7 @@ def makeTreeFromMiniAOD(self,process):
         VectorInt            = VectorInt,
         VectorString         = VectorString,
         VectorBool           = VectorBool,
+        VectorVectorTLorentzVector = VectorVectorTLorentzVector,
     )
 
     ## ----------------------------------------------------------------------------------------------
