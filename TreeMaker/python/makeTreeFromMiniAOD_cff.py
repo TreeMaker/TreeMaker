@@ -674,9 +674,29 @@ def makeTreeFromMiniAOD(self,process):
     process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSVAK8TagInfos_cfi")
     process.load("RecoBTag.SecondaryVertex.candidateBoostedDoubleSecondaryVertexAK8Computer_cfi")
     process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSecondaryVertexAK8BJetTags_cfi")
+
+    ak8floats = []
+    ak8ints = []
+
+    # get more substructure
+    if self.semivisible:
+        process.BasicSubstructure = cms.EDProducer("BasicSubstructureProducer",
+            JetTag = JetAK8Tag
+        )
+        ak8floats.extend([
+            'BasicSubstructure:overflow',
+            'BasicSubstructure:girth',
+            'BasicSubstructure:momenthalf',
+            'BasicSubstructure:ptD',
+            'BasicSubstructure:axismajor',
+            'BasicSubstructure:axisminor',
+        ])
+        ak8ints.extend([
+            'BasicSubstructure:multiplicity',
+        ])
     
     # add discriminator and update tag
-    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, [], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
+    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, ak8floats, ak8ints, cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
     
     # apply jet ID
     process = self.makeJetVars(process,
@@ -720,6 +740,34 @@ def makeTreeFromMiniAOD(self,process):
                          'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
     self.VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
                       'JetsPropertiesAK8:NumChadrons(JetsAK8_NumChadrons)'])
+    if self.semivisible:
+        process.JetsPropertiesAK8.properties.extend([
+            'overflow',
+            'girth',
+            'momenthalf',
+            'ptD',
+            'axismajor',
+            'axisminor',
+            'multiplicity',
+        ])
+        process.JetsPropertiesAK8.overflow = cms.vstring('BasicSubstructure:overflow')
+        process.JetsPropertiesAK8.girth = cms.vstring('BasicSubstructure:girth')
+        process.JetsPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure:momenthalf')
+        process.JetsPropertiesAK8.ptD = cms.vstring('BasicSubstructure:ptD')
+        process.JetsPropertiesAK8.axismajor = cms.vstring('BasicSubstructure:axismajor')
+        process.JetsPropertiesAK8.axisminor = cms.vstring('BasicSubstructure:axisminor')
+        process.JetsPropertiesAK8.multiplicity = cms.vstring('BasicSubstructure:multiplicity')
+        self.VectorDouble.extend([
+            'JetsPropertiesAK8:overflow(JetsAK8_overflow)',
+            'JetsPropertiesAK8:girth(JetsAK8_girth)',
+            'JetsPropertiesAK8:momenthalf(JetsAK8_momenthalf)',
+            'JetsPropertiesAK8:ptD(JetsAK8_ptD)',
+            'JetsPropertiesAK8:axismajor(JetsAK8_axismajor)',
+            'JetsPropertiesAK8:axisminor(JetsAK8_axisminor)',
+        ])
+        self.VectorInt.extend([
+            'JetsPropertiesAK8:multiplicity(JetsAK8_multiplicity)',
+        ])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables
@@ -832,20 +880,6 @@ def makeTreeFromMiniAOD(self,process):
     ## Semi-visible jets
     ## ----------------------------------------------------------------------------------------------
     if self.semivisible:
-        process.BasicSubstructure = cms.EDProducer("BasicSubstructureProducer",
-            JetTag = JetAK8Tag
-        )
-        self.VectorVectorTLorentzVector.extend(['BasicSubstructure:jetConstituents(JetsAK8_constituents)'])
-        self.VectorDouble.extend([
-            'BasicSubstructure:overflow(JetsAK8_overflow)',
-            'BasicSubstructure:girth(JetsAK8_girth)',
-            'BasicSubstructure:momenthalf(JetsAK8_momenthalf)',
-            'BasicSubstructure:ptD(JetsAK8_ptD)',
-            'BasicSubstructure:axismajor(JetsAK8_axismajor)',
-            'BasicSubstructure:axisminor(JetsAK8_axisminor)',
-        ])
-        self.VectorInt.extend(['BasicSubstructure:multiplicity(JetsAK8_multiplicity)'])
-
         process.HiddenSector = cms.EDProducer("HiddenSectorProducer",
             JetTag = JetAK8Tag,
             MetTag = METTag,

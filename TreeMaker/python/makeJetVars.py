@@ -181,8 +181,8 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                                                     'JetsProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
                                                     'JetsProperties'+suff+':jecUnc(Jets'+suff+'_jecUnc)',
                                                     'JetsProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
-                                                    'JetsProperties'+suff+':qgPtD(Jets'+suff+'_qgPtD)',
-                                                    'JetsProperties'+suff+':qgAxis2(Jets'+suff+'_qgAxis2)'])
+                                                    'JetsProperties'+suff+':ptD(Jets'+suff+'_ptD)',
+                                                    'JetsProperties'+suff+':axisminor(Jets'+suff+'_axisminor)'])
             if self.geninfo:
                 self.VectorDouble.extend(['JetsProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
                                                         'JetsProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
@@ -195,6 +195,6 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                                                  'JetsProperties'+suff+':photonMultiplicity(Jets'+suff+'_photonMultiplicity)',
                                                  'JetsProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
                                                  'JetsProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
-                                                 'JetsProperties'+suff+':qgMult(Jets'+suff+'_qgMult)'])
+                                                 'JetsProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)'])
                                              
     return process
