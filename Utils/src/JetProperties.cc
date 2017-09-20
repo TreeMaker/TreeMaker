@@ -146,6 +146,15 @@ template<> void NamedPtrVL<vl_constituents>::get_property(const pat::Jet* Jet) {
 	}
 	ptr->push_back(partvecs);
 }
+template<> void NamedPtrVL<vl_subjets>::get_property(const pat::Jet* Jet) {
+	std::vector<TLorentzVector> subvecs;
+    auto const & subjets = Jet->subjets(extraInfo.at(0));
+    for ( auto const & it : subjets ) {
+		const auto& p4 = it->correctedP4(0);
+		subvecs.emplace_back(p4.px(),p4.py(),p4.pz(),p4.energy());
+    }
+	ptr->push_back(subvecs);
+}
 
 //
 // class declaration

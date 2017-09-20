@@ -47,6 +47,10 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     process.JetsPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
     process.JetsPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
     process.JetsPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8CHSClean:tau3')
+    
+    # no ak8 subjets available
+    process.JetsPropertiesAK8Clean.properties.remove("subjets")
+    self.VectorVectorTLorentzVector.remove('JetsPropertiesAK8Clean:subjets(JetsAK8Clean_subjets)')
 
     ### end AK8 detour
 

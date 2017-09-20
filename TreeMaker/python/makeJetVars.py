@@ -244,6 +244,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 "bDiscriminatorCSV"    ,
                 "NumBhadrons"          ,
                 "NumChadrons"          ,
+                "subjets"              ,
             )
         )
         # specify userfloats
@@ -254,6 +255,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
 #        JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
 #        JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
         JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
+        JetsPropertiesAK8.subjets = cms.vstring('SoftDrop')
         self.VectorDouble.extend(['JetsProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
 #                             'JetsProperties'+suff+':bDiscriminatorSubjet1(Jets'+suff+'_bDiscriminatorSubjet1CSV)',
 #                             'JetsProperties'+suff+':bDiscriminatorSubjet2(Jets'+suff+'_bDiscriminatorSubjet2CSV)',
@@ -263,6 +265,10 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                              'JetsProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)'])
         self.VectorInt.extend(['JetsProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
                           'JetsProperties'+suff+':NumChadrons(Jets'+suff+'_NumChadrons)'])
+        self.VectorVectorTLorentzVector.extend([
+            'JetsProperties'+suff+':subjets(Jets'+suff+'_subjets)',
+        ])
+
         if self.semivisible:
             JetsPropertiesAK8.properties.extend([
                 'overflow',
