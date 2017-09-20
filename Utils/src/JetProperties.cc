@@ -45,7 +45,7 @@ typedef math::XYZTLorentzVector LorentzVector;
 enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyFraction, d_chargedEmEnergyFraction, d_neutralEmEnergyFraction,
 				d_electronEnergyFraction, d_photonEnergyFraction, d_muonEnergyFraction, d_bDiscriminatorCSV, d_bDiscriminatorMVA,
 				d_jecFactor, d_jecUnc, d_jerFactor, d_jerFactorUp, d_jerFactorDown, d_qgLikelihood, d_ptD, d_axisminor, d_axismajor,
-				d_prunedMass, d_PuppiSoftDropMass, d_bDiscriminatorSubjet1, d_bDiscriminatorSubjet2, d_NsubjettinessTau1, d_NsubjettinessTau2, d_NsubjettinessTau3,
+				d_prunedMass, d_softDropMass, d_bDiscriminatorSubjet1, d_bDiscriminatorSubjet2, d_NsubjettinessTau1, d_NsubjettinessTau2, d_NsubjettinessTau3,
 				d_overflow, d_girth, d_momenthalf }; //AK8 properties
 enum JetPropI { i_chargedHadronMultiplicity, i_neutralHadronMultiplicity, i_electronMultiplicity, i_photonMultiplicity,
 				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor, i_multiplicity };
@@ -115,7 +115,7 @@ template<> void NamedPtrD<d_jecFactor>::get_property(const pat::Jet* Jet)       
 //ak8 jet accessors
 template<> void NamedPtrD<d_bDiscriminatorSubjet1>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 0 ? Jet->subjets(extraInfo.at(0)).at(0)->bDiscriminator(extraInfo.at(1)) : -10.); }
 template<> void NamedPtrD<d_bDiscriminatorSubjet2>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 1 ? Jet->subjets(extraInfo.at(0)).at(1)->bDiscriminator(extraInfo.at(1)) : -10.); }
-template<> void NamedPtrD<d_PuppiSoftDropMass>::get_property(const pat::Jet* Jet)           { 
+template<> void NamedPtrD<d_softDropMass>::get_property(const pat::Jet* Jet)                { 
     LorentzVector fatJet;
     auto const & subjets = Jet->subjets(extraInfo.at(0));
     for ( auto const & it : subjets ) {
@@ -229,7 +229,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="axisminor"                  ) { DoublePtrs_.push_back(new NamedPtrD<d_axisminor>                  ("axisminor",this)                  ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="axismajor"                  ) { DoublePtrs_.push_back(new NamedPtrD<d_axismajor>                  ("axismajor",this)                  ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="prunedMass"                 ) { DoublePtrs_.push_back(new NamedPtrD<d_prunedMass>                 ("prunedMass",this)                 ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
-		else if(p=="PuppiSoftDropMass"          ) { DoublePtrs_.push_back(new NamedPtrD<d_PuppiSoftDropMass>          ("PuppiSoftDropMass",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="softDropMass"               ) { DoublePtrs_.push_back(new NamedPtrD<d_softDropMass>               ("softDropMass",this)               ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau1"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau1>          ("NsubjettinessTau1",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau2"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau2>          ("NsubjettinessTau2",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau3"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau3>          ("NsubjettinessTau3",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }

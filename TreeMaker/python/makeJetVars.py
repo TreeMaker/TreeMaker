@@ -235,7 +235,8 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         JetsPropertiesAK8 = jetproperties.clone(
             JetTag       = GoodJetsTag,
             properties = cms.vstring(
-                "prunedMass"    ,
+                "prunedMass"           ,
+                "softDropMass"         ,
                 "NsubjettinessTau1"    ,
                 "NsubjettinessTau2"    ,
                 "NsubjettinessTau3"    ,
@@ -249,6 +250,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         )
         # specify userfloats
         JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
+        JetsPropertiesAK8.softDropMass = cms.vstring('SoftDrop') # computed from subjets
         JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
         JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
         JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
@@ -256,7 +258,9 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
 #        JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
         JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetsPropertiesAK8.subjets = cms.vstring('SoftDrop')
-        self.VectorDouble.extend(['JetsProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
+        self.VectorDouble.extend([
+                             'JetsProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
+                             'JetsProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
 #                             'JetsProperties'+suff+':bDiscriminatorSubjet1(Jets'+suff+'_bDiscriminatorSubjet1CSV)',
 #                             'JetsProperties'+suff+':bDiscriminatorSubjet2(Jets'+suff+'_bDiscriminatorSubjet2CSV)',
                              'JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
