@@ -244,7 +244,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="momenthalf"                 ) { DoublePtrs_.push_back(new NamedPtrD<d_momenthalf>                 ("momenthalf",this)                 ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="constituents"               ) { VLPtrs_.push_back(new NamedPtrVL<vl_constituents>                 ("constituents",this)               ); checkExtraInfo(iConfig, p, VLPtrs_.back()); }
 		else if(p=="subjets"                    ) { VLPtrs_.push_back(new NamedPtrVL<vl_subjets>                      ("subjets",this)                    ); checkExtraInfo(iConfig, p, VLPtrs_.back()); }
-		else edm::LogWarning("TreeMaker") << "JetsProperties: unknown property " << p;
+		else edm::LogWarning("TreeMaker") << "JetProperties: unknown property " << p;
 	}	
 }
 

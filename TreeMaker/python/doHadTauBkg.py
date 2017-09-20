@@ -20,25 +20,25 @@ def makeJetVarsHadTau(self,process,JetTag,suff,storeProperties=0):
     if storeProperties>0:
         # make jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
-        JetsProperties = jetproperties.clone(
+        JetProperties = jetproperties.clone(
             JetTag       = GoodJetsTag,
             properties   = cms.vstring("jecFactor","jecUnc","bDiscriminatorCSV")
         )
         if self.geninfo:
-            JetsProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
+            JetProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
         # provide extra info where necessary
-        JetsProperties.jecUnc = cms.vstring("jecUncHadTau")
-        JetsProperties.jerFactor = cms.vstring("jerFactorHadTau")
-        JetsProperties.jerFactorUp = cms.vstring("jerFactorUpHadTau")
-        JetsProperties.jerFactorDown = cms.vstring("jerFactorDownHadTau")
-        setattr(process,"HadTauJetsProperties"+suff,JetsProperties)
-        self.VectorDouble.extend(['HadTauJetsProperties:jecFactor(SoftJets'+suff+'_jecFactor)',
-                                                'HadTauJetsProperties:jecUnc(SoftJets'+suff+'_jecUnc)',
-                                                'HadTauJetsProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)'])
+        JetProperties.jecUnc = cms.vstring("jecUncHadTau")
+        JetProperties.jerFactor = cms.vstring("jerFactorHadTau")
+        JetProperties.jerFactorUp = cms.vstring("jerFactorUpHadTau")
+        JetProperties.jerFactorDown = cms.vstring("jerFactorDownHadTau")
+        setattr(process,"HadTauJetProperties"+suff,JetsProperties)
+        self.VectorDouble.extend(['HadTauJetProperties:jecFactor(SoftJets'+suff+'_jecFactor)',
+                                                'HadTauJetProperties:jecUnc(SoftJets'+suff+'_jecUnc)',
+                                                'HadTauJetProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)'])
         if self.geninfo:
-            self.VectorDouble.extend(['HadTauJetsProperties:jerFactor(SoftJets'+suff+'_jerFactor)',
-                                                    'HadTauJetsProperties:jerFactorUp(SoftJets'+suff+'_jerFactorUp)',
-                                                    'HadTauJetsProperties:jerFactorDown(SoftJets'+suff+'_jerFactorDown)'])
+            self.VectorDouble.extend(['HadTauJetProperties:jerFactor(SoftJets'+suff+'_jerFactor)',
+                                                    'HadTauJetProperties:jerFactorUp(SoftJets'+suff+'_jerFactorUp)',
+                                                    'HadTauJetProperties:jerFactorDown(SoftJets'+suff+'_jerFactorDown)'])
     
     return process
 
