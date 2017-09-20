@@ -675,99 +675,15 @@ def makeTreeFromMiniAOD(self,process):
     process.load("RecoBTag.SecondaryVertex.candidateBoostedDoubleSecondaryVertexAK8Computer_cfi")
     process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSecondaryVertexAK8BJetTags_cfi")
 
-    ak8floats = []
-    ak8ints = []
-
-    # get more substructure
-    if self.semivisible:
-        process.BasicSubstructure = cms.EDProducer("BasicSubstructureProducer",
-            JetTag = JetAK8Tag
-        )
-        ak8floats.extend([
-            'BasicSubstructure:overflow',
-            'BasicSubstructure:girth',
-            'BasicSubstructure:momenthalf',
-            'BasicSubstructure:ptD',
-            'BasicSubstructure:axismajor',
-            'BasicSubstructure:axisminor',
-        ])
-        ak8ints.extend([
-            'BasicSubstructure:multiplicity',
-        ])
-    
     # add discriminator and update tag
-    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, ak8floats, ak8ints, cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
-    
-    # apply jet ID
-    process = self.makeJetVars(process,
+    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, [], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
+
+    # apply jet ID and get properties
+    process = self.makeJetVarsAK8(process,
         JetTag=JetAK8Tag,
         suff='AK8',
-        skipGoodJets=False,
         storeProperties=1,
-        onlyGoodJets=True
-    )
-    
-    # AK8 jet variables - separate instance of jet properties producer
-    from TreeMaker.Utils.jetproperties_cfi import jetproperties
-    process.JetsPropertiesAK8 = jetproperties.clone(
-        JetTag       = JetAK8Tag,
-        properties = cms.vstring(
-            "prunedMass"    ,
-            "NsubjettinessTau1"    ,
-            "NsubjettinessTau2"    ,
-            "NsubjettinessTau3"    ,
-            "bDiscriminatorSubjet1",
-            "bDiscriminatorSubjet2",
-            "bDiscriminatorCSV"    ,
-            "NumBhadrons"          ,
-            "NumChadrons"          ,
-        )
-    )
-    # specify userfloats
-    process.JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
-    process.JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
-    process.JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
-    process.JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
-    process.JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
-    self.VectorDouble.extend(['JetsPropertiesAK8:prunedMass(JetsAK8_prunedMass)',
-                         'JetsPropertiesAK8:bDiscriminatorSubjet1(JetsAK8_bDiscriminatorSubjet1CSV)',
-                         'JetsPropertiesAK8:bDiscriminatorSubjet2(JetsAK8_bDiscriminatorSubjet2CSV)',
-                         'JetsPropertiesAK8:bDiscriminatorCSV(JetsAK8_doubleBDiscriminator)',
-                         'JetsPropertiesAK8:NsubjettinessTau1(JetsAK8_NsubjettinessTau1)',
-                         'JetsPropertiesAK8:NsubjettinessTau2(JetsAK8_NsubjettinessTau2)',
-                         'JetsPropertiesAK8:NsubjettinessTau3(JetsAK8_NsubjettinessTau3)'])
-    self.VectorInt.extend(['JetsPropertiesAK8:NumBhadrons(JetsAK8_NumBhadrons)',
-                      'JetsPropertiesAK8:NumChadrons(JetsAK8_NumChadrons)'])
-    if self.semivisible:
-        process.JetsPropertiesAK8.properties.extend([
-            'overflow',
-            'girth',
-            'momenthalf',
-            'ptD',
-            'axismajor',
-            'axisminor',
-            'multiplicity',
-        ])
-        process.JetsPropertiesAK8.overflow = cms.vstring('BasicSubstructure:overflow')
-        process.JetsPropertiesAK8.girth = cms.vstring('BasicSubstructure:girth')
-        process.JetsPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure:momenthalf')
-        process.JetsPropertiesAK8.ptD = cms.vstring('BasicSubstructure:ptD')
-        process.JetsPropertiesAK8.axismajor = cms.vstring('BasicSubstructure:axismajor')
-        process.JetsPropertiesAK8.axisminor = cms.vstring('BasicSubstructure:axisminor')
-        process.JetsPropertiesAK8.multiplicity = cms.vstring('BasicSubstructure:multiplicity')
-        self.VectorDouble.extend([
-            'JetsPropertiesAK8:overflow(JetsAK8_overflow)',
-            'JetsPropertiesAK8:girth(JetsAK8_girth)',
-            'JetsPropertiesAK8:momenthalf(JetsAK8_momenthalf)',
-            'JetsPropertiesAK8:ptD(JetsAK8_ptD)',
-            'JetsPropertiesAK8:axismajor(JetsAK8_axismajor)',
-            'JetsPropertiesAK8:axisminor(JetsAK8_axisminor)',
-        ])
-        self.VectorInt.extend([
-            'JetsPropertiesAK8:multiplicity(JetsAK8_multiplicity)',
-        ])
+    )    
 
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables

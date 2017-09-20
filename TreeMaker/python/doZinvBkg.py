@@ -36,51 +36,17 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     JetAK8CleanTag = cms.InputTag("selectedPatJetsAK8PFCHSClean")
 
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
-    process = self.makeJetVars(process,
+    process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
-        skipGoodJets=False,
         storeProperties=1,
-        onlyGoodJets=True
     )
-    
-    from TreeMaker.Utils.jetproperties_cfi import jetproperties
-    process.JetsPropertiesAK8Clean = jetproperties.clone(
-        JetTag       = JetAK8CleanTag,
-        debug = cms.bool(False),
-        properties = cms.vstring(
-            "prunedMass"    ,
-            "NsubjettinessTau1"    ,
-            "NsubjettinessTau2"    ,
-            "NsubjettinessTau3"    ,
-            #"bDiscriminatorSubjet1",
-            #"bDiscriminatorSubjet2",
-            "bDiscriminatorCSV"    ,
-            "NumBhadrons"          ,
-            "NumChadrons"          ,
-        )
-    )
-    
+
+    # update some userfloat names
     process.JetsPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsCHSCleanPrunedMass')
     process.JetsPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
     process.JetsPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
     process.JetsPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8CHSClean:tau3')
-    #process.JetsPropertiesAK8Clean.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    #process.JetsPropertiesAK8Clean.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.JetsPropertiesAK8Clean.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
-    self.VectorDouble.extend([
-        'JetsPropertiesAK8Clean:prunedMass(JetsAK8Clean_prunedMass)',
-        'JetsPropertiesAK8Clean:NsubjettinessTau1(JetsAK8Clean_NsubjettinessTau1)',
-        'JetsPropertiesAK8Clean:NsubjettinessTau2(JetsAK8Clean_NsubjettinessTau2)',
-        'JetsPropertiesAK8Clean:NsubjettinessTau3(JetsAK8Clean_NsubjettinessTau3)',
-        #'JetsPropertiesAK8Clean:bDiscriminatorSubjet1(JetsAK8Clean_bDiscriminatorSubjet1CSV)',
-        #'JetsPropertiesAK8Clean:bDiscriminatorSubjet2(JetsAK8Clean_bDiscriminatorSubjet2CSV)',
-        'JetsPropertiesAK8Clean:bDiscriminatorCSV(JetsAK8Clean_doubleBDiscriminator)'
-    ])
-    self.VectorInt.extend([
-        'JetsPropertiesAK8Clean:NumBhadrons(JetsAK8Clean_NumBhadrons)',
-        'JetsPropertiesAK8Clean:NumChadrons(JetsAK8Clean_NumChadrons)'
-    ])
 
     ### end AK8 detour
 

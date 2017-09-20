@@ -1,4 +1,5 @@
 import FWCore.ParameterSet.Config as cms
+from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
 def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff):
     from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
@@ -29,6 +30,38 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
     
     return process
 
+def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag()):
+    from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
+    GoodJets = GoodJetsProducer.clone(
+        TagMode                   = cms.bool(True),
+        JetTag                    = JetTag,
+        maxJetEta                 = cms.double(5.0),
+        minNconstituents          = cms.int32(1),
+        minNneutrals              = cms.int32(10),
+        minNcharged               = cms.int32(0),
+        maxNeutralFraction        = cms.double(0.99),
+        maxPhotonFraction         = cms.double(0.99),
+        maxPhotonFractionHF       = cms.double(0.90),
+        minChargedFraction        = cms.double(0),
+        maxChargedEMFraction      = cms.double(0.99),
+        jetPtFilter               = cms.double(30),
+        ExcludeLepIsoTrackPhotons = cms.bool(True),
+        JetConeSize               = cms.double(0.4),
+        SkipTag                   = SkipTag,
+        SaveAllJetsId             = True,
+        SaveAllJetsPt             = False, # exclude low pt jets from good collection
+    )
+    if self.fastsim: GoodJets.jetPtFilter = cms.double(20)
+    setattr(process,"GoodJets"+suff,GoodJets)
+    GoodJetsTag = cms.InputTag("GoodJets"+suff)
+    self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
+    if storeProperties>0:
+        self.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
+        self.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
+        if len(SkipTag)>0: self.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(Jets'+suff+'_LeptonMask)'])
+    return (process,GoodJetsTag)
+
+
 def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
@@ -36,34 +69,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     if skipGoodJets:
         GoodJetsTag = JetTag
     else:
-        from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
-        GoodJets = GoodJetsProducer.clone(
-            TagMode                   = cms.bool(True),
-            JetTag                    = JetTag,
-            maxJetEta                 = cms.double(5.0),
-            minNconstituents          = cms.int32(1),
-            minNneutrals              = cms.int32(10),
-            minNcharged               = cms.int32(0),
-            maxNeutralFraction        = cms.double(0.99),
-            maxPhotonFraction         = cms.double(0.99),
-            maxPhotonFractionHF       = cms.double(0.90),
-            minChargedFraction        = cms.double(0),
-            maxChargedEMFraction      = cms.double(0.99),
-            jetPtFilter               = cms.double(30),
-            ExcludeLepIsoTrackPhotons = cms.bool(True),
-            JetConeSize               = cms.double(0.4),
-            SkipTag                   = SkipTag,
-            SaveAllJetsId             = True,
-            SaveAllJetsPt             = False, # exclude low pt jets from good collection
-        )
-        if self.fastsim: GoodJets.jetPtFilter = cms.double(20)
-        setattr(process,"GoodJets"+suff,GoodJets)
-        GoodJetsTag = cms.InputTag("GoodJets"+suff)
-        self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
-        if storeProperties>0:
-            self.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
-            self.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
-            if len(SkipTag)>0: self.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(Jets'+suff+'_LeptonMask)'])
+        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag)
         if onlyGoodJets:
             return process
     
@@ -198,3 +204,93 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                                                  'JetsProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)'])
                                              
     return process
+
+def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
+    # get more substructure
+    if self.semivisible:
+        BasicSubstructure = cms.EDProducer("BasicSubstructureProducer",
+            JetTag = JetTag
+        )
+        setattr(process,"BasicSubstructure"+suff,BasicSubstructure)
+        ak8floats = [
+            'BasicSubstructure'+suff+':overflow',
+            'BasicSubstructure'+suff+':girth',
+            'BasicSubstructure'+suff+':momenthalf',
+            'BasicSubstructure'+suff+':ptD',
+            'BasicSubstructure'+suff+':axismajor',
+            'BasicSubstructure'+suff+':axisminor',
+        ]
+        ak8ints = [
+            'BasicSubstructure'+suff+':multiplicity',
+        ]
+    
+        # add discriminator and update tag
+        process, JetTag = addJetInfo(process, JetTag, ak8floats, ak8ints)
+
+    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties)
+
+    if storeProperties>0:
+        # AK8 jet variables - separate instance of jet properties producer
+        from TreeMaker.Utils.jetproperties_cfi import jetproperties
+        JetsPropertiesAK8 = jetproperties.clone(
+            JetTag       = GoodJetsTag,
+            properties = cms.vstring(
+                "prunedMass"    ,
+                "NsubjettinessTau1"    ,
+                "NsubjettinessTau2"    ,
+                "NsubjettinessTau3"    ,
+#                "bDiscriminatorSubjet1",
+#                "bDiscriminatorSubjet2",
+                "bDiscriminatorCSV"    ,
+                "NumBhadrons"          ,
+                "NumChadrons"          ,
+            )
+        )
+        # specify userfloats
+        JetsPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
+        JetsPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
+        JetsPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
+        JetsPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
+#        JetsPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+#        JetsPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+        JetsPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
+        self.VectorDouble.extend(['JetsProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
+#                             'JetsProperties'+suff+':bDiscriminatorSubjet1(Jets'+suff+'_bDiscriminatorSubjet1CSV)',
+#                             'JetsProperties'+suff+':bDiscriminatorSubjet2(Jets'+suff+'_bDiscriminatorSubjet2CSV)',
+                             'JetsProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
+                             'JetsProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
+                             'JetsProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
+                             'JetsProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)'])
+        self.VectorInt.extend(['JetsProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
+                          'JetsProperties'+suff+':NumChadrons(Jets'+suff+'_NumChadrons)'])
+        if self.semivisible:
+            JetsPropertiesAK8.properties.extend([
+                'overflow',
+                'girth',
+                'momenthalf',
+                'ptD',
+                'axismajor',
+                'axisminor',
+                'multiplicity',
+            ])
+            JetsPropertiesAK8.overflow = cms.vstring('BasicSubstructure'+suff+':overflow')
+            JetsPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
+            JetsPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure'+suff+':momenthalf')
+            JetsPropertiesAK8.ptD = cms.vstring('BasicSubstructure'+suff+':ptD')
+            JetsPropertiesAK8.axismajor = cms.vstring('BasicSubstructure'+suff+':axismajor')
+            JetsPropertiesAK8.axisminor = cms.vstring('BasicSubstructure'+suff+':axisminor')
+            JetsPropertiesAK8.multiplicity = cms.vstring('BasicSubstructure'+suff+':multiplicity')
+            self.VectorDouble.extend([
+                'JetsProperties'+suff+':overflow(Jets'+suff+'_overflow)',
+                'JetsProperties'+suff+':girth(Jets'+suff+'_girth)',
+                'JetsProperties'+suff+':momenthalf(Jets'+suff+'_momenthalf)',
+                'JetsProperties'+suff+':ptD(Jets'+suff+'_ptD)',
+                'JetsProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
+                'JetsProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
+            ])
+            self.VectorInt.extend([
+                'JetsProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
+            ])
+        setattr(process,"JetsProperties"+suff,JetsPropertiesAK8)
+
+        return process        
