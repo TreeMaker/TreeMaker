@@ -37,6 +37,8 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
+#include "TLorentzVector.h"
+
 typedef math::XYZTLorentzVector LorentzVector;
 
 //enum lists of properties
@@ -47,6 +49,7 @@ enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyF
 				d_overflow, d_girth, d_momenthalf }; //AK8 properties
 enum JetPropI { i_chargedHadronMultiplicity, i_neutralHadronMultiplicity, i_electronMultiplicity, i_photonMultiplicity,
 				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor, i_multiplicity };
+enum JetPropVL { vl_constituents, vl_subjets };
 
 // helper class
 template <class T>
@@ -89,6 +92,14 @@ class NamedPtrI : public NamedPtr<int> {
 		virtual void get_property(const pat::Jet* Jet) { push_back(Jet->userInt(extraInfo.at(0))); }
 };
 
+template <JetPropVL VL>
+class NamedPtrVL : public NamedPtr<std::vector<TLorentzVector>> {
+	public:
+		using NamedPtr<std::vector<TLorentzVector>>::NamedPtr;
+		//no default here...
+		virtual void get_property(const pat::Jet* Jet) { }
+};
+
 //define accessors (for non-userfloats)
 template<> void NamedPtrD<d_jetArea>::get_property(const pat::Jet* Jet)                     { push_back(Jet->jetArea()); }
 template<> void NamedPtrD<d_chargedHadronEnergyFraction>::get_property(const pat::Jet* Jet) { push_back(Jet->chargedHadronEnergyFraction()); }
@@ -125,6 +136,17 @@ template<> void NamedPtrI<i_neutralMultiplicity>::get_property(const pat::Jet* J
 template<> void NamedPtrI<i_partonFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->partonFlavour()); }
 template<> void NamedPtrI<i_hadronFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->hadronFlavour()); }
 
+template<> void NamedPtrVL<vl_constituents>::get_property(const pat::Jet* Jet) {
+	std::vector<TLorentzVector> partvecs;
+	for(unsigned k = 0; k < Jet->numberOfDaughters(); ++k){
+		const reco::CandidatePtr& part = Jet->daughterPtr(k);
+		if(part.isNonnull() and part.isAvailable()){
+			partvecs.emplace_back(part->px(),part->py(),part->pz(),part->energy());
+		}
+	}
+	ptr->push_back(partvecs);
+}
+
 //
 // class declaration
 //
@@ -148,6 +170,7 @@ private:
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	std::vector<NamedPtr<int>*> IntPtrs_;
 	std::vector<NamedPtr<double>*> DoublePtrs_;
+	std::vector<NamedPtr<std::vector<TLorentzVector>>*> VLPtrs_;
 	bool debug;
 };
 
@@ -206,6 +229,8 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="overflow"                   ) { DoublePtrs_.push_back(new NamedPtrD<d_overflow>                   ("overflow",this)                   ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="girth"                      ) { DoublePtrs_.push_back(new NamedPtrD<d_girth>                      ("girth",this)                      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="momenthalf"                 ) { DoublePtrs_.push_back(new NamedPtrD<d_momenthalf>                 ("momenthalf",this)                 ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="constituents"               ) { VLPtrs_.push_back(new NamedPtrVL<vl_constituents>                 ("constituents",this)               ); checkExtraInfo(iConfig, p, VLPtrs_.back()); }
+		else if(p=="subjets"                    ) { VLPtrs_.push_back(new NamedPtrVL<vl_subjets>                      ("subjets",this)                    ); checkExtraInfo(iConfig, p, VLPtrs_.back()); }
 		else edm::LogWarning("TreeMaker") << "JetsProperties: unknown property " << p;
 	}	
 }
@@ -222,6 +247,10 @@ JetProperties::~JetProperties()
 		delete (DoublePtrs_[ip]);
 	}
 	DoublePtrs_.clear();
+	for(unsigned ip = 0; ip < VLPtrs_.size(); ++ip){
+		delete (VLPtrs_[ip]);
+	}
+	VLPtrs_.clear();
 }
 
 
@@ -240,6 +269,9 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 		DoublePtrs_[ip]->reset();
 	}
+	for(unsigned ip = 0; ip < VLPtrs_.size(); ++ip){
+		VLPtrs_[ip]->reset();
+	}
 
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
@@ -250,6 +282,9 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			}
 			for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 				DoublePtrs_[ip]->get_property(&(*Jet));
+			}
+			for(unsigned ip = 0; ip < VLPtrs_.size(); ++ip){
+				VLPtrs_[ip]->get_property(&(*Jet));
 			}
 			//for debugging: print out available subjet collections & btag discriminators
 			if(debug){
@@ -285,6 +320,9 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 		DoublePtrs_[ip]->put(iEvent);
+	}
+	for(unsigned ip = 0; ip < VLPtrs_.size(); ++ip){
+		VLPtrs_[ip]->put(iEvent);
 	}
 
 }
