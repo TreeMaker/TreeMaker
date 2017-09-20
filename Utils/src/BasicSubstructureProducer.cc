@@ -73,9 +73,14 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 		float sumPt = 0.0, sumPt2 = 0.0;
 		float sumDeta = 0.0, sumDphi = 0.0, sumDeta2 = 0.0, sumDphi2 = 0.0, sumDetaDphi = 0.0;
 
-		for(int k = 0; k < i_mult; ++k){
-			const reco::CandidatePtr& i_part = i_jet.daughterPtr(k);
-			if(i_part.isNonnull() and i_part.isAvailable()){
+		for(unsigned k = 0; k < i_jet.numberOfDaughters(); ++k){
+			const reco::Candidate* part = i_jet.daughter(k);
+			//for AK8, subjets stored as daughters, need to get constituents from them
+			unsigned numdau = part->numberOfDaughters();
+			for(unsigned m = 0; m < std::max(numdau,1u); ++m){
+				const reco::Candidate* i_part = numdau==0 ? part : part->daughter(m);
+				++i_mult;
+
 				//overflow
 				float dR = reco::deltaR(i_jet.p4(),i_part->p4());
 				float pT = i_part->pt();
