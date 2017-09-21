@@ -45,17 +45,16 @@ private:
 
 
 GenParticlesProducer::GenParticlesProducer(const edm::ParameterSet& iConfig):
-  genCollection(iConfig.getUntrackedParameter<edm::InputTag>("genCollection")),
+  genCollection(iConfig.getParameter<edm::InputTag>("genCollection")),
   genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
-  debug(iConfig.getUntrackedParameter<bool>("debug",true)),
-  typicalChildIds({1,2,3,4,5,11,12,13,14,15,16,22}),
-  typicalParentIds(
-    {1,2,1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
-     1000001,1000002,1000003,1000004,1000005,1000006,
-     2000001,2000002,2000003,2000004,2000005,2000006,
-     6, 23, 24, 25}
-  )
+  debug(iConfig.getParameter<bool>("debug"))
 {
+  const auto& cids = iConfig.getParameter<std::vector<int>>("childIds");
+  typicalChildIds.insert(cids.begin(),cids.end());
+
+  const auto& pids = iConfig.getParameter<std::vector<int>>("parentIds");
+  typicalParentIds.insert(pids.begin(),pids.end());
+
   produces< std::vector< TLorentzVector > >(""); 
   produces< std::vector< int > >("PdgId");
   produces< std::vector< int > >("Status");

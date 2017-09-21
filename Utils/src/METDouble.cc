@@ -93,6 +93,7 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    produces<double>("GenPt");
    produces<double>("GenPhi");
    produces<double>("PFCaloPtRatio");
+   produces<double>("Significance");
 
    produces<std::vector<double> >("PtUp");
    produces<std::vector<double> >("PtDown");
@@ -122,6 +123,7 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
    double metpt_=0, metphi_=0;
    double genmetpt_=0, genmetphi_=0;
    double calometpt_=0, calometphi_=0;
+   double metsig_=0;
 
    std::vector<double> metPtUp_(uncUpList.size(),0.);
    std::vector<double> metPhiUp_(uncUpList.size(),0.);
@@ -147,6 +149,7 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
       metpt_=MET->at(0).pt();
       metphi_=MET->at(0).phi();
       metLorentz=MET->at(0).p4();
+      metsig_=MET->at(0).metSignificance();
       
       for(unsigned u = 0; u < uncUpList.size(); ++u){
         metPtUp_[u] = MET->at(0).shiftedPt(uncUpList[u], pat::MET::Type1);
@@ -173,6 +176,8 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
    iEvent.put(std::move(htp),"Pt");
    auto htp2 = std::make_unique<double>(metphi_);
    iEvent.put(std::move(htp2),"Phi");
+   auto htp0 = std::make_unique<double>(metsig_);
+   iEvent.put(std::move(htp0),"Significance");
 
    auto chtp = std::make_unique<double>(calometpt_);
    iEvent.put(std::move(chtp),"CaloPt");

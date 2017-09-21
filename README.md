@@ -197,6 +197,8 @@ Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py
 * `hadtau`: switch to enable the hadronic tau background estimation processes (default=True)
 * `hadtaurecluster`: switch to enable the hadronic tau reclustering to include jets with pT < 10 GeV, options: 0 = never, 1 = only TTJets/WJets MC, 2 = all MC, 3 = always (default=1)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=True)
+* `systematics`: switch to enable JEC- and JER-related systematics (default=True)
+* `semivisible`: switch to enable variables for semi-visible jets (default=False)
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)

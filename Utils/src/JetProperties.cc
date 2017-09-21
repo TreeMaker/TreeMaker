@@ -37,15 +37,19 @@
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
+#include "TLorentzVector.h"
+
 typedef math::XYZTLorentzVector LorentzVector;
 
 //enum lists of properties
 enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyFraction, d_chargedEmEnergyFraction, d_neutralEmEnergyFraction,
 				d_electronEnergyFraction, d_photonEnergyFraction, d_muonEnergyFraction, d_bDiscriminatorCSV, d_bDiscriminatorMVA,
-				d_jecFactor, d_jecUnc, d_jerFactor, d_jerFactorUp, d_jerFactorDown, d_qgLikelihood, d_qgPtD, d_qgAxis2,
-				d_prunedMass, d_PuppiSoftDropMass, d_bDiscriminatorSubjet1, d_bDiscriminatorSubjet2, d_NsubjettinessTau1, d_NsubjettinessTau2, d_NsubjettinessTau3 }; //AK8 properties
+				d_jecFactor, d_jecUnc, d_jerFactor, d_jerFactorUp, d_jerFactorDown, d_qgLikelihood, d_ptD, d_axisminor, d_axismajor,
+				d_prunedMass, d_softDropMass, d_bDiscriminatorSubjet1, d_bDiscriminatorSubjet2, d_NsubjettinessTau1, d_NsubjettinessTau2, d_NsubjettinessTau3,
+				d_overflow, d_girth, d_momenthalf }; //AK8 properties
 enum JetPropI { i_chargedHadronMultiplicity, i_neutralHadronMultiplicity, i_electronMultiplicity, i_photonMultiplicity,
-				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor, i_qgMult };
+				i_muonMultiplicity, i_NumBhadrons, i_NumChadrons, i_chargedMultiplicity, i_neutralMultiplicity, i_partonFlavor, i_hadronFlavor, i_multiplicity };
+enum JetPropVL { vl_constituents, vl_subjets };
 
 // helper class
 template <class T>
@@ -88,6 +92,14 @@ class NamedPtrI : public NamedPtr<int> {
 		virtual void get_property(const pat::Jet* Jet) { push_back(Jet->userInt(extraInfo.at(0))); }
 };
 
+template <JetPropVL VL>
+class NamedPtrVL : public NamedPtr<std::vector<TLorentzVector>> {
+	public:
+		using NamedPtr<std::vector<TLorentzVector>>::NamedPtr;
+		//no default here...
+		virtual void get_property(const pat::Jet* Jet) { }
+};
+
 //define accessors (for non-userfloats)
 template<> void NamedPtrD<d_jetArea>::get_property(const pat::Jet* Jet)                     { push_back(Jet->jetArea()); }
 template<> void NamedPtrD<d_chargedHadronEnergyFraction>::get_property(const pat::Jet* Jet) { push_back(Jet->chargedHadronEnergyFraction()); }
@@ -103,7 +115,7 @@ template<> void NamedPtrD<d_jecFactor>::get_property(const pat::Jet* Jet)       
 //ak8 jet accessors
 template<> void NamedPtrD<d_bDiscriminatorSubjet1>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 0 ? Jet->subjets(extraInfo.at(0)).at(0)->bDiscriminator(extraInfo.at(1)) : -10.); }
 template<> void NamedPtrD<d_bDiscriminatorSubjet2>::get_property(const pat::Jet* Jet)       { push_back(Jet->subjets(extraInfo.at(0)).size() > 1 ? Jet->subjets(extraInfo.at(0)).at(1)->bDiscriminator(extraInfo.at(1)) : -10.); }
-template<> void NamedPtrD<d_PuppiSoftDropMass>::get_property(const pat::Jet* Jet)           { 
+template<> void NamedPtrD<d_softDropMass>::get_property(const pat::Jet* Jet)                { 
     LorentzVector fatJet;
     auto const & subjets = Jet->subjets(extraInfo.at(0));
     for ( auto const & it : subjets ) {
@@ -123,6 +135,30 @@ template<> void NamedPtrI<i_chargedMultiplicity>::get_property(const pat::Jet* J
 template<> void NamedPtrI<i_neutralMultiplicity>::get_property(const pat::Jet* Jet)         { push_back(Jet->neutralMultiplicity()); }
 template<> void NamedPtrI<i_partonFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->partonFlavour()); }
 template<> void NamedPtrI<i_hadronFlavor>::get_property(const pat::Jet* Jet)                { push_back(Jet->hadronFlavour()); }
+
+template<> void NamedPtrVL<vl_constituents>::get_property(const pat::Jet* Jet) {
+	std::vector<TLorentzVector> partvecs;
+	for(unsigned k = 0; k < Jet->numberOfDaughters(); ++k){
+		const reco::Candidate* part = Jet->daughter(k);
+		//for AK8, subjets stored as daughters, need to get constituents from them
+		unsigned numdau = part->numberOfDaughters();
+		for(unsigned m = 0; m < std::max(numdau,1u); ++m){
+			const reco::Candidate* subpart = numdau==0 ? part : part->daughter(m);
+			partvecs.emplace_back(subpart->px(),subpart->py(),subpart->pz(),subpart->energy());			
+		}
+	}
+	std::sort(partvecs.begin(), partvecs.end(), [] (const TLorentzVector& a, const TLorentzVector& b){return a.Pt() > b.Pt();} );
+	ptr->push_back(partvecs);
+}
+template<> void NamedPtrVL<vl_subjets>::get_property(const pat::Jet* Jet) {
+	std::vector<TLorentzVector> subvecs;
+    auto const & subjets = Jet->subjets(extraInfo.at(0));
+    for ( auto const & it : subjets ) {
+		const auto& p4 = it->correctedP4(0);
+		subvecs.emplace_back(p4.px(),p4.py(),p4.pz(),p4.energy());
+    }
+	ptr->push_back(subvecs);
+}
 
 //
 // class declaration
@@ -147,6 +183,7 @@ private:
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	std::vector<NamedPtr<int>*> IntPtrs_;
 	std::vector<NamedPtr<double>*> DoublePtrs_;
+	std::vector<NamedPtr<std::vector<TLorentzVector>>*> VLPtrs_;
 	bool debug;
 };
 
@@ -175,7 +212,7 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="neutralMultiplicity"        ) { IntPtrs_.push_back(new NamedPtrI<i_neutralMultiplicity>           ("neutralMultiplicity",this)        ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
 		else if(p=="partonFlavor"               ) { IntPtrs_.push_back(new NamedPtrI<i_partonFlavor>                  ("partonFlavor",this)               ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
 		else if(p=="hadronFlavor"               ) { IntPtrs_.push_back(new NamedPtrI<i_hadronFlavor>                  ("hadronFlavor",this)               ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
-		else if(p=="qgMult"                     ) { IntPtrs_.push_back(new NamedPtrI<i_qgMult>                        ("qgMult",this)                     ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
+		else if(p=="multiplicity"               ) { IntPtrs_.push_back(new NamedPtrI<i_multiplicity>                  ("multiplicity",this)               ); checkExtraInfo(iConfig, p, IntPtrs_.back());    }
 		else if(p=="jetArea"                    ) { DoublePtrs_.push_back(new NamedPtrD<d_jetArea>                    ("jetArea",this)                    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="chargedHadronEnergyFraction") { DoublePtrs_.push_back(new NamedPtrD<d_chargedHadronEnergyFraction>("chargedHadronEnergyFraction",this)); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="neutralHadronEnergyFraction") { DoublePtrs_.push_back(new NamedPtrD<d_neutralHadronEnergyFraction>("neutralHadronEnergyFraction",this)); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
@@ -192,16 +229,22 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="jerFactorUp"                ) { DoublePtrs_.push_back(new NamedPtrD<d_jerFactorUp>                ("jerFactorUp",this)                ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="jerFactorDown"              ) { DoublePtrs_.push_back(new NamedPtrD<d_jerFactorDown>              ("jerFactorDown",this)              ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="qgLikelihood"               ) { DoublePtrs_.push_back(new NamedPtrD<d_qgLikelihood>               ("qgLikelihood",this)               ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
-		else if(p=="qgPtD"                      ) { DoublePtrs_.push_back(new NamedPtrD<d_qgPtD>                      ("qgPtD",this)                      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
-		else if(p=="qgAxis2"                    ) { DoublePtrs_.push_back(new NamedPtrD<d_qgAxis2>                    ("qgAxis2",this)                    ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="ptD"                        ) { DoublePtrs_.push_back(new NamedPtrD<d_ptD>                        ("ptD",this)                        ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="axisminor"                  ) { DoublePtrs_.push_back(new NamedPtrD<d_axisminor>                  ("axisminor",this)                  ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="axismajor"                  ) { DoublePtrs_.push_back(new NamedPtrD<d_axismajor>                  ("axismajor",this)                  ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="prunedMass"                 ) { DoublePtrs_.push_back(new NamedPtrD<d_prunedMass>                 ("prunedMass",this)                 ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
-		else if(p=="PuppiSoftDropMass"          ) { DoublePtrs_.push_back(new NamedPtrD<d_PuppiSoftDropMass>          ("PuppiSoftDropMass",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="softDropMass"               ) { DoublePtrs_.push_back(new NamedPtrD<d_softDropMass>               ("softDropMass",this)               ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau1"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau1>          ("NsubjettinessTau1",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau2"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau2>          ("NsubjettinessTau2",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="NsubjettinessTau3"          ) { DoublePtrs_.push_back(new NamedPtrD<d_NsubjettinessTau3>          ("NsubjettinessTau3",this)          ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="bDiscriminatorSubjet1"      ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSubjet1>      ("bDiscriminatorSubjet1",this)      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
 		else if(p=="bDiscriminatorSubjet2"      ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorSubjet2>      ("bDiscriminatorSubjet2",this)      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
-		else edm::LogWarning("TreeMaker") << "JetsProperties: unknown property " << p;
+		else if(p=="overflow"                   ) { DoublePtrs_.push_back(new NamedPtrD<d_overflow>                   ("overflow",this)                   ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="girth"                      ) { DoublePtrs_.push_back(new NamedPtrD<d_girth>                      ("girth",this)                      ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="momenthalf"                 ) { DoublePtrs_.push_back(new NamedPtrD<d_momenthalf>                 ("momenthalf",this)                 ); checkExtraInfo(iConfig, p, DoublePtrs_.back()); }
+		else if(p=="constituents"               ) { VLPtrs_.push_back(new NamedPtrVL<vl_constituents>                 ("constituents",this)               ); checkExtraInfo(iConfig, p, VLPtrs_.back()); }
+		else if(p=="subjets"                    ) { VLPtrs_.push_back(new NamedPtrVL<vl_subjets>                      ("subjets",this)                    ); checkExtraInfo(iConfig, p, VLPtrs_.back()); }
+		else edm::LogWarning("TreeMaker") << "JetProperties: unknown property " << p;
 	}	
 }
 
@@ -217,6 +260,10 @@ JetProperties::~JetProperties()
 		delete (DoublePtrs_[ip]);
 	}
 	DoublePtrs_.clear();
+	for(unsigned ip = 0; ip < VLPtrs_.size(); ++ip){
+		delete (VLPtrs_[ip]);
+	}
+	VLPtrs_.clear();
 }
 
 
@@ -235,6 +282,9 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 		DoublePtrs_[ip]->reset();
 	}
+	for(unsigned ip = 0; ip < VLPtrs_.size(); ++ip){
+		VLPtrs_[ip]->reset();
+	}
 
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
@@ -245,6 +295,9 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			}
 			for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 				DoublePtrs_[ip]->get_property(&(*Jet));
+			}
+			for(unsigned ip = 0; ip < VLPtrs_.size(); ++ip){
+				VLPtrs_[ip]->get_property(&(*Jet));
 			}
 			//for debugging: print out available subjet collections & btag discriminators
 			if(debug){
@@ -280,6 +333,9 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 	for(unsigned ip = 0; ip < DoublePtrs_.size(); ++ip){
 		DoublePtrs_[ip]->put(iEvent);
+	}
+	for(unsigned ip = 0; ip < VLPtrs_.size(); ++ip){
+		VLPtrs_[ip]->put(iEvent);
 	}
 
 }
