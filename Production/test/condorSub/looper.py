@@ -124,7 +124,7 @@ def generateSubmission(options,verbose,filesConfig,scenario,firstJob,filesSet,ru
         os.system("sed -e 's|CMSSWVER|'${CMSSW_VERSION}'|g' "
                      +"-e 's~OUTDIR~"+options.outputDir+"~g' "
                      +"-e 's|SAMPLE|"+filesConfig+"|g' "
-                     +"-e 's|THREADS|"+options.threads+"|g' "
+                     +"-e 's|THREADS|"+str(options.threads)+"|g' "
                      +"-e 's~EXTRASTUFF~"+extras+"~g' "
                      +"< jobExecCondor.jdl > jobExecCondor_"+filesConfig+".jdl")
                      
