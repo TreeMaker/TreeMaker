@@ -31,7 +31,7 @@ def makeJetVarsHadTau(self,process,JetTag,suff,storeProperties=0):
         JetProperties.jerFactor = cms.vstring("jerFactorHadTau")
         JetProperties.jerFactorUp = cms.vstring("jerFactorUpHadTau")
         JetProperties.jerFactorDown = cms.vstring("jerFactorDownHadTau")
-        setattr(process,"HadTauJetProperties"+suff,JetsProperties)
+        setattr(process,"HadTauJetProperties"+suff,JetProperties)
         self.VectorDouble.extend(['HadTauJetProperties:jecFactor(SoftJets'+suff+'_jecFactor)',
                                                 'HadTauJetProperties:jecUnc(SoftJets'+suff+'_jecUnc)',
                                                 'HadTauJetProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)'])
