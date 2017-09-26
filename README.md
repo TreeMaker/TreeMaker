@@ -6,24 +6,18 @@ The following installation instructions assume the user wants to process Summer1
 (Spring16 MC and Run2016 PromptReco data are also supported, but only in limited cases.)
 
 ```
-cmsrel CMSSW_8_0_28
+wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2/setup.sh
+chmod +x setup.sh
+./setup.sh
 cd CMSSW_8_0_28/src/
 cmsenv
-git cms-init
-git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
-git fetch btv-cmssw refs/tags/BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
-git cms-merge-topic -u cms-btv-pog:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_8_0_21
-git cms-merge-topic -u kpedro88:storeJERFactor8028
-git cms-merge-topic -u kpedro88:badMuonFilters_80X_v2_RA2
-git cms-merge-topic -u kpedro88:FixMetSigData8028
-git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
-git clone git@github.com:kpedro88/CondorProduction.git Condor/Production
-git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
-scram b -j 8
-cd $CMSSW_BASE/src/TreeMaker/Production/test/condorSub
-ln -s $CMSSW_BASE/src/Condor/Production/scripts/* .
-cd $CMSSW_BASE/src/TreeMaker/Production/test
+cd TreeMaker/Production/test
 ```
+
+The script [setup.sh](./setup.sh) has options to allow installing a different fork or branch of TreeMaker
+(though some branches may have different setup scripts, so check carefully which one you download):
+* `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
+* `-b [branch]`: which branch to download (`-b branch`, default = Run2)
 
 Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
