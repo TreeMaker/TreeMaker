@@ -16,7 +16,7 @@ export SCRAM_ARCH=slc6_amd64_gcc530
 # cmsrel
 scram project CMSSW_8_0_28
 cd CMSSW_8_0_28/src/
-$ cmsenv
+# cmsenv
 eval `scramv1 runtime -sh`
 git cms-init
 git remote add btv-cmssw https://github.com/cms-btv-pog/cmssw.git
