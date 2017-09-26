@@ -1,5 +1,7 @@
 from jobSubmitterTM import *
 
+# todo: integrate getResults functionality into missing mode (and add new "results" mode?)
+
 class jobSubmitterNeff(jobSubmitterTM):
     def __init__(self):
         super(jobSubmitterNeff,self).__init__()
@@ -21,7 +23,7 @@ class jobSubmitterNeff(jobSubmitterTM):
             
     def generateExtra(self,job):
         super(jobSubmitterNeff,self).generateExtra(job)
-        job.patterns = [p if p[0]!="EXTRAINPUTS" else ("EXTRAINPUTS","input/argsNeff_"+job.name+"_$(Process).txt") for p in job.patterns]
+        job.patterns["EXTRAINPUTS"] = "input/argsNeff_"+job.name+"_$(Process).txt"
         
     def generateSubmission(self):
         # get entries

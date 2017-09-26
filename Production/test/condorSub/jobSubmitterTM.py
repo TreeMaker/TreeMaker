@@ -26,7 +26,7 @@ class jobSubmitterTM(jobSubmitter):
             
     def generateExtra(self,job):
         super(jobSubmitterTM,self).generateExtra(job)
-        job.patterns.extend([
+        job.patterns.update([
             ("JOBNAME",job.name+"_$(Process)_$(Cluster)"),
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
             ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output),
