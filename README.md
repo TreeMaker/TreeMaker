@@ -58,13 +58,8 @@ Condor submission is supported for the LPC batch system or for the global pool v
 Job submission and management is based on the [CondorProduction](https://github.com/kpedro88/CondorProduction) package.
 Refer to the package documentation for basic details.
 
-To reduce the size of the CMSSW tarball sent to the Condor worker node, there are a few standard directories that can be marked as cached using the script [cache_all.sh](./Production/test/cache_all.sh):
-```
-./cache_all.sh
-```
-
 The [test/condorSub](./Production/test/condorSub/) directory contains all of the relevant scripts.
-If you copy this to another directory and run the [submitJobs.py](./Production/test/condorSub/submitJobs.py) script, it will submit one job per file to Condor for all of the relevant samples. Example:
+If you make a copy of this directory and run the [submitJobs.py](./Production/test/condorSub/submitJobs.py) script, it will submit one job per file to Condor for all of the relevant samples. Example:
 ```
 cp -r condorSub myProduction
 cd myProduction
