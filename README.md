@@ -17,9 +17,12 @@ git cms-merge-topic -u kpedro88:storeJERFactor8028
 git cms-merge-topic -u kpedro88:badMuonFilters_80X_v2_RA2
 git cms-merge-topic -u kpedro88:FixMetSigData8028
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
+git clone git@github.com:kpedro88/CondorProduction.git Condor/Production
 git clone git@github.com:TreeMaker/TreeMaker.git -b Run2
 scram b -j 8
-cd TreeMaker/Production/test
+cd $CMSSW_BASE/src/TreeMaker/Production/test/condorSub
+ln -s $CMSSW_BASE/src/Condor/Production/scripts/* .
+cd $CMSSW_BASE/src/TreeMaker/Production/test
 ```
 
 Several predefined scenarios are available for ease of production.
@@ -57,9 +60,9 @@ Note that all of the background estimation processes (and some processes necessa
 
 ## Submit Production to Condor
 
-Condor submission on the LPC batch system is supported. Support for submission to the global pool via [CMS Connect](https://connect.uscms.org/) is preliminary.
-The scripts in this section use the [Condor Python bindings](https://research.cs.wisc.edu/htcondor/manual/current/6_7Python_Bindings.html), which require `/usr/lib64/python2.6/site-packages` to be in the `PYTHONPATH` environment variable.
-For full functionality, the Python packages `paramiko` and `python-gssapi` are also required.
+Condor submission is supported for the LPC batch system or for the global pool via [CMS Connect](https://connect.uscms.org/).
+Job submission and management is based on the [CondorProduction](https://github.com/kpedro88/CondorProduction) package.
+Refer to the package documentation for basic details.
 
 To reduce the size of the CMSSW tarball sent to the Condor worker node, there are a few standard directories that can be marked as cached using the script [cache_all.sh](./Production/test/cache_all.sh):
 ```
@@ -67,43 +70,37 @@ To reduce the size of the CMSSW tarball sent to the Condor worker node, there ar
 ```
 
 The [test/condorSub](./Production/test/condorSub/) directory contains all of the relevant scripts.
-If you copy this to another directory and run the [looper.py](./Production/test/condorSub/looper.py) script, it will submit one job per file to condor for all of the relevant samples. Example:
+If you copy this to another directory and run the [submitJobs.py](./Production/test/condorSub/submitJobs.py) script, it will submit one job per file to Condor for all of the relevant samples. Example:
 ```
 cp -r condorSub myProduction
 cd myProduction
-python looper.py -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction -s
+python submitJobs.py -p -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction -s
 ```
-Consult the `--help` option to view the available options.
-[looper.py](./Production/test/condorSub/looper.py) can also check for jobs which were completely removed from the queue and make a resubmission list.
+[submitJobs.py](./Production/test/condorSub/submitJobs.py) can also:
+* count the expected number of jobs to submit (for planning purposes),
+* check for jobs which were completely removed from the queue and make a resubmission list.
 
-The jobs open the files over xrootd, so [looper.py](./Production/test/condorSub/looper.py) will check that you have a valid grid proxy. 
-It will also make a tarball of the current CMSSW working directory to send to the worker node. 
-If you want to reuse an existing CMSSW tarball (no important changes have been made since the last time you submitted jobs), add the argument `-k`.
+The class [jobSubmitterTM.py](./Production/test/condorSub/jobSubmitterTM.py) extends the class `jobSubmitter` from [CondorProduction](https://github.com/kpedro88/CondorProduction). It adds a few extra arguments:
+
+Python:
+* `-d, --dicts [list]`: comma-separated list of input dicts; each prefixed by dict_ and contains scenario + list of samples (default taken from [.prodconfig](./Production/test/condorSub/.prodconfig))
+* `-o, --output [dir]`: path to output directory in which root files will be stored (required)
+* `--json [jsonfile]`: manually specified json file to check data (override scenario)
+* `--nFiles [num]`: number of files to process per job
+* `--args [list]`: additional common args to use for all jobs (passed to [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
+* `-v, --verbose`: enable verbose output (default = False)
+
+Shell (in [step2.sh](./Production/test/condorSub/step2.sh):
+* `-o [dir]`: output directory
+* `-j [jobname]`: job name
+* `-p [process]`: process number
+* `-x [redir]`: xrootd redirector
 
 When the python file list for a given sample (usually data) is updated, it may be desirable to submit jobs only for the new files.
-The input dictionary format for [looper.py](./Production/test/condorSub/looper.py) optionally allows a (non-zero) starting number to be placed after the sample name.
+The input dictionary format for [jobSubmitterTM.py](./Production/test/condorSub/jobSubmitterTM.py) optionally allows a (non-zero) starting number to be placed after the sample name.
 To get the number of the first new job, just use `len(readFiles)` from the python file list *before* updating it.
 
 When submitting jobs for prompt data, each data file will be checked to see if the run it contains is certified in the corresponding JSON file. The JSON file is taken by default from the scenario; an alternative can be specified with the `--json` option, e.g. if the JSON is updated and you want to submit jobs only for the newly certified runs. (Use [compareJSON.py](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/FWCore/PythonUtilities/scripts/compareJSON.py) to subtract one JSON list from another, following [this twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#How_to_compare_Good_Luminosity_f).)
-
-Sometimes, a few jobs might fail, e.g. due to xrootd connectivity problems.
-Failed jobs are placed in "held" status in the Condor queue.
-This enables the job output and parameters to be examined.
-The job can be examined and resubmitted using the script [manageJobs.py](./Production/test/condorSub/manageJobs.py).
-Consult the `--help` option for the script to view the available functions.
-
-The scripts [looper.py](./Production/test/condorSub/looper.py) and [manageJobs.py](./Production/test/condorSub/manageJobs.py) can be configured
-by a file called [.tmconfig](./Production/test/condorSub/.tmconfig) (using Python ConfigParser syntax). The config parser first looks for
-`.tmconfig` in the directory where the script is located (typically `Production/test/condorSub`), and then looks in the user's `$HOME` directory.
-Currently, the allowed values are:
-```
-[common]
-user = ...
-[looper]
-input = ...
-[manage]
-dir = ...
-```
 
 ## Calculate Integrated Luminosity
 
