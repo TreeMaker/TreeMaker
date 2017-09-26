@@ -33,7 +33,7 @@ class jobSubmitterTM(jobSubmitter):
         ])
         if "cmslpc" in os.uname()[1]:
             job.appends.append(
-                'ONE_DAY = 864000\n'
+                'ONE_DAY = 86400\n'
                 'periodic_hold = (\\\n'
                 '    ( JobUniverse == 5 && JobStatus == 2 && CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 1.75 ) || \\\n'
                 '    ( JobRunCount > 8 ) || \\\n'

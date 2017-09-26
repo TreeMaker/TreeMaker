@@ -152,12 +152,12 @@ python get_py.py dict=dictNLO.py wp=False
 ```
 
 Step 2: Run NeffFinder, a simple analyzer which calculates the effective number of events for a sample.
-The analyzer should be submitted as a Condor batch job for each sample (assuming samples are listed in [looperNeff.sh](./Production/test/condorSubNeff/looperNeff.sh)), because the xrootd I/O bottleneck is prohibitive when running interactively.
+The analyzer should be submitted as a Condor batch job for each sample (assuming samples are listed in [dict_neff.py](./Production/test/condorSub/dict_neff.py)), because the xrootd I/O bottleneck is prohibitive when running interactively.
 Be sure to sanity-check the results, as xrootd failures can cause jobs to terminate early.
 ```
-cp -r condorSubNeff myNeff
+cp -r condorSub myNeff
 cd myNeff
-./looperNeff.sh
+python submitJobsNeff.py -p -d neff --nFiles 50 -s
 (after jobs are finished)
 python getResults.py
 ```
