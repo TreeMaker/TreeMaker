@@ -9,6 +9,7 @@ while getopts "f:b:" opt; do
 	;;
 	b) BRANCH=$OPTARG
 	;;
+	esac
 done
 
 export SCRAM_ARCH=slc6_amd64_gcc530
