@@ -10,9 +10,9 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-d", "--dicts", dest="dicts", type="string", action="callback", callback=list_callback, default=parser_dict["submit"]["input"].split(','),
             help="comma-separated list of input dicts; each prefixed by dict_ and contains scenario + list of samples (default = %default)")
         parser.add_option("-o", "--output", dest="output", default="", help="path to output directory in which root files will be stored (required) (default = %default)")
-        parser.add_option("--json", dest="json", default="", help="manually specified json file to check data (override scenario) (default = %default)")
-        parser.add_option("--nFiles", dest="nFiles", default=1, help="number of files to process per job (default = %default)")
-        parser.add_option("--args", dest="args", default="", help="additional common args to use for all jobs (default = %default)")
+        parser.add_option("-J", "--json", dest="json", default="", help="manually specified json file to check data (override scenario) (default = %default)")
+        parser.add_option("-N", "--nFiles", dest="nFiles", default=1, help="number of files to process per job (default = %default)")
+        parser.add_option("-A", "--args", dest="args", default="", help="additional common args to use for all jobs (default = %default)")
         parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="enable verbose output (default = %default)")
         
     def checkExtraOptions(self,options,parser):

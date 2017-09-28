@@ -74,9 +74,9 @@ The class [jobSubmitterTM.py](./Production/test/condorSub/jobSubmitterTM.py) ext
 Python:
 * `-d, --dicts [list]`: comma-separated list of input dicts; each prefixed by dict_ and contains scenario + list of samples (default taken from [.prodconfig](./Production/test/condorSub/.prodconfig))
 * `-o, --output [dir]`: path to output directory in which root files will be stored (required)
-* `--json [jsonfile]`: manually specified json file to check data (override scenario)
-* `--nFiles [num]`: number of files to process per job
-* `--args [list]`: additional common args to use for all jobs (passed to [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
+* `-J, --json [jsonfile]`: manually specified json file to check data (override scenario)
+* `-N, --nFiles [num]`: number of files to process per job
+* `-A, --args [list]`: additional common args to use for all jobs (passed to [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
 * `-v, --verbose`: enable verbose output (default = False)
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):
@@ -157,7 +157,7 @@ Be sure to sanity-check the results, as xrootd failures can cause jobs to termin
 ```
 cp -r condorSub myNeff
 cd myNeff
-python submitJobsNeff.py -p -d neff --nFiles 50 -s
+python submitJobsNeff.py -p -d neff -N 50 -s
 (after jobs are finished)
 python getResults.py
 ```
