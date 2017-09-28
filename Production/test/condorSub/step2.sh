@@ -41,6 +41,7 @@ if [[ -n "$REDIR" ]]; then
 fi
 echo "cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1"
 cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1
+rm runMakeTreeFromMiniAOD_cfg.py
 
 CMSEXIT=$?
 

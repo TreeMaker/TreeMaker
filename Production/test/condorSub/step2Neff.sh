@@ -36,6 +36,7 @@ if [[ -n "$REDIR" ]]; then
 fi
 echo "cmsRun nefffinder_cfg.py ${ARGS} 2>&1"
 cmsRun nefffinder_cfg.py ${ARGS} 2>&1
+rm nefffinder_cfg.py
 
 CMSEXIT=$?
 
