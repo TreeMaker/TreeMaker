@@ -1,50 +1,47 @@
 #!/bin/bash
 
-#
-# variables from arguments string in jdl
-#
+export JOBNAME=""
+export PROCESS=""
+export OUTDIR=""
+export REDIR=""
+export OPTIND=1
+while [[ $OPTIND -lt $# ]]; do
+	# getopts in silent mode, don't exit on errors
+	getopts ":j:p:o:x:" opt || status=$?
+	case "$opt" in
+		j) export JOBNAME=$OPTARG
+		;;
+		p) export PROCESS=$OPTARG
+		;;
+		o) export OUTDIR=$OPTARG
+		;;
+		x) export REDIR=$OPTARG
+		;;
+		# keep going if getopts had an error
+		\? | :) OPTIND=$((OPTIND+1))
+		;;
+	esac
+done
 
-echo "Starting job on " `date` #Only to display the starting of production date
-echo "Running on " `uname -a` #Only to display the machine where the job is running
-echo "System release " `cat /etc/redhat-release` #And the system release
-echo "CMSSW on Condor"
-
-# to get condor-chirp from CMSSW
-PATH="/usr/libexec/condor:$PATH"
-source /cvmfs/cms.cern.ch/cmsset_default.sh
-
-CMSSWVER=$1
-OUTDIR=$2
-SAMPLE=$3
-PROCESS=$4
-THREADS=$5
-REDIR=$6
-
-echo ""
 echo "parameter set:"
-echo "CMSSWVER:   $CMSSWVER"
 echo "OUTDIR:     $OUTDIR"
-echo "SAMPLE:     $SAMPLE"
+echo "JOBNAME:    $JOBNAME"
 echo "PROCESS:    $PROCESS"
-echo "THREADS:    $THREADS"
 echo "REDIR:      $REDIR"
+echo ""
 
-tar -xzf ${CMSSWVER}.tar.gz
-cd ${CMSSWVER}
-scram b ProjectRename
-# cmsenv
-eval `scramv1 runtime -sh`
-cd -
+# link files from CMSSW dir
 ln -s ${CMSSWVER}/src/TreeMaker/Production/test/data
+ln -s ${CMSSWVER}/src/TreeMaker/Production/test/runMakeTreeFromMiniAOD_cfg.py
 
 # run CMSSW
-ARGS=$(cat args_${SAMPLE}_${PROCESS}.txt)
-ARGS="$ARGS threads=${THREADS}"
+ARGS=$(cat args_${JOBNAME}_${PROCESS}.txt)
 if [[ -n "$REDIR" ]]; then
  ARGS="$ARGS redir=${REDIR}"
 fi
 echo "cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1"
 cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1
+rm runMakeTreeFromMiniAOD_cfg.py
 
 CMSEXIT=$?
 
