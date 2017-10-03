@@ -80,8 +80,7 @@ class jobSubmitterNeff(jobSubmitterTM):
                 if self.count and not self.prepare:
                     continue
 
-                job.nums.append(str(iJob))
-                job.names.append(job.name+"_"+str(iJob))
+                job.nums.append(iJob)
                 
                 # just keep list of jobs
                 if self.missing and not self.prepare:
@@ -89,7 +88,8 @@ class jobSubmitterNeff(jobSubmitterTM):
                     
                 # write job options to file - will be transferred with job
                 if self.prepare:
-                    with open("input/argsNeff_"+job.names[-1]+".txt",'w') as argfile:
+                    jname = job.makeName(job.nums[-1])
+                    with open("input/argsNeff_"+jname+".txt",'w') as argfile:
                         args = (self.args+" " if len(self.args)>0 else "")+"name="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)
                         argfile.write(args)
 

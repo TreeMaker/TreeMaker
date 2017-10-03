@@ -143,8 +143,7 @@ class jobSubmitterTM(jobSubmitter):
                     if self.count and not self.prepare:
                         continue
 
-                    job.nums.append(str(iJob))
-                    job.names.append(job.name+"_"+str(iJob))
+                    job.nums.append(iJob)
                     
                     # just keep list of jobs
                     if self.missing and not self.prepare:
@@ -152,13 +151,14 @@ class jobSubmitterTM(jobSubmitter):
                         
                     # write job options to file - will be transferred with job
                     if self.prepare:
-                        with open("input/args_"+job.names[-1]+".txt",'w') as argfile:
-                            args = (self.args+" " if len(self.args)>0 else "")+("threads="+str(self.cpus)+" " if self.cpus>1 else "")+"outfile="+job.names[-1]+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
+                        jname = job.makeName(job.nums[-1])
+                        with open("input/args_"+jname+".txt",'w') as argfile:
+                            args = (self.args+" " if len(self.args)>0 else "")+("threads="+str(self.cpus)+" " if self.cpus>1 else "")+"outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
                             argfile.write(args)
 
                 # append queue comment
                 job.queue = "-queue "+str(job.njobs)
-                if discontinuousJobs: job.queue = "-queue Process in "+','.join(job.nums)
+                if discontinuousJobs: job.queue = "-queue Process in "+','.join(map(str,job.nums))
 
                 if self.verbose and data: print "("+str(job.njobs)+" actual jobs)"
                 
