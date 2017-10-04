@@ -162,8 +162,8 @@ class jobSubmitterTM(jobSubmitter):
 
                 if self.verbose and data: print "("+str(job.njobs)+" actual jobs)"
                 
-            # store protojob
-            self.protoJobs.append(job)
+                # store protojob
+                self.protoJobs.append(job)
 
     def finishedToJobName(self,val):
         return val.split("/")[-1].replace("_RA2AnalysisTree.root","")
