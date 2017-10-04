@@ -28,7 +28,15 @@ else:
         fileNames = cms.untracked.vstring(readFiles[nstart:(nstart+nfiles)])
     )
 
-#temporary redirector fix
+# log output
+process.load("FWCore.MessageService.MessageLogger_cfi")
+process.MessageLogger.categories.append('TreeMaker')
+process.MessageLogger.cerr.TreeMaker = cms.untracked.PSet(
+    optionalPSet = cms.untracked.bool(True),
+    limit = cms.untracked.int32(10000000),
+)
+
+# temporary redirector fix
 for f,val in enumerate(process.source.fileNames):
     if process.source.fileNames[f][0:6]=="/store":
         process.source.fileNames[f] = redir+process.source.fileNames[f]
