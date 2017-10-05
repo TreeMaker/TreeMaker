@@ -98,6 +98,30 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 120.4, 11826702), # subtotal = 7855883
         MCSample("QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 25.24, 6039005), # subtotal = 1991645
         MCSample("QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 25.24, 6039005), # subtotal = 4047360
+        # QCD pT-hat binned: cross sections from AN2017_013_v17, extensions included
+        MCSample("QCD_Pt_50to80_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 19204300, 9954370),
+        MCSample("QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1", "RunIISummer16MiniAODv2", "Constant", 2762530, 14595570), # subtotal = 7608830
+        MCSample("QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 2762530, 14595570), # subtotal = 6986740
+        MCSample("QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 471100, 12457308), # subtotal = 5748736
+        MCSample("QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 471100, 12457308), # subtotal = 6708572
+        MCSample("QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 117276, 14796774), # subtotal = 7838066
+        MCSample("QCD_Pt_170to300_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 117276, 14796774), # subtotal = 6958708
+        MCSample("QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 7823, 22403620), # subtotal = 18253032
+        MCSample("QCD_Pt_300to470_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 7823, 22403620), # subtotal = 4150588
+        MCSample("QCD_Pt_470to600_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 648.2, 3959986),
+        MCSample("QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 186.9, 13519308), # subtotal = 9622896
+        MCSample("QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 186.9, 13519308), # subtotal = 3896412
+        MCSample("QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 32.293, 19697092), # subtotal = 15704980
+        MCSample("QCD_Pt_800to1000_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 32.293, 19697092), # subtotal = 3992112
+        MCSample("QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 9.4183, 9981655), # subtotal = 6982586
+        MCSample("QCD_Pt_1000to1400_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 9.4183, 9981655), # subtotal = 2999069
+        MCSample("QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 0.84265, 2873427), # subtotal = 2477018
+        MCSample("QCD_Pt_1400to1800_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 0.84265, 2873427), # subtotal = 396409
+        MCSample("QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 0.114943, 1949724), # subtotal = 1552064
+        MCSample("QCD_Pt_1800to2400_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 0.114943, 1949724), # subtotal = 397660
+        MCSample("QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 0.00682981, 996130), # subtotal = 596904
+        MCSample("QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 0.00682981, 996130), # subtotal = 399226
+        MCSample("QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v3", "RunIISummer16MiniAODv2", "Constant", 0.000165445, 391735),
         # DY/Z: k-factor of 1.23 applied, available extensions included
         MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 181.302, 10607207), # subtotal = 2751187
         MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 181.302, 10607207), # subtotal = 7856020
