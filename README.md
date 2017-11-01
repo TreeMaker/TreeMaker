@@ -61,7 +61,7 @@ Refer to the package documentation for basic details.
 The [test/condorSub](./Production/test/condorSub/) directory contains all of the relevant scripts.
 If you make a copy of this directory and run the [submitJobs.py](./Production/test/condorSub/submitJobs.py) script, it will submit one job per file to Condor for all of the relevant samples. Example:
 ```
-cp -r condorSub myProduction
+./lnbatch.sh myProduction
 cd myProduction
 python submitJobs.py -p -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myProduction -s
 ```
@@ -155,7 +155,7 @@ Step 2: Run NeffFinder, a simple analyzer which calculates the effective number 
 The analyzer should be submitted as a Condor batch job for each sample (assuming samples are listed in [dict_neff.py](./Production/test/condorSub/dict_neff.py)), because the xrootd I/O bottleneck is prohibitive when running interactively.
 Be sure to sanity-check the results, as xrootd failures can cause jobs to terminate early.
 ```
-cp -r condorSub myNeff
+./lnbatch.sh myNeff
 cd myNeff
 python submitJobsNeff.py -p -d neff -N 50 -s
 (after jobs are finished)
