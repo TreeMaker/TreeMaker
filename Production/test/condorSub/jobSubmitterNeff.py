@@ -11,7 +11,8 @@ class jobSubmitterNeff(jobSubmitterTM):
     def addExtraOptions(self,parser):
         super(jobSubmitterNeff,self).addExtraOptions(parser)
         
-        self.removeOptions(parser,"-d","--dicts","-o","--output","--json")
+        self.removeOptions(parser,"-d","--dicts","-o","--output","--json","--cpus")
+        self.cpus = 1
         
         parser.add_option("-d", "--dict", dest="dict", default="neff", help="input dict, prefixed by dict_ and list of samples (default = %default)")
         
