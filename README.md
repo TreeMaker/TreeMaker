@@ -121,6 +121,9 @@ The script [get_mcm.py](./Production/test/get_mcm.py) can search the McM databas
 Command line options exist to specify campaign names and other information, which can be viewed with the `--help` option.
 An example dictionary of samples and extensions to check can be found at [dict_mcm.py](./Production/test/dict_mcm.py).
 This script requires [cern-get-sso-cookie](http://linux.web.cern.ch/linux/docs/cernssocookie.shtml) to access the McM database, which is installed on lxplus and cmslpc.
+Kerberos-based access is used by default, but certificate-based access is also available.
+Kerberos access requires a ticket for CERN.CH, and currently only works on lxplus. To configure your certificate for access, see the "User certificates" section of the [cern-get-sso-cookie](http://linux.web.cern.ch/linux/docs/cernssocookie.shtml) documentation.
+The same arguments `--cert` and `--key` can be used with the `get_mcm.py` script.
 
 The script [get_py.py](./Production/test/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (enabled with `-p`).
 For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (enabled with `-w`).

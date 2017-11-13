@@ -22,13 +22,42 @@ parser.add_option("--miniaod", dest="miniaod", default="RunIISummer16MiniAODv2",
 parser.add_option("--digireco", dest="digireco", default="RunIISummer16DR80*", help="DIGI-RECO campaign name (default = %default)")
 parser.add_option("--gensim", dest="gensim", default="RunIISummer15*GS*", help="GEN-SIM campaign name (default = %default)")
 parser.add_option("--debug", dest="debug", default=False, action="store_true", help="print debug info (default = %default)")
+parser.add_option("--cert", dest="cert", default="", help="w/ --key, use certificate access for McM database (otherwise kerberos) (default = %default)")
+parser.add_option("--key", dest="key", default="", help="w/ --cert, use certificate access for McM database (otherwise kerberos) (default = %default)")
 (options, args) = parser.parse_args()
+
+# check options
+if len(options.dict)==0:
+	parser.error("Must specify a dict of samples")
+use_krb = True
+cgso_check = int(len(options.cert)>0) + int(len(options.key)>0)
+if cgso_check==2:
+    use_krb = False
+elif cgso_check==1:
+    parser.error("Need to specify both --cert and --key")
 
 dictname = options.dict.replace(".py","");
 datasets = __import__(dictname).datasets
 
+# configure McM access
+if use_krb:
+    cgso_access = "--krb"
+    # check for ticket
+    test_krb = subprocess.Popen('klist', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    test_krb_msg = test_krb.communicate()
+    has_krb = False
+    for line in test_krb_msg[0].split('\n'):
+        if "Default principal" in line and "CERN.CH" in line:
+            has_krb = True
+            break
+    if not has_krb:
+        print "No kerberos ticket found for CERN.CH"
+        sys.exit(1)
+else:
+    cgso_access = "--cert "+options.cert+" --key "+options.key
+
 # generate cookie
-cgso = subprocess.Popen("cern-get-sso-cookie --krb -r -u https://cms-pdmv.cern.ch/mcm/ -o ~/private/ssocookie.txt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+cgso = subprocess.Popen("cern-get-sso-cookie "+cgso_access+" -r -u https://cms-pdmv.cern.ch/mcm/ -o ~/private/ssocookie.txt", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 cgso_msg = cgso.communicate()
 cgso_code = cgso.returncode
 if cgso_code != 0:
