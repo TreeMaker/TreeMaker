@@ -22,7 +22,7 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
     from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
     DeltaPhi = deltaphidouble.clone(
         DeltaPhiJets = HTJetsTag,
-        MHTJets      = MHTJetsTag,
+        MHTPhi       = cms.InputTag('MHT'+MHTsuff+suff+':Phi'),
     )
     setattr(process,"DeltaPhi"+MHTsuff+suff,DeltaPhi)
     self.VarsDouble.extend(['DeltaPhi'+MHTsuff+suff+':DeltaPhi1(DeltaPhi1'+MHTsuff+suff+')','DeltaPhi'+MHTsuff+suff+':DeltaPhi2(DeltaPhi2'+MHTsuff+suff+')',

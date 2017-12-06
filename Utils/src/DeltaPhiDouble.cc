@@ -30,7 +30,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
-#include <DataFormats/Math/interface/deltaR.h>
+#include "DataFormats/Math/interface/deltaR.h"
+#include "TreeMaker/Utils/interface/mht.h"
 
 //
 // class declaration
@@ -46,8 +47,10 @@ public:
 private:
    virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    
-   edm::InputTag MHTJetTag_, DeltaPhiJetTag_;
+   edm::InputTag MHTPhiTag_, MHTJetTag_, DeltaPhiJetTag_;
    edm::EDGetTokenT<edm::View<reco::Candidate>> MHTJetTok_, DeltaPhiJetTok_;
+   edm::EDGetTokenT<double> MHTPhiTok_;
+   bool usePhi;
    
    
    // ----------member data ---------------------------
@@ -65,12 +68,15 @@ private:
 //
 // constructors and destructor
 //
-DeltaPhiDouble::DeltaPhiDouble(const edm::ParameterSet& iConfig)
+DeltaPhiDouble::DeltaPhiDouble(const edm::ParameterSet& iConfig) :
+   MHTPhiTag_(iConfig.getParameter<edm::InputTag>("MHTPhi")),
+   MHTJetTag_(iConfig.getParameter<edm::InputTag>("MHTJets")),
+   DeltaPhiJetTag_(iConfig.getParameter<edm::InputTag>("DeltaPhiJets")),
+   usePhi(MHTPhiTag_.label().size()>0)
 {
    //register your products
-   MHTJetTag_ = iConfig.getParameter<edm::InputTag> ("MHTJets");
-   DeltaPhiJetTag_ = iConfig.getParameter<edm::InputTag> ("DeltaPhiJets");
-   MHTJetTok_ = consumes<edm::View<reco::Candidate> >(MHTJetTag_);
+   if(usePhi) MHTPhiTok_ = consumes<double>(MHTPhiTag_);
+   else MHTJetTok_ = consumes<edm::View<reco::Candidate> >(MHTJetTag_);
    DeltaPhiJetTok_ = consumes<edm::View<reco::Candidate> >(DeltaPhiJetTag_);
    
    produces<double>("DeltaPhi1");
@@ -100,23 +106,29 @@ DeltaPhiDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup
 {
    using namespace edm;
    std::vector<double> deltaphi(4,10.);
-   edm::Handle< edm::View<reco::Candidate> > MHTJets;
-   iEvent.getByToken(MHTJetTok_,MHTJets);
-   reco::MET::LorentzVector mhtLorentz(0,0,0,0);
-   if( MHTJets.isValid() ) {
-      for(unsigned int i=0; i<MHTJets->size();i++)
-      {
-         mhtLorentz -=MHTJets->at(i).p4();
-      }
+   double mhtLorentzPhi = -1;
+   if(usePhi){
+      edm::Handle<double> MHTPhi;
+      iEvent.getByToken(MHTPhiTok_,MHTPhi);
+      if(MHTPhi.isValid()) mhtLorentzPhi = *(MHTPhi.product());
+      else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Phi Tag: "<<MHTPhiTag_;
    }
-   else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Jet Tag: "<<MHTJetTag_.label();
+   else {
+      edm::Handle< edm::View<reco::Candidate> > MHTJets;
+      iEvent.getByToken(MHTJetTok_,MHTJets);
+      if( MHTJets.isValid() ) {
+         reco::MET::LorentzVector mhtLorentz = utils::calculateMHT(MHTJets.product());
+         mhtLorentzPhi = mhtLorentz.phi();
+      }
+      else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Jet Tag: "<<MHTJetTag_.label();
+   }
    edm::Handle< edm::View<reco::Candidate> > DeltaPhiJets;
    iEvent.getByToken(DeltaPhiJetTok_,DeltaPhiJets);
    float minDeltaPhi=99;
    if( DeltaPhiJets.isValid() ) {
       for (unsigned int i=0; i<DeltaPhiJets->size();i++)
       {
-         deltaphi[i] = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
+         deltaphi[i] = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentzPhi));
          if (minDeltaPhi>deltaphi[i]) minDeltaPhi = deltaphi[i];
 
          if(i==3) break;
