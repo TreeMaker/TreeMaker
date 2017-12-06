@@ -27,6 +27,8 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
 		explicit HiddenSectorProducer(const edm::ParameterSet&);
 	private:
 		virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+		//helper
+		double TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const;
 		edm::InputTag JetTag_, MetTag_, GenTag_;
 		edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 		edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
@@ -51,6 +53,13 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
 	produces<double>("DeltaPhi1");
 	produces<double>("DeltaPhi2");
 	produces<double>("DeltaPhiMin");
+}
+
+double HiddenSectorProducer::TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const{
+	double E1 = std::sqrt(std::pow(px1,2)+std::pow(py1,2)+std::pow(m1,2));
+	double E2 = std::sqrt(std::pow(px2,2)+std::pow(py2,2)+std::pow(m2,2));
+	double MTsq = std::pow(E1+E2,2)-std::pow(px1+px2,2)-std::pow(py1+py2,2);
+	return std::sqrt(std::max(MTsq,0.0));
 }
 
 void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
@@ -90,8 +99,9 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 		LorentzVector vmc = vjj + vpartsSum;
 		Mmc = vmc.M();
 		
-		//assume MET is massless
-		MT = std::sqrt(2*h_mets->at(0).pt()*vjj.pt()*(1-cos(reco::deltaPhi(h_mets->at(0).phi(),vjj.phi()))));
+		//MET is massless, but jets aren't
+		double MET = h_mets->at(0).pt(), METPhi = h_mets->at(0).phi();
+		MT = TransverseMass(vjj.Px(),vjj.Py(),vjj.M(),MET*std::cos(METPhi),MET*std::sin(METPhi),0);
 	}
 
 	auto pMJJ = std::make_unique<double>(MJJ);
