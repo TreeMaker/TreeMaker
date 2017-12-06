@@ -44,6 +44,7 @@ typedef math::XYZTLorentzVector LorentzVector;
 //enum lists of properties
 enum JetPropD { d_jetArea, d_chargedHadronEnergyFraction, d_neutralHadronEnergyFraction, d_chargedEmEnergyFraction, d_neutralEmEnergyFraction,
 				d_electronEnergyFraction, d_photonEnergyFraction, d_muonEnergyFraction, d_bDiscriminatorCSV, d_bDiscriminatorMVA,
+				d_hfEMEnergyFraction, d_hfHadronEnergyFraction,
 				d_jecFactor, d_jecUnc, d_jerFactor, d_jerFactorUp, d_jerFactorDown, d_qgLikelihood, d_ptD, d_axisminor, d_axismajor,
 				d_prunedMass, d_softDropMass, d_bDiscriminatorSubjet1, d_bDiscriminatorSubjet2, d_NsubjettinessTau1, d_NsubjettinessTau2, d_NsubjettinessTau3,
 				d_overflow, d_girth, d_momenthalf }; //AK8 properties
@@ -109,6 +110,8 @@ template<> void NamedPtrD<d_neutralEmEnergyFraction>::get_property(const pat::Je
 template<> void NamedPtrD<d_electronEnergyFraction>::get_property(const pat::Jet* Jet)      { push_back(Jet->electronEnergyFraction()); }
 template<> void NamedPtrD<d_photonEnergyFraction>::get_property(const pat::Jet* Jet)        { push_back(Jet->photonEnergyFraction()); }
 template<> void NamedPtrD<d_muonEnergyFraction>::get_property(const pat::Jet* Jet)          { push_back(Jet->muonEnergyFraction()); }
+template<> void NamedPtrD<d_hfEMEnergyFraction>::get_property(const pat::Jet* Jet)          { push_back(Jet->HFEMEnergyFraction()); }
+template<> void NamedPtrD<d_hfHadronEnergyFraction>::get_property(const pat::Jet* Jet)      { push_back(Jet->HFHadronEnergyFraction()); }
 template<> void NamedPtrD<d_bDiscriminatorCSV>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator(extraInfo.at(0))); }
 template<> void NamedPtrD<d_bDiscriminatorMVA>::get_property(const pat::Jet* Jet)           { push_back(Jet->bDiscriminator(extraInfo.at(0))); }
 template<> void NamedPtrD<d_jecFactor>::get_property(const pat::Jet* Jet)                   { push_back(Jet->jecFactor(Jet->availableJECLevels().back())/Jet->jecFactor("Uncorrected")); }
@@ -216,6 +219,8 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 		else if(p=="electronEnergyFraction"     ) { DoublePtrs_.push_back(new NamedPtrD<d_electronEnergyFraction>     ("electronEnergyFraction",this,iConfig)     ); }
 		else if(p=="photonEnergyFraction"       ) { DoublePtrs_.push_back(new NamedPtrD<d_photonEnergyFraction>       ("photonEnergyFraction",this,iConfig)       ); }
 		else if(p=="muonEnergyFraction"         ) { DoublePtrs_.push_back(new NamedPtrD<d_muonEnergyFraction>         ("muonEnergyFraction",this,iConfig)         ); }
+		else if(p=="hfEMEnergyFraction"         ) { DoublePtrs_.push_back(new NamedPtrD<d_hfEMEnergyFraction>         ("hfEMEnergyFraction",this,iConfig)         ); }
+		else if(p=="hfHadronEnergyFraction"     ) { DoublePtrs_.push_back(new NamedPtrD<d_hfHadronEnergyFraction>     ("hfHadronEnergyFraction",this,iConfig)     ); }
 		else if(p=="bDiscriminatorCSV"          ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorCSV>          ("bDiscriminatorCSV",this,iConfig)          ); }
 		else if(p=="bDiscriminatorMVA"          ) { DoublePtrs_.push_back(new NamedPtrD<d_bDiscriminatorMVA>          ("bDiscriminatorMVA",this,iConfig)          ); }
 		else if(p=="jecFactor"                  ) { DoublePtrs_.push_back(new NamedPtrD<d_jecFactor>                  ("jecFactor",this,iConfig)                  ); }
