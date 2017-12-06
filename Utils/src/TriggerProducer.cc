@@ -70,6 +70,8 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   parsedTrigNamesVec = iConfig.getParameter <std::vector<std::string> > ("triggerNameList");
   //sort the trigger names
   std::sort(parsedTrigNamesVec.begin(), parsedTrigNamesVec.end());
+  //remove duplicates
+  parsedTrigNamesVec.erase(std::unique(parsedTrigNamesVec.begin(),parsedTrigNamesVec.end()),parsedTrigNamesVec.end());
   //print triggers
   std::stringstream message;
   message << "List of stored triggers:" << "\n";
