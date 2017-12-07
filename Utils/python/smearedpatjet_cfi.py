@@ -15,4 +15,5 @@ SmearedPATJetProducer = cms.EDProducer("SmearedPATJetProducer",
     dPtMaxFactor = cms.double(3),
     variation = cms.int32(0),
     seed = cms.uint32(37428479),
+    useDeterministicSeed = cms.bool(True),
 )

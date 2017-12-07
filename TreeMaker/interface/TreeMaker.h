@@ -1,8 +1,9 @@
 // CMSSW headers
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/one/EDAnalyzer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "FWCore/Utilities/interface/EDMException.h"
@@ -33,7 +34,7 @@
 using namespace std;
 
 //enum with known types
-enum TreeTypes { t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4, t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104, t_recocand=1000 };
+enum TreeTypes { t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4, t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104, t_vvlorentz=204, t_recocand=1000 };
 
 //forward declaration of helper class
 class TreeObjectBase;
@@ -42,7 +43,7 @@ class TreeObjectBase;
 // class declaration
 //
 
-class TreeMaker : public edm::EDProducer {
+class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 	public:
 		explicit TreeMaker(const edm::ParameterSet&);
 		~TreeMaker();
@@ -50,12 +51,13 @@ class TreeMaker : public edm::EDProducer {
 
 	private:
 		virtual void beginJob() override;
-		virtual void produce(edm::Event&, const edm::EventSetup&) override;
+		virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
 		virtual void endJob() override;
 		// ----------member data ---------------------------
+		edm::Service<TFileService> fs;
 		string treeName;
 		TTree* tree;	
-		bool debug, doLorentz, sortBranches;
+		bool doLorentz, sortBranches;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
 		map<string,unsigned> nameCache;
@@ -75,21 +77,21 @@ class TreeObjectBase {
 		//destructor
 		virtual ~TreeObjectBase() {}
 		//functions
-		virtual string GetNameInTree() { return nameInTree; }
-		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC) {}
+		virtual string GetNameInTree() const { return nameInTree; }
+		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) {}
 		virtual void SetTree(TTree* tree_) { tree = tree_; }
 		virtual void AddBranch() {}
 		virtual void SetDefault() {}
-		virtual void FillTree(edm::Event& iEvent) {}
+		virtual void FillTree(const edm::Event& iEvent) {}
 		
 		//common helper function
-		virtual void FinalizeName(map<string,unsigned>& nameCache){
+		virtual void FinalizeName(map<string,unsigned>& nameCache, stringstream& message){
 			auto nameIt = nameCache.find(nameInTree);
 			if(nameIt != nameCache.end()){
 				stringstream ss;
 				ss << nameInTree << "_" << nameIt->second;
 				nameInTree = ss.str();
-				cout << "Warning: name in tree already defined, alternating name... " << nameInTree << endl;
+				message << "Warning: name in tree already defined, alternating name... " << nameInTree << "\n";
 				//increment count for this name
 				nameIt->second++;
 			}
@@ -109,7 +111,7 @@ class TreeObjectBase {
 //comparator (case-insensitive sort)
 class TreeObjectComp {
 	public:
-		bool operator() (TreeObjectBase* b1, TreeObjectBase* b2){
+		bool operator() (TreeObjectBase* b1, TreeObjectBase* b2) const {
 			string s1 = b1->GetNameInTree();
 			transform(s1.begin(),s1.end(),s1.begin(),::tolower);
 			string s2 = b2->GetNameInTree();
@@ -129,7 +131,7 @@ class TreeObject : public TreeObjectBase {
 		//destructor
 		virtual ~TreeObject() {}
 		//functions
-		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC) {
+		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) {
 			//case 1: x      -> tag = x,   name = x
 			//case 2: x:y    -> tag = x:y, name = y
 			//case 3: x(y)   -> tag = x,   name = y
@@ -152,18 +154,18 @@ class TreeObject : public TreeObjectBase {
 			//(constructor assumes this case by default)
 			else { }
 			
-			cout << "full name: " << tempFull << " -> tag: " << tagName << " nameInTree: " << nameInTree << endl;
+			message << "full name: " << tempFull << " -> tag: " << tagName << " nameInTree: " << nameInTree << "\n";
 			//make tag
 			tag = edm::InputTag(tagName);
 			SetConsumes(std::move(iC));
 			
 			//finalize name to avoid duplicates
-			FinalizeName(nameCache);
+			FinalizeName(nameCache,message);
 		}
 		virtual void SetConsumes(edm::ConsumesCollector && iC){
 			tok = iC.consumes<T>(tag);
 		}
-		virtual void FillTree(edm::Event& iEvent){
+		virtual void FillTree(const edm::Event& iEvent){
 			SetDefault();
 			edm::Handle<T> var;
 			iEvent.getByToken(tok,var);
@@ -171,7 +173,7 @@ class TreeObject : public TreeObjectBase {
 				value = *var;
 			}
 			else {
-				cout << "WARNING ... " << tagName << " is NOT valid?!" << endl;
+				edm::LogWarning("TreeMaker") << "WARNING ... " << tagName << " is NOT valid?!";
 			}
 		}
 		//these will be implemented below for specializations
@@ -206,6 +208,8 @@ template<>
 void TreeObject<vector<string> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,0); }
 template<>
 void TreeObject<vector<TLorentzVector> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0); }
+template<>
+void TreeObject<vector<vector<TLorentzVector>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<TLorentzVector>>",&value,32000,0); }
 
 template<>
 void TreeObject<bool>::SetDefault() { value = false; }
@@ -227,6 +231,8 @@ template<>
 void TreeObject<vector<string> >::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<TLorentzVector> >::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<vector<TLorentzVector>>>::SetDefault() { value.clear(); }
 
 //derived version of vector<TLorentzVector> for RecoCand
 //with switch for vector<double> pt, eta, phi, energy instead
@@ -242,7 +248,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 		virtual void SetConsumes(edm::ConsumesCollector && iC){
 			candTok = iC.consumes<edm::View<reco::Candidate>>(tag);
 		}
-		virtual void FillTree(edm::Event& iEvent){
+		virtual void FillTree(const edm::Event& iEvent){
 			SetDefault();
 			edm::Handle< edm::View<reco::Candidate> > cands;
 			iEvent.getByToken(candTok,cands);
@@ -267,7 +273,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 				}
 			}
 			else {
-				cout << "WARNING ... " << tagName << " is NOT valid?!" << endl;
+				edm::LogWarning("TreeMaker") << "WARNING ... " << tagName << " is NOT valid?!";
 			}
 		}
 		virtual void AddBranch() {

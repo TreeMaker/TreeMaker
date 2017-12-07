@@ -2,7 +2,7 @@
 #include <memory>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -11,11 +11,11 @@
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 
-class ZProducer : public edm::EDProducer {
+class ZProducer : public edm::global::EDProducer<> {
 public:
 	explicit ZProducer(const edm::ParameterSet&);
 private:
-   virtual void produce(edm::Event&, const edm::EventSetup&);
+   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    edm::InputTag ElectronTag_;
    edm::InputTag MuonTag_;
    edm::EDGetTokenT<std::vector<pat::Electron>> ElectronTok_;
@@ -33,7 +33,7 @@ ZProducer::ZProducer(const edm::ParameterSet& iConfig)
    produces<pat::CompositeCandidateCollection>("ZCandidates");
 }
 
-void ZProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void ZProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
    auto ZCandidates = std::make_unique<pat::CompositeCandidateCollection>();
 

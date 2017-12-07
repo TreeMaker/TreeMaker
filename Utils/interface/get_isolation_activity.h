@@ -31,7 +31,7 @@ public:
   enum iso_types { electron = 0, muon = 1, other = 2 };
 
   // Effective areas from https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF
-  double GetMuonEA(double eta) {
+  double GetMuonEA(double eta) const {
     double abseta = fabs(eta);
     if (abseta < 0.8) return 0.0735;
     else if (abseta < 1.3) return 0.0619;
@@ -41,7 +41,7 @@ public:
     else return 0;
   }
 
-  double GetElectronEA(double eta) {
+  double GetElectronEA(double eta) const {
     double abseta = fabs(eta);
     if (abseta < 1) return 0.1752;
     else if (abseta < 1.479) return 0.1862;
@@ -53,7 +53,7 @@ public:
     else return 0;
   }
 
-  void GetCandIso(bool computeMT2Activity, const pat::PackedCandidate &pfc, double dr, double ptThresh, std::vector<double>& iso_x, const std::vector<double>& deadcones){
+  void GetCandIso(bool computeMT2Activity, const pat::PackedCandidate &pfc, double dr, double ptThresh, std::vector<double>& iso_x, const std::vector<double>& deadcones) const {
     //setup variables
     double& iso_nh = iso_x[0]; double& iso_ch = iso_x[1]; double& iso_ph = iso_x[2]; double& iso_pu = iso_x[3];
     const double& deadcone_nh = deadcones[0]; const double& deadcone_ch = deadcones[1]; const double& deadcone_ph = deadcones[2]; const double& deadcone_pu = deadcones[3];
@@ -86,7 +86,7 @@ public:
     }
   }
   
-  double GetFinalIso(const reco::Candidate* ptcl, iso_types type, double r_iso, double rho, const std::vector<double>& iso_x, bool useEAcorr=true, bool charged_only=false){
+  double GetFinalIso(const reco::Candidate* ptcl, iso_types type, double r_iso, double rho, const std::vector<double>& iso_x, bool useEAcorr=true, bool charged_only=false) const {
     //setup variables
     const double& iso_nh = iso_x[0]; const double& iso_ch = iso_x[1]; const double& iso_ph = iso_x[2]; const double& iso_pu = iso_x[3];
 
@@ -117,7 +117,7 @@ public:
                           const reco::Candidate* ptcl, iso_types type, double rho,
                           double& mini_iso, double& mt2_activity, //return values
                           double r_iso_min=0.05, double r_iso_max=0.2, double kt_scale=10.,
-                          bool useEAcorr=true, bool charged_only=false)
+                          bool useEAcorr=true, bool charged_only=false) const
   {
     mini_iso = 0.0;
     mt2_activity = 0.0;
@@ -160,7 +160,7 @@ public:
 
   }
   
-  double GetRA2Activity(edm::Handle<pat::JetCollection> jets, const reco::Candidate* ptcl, const bool useEME=true) {
+  double GetRA2Activity(edm::Handle<pat::JetCollection> jets, const reco::Candidate* ptcl, const bool useEME=true) const {
 
     double activity=0;
     for (unsigned int ijet(0); ijet < jets->size(); ijet++) 

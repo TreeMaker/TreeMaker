@@ -25,14 +25,12 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
-
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
-
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -45,29 +43,22 @@
 // class declaration
 //
 
-
-
-class LeptonProducer : public edm::EDProducer {
+class LeptonProducer : public edm::global::EDProducer<> {
   enum elecIDLevel {VETO, LOOSE, MEDIUM, TIGHT};
 public:
   explicit LeptonProducer(const edm::ParameterSet&);
   ~LeptonProducer();
         
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-  float MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi);
-  bool MuonID(const pat::Muon & muon, const reco::Vertex& vtx);
-  bool MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx);
-  bool ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level);
+  float MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi) const;
+  bool MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const;
+  bool MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx) const;
+  bool ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level) const;
         
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
         
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+  // ----------member data ---------------------------
   edm::InputTag MuonTag_, ElecTag_, PrimVtxTag_, metTag_, PFCandTag_, RhoTag_;
   edm::EDGetTokenT<edm::View<pat::Muon>> MuonTok_;
   edm::EDGetTokenT<edm::View<pat::Electron>> ElecTok_;
@@ -79,28 +70,14 @@ private:
   bool useMiniIsolation_;
   double muIsoValue_, elecIsoValue_;
   SUSYIsolation SUSYIsolationHelper;
-        
-        
-  // ----------member data ---------------------------
-
-
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
 //
 LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
 {
-  //register your product
+  //register your products
   MuonTag_                                 =         iConfig.getParameter<edm::InputTag >("MuonTag");
   ElecTag_                                 =         iConfig.getParameter<edm::InputTag >("ElectronTag");
   PrimVtxTag_=iConfig.getParameter<edm::InputTag>("PrimaryVertex");
@@ -157,10 +134,8 @@ LeptonProducer::~LeptonProducer()
 //
 
 // ------------ method called to produce the data  ------------
-void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
-  //  std::cout<<"Running LeptonProducer"<<std::endl;
- 
   using namespace edm;
 
   auto isoElectrons = std::make_unique<std::vector<pat::Electron>>();
@@ -188,7 +163,7 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
   if(MET.isValid() )
     {
       metLorentz=MET->at(0).p4();
-    } else std::cout<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label()<<std::endl;
+    } else edm::LogWarning("TreeMaker")<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label();
 
   int Leptons=0;
   edm::Handle<pat::PackedCandidateCollection> pfcands;
@@ -227,7 +202,6 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                   isoMuons->push_back(muonHandle->at(m));
                   muIDIsoTight->push_back(MuonIDtight(muonHandle->at(m),vtx_h->at(0)));
                   muIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi()));
-                  //        std::cout<<"muIDIsoMTW: "<<MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi())<<"\n";
                   MuonCharge->push_back(muonHandle->at(m).charge());
                 }
             }
@@ -294,41 +268,6 @@ void LeptonProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
 }
 
-// ------------ method called once each job just before starting event loop  ------------
-void
-LeptonProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-LeptonProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-LeptonProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-LeptonProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-LeptonProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-LeptonProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
 LeptonProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
@@ -339,14 +278,14 @@ LeptonProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   descriptions.addDefault(desc);
 }
 
-float LeptonProducer::MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi)
+float LeptonProducer::MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi) const
 {
   if(std::isnan(lepPhi) || std::isnan(metPhi)) return 0.;
   float deltaPhi =TVector2::Phi_mpi_pi(lepPhi-metPhi);
   return sqrt(2*lepPt*metPt*(1-cos(deltaPhi)) );
 }
 
-bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx){
+bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const {
   //medium WP + dz/dxy cuts
   bool goodGlob = muon.isGlobalMuon() && 
                   muon.globalTrack()->normalizedChi2() < 3 && 
@@ -359,7 +298,7 @@ bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx){
   return isMediumPlus; 
 }
 
-bool LeptonProducer::MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx){
+bool LeptonProducer::MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx) const {
   //tight WP
   bool isTight = muon.isGlobalMuon() &&
                  muon.isPFMuon() &&
@@ -374,7 +313,7 @@ bool LeptonProducer::MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx
   return isTight;
 }
 
-bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level) {
+bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level) const {
   // electron ID cuts, updated for Spring15 25ns MC and Run2015C-D data 
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
 

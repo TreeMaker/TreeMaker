@@ -28,18 +28,20 @@ using namespace pat;
 //
 TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 : tree(0),
-  VarTypeNames{"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorRecoCand"},
-  VarTypes{t_bool,t_int,t_double,t_string,t_lorentz,t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_recocand}
+  VarTypeNames{"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorVectorTLorentzVector","VectorRecoCand"},
+  VarTypes{t_bool,t_int,t_double,t_string,t_lorentz,t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_vvlorentz,t_recocand}
 {
+	usesResource("TFileService");
+
 	// general parameters
 	treeName = iConfig.getParameter<string>("TreeName");
-	debug = iConfig.getParameter<bool>("debug");
 	doLorentz = iConfig.getParameter<bool>("doLorentz");
 	sortBranches = iConfig.getParameter<bool>("sortBranches");
 	//loop over all var type names to initialize TreeObjects
+	stringstream message;
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
 		vector<string> VarNames = iConfig.getParameter< vector<string> >(VarTypeNames.at(v));
-		cout << VarTypeNames.at(v) << ":" << endl;
+		message << VarTypeNames.at(v) << ":" << "\n";
 		for(unsigned t = 0; t < VarNames.size(); ++t){
 			//check for the right type
 			TreeObjectBase* tmp = NULL;
@@ -54,15 +56,18 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double> >(VarNames[t]); break;
 				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string> >(VarNames[t]); break;
 				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector> >(VarNames[t]); break;
+				case TreeTypes::t_vvlorentz: tmp = new TreeObject<vector<vector<TLorentzVector>>>(VarNames[t]); break;
 				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarNames[t],doLorentz); break;
 			}
 			//if a known type was found, initialize and store the object
 			if(tmp) {
-				tmp->Initialize(nameCache,consumesCollector());
+				tmp->Initialize(nameCache,consumesCollector(),message);
 				variables.push_back(tmp);
 			}
 		}
 	}
+	//print info
+	edm::LogInfo("TreeMaker") << message.str();
 }
 
 TreeMaker::~TreeMaker() {}
@@ -73,7 +78,7 @@ TreeMaker::~TreeMaker() {}
 
 // ------------ method called to produce the data  ------------
 void
-TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+TreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 { 
     //set variables to default
 	runNum = 0;
@@ -92,14 +97,12 @@ TreeMaker::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 	
 	tree->Fill();
-	if(debug) cout << "Done filling tree" << endl;
 }
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
 TreeMaker::beginJob()
 {
-	edm::Service<TFileService> fs;
 	if( !fs ) {
 		throw edm::Exception(edm::errors::Configuration, "TFile Service is not registered in cfg file");
 	}

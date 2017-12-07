@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -42,7 +42,7 @@
 // class declaration
 //
 
-class GenLeptonRecoCand : public edm::EDProducer {
+class GenLeptonRecoCand : public edm::global::EDProducer<> {
 public:
   explicit GenLeptonRecoCand(const edm::ParameterSet&);
   ~GenLeptonRecoCand();
@@ -50,26 +50,19 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag PrunedGenParticleTag_;
   edm::InputTag pfCandsTag_;
   edm::EDGetTokenT<edm::View<reco::GenParticle>> PrunedGenParticleTok_;
   edm::EDGetTokenT<pat::PackedCandidateCollection> pfCandsTok_;
-  int pdgID_;
 	
-  const reco::GenParticle* BosonFound(const reco::GenParticle * particle);
-  const reco::GenParticle* TauFound(const reco::GenParticle * particle);
+  const reco::GenParticle* BosonFound(const reco::GenParticle * particle) const;
+  const reco::GenParticle* TauFound(const reco::GenParticle * particle) const;
 
-  void GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity);
-  const int MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track);
-  const double GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track);
+  void GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+  const int MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) const;
+  const double GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track) const;
 	
 	
   // ----------member data ---------------------------
@@ -95,57 +88,32 @@ GenLeptonRecoCand::GenLeptonRecoCand(const edm::ParameterSet& iConfig)
   PrunedGenParticleTok_ = consumes<edm::View<reco::GenParticle>>(PrunedGenParticleTag_);
   pfCandsTok_ = consumes<pat::PackedCandidateCollection>(pfCandsTag_);
   
-  const std::string string1("Boson");
-  const std::string string1t("BosonPDGId");
-  const std::string string2("Muon");
-  const std::string string2t("MuonTauDecay");
-  const std::string string2tt("MuonGenRecoD3");
-  const std::string string2ttt("MuonTrkIso");
-  const std::string string2tttt("MuonTrkAct");
-  const std::string string3("Electron");
-  const std::string string3t("ElectronTauDecay");
-  const std::string string3tt("ElectronGenRecoD3");
-  const std::string string3ttt("ElectronTrkIso");
-  const std::string string3tttt("ElectronTrkAct");
-  const std::string string4("Tau");
-  const std::string string4t("TauHadronic");
-  const std::string string4tt("TauDecayCands");
-  const std::string string4tt2("TauDecayCandspdgID");
-  const std::string string4tt3("TauDecayCandsmomInd");
-  const std::string string4tt4("TauLeadTrk");
-  const std::string string4tt5("TauLeadTrkGenRecoD3");
-  const std::string string4tt6("TauLeadTrkIso");
-  const std::string string4tt7("TauLeadTrkAct");
-  const std::string string4ttt("TauNProngs");
-  const std::string string4ttt2("TauNNHads");
-  const std::string string5("TauNu");
-  const std::string string6("TauNuMomPt");
 
-  produces<std::vector<reco::GenParticle> > (string1).setBranchAlias(string1);
-  produces<std::vector<int> > (string1t).setBranchAlias(string1t);
-  produces<std::vector<reco::GenParticle> > (string2).setBranchAlias(string2);
-  produces<std::vector<bool> > (string2t).setBranchAlias(string2t);
-  produces<std::vector<double> > (string2tt).setBranchAlias(string2tt);
-  produces<std::vector<double> > (string2ttt).setBranchAlias(string2ttt);
-  produces<std::vector<double> > (string2tttt).setBranchAlias(string2ttt);
-  produces<std::vector<reco::GenParticle> > (string3).setBranchAlias(string3);
-  produces<std::vector<bool> > (string3t).setBranchAlias(string3t);
-  produces<std::vector<double> > (string3tt).setBranchAlias(string3tt);
-  produces<std::vector<double> > (string3ttt).setBranchAlias(string3ttt);
-  produces<std::vector<double> > (string3tttt).setBranchAlias(string3ttt);
-  produces<std::vector<reco::GenParticle> > (string4).setBranchAlias(string4);
-  produces<std::vector<bool> > (string4t).setBranchAlias(string4t);
-  produces<std::vector<reco::GenParticle> > (string4tt).setBranchAlias(string4tt);
-  produces<std::vector<int> > (string4tt2).setBranchAlias(string4tt2);
-  produces<std::vector<int> > (string4tt3).setBranchAlias(string4tt3);
-  produces<std::vector<TLorentzVector> > (string4tt4).setBranchAlias(string4tt4);
-  produces<std::vector<double> > (string4tt5).setBranchAlias(string4tt5);
-  produces<std::vector<double> > (string4tt6).setBranchAlias(string4tt6);
-  produces<std::vector<double> > (string4tt7).setBranchAlias(string4tt7);
-  produces<std::vector<int> > (string4ttt).setBranchAlias(string4ttt);
-  produces<std::vector<int> > (string4ttt2).setBranchAlias(string4ttt2);
-  produces<std::vector<reco::GenParticle> > (string5).setBranchAlias(string5);
-  produces<std::vector<double> > (string6).setBranchAlias(string6);
+  produces<std::vector<reco::GenParticle>>("Boson");
+  produces<std::vector<int>>("BosonPDGId");
+  produces<std::vector<reco::GenParticle>>("Muon");
+  produces<std::vector<bool>>("MuonTauDecay");
+  produces<std::vector<double>>("MuonGenRecoD3");
+  produces<std::vector<double>>("MuonTrkIso");
+  produces<std::vector<double>>("MuonTrkAct");
+  produces<std::vector<reco::GenParticle>>("Electron");
+  produces<std::vector<bool>>("ElectronTauDecay");
+  produces<std::vector<double>>("ElectronGenRecoD3");
+  produces<std::vector<double>>("ElectronTrkIso");
+  produces<std::vector<double>>("ElectronTrkAct");
+  produces<std::vector<reco::GenParticle>>("Tau");
+  produces<std::vector<bool>>("TauHadronic");
+  produces<std::vector<reco::GenParticle>>("TauDecayCands");
+  produces<std::vector<int>>("TauDecayCandspdgID");
+  produces<std::vector<int>>("TauDecayCandsmomInd");
+  produces<std::vector<TLorentzVector>>("TauLeadTrk");
+  produces<std::vector<double>>("TauLeadTrkGenRecoD3");
+  produces<std::vector<double>>("TauLeadTrkIso");
+  produces<std::vector<double>>("TauLeadTrkAct");
+  produces<std::vector<int>>("TauNProngs");
+  produces<std::vector<int>>("TauNNHads");
+  produces<std::vector<reco::GenParticle>>("TauNu");
+  produces<std::vector<double>>("TauNuMomPt");
   /* Examples
    *   produces<ExampleData2>();
    * 
@@ -175,10 +143,8 @@ GenLeptonRecoCand::~GenLeptonRecoCand()
 
 // ------------ method called to produce the data  ------------
 void
-GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
-  //  std::cout<<"Running GenLeptonRecoCand"<<std::endl;
-
   using namespace edm;	
   auto selectedBoson = std::make_unique<std::vector<reco::GenParticle>>();
   auto selectedBosonPDGId = std::make_unique<std::vector<int>>();
@@ -318,10 +284,7 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			  hadTauDecay=0;
 			}
 		      // store all decay productes of the tau in a new colleciton
-
-						
-		      // 						else std::cout<<"No lep decay tau with daughters["<<iii<<"]: "<<FinalTauDecay->daughter(iii)->pdgId()<<std::endl;
-		    }
+          }
 		  selectedTauHadronic->push_back(hadTauDecay);
 		}
 	    }
@@ -386,94 +349,31 @@ GenLeptonRecoCand::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     }
   }
   
-  //  std::cout<<"Putting stuff back into event"<<std::endl;
+  iEvent.put(std::move(selectedBoson),"Boson");
+  iEvent.put(std::move(selectedBosonPDGId),"BosonPDGId");
+  iEvent.put(std::move(selectedMuon),"Muon");
+  iEvent.put(std::move(selectedMuonTauDecay),"MuonTauDecay");
+  iEvent.put(std::move(selectedMuonGenRecoD3),"MuonGenRecoD3");
+  iEvent.put(std::move(selectedMuonTrkIso),"MuonTrkIso");
+  iEvent.put(std::move(selectedMuonTrkAct),"MuonTrkAct");
+  iEvent.put(std::move(selectedElectron),"Electron");
+  iEvent.put(std::move(selectedElectronTauDecay),"ElectronTauDecay");
+  iEvent.put(std::move(selectedElectronGenRecoD3),"ElectronGenRecoD3");
+  iEvent.put(std::move(selectedElectronTrkIso),"ElectronTrkIso");
+  iEvent.put(std::move(selectedElectronTrkAct),"ElectronTrkAct");
+  iEvent.put(std::move(selectedTau),"Tau");
+  iEvent.put(std::move(selectedTauHadronic),"TauHadronic");
+  iEvent.put(std::move(selectedTauDecayCands),"TauDecayCands");
+  iEvent.put(std::move(selectedTauDecayCandspdgID),"TauDecayCandspdgID");
+  iEvent.put(std::move(selectedTauDecayCandsmomInd),"TauDecayCandsmomInd");
+  iEvent.put(std::move(selectedTauLeadTrk),"TauLeadTrk");
+  iEvent.put(std::move(selectedTauLeadTrkd3),"TauLeadTrkGenRecoD3");
+  iEvent.put(std::move(selectedTauLeadTrkIso),"TauLeadTrkIso");
+  iEvent.put(std::move(selectedTauLeadTrkAct),"TauLeadTrkAct");
+  iEvent.put(std::move(selectedTauNProngs),"TauNProngs");
+  iEvent.put(std::move(selectedTauNNHads),"TauNNHads");
+  iEvent.put(std::move(selectedTauNu),"TauNu");
 
-  const std::string string1("Boson");
-  const std::string string1t("BosonPDGId");
-  const std::string string2("Muon");
-  const std::string string2t("MuonTauDecay");
-  const std::string string2tt("MuonGenRecoD3");
-  const std::string string2ttt("MuonTrkIso");
-  const std::string string2tttt("MuonTrkAct");
-  const std::string string3("Electron");
-  const std::string string3t("ElectronTauDecay");
-  const std::string string3tt("ElectronGenRecoD3");
-  const std::string string3ttt("ElectronTrkIso");
-  const std::string string3tttt("ElectronTrkAct");
-  const std::string string4("Tau");
-  const std::string string4t("TauHadronic");
-  const std::string string4tt("TauDecayCands");
-  const std::string string4tt2("TauDecayCandspdgID");
-  const std::string string4tt3("TauDecayCandsmomInd");
-  const std::string string4tt4("TauLeadTrk");
-  const std::string string4tt5("TauLeadTrkGenRecoD3");
-  const std::string string4tt6("TauLeadTrkIso");
-  const std::string string4tt7("TauLeadTrkAct");
-  const std::string string4ttt("TauNProngs");
-  const std::string string4ttt2("TauNNHads");
-  const std::string string5("TauNu");
-  iEvent.put(std::move(selectedBoson),string1);
-  iEvent.put(std::move(selectedBosonPDGId),string1t);
-  iEvent.put(std::move(selectedMuon),string2);
-  iEvent.put(std::move(selectedMuonTauDecay),string2t);
-  iEvent.put(std::move(selectedMuonGenRecoD3),string2tt);
-  iEvent.put(std::move(selectedMuonTrkIso),string2ttt);
-  iEvent.put(std::move(selectedMuonTrkAct),string2tttt);
-  iEvent.put(std::move(selectedElectron),string3);
-  iEvent.put(std::move(selectedElectronTauDecay),string3t);
-  iEvent.put(std::move(selectedElectronGenRecoD3),string3tt);
-  iEvent.put(std::move(selectedElectronTrkIso),string3ttt);
-  iEvent.put(std::move(selectedElectronTrkAct),string3tttt);
-  iEvent.put(std::move(selectedTau),string4);
-  iEvent.put(std::move(selectedTauHadronic),string4t);
-  iEvent.put(std::move(selectedTauDecayCands),string4tt);
-  iEvent.put(std::move(selectedTauDecayCandspdgID),string4tt2);
-  iEvent.put(std::move(selectedTauDecayCandsmomInd),string4tt3);
-  iEvent.put(std::move(selectedTauLeadTrk),string4tt4);
-  iEvent.put(std::move(selectedTauLeadTrkd3),string4tt5);
-  iEvent.put(std::move(selectedTauLeadTrkIso),string4tt6);
-  iEvent.put(std::move(selectedTauLeadTrkAct),string4tt7);
-  iEvent.put(std::move(selectedTauNProngs),string4ttt);
-  iEvent.put(std::move(selectedTauNNHads),string4ttt2);
-  iEvent.put(std::move(selectedTauNu),string5);
-
-  //  std::cout<<"DONE!"<<std::endl;
- 
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-GenLeptonRecoCand::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-GenLeptonRecoCand::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-GenLeptonRecoCand::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-GenLeptonRecoCand::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-GenLeptonRecoCand::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-GenLeptonRecoCand::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
@@ -485,7 +385,8 @@ GenLeptonRecoCand::fillDescriptions(edm::ConfigurationDescriptions& descriptions
   desc.setUnknown();
   descriptions.addDefault(desc);
 }
-const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle * particle)
+
+const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle * particle) const
 {
   for(size_t i=0;i< particle->numberOfDaughters();i++)
     {
@@ -495,7 +396,7 @@ const reco::GenParticle* GenLeptonRecoCand::BosonFound(const reco::GenParticle *
 	
 }
 
-const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * particle)
+const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * particle) const
 {
   for(size_t i=0;i< particle->numberOfDaughters();i++)
     {
@@ -506,7 +407,7 @@ const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * p
 }
 
 
-void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) {
+void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
   if (tkInd>pfcands->size()) {
 	  trkiso = -999.;
 	  activity = -999.;
@@ -531,7 +432,7 @@ void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pf
   activity = activity/pfcands->at(tkInd).pt();
 }
 
-const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) {
+const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) const {
   int pdgId=abs(gen_track->pdgId());
   if (pdgId!=11&&pdgId!=13) pdgId=211;
   double mind3=99999.;
@@ -551,7 +452,7 @@ const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateColle
   return matched_track;
 }
 
-const double GenLeptonRecoCand::GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track) {
+const double GenLeptonRecoCand::GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track) const {
   if (tkInd<0||tkInd>(int)pfcands->size()) return -999.;
   const pat::PackedCandidate &pfc = pfcands->at(tkInd);
   TVector3 genTrk3(gen_track->px(), gen_track->py(), gen_track->pz());

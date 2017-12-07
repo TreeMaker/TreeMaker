@@ -23,7 +23,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -41,7 +41,7 @@
 //
 
 template <class T>
-class SubJetSelectionT : public edm::EDProducer {
+class SubJetSelectionT : public edm::global::EDProducer<> {
 public:
    explicit SubJetSelectionT(const edm::ParameterSet&);
    ~SubJetSelectionT();
@@ -49,29 +49,13 @@ public:
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
-   virtual void beginJob() ;
-   virtual void produce(edm::Event&, const edm::EventSetup&);
-   virtual void endJob() ;
+   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    
-   virtual void beginRun(edm::Run&, edm::EventSetup const&);
-   virtual void endRun(edm::Run&, edm::EventSetup const&);
-   virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-   virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
+   // ----------member data ---------------------------
    edm::InputTag JetTag_;
    edm::EDGetTokenT<edm::View<T>> JetTok_;
    double MinPt_, MaxEta_;
-   
-   // ----------member data ---------------------------
 };
-
-//
-// constants, enums and typedefs
-//
-
-
-//
-// static data member definitions
-//
 
 //
 // constructors and destructor
@@ -110,7 +94,7 @@ SubJetSelectionT<T>::~SubJetSelectionT()
 
 // ------------ method called to produce the data  ------------
 template <class T>
-void SubJetSelectionT<T>::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void SubJetSelectionT<T>::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
    using namespace edm;
    auto prodJets = std::make_unique<std::vector<T>>();
@@ -131,41 +115,6 @@ void SubJetSelectionT<T>::produce(edm::Event& iEvent, const edm::EventSetup& iSe
    iEvent.put(std::move(prodJets));
    iEvent.put(std::move(mask),"SubJetMask");
    
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-template <class T>
-void SubJetSelectionT<T>::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-template <class T>
-void SubJetSelectionT<T>::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-template <class T>
-void SubJetSelectionT<T>::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-template <class T>
-void SubJetSelectionT<T>::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-template <class T>
-void SubJetSelectionT<T>::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-template <class T>
-void SubJetSelectionT<T>::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

@@ -1,11 +1,9 @@
 import FWCore.ParameterSet.Config as cms
 
-TreeMaker = cms.EDProducer(
+TreeMaker = cms.EDAnalyzer(
 'TreeMaker',
 # Name of the output tree
 TreeName          = cms.string('RA2Tree'),
-## might help if something isn't working, will produce couts
-debug = cms.bool(False),
 #default: output RecoCands as vector<TLorentzVector>
 #switches to vector<double> pt, eta, phi, energy if false
 doLorentz = cms.bool(True),
@@ -22,5 +20,6 @@ VectorInt = cms.vstring(),
 VectorFloat = cms.vstring(),
 VectorString = cms.vstring(),
 VectorTLorentzVector = cms.vstring(),
+VectorVectorTLorentzVector = cms.vstring(),
 VectorRecoCand = cms.vstring(),
 )

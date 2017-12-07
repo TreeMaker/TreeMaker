@@ -4,14 +4,12 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
-
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
-
 #include "DataFormats/PatCandidates/interface/Electron.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"
@@ -27,7 +25,7 @@
 
 
 
-class IsolationProducer : public edm::EDProducer {
+class IsolationProducer : public edm::global::EDProducer<> {
 public:
   explicit IsolationProducer(const edm::ParameterSet&);
   ~IsolationProducer();
@@ -36,14 +34,8 @@ public:
   
 
 private:
-  virtual void beginJob() ;
-  virtual void produce(edm::Event&, const edm::EventSetup&);
-  virtual void endJob() ;
+  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const;
     
-  virtual void beginRun(edm::Run&, edm::EventSetup const&);
-  virtual void endRun(edm::Run&, edm::EventSetup const&);
-  virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-  virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
   edm::InputTag LeptonTag_, PFCandTag_, JetTag_, RhoTag_;
   edm::EDGetTokenT<edm::View<reco::Candidate>> LeptonTok_;
   edm::EDGetTokenT<pat::PackedCandidateCollection> PFCandTok_;
@@ -78,7 +70,7 @@ IsolationProducer::IsolationProducer(const edm::ParameterSet& iConfig)
   else if(LeptonTypeName_=="track") LeptonType_ = track; 
   else {
     LeptonType_ = other;
-    std::cout << "IsolationProducer Error: " << LeptonTypeName_ << " is not a valid collection." << std::endl;
+    edm::LogWarning("TreeMaker") << "IsolationProducer Error: " << LeptonTypeName_ << " is not a valid collection.";
   }
 
   produces<std::vector<double> >("MiniIso");
@@ -95,10 +87,8 @@ IsolationProducer::~IsolationProducer()
     
 }
 
-void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void IsolationProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
-  //  std::cout<<"Running IsolationProducer"<<std::endl;
- 
   using namespace edm;
         
   auto mini_iso = std::make_unique<std::vector<double>>();
@@ -117,7 +107,6 @@ void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   double rho = *rho_;
 
   if(LeptonType_ != other){
-    //std::cout << "Computing mini isolation for " << LeptonTag_.label() << ":" << LeptonTag_.instance() << std::endl;
     edm::Handle<edm::View<reco::Candidate> > lepHandle;
     iEvent.getByToken(LeptonTok_, lepHandle);
     if(lepHandle.isValid())
@@ -157,41 +146,6 @@ void IsolationProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetu
   iEvent.put(std::move(ra2_activity),"RA2Activity");
   iEvent.put(std::move(mt2_activity),"MT2Activity");
   
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void
-IsolationProducer::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-IsolationProducer::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-IsolationProducer::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-IsolationProducer::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-IsolationProducer::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-IsolationProducer::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

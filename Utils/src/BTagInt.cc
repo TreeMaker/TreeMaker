@@ -22,11 +22,10 @@
 #include <memory>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/EDProducer.h"
-
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
+#include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
@@ -35,7 +34,7 @@
 // class declaration
 //
 
-class BTagInt : public edm::EDProducer {
+class BTagInt : public edm::global::EDProducer<> {
 public:
 	explicit BTagInt(const edm::ParameterSet&);
 	~BTagInt();
@@ -43,14 +42,8 @@ public:
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual void beginJob() ;
-	virtual void produce(edm::Event&, const edm::EventSetup&);
-	virtual void endJob() ;
+	virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
-	virtual void beginRun(edm::Run&, edm::EventSetup const&);
-	virtual void endRun(edm::Run&, edm::EventSetup const&);
-	virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
-	virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 	edm::InputTag JetTag_;
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	std::string   btagname_;
@@ -110,7 +103,7 @@ BTagInt::~BTagInt()
 
 // ------------ method called to produce the data  ------------
 void
-BTagInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+BTagInt::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
 	using namespace edm;
 	using namespace reco;
@@ -124,45 +117,10 @@ BTagInt::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 		  if(Jets->at(i).bDiscriminator(btagname_) >btagvalue_)BTags++;
 		}
 	}
-	else std::cout<<"BTagInt::Invalid Tag: "<<JetTag_.label()<<std::endl;
+	else edm::LogWarning("TreeMaker")<<"BTagInt::Invalid Tag: "<<JetTag_.label();
 	auto htp = std::make_unique<int>(BTags);
 	iEvent.put(std::move(htp));
 	
-}
-
-// ------------ method called once each job just before starting event loop  ------------
-void 
-BTagInt::beginJob()
-{
-}
-
-// ------------ method called once each job just after ending the event loop  ------------
-void 
-BTagInt::endJob() {
-}
-
-// ------------ method called when starting to processes a run  ------------
-void 
-BTagInt::beginRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a run  ------------
-void 
-BTagInt::endRun(edm::Run&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when starting to processes a luminosity block  ------------
-void 
-BTagInt::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
-}
-
-// ------------ method called when ending the processing of a luminosity block  ------------
-void 
-BTagInt::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
-{
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
