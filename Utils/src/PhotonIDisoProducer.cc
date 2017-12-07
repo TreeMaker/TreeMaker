@@ -316,8 +316,8 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
             }//gen matching
           }
           //check whether photon has matched to a gen electron or not
-          if( abs(iGen->pdgId()) == 11 && iGen->status() == 1 ){
-            if( deltaR(iGen->p4(),iPhoton->p4()) < 0.2 ){
+          if( abs(iGen->pdgId()) == 11 && iGen->status() == 1 && abs(iGen->mother()->pdgId()) <=25 ){
+            if( deltaR(iGen->p4(),iPhoton->p4()) < 0.2 && (iGen->pt()/iPhoton->pt() > 0.9 && iGen->pt()/iPhoton->pt() < 1.1) ){
               photonMatchGenE = true;
             }
           }
@@ -341,7 +341,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
         else if( matchedGenNonPrompt > 0 ) photon_nonPrompt->push_back(true);
         else photon_nonPrompt->push_back(false);
         //check if photon is fake or not.
-        if( matchedGenPrompt == 0 && photonMatchGenE )//make sure that photon is matched to gen electron and not matched to any gen prompt photon
+        if( photonMatchGenE )//make sure that photon is matched to gen electron and ahs similar pT as that of gen e.
           photon_electronFakes->push_back(true);
         else
           photon_electronFakes->push_back(false);
