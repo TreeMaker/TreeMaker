@@ -182,7 +182,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   // Initializing effective area to be used 
   // for rho corrections to the photon isolation
   // variables. 
-  // Spring16 EA are used. Spring15 EA are commented out.
+  // Spring16 EA are used.
   // - - - - - - - - - - - - - - - - - - - - 
   //addEffA(etaLow_, etaHigh_, effA_pfCh_, effA_pfNu_, effA_pfGa_); 
   effArea effAreas;
@@ -333,7 +333,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
         else if( matchedGenNonPrompt > 0 ) photon_nonPrompt->push_back(true);
         else photon_nonPrompt->push_back(false);
         //check if photon is fake or not.
-        if( photonMatchGenE )//make sure that photon is matched to gen electron and ahs similar pT as that of gen e.
+        if( photonMatchGenE )//make sure that photon is matched to gen electron and has similar pT as that of gen e.
           photon_electronFakes->push_back(true);
         else
           photon_electronFakes->push_back(false);
@@ -350,7 +350,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
         if( iGen->pt() > 40.0 && (abs(iGen->mother()->pdgId()) <= 100 || abs(iGen->mother()->pdgId()) == 2212 ) ){
           foundGenPrompt = true;
           break;
-        }//if there is a photon with pt > 10 and its parent PdgID <=100, then consider the event as having a hard scattered photon.
+        }//if there is a photon with pt > 40 and its parent PdgID <=100, then consider the event as having a hard scattered photon.
       }
     }// end of loop over gen particles
   }
