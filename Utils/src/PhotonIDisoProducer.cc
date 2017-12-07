@@ -182,17 +182,18 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   // Initializing effective area to be used 
   // for rho corrections to the photon isolation
   // variables. 
+  // Spring16 EA are used.
   // - - - - - - - - - - - - - - - - - - - - 
   //addEffA(etaLow_, etaHigh_, effA_pfCh_, effA_pfNu_, effA_pfGa_); 
   effArea effAreas;
-  effAreas.addEffA(0.,    1.0,   0.0, 0.0599, 0.1271);
-  effAreas.addEffA(1.0,   1.479, 0.0, 0.0819, 0.1101);
-  effAreas.addEffA(1.479, 2.0,   0.0, 0.0696, 0.0756);
-  effAreas.addEffA(2.0,   2.2,   0.0, 0.0360, 0.1175);
-  effAreas.addEffA(2.2,   2.3,   0.0, 0.0360, 0.1498);
-  effAreas.addEffA(2.3,   2.4,   0.0, 0.0462, 0.1857);
-  effAreas.addEffA(2.4,   99.,   0.0, 0.0656, 0.2183);
-
+  effAreas.addEffA(0.,    1.0,   0.0360, 0.0597, 0.1210);
+  effAreas.addEffA(1.0,   1.479, 0.0377, 0.0807, 0.1107);
+  effAreas.addEffA(1.479, 2.0,   0.0306, 0.0629, 0.0699);
+  effAreas.addEffA(2.0,   2.2,   0.0283, 0.0197, 0.1056);
+  effAreas.addEffA(2.2,   2.3,   0.0254, 0.0184, 0.1457);
+  effAreas.addEffA(2.3,   2.4,   0.0217, 0.0284, 0.1719);
+  effAreas.addEffA(2.4,   99.,   0.0167, 0.0591, 0.1988);
+  
   /// setup cluster tools
   noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
         
@@ -239,35 +240,35 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       passAcc=true;
     }
     
-    // apply id cuts
+    // apply id cuts using https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Recommended_Working_points_for_2
     if (isBarrelPhoton) {
-      if (iPhoton->hadTowOverEm() < 0.05 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
-         passIDLoose = true;
-         if (sieie < 0.0102) {
-            passID = true;
-         }
+      if (iPhoton->hadTowOverEm() < 0.0597 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+	passIDLoose = true;
+	if (sieie < 0.01031) {
+	  passID = true;
+	}
       }
     } else if (isEndcapPhoton) {
-      if (iPhoton->hadTowOverEm() < 0.05 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
-         passIDLoose = true;
-         if (sieie < 0.0274) {
-            passID = true;
-         }
+      if (iPhoton->hadTowOverEm() < 0.0481 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+	passIDLoose = true;
+	if (sieie < 0.03013) {
+	  passID = true;
+	}
       }
     }
  
     // apply isolation cuts
     if (isBarrelPhoton) {
-      if (nuIso < (1.92 + 0.014*iPhoton->pt() + 0.000019*iPhoton->pt()*iPhoton->pt()) && gamIso < (0.81 + 0.0053*iPhoton->pt())) {
+      if (nuIso < (10.910 + 0.0148*iPhoton->pt() + 0.000017*iPhoton->pt()*iPhoton->pt()) && gamIso < (3.630 + 0.0047*iPhoton->pt())) {
         passIsoLoose = true;
-        if (chIso < 3.32) {
-           passIso = true;
+	if (chIso < 1.295) {
+	  passIso = true;
         }
       }
     } else if (isEndcapPhoton) {
-      if (nuIso < (11.86 + 0.0139*iPhoton->pt() + 0.000025*iPhoton->pt()*iPhoton->pt())  && gamIso < (0.83 + 0.0034*iPhoton->pt())) {
+      if (nuIso < (5.931 + 0.0163*iPhoton->pt() + 0.000014*iPhoton->pt()*iPhoton->pt())  && gamIso < (6.641 + 0.0034*iPhoton->pt())) {
         passIsoLoose = true;
-        if (chIso < 1.97) {
+	if (chIso < 1.011) {
           passIso = true;
         }
       }
@@ -307,8 +308,8 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
             }//gen matching
           }
           //check whether photon has matched to a gen electron or not
-          if( abs(iGen->pdgId()) == 11 && iGen->status() == 1 ){
-            if( deltaR(iGen->p4(),iPhoton->p4()) < 0.2 ){
+          if( abs(iGen->pdgId()) == 11 && iGen->status() == 1 && abs(iGen->mother()->pdgId()) <=25 ){
+            if( deltaR(iGen->p4(),iPhoton->p4()) < 0.2 && (iGen->pt()/iPhoton->pt() > 0.9 && iGen->pt()/iPhoton->pt() < 1.1) ){
               photonMatchGenE = true;
             }
           }
@@ -332,7 +333,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
         else if( matchedGenNonPrompt > 0 ) photon_nonPrompt->push_back(true);
         else photon_nonPrompt->push_back(false);
         //check if photon is fake or not.
-        if( matchedGenPrompt == 0 && photonMatchGenE )//make sure that photon is matched to gen electron and not matched to any gen prompt photon
+        if( photonMatchGenE )//make sure that photon is matched to gen electron and has similar pT as that of gen e.
           photon_electronFakes->push_back(true);
         else
           photon_electronFakes->push_back(false);
@@ -349,7 +350,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
         if( iGen->pt() > 40.0 && (abs(iGen->mother()->pdgId()) <= 100 || abs(iGen->mother()->pdgId()) == 2212 ) ){
           foundGenPrompt = true;
           break;
-        }//if there is a photon with pt > 10 and its parent PdgID <=100, then consider the event as having a hard scattered photon.
+        }//if there is a photon with pt > 40 and its parent PdgID <=100, then consider the event as having a hard scattered photon.
       }
     }// end of loop over gen particles
   }
