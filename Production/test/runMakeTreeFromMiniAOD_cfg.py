@@ -1,6 +1,6 @@
 import sys
 
-# Read parameters 
+# Read parameters
 from TreeMaker.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
 
