@@ -491,10 +491,13 @@ def makeTreeFromMiniAOD(self,process):
         prescaleTagArg1  = cms.string('patTrigger'),
         prescaleTagArg2  = cms.string(''),
         prescaleTagArg3  = cms.string(''),
+        saveHLTObj = cms.bool("SingleElectron" in process.source.fileNames[0]),
         triggerNameList = _triggerNameList
     )
     self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     self.VectorString.extend(['TriggerProducer:TriggerNames'])
+    if "SingleElectron" in process.source.fileNames[0]:
+        self.VectorTLorentzVector.extend(['TriggerProducer:HLTElectronObjects'])
 
     if not self.geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
