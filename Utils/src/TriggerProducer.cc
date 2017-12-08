@@ -28,6 +28,8 @@
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
 
+#include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
+#include "TLorentzVector.h"
 //
 // class declaration
 //
@@ -48,6 +50,9 @@ private:
   edm::EDGetTokenT<edm::TriggerResults> trigResultsTok_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> trigPrescalesTok_;
   std::vector<std::string> parsedTrigNamesVec;
+  edm::EDGetTokenT<edm::TriggerResults> trigResultsToken;
+  edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> trigObjCollToken;
+
 };
 
 //
@@ -89,9 +94,15 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   trigResultsTok_ = consumes<edm::TriggerResults>(trigResultsTag_);
   trigPrescalesTok_ = consumes<pat::PackedTriggerPrescales>(trigPrescalesTag_);
 
+  edm::InputTag theTriggerLabel("TriggerResults", "", "HLT");
+  edm::InputTag theTrigObjLabel("selectedPatTrigger");
+  trigResultsToken = consumes<edm::TriggerResults>(theTriggerLabel);
+  trigObjCollToken = consumes<pat::TriggerObjectStandAloneCollection>(theTrigObjLabel);
+
   produces<std::vector<std::string> >("TriggerNames");
   produces<std::vector<int> >("TriggerPass");
   produces<std::vector<int> >("TriggerPrescales");
+  produces<std::vector<TLorentzVector> >("HLTElectronObjects");
 }
 
 
@@ -127,6 +138,7 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   auto passTrigVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),-1);
   auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
   auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec.size(),"");
+  auto hltEleObj = std::make_unique<std::vector<TLorentzVector>>();
 
   //int passesTrigger;
   edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
@@ -150,9 +162,36 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
     }
   }
 
+  edm::Handle<edm::TriggerResults> triggerBits;
+  iEvent.getByToken(trigResultsToken,triggerBits);
+
+  const edm::TriggerNames& names = iEvent.triggerNames(*triggerBits);
+  edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
+  iEvent.getByToken(trigObjCollToken,triggerObjects);
+  //save the trigger object corresponding to the trigger HLT_Ele27_WPTight_Gsf_v*. Obtained code from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#Trigger
+  // loop over selected trigger objects                                                                                              
+  for (pat::TriggerObjectStandAlone obj : *triggerObjects) {
+    obj.unpackPathNames(names);
+    if(obj.pt() < 25.0) continue;//look for HLT objects with Pt > 25GeV only.
+    TLorentzVector objVec(obj.px(),obj.py(),obj.pz(),obj.energy());
+    std::vector<std::string> pathNamesAll = obj.pathNames(false);
+    std::vector<std::string> pathNamesLast = obj.pathNames(true);
+    for (unsigned h = 0, n = pathNamesAll.size(); h < n; ++h) {
+      bool isBoth = obj.hasPathName( pathNamesAll[h], true, true );//object is associated wih l3 filter and associated to the last filter of a successfull path. this object caused the trigger to fire.
+      std::string path_i = pathNamesAll[h];
+      path_i.pop_back(); path_i.pop_back(); //remove last 2 characters from path name.
+      if( isBoth && ( (path_i == "HLT_Ele27_WPTight_Gsf_v") || (path_i == "HLT_Ele27_WPTight_Gsf_") ) ){ //check if the trigger path name is "HLT_Ele27_WPTight_Gsf_vX" or "HLT_Ele27_WPTight_Gsf_vXX"
+	hltEleObj->push_back(objVec);//save the trigger object corresponding to HLT_Ele27_WPTight_Gsf_v* trigger.
+	break;
+      }
+    }
+  }
+
   iEvent.put(std::move(passTrigVec),"TriggerPass");
   iEvent.put(std::move(trigPrescaleVec),"TriggerPrescales");
   iEvent.put(std::move(trigNamesVec),"TriggerNames");
+  iEvent.put(std::move(hltEleObj),"HLTElectronObjects");
+
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
