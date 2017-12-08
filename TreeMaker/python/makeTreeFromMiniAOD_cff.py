@@ -495,7 +495,8 @@ def makeTreeFromMiniAOD(self,process):
     )
     self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
     self.VectorString.extend(['TriggerProducer:TriggerNames'])
-    self.VectorTLorentzVector.extend(['TriggerProducer:HLTElectronObjects'])
+    if "SingleElectron" in process.source.fileNames[0]:
+        self.VectorTLorentzVector.extend(['TriggerProducer:HLTElectronObjects'])
 
     if not self.geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
