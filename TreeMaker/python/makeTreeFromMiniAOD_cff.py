@@ -491,6 +491,7 @@ def makeTreeFromMiniAOD(self,process):
         prescaleTagArg1  = cms.string('patTrigger'),
         prescaleTagArg2  = cms.string(''),
         prescaleTagArg3  = cms.string(''),
+        saveHLTObj = cms.bool("SingleElectron" in process.source.fileNames[0]),
         triggerNameList = _triggerNameList
     )
     self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])

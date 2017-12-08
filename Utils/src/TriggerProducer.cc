@@ -51,7 +51,7 @@ private:
   edm::EDGetTokenT<pat::PackedTriggerPrescales> trigPrescalesTok_;
   std::vector<std::string> parsedTrigNamesVec;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> trigObjCollToken;
-  bool saveHLTObj = true;
+  bool saveHLTObj = false;
 };
 
 //
@@ -99,6 +99,7 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   produces<std::vector<std::string> >("TriggerNames");
   produces<std::vector<int> >("TriggerPass");
   produces<std::vector<int> >("TriggerPrescales");
+  saveHLTObj = iConfig.getParameter<bool>("saveHLTObj");
   if(saveHLTObj) produces<std::vector<TLorentzVector> >("HLTElectronObjects");
 }
 
@@ -159,29 +160,30 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
     }
   }
 
-  edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
-  iEvent.getByToken(trigObjCollToken,triggerObjects);
-  //save the trigger object corresponding to the trigger HLT_Ele27_WPTight_Gsf_v*. Obtained code from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#Trigger
-  // loop over selected trigger objects                                                                                              
-  for (pat::TriggerObjectStandAlone obj : *triggerObjects) {
-    if(obj.pt() < 25.0) continue;//look for HLT objects with Pt > 25GeV only.
-    obj.unpackPathNames(trigNames);
-    const std::vector<std::string>& pathNamesAll = obj.pathNames(false);
-    for (const auto& pathName : pathNamesAll){
-      bool isBoth = obj.hasPathName( pathName, true, true );//object is associated wih l3 filter and associated to the last filter of a successfull path. this object caused the trigger to fire.
-      const std::string& path_i = pathName;
-      if(isBoth && path_i.find("HLT_Ele27_WPTight_Gsf_v")!= std::string::npos){
-	hltEleObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
-	break;
+  if(saveHLTObj){
+    edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
+    iEvent.getByToken(trigObjCollToken,triggerObjects);
+    //save the trigger object corresponding to the trigger HLT_Ele27_WPTight_Gsf_v*. Obtained code from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#Trigger
+    // loop over selected trigger objects                                                                                              
+    for (pat::TriggerObjectStandAlone obj : *triggerObjects) {
+      if(obj.pt() < 25.0) continue;//look for HLT objects with Pt > 25GeV only.
+      obj.unpackPathNames(trigNames);
+      const std::vector<std::string>& pathNamesAll = obj.pathNames(false);
+      for (const auto& pathName : pathNamesAll){
+	bool isBoth = obj.hasPathName( pathName, true, true );//object is associated wih l3 filter and associated to the last filter of a successfull path. this object caused the trigger to fire.
+	const std::string& path_i = pathName;
+	if(isBoth && path_i.find("HLT_Ele27_WPTight_Gsf_v")!= std::string::npos){
+	  hltEleObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
+	  break;
+	}
       }
     }
+    iEvent.put(std::move(hltEleObj),"HLTElectronObjects");    
   }
 
   iEvent.put(std::move(passTrigVec),"TriggerPass");
   iEvent.put(std::move(trigPrescaleVec),"TriggerPrescales");
   iEvent.put(std::move(trigNamesVec),"TriggerNames");
-  if(saveHLTObj) iEvent.put(std::move(hltEleObj),"HLTElectronObjects");
-
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
