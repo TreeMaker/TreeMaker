@@ -22,7 +22,7 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
     from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
     DeltaPhi = deltaphidouble.clone(
         DeltaPhiJets = HTJetsTag,
-        MHTJets      = MHTJetsTag,
+        MHTPhi       = cms.InputTag('MHT'+MHTsuff+suff+':Phi'),
     )
     setattr(process,"DeltaPhi"+MHTsuff+suff,DeltaPhi)
     self.VarsDouble.extend(['DeltaPhi'+MHTsuff+suff+':DeltaPhi1(DeltaPhi1'+MHTsuff+suff+')','DeltaPhi'+MHTsuff+suff+':DeltaPhi2(DeltaPhi2'+MHTsuff+suff+')',
@@ -173,35 +173,48 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         if storeProperties>1 and self.geninfo:
             JetProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
         setattr(process,"JetProperties"+suff,JetProperties)
-        self.VectorDouble.extend(['JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
-                                                'JetProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
-                                                'JetProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
-                                                'JetProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',])
-        self.VectorInt.extend(['JetProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
-                                             'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)'])
+        self.VectorDouble.extend([
+            'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
+            'JetProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
+            'JetProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
+            'JetProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
+        ])
+        self.VectorInt.extend([
+            'JetProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
+            'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)',
+        ])
         if storeProperties>1:
-            self.VectorDouble.extend(['JetProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
-                                                    'JetProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
-                                                    'JetProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
-                                                    'JetProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
-                                                    'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
-                                                    'JetProperties'+suff+':jecUnc(Jets'+suff+'_jecUnc)',
-                                                    'JetProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
-                                                    'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
-                                                    'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)'])
+            self.VectorDouble.extend([
+                'JetProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
+                'JetProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
+                'JetProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
+                'JetProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
+                'JetProperties'+suff+':electronEnergyFraction(Jets'+suff+'_electronEnergyFraction)',
+                'JetProperties'+suff+':hfEMEnergyFraction(Jets'+suff+'_hfEMEnergyFraction)',
+                'JetProperties'+suff+':hfHadronEnergyFraction(Jets'+suff+'_hfHadronEnergyFraction)',
+                'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
+                'JetProperties'+suff+':jecUnc(Jets'+suff+'_jecUnc)',
+                'JetProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
+                'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
+                'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
+            ])
             if self.geninfo:
-                self.VectorDouble.extend(['JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
-                                                        'JetProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
-                                                        'JetProperties'+suff+':jerFactorDown(Jets'+suff+'_jerFactorDown)'])
+                self.VectorDouble.extend([
+                    'JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
+                    'JetProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
+                    'JetProperties'+suff+':jerFactorDown(Jets'+suff+'_jerFactorDown)',
+                ])
 
-            self.VectorInt.extend(['JetProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
-                                                 'JetProperties'+suff+':electronMultiplicity(Jets'+suff+'_electronMultiplicity)',
-                                                 'JetProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
-                                                 'JetProperties'+suff+':neutralHadronMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
-                                                 'JetProperties'+suff+':photonMultiplicity(Jets'+suff+'_photonMultiplicity)',
-                                                 'JetProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
-                                                 'JetProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
-                                                 'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)'])
+            self.VectorInt.extend([
+                'JetProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
+                'JetProperties'+suff+':electronMultiplicity(Jets'+suff+'_electronMultiplicity)',
+                'JetProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
+                'JetProperties'+suff+':neutralHadronMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
+                'JetProperties'+suff+':photonMultiplicity(Jets'+suff+'_photonMultiplicity)',
+                'JetProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
+                'JetProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
+                'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
+            ])
                                              
     return process
 

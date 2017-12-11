@@ -16,8 +16,10 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/JetReco/interface/BasicJet.h"
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/Math/interface/deltaR.h"
 
 //
 // class declaration
@@ -35,7 +37,9 @@ private:
 	
   edm::InputTag GenJetTag;
   edm::EDGetTokenT<edm::View<reco::GenJet>> GenJetTok;
-
+  edm::InputTag PrunedTag, SoftDropTag;
+  edm::EDGetTokenT<std::vector<reco::BasicJet>> PrunedTok, SoftDropTok;
+  double distMax;
 	
 	
   // ----------member data ---------------------------
@@ -53,24 +57,19 @@ private:
 //
 // constructors and destructor
 //
-GenJetProperties::GenJetProperties(const edm::ParameterSet& iConfig)
+GenJetProperties::GenJetProperties(const edm::ParameterSet& iConfig) :
+  GenJetTag(iConfig.getParameter<edm::InputTag>("GenJetTag")),
+  GenJetTok(consumes<edm::View<reco::GenJet>>(GenJetTag)),
+  PrunedTag(iConfig.getParameter<edm::InputTag>("PrunedGenJetTag")),
+  SoftDropTag(iConfig.getParameter<edm::InputTag>("SoftDropGenJetTag")),
+  PrunedTok(consumes<std::vector<reco::BasicJet>>(PrunedTag)),
+  SoftDropTok(consumes<std::vector<reco::BasicJet>>(SoftDropTag)),
+  distMax(iConfig.getParameter<double>("distMax"))
 {
-  GenJetTag = iConfig.getParameter<edm::InputTag>("GenJetTag");
-  GenJetTok = consumes<edm::View<reco::GenJet>>(GenJetTag);
-  //register your products
-  /* Examples
-   *   produces<ExampleData2>();
-   * 
-   *   //if do put with a label
-   *   produces<ExampleData2>("label");
-   * 
-   *   //if you want to put into the Run
-   *   produces<ExampleData2,InRun>();
-   */
-  //now do what ever other initialization is needed
   //register your products
   produces<std::vector<double>>("invisibleEnergy");
-
+  produces<std::vector<double>>("prunedMass");
+  produces<std::vector<double>>("softDropMass");
 }
 
 
@@ -94,18 +93,50 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
   using namespace edm;
 	
   auto invisibleEnergy = std::make_unique<std::vector<double>>();
-  using namespace edm;
-  using namespace reco;
+  auto prunedMass = std::make_unique<std::vector<double>>();
+  auto softDropMass = std::make_unique<std::vector<double>>();
+
   edm::Handle< edm::View<reco::GenJet> > GenJets;
   iEvent.getByToken(GenJetTok,GenJets);
   if( GenJets.isValid() ) {
-    for(unsigned int i=0; i<GenJets->size();i++)
-      {
-	invisibleEnergy->push_back( GenJets->at(i).invisibleEnergy() );
+    edm::Handle<std::vector<reco::BasicJet>> PrunedJets;
+    iEvent.getByToken(PrunedTok,PrunedJets);
+    bool doPruned = PrunedJets.isValid();
+
+    edm::Handle<std::vector<reco::BasicJet>> SoftDropJets;
+    iEvent.getByToken(SoftDropTok,SoftDropJets);
+    bool doSoftDrop = SoftDropJets.isValid();
+
+    for(const auto& GenJet: *GenJets){
+      invisibleEnergy->push_back( GenJet.invisibleEnergy() );
+      double pruned = 0.0;
+      double softdrop = 0.0;
+
+      if(doPruned){
+        for(const auto& PrunedJet: *PrunedJets){
+          if(reco::deltaR(GenJet,PrunedJet)<distMax){
+            pruned = PrunedJet.mass();
+            break;
+          }
+        }
       }
+      if(doSoftDrop){
+        for(const auto& SoftDropJet: *SoftDropJets){
+          if(reco::deltaR(GenJet,SoftDropJet)<distMax){
+            softdrop = SoftDropJet.mass();
+            break;
+          }
+        }
+      }
+
+      prunedMass->push_back(pruned);
+      softDropMass->push_back(softdrop);
+    }
   }
 
   iEvent.put(std::move(invisibleEnergy),"invisibleEnergy");
+  iEvent.put(std::move(prunedMass),"prunedMass");
+  iEvent.put(std::move(softDropMass),"softDropMass");
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

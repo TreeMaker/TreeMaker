@@ -27,10 +27,9 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
-#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
+#include "TreeMaker/Utils/interface/mht.h"
 //
 // class declaration
 //
@@ -59,8 +58,8 @@ MhtDouble::MhtDouble(const edm::ParameterSet& iConfig)
    JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
    JetTok_ = consumes<reco::CandidateView>(JetTag_);
 
-	 produces<double>("Pt");
-	 produces<double>("Phi");
+   produces<double>("Pt");
+   produces<double>("Phi");
 }
 
 
@@ -83,19 +82,16 @@ MhtDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
 {
   using namespace edm;
   edm::Handle< reco::CandidateView > Jets;
-	iEvent.getByToken(JetTok_,Jets);
-	reco::MET::LorentzVector mhtLorentz(0,0,0,0);
-	if( Jets.isValid() ) {
-		for(unsigned int i=0; i<Jets->size();i++)
-		{
-		mhtLorentz -=Jets->at(i).p4();
-		}
+  iEvent.getByToken(JetTok_,Jets);
+  reco::MET::LorentzVector mhtLorentz(0,0,0,0);
+  if( Jets.isValid() ) {
+    mhtLorentz = utils::calculateMHT(Jets.product());
   }
   else edm::LogWarning("TreeMaker")<<"MHTDouble::Invalid Tag: "<<JetTag_.label();
-	auto Pt = std::make_unique<double>(mhtLorentz.pt());
-	auto Phi = std::make_unique<double>(mhtLorentz.phi());
-	iEvent.put(std::move(Pt),"Pt");
-	iEvent.put(std::move(Phi),"Phi");
+  auto Pt = std::make_unique<double>(mhtLorentz.pt());
+  auto Phi = std::make_unique<double>(mhtLorentz.phi());
+  iEvent.put(std::move(Pt),"Pt");
+  iEvent.put(std::move(Phi),"Phi");
  
 }
 

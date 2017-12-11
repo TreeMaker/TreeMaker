@@ -725,6 +725,45 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
     
+        # store all AK8 genjets
+        self.VectorRecoCand.extend ( [ 'slimmedGenJetsAK8(GenJetsAK8)' ] )
+
+        # substructure for genjets
+        from RecoJets.Configuration.RecoGenJets_cff import ak8GenJetsNoNu
+        from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
+        process.ak8GenJetsPruned = ak8GenJetsNoNu.clone(
+            SubJetParameters,
+            usePruning = cms.bool(True),
+            useExplicitGhosts = cms.bool(True),
+            writeCompound = cms.bool(True),
+            jetCollInstanceName=cms.string("SubJets"),
+            jetPtMin = 170.,
+            doAreaFastjet = cms.bool(False),
+            src = cms.InputTag("packedGenParticles"),
+        )
+        process.ak8GenJetsSoftDrop = ak8GenJetsNoNu.clone(
+            useSoftDrop = cms.bool(True),
+            zcut = cms.double(0.1),
+            beta = cms.double(0.0),
+            R0   = cms.double(0.5),
+            useExplicitGhosts = cms.bool(True),
+            writeCompound = cms.bool(True),
+            jetCollInstanceName=cms.string("SubJets"),
+            jetPtMin = 170.,
+            src = cms.InputTag("packedGenParticles"),
+        )
+
+        process.ak8GenJetProperties = cms.EDProducer("GenJetProperties",
+            GenJetTag = cms.InputTag("slimmedGenJetsAK8"),
+            PrunedGenJetTag = cms.InputTag("ak8GenJetsPruned"),
+            SoftDropGenJetTag = cms.InputTag("ak8GenJetsSoftDrop"),
+            distMax = cms.double(0.8),
+        )
+        self.VectorDouble.extend([
+            'ak8GenJetProperties:prunedMass(GenJetsAK8_prunedMass)',
+            'ak8GenJetProperties:softDropMass(GenJetsAK8_softDropMass)',
+        ])
+
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
     ## ----------------------------------------------------------------------------------------------

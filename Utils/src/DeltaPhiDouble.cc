@@ -30,7 +30,8 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
-#include <DataFormats/Math/interface/deltaR.h>
+#include "DataFormats/Math/interface/deltaR.h"
+#include "TreeMaker/Utils/interface/mht.h"
 
 //
 // class declaration
@@ -46,8 +47,10 @@ public:
 private:
    virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    
-   edm::InputTag MHTJetTag_, DeltaPhiJetTag_;
+   edm::InputTag MHTPhiTag_, MHTJetTag_, DeltaPhiJetTag_;
    edm::EDGetTokenT<edm::View<reco::Candidate>> MHTJetTok_, DeltaPhiJetTok_;
+   edm::EDGetTokenT<double> MHTPhiTok_;
+   bool usePhi;
    
    
    // ----------member data ---------------------------
@@ -65,38 +68,22 @@ private:
 //
 // constructors and destructor
 //
-DeltaPhiDouble::DeltaPhiDouble(const edm::ParameterSet& iConfig)
+DeltaPhiDouble::DeltaPhiDouble(const edm::ParameterSet& iConfig) :
+   MHTPhiTag_(iConfig.getParameter<edm::InputTag>("MHTPhi")),
+   MHTJetTag_(iConfig.getParameter<edm::InputTag>("MHTJets")),
+   DeltaPhiJetTag_(iConfig.getParameter<edm::InputTag>("DeltaPhiJets")),
+   usePhi(MHTPhiTag_.label().size()>0)
 {
-   //register your product
-   MHTJetTag_ = iConfig.getParameter<edm::InputTag> ("MHTJets");
-   DeltaPhiJetTag_ = iConfig.getParameter<edm::InputTag> ("DeltaPhiJets");
-   MHTJetTok_ = consumes<edm::View<reco::Candidate> >(MHTJetTag_);
+   //register your products
+   if(usePhi) MHTPhiTok_ = consumes<double>(MHTPhiTag_);
+   else MHTJetTok_ = consumes<edm::View<reco::Candidate> >(MHTJetTag_);
    DeltaPhiJetTok_ = consumes<edm::View<reco::Candidate> >(DeltaPhiJetTag_);
    
-   produces<double>("Jet1Pt");
-   produces<double>("Jet2Pt");
-   produces<double>("Jet3Pt");
-   produces<double>("Jet4Pt");
-   produces<double>("Jet1Eta");
-   produces<double>("Jet2Eta");
-   produces<double>("Jet3Eta");
-   produces<double>("Jet4Eta");
    produces<double>("DeltaPhi1");
    produces<double>("DeltaPhi2");
    produces<double>("DeltaPhi3");
    produces<double>("DeltaPhi4");
    produces<double>("minDeltaPhi");
-   /* Examples
-    *   produces<ExampleData2>();
-    *
-    *   //if do put with a label
-    *   produces<ExampleData2>("label");
-    *
-    *   //if you want to put into the Run
-    *   produces<ExampleData2,InRun>();
-    */
-   //now do what ever other initialization is needed
-   
 }
 
 
@@ -118,87 +105,44 @@ void
 DeltaPhiDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
    using namespace edm;
-   double jet1pt=0;
-   double jet2pt=0;
-   double jet3pt=0;
-   double jet4pt=0;
-   double jet1eta=0;
-   double jet2eta=0;
-   double jet3eta=0;
-   double jet4eta=0;
-   double deltaphi1=10;
-   double deltaphi2=10;
-   double deltaphi3=10;
-   double deltaphi4=10;
-   edm::Handle< edm::View<reco::Candidate> > MHTJets;
-   iEvent.getByToken(MHTJetTok_,MHTJets);
-   reco::MET::LorentzVector mhtLorentz(0,0,0,0);
-   if( MHTJets.isValid() ) {
-      for(unsigned int i=0; i<MHTJets->size();i++)
-      {
-         mhtLorentz -=MHTJets->at(i).p4();
-      }
+   std::vector<double> deltaphi(4,10.);
+   double mhtLorentzPhi = -1;
+   if(usePhi){
+      edm::Handle<double> MHTPhi;
+      iEvent.getByToken(MHTPhiTok_,MHTPhi);
+      if(MHTPhi.isValid()) mhtLorentzPhi = *(MHTPhi.product());
+      else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Phi Tag: "<<MHTPhiTag_;
    }
-   else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Jet Tag: "<<MHTJetTag_.label();
+   else {
+      edm::Handle< edm::View<reco::Candidate> > MHTJets;
+      iEvent.getByToken(MHTJetTok_,MHTJets);
+      if( MHTJets.isValid() ) {
+         reco::MET::LorentzVector mhtLorentz = utils::calculateMHT(MHTJets.product());
+         mhtLorentzPhi = mhtLorentz.phi();
+      }
+      else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Jet Tag: "<<MHTJetTag_.label();
+   }
    edm::Handle< edm::View<reco::Candidate> > DeltaPhiJets;
    iEvent.getByToken(DeltaPhiJetTok_,DeltaPhiJets);
    float minDeltaPhi=99;
    if( DeltaPhiJets.isValid() ) {
-      int count=0;
       for (unsigned int i=0; i<DeltaPhiJets->size();i++)
       {
-         if (count==0){
-            jet1pt = DeltaPhiJets->at(i).pt();
-            jet1eta = DeltaPhiJets->at(i).eta();
-            deltaphi1 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
-         }
-         if (count==1){
-            jet2pt = DeltaPhiJets->at(i).pt();
-            jet2eta = DeltaPhiJets->at(i).eta();
-            deltaphi2 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
-         }
-         if (count==2){
-            jet3pt = DeltaPhiJets->at(i).pt();
-            jet3eta = DeltaPhiJets->at(i).eta();
-            deltaphi3 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
-         }
-         if (count==3){
-            jet4pt = DeltaPhiJets->at(i).pt();
-            jet4eta = DeltaPhiJets->at(i).eta();
-            deltaphi4 = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));
-         }
-         if (minDeltaPhi>std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi())))
-            minDeltaPhi=std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentz.phi()));;
+         deltaphi[i] = std::abs(reco::deltaPhi(DeltaPhiJets->at(i).phi(),mhtLorentzPhi));
+         if (minDeltaPhi>deltaphi[i]) minDeltaPhi = deltaphi[i];
 
-         count++;
-         if(count==4) break;
+         if(i==3) break;
       }
    }
    else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid DeltaPhiJets Jet Tag: "<<DeltaPhiJetTag_.label();
    
-   auto htp1a = std::make_unique<double>(jet1pt);
-   iEvent.put(std::move(htp1a),"Jet1Pt");
-   auto htp1b = std::make_unique<double>(jet1eta);
-   iEvent.put(std::move(htp1b),"Jet1Eta");
-   auto htp1c = std::make_unique<double>(deltaphi1);
+   auto htp1c = std::make_unique<double>(deltaphi[0]);
    iEvent.put(std::move(htp1c),"DeltaPhi1");
-   auto htp2a = std::make_unique<double>(jet2pt);
-   iEvent.put(std::move(htp2a),"Jet2Pt");
-   auto htp2b = std::make_unique<double>(jet2eta);
-   iEvent.put(std::move(htp2b),"Jet2Eta");
-   auto htp2c = std::make_unique<double>(deltaphi2);
+   auto htp2c = std::make_unique<double>(deltaphi[1]);
    iEvent.put(std::move(htp2c),"DeltaPhi2");
-   auto htp3a = std::make_unique<double>(jet3pt);
-   iEvent.put(std::move(htp3a),"Jet3Pt");
-   auto htp3b = std::make_unique<double>(jet3eta);
-   iEvent.put(std::move(htp3b),"Jet3Eta");
-   auto htp3c = std::make_unique<double>(deltaphi3);
+   auto htp3c = std::make_unique<double>(deltaphi[2]);
    iEvent.put(std::move(htp3c),"DeltaPhi3");
-   auto htp4a = std::make_unique<double>(jet4pt);
-   iEvent.put(std::move(htp4a),"Jet4Pt");
-   auto htp4b = std::make_unique<double>(jet4eta);
-   iEvent.put(std::move(htp4b),"Jet4Eta");
-   auto htp4d = std::make_unique<double>(deltaphi4);
+   auto htp4d = std::make_unique<double>(deltaphi[3]);
    iEvent.put(std::move(htp4d),"DeltaPhi4");   
    auto htp4c = std::make_unique<double>(minDeltaPhi);
    iEvent.put(std::move(htp4c),"minDeltaPhi");
