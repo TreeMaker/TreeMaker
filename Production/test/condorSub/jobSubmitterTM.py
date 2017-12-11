@@ -153,7 +153,7 @@ class jobSubmitterTM(jobSubmitter):
                     if self.prepare:
                         jname = job.makeName(job.nums[-1])
                         with open("input/args_"+jname+".txt",'w') as argfile:
-                            args = (self.args+" " if len(self.args)>0 else "")+("threads="+str(self.cpus)+" " if self.cpus>1 else "")+"outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
+                            args = (self.args+" " if len(self.args)>0 else "")+"outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
                             argfile.write(args)
 
                 # append queue comment
