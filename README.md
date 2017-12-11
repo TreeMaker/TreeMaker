@@ -204,7 +204,7 @@ The following parameters take their default values from the specified scenario:
 * `jerfile`: name of a database file from which to get JERs
 * `residual`: switch to enable residual JECs for data
 * `era`: CMS detector era for the dataset
-* `redir`: xrootd redirector or storage element address (default="root://cmsxrootd.fnal.gov/") (`fastsim` default="root://cmseos.fnal.gov/")
+* `redir`: xrootd redirector, storage element address, or site name (default="root://cmsxrootd.fnal.gov/") (`fastsim` default="root://cmseos.fnal.gov/")
 
 Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py):
 * `reportfreq`: frequency of CMSSW log output (default=1000)

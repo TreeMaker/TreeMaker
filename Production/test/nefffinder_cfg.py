@@ -6,6 +6,10 @@ nstart = parameters.value("nstart",0)
 nfiles = parameters.value("nfiles",-1)
 redir = parameters.value("redir","root://cmsxrootd.fnal.gov/")
 
+# handle site name usage
+if redir[0]=="T":
+    redir = "root://cmsxrootd.fnal.gov//store/test/xrootd/"+redir
+
 import FWCore.ParameterSet.Config as cms
 from Configuration.StandardSequences.Eras import eras
 

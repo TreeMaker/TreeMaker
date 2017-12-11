@@ -60,6 +60,9 @@ class makeTree:
         # temporary redirector fix
         # fastsim signal is phedexed to LPC Tier3
         self.getParamDefault("redir", "root://cmseos.fnal.gov/" if self.fastsim and self.signal else "root://cmsxrootd.fnal.gov/")
+        # handle site name usage
+        if redir[0]=="T":
+            redir = "root://cmsxrootd.fnal.gov//store/test/xrootd/"+redir
         
         # Load input files
         self.readFiles = cms.untracked.vstring()
