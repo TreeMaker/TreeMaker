@@ -184,7 +184,8 @@ def makeTreeFromMiniAOD(self,process):
             runOnMiniAOD=True,
             postfix="MuEGClean2"
         )
-        process.slimmedMETsMuEGClean2 = process.slimmedMETs.clone()
+        from PhysicsTools.PatAlgos.slimming.slimmedMETs_cfi import slimmedMETs
+        process.slimmedMETsMuEGClean2 = slimmedMETs.clone()
         process.slimmedMETsMuEGClean2.src = cms.InputTag("patPFMetT1MuEGClean2")
         process.slimmedMETsMuEGClean2.rawVariation =  cms.InputTag("patPFMetRawMuEGClean2")
         process.slimmedMETsMuEGClean2.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean2")
@@ -638,7 +639,7 @@ def makeTreeFromMiniAOD(self,process):
     )
     
     # add userfloats & update tag
-    process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2'], ['QGTagger:mult'])
+    process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2', 'QGTagger:axis1'], ['QGTagger:mult'])
     
     process = self.makeJetVars(process,
                           JetTag=JetTag,
