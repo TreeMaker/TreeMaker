@@ -431,44 +431,6 @@ def makeTreeFromMiniAOD(self,process):
         process.BadPFMuonFilter.taggingMode = True
         self.VarsBool.extend(['BadPFMuonFilter'])
         
-        # bad muon crap
-        process.BadGlobalMuonTagger = cms.EDFilter("BadGlobalMuonTagger",
-            muons = cms.InputTag("slimmedMuons"),
-            vtx   = cms.InputTag("offlineSlimmedPrimaryVertices"),
-            muonPtCut = cms.double(0), # store leading pt
-            selectClones = cms.bool(False),
-            taggingMode = cms.bool(True),
-            verbose = cms.untracked.bool(False)
-        )
-        process.DupGlobalMuonTagger = process.BadGlobalMuonTagger.clone(
-            selectClones = cms.bool(True)
-        )
-        self.VarsBool.extend(['BadGlobalMuonTagger:bad(BadGlobalMuon)','BadGlobalMuonTagger:badTrk(BadTrkGlobalMuon)','DupGlobalMuonTagger:dup(DupGlobalMuon)'])
-        self.VarsDouble.extend(['BadGlobalMuonTagger:badLeadPt(BadGlobalMuonLeadPt)','BadGlobalMuonTagger:badTrkLeadPt(BadTrkGlobalMuonLeadPt)','DupGlobalMuonTagger:dupLeadPt(DupGlobalMuonLeadPt)'])
-        
-        # more bad muon crap
-        process.duplicateMuonsFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string('TriggerResults'),
-            trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(self.tagname),
-            filterName  =   cms.string("Flag_duplicateMuons"),
-        )
-        self.VarsInt.extend(['duplicateMuonsFilter'])
-        process.badMuonsFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string('TriggerResults'),
-            trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(self.tagname),
-            filterName  =   cms.string("Flag_badMuons"),
-        )
-        self.VarsInt.extend(['badMuonsFilter'])
-        process.noBadMuonsFilter = filterDecisionProducer.clone(
-            trigTagArg1  = cms.string('TriggerResults'),
-            trigTagArg2  = cms.string(''),
-            trigTagArg3  = cms.string(self.tagname),
-            filterName  =   cms.string("Flag_noBadMuons"),
-        )
-        self.VarsInt.extend(['noBadMuonsFilter'])
-        
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
     ## ----------------------------------------------------------------------------------------------
