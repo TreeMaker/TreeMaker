@@ -169,7 +169,27 @@ def makeTreeFromMiniAOD(self,process):
     JetTag = cms.InputTag('slimmedJets')
     JetAK8Tag = cms.InputTag('slimmedJetsAK8')
     METTag = cms.InputTag('slimmedMETs')
-    if self.scenarioName=="2016ReMiniAOD03Feb": METTag = cms.InputTag('slimmedMETsMuEGClean')
+    if self.scenarioName=="2016ReMiniAOD03Feb":
+        # rerun egamma correction
+        from PhysicsTools.PatUtils.tools.corMETFromMuonAndEG import corMETFromMuonAndEG
+        corMETFromMuonAndEG(process,
+            pfCandCollection="", #not needed
+            electronCollection="slimmedElectronsBeforeGSFix",
+            photonCollection="slimmedPhotonsBeforeGSFix",
+            corElectronCollection="slimmedElectrons",
+            corPhotonCollection="slimmedPhotons",
+            allMETEGCorrected=True,
+            muCorrection=False,
+            eGCorrection=True,
+            runOnMiniAOD=True,
+            postfix="MuEGClean2"
+        )
+        process.slimmedMETsMuEGClean2 = process.slimmedMETs.clone()
+        process.slimmedMETsMuEGClean2.src = cms.InputTag("patPFMetT1MuEGClean2")
+        process.slimmedMETsMuEGClean2.rawVariation =  cms.InputTag("patPFMetRawMuEGClean2")
+        process.slimmedMETsMuEGClean2.t1Uncertainties = cms.InputTag("patPFMetT1%sMuEGClean2")
+        del process.slimmedMETsMuEGClean2.caloMET
+        METTag = cms.InputTag('slimmedMETsMuEGClean2')
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
