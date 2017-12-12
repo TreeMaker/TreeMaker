@@ -115,15 +115,6 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     setattr(process,"BTags"+suff,BTags)
     self.VarsInt.extend(['BTags'+suff])
     
-    from TreeMaker.Utils.btagint_cfi import btagint
-    BTagsMVA = btagint.clone(
-        JetTag       = HTJetsTag,
-        BTagInputTag = cms.string('pfCombinedMVAV2BJetTags'),
-        BTagCutValue = cms.double(0.4432)
-    )
-    setattr(process,"BTagsMVA"+suff,BTagsMVA)
-    self.VarsInt.extend(['BTagsMVA'+suff])
-
     ## ----------------------------------------------------------------------------------------------
     ## MHT, DeltaPhi
     ## ----------------------------------------------------------------------------------------------
@@ -158,15 +149,13 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
             JetTag       = GoodJetsTag
         )
         # provide extra info where necessary
-        JetProperties.bDiscriminatorMVA = cms.vstring('pfCombinedMVAV2BJetTags')
         if storeProperties==1: 
-            JetProperties.properties = cms.vstring("bDiscriminatorCSV","bDiscriminatorMVA","muonEnergyFraction","chargedHadronEnergyFraction","partonFlavor","hadronFlavor")
+            JetProperties.properties = cms.vstring("bDiscriminatorCSV","muonEnergyFraction","chargedHadronEnergyFraction","partonFlavor","hadronFlavor")
         if storeProperties>1 and self.geninfo:
             JetProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
         setattr(process,"JetProperties"+suff,JetProperties)
         self.VectorDouble.extend([
             'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
-            'JetProperties'+suff+':bDiscriminatorMVA(Jets'+suff+'_bDiscriminatorMVA)',
             'JetProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
             'JetProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
         ])
@@ -244,8 +233,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 "NsubjettinessTau1"    ,
                 "NsubjettinessTau2"    ,
                 "NsubjettinessTau3"    ,
-#                "bDiscriminatorSubjet1",
-#                "bDiscriminatorSubjet2",
                 "bDiscriminatorCSV"    ,
                 "NumBhadrons"          ,
                 "NumChadrons"          ,
@@ -258,15 +245,11 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
         JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
         JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
-#        JetPropertiesAK8.bDiscriminatorSubjet1 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-#        JetPropertiesAK8.bDiscriminatorSubjet2 = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetPropertiesAK8.subjets = cms.vstring('SoftDrop')
         self.VectorDouble.extend([
                              'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
                              'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
-#                             'JetProperties'+suff+':bDiscriminatorSubjet1(Jets'+suff+'_bDiscriminatorSubjet1CSV)',
-#                             'JetProperties'+suff+':bDiscriminatorSubjet2(Jets'+suff+'_bDiscriminatorSubjet2CSV)',
                              'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
                              'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
                              'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
