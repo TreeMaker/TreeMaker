@@ -28,8 +28,8 @@ class makeTree:
         
         # background estimations on by default
         self.getParamDefault("lostlepton", True)
-        self.getParamDefault("hadtau", True)
-        self.getParamDefault("hadtaurecluster", 1)
+        self.getParamDefault("hadtau", False)
+        self.getParamDefault("hadtaurecluster", 0)
         self.getParamDefault("doZinv", True)
 
         # special signal stuff
