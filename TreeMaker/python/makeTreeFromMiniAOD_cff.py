@@ -138,6 +138,8 @@ def makeTreeFromMiniAOD(self,process):
                 4900023,4900101,4900111,4900211,
             ),
         )
+        # store gluons for signals with Higgs
+        if "T5qqqqZH" in process.source.fileNames[0]: process.genParticles.childIds.append(21)
         self.VectorTLorentzVector.append("genParticles(GenParticles)")
         self.VectorInt.append("genParticles:PdgId(GenParticles_PdgId)")
         self.VectorInt.append("genParticles:Status(GenParticles_Status)")
