@@ -37,7 +37,11 @@ ln -s ${CMSSWVER}/src/TreeMaker/Production/test/runMakeTreeFromMiniAOD_cfg.py
 # run CMSSW
 ARGS=$(cat args_${JOBNAME}_${PROCESS}.txt)
 if [[ -n "$REDIR" ]]; then
- ARGS="$ARGS redir=${REDIR}"
+	ARGS="$ARGS redir=${REDIR}"
+fi
+THREADS=$(getFromClassAd RequestCpus)
+if [[ -n "$THREADS" ]]; then
+	ARGS="$ARGS threads=${THREADS}"
 fi
 echo "cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1"
 cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1

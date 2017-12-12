@@ -6,16 +6,15 @@ nstart = parameters.value("nstart",0)
 nfiles = parameters.value("nfiles",-1)
 redir = parameters.value("redir","root://cmsxrootd.fnal.gov/")
 
-import FWCore.ParameterSet.Config as cms
-from Configuration.StandardSequences.Eras import eras
+# handle site name usage
+if redir[0]=="T":
+    redir = "root://cmsxrootd.fnal.gov//store/test/xrootd/"+redir
 
-process = cms.Process("Demo",eras.Run2_25ns)
+import FWCore.ParameterSet.Config as cms
+
+process = cms.Process("Demo")
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
-process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
-process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
-process.GlobalTag.globaltag = "74X_mcRun2_asymptotic_v2"
 
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 

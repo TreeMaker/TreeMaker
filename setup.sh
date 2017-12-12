@@ -30,4 +30,4 @@ git clone git@github.com:kpedro88/CondorProduction.git Condor/Production
 git clone git@github.com:${FORK}/TreeMaker.git -b ${BRANCH}
 scram b -j 8
 cd TreeMaker/Production/test/condorSub/
-ln -s $CMSSW_BASE/src/Condor/Production/scripts/* .
+python $CMSSW_BASE/src/Condor/Production/python linkScripts.py
