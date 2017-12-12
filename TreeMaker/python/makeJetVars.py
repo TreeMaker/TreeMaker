@@ -269,7 +269,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 'axismajor',
                 'axisminor',
                 'multiplicity',
-                'constituents',
+#                'constituents',
             ])
             JetPropertiesAK8.overflow = cms.vstring('BasicSubstructure'+suff+':overflow')
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
@@ -289,9 +289,9 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             self.VectorInt.extend([
                 'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
             ])
-            self.VectorVectorTLorentzVector.extend([
-                'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
-            ])
+#            self.VectorVectorTLorentzVector.extend([
+#                'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
+#            ])
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
         return process        
