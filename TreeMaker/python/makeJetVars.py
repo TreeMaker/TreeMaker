@@ -127,17 +127,8 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     ## ----------------------------------------------------------------------------------------------
     ## MHT, DeltaPhi
     ## ----------------------------------------------------------------------------------------------
-    # MHT, DeltaPhi moved to separate fn (above) because of stupid egamma slew corrections
-    MHTOrig = ""
-    if self.scenario=="2016ReMiniAOD03Feb":
-        MHTOrig = "Orig"
-        from TreeMaker.Utils.patjetfix_cfi import patjetfix
-        PatJetFix = patjetfix.clone(
-            jets = GoodJetsTag
-        )
-        setattr(process,"PatJetFix"+suff,PatJetFix)
-        process = self.makeMHTVars(process, cms.InputTag("PatJetFix"+suff), HTJetsTag, storeProperties, suff, "")
-    process = self.makeMHTVars(process, GoodJetsTag, HTJetsTag, storeProperties, suff, MHTOrig)
+    # MHT, DeltaPhi moved to separate fn (above)
+    process = self.makeMHTVars(process, GoodJetsTag, HTJetsTag, storeProperties, suff, "")
 
     ## ----------------------------------------------------------------------------------------------
     ## ISR jets
