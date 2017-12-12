@@ -9,7 +9,7 @@ The following installation instructions assume the user wants to process Summer1
 wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2/setup.sh
 chmod +x setup.sh
 ./setup.sh
-cd CMSSW_8_0_28/src/
+cd CMSSW_8_0_30/src/
 cmsenv
 cd TreeMaker/Production/test
 ```
