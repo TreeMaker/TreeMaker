@@ -177,6 +177,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                 'JetProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
                 'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
                 'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
+                'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
             ])
             if self.geninfo:
                 self.VectorDouble.extend([
