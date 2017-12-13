@@ -192,8 +192,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
        JetTag = cms.InputTag('HTJets'+postfix)
     )
     setattr(process,"METclean"+suff,METclean)
-    self.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')'])
-    
+    self.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')','METclean'+suff+':Significance(METSignificanceclean'+suff+')'])
     return process
 
 def doZinvBkg(self,process):
