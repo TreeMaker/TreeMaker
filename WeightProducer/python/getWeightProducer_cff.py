@@ -224,7 +224,21 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("SMS-T5qqqqZH-mGluino1900_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 0.00163547, 404812),
         MCSample("SMS-T5qqqqZH-mGluino2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 0.000981077, 417293),
         MCSample("SMS-T5qqqqZH-mGluino2100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 0.000591918, 391445),
-        MCSample("SMS-T5qqqqZH-mGluino2200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 0.000359318, 396083)
+        MCSample("SMS-T5qqqqZH-mGluino2200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 0.000359318, 396083),
+        # semivisible jet signals
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.2_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.1_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.5_alpha-0.2_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-1000_mDark-20_rinv-0.3_alpha-0.2_n-500", "", "", "Constant", 4.612, 50000),
+        MCSample("step4_MINIAOD_mZprime-2000_mDark-20_rinv-0.3_alpha-0.2_n-500", "", "", "Constant", 0.1849, 50000),
+        MCSample("step4_MINIAOD_mZprime-4000_mDark-20_rinv-0.3_alpha-0.2_n-500", "", "", "Constant", 0.001688, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-1_rinv-0.3_alpha-0.2_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-50_rinv-0.3_alpha-0.2_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-100_rinv-0.3_alpha-0.2_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.1_alpha-0.2_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.7_alpha-0.2_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.5_n-500", "", "", "Constant", 0.0155, 50000),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-500", "", "", "Constant", 0.0155, 49500),
     ]
     
     # loop over all samples until we find a match
