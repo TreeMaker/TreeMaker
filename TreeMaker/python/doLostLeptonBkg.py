@@ -21,18 +21,6 @@ def doLostLeptonBkg(self,process,METTag):
         PFCandTag = cms.InputTag('packedPFCandidates'),
         JetTag = cms.InputTag('HTJets')
     )
-    process.IDIsoMuonMiniIso = isolationproducer.clone(
-        LeptonTag = cms.InputTag('LeptonsNew:IdIsoMuon'), 
-        LeptonType = cms.string('muon'),
-        PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
-    )
-    process.IDIsoElectronMiniIso = isolationproducer.clone(
-        LeptonTag = cms.InputTag('LeptonsNew:IdIsoElectron'), 
-        LeptonType = cms.string('electron'),
-        PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
-    )
 
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
 
@@ -97,21 +85,19 @@ def doLostLeptonBkg(self,process,METTag):
 
     from TreeMaker.Utils.extrapolationproducer_cfi import extrapolationproducer
     process.PTWExtrapolation = extrapolationproducer.clone(
-        MuonTag = cms.InputTag('LeptonsNew:IdIsoMuon'), # these are the leptons that pass ID and isolation
-        ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron')
+        MuonTag = cms.InputTag('LeptonsNew:IdMuon'), # these are the leptons that pass ID
+        ElectronTag = cms.InputTag('LeptonsNew:IdElectron')
     )
     
     # may eventually save track isolation, activity
-    self.VectorRecoCand.extend(['LeptonsNew:IdMuon(MuonsNoIso)','LeptonsNew:IdElectron(ElectronsNoIso)'])
-    self.VectorBool.extend(['LeptonsNew:IdMuonTightID(MuonsNoIso_tightID)','LeptonsNew:IdIsoMuonTightID(Muons_tightID)'])
-    self.VectorBool.extend(['LeptonsNew:IdElectronMediumID(ElectronsNoIso_mediumID)','LeptonsNew:IdIsoElectronMediumID(Electrons_mediumID)'])
-    self.VectorBool.extend(['LeptonsNew:IdElectronTightID(ElectronsNoIso_tightID)','LeptonsNew:IdIsoElectronTightID(Electrons_tightID)'])
-    self.VectorDouble.extend(['LeptonsNew:MuIDMTW(MuonsNoIso_MTW)','LeptonsNew:ElecIDMTW(ElectronsNoIso_MTW)'])
-    self.VectorDouble.extend(['IDMuonMiniIso:MiniIso(MuonsNoIso_MiniIso)','IDElectronMiniIso:MiniIso(ElectronsNoIso_MiniIso)'])
-    self.VectorDouble.extend(['IDMuonMiniIso:MT2Activity(MuonsNoIso_MT2Activity)','IDElectronMiniIso:MT2Activity(ElectronsNoIso_MT2Activity)'])
-    self.VectorDouble.extend(['LeptonsNew:MuIDIsoMTW(Muons_MTW)','LeptonsNew:ElecIDIsoMTW(Electrons_MTW)'])
+    self.VectorBool.extend(['LeptonsNew:IdMuonTightID(Muons_tightID)'])
+    self.VectorBool.extend(['LeptonsNew:IdElectronMediumID(Electrons_mediumID)'])
+    self.VectorBool.extend(['LeptonsNew:IdElectronTightID(Electrons_tightID)'])
+    self.VectorDouble.extend(['LeptonsNew:IdMuonMTW(Muons_MTW)','LeptonsNew:IdElectronMTW(Electrons_MTW)'])
+    self.VectorDouble.extend(['IDMuonMiniIso:MiniIso(Muons_MiniIso)','IDElectronMiniIso:MiniIso(Electrons_MiniIso)'])
+    self.VectorDouble.extend(['IDMuonMiniIso:MT2Activity(Muons_MT2Activity)','IDElectronMiniIso:MT2Activity(Electrons_MT2Activity)'])
+    self.VectorDouble.extend(['LeptonsNew:IdMuonMTW(Muons_MTW)','LeptonsNew:IdElectronMTW(Electrons_MTW)'])
     self.VectorDouble.extend(['PTWExtrapolation:MuPTW(Muons_PTW)','PTWExtrapolation:ElecPTW(Electrons_PTW)'])
-    self.VectorDouble.extend(['IDIsoMuonMiniIso:MT2Activity(Muons_MT2Activity)','IDIsoElectronMiniIso:MT2Activity(Electrons_MT2Activity)'])
     self.VectorTLorentzVector.extend(['TAPElectronTracks:pfcands(TAPElectronTracks)'])
     self.VectorDouble.extend(['TAPElectronTracks:pfcandstrkiso(TAPElectronTracks_trkiso)'])
     self.VectorDouble.extend(['TAPElectronTracks:pfcandsactivity(TAPElectronTracks_activity)'])

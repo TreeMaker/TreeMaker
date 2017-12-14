@@ -99,22 +99,22 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
   PFCandTok_ = consumes<pat::PackedCandidateCollection>(PFCandTag_);
   RhoTok_ = consumes<double>(RhoTag_);
         
-  produces<std::vector<pat::Muon> > ("IdMuon");
-  produces<std::vector<bool> > ("IdMuonTightID");
-  produces<std::vector<pat::Muon> > ("IdIsoMuon");
-  produces<std::vector<bool> > ("IdIsoMuonTightID");
-  produces<std::vector<int> >("MuonCharge");
-  produces<std::vector<pat::Electron> > ("IdElectron");
-  produces<std::vector<bool> > ("IdElectronMediumID");
-  produces<std::vector<bool> > ("IdElectronTightID");
-  produces<std::vector<pat::Electron> > ("IdIsoElectron");
-  produces<std::vector<bool> > ("IdIsoElectronMediumID");
-  produces<std::vector<bool> > ("IdIsoElectronTightID");
-  produces<std::vector<int> >("ElectronCharge");
-  produces<std::vector<double> >("MuIDMTW");
-  produces<std::vector<double> >("MuIDIsoMTW");
-  produces<std::vector<double> >("ElecIDMTW");
-  produces<std::vector<double> >("ElecIDIsoMTW");
+  produces<std::vector<pat::Muon>>("IdMuon");
+  produces<std::vector<bool>>("IdMuonTightID");
+  produces<std::vector<int>>("IdMuonCharge");
+  produces<std::vector<double>>("IdMuonMTW");
+  produces<std::vector<bool>>("IdMuonPassIso");
+  produces<std::vector<pat::Muon>>("IdIsoMuon");
+  produces<int>("IdIsoMuonNum");
+
+  produces<std::vector<pat::Electron>>("IdElectron");
+  produces<std::vector<bool>>("IdElectronMediumID");
+  produces<std::vector<bool>>("IdElectronTightID");
+  produces<std::vector<int>>("IdElectronCharge");
+  produces<std::vector<double>>("IdElectronMTW");
+  produces<std::vector<bool>>("IdElectronPassIso");
+  produces<std::vector<pat::Electron>>("IdIsoElectron");
+  produces<int>("IdIsoElectronNum");
   
   produces<int>("");        
 }
@@ -147,15 +147,15 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   auto ElectronCharge = std::make_unique<std::vector<int>>();
 
   auto muIDMTW = std::make_unique<std::vector<double>>();
-  auto muIDIsoMTW = std::make_unique<std::vector<double>>();
   auto muIDTight = std::make_unique<std::vector<bool>>();
-  auto muIDIsoTight = std::make_unique<std::vector<bool>>();
+  auto muIDPassIso = std::make_unique<std::vector<bool>>();
   auto elecIDMTW = std::make_unique<std::vector<double>>();
-  auto elecIDIsoMTW = std::make_unique<std::vector<double>>();
   auto elecIDMedium = std::make_unique<std::vector<bool>>();
-  auto elecIDIsoMedium = std::make_unique<std::vector<bool>>();
   auto elecIDTight = std::make_unique<std::vector<bool>>();
-  auto elecIDIsoTight = std::make_unique<std::vector<bool>>();
+  auto elecIDPassIso = std::make_unique<std::vector<bool>>();
+
+  int nmuons = 0;
+  int nelectrons = 0;
 
   edm::Handle< edm::View<pat::MET> > MET;
   iEvent.getByToken(metTok_,MET); 
@@ -165,7 +165,6 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       metLorentz=MET->at(0).p4();
     } else edm::LogWarning("TreeMaker")<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label();
 
-  int Leptons=0;
   edm::Handle<pat::PackedCandidateCollection> pfcands;
   iEvent.getByToken(PFCandTok_, pfcands);
 
@@ -181,28 +180,28 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     {
       for(unsigned int m=0; m<muonHandle->size(); ++m)
         {
-          if(muonHandle->at(m).pt()<minMuPt_ || fabs(muonHandle->at(m).eta())>maxMuEta_) continue;
+          const pat::Muon& aMu = muonHandle->at(m);
+          if(aMu.pt()<minMuPt_ || fabs(aMu.eta())>maxMuEta_) continue;
                         
-          if(MuonID(muonHandle->at(m),vtx_h->at(0)))
+          if(MuonID(aMu,vtx_h->at(0)))
             {
-              idMuons->push_back(muonHandle->at(m));
-              muIDTight->push_back(MuonIDtight(muonHandle->at(m),vtx_h->at(0)));
-              muIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi()));
-              float ChgIso=muonHandle->at(m).pfIsolationR04().sumChargedHadronPt;
-              float ChgPU=muonHandle->at(m).pfIsolationR04().sumPUPt;
-              float NeuIso=muonHandle->at(m).pfIsolationR04().sumNeutralHadronEt+muonHandle->at(m).pfIsolationR04().sumPhotonEt;
-              double dBIsoMu= (ChgIso+std::max(0., NeuIso-0.5*ChgPU))/muonHandle->at(m).pt();
+              idMuons->push_back(aMu);
+              muIDTight->push_back(MuonIDtight(aMu,vtx_h->at(0)));
+              muIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),aMu.pt(),aMu.phi()));
+              MuonCharge->push_back(aMu.charge());
+              float ChgIso=aMu.pfIsolationR04().sumChargedHadronPt;
+              float ChgPU=aMu.pfIsolationR04().sumPUPt;
+              float NeuIso=aMu.pfIsolationR04().sumNeutralHadronEt+aMu.pfIsolationR04().sumPhotonEt;
+              double dBIsoMu= (ChgIso+std::max(0., NeuIso-0.5*ChgPU))/aMu.pt();
               if(useMiniIsolation_) {
                 double mt2_act = 0.0;
-                SUSYIsolationHelper.GetMiniIsolation(pfcands, &muonHandle->at(m), SUSYIsolation::muon, rho, dBIsoMu, mt2_act);
+                SUSYIsolationHelper.GetMiniIsolation(pfcands, &aMu, SUSYIsolation::muon, rho, dBIsoMu, mt2_act);
               }
-              if(dBIsoMu<muIsoValue_)
+              muIDPassIso->push_back(dBIsoMu<muIsoValue_);
+              if(muIDPassIso->back())
                 {
-                  Leptons++;
-                  isoMuons->push_back(muonHandle->at(m));
-                  muIDIsoTight->push_back(MuonIDtight(muonHandle->at(m),vtx_h->at(0)));
-                  muIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),muonHandle->at(m).pt(),muonHandle->at(m).phi()));
-                  MuonCharge->push_back(muonHandle->at(m).charge());
+                  nmuons++;
+                  isoMuons->push_back(aMu);
                 }
             }
         }
@@ -215,8 +214,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     {
       for(unsigned int e=0; e<eleHandle->size(); ++e)
         {
-          if(fabs(eleHandle->at(e).superCluster()->eta())>maxElecEta_ ||eleHandle->at(e).pt()<minElecPt_)continue;
-          const pat::Electron aEle = eleHandle->at(e);
+          const pat::Electron& aEle = eleHandle->at(e);
+          if(fabs(aEle.superCluster()->eta())>maxElecEta_ || aEle.pt()<minElecPt_) continue;
           const reco::Vertex vtx = vtx_h->at(0);
 
           double miniIso = 0.0;
@@ -226,45 +225,44 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
           if(ElectronID(aEle, vtx, VETO)) // check VETO id
             {
               // id passed
-              idElectrons->push_back(eleHandle->at(e));
-              elecIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
+              idElectrons->push_back(aEle);
+              elecIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),aEle.pt(),aEle.phi()));
               elecIDMedium->push_back(ElectronID(aEle, vtx, MEDIUM));
               elecIDTight->push_back(ElectronID(aEle, vtx, TIGHT));
-              if(miniIso<elecIsoValue_)
+              ElectronCharge->push_back(aEle.charge());
+              elecIDPassIso->push_back(miniIso<elecIsoValue_);
+              if(elecIDPassIso->back())
                 {
                   // iso passed
-                  isoElectrons->push_back(eleHandle->at(e));
-                  elecIDIsoMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),eleHandle->at(e).pt(),eleHandle->at(e).phi()));
-                  elecIDIsoMedium->push_back(ElectronID(aEle, vtx, MEDIUM));
-                  elecIDIsoTight->push_back(ElectronID(aEle, vtx, TIGHT));
-                  Leptons++;
-                  ElectronCharge->push_back(eleHandle->at(e).charge());
+                  isoElectrons->push_back(aEle);
+                  nelectrons++;
                 }
             }
         }
     }
 
-  auto htp = std::make_unique<int>(Leptons);
-  iEvent.put(std::move(htp));
+  auto htp1 = std::make_unique<int>(nmuons+nelectrons);
+  auto htp2 = std::make_unique<int>(nmuons);
+  auto htp3 = std::make_unique<int>(nelectrons);
+  iEvent.put(std::move(htp1));
+  iEvent.put(std::move(htp2),"IdIsoMuonNum");
+  iEvent.put(std::move(htp3),"IdIsoElectronNum");
   iEvent.put(std::move(idMuons),"IdMuon");
   iEvent.put(std::move(isoMuons),"IdIsoMuon");
 
   iEvent.put(std::move(idElectrons),"IdElectron");
   iEvent.put(std::move(isoElectrons),"IdIsoElectron");
 
-  iEvent.put(std::move(ElectronCharge),"ElectronCharge");
-  iEvent.put(std::move(MuonCharge),"MuonCharge");
+  iEvent.put(std::move(ElectronCharge),"IdElectronCharge");
+  iEvent.put(std::move(MuonCharge),"IdMuonCharge");
 
-  iEvent.put(std::move(muIDMTW),"MuIDMTW");
-  iEvent.put(std::move(muIDIsoMTW),"MuIDIsoMTW");
+  iEvent.put(std::move(muIDMTW),"IdMuonMTW");
   iEvent.put(std::move(muIDTight),"IdMuonTightID");
-  iEvent.put(std::move(muIDIsoTight),"IdIsoMuonTightID");
-  iEvent.put(std::move(elecIDMTW),"ElecIDMTW");
-  iEvent.put(std::move(elecIDIsoMTW),"ElecIDIsoMTW");
+  iEvent.put(std::move(muIDPassIso),"IdMuonPassIso");
+  iEvent.put(std::move(elecIDMTW),"IdElectronMTW");
   iEvent.put(std::move(elecIDMedium),"IdElectronMediumID");
   iEvent.put(std::move(elecIDTight),"IdElectronTightID");
-  iEvent.put(std::move(elecIDIsoMedium),"IdIsoElectronMediumID");
-  iEvent.put(std::move(elecIDIsoTight),"IdIsoElectronTightID");
+  iEvent.put(std::move(elecIDPassIso),"IdElectronPassIso");
 
 }
 
