@@ -259,8 +259,13 @@ def doZinvBkg(self,process):
     )
     
     # do the removal
+    # if putEmpty is set to true, this will output an empty collection if the "veto" collection is empty
+    # this avoids pointless reclustering of an identical candidate collection
+    # "clean" branches in the ntuple will not be filled in this case; (e.g. Jetsclean.size()==0)
+    # the corresponding non-clean branches should be used instead for those events
     process.cleanedCandidates =  cms.EDProducer("PackedCandPtrProjector",
-        src = cms.InputTag("packedPFCandidates"), veto = cms.InputTag("selectedXons")
+        src = cms.InputTag("packedPFCandidates"), veto = cms.InputTag("selectedXons"),
+        putEmpty = cms.bool(True)
     )
     
     # make reclustered jets
