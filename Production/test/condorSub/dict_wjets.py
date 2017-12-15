@@ -14,5 +14,7 @@ flist = {
         ['Summer16.WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1'],
         ['Summer16.WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16.WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext1'],
+        ['Summer16.WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16.WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext2'],
     ]
 }
