@@ -25,12 +25,14 @@ class PackedCandPtrProjector : public edm::global::EDProducer<> {
     edm::EDGetTokenT<edm::View<pat::PackedCandidate> > packedCandSrcToken_;
     edm::EDGetTokenT<edm::View<reco::Candidate> > candSrcToken_;
     edm::EDGetTokenT<edm::View<reco::Candidate> > vetoSrcToken_;
+    bool putEmpty_;
 };
 
 PackedCandPtrProjector::PackedCandPtrProjector(const edm::ParameterSet & iConfig):
   packedCandSrcToken_(consumes<edm::View<pat::PackedCandidate> >(iConfig.getParameter<edm::InputTag>("src"))),
   candSrcToken_(consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("src"))),
-  vetoSrcToken_(consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("veto")))
+  vetoSrcToken_(consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("veto"))),
+  putEmpty_(iConfig.getParameter<bool>("putEmpty"))
 {
   produces<edm::PtrVector<pat::PackedCandidate> >();
 }
@@ -55,9 +57,13 @@ PackedCandPtrProjector::produce(edm::StreamID, edm::Event & iEvent, const edm::E
   for(size_t i = 0; i< vetos->size();  ++i) {
    for(size_t j=0,n=(*vetos)[i].numberOfSourceCandidatePtrs(); j<n;j++ )    {
      vetoedPtrs.insert((*vetos)[i].sourceCandidatePtr(j));   
+   }
   }
+  if(vetoedPtrs.empty() and putEmpty_) {
+    iEvent.put(std::move(result));
+    return;
   }
- for(size_t i = 0; i< cands->size();  ++i) {
+  for(size_t i = 0; i< cands->size();  ++i) {
     reco::CandidatePtr c = cands->ptrAt(i);
     if(vetoedPtrs.find(c)==vetoedPtrs.end())
     {
