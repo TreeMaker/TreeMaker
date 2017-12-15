@@ -83,11 +83,11 @@ def doLostLeptonBkg(self,process,METTag):
             JetTag = cms.InputTag('HTJets')
         )
 
-    from TreeMaker.Utils.extrapolationproducer_cfi import extrapolationproducer
-    process.PTWExtrapolation = extrapolationproducer.clone(
-        MuonTag = cms.InputTag('LeptonsNew:IdMuon'), # these are the leptons that pass ID
-        ElectronTag = cms.InputTag('LeptonsNew:IdElectron')
-    )
+#    from TreeMaker.Utils.extrapolationproducer_cfi import extrapolationproducer
+#    process.PTWExtrapolation = extrapolationproducer.clone(
+#        MuonTag = cms.InputTag('LeptonsNew:IdMuon'), # these are the leptons that pass ID
+#        ElectronTag = cms.InputTag('LeptonsNew:IdElectron')
+#    )
     
     # may eventually save track isolation, activity
     self.VectorBool.extend(['LeptonsNew:IdMuonTightID(Muons_tightID)'])
@@ -97,7 +97,7 @@ def doLostLeptonBkg(self,process,METTag):
     self.VectorDouble.extend(['IDMuonMiniIso:MiniIso(Muons_MiniIso)','IDElectronMiniIso:MiniIso(Electrons_MiniIso)'])
     self.VectorDouble.extend(['IDMuonMiniIso:MT2Activity(Muons_MT2Activity)','IDElectronMiniIso:MT2Activity(Electrons_MT2Activity)'])
     self.VectorDouble.extend(['LeptonsNew:IdMuonMTW(Muons_MTW)','LeptonsNew:IdElectronMTW(Electrons_MTW)'])
-    self.VectorDouble.extend(['PTWExtrapolation:MuPTW(Muons_PTW)','PTWExtrapolation:ElecPTW(Electrons_PTW)'])
+#    self.VectorDouble.extend(['PTWExtrapolation:MuPTW(Muons_PTW)','PTWExtrapolation:ElecPTW(Electrons_PTW)'])
     self.VectorTLorentzVector.extend(['TAPElectronTracks:pfcands(TAPElectronTracks)'])
     self.VectorDouble.extend(['TAPElectronTracks:pfcandstrkiso(TAPElectronTracks_trkiso)'])
     self.VectorDouble.extend(['TAPElectronTracks:pfcandsactivity(TAPElectronTracks_activity)'])
