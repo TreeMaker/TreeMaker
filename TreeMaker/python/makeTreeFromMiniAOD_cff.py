@@ -374,8 +374,10 @@ def makeTreeFromMiniAOD(self,process):
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
         METTag           = METTag, 
     )
-    self.VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
-    self.VectorInt.extend(['LeptonsNew:MuonCharge(Muons_charge)','LeptonsNew:ElectronCharge(Electrons_charge)'])
+    self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
+    self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
+    self.VectorBool.extend(['LeptonsNew:IdMuonPassIso(Muons_passIso)','LeptonsNew:IdElectronPassIso(Electrons_passIso)'])
+    self.VarsInt.extend(['LeptonsNew:IdIsoMuonNum(NMuons)','LeptonsNew:IdIsoElectronNum(NElectrons)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
