@@ -59,5 +59,16 @@ triggerNameList = cms.vstring(
     'HLT_CaloJet500_NoJetID_v',
     'HLT_Ele115_CaloIdVT_GsfTrkIdT_v',
     'HLT_IsoTkMu24_v',
+    'HLT_PFHT450_SixJet40_BTagCSV_p056',
+    'HLT_PFHT400_SixJet30_DoubleBTagCSV_p056',
+    'HLT_AK8DiPFJet250_200_TrimMass30_v',
+    'HLT_AK8DiPFJet280_200_TrimMass30_v',
+    'HLT_AK8DiPFJet300_200_TrimMass30_v',
+    'HLT_AK8PFHT700_TrimR0p1PT0p03Mass50_v',
+    'HLT_AK8PFJet360_TrimMass30_v',
+    'HLT_AK8PFJet450_v',
+    'HLT_DiCentralPFJet55_PFMET110_v',
+    'HLT_DiPFJet40_DEta3p5_MJJ600_PFMETNoMu140_v',
+    'HLT_PFHT650_WideJetMJJ900DEtaJJ1p5_v',
     ])))
 )
