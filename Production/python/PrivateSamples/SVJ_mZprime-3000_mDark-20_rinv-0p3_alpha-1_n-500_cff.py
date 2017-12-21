@@ -6,7 +6,6 @@ secFiles = cms.untracked.vstring()
 source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 readFiles.extend( [
        '/store/user/lpcsusyhad/SVJ2017/ProductionV1/MINIAOD//step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-500_part-1.root',
-       '/store/user/lpcsusyhad/SVJ2017/ProductionV1/MINIAOD//step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-500_part-2.root',
        '/store/user/lpcsusyhad/SVJ2017/ProductionV1/MINIAOD//step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-500_part-3.root',
        '/store/user/lpcsusyhad/SVJ2017/ProductionV1/MINIAOD//step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-500_part-4.root',
        '/store/user/lpcsusyhad/SVJ2017/ProductionV1/MINIAOD//step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-500_part-5.root',
