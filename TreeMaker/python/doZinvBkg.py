@@ -34,6 +34,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         subJETCorrLevels = jecLevels,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFCHSCleanSoftDrop")
+    # temporary bug fix for jet toolbox (see https://github.com/cms-jet/JetToolbox/issues/51)
+    if hasattr(process,'out'): del process.out
+    if hasattr(process,'endpath'): del process.endpath
 
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     process = self.makeJetVarsAK8(process,
