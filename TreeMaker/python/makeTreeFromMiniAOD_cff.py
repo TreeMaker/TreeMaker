@@ -760,11 +760,11 @@ def makeTreeFromMiniAOD(self,process):
     if self.applybaseline:
         process.HTFilter = DoubleFilter.clone(
             DoubleTag = cms.InputTag('HT'),
-            CutValue  = cms.double('500'),
+            CutValue  = cms.double(500),
         )
         process.MHTFilter = DoubleFilter.clone(
             DoubleTag = cms.InputTag('MHT:Pt'),
-            CutValue  = cms.double('200'),
+            CutValue  = cms.double(200),
         )
         process.Baseline += process.HTFilter
         #process.Baseline += process.MHTFilter
