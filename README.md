@@ -2,14 +2,13 @@
 
 ## Instructions
 
-The following installation instructions assume the user wants to process Summer16 MC (miniAOD v2 format), or Run2016 23Sep ReReco or 03Feb ReMiniAOD data.
-(Spring16 MC and Run2016 PromptReco data are also supported, but only in limited cases.)
+The following installation instructions assume the user wants to process 2016 or 2017 miniAOD.
 
 ```
-wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2/setup.sh
+wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017/setup.sh
 chmod +x setup.sh
 ./setup.sh
-cd CMSSW_8_0_30/src/
+cd CMSSW_9_4_2/src/
 cmsenv
 cd TreeMaker/Production/test
 ```
@@ -17,7 +16,7 @@ cd TreeMaker/Production/test
 The script [setup.sh](./setup.sh) has options to allow installing a different fork or branch of TreeMaker
 (though some branches may have different setup scripts, so check carefully which one you download):
 * `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
-* `-b [branch]`: which branch to download (`-b branch`, default = Run2)
+* `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017)
 
 Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
