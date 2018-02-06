@@ -38,7 +38,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     if hasattr(process,'out'): del process.out
     if hasattr(process,'endpath'): del process.endpath
 
-    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
