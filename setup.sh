@@ -24,6 +24,8 @@ git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from
 git cms-merge-topic -u TreeMaker:MET_80X_FixEGdR
 git cms-merge-topic -u TreeMaker:METRecipe_8030plus
 git cms-merge-topic -u TreeMaker:storeJERFactor8030plus
+git cms-merge-topic -u TreeMaker:RemoveUnneededTagsPAT_8030
+git cms-merge-topic -u TreeMaker:RemoveMayConsumePAT_8030
 git cms-merge-topic -u TreeMaker:AddJetAxis1
 git clone git@github.com:cms-jet/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_80X_V3
 git clone git@github.com:kpedro88/CondorProduction.git Condor/Production  
