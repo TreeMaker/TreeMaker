@@ -35,7 +35,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFCHSCleanSoftDrop")
 
-    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
