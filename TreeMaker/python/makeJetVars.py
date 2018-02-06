@@ -295,4 +295,4 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
 #            ])
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
-        return process        
+    return process        

@@ -213,3 +213,4 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `threads`: run in multithreaded mode w/ specified number of threads (default=1)
 * `streams`: run w/ specified number of streams (default=0 -> streams=threads)
 * `tmi`: enable [TimeMemoryInfo](https://github.com/cms-sw/cmssw/blob/master/Validation/Performance/python/TimeMemoryInfo.py) for simple profiling (default=False)
+* `trace`: enable the tracer for debugging (default=False)
