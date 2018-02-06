@@ -14,6 +14,7 @@ mp=parameters.value("mp",False)
 threads=parameters.value("threads",1)
 streams=parameters.value("streams",0)
 tmi=parameters.value("tmi",False)
+trace=parameters.value("trace",False)
 
 # print out settings
 print "***** SETUP ************************************"
@@ -70,6 +71,9 @@ if threads>1:
 if tmi:
     from Validation.Performance.TimeMemoryInfo import customise
     process = customise(process)
+
+if trace:
+    process.add_(cms.Service("Tracer", dumpPathsAndConsumes = cms.untracked.bool(True)))
 
 # setup makeTree modules
 process = maker.makeTreeFromMiniAOD(process)
