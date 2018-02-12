@@ -264,6 +264,25 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.7_alpha-0.2_n-500", "", "", "Constant", 0.0155, 50000),
         MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.5_n-500", "", "", "Constant", 0.0155, 50000),
         MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-500", "", "", "Constant", 0.0155, 49500),
+        # stealth/rpv stop signals
+        MCSample("stealth_stop_350_singlino_SYY", "", "", "Constant", 3.78661, 71695),
+        MCSample("stealth_stop_450_singlino_SYY", "", "", "Constant", 0.948333, 66250),
+        MCSample("stealth_stop_550_singlino_SYY", "", "", "Constant", 0.296128, 63434),
+        MCSample("stealth_stop_650_singlino_SYY", "", "", "Constant", 0.107045, 62097),
+        MCSample("stealth_stop_750_singlino_SYY", "", "", "Constant", 0.0431418, 60023),
+        MCSample("stealth_stop_850_singlino_SYY", "", "", "Constant", 0.0189612, 59107),
+        MCSample("stealth_stop_350_singlino_SHuHd", "", "", "Constant", 3.78661, 72270),
+        MCSample("stealth_stop_450_singlino_SHuHd", "", "", "Constant", 0.948333, 66340),
+        MCSample("stealth_stop_550_singlino_SHuHd", "", "", "Constant", 0.296128, 63399),
+        MCSample("stealth_stop_650_singlino_SHuHd", "", "", "Constant", 0.107045, 61442),
+        MCSample("stealth_stop_750_singlino_SHuHd", "", "", "Constant", 0.0431418, 59992),
+        MCSample("stealth_stop_850_singlino_SHuHd", "", "", "Constant", 0.0189612, 59737),
+        MCSample("rpv_stop_350_t3j_uds", "", "", "Constant", 3.78661, 69543),
+        MCSample("rpv_stop_450_t3j_uds", "", "", "Constant", 0.948333, 64566),
+        MCSample("rpv_stop_550_t3j_uds", "", "", "Constant", 0.296128, 61287),
+        MCSample("rpv_stop_650_t3j_uds", "", "", "Constant", 0.107045, 59334),
+        MCSample("rpv_stop_750_t3j_uds", "", "", "Constant", 0.0431418, 58016),
+        MCSample("rpv_stop_850_t3j_uds", "", "", "Constant", 0.0189612, 57069),
     ]
     
     # loop over all samples until we find a match
