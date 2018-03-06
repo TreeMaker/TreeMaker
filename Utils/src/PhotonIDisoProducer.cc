@@ -181,18 +181,18 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   // - - - - - - - - - - - - - - - - - - - - 
   // Initializing effective area to be used 
   // for rho corrections to the photon isolation
-  // variables. 
-  // Spring16 EA are used.
+  // variables. Taken EA and ID definitions from
+  // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Working_points_for_92X_and_later
   // - - - - - - - - - - - - - - - - - - - - 
   //addEffA(etaLow_, etaHigh_, effA_pfCh_, effA_pfNu_, effA_pfGa_); 
   effArea effAreas;
-  effAreas.addEffA(0.,    1.0,   0.0360, 0.0597, 0.1210);
-  effAreas.addEffA(1.0,   1.479, 0.0377, 0.0807, 0.1107);
-  effAreas.addEffA(1.479, 2.0,   0.0306, 0.0629, 0.0699);
-  effAreas.addEffA(2.0,   2.2,   0.0283, 0.0197, 0.1056);
-  effAreas.addEffA(2.2,   2.3,   0.0254, 0.0184, 0.1457);
-  effAreas.addEffA(2.3,   2.4,   0.0217, 0.0284, 0.1719);
-  effAreas.addEffA(2.4,   99.,   0.0167, 0.0591, 0.1988);
+  effAreas.addEffA(0.,    1.0,   0.0385, 0.0636, 0.124);
+  effAreas.addEffA(1.0,   1.479, 0.0468, 0.1103, 0.1093);
+  effAreas.addEffA(1.479, 2.0,   0.0435, 0.0759, 0.0631);
+  effAreas.addEffA(2.0,   2.2,   0.0378, 0.0236, 0.0779);
+  effAreas.addEffA(2.2,   2.3,   0.0338, 0.0151, 0.0999);
+  effAreas.addEffA(2.3,   2.4,   0.0314, 0.00007, 0.1155);
+  effAreas.addEffA(2.4,   99.,   0.0269, 0.0132, 0.1373);
   
   /// setup cluster tools
   noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
@@ -240,18 +240,18 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       passAcc=true;
     }
     
-    // apply id cuts using https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Recommended_Working_points_for_2
+    // apply id cuts using https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Working_points_for_92X_and_later
     if (isBarrelPhoton) {
-      if (iPhoton->hadTowOverEm() < 0.0597 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+      if (iPhoton->hadTowOverEm() < 0.105 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
 	passIDLoose = true;
-	if (sieie < 0.01031) {
+	if (sieie < 0.0103) {
 	  passID = true;
 	}
       }
     } else if (isEndcapPhoton) {
-      if (iPhoton->hadTowOverEm() < 0.0481 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+      if (iPhoton->hadTowOverEm() < 0.029 && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
 	passIDLoose = true;
-	if (sieie < 0.03013) {
+	if (sieie < 0.0276) {
 	  passID = true;
 	}
       }
@@ -259,16 +259,16 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
  
     // apply isolation cuts
     if (isBarrelPhoton) {
-      if (nuIso < (10.910 + 0.0148*iPhoton->pt() + 0.000017*iPhoton->pt()*iPhoton->pt()) && gamIso < (3.630 + 0.0047*iPhoton->pt())) {
+      if (nuIso < (9.188 + 0.0126*iPhoton->pt() + 0.000026*iPhoton->pt()*iPhoton->pt()) && gamIso < (2.956 + 0.0035*iPhoton->pt())) {
         passIsoLoose = true;
-	if (chIso < 1.295) {
+	if (chIso < 2.839) {
 	  passIso = true;
         }
       }
     } else if (isEndcapPhoton) {
-      if (nuIso < (5.931 + 0.0163*iPhoton->pt() + 0.000014*iPhoton->pt()*iPhoton->pt())  && gamIso < (6.641 + 0.0034*iPhoton->pt())) {
+      if (nuIso < (10.471 + 0.0119*iPhoton->pt() + 0.000025*iPhoton->pt()*iPhoton->pt())  && gamIso < (4.895 + 0.0040*iPhoton->pt())) {
         passIsoLoose = true;
-	if (chIso < 1.011) {
+	if (chIso < 2.150) {
           passIso = true;
         }
       }
