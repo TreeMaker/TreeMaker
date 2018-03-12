@@ -77,6 +77,8 @@ private:
   edm::EDGetTokenT<double> rhoTok_;
   edm::EDGetTokenT<edm::View<reco::GenParticle>> genParTok_;
   bool debug;
+  effArea effAreas;
+
 };
 
 
@@ -121,6 +123,21 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   produces< std::vector< bool > >("fullID");
   produces< std::vector< bool > >("electronFakes");
   produces< bool >("hasGenPromptPhoton");
+  // - - - - - - - - - - - - - - - - - - - - 
+  // Initializing effective area to be used 
+  // for rho corrections to the photon isolation
+  // variables. Taken EA and ID definitions from
+  // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Working_points_for_92X_and_later
+  // - - - - - - - - - - - - - - - - - - - - 
+  //addEffA(etaLow_, etaHigh_, effA_pfCh_, effA_pfNu_, effA_pfGa_); 
+  effAreas.addEffA(0.,    1.0,   0.0385, 0.0636, 0.124);
+  effAreas.addEffA(1.0,   1.479, 0.0468, 0.1103, 0.1093);
+  effAreas.addEffA(1.479, 2.0,   0.0435, 0.0759, 0.0631);
+  effAreas.addEffA(2.0,   2.2,   0.0378, 0.0236, 0.0779);
+  effAreas.addEffA(2.2,   2.3,   0.0338, 0.0151, 0.0999);
+  effAreas.addEffA(2.3,   2.4,   0.0314, 0.00007, 0.1155);
+  effAreas.addEffA(2.4,   99.,   0.0269, 0.0132, 0.1373);
+
 }
 
 
@@ -178,22 +195,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 
   if( debug ) edm::LogInfo("TreeMaker") << "got photon collection";
 
-  // - - - - - - - - - - - - - - - - - - - - 
-  // Initializing effective area to be used 
-  // for rho corrections to the photon isolation
-  // variables. Taken EA and ID definitions from
-  // https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Working_points_for_92X_and_later
-  // - - - - - - - - - - - - - - - - - - - - 
-  //addEffA(etaLow_, etaHigh_, effA_pfCh_, effA_pfNu_, effA_pfGa_); 
-  effArea effAreas;
-  effAreas.addEffA(0.,    1.0,   0.0385, 0.0636, 0.124);
-  effAreas.addEffA(1.0,   1.479, 0.0468, 0.1103, 0.1093);
-  effAreas.addEffA(1.479, 2.0,   0.0435, 0.0759, 0.0631);
-  effAreas.addEffA(2.0,   2.2,   0.0378, 0.0236, 0.0779);
-  effAreas.addEffA(2.2,   2.3,   0.0338, 0.0151, 0.0999);
-  effAreas.addEffA(2.3,   2.4,   0.0314, 0.00007, 0.1155);
-  effAreas.addEffA(2.4,   99.,   0.0269, 0.0132, 0.1373);
-  
+ 
   /// setup cluster tools
   noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
         
