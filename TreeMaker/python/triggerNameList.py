@@ -61,6 +61,8 @@ triggerNameList = cms.vstring(
     'HLT_IsoTkMu24_v',
     'HLT_PFHT450_SixJet40_BTagCSV_p056',
     'HLT_PFHT400_SixJet30_DoubleBTagCSV_p056',
+    'HLT_PFHT450_SixJet40_v',
+    'HLT_PFHT400_SixJet30_v',
     'HLT_AK8DiPFJet250_200_TrimMass30_v',
     'HLT_AK8DiPFJet280_200_TrimMass30_v',
     'HLT_AK8DiPFJet300_200_TrimMass30_v',
