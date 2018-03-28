@@ -60,6 +60,30 @@ class Scenario:
                           jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                           residual=True,
                           era="Run2_25ns")
+        elif sname == "Fall17":
+            self.set_vars(globaltag="94X_mc2017_realistic_v13",
+                          tagname="PAT",
+                          geninfo=True,
+                          jecfile="data/jec/Fall17_17Nov2017_V6_MC",
+                          jerfile="data/jer/Spring16_25nsV6_MC",
+                          pufile="TreeMaker/Production/test/data/",
+                          era="Run2_25ns")
+        elif sname == "Fall17sig":
+            self.set_vars(globaltag="94X_mc2017_realistic_v13",
+                          tagname="PAT",
+                          geninfo=True,
+                          signal=True,
+                          jecfile="data/jec/Fall17_17Nov2017_V6_MC",
+                          jerfile="data/jer/Spring16_25nsV6_MC",
+                          pufile="TreeMaker/Production/test/data/",
+                          era="Run2_25ns")
+        elif sname == "EOY2017ReReco":
+            self.set_vars(globaltag="94X_dataRun2_v6",
+                          tagname="RECO",
+                          jsonfile="data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt",
+                          jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
+                          residual=True,
+                          era="Run2_25ns")
         else: #if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
