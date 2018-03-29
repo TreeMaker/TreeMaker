@@ -66,7 +66,7 @@ class Scenario:
                           geninfo=True,
                           jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                           jerfile="data/jer/Spring16_25nsV6_MC",
-                          pufile="TreeMaker/Production/test/data/",
+                          pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
                           era="Run2_25ns")
         elif sname == "Fall17sig":
             self.set_vars(globaltag="94X_mc2017_realistic_v13",
@@ -75,9 +75,9 @@ class Scenario:
                           signal=True,
                           jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                           jerfile="data/jer/Spring16_25nsV6_MC",
-                          pufile="TreeMaker/Production/test/data/",
+                          pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
                           era="Run2_25ns")
-        elif sname == "EOY2017ReReco":
+        elif sname == "2017ReReco17Nov":
             self.set_vars(globaltag="94X_dataRun2_v6",
                           tagname="RECO",
                           jsonfile="data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt",
