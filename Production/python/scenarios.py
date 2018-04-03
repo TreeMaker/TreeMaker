@@ -11,6 +11,7 @@ class Scenario:
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
                 era="Run2_25ns",
+                localera="TM2016",
             )
         elif sname == "Spring16Pmssm":
             self.set_vars(
@@ -24,6 +25,7 @@ class Scenario:
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
                 era="Run2_25ns",
+                localera="TM2016",
             )
         elif sname == "Summer16":
             self.set_vars(
@@ -34,6 +36,7 @@ class Scenario:
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
                 era="Run2_25ns",
+                localera="TM2016",
             )
         elif sname == "Summer16sig":
             self.set_vars(
@@ -45,6 +48,7 @@ class Scenario:
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
                 era="Run2_25ns",
+                localera="TM2016",
             )
         elif sname == "2016H":
             self.set_vars(
@@ -54,6 +58,7 @@ class Scenario:
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
                 era="Run2_25ns",
+                localera="TM2016",
             )
         elif sname == "2016ReReco23Sep":
             self.set_vars(
@@ -63,6 +68,7 @@ class Scenario:
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
                 era="Run2_25ns",
+                localera="TM2016",
             )
         elif sname == "2016ReMiniAOD03Feb":
             self.set_vars(
@@ -72,6 +78,7 @@ class Scenario:
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
                 era="Run2_25ns",
+                localera="TM2016",
             )
         elif sname == "Fall17":
             self.set_vars(
@@ -82,6 +89,7 @@ class Scenario:
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
                 era="Run2_25ns",
+                localera="TM2017",
             )
         elif sname == "Fall17sig":
             self.set_vars(
@@ -93,6 +101,7 @@ class Scenario:
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
                 era="Run2_25ns",
+                localera="TM2017",
             )
         elif sname == "2017ReReco17Nov":
             self.set_vars(
@@ -102,11 +111,12 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
                 residual=True,
                 era="Run2_25ns",
+                localera="TM2017",
             )
         else: # if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
-    def set_vars(self, globaltag, era, tagname, geninfo=False, fastsim=False, signal=False, pmssm=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile=""):
+    def set_vars(self, globaltag, era, localera, tagname, geninfo=False, fastsim=False, signal=False, pmssm=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile=""):
         self.globaltag  = globaltag
         self.tagname    = tagname
         self.geninfo    = geninfo
@@ -119,3 +129,4 @@ class Scenario:
         self.jerfile    = jerfile
         self.pufile     = pufile
         self.era        = era
+        self.localera   = localera
