@@ -88,7 +88,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                era="Run2_25ns",
+                era="Run2_2017",
                 localera="TM2017",
             )
         elif sname == "Fall17sig":
@@ -100,7 +100,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                era="Run2_25ns",
+                era="Run2_2017",
                 localera="TM2017",
             )
         elif sname == "2017ReReco17Nov":
@@ -110,7 +110,7 @@ class Scenario:
                 jsonfile="data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt",
                 jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
                 residual=True,
-                era="Run2_25ns",
+                era="Run2_2017",
                 localera="TM2017",
             )
         else: # if no recognized scenario, cannot go forward
