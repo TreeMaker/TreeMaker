@@ -10,7 +10,7 @@ class Scenario:
                 jecfile="data/jec/Spring16_25nsFastSimMC_V1",
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
-                era="Run2_25ns",
+                era="Run2_2016",
                 localera="TM2016",
             )
         elif sname == "Spring16Pmssm":
@@ -24,7 +24,7 @@ class Scenario:
                 jecfile="data/jec/Spring16_25nsFastSimMC_V1",
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
-                era="Run2_25ns",
+                era="Run2_2016",
                 localera="TM2016",
             )
         elif sname == "Summer16":
@@ -35,7 +35,7 @@ class Scenario:
                 jecfile="data/jec/Summer16_23Sep2016V3_MC",
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
-                era="Run2_25ns",
+                era="Run2_2016",
                 localera="TM2016",
             )
         elif sname == "Summer16sig":
@@ -47,7 +47,7 @@ class Scenario:
                 jecfile="data/jec/Summer16_23Sep2016V3_MC",
                 jerfile="data/jer/Spring16_25nsV6_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
-                era="Run2_25ns",
+                era="Run2_2016",
                 localera="TM2016",
             )
         elif sname == "2016H":
@@ -57,7 +57,7 @@ class Scenario:
                 jsonfile="data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt",
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
-                era="Run2_25ns",
+                era="Run2_2016",
                 localera="TM2016",
             )
         elif sname == "2016ReReco23Sep":
@@ -67,7 +67,7 @@ class Scenario:
                 jsonfile="data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
-                era="Run2_25ns",
+                era="Run2_2016",
                 localera="TM2016",
             )
         elif sname == "2016ReMiniAOD03Feb":
@@ -77,7 +77,7 @@ class Scenario:
                 jsonfile="data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
-                era="Run2_25ns",
+                era="Run2_2016",
                 localera="TM2016",
             )
         elif sname == "Fall17":
