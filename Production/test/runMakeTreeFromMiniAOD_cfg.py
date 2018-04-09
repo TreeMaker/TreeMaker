@@ -29,9 +29,13 @@ print "************************************************"
 # otherwise edmConfigHash fails
 import FWCore.ParameterSet.Config as cms
 from Configuration.StandardSequences.Eras import eras
-process = cms.Process("RA2EventSelection")
+from TreeMaker.TreeMaker.TMEras import TMeras
+eralist = []
 if len(maker.era)>0:
-    process = cms.Process("RA2EventSelection",getattr(eras,maker.era))
+	eralist.append(getattr(eras,maker.era))
+if len(maker.localera)>0:
+	eralist.append(getattr(TMeras,maker.localera))
+process = cms.Process("RA2EventSelection",*eralist)
 
 # configure geometry & conditions
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")

@@ -56,6 +56,7 @@ class makeTree:
         self.getParamDefault("jerfile",self.scenario.jerfile)
         self.getParamDefault("pufile",self.scenario.pufile)
         self.getParamDefault("era",self.scenario.era)
+        self.getParamDefault("localera",self.scenario.localera)
         
         # temporary redirector fix
         # fastsim signal is phedexed to LPC Tier3
@@ -122,6 +123,7 @@ class makeTree:
         if len(self.jerfile)>0: print " JERs applied: "+self.jerfile
         if len(self.pufile)>0: print " PU weights stored: "+self.pufile
         print " era of this dataset: "+self.era
+        print " local era of this dataset: "+self.localera
 
     # assign class methods from functions
     makeTreeFromMiniAOD = makeTreeFromMiniAOD
