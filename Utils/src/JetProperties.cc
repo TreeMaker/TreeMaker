@@ -188,6 +188,19 @@ class NamedPtr_bDiscriminator : public NamedPtr<double> {
 };
 DEFAULT_NAMED_PTR(bDiscriminator,bDiscriminatorCSV);
 DEFAULT_NAMED_PTR(bDiscriminator,bDiscriminatorMVA);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepCSVprobb);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepCSVprobc);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepCSVprobudsgg);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepCSVprobb);
+DEFAULT_NAMED_PTR(bDiscriminator,bDiscriminatorDeepCSVBvsAll);
+DEFAULT_NAMED_PTR(bDiscriminator,bDiscriminatorDeepCSVCvsB);
+DEFAULT_NAMED_PTR(bDiscriminator,bDiscriminatorDeepCSVCvsL);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobb);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobc);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobg);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourproblepb);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobbb);
+DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobuds);
 
 class NamedPtr_jecFactor : public NamedPtr<double> {
 	public:
