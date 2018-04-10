@@ -151,7 +151,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         # provide extra info where necessary
         if storeProperties==1: 
             JetProperties.properties = cms.vstring("bDiscriminatorCSV","bJetTagDeepCSVprobb","bJetTagDeepCSVprobc",
-                                                   "bJetTagDeepCSVprobudsgg","bJetTagDeepCSVprobbb","bDiscriminatorDeepCSVBvsAll",
+                                                   "bJetTagDeepCSVprobudsg","bJetTagDeepCSVprobbb","bDiscriminatorDeepCSVBvsAll",
                                                    "bDiscriminatorDeepCSVCvsB","bDiscriminatorDeepCSVCvsL","bJetTagDeepFlavourprobb",
                                                    "bJetTagDeepFlavourprobc","bJetTagDeepFlavourprobg","bJetTagDeepFlavourproblepb",
                                                    "bJetTagDeepFlavourprobbb","bJetTagDeepFlavourprobuds","muonEnergyFraction",
@@ -263,17 +263,17 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             )
         )
         # specify userfloats
-        JetPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
-        JetPropertiesAK8.softDropMass = cms.vstring('SoftDrop') # computed from subjets
-        JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
-        JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
-        JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
+        JetPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass')
+        JetPropertiesAK8.softDropMass = cms.vstring('SoftDropPuppi') # computed from subjets
+        JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
+        JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
+        JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetPropertiesAK8.bJetTagDeepCSVprobb = cms.vstring('pfDeepCSVJetTags:probb')
         JetPropertiesAK8.bJetTagDeepCSVprobc = cms.vstring('pfDeepCSVJetTags:probc')
         JetPropertiesAK8.bJetTagDeepCSVprobudsg = cms.vstring('pfDeepCSVJetTags:probudsg')
         JetPropertiesAK8.bJetTagDeepCSVprobbb = cms.vstring('pfDeepCSVJetTags:probbb')
-        JetPropertiesAK8.subjets = cms.vstring('SoftDrop')
+        JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
         self.VectorDouble.extend([
                              'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
                              'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
