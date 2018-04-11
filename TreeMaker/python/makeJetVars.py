@@ -140,6 +140,14 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     )
     setattr(process,"BTags"+suff,BTags)
     self.VarsInt.extend(['BTags'+suff])
+
+    BTagsDeepCSV = btagint.clone(
+        JetTag       = HTJetsTag,
+        BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
+        BTagCutValue = cms.double(0.4941 )
+    )
+    setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
+    self.VarsInt.extend(['BTagsDeepCSV'+suff])
     
     ## ----------------------------------------------------------------------------------------------
     ## MHT, DeltaPhi

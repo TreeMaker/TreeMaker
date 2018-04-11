@@ -75,7 +75,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if self.residual: jecLevels.append("L2L3Residual")
-    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags']
+    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags','pfDeepCSVDiscriminatorsJetTags:BvsAll']
     addJetCollection(
        process,
        labelName = 'AK4PFCLEAN'+suff,
