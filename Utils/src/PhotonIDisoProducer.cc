@@ -78,11 +78,12 @@ private:
   edm::EDGetTokenT<edm::View<reco::GenParticle>> genParTok_;
   bool debug;
   effArea effAreas;
-  std::vector<double> effArChHad_,effArNuHad_,effArGamma_;
+  std::vector<double> effArEtaLow_,effArEtaHigh_; //|eta| boundaries effective areas
+  std::vector<double> effArChHad_,effArNuHad_,effArGamma_; //values for each of the |eta| ranges
   double hadTowOverEm_EB_cut_, sieie_EB_cut_, pfChIsoRhoCorr_EB_cut_;
   double hadTowOverEm_EE_cut_, sieie_EE_cut_, pfChIsoRhoCorr_EE_cut_;
-  std::vector<double> pfNuIsoRhoCorr_EB_cut_, pfNuIsoRhoCorr_EE_cut_;
-  std::vector<double> pfGmIsoRhoCorr_EB_cut_, pfGmIsoRhoCorr_EE_cut_;
+  std::vector<double> pfNuIsoRhoCorr_EB_cut_, pfNuIsoRhoCorr_EE_cut_; //Rho corrected PF neutral ISO is calulated as [0] + [1]*pho_pt + [2]*pho_pt^2
+  std::vector<double> pfGmIsoRhoCorr_EB_cut_, pfGmIsoRhoCorr_EE_cut_; //Rho corrected PF gamma ISO is calulated as [0] + [1]*pho_pt
 };
 
 
@@ -106,6 +107,8 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   debug(iConfig.getUntrackedParameter<bool>("debug",true))
 {
 
+  effArEtaLow_           = iConfig.getParameter <std::vector<double>> ("effArEtaLow");
+  effArEtaHigh_          = iConfig.getParameter <std::vector<double>> ("effArEtaHigh");
   effArChHad_            = iConfig.getParameter <std::vector<double>> ("effArChHad");
   effArNuHad_            = iConfig.getParameter <std::vector<double>> ("effArNuHad");
   effArGamma_            = iConfig.getParameter <std::vector<double>> ("effArGamma");
@@ -152,13 +155,9 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
     edm::LogInfo("TreeMaker") << "There are 7 eta slices for photon effective area. Size of effArChHad, effArNuHad and effArGamma(should be 7 each): "
 			      <<effArChHad_.size()<<","<<effArNuHad_.size()<<","<<effArGamma_.size()<<".";
   }
-  effAreas.addEffA(0.,    1.0,   effArChHad_[0], effArNuHad_[0], effArGamma_[0]);
-  effAreas.addEffA(1.0,   1.479, effArChHad_[1], effArNuHad_[1], effArGamma_[1]);
-  effAreas.addEffA(1.479, 2.0,   effArChHad_[2], effArNuHad_[2], effArGamma_[2]);
-  effAreas.addEffA(2.0,   2.2,   effArChHad_[3], effArNuHad_[3], effArGamma_[3]);
-  effAreas.addEffA(2.2,   2.3,   effArChHad_[4], effArNuHad_[4], effArGamma_[4]);
-  effAreas.addEffA(2.3,   2.4,   effArChHad_[5], effArNuHad_[5], effArGamma_[5]);
-  effAreas.addEffA(2.4,   99.,   effArChHad_[6], effArNuHad_[6], effArGamma_[6]);
+  for(unsigned int i_effA=0;i_effA<effArEtaLow_.size();i_effA++){
+    effAreas.addEffA(effArEtaLow_[i_effA], effArEtaHigh_[i_effA],   effArChHad_[i_effA], effArNuHad_[i_effA], effArGamma_[i_effA]);
+  }
   // effAreas.addEffA(0.,    1.0,   0.0385, 0.0636, 0.124);
   // effAreas.addEffA(1.0,   1.479, 0.0468, 0.1103, 0.1093);
   // effAreas.addEffA(1.479, 2.0,   0.0435, 0.0759, 0.0631);
