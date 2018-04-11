@@ -208,9 +208,23 @@ def doZinvBkg(self,process):
         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
         rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
         genParCollection       = cms.untracked.InputTag("prunedGenParticles"), 
-        debug                  = cms.untracked.bool(False)
+        effArChHad             = cms.vdouble(0.0385, 0.0468, 0.0435, 0.0378, 0.0338, 0.0314,  0.0269),#|eta|=0 to 1.0, 1.0 to 1.479 etc
+        effArNuHad             = cms.vdouble(0.0636, 0.1103, 0.0759, 0.0236, 0.0151, 0.00007, 0.0132),
+        effArGamma             = cms.vdouble(0.1240, 0.1093, 0.0631, 0.0779, 0.0999, 0.1155,  0.1373),
+        hadTowOverEm_EB_cut    = cms.double(0.105),
+        hadTowOverEm_EE_cut    = cms.double(0.029),
+        sieie_EB_cut           = cms.double(0.0103),
+        sieie_EE_cut           = cms.double(0.0276),
+        pfChIsoRhoCorr_EB_cut  = cms.double(2.839),
+        pfChIsoRhoCorr_EE_cut  = cms.double(2.150),
+        pfNuIsoRhoCorr_EB_cut  = cms.vdouble(9.188,  0.0126, 0.000026),
+        pfNuIsoRhoCorr_EE_cut  = cms.vdouble(10.471, 0.0119, 0.000025),
+        pfGmIsoRhoCorr_EB_cut  = cms.vdouble(2.956, 0.0035),
+        pfGmIsoRhoCorr_EE_cut  = cms.vdouble(4.895, 0.0040),
+        debug                  = cms.untracked.bool(False),
     )
-    
+#    from TreeMaker.Utils.PhotonIDisoProducer_cfi import PhotonIDisoProducer
+
     ##### add branches for photon studies
     self.VectorRecoCand.append("goodPhotons(Photons)")
     self.VectorDouble.append("goodPhotons:isEB(Photons_isEB)")
