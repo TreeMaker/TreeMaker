@@ -208,7 +208,7 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
             if(std::abs(Jets->at(i).eta()) < 2.4) good &= chgfrac>minChargedFraction_ && chgmulti>minNcharged_ && chgEMfrac<maxChargedEMFraction_;
          }
          else if(std::abs(Jets->at(i).eta()) <= 3.0){
-            good = phofrac>minPhotonFractionHE_ phofrac<maxPhotonFractionHE_ && neufrac<maxNeutralFractionHE_ && neumulti>minNneutralsHE_;
+            good = phofrac>minPhotonFractionHE_ && phofrac<maxPhotonFractionHE_ && neufrac<maxNeutralFractionHE_ && neumulti>minNneutralsHE_;
          }
          else {
             good = phofrac<maxPhotonFractionHF_ && neufrac>minNeutralFractionHF_ && neumulti>minNneutralsHF_;
