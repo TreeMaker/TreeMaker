@@ -395,6 +395,14 @@ def makeTreeFromMiniAOD(self,process):
 
         from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
         
+        process.PrimaryVertexFilter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(self.tagname),
+            filterName  = cms.string("Flag_goodVertices"),
+        )
+        self.VarsInt.extend(['PrimaryVertexFilter'])
+
         process.CSCTightHaloFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -443,6 +451,14 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsInt.extend(['eeBadScFilter'])
         
+        process.ecalBadCalibFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_ecalBadCalibFilter"),
+        )
+        self.VarsInt.extend(['ecalBadCalibFilter'])
+
         # some filters need to be rerun
         process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
         process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
