@@ -30,14 +30,16 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
     
     return process
 
-def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag()):
+def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4):
+    from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
-    GoodJets = GoodJetsProducer.clone(
+    GoodJets = GoodJetsProducer.clone()
+    TMeras.TM2016.toModify(GoodJets,
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
         maxJetEta                 = cms.double(5.0),
         minNconstituents          = cms.int32(1),
-        minNneutrals              = cms.int32(10),
+        minNneutralsHF            = cms.int32(10),
         minNcharged               = cms.int32(0),
         maxNeutralFraction        = cms.double(0.99),
         maxPhotonFraction         = cms.double(0.99),
@@ -46,7 +48,31 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         maxChargedEMFraction      = cms.double(0.99),
         jetPtFilter               = cms.double(30),
         ExcludeLepIsoTrackPhotons = cms.bool(True),
-        JetConeSize               = cms.double(0.4),
+        JetConeSize               = cms.double(jetConeSize),
+        SkipTag                   = SkipTag,
+        SaveAllJetsId             = True,
+        SaveAllJetsPt             = False, # exclude low pt jets from good collection
+    )
+    TMeras.TM2017.toModify(GoodJets,
+        TagMode                   = cms.bool(True),
+        JetTag                    = JetTag,
+        maxJetEta                 = cms.double(5.0),
+        minNconstituents          = cms.int32(1),
+        minNneutralsHE            = cms.int32(2),
+        minNneutralsHF            = cms.int32(10),
+        minNcharged               = cms.int32(0),
+        maxNeutralFraction        = cms.double(0.90),
+        maxNeutralFractionHE      = cms.double(1.00), #Turned off as not needed for the tight WP
+        minNeutralFractionHF      = cms.double(0.02),
+        maxPhotonFraction         = cms.double(0.90),
+        minPhotonFractionHE       = cms.double(0.02),
+        maxPhotonFractionHE       = cms.double(0.99),
+        maxPhotonFractionHF       = cms.double(0.90),
+        minChargedFraction        = cms.double(0.00),
+        maxChargedEMFraction      = cms.double(1.00), #Turned off as not needed for the tight WP
+        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30),
+        ExcludeLepIsoTrackPhotons = cms.bool(True),
+        JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
         SaveAllJetsId             = True,
         SaveAllJetsPt             = False, # exclude low pt jets from good collection
@@ -69,7 +95,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     if skipGoodJets:
         GoodJetsTag = JetTag
     else:
-        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag)
+        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag,0.4)
         if onlyGoodJets:
             return process
     
@@ -239,7 +265,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         # add discriminator and update tag
         process, JetTag = addJetInfo(process, JetTag, ak8floats, ak8ints)
 
-    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties)
+    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8)
 
     if storeProperties>0:
         # AK8 jet variables - separate instance of jet properties producer
