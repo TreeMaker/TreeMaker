@@ -46,9 +46,11 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
 
     # update some userfloat names
     process.JetPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsCHSCleanPrunedMass')
+    process.JetPropertiesAK8Clean.softDropMass = cms.vstring('SoftDrop')
     process.JetPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
     process.JetPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8CHSClean:tau3')
+    process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
 
     ### end AK8 detour
 
