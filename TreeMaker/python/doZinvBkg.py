@@ -34,8 +34,10 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         subJETCorrLevels = jecLevels,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFCHSCleanSoftDrop")
+    # temporary bug fix for jet toolbox (see https://github.com/cms-jet/JetToolbox/issues/51)
+    if hasattr(process,'out'): del process.out
+    if hasattr(process,'endpath'): del process.endpath
 
-    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
@@ -44,9 +46,11 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
 
     # update some userfloat names
     process.JetPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsCHSCleanPrunedMass')
+    process.JetPropertiesAK8Clean.softDropMass = cms.vstring('SoftDrop')
     process.JetPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
     process.JetPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8CHSClean:tau3')
+    process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
 
     ### end AK8 detour
 
@@ -71,7 +75,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if self.residual: jecLevels.append("L2L3Residual")
-    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags']
+    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags','pfDeepCSVDiscriminatorsJetTags:BvsAll']
     addJetCollection(
        process,
        labelName = 'AK4PFCLEAN'+suff,
@@ -223,9 +227,9 @@ def doZinvBkg(self,process):
         pfNuIsoRhoCorr_EE_cut  = cms.vdouble(10.471, 0.0119, 0.000025), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
         pfGmIsoRhoCorr_EB_cut  = cms.vdouble(2.956, 0.0035), #Rho corrected gamma ISO = [0]+[1]*pt
         pfGmIsoRhoCorr_EE_cut  = cms.vdouble(4.895, 0.0040), #Rho corrected gamma ISO = [0]+[1]*pt
-        debug                  = cms.untracked.bool(False),
+        debug                  = cms.untracked.bool(False)
     )
-
+    
     ##### add branches for photon studies
     self.VectorRecoCand.append("goodPhotons(Photons)")
     self.VectorDouble.append("goodPhotons:isEB(Photons_isEB)")
@@ -274,8 +278,13 @@ def doZinvBkg(self,process):
     )
     
     # do the removal
+    # if putEmpty is set to true, this will output an empty collection if the "veto" collection is empty
+    # this avoids pointless reclustering of an identical candidate collection
+    # "clean" branches in the ntuple will not be filled in this case; (e.g. Jetsclean.size()==0)
+    # the corresponding non-clean branches should be used instead for those events
     process.cleanedCandidates =  cms.EDProducer("PackedCandPtrProjector",
-        src = cms.InputTag("packedPFCandidates"), veto = cms.InputTag("selectedXons")
+        src = cms.InputTag("packedPFCandidates"), veto = cms.InputTag("selectedXons"),
+        putEmpty = cms.bool(True)
     )
     
     # make reclustered jets
