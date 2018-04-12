@@ -1,6 +1,7 @@
 import re,sys,getopt,urllib2,json
 from dbs.apis.dbsClient import DbsApi
 from optparse import OptionParser
+from collections import defaultdict
 
 # Read parameters
 parser = OptionParser()
@@ -18,15 +19,15 @@ makese = options.se
 if not makepy and not makewp and not makese:
     parser.error("No operations selected!")
 
-#interface with DBS
+# interface with DBS
 dbs3api = DbsApi("https://cmsweb.cern.ch/dbs/prod/global/DBSReader")
 
-#format for dict entries:
-#                                               data: [['sample'] , []]
-#                                                 MC: [['sample'] , [xsec]]
-#                              MC w/ extended sample: [['sample','sample_ext'] , [xsec]]
-#                  MC w/ negative weights (amcatnlo): [['sample'] , [xsec, neff]]
-#MC w/ negative weights (amcatnlo) + extended sample: [['sample','sample_ext'] , [xsec, neff, neff_ext]]
+# format for dict entries:
+#                                                data: [['sample'] , []]
+#                                                  MC: [['sample'] , [xsec]]
+#                               MC w/ extended sample: [['sample','sample_ext'] , [xsec]]
+#                   MC w/ negative weights (amcatnlo): [['sample'] , [xsec, neff]]
+# MC w/ negative weights (amcatnlo) + extended sample: [['sample','sample_ext'] , [xsec, neff, neff_ext]]
 
 if makewp:
     wname = "weights_"+dictname+".txt"
@@ -41,15 +42,17 @@ for fitem in flist:
     x = fitem[1]
     nevents_all = []
     for f in ff: # in case of extended samples
+        print f
+
         if makepy:
-            #get sample name
+            # get sample name
             oname = f.split('/')[1]
             
-            #check for extended sample
+            # check for extended sample
             extcheck = re.search("ext[0-9]",f.split('/')[2])
             if not extcheck==None and len(extcheck.group(0))>0: oname = oname+"_"+extcheck.group(0)
             
-            #make python file with preamble
+            # make python file with preamble
             pfile = open(oname+"_cff.py",'w')
             pfile.write("import FWCore.ParameterSet.Config as cms\n\n")
             pfile.write("maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )\n")
@@ -57,65 +60,66 @@ for fitem in flist:
             pfile.write("secFiles = cms.untracked.vstring()\n")
             pfile.write("source = cms.Source (\"PoolSource\",fileNames = readFiles, secondaryFileNames = secFiles)\n")
             
-        #get dataset info - detail only needed in makewp case
-        filelist = []
+        # get list of hosted files using PhEDEx API
+        filelist = set()
+        sitelist = defaultdict(int)
+        url='https://cmsweb.cern.ch/phedex/datasvc/json/prod/filereplicas?dataset=' + f
+        jstr = urllib2.urlopen(url).read()
+        jstr = jstr.replace("\n", " ")
+        result = json.loads(jstr)
+        for block in result['phedex']['block']:
+            for item in block['file']:
+                filelist.add(item['name'])
+                if makese:
+                    for replica in item['replica']:
+                        site = replica['node']
+                        addr = replica['se']
+                        # safety checks
+                        if site is None: continue
+                        if addr is None: addr = ""
+                        ## if (site,addr) not in sitelist.keys(): sitelist[(site,addr)] = 0
+                        sitelist[(site,addr)] += 1
+
+        # get dataset info - detail only needed in makewp case
         nevents = 0
-        print f
-        fileArrays = dbs3api.listFileArray(dataset=f,detail=makewp)
-        for fileArray in fileArrays:
-            if makepy:
-                filelist.append(fileArray["logical_file_name"])
-            if makewp:
-                nevents += fileArray["event_count"]
-        nevents_all.append(nevents)
+        if makewp:
+            fileArrays = dbs3api.listFileArray(dataset=f,detail=makewp)
+            for fileArray in fileArrays:
+                if fileArray["logical_file_name"] in filelist:
+                    nevents += fileArray["event_count"]
+            nevents_all.append(nevents)
         
-        # check for sites with 100% dataset presence (using PhEDEx API)
+        # check for sites with 100% dataset presence (based on PhEDEx)
         # refs:
         # https://github.com/dmwm/DAS/blob/master/src/python/DAS/services/combined/combined_service.py
         # https://github.com/gutsche/scripts/blob/master/PhEDEx/checkLocation.py
         if makese:
-            url='https://cmsweb.cern.ch/phedex/datasvc/json/prod/blockreplicas?dataset=' + f
-            jstr = urllib2.urlopen(url).read()
-            jstr = jstr.replace("\n", " ")
-            result = json.loads(jstr)
-            
-            site_list = {}
-            for block in result['phedex']['block']:
-                for replica in block['replica']:
-                    site = replica['node']
-                    addr = replica['se']
-                    #safety checks
-                    if site is None: continue
-                    if addr is None: addr = ""
-                    if (site,addr) not in site_list.keys(): site_list[(site,addr)] = 0
-                    site_list[(site,addr)] += replica['files']
-                
-            # get total number of expected files from DBS
-            nfiles_tot = len(fileArrays)
+            # get total number of expected files
+            nfiles_tot = len(filelist)
             # calculate dataset fraction (presence) in % and check for completion
             highest_percent = 0
-            for site,addr in site_list:
-                this_percent = float(site_list[(site,addr)])/float(nfiles_tot)*100
-                site_list[(site,addr)] = this_percent
+            for site,addr in sitelist:
+                this_percent = float(sitelist[(site,addr)])/float(nfiles_tot)*100
+                sitelist[(site,addr)] = this_percent
                 if this_percent > highest_percent: highest_percent = this_percent
         
             sfile.write(f+"\n")
             if highest_percent < 100:
                 sfile.write("  !!! No site has complete dataset !!! ( Highest: "+str(highest_percent)+"% )\n")
-            for site,addr in site_list:
-                this_percent = site_list[(site,addr)]
+            for site,addr in sorted(sitelist):
+                this_percent = sitelist[(site,addr)]
                 if this_percent==highest_percent:
                     sfile.write("  "+site+" ("+addr+")\n")
 
         if makepy:
             #sort list of files for consistency
-            filelist.sort()
+            filesort = sorted(filelist)
             counter = 0
             #split into chunks of 255
-            for lfn in filelist:
+            for lfn in filesort:
                 if counter==0: pfile.write("readFiles.extend( [\n")
                 pfile.write("       '"+lfn+"',\n")
-                if counter==254 or lfn==filelist[-1]:
+                if counter==254 or lfn==filesort[-1]:
                     pfile.write("] )\n")
                     counter = 0
                 else:

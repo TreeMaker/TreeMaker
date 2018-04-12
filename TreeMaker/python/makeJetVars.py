@@ -30,14 +30,16 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
     
     return process
 
-def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag()):
+def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4):
+    from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
-    GoodJets = GoodJetsProducer.clone(
+    GoodJets = GoodJetsProducer.clone()
+    TMeras.TM2016.toModify(GoodJets,
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
         maxJetEta                 = cms.double(5.0),
         minNconstituents          = cms.int32(1),
-        minNneutrals              = cms.int32(10),
+        minNneutralsHF            = cms.int32(10),
         minNcharged               = cms.int32(0),
         maxNeutralFraction        = cms.double(0.99),
         maxPhotonFraction         = cms.double(0.99),
@@ -46,7 +48,31 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         maxChargedEMFraction      = cms.double(0.99),
         jetPtFilter               = cms.double(30),
         ExcludeLepIsoTrackPhotons = cms.bool(True),
-        JetConeSize               = cms.double(0.4),
+        JetConeSize               = cms.double(jetConeSize),
+        SkipTag                   = SkipTag,
+        SaveAllJetsId             = True,
+        SaveAllJetsPt             = False, # exclude low pt jets from good collection
+    )
+    TMeras.TM2017.toModify(GoodJets,
+        TagMode                   = cms.bool(True),
+        JetTag                    = JetTag,
+        maxJetEta                 = cms.double(5.0),
+        minNconstituents          = cms.int32(1),
+        minNneutralsHE            = cms.int32(2),
+        minNneutralsHF            = cms.int32(10),
+        minNcharged               = cms.int32(0),
+        maxNeutralFraction        = cms.double(0.90),
+        maxNeutralFractionHE      = cms.double(1.00), #Turned off as not needed for the tight WP
+        minNeutralFractionHF      = cms.double(0.02),
+        maxPhotonFraction         = cms.double(0.90),
+        minPhotonFractionHE       = cms.double(0.02),
+        maxPhotonFractionHE       = cms.double(0.99),
+        maxPhotonFractionHF       = cms.double(0.90),
+        minChargedFraction        = cms.double(0.00),
+        maxChargedEMFraction      = cms.double(1.00), #Turned off as not needed for the tight WP
+        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30),
+        ExcludeLepIsoTrackPhotons = cms.bool(True),
+        JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
         SaveAllJetsId             = True,
         SaveAllJetsPt             = False, # exclude low pt jets from good collection
@@ -69,7 +95,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     if skipGoodJets:
         GoodJetsTag = JetTag
     else:
-        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag)
+        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag,0.4)
         if onlyGoodJets:
             return process
     
@@ -114,6 +140,14 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     )
     setattr(process,"BTags"+suff,BTags)
     self.VarsInt.extend(['BTags'+suff])
+
+    BTagsDeepCSV = btagint.clone(
+        JetTag       = HTJetsTag,
+        BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
+        BTagCutValue = cms.double(0.4941 )
+    )
+    setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
+    self.VarsInt.extend(['BTagsDeepCSV'+suff])
     
     ## ----------------------------------------------------------------------------------------------
     ## MHT, DeltaPhi
@@ -150,12 +184,30 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         )
         # provide extra info where necessary
         if storeProperties==1: 
-            JetProperties.properties = cms.vstring("bDiscriminatorCSV","muonEnergyFraction","chargedHadronEnergyFraction","partonFlavor","hadronFlavor")
+            JetProperties.properties = cms.vstring("bDiscriminatorCSV","bJetTagDeepCSVprobb","bJetTagDeepCSVprobc",
+                                                   "bJetTagDeepCSVprobudsg","bJetTagDeepCSVprobbb","bDiscriminatorDeepCSVBvsAll",
+                                                   "bDiscriminatorDeepCSVCvsB","bDiscriminatorDeepCSVCvsL","bJetTagDeepFlavourprobb",
+                                                   "bJetTagDeepFlavourprobc","bJetTagDeepFlavourprobg","bJetTagDeepFlavourproblepb",
+                                                   "bJetTagDeepFlavourprobbb","bJetTagDeepFlavourprobuds","muonEnergyFraction",
+                                                   "chargedHadronEnergyFraction","partonFlavor","hadronFlavor")
         if storeProperties>1 and self.geninfo:
             JetProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
         setattr(process,"JetProperties"+suff,JetProperties)
         self.VectorDouble.extend([
             'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
+            'JetProperties'+suff+':bJetTagDeepCSVprobb(Jets'+suff+'_bJetTagDeepCSVprobb)',
+            'JetProperties'+suff+':bJetTagDeepCSVprobc(Jets'+suff+'_bJetTagDeepCSVprobc)',
+            'JetProperties'+suff+':bJetTagDeepCSVprobudsg(Jets'+suff+'_bJetTagDeepCSVprobudsg)',
+            'JetProperties'+suff+':bJetTagDeepCSVprobbb(Jets'+suff+'_bJetTagDeepCSVprobbb)',
+            'JetProperties'+suff+':bDiscriminatorDeepCSVBvsAll(Jets'+suff+'_bJetTagDeepCSVBvsAll)',
+            'JetProperties'+suff+':bDiscriminatorDeepCSVCvsB(Jets'+suff+'_bJetTagDeepCSVCvsB)',
+            'JetProperties'+suff+':bDiscriminatorDeepCSVCvsL(Jets'+suff+'_bJetTagDeepCSVCvsL)',
+            'JetProperties'+suff+':bJetTagDeepFlavourprobb(Jets'+suff+'_bJetTagDeepFlavourprobb)',
+            'JetProperties'+suff+':bJetTagDeepFlavourprobc(Jets'+suff+'_bJetTagDeepFlavourprobc)',
+            'JetProperties'+suff+':bJetTagDeepFlavourprobg(Jets'+suff+'_bJetTagDeepFlavourprobg)',
+            'JetProperties'+suff+':bJetTagDeepFlavourproblepb(Jets'+suff+'_bJetTagDeepFlavourproblepb)',
+            'JetProperties'+suff+':bJetTagDeepFlavourprobbb(Jets'+suff+'_bJetTagDeepFlavourprobbb)',
+            'JetProperties'+suff+':bJetTagDeepFlavourprobuds(Jets'+suff+'_bJetTagDeepFlavourprobuds)',
             'JetProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
             'JetProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
         ])
@@ -221,7 +273,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         # add discriminator and update tag
         process, JetTag = addJetInfo(process, JetTag, ak8floats, ak8ints)
 
-    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties)
+    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8)
 
     if storeProperties>0:
         # AK8 jet variables - separate instance of jet properties producer
@@ -229,29 +281,41 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         JetPropertiesAK8 = jetproperties.clone(
             JetTag       = GoodJetsTag,
             properties = cms.vstring(
-                "prunedMass"           ,
-                "softDropMass"         ,
-                "NsubjettinessTau1"    ,
-                "NsubjettinessTau2"    ,
-                "NsubjettinessTau3"    ,
-                "bDiscriminatorCSV"    ,
-                "NumBhadrons"          ,
-                "NumChadrons"          ,
-                "subjets"              ,
+                "prunedMass"            ,
+                "softDropMass"          ,
+                "NsubjettinessTau1"     ,
+                "NsubjettinessTau2"     ,
+                "NsubjettinessTau3"     ,
+                "bDiscriminatorCSV"     ,
+                "bJetTagDeepCSVprobb"   ,
+                "bJetTagDeepCSVprobc"   ,
+                "bJetTagDeepCSVprobudsg",
+                "bJetTagDeepCSVprobbb"  ,
+                "NumBhadrons"           ,
+                "NumChadrons"           ,
+                "subjets"               ,
             )
         )
         # specify userfloats
-        JetPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSPrunedMass')
-        JetPropertiesAK8.softDropMass = cms.vstring('SoftDrop') # computed from subjets
-        JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8:tau1')
-        JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8:tau2')
-        JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8:tau3')
+        JetPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass')
+        JetPropertiesAK8.softDropMass = cms.vstring('SoftDropPuppi') # computed from subjets
+        JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
+        JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
+        JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
-        JetPropertiesAK8.subjets = cms.vstring('SoftDrop')
+        JetPropertiesAK8.bJetTagDeepCSVprobb = cms.vstring('pfDeepCSVJetTags:probb')
+        JetPropertiesAK8.bJetTagDeepCSVprobc = cms.vstring('pfDeepCSVJetTags:probc')
+        JetPropertiesAK8.bJetTagDeepCSVprobudsg = cms.vstring('pfDeepCSVJetTags:probudsg')
+        JetPropertiesAK8.bJetTagDeepCSVprobbb = cms.vstring('pfDeepCSVJetTags:probbb')
+        JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
         self.VectorDouble.extend([
                              'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
                              'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
                              'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
+                             'JetProperties'+suff+':bJetTagDeepCSVprobb(Jets'+suff+'_bJetTagDeepCSVprobb)',
+                             'JetProperties'+suff+':bJetTagDeepCSVprobc(Jets'+suff+'_bJetTagDeepCSVprobc)',
+                             'JetProperties'+suff+':bJetTagDeepCSVprobudsg(Jets'+suff+'_bJetTagDeepCSVprobudsg)',
+                             'JetProperties'+suff+':bJetTagDeepCSVprobbb(Jets'+suff+'_bJetTagDeepCSVprobbb)',
                              'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
                              'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
                              'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)'])
@@ -295,4 +359,4 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
 #            ])
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
-        return process        
+    return process        

@@ -21,9 +21,9 @@ def DtoF(file,get):
 if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-o", "--outname", dest="outname", default="PileupHistograms.root", help="output filename for PU histos (default = %default)")
-    parser.add_option("-j", "--json", dest="json", default="data/Cert_271036-274443_13TeV_PromptReco_Collisions16_JSON.txt", help="golden JSON for data (default = %default)")
+    parser.add_option("-j", "--json", dest="json", default="data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.txt", help="golden JSON for data (default = %default)")
     parser.add_option("-l", "--latest", dest="latest", default="data/pileup_latest.txt", help="latest pileup file (default = %default)")
-    parser.add_option("-s", "--scenario", dest="scenario", default="SimGeneral.MixingModule.mix_2016_25ns_SpringMC_PUScenarioV1_PoissonOOTPU_cfi", help="CMSSW python file for pileup scenario (default = %default)")
+    parser.add_option("-s", "--scenario", dest="scenario", default="SimGeneral.MixingModule.mix_2017_25ns_WinterMC_PUScenarioV1_PoissonOOTPU_cfi", help="CMSSW python file for pileup scenario (default = %default)")
     parser.add_option("-m", "--minbias", dest="minbias", default=71300, help="minbias xsec in mb (default = %default)")
     parser.add_option("-u", "--uncertainty", dest="uncertainty", default=0.0485, help="minbias xsec uncertainty (default = %default)")
     parser.add_option("-b", "--nbins", dest="nbins", default=50, help="max number of bins for histos (default = %default)")

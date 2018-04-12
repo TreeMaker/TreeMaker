@@ -374,8 +374,10 @@ def makeTreeFromMiniAOD(self,process):
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
         METTag           = METTag, 
     )
-    self.VectorRecoCand.extend(['LeptonsNew:IdIsoMuon(Muons)','LeptonsNew:IdIsoElectron(Electrons)'])
-    self.VectorInt.extend(['LeptonsNew:MuonCharge(Muons_charge)','LeptonsNew:ElectronCharge(Electrons_charge)'])
+    self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
+    self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
+    self.VectorBool.extend(['LeptonsNew:IdMuonPassIso(Muons_passIso)','LeptonsNew:IdElectronPassIso(Electrons_passIso)'])
+    self.VarsInt.extend(['LeptonsNew:IdIsoMuonNum(NMuons)','LeptonsNew:IdIsoElectronNum(NElectrons)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## MET Filters
@@ -393,6 +395,14 @@ def makeTreeFromMiniAOD(self,process):
 
         from TreeMaker.Utils.filterdecisionproducer_cfi import filterDecisionProducer
         
+        process.PrimaryVertexFilter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(self.tagname),
+            filterName  = cms.string("Flag_goodVertices"),
+        )
+        self.VarsInt.extend(['PrimaryVertexFilter'])
+
         process.CSCTightHaloFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -441,6 +451,14 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsInt.extend(['eeBadScFilter'])
         
+        process.ecalBadCalibFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_ecalBadCalibFilter"),
+        )
+        self.VarsInt.extend(['ecalBadCalibFilter'])
+
         # some filters need to be rerun
         process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
         process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
@@ -758,11 +776,11 @@ def makeTreeFromMiniAOD(self,process):
     if self.applybaseline:
         process.HTFilter = DoubleFilter.clone(
             DoubleTag = cms.InputTag('HT'),
-            CutValue  = cms.double('500'),
+            CutValue  = cms.double(500),
         )
         process.MHTFilter = DoubleFilter.clone(
             DoubleTag = cms.InputTag('MHT:Pt'),
-            CutValue  = cms.double('200'),
+            CutValue  = cms.double(200),
         )
         process.Baseline += process.HTFilter
         #process.Baseline += process.MHTFilter
@@ -844,11 +862,16 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
 
+    # dump everything into a task so it can run unscheduled
+    process.myTask = cms.Task()
+    process.myTask.add(*[getattr(process,prod) for prod in process.producers_()])
+    process.myTask.add(*[getattr(process,filt) for filt in process.filters_()])
     # create the process path
     process.WriteTree = cms.Path(
         process.Baseline *
         process.TreeMaker2
     )
-    
+    process.WriteTree.associate(process.myTask)
+
     return process
 
