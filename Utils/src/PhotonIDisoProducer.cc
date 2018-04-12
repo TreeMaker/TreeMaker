@@ -78,8 +78,8 @@ private:
   edm::EDGetTokenT<edm::View<reco::GenParticle>> genParTok_;
   bool debug;
   effArea effAreas;
-  std::vector<double> effArEtaLow_,effArEtaHigh_; //|eta| boundaries effective areas
-  std::vector<double> effArChHad_,effArNuHad_,effArGamma_; //values for each of the |eta| ranges
+  std::vector<double> effArEtaLow_,effArEtaHigh_; //|eta| boundaries for effective areas
+  std::vector<double> effArChHad_,effArNuHad_,effArGamma_; //effective area values for each of the |eta| ranges
   double hadTowOverEm_EB_cut_, sieie_EB_cut_, pfChIsoRhoCorr_EB_cut_;
   double hadTowOverEm_EE_cut_, sieie_EE_cut_, pfChIsoRhoCorr_EE_cut_;
   std::vector<double> pfNuIsoRhoCorr_EB_cut_, pfNuIsoRhoCorr_EE_cut_; //Rho corrected PF neutral ISO is calulated as [0] + [1]*pho_pt + [2]*pho_pt^2
