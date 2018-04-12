@@ -34,10 +34,8 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         subJETCorrLevels = jecLevels,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFCHSCleanSoftDrop")
-    # temporary bug fix for jet toolbox (see https://github.com/cms-jet/JetToolbox/issues/51)
-    if hasattr(process,'out'): del process.out
-    if hasattr(process,'endpath'): del process.endpath
 
+    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
@@ -46,11 +44,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
 
     # update some userfloat names
     process.JetPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsCHSCleanPrunedMass')
-    process.JetPropertiesAK8Clean.softDropMass = cms.vstring('SoftDrop')
     process.JetPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
     process.JetPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8CHSClean:tau3')
-    process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
 
     ### end AK8 detour
 
@@ -75,7 +71,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if self.residual: jecLevels.append("L2L3Residual")
-    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags','pfDeepCSVDiscriminatorsJetTags:BvsAll']
+    btagDiscs = ['pfCombinedInclusiveSecondaryVertexV2BJetTags']
     addJetCollection(
        process,
        labelName = 'AK4PFCLEAN'+suff,
@@ -212,9 +208,24 @@ def doZinvBkg(self,process):
         ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
         rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
         genParCollection       = cms.untracked.InputTag("prunedGenParticles"), 
-        debug                  = cms.untracked.bool(False)
+        effArEtaLow            = cms.vdouble(0.,     1.000,  1.479,  2.0,    2.2,    2.3,     2.4), #lower boundaries of |eta| in effective area(EA) calculation
+        effArEtaHigh           = cms.vdouble(1.,     1.479,  2.000,  2.2,    2.3,    2.4,     99.), #upper boundaries of |eta| in effective area(EA) calculation
+        effArChHad             = cms.vdouble(0.0385, 0.0468, 0.0435, 0.0378, 0.0338, 0.0314,  0.0269),#EA for charged hadrons in diiferent |eta| ranges
+        effArNuHad             = cms.vdouble(0.0636, 0.1103, 0.0759, 0.0236, 0.0151, 0.00007, 0.0132),#EA for neutral hadrons in diiferent |eta| ranges
+        effArGamma             = cms.vdouble(0.1240, 0.1093, 0.0631, 0.0779, 0.0999, 0.1155,  0.1373),#EA for photons(gamma) in diiferent |eta| ranges
+        hadTowOverEm_EB_cut    = cms.double(0.105), #H/E cut in EB
+        hadTowOverEm_EE_cut    = cms.double(0.029), #H/E cut in EE
+        sieie_EB_cut           = cms.double(0.0103), #Sigma ieta_ieta cut in EB
+        sieie_EE_cut           = cms.double(0.0276), #Sigma ieta_ieta cut in EE
+        pfChIsoRhoCorr_EB_cut  = cms.double(2.839), #Pho corrected PF charged ISO in EB
+        pfChIsoRhoCorr_EE_cut  = cms.double(2.150), #Pho corrected PF charged ISO in EE
+        pfNuIsoRhoCorr_EB_cut  = cms.vdouble(9.188,  0.0126, 0.000026), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
+        pfNuIsoRhoCorr_EE_cut  = cms.vdouble(10.471, 0.0119, 0.000025), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
+        pfGmIsoRhoCorr_EB_cut  = cms.vdouble(2.956, 0.0035), #Rho corrected gamma ISO = [0]+[1]*pt
+        pfGmIsoRhoCorr_EE_cut  = cms.vdouble(4.895, 0.0040), #Rho corrected gamma ISO = [0]+[1]*pt
+        debug                  = cms.untracked.bool(False),
     )
-    
+
     ##### add branches for photon studies
     self.VectorRecoCand.append("goodPhotons(Photons)")
     self.VectorDouble.append("goodPhotons:isEB(Photons_isEB)")
@@ -263,13 +274,8 @@ def doZinvBkg(self,process):
     )
     
     # do the removal
-    # if putEmpty is set to true, this will output an empty collection if the "veto" collection is empty
-    # this avoids pointless reclustering of an identical candidate collection
-    # "clean" branches in the ntuple will not be filled in this case; (e.g. Jetsclean.size()==0)
-    # the corresponding non-clean branches should be used instead for those events
     process.cleanedCandidates =  cms.EDProducer("PackedCandPtrProjector",
-        src = cms.InputTag("packedPFCandidates"), veto = cms.InputTag("selectedXons"),
-        putEmpty = cms.bool(True)
+        src = cms.InputTag("packedPFCandidates"), veto = cms.InputTag("selectedXons")
     )
     
     # make reclustered jets
