@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// 
+//
 // Package:    SuSySubstructure
 // Class:      PhotonIDisoProducer
 // 
