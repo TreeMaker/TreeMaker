@@ -76,7 +76,7 @@ private:
   edm::EDGetTokenT<EcalRecHitCollection> ecalRecHitsInputTag_EB_Token_;
   edm::EDGetTokenT<double> rhoTok_;
   edm::EDGetTokenT<edm::View<reco::GenParticle>> genParTok_;
-  bool debug, correctSizeVecs = false;
+  bool debug;
   effArea effAreas;
   std::vector<double> effArEtaLow_,effArEtaHigh_; //|eta| boundaries for effective areas
   std::vector<double> effArChHad_,effArNuHad_,effArGamma_; //effective area values for each of the |eta| ranges
@@ -87,26 +87,24 @@ private:
 };
 
 
-PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
-  photonCollection(iConfig.getUntrackedParameter<edm::InputTag>("photonCollection")),
-  electronCollection(iConfig.getUntrackedParameter<edm::InputTag>("electronCollection")),
-  conversionCollection(iConfig.getUntrackedParameter<edm::InputTag>("conversionCollection")),
-  beamspotCollection(iConfig.getUntrackedParameter<edm::InputTag>("beamspotCollection")),
-  ecalRecHitsInputTag_EE_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EE")),
-  ecalRecHitsInputTag_EB_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EB")),
-  rhoCollection(iConfig.getUntrackedParameter<edm::InputTag>("rhoCollection")),
-  genParCollection(iConfig.getUntrackedParameter<edm::InputTag>("genParCollection")),
-  photonTok_(consumes<edm::View<pat::Photon>>(photonCollection)),
-  electronTok_(consumes<pat::ElectronCollection>(electronCollection)),
-  conversionTok_(consumes<std::vector<reco::Conversion>>(conversionCollection)),
-  beamspotTok_(consumes<reco::BeamSpot>(beamspotCollection)),
-  ecalRecHitsInputTag_EE_Token_(consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EE_)),
-  ecalRecHitsInputTag_EB_Token_(consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EB_)),
-  rhoTok_(consumes<double>(rhoCollection)),
-  genParTok_(consumes<edm::View<reco::GenParticle>>(genParCollection)),
-  debug(iConfig.getUntrackedParameter<bool>("debug",true))
-{
-
+PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig){
+  photonCollection       = iConfig.getUntrackedParameter<edm::InputTag>("photonCollection");
+  electronCollection     = iConfig.getUntrackedParameter<edm::InputTag>("electronCollection");
+  conversionCollection   = iConfig.getUntrackedParameter<edm::InputTag>("conversionCollection");
+  beamspotCollection     = iConfig.getUntrackedParameter<edm::InputTag>("beamspotCollection");
+  ecalRecHitsInputTag_EE_ = iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EE");
+  ecalRecHitsInputTag_EB_ = iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EB");
+  rhoCollection          = iConfig.getUntrackedParameter<edm::InputTag>("rhoCollection");
+  genParCollection       = iConfig.getUntrackedParameter<edm::InputTag>("genParCollection");
+  photonTok_             = consumes<edm::View<pat::Photon>>(photonCollection);
+  electronTok_           = consumes<pat::ElectronCollection>(electronCollection);
+  conversionTok_         = consumes<std::vector<reco::Conversion>>(conversionCollection);
+  beamspotTok_           = consumes<reco::BeamSpot>(beamspotCollection);
+  ecalRecHitsInputTag_EE_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EE_);
+  ecalRecHitsInputTag_EB_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EB_);
+  rhoTok_                = consumes<double>(rhoCollection);
+  genParTok_             = consumes<edm::View<reco::GenParticle>>(genParCollection);
+  debug                  = iConfig.getUntrackedParameter<bool>("debug",true);
   effArEtaLow_           = iConfig.getParameter <std::vector<double>> ("effArEtaLow");
   effArEtaHigh_          = iConfig.getParameter <std::vector<double>> ("effArEtaHigh");
   effArChHad_            = iConfig.getParameter <std::vector<double>> ("effArChHad");
@@ -144,18 +142,12 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   produces< std::vector< bool > >("fullID");
   produces< std::vector< bool > >("electronFakes");
   produces< bool >("hasGenPromptPhoton");
+
   if(effArEtaLow_.size()!=7 || effArEtaHigh_.size()!=7
      || effArChHad_.size()!=7 || effArNuHad_.size()!=7 || effArGamma_.size()!=7 
      || pfNuIsoRhoCorr_EB_cut_.size()!=3 || pfNuIsoRhoCorr_EE_cut_.size()!=3 
-     || pfGmIsoRhoCorr_EB_cut_.size()!=2 || pfGmIsoRhoCorr_EE_cut_.size()!=2)  correctSizeVecs = false;
-  else correctSizeVecs = true;
-  if(debug || !correctSizeVecs){
-    edm::LogInfo("TreeMaker") << "There are 7 eta slices for photon effective area. Size of effArChHad, effArNuHad and effArGamma(should be 7 each): "
-			      <<effArChHad_.size()<<","<<effArNuHad_.size()<<","<<effArGamma_.size()<<".";
-    edm::LogInfo("TreeMaker") << "Need to have 3 parametrs for pfNuIsoRhoCorr_EB(EE)_cut_ and 2 parametrs for pfGmIsoRhoCorr_EB(EE)_cut_. Size of these: "
-			      << pfNuIsoRhoCorr_EB_cut_.size() <<"("<< pfNuIsoRhoCorr_EE_cut_.size()<<"), " 
-			      << pfGmIsoRhoCorr_EB_cut_.size() <<"("<< pfGmIsoRhoCorr_EE_cut_.size()<<").";
-  }
+     || pfGmIsoRhoCorr_EB_cut_.size()!=2 || pfGmIsoRhoCorr_EE_cut_.size()!=2)
+    throw cms::Exception("Vector size mismatch, either for photon EA or photon ISO variables.");
   // - - - - - - - - - - - - - - - - - - - - 
   // Initializing effective area to be used 
   // for rho corrections to the photon isolation
@@ -166,7 +158,7 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   for(unsigned int i_effA=0;i_effA<effArEtaLow_.size();i_effA++){
     effAreas.addEffA(effArEtaLow_[i_effA], effArEtaHigh_[i_effA],   effArChHad_[i_effA], effArNuHad_[i_effA], effArGamma_[i_effA]);
   }
-
+  
 }
 
 
@@ -224,7 +216,6 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 
   if( debug ) edm::LogInfo("TreeMaker") << "got photon collection";
 
- 
   /// setup cluster tools
   noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
   for( View< pat::Photon >::const_iterator iPhoton = photonCands->begin(); iPhoton != photonCands->end(); ++iPhoton){
@@ -270,45 +261,40 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       passAcc=true;
     }
 
-    if(correctSizeVecs){
-      // apply id cuts using https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Working_points_for_92X_and_later
-      if (isBarrelPhoton) {
-	if (iPhoton->hadTowOverEm() < hadTowOverEm_EB_cut_ && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
-	  passIDLoose = true;
-	  if (sieie < sieie_EB_cut_) {
-	    passID = true;
-	  }
-	}
-      } else if (isEndcapPhoton) {
-	if (iPhoton->hadTowOverEm() < hadTowOverEm_EE_cut_ && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
-	  passIDLoose = true;
-	  if (sieie < sieie_EE_cut_) {
-	    passID = true;
-	  }
-	}
-      }
- 
-      // apply isolation cuts
-      if (isBarrelPhoton) {
-	if (nuIso < (pfNuIsoRhoCorr_EB_cut_[0] + pfNuIsoRhoCorr_EB_cut_[1]*iPhoton->pt() + pfNuIsoRhoCorr_EB_cut_[2]*iPhoton->pt()*iPhoton->pt()) && gamIso < ( pfGmIsoRhoCorr_EB_cut_[0] +  pfGmIsoRhoCorr_EB_cut_[1]*iPhoton->pt())) {
-	  passIsoLoose = true;
-	  if (chIso < pfChIsoRhoCorr_EB_cut_) {
-	    passIso = true;
-	  }
-	}
-      } else if (isEndcapPhoton) {
-	if (nuIso < (pfNuIsoRhoCorr_EE_cut_[0] + pfNuIsoRhoCorr_EE_cut_[1]*iPhoton->pt() + pfNuIsoRhoCorr_EE_cut_[2]*iPhoton->pt()*iPhoton->pt())  && gamIso < (pfGmIsoRhoCorr_EE_cut_[0] + pfGmIsoRhoCorr_EE_cut_[1]*iPhoton->pt())) {
-	  passIsoLoose = true;
-	  if (chIso <  pfChIsoRhoCorr_EE_cut_) {
-	    passIso = true;
-	  }
-	}
-      }
-    }else{
-      edm::LogInfo("TreeMaker")
-        << "Could not get correct photon ID,ISO, EA parmaters for photons.";
-    }
 
+    // apply id cuts using https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Working_points_for_92X_and_later
+    if (isBarrelPhoton) {
+      if (iPhoton->hadTowOverEm() < hadTowOverEm_EB_cut_ && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+	passIDLoose = true;
+	if (sieie < sieie_EB_cut_) {
+	  passID = true;
+	}
+      }
+    } else if (isEndcapPhoton) {
+      if (iPhoton->hadTowOverEm() < hadTowOverEm_EE_cut_ && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+	passIDLoose = true;
+	if (sieie < sieie_EE_cut_) {
+	  passID = true;
+	}
+      }
+    }
+ 
+    // apply isolation cuts
+    if (isBarrelPhoton) {
+      if (nuIso < (pfNuIsoRhoCorr_EB_cut_[0] + pfNuIsoRhoCorr_EB_cut_[1]*iPhoton->pt() + pfNuIsoRhoCorr_EB_cut_[2]*iPhoton->pt()*iPhoton->pt()) && gamIso < ( pfGmIsoRhoCorr_EB_cut_[0] +  pfGmIsoRhoCorr_EB_cut_[1]*iPhoton->pt())) {
+	passIsoLoose = true;
+	if (chIso < pfChIsoRhoCorr_EB_cut_) {
+	  passIso = true;
+	}
+      }
+    } else if (isEndcapPhoton) {
+      if (nuIso < (pfNuIsoRhoCorr_EE_cut_[0] + pfNuIsoRhoCorr_EE_cut_[1]*iPhoton->pt() + pfNuIsoRhoCorr_EE_cut_[2]*iPhoton->pt()*iPhoton->pt())  && gamIso < (pfGmIsoRhoCorr_EE_cut_[0] + pfGmIsoRhoCorr_EE_cut_[1]*iPhoton->pt())) {
+	passIsoLoose = true;
+	if (chIso <  pfChIsoRhoCorr_EE_cut_) {
+	  passIso = true;
+	}
+      }
+    }
     // check if photon is a good loose photon
     if( passAcc && passIDLoose && passIsoLoose && iPhoton->pt() > 100.0){//pure photons
       goodPhotons->push_back( *iPhoton );
