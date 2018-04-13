@@ -78,52 +78,49 @@ private:
   edm::EDGetTokenT<edm::View<reco::GenParticle>> genParTok_;
   bool debug;
   effArea effAreas;
-  std::vector<double> effArEtaLow_,effArEtaHigh_; //|eta| boundaries for effective areas
-  std::vector<double> effArChHad_,effArNuHad_,effArGamma_; //effective area values for each of the |eta| ranges
   double hadTowOverEm_EB_cut_, sieie_EB_cut_, pfChIsoRhoCorr_EB_cut_;
   double hadTowOverEm_EE_cut_, sieie_EE_cut_, pfChIsoRhoCorr_EE_cut_;
+  std::vector<double> effArEtaLow_,effArEtaHigh_; //|eta| boundaries for effective areas
+  std::vector<double> effArChHad_,effArNuHad_,effArGamma_; //effective area values for each of the |eta| ranges
   std::vector<double> pfNuIsoRhoCorr_EB_cut_, pfNuIsoRhoCorr_EE_cut_; //Rho corrected PF neutral ISO is calulated as [0] + [1]*pho_pt + [2]*pho_pt^2
   std::vector<double> pfGmIsoRhoCorr_EB_cut_, pfGmIsoRhoCorr_EE_cut_; //Rho corrected PF gamma ISO is calulated as [0] + [1]*pho_pt
 };
 
 
-PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig){
-  photonCollection       = iConfig.getUntrackedParameter<edm::InputTag>("photonCollection");
-  electronCollection     = iConfig.getUntrackedParameter<edm::InputTag>("electronCollection");
-  conversionCollection   = iConfig.getUntrackedParameter<edm::InputTag>("conversionCollection");
-  beamspotCollection     = iConfig.getUntrackedParameter<edm::InputTag>("beamspotCollection");
-  ecalRecHitsInputTag_EE_ = iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EE");
-  ecalRecHitsInputTag_EB_ = iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EB");
-  rhoCollection          = iConfig.getUntrackedParameter<edm::InputTag>("rhoCollection");
-  genParCollection       = iConfig.getUntrackedParameter<edm::InputTag>("genParCollection");
-  photonTok_             = consumes<edm::View<pat::Photon>>(photonCollection);
-  electronTok_           = consumes<pat::ElectronCollection>(electronCollection);
-  conversionTok_         = consumes<std::vector<reco::Conversion>>(conversionCollection);
-  beamspotTok_           = consumes<reco::BeamSpot>(beamspotCollection);
-  ecalRecHitsInputTag_EE_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EE_);
-  ecalRecHitsInputTag_EB_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EB_);
-  rhoTok_                = consumes<double>(rhoCollection);
-  genParTok_             = consumes<edm::View<reco::GenParticle>>(genParCollection);
-  debug                  = iConfig.getUntrackedParameter<bool>("debug",true);
-  effArEtaLow_           = iConfig.getParameter <std::vector<double>> ("effArEtaLow");
-  effArEtaHigh_          = iConfig.getParameter <std::vector<double>> ("effArEtaHigh");
-  effArChHad_            = iConfig.getParameter <std::vector<double>> ("effArChHad");
-  effArNuHad_            = iConfig.getParameter <std::vector<double>> ("effArNuHad");
-  effArGamma_            = iConfig.getParameter <std::vector<double>> ("effArGamma");
-  hadTowOverEm_EB_cut_   = iConfig.getParameter <double> ("hadTowOverEm_EB_cut"); 
-  hadTowOverEm_EE_cut_   = iConfig.getParameter <double> ("hadTowOverEm_EE_cut");
-  sieie_EB_cut_          = iConfig.getParameter <double> ("sieie_EB_cut");
-  sieie_EE_cut_          = iConfig.getParameter <double> ("sieie_EE_cut"); 
-  pfChIsoRhoCorr_EB_cut_ = iConfig.getParameter <double> ("pfChIsoRhoCorr_EB_cut");
-  pfChIsoRhoCorr_EE_cut_ = iConfig.getParameter <double> ("pfChIsoRhoCorr_EE_cut");
-  pfNuIsoRhoCorr_EB_cut_ = iConfig.getParameter <std::vector<double>> ("pfNuIsoRhoCorr_EB_cut");
-  pfNuIsoRhoCorr_EE_cut_ = iConfig.getParameter <std::vector<double>> ("pfNuIsoRhoCorr_EE_cut"); 
-  pfGmIsoRhoCorr_EB_cut_ = iConfig.getParameter <std::vector<double>> ("pfGmIsoRhoCorr_EB_cut");
-  pfGmIsoRhoCorr_EE_cut_ = iConfig.getParameter <std::vector<double>> ("pfGmIsoRhoCorr_EE_cut"); 
-
-  ecalRecHitsInputTag_EE_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EE_);
-  ecalRecHitsInputTag_EB_Token_ = consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EB_);
-
+PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
+  photonCollection(iConfig.getUntrackedParameter<edm::InputTag>("photonCollection")),
+  electronCollection(iConfig.getUntrackedParameter<edm::InputTag>("electronCollection")),
+  conversionCollection(iConfig.getUntrackedParameter<edm::InputTag>("conversionCollection")),
+  beamspotCollection(iConfig.getUntrackedParameter<edm::InputTag>("beamspotCollection")),
+  ecalRecHitsInputTag_EE_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EE")),
+  ecalRecHitsInputTag_EB_(iConfig.getParameter<edm::InputTag>("ecalRecHitsInputTag_EB")),
+  rhoCollection(iConfig.getUntrackedParameter<edm::InputTag>("rhoCollection")),
+  genParCollection(iConfig.getUntrackedParameter<edm::InputTag>("genParCollection")),
+  photonTok_(consumes<edm::View<pat::Photon>>(photonCollection)),
+  electronTok_(consumes<pat::ElectronCollection>(electronCollection)),
+  conversionTok_(consumes<std::vector<reco::Conversion>>(conversionCollection)),
+  beamspotTok_(consumes<reco::BeamSpot>(beamspotCollection)),
+  ecalRecHitsInputTag_EE_Token_(consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EE_)),
+  ecalRecHitsInputTag_EB_Token_(consumes<EcalRecHitCollection>(ecalRecHitsInputTag_EB_)),
+  rhoTok_(consumes<double>(rhoCollection)),
+  genParTok_(consumes<edm::View<reco::GenParticle>>(genParCollection)),
+  debug(iConfig.getUntrackedParameter<bool>("debug",true)),
+  hadTowOverEm_EB_cut_(iConfig.getParameter<double>("hadTowOverEm_EB_cut")),
+  sieie_EB_cut_(iConfig.getParameter<double>("sieie_EB_cut")),
+  pfChIsoRhoCorr_EB_cut_(iConfig.getParameter<double>("pfChIsoRhoCorr_EB_cut")),
+  hadTowOverEm_EE_cut_(iConfig.getParameter<double>("hadTowOverEm_EE_cut")),
+  sieie_EE_cut_(iConfig.getParameter<double>("sieie_EE_cut")),
+  pfChIsoRhoCorr_EE_cut_(iConfig.getParameter<double>("pfChIsoRhoCorr_EE_cut")),
+  effArEtaLow_(iConfig.getParameter<std::vector<double>> ("effArEtaLow")),
+  effArEtaHigh_(iConfig.getParameter <std::vector<double>> ("effArEtaHigh")),
+  effArChHad_(iConfig.getParameter <std::vector<double>> ("effArChHad")),
+  effArNuHad_(iConfig.getParameter <std::vector<double>> ("effArNuHad")),
+  effArGamma_(iConfig.getParameter <std::vector<double>> ("effArGamma")),
+  pfNuIsoRhoCorr_EB_cut_(iConfig.getParameter <std::vector<double>> ("pfNuIsoRhoCorr_EB_cut")),
+  pfNuIsoRhoCorr_EE_cut_(iConfig.getParameter <std::vector<double>> ("pfNuIsoRhoCorr_EE_cut")),
+  pfGmIsoRhoCorr_EB_cut_(iConfig.getParameter <std::vector<double>> ("pfGmIsoRhoCorr_EB_cut")),
+  pfGmIsoRhoCorr_EE_cut_(iConfig.getParameter <std::vector<double>> ("pfGmIsoRhoCorr_EE_cut"))
+{
   produces< std::vector< pat::Photon > >(); 
   produces< std::vector< double > >("isEB");
   produces< std::vector< double > >("genMatched"); 
