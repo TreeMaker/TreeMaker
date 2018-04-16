@@ -46,7 +46,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         maxPhotonFractionHF       = cms.double(0.90),
         minChargedFraction        = cms.double(0),
         maxChargedEMFraction      = cms.double(0.99),
-        jetPtFilter               = cms.double(30),
+        jetPtFilter               = cms.double(20 if self.fastsim else 30),
         ExcludeLepIsoTrackPhotons = cms.bool(True),
         JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
@@ -70,14 +70,13 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         maxPhotonFractionHF       = cms.double(0.90),
         minChargedFraction        = cms.double(0.00),
         maxChargedEMFraction      = cms.double(1.00), #Turned off as not needed for the tight WP
-        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30),
+        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 20 if self.fastsim else 30),
         ExcludeLepIsoTrackPhotons = cms.bool(True),
         JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
         SaveAllJetsId             = True,
         SaveAllJetsPt             = False, # exclude low pt jets from good collection
     )
-    if self.fastsim: GoodJets.jetPtFilter = cms.double(20)
     setattr(process,"GoodJets"+suff,GoodJets)
     GoodJetsTag = cms.InputTag("GoodJets"+suff)
     self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
