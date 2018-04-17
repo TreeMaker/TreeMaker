@@ -41,6 +41,7 @@ private:
   edm::EDGetTokenT<pat::PackedCandidateCollection> PFCandTok_;
   edm::EDGetTokenT<pat::JetCollection> JetTok_;
   edm::EDGetTokenT<double> RhoTok_;
+  std::vector<double> electronEAValues_, muonEAValues_;
   
   std::string LeptonTypeName_;
   enum lepton_type { electron = 0, muon = 1, gen = 2, track = 3, other = 4 };
@@ -53,17 +54,20 @@ private:
 IsolationProducer::IsolationProducer(const edm::ParameterSet& iConfig)
 {
   //register your product
-  LeptonTag_         =     iConfig.getParameter<edm::InputTag>("LeptonTag");
-  LeptonTypeName_       =     iConfig.getParameter<std::string>("LeptonType");
-  PFCandTag_        =     iConfig.getParameter<edm::InputTag>("PFCandTag");
-  JetTag_        =     iConfig.getParameter<edm::InputTag>("JetTag");
-  RhoTag_ = edm::InputTag("fixedGridRhoFastjetAll");
+  LeptonTag_        = iConfig.getParameter<edm::InputTag>("LeptonTag");
+  LeptonTypeName_   = iConfig.getParameter<std::string>("LeptonType");
+  PFCandTag_        = iConfig.getParameter<edm::InputTag>("PFCandTag");
+  JetTag_           = iConfig.getParameter<edm::InputTag>("JetTag");
+  RhoTag_           = edm::InputTag("fixedGridRhoFastjetAll");
   
-  LeptonTok_ = consumes<edm::View<reco::Candidate>>(LeptonTag_);
-  PFCandTok_ = consumes<pat::PackedCandidateCollection>(PFCandTag_);
-  JetTok_ = consumes<pat::JetCollection>(JetTag_);
-  RhoTok_ = consumes<double>(RhoTag_);
+  LeptonTok_        = consumes<edm::View<reco::Candidate>>(LeptonTag_);
+  PFCandTok_        = consumes<pat::PackedCandidateCollection>(PFCandTag_);
+  JetTok_           = consumes<pat::JetCollection>(JetTag_);
+  RhoTok_           = consumes<double>(RhoTag_);
   
+  electronEAValues_ = iConfig.getParameter<std::vector<double>>("electronEAValues");
+  muonEAValues_     = iConfig.getParameter<std::vector<double>>("muonEAValues");
+
   if(LeptonTypeName_=="electron") LeptonType_ = electron; 
   else if(LeptonTypeName_=="muon") LeptonType_ = muon; 
   else if(LeptonTypeName_=="gen") LeptonType_ = gen; 
@@ -72,6 +76,8 @@ IsolationProducer::IsolationProducer(const edm::ParameterSet& iConfig)
     LeptonType_ = other;
     edm::LogWarning("TreeMaker") << "IsolationProducer Error: " << LeptonTypeName_ << " is not a valid collection.";
   }
+
+  SUSYIsolationHelper.SetEAVectors(electronEAValues_, muonEAValues_);
 
   produces<std::vector<double> >("MiniIso");
   produces<std::vector<double> >("RA2Activity");

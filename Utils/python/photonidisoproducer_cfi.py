@@ -3,7 +3,7 @@ import FWCore.ParameterSet.Config as cms
 PhotonIDisoProducer = cms.EDProducer("PhotonIDisoProducer",
     photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
     electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
-    conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",self.tagname),
+    conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions"),
     beamspotCollection     = cms.untracked.InputTag("offlineBeamSpot"),
     ecalRecHitsInputTag_EE = cms.InputTag("reducedEgamma","reducedEERecHits"),
     ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
