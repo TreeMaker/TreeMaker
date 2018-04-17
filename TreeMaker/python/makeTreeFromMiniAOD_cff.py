@@ -359,9 +359,10 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## Electrons/Muons
     ## ----------------------------------------------------------------------------------------------
+    from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.leptonproducer_cfi import leptonproducer
-
-    process.LeptonsNew = leptonproducer.clone(
+    process.LeptonsNew = leptonproducer.clone()
+    TMeras.TM2016.toModify(process.LeptonsNew,
         MuonTag          = cms.InputTag('slimmedMuons'),
         ElectronTag      = cms.InputTag('slimmedElectrons'),
         PrimaryVertex    = cms.InputTag('offlineSlimmedPrimaryVertices'),
@@ -371,6 +372,19 @@ def makeTreeFromMiniAOD(self,process):
         maxMuEta         = cms.double(2.4),
         UseMiniIsolation = cms.bool(True),
         muIsoValue       = cms.double(0.2),
+        elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
+        METTag           = METTag,
+    )
+    TMeras.TM2017.toModify(process.LeptonsNew,
+        MuonTag          = cms.InputTag('slimmedMuons'),
+        ElectronTag      = cms.InputTag('slimmedElectrons'),
+        PrimaryVertex    = cms.InputTag('offlineSlimmedPrimaryVertices'),
+        minElecPt        = cms.double(10),
+        maxElecEta       = cms.double(2.5),
+        minMuPt          = cms.double(10),
+        maxMuEta         = cms.double(2.4),
+        UseMiniIsolation = cms.bool(True),
+        muIsoValue       = cms.double(0.2), #loose (<0.40), medium (<0.20), tight (<0.10), very tight (<0.05)
         elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
         METTag           = METTag, 
     )

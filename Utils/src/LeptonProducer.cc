@@ -66,39 +66,58 @@ private:
   edm::EDGetTokenT<edm::View<pat::MET>> metTok_;
   edm::EDGetTokenT<pat::PackedCandidateCollection> PFCandTok_;
   edm::EDGetTokenT<double> RhoTok_;
-  double minElecPt_, maxElecEta_, minMuPt_, maxMuEta_;
+  double minElecPt_, maxElecEta_, elecIsoValue_;
+  double minMuPt_, maxMuEta_, muIsoValue_;
+  double muNormalizedChi2Max_, muChi2LocalPositionMax_, muTrkKink_, muValidFractionMin_;
+  std::vector<double> muSegmentCompatibilityMin_;
+  double mudBMax_, mudZMax_;
+  double tightMuNormalizedChi2Max_;
+  int tightMuNumberOfValidMuonHitsMin_, tightMuNumberOfMatchedStationsMin_;
+  double tightMudBMax_, tightMudZMax_;
+  int tightMuNumberOfValidPixelHitsMin_, tightMuTrackerLayersWithMeasurementMin_;
   bool useMiniIsolation_;
-  double muIsoValue_, elecIsoValue_;
   SUSYIsolation SUSYIsolationHelper;
 };
 
 //
 // constructors and destructor
 //
-LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
-{
+LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   //register your products
-  MuonTag_                                 =         iConfig.getParameter<edm::InputTag >("MuonTag");
-  ElecTag_                                 =         iConfig.getParameter<edm::InputTag >("ElectronTag");
-  PrimVtxTag_=iConfig.getParameter<edm::InputTag>("PrimaryVertex");
-  minElecPt_=iConfig.getParameter<double>          ("minElecPt");
-  maxElecEta_=iConfig.getParameter<double>          ("maxElecEta");
-  minMuPt_=iConfig.getParameter<double>          ("minMuPt");
-  maxMuEta_=iConfig.getParameter<double>          ("maxMuEta");
-  useMiniIsolation_ = iConfig.getParameter<bool>("UseMiniIsolation");
-  muIsoValue_=iConfig.getParameter<double>          ("muIsoValue");
-  elecIsoValue_=iConfig.getParameter<double>          ("elecIsoValue");
-  metTag_   = iConfig.getParameter<edm::InputTag> ("METTag");
-  RhoTag_ = edm::InputTag("fixedGridRhoFastjetCentralNeutral");
-  PFCandTag_ = edm::InputTag("packedPFCandidates");
-  
-  MuonTok_ = consumes<edm::View<pat::Muon>>(MuonTag_);
-  ElecTok_ = consumes<edm::View<pat::Electron>>(ElecTag_);
-  PrimVtxTok_ = consumes<reco::VertexCollection>(PrimVtxTag_);
-  metTok_ = consumes<edm::View<pat::MET>>(metTag_);
-  PFCandTok_ = consumes<pat::PackedCandidateCollection>(PFCandTag_);
-  RhoTok_ = consumes<double>(RhoTag_);
-        
+  MuonTag_                               (iConfig.getParameter<edm::InputTag>("MuonTag")),
+  ElecTag_                               (iConfig.getParameter<edm::InputTag>("ElectronTag")),
+  PrimVtxTag_                            (iConfig.getParameter<edm::InputTag>("PrimaryVertex")),
+  metTag_                                (iConfig.getParameter<edm::InputTag> ("METTag")),
+  PFCandTag_                             (edm::InputTag("packedPFCandidates")),
+  RhoTag_                                (edm::InputTag("fixedGridRhoFastjetCentralNeutral")),
+  MuonTok_                               (consumes<edm::View<pat::Muon>>(MuonTag_)),
+  ElecTok_                               (consumes<edm::View<pat::Electron>>(ElecTag_)),
+  PrimVtxTok_                            (consumes<reco::VertexCollection>(PrimVtxTag_)),
+  metTok_                                (consumes<edm::View<pat::MET>>(metTag_)),
+  PFCandTok_                             (consumes<pat::PackedCandidateCollection>(PFCandTag_)),
+  RhoTok_                                (consumes<double>(RhoTag_)),
+  minElecPt_                             (iConfig.getParameter<double>("minElecPt")),
+  maxElecEta_                            (iConfig.getParameter<double>("maxElecEta")),
+  elecIsoValue_                          (iConfig.getParameter<double>("elecIsoValue")),
+  minMuPt_                               (iConfig.getParameter<double>("minMuPt")),
+  maxMuEta_                              (iConfig.getParameter<double>("maxMuEta")),
+  muIsoValue_                            (iConfig.getParameter<double>("muIsoValue")),
+  muNormalizedChi2Max_                   (iConfig.getParameter<double>("muNormalizedChi2Max")),
+  muChi2LocalPositionMax_                (iConfig.getParameter<double>("muChi2LocalPositionMax")),
+  muTrkKink_                             (iConfig.getParameter<double>("muTrkKink")),
+  muValidFractionMin_                    (iConfig.getParameter<double>("muValidFractionMin")),
+  muSegmentCompatibilityMin_             (iConfig.getParameter<std::vector<double>>("muSegmentCompatibilityMin")),
+  mudBMax_                               (iConfig.getParameter<double>("mudBMax")),
+  mudZMax_                               (iConfig.getParameter<double>("mudZMax")),
+  tightMuNormalizedChi2Max_              (iConfig.getParameter<double>("tightMuNormalizedChi2Max")),
+  tightMuNumberOfValidMuonHitsMin_       (iConfig.getParameter<int>("tightMuNumberOfValidMuonHitsMin")),
+  tightMuNumberOfMatchedStationsMin_     (iConfig.getParameter<int>("tightMuNumberOfMatchedStationsMin")),
+  tightMudBMax_                          (iConfig.getParameter<double>("tightMudBMax")),
+  tightMudZMax_                          (iConfig.getParameter<double>("tightMudZMax")),
+  tightMuNumberOfValidPixelHitsMin_      (iConfig.getParameter<int>("tightMuNumberOfValidPixelHitsMin")),
+  tightMuTrackerLayersWithMeasurementMin_(iConfig.getParameter<int>("tightMuTrackerLayersWithMeasurementMin")),
+  useMiniIsolation_                      (iConfig.getParameter<bool>("UseMiniIsolation"))
+{        
   produces<std::vector<pat::Muon>>("IdMuon");
   produces<std::vector<bool>>("IdMuonTightID");
   produces<std::vector<int>>("IdMuonCharge");
@@ -285,14 +304,15 @@ float LeptonProducer::MTWCalculator(double metPt,double  metPhi,double  lepPt,do
 
 bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const {
   //medium WP + dz/dxy cuts
-  bool goodGlob = muon.isGlobalMuon() && 
-                  muon.globalTrack()->normalizedChi2() < 3 && 
-                  muon.combinedQuality().chi2LocalPosition < 12 && 
-                  muon.combinedQuality().trkKink < 20; 
-  bool isMedium = muon.isLooseMuon() && 
-                  muon.innerTrack()->validFraction() > 0.8 && 
-                  muon.segmentCompatibility() > (goodGlob ? 0.303 : 0.451);
-  bool isMediumPlus = isMedium && muon.dB() < 0.2 && fabs(muon.muonBestTrack()->dz(vtx.position())) < 0.5;
+  bool goodGlob      = muon.isGlobalMuon() && 
+                       muon.globalTrack()->normalizedChi2() < muNormalizedChi2Max_ && 
+                       muon.combinedQuality().chi2LocalPosition < muChi2LocalPositionMax_ && 
+                       muon.combinedQuality().trkKink < muTrkKink_; 
+  bool isMedium      = muon.isLooseMuon() && 
+                       muon.innerTrack()->validFraction() > muValidFractionMin_ && 
+                       muon.segmentCompatibility() > (goodGlob ? muSegmentCompatibilityMin_[0] : muSegmentCompatibilityMin_[1]);
+  bool susyIP2DLoose = muon.dB() < mudBMax_ && fabs(muon.muonBestTrack()->dz(vtx.position())) < mudZMax_;
+  bool isMediumPlus  = isMedium && susyIP2DLoose;
   return isMediumPlus; 
 }
 
@@ -300,13 +320,13 @@ bool LeptonProducer::MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx
   //tight WP
   bool isTight = muon.isGlobalMuon() &&
                  muon.isPFMuon() &&
-                 muon.globalTrack()->normalizedChi2() < 10. &&
-                 muon.globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
-                 muon.numberOfMatchedStations() > 1 &&
-                 muon.dB() < 0.2 &&
-                 fabs(muon.muonBestTrack()->dz(vtx.position())) < 0.5 &&
-                 muon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0 &&
-                 muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5;
+                 muon.globalTrack()->normalizedChi2() < tightMuNormalizedChi2Max_ &&
+                 muon.globalTrack()->hitPattern().numberOfValidMuonHits() > tightMuNumberOfValidMuonHitsMin_ &&
+                 muon.numberOfMatchedStations() > tightMuNumberOfMatchedStationsMin_ &&
+                 muon.dB() < tightMudBMax_ &&
+                 fabs(muon.muonBestTrack()->dz(vtx.position())) < tightMudZMax_ &&
+                 muon.innerTrack()->hitPattern().numberOfValidPixelHits() > tightMuNumberOfValidPixelHitsMin_ &&
+                 muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > tightMuTrackerLayersWithMeasurementMin_;
 
   return isTight;
 }
