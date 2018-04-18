@@ -205,9 +205,10 @@ def doZinvBkg(self,process):
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.photonidisoproducer_cfi import PhotonIDisoProducer
-    process.goodPhotons = PhotonIDisoProducer.clone()
+    process.goodPhotons = PhotonIDisoProducer.clone(
+        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",self.tagname)
+    )
     TMeras.TM2016.toModify(process.goodPhotons,
-        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",self.tagname),
         effArChHad             = cms.vdouble(0.0360, 0.0377, 0.0306, 0.0283, 0.0254, 0.0217, 0.0167),#EA for charged hadrons in diiferent |eta| ranges
         effArNuHad             = cms.vdouble(0.0597, 0.0807, 0.0629, 0.0197, 0.0184, 0.0284, 0.0591),#EA for neutral hadrons in diiferent |eta| ranges
         effArGamma             = cms.vdouble(0.1210, 0.1107, 0.0699, 0.1056, 0.1457, 0.1719, 0.1988),#EA for photons(gamma) in diiferent |eta| ranges
@@ -221,9 +222,6 @@ def doZinvBkg(self,process):
         pfNuIsoRhoCorr_EE_cut  = cms.vdouble(5.931,  0.0163, 0.000014), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
         pfGmIsoRhoCorr_EB_cut  = cms.vdouble(3.630, 0.0047), #Rho corrected gamma ISO = [0]+[1]*pt
         pfGmIsoRhoCorr_EE_cut  = cms.vdouble(6.641, 0.0034), #Rho corrected gamma ISO = [0]+[1]*pt
-    )
-    TMeras.TM2017.toModify(process.goodPhotons,
-        conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",self.tagname)
     )
     
     ##### add branches for photon studies
