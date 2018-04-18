@@ -58,7 +58,7 @@ IsolationProducer::IsolationProducer(const edm::ParameterSet& iConfig)
   LeptonTypeName_   = iConfig.getParameter<std::string>("LeptonType");
   PFCandTag_        = iConfig.getParameter<edm::InputTag>("PFCandTag");
   JetTag_           = iConfig.getParameter<edm::InputTag>("JetTag");
-  RhoTag_           = edm::InputTag("fixedGridRhoFastjetAll");
+  RhoTag_           = iConfig.getParameter<edm::InputTag>("RhoTag");
   
   LeptonTok_        = consumes<edm::View<reco::Candidate>>(LeptonTag_);
   PFCandTok_        = consumes<pat::PackedCandidateCollection>(PFCandTag_);
