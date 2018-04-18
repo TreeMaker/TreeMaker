@@ -361,14 +361,13 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.leptonproducer_cfi import leptonproducer
-    process.LeptonsNew = leptonproducer.clone()
-    TMeras.TM2016.toModify(process.LeptonsNew,
+    process.LeptonsNew = leptonproducer.clone(
         elecIsoValue       = cms.double(0.1), # only has an effect when used with miniIsolation
         UseMiniIsolation   = cms.bool(True),
-        METTag             = METTag,
+        METTag             = METTag  ,
+        rhoCollection      = cms.InputTag("fixedGridRhoFastjetCentralNeutral")  
     )
     TMeras.TM2017.toModify(process.LeptonsNew,
-        elecIsoValue       = cms.double(0.1), # only has an effect when used with miniIsolation
         # barrel electrons
         eb_ieta_cut        = cms.vdouble(0.0128,  0.0105,  0.0105,  0.0104),
         eb_deta_cut        = cms.vdouble(0.00523, 0.00387, 0.00365, 0.00353),
@@ -391,11 +390,7 @@ def makeTreeFromMiniAOD(self,process):
         hovere_constant    = cms.bool(False),
         electronEAValues   = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
             # Newer values exist at https://github.com/lsoffi/cmssw/blob/CMSSW_9_2_X_TnP/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt,
-            #  but the SUSY group sais to use the older values as of 04/17/2018 (https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Electrons).
-        # muons
-        UseMiniIsolation   = cms.bool(True),
-        METTag             = METTag,
-        rhoCollection      = cms.InputTag("fixedGridRhoFastjetCentralNeutral")
+            #  but the SUSY group says to use the older values as of 04/17/2018 (https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Electrons).
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
