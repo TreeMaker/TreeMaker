@@ -359,20 +359,38 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## Electrons/Muons
     ## ----------------------------------------------------------------------------------------------
+    from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.leptonproducer_cfi import leptonproducer
-
     process.LeptonsNew = leptonproducer.clone(
-        MuonTag          = cms.InputTag('slimmedMuons'),
-        ElectronTag      = cms.InputTag('slimmedElectrons'),
-        PrimaryVertex    = cms.InputTag('offlineSlimmedPrimaryVertices'),
-        minElecPt        = cms.double(10),
-        maxElecEta       = cms.double(2.5),
-        minMuPt          = cms.double(10),
-        maxMuEta         = cms.double(2.4),
-        UseMiniIsolation = cms.bool(True),
-        muIsoValue       = cms.double(0.2),
-        elecIsoValue     = cms.double(0.1), # only has an effect when used with miniIsolation
-        METTag           = METTag, 
+        elecIsoValue       = cms.double(0.1), # only has an effect when used with miniIsolation
+        UseMiniIsolation   = cms.bool(True),
+        METTag             = METTag  ,
+        rhoCollection      = cms.InputTag("fixedGridRhoFastjetCentralNeutral")  
+    )
+    TMeras.TM2017.toModify(process.LeptonsNew,
+        # barrel electrons
+        eb_ieta_cut        = cms.vdouble(0.0128,  0.0105,  0.0105,  0.0104),
+        eb_deta_cut        = cms.vdouble(0.00523, 0.00387, 0.00365, 0.00353),
+        eb_dphi_cut        = cms.vdouble(0.159,   0.0716,  0.0588,  0.0499),
+        eb_hovere_cut      = cms.vdouble(0.05,    0.05,    0.026,   0.026),
+        eb_ooeminusoop_cut = cms.vdouble(0.193,   0.129,   0.0327,  0.0278),
+        eb_d0_cut          = cms.vdouble(0.05,    0.05,    0.05,    0.05),
+        eb_dz_cut          = cms.vdouble(0.10,    0.10,    0.10,    0.10),
+        eb_misshits_cut    = cms.vint32 (2,       1,       1,       1),
+        # endcap electrons
+        ee_ieta_cut        = cms.vdouble(0.0445,  0.0356,  0.0309,  0.0305),
+        ee_deta_cut        = cms.vdouble(0.00984, 0.0072,  0.00625, 0.00567),
+        ee_dphi_cut        = cms.vdouble(0.157,   0.147,   0.0355,  0.0165),
+        ee_hovere_cut      = cms.vdouble(0.05,    0.0414,  0.026,   0.026),
+        ee_ooeminusoop_cut = cms.vdouble(0.0962,  0.0875,  0.0335,  0.0158),
+        ee_d0_cut          = cms.vdouble(0.10,    0.10,    0.10,    0.10),
+        ee_dz_cut          = cms.vdouble(0.20,    0.20,    0.20,    0.20),
+        ee_misshits_cut    = cms.vint32 (3,       1,       1,       1),
+        # common electrons
+        hovere_constant    = cms.bool(False),
+        electronEAValues   = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
+            # Newer values exist at https://github.com/lsoffi/cmssw/blob/CMSSW_9_2_X_TnP/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt,
+            #  but the SUSY group says to use the older values as of 04/17/2018 (https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Electrons).
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])

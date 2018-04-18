@@ -30,26 +30,40 @@ class SUSYIsolation {
 public:
   enum iso_types { electron = 0, muon = 1, other = 2 };
 
+  std::vector<double> electronEAValues;
+  std::vector<double> muonEAValues;
+
+  void SetEAVectors(const std::vector<double> & electronValues, const std::vector<double> muonValues) {
+    electronEAValues = electronValues;
+    muonEAValues = muonValues;
+  }
+
   // Effective areas from https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF
   double GetMuonEA(double eta) const {
+    if (muonEAValues.size()!=5)
+      throw cms::Exception("The muon effective area vector does not have the proper size (5).");
+
     double abseta = fabs(eta);
-    if (abseta < 0.8) return 0.0735;
-    else if (abseta < 1.3) return 0.0619;
-    else if (abseta < 2.0) return 0.0465;
-    else if (abseta < 2.2) return 0.0433;
-    else if (abseta < 2.5) return 0.0577;
+    if (abseta < 0.8) return muonEAValues[0];
+    else if (abseta < 1.3) return muonEAValues[1];
+    else if (abseta < 2.0) return muonEAValues[2];
+    else if (abseta < 2.2) return muonEAValues[3];
+    else if (abseta < 2.5) return muonEAValues[4];
     else return 0;
   }
 
   double GetElectronEA(double eta) const {
+    if (electronEAValues.size()!=7)
+      throw cms::Exception("The electron effective area vector does not have the proper size (7).");
+
     double abseta = fabs(eta);
-    if (abseta < 1) return 0.1752;
-    else if (abseta < 1.479) return 0.1862;
-    else if (abseta < 2.0) return 0.1411;
-    else if (abseta < 2.2) return 0.1534;
-    else if (abseta < 2.3) return 0.1903;
-    else if (abseta < 2.4) return 0.2243;
-    else if (abseta < 2.5) return 0.2687;
+    if (abseta < 1) return electronEAValues[0];
+    else if (abseta < 1.479) return electronEAValues[1];
+    else if (abseta < 2.0) return electronEAValues[2];
+    else if (abseta < 2.2) return electronEAValues[3];
+    else if (abseta < 2.3) return electronEAValues[4];
+    else if (abseta < 2.4) return electronEAValues[5];
+    else if (abseta < 2.5) return electronEAValues[6];
     else return 0;
   }
 

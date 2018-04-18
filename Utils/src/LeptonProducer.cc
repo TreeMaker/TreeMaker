@@ -53,7 +53,7 @@ public:
   float MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi) const;
   bool MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const;
   bool MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx) const;
-  bool ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level) const;
+  bool ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level, const double rho = 0.0) const;
         
 private:
   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
@@ -66,39 +66,90 @@ private:
   edm::EDGetTokenT<edm::View<pat::MET>> metTok_;
   edm::EDGetTokenT<pat::PackedCandidateCollection> PFCandTok_;
   edm::EDGetTokenT<double> RhoTok_;
-  double minElecPt_, maxElecEta_, minMuPt_, maxMuEta_;
+  double minElecPt_, maxElecEta_, elecIsoValue_;
+  std::vector<double> eb_ieta_cut_, eb_deta_cut_, eb_dphi_cut_, eb_hovere_cut_, eb_hovere_parameters_, eb_ooeminusoop_cut_, eb_d0_cut_, eb_dz_cut_;
+  std::vector<int> eb_misshits_cut_;
+  std::vector<double> ee_ieta_cut_, ee_deta_cut_, ee_dphi_cut_, ee_hovere_cut_, ee_hovere_parameters_, ee_ooeminusoop_cut_, ee_d0_cut_, ee_dz_cut_;
+  std::vector<int> ee_misshits_cut_;
+  bool hovere_constant_;
+  double minMuPt_, maxMuEta_, muIsoValue_;
+  double muNormalizedChi2Max_, muChi2LocalPositionMax_, muTrkKink_, muValidFractionMin_;
+  std::vector<double> muSegmentCompatibilityMin_;
+  double mudBMax_, mudZMax_;
+  double tightMuNormalizedChi2Max_;
+  int tightMuNumberOfValidMuonHitsMin_, tightMuNumberOfMatchedStationsMin_;
+  double tightMudBMax_, tightMudZMax_;
+  int tightMuNumberOfValidPixelHitsMin_, tightMuTrackerLayersWithMeasurementMin_;
   bool useMiniIsolation_;
-  double muIsoValue_, elecIsoValue_;
+  std::vector<double> electronEAValues_, muonEAValues_;
   SUSYIsolation SUSYIsolationHelper;
 };
 
 //
 // constructors and destructor
 //
-LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig)
-{
+LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   //register your products
-  MuonTag_                                 =         iConfig.getParameter<edm::InputTag >("MuonTag");
-  ElecTag_                                 =         iConfig.getParameter<edm::InputTag >("ElectronTag");
-  PrimVtxTag_=iConfig.getParameter<edm::InputTag>("PrimaryVertex");
-  minElecPt_=iConfig.getParameter<double>          ("minElecPt");
-  maxElecEta_=iConfig.getParameter<double>          ("maxElecEta");
-  minMuPt_=iConfig.getParameter<double>          ("minMuPt");
-  maxMuEta_=iConfig.getParameter<double>          ("maxMuEta");
-  useMiniIsolation_ = iConfig.getParameter<bool>("UseMiniIsolation");
-  muIsoValue_=iConfig.getParameter<double>          ("muIsoValue");
-  elecIsoValue_=iConfig.getParameter<double>          ("elecIsoValue");
-  metTag_   = iConfig.getParameter<edm::InputTag> ("METTag");
-  RhoTag_ = edm::InputTag("fixedGridRhoFastjetCentralNeutral");
-  PFCandTag_ = edm::InputTag("packedPFCandidates");
-  
-  MuonTok_ = consumes<edm::View<pat::Muon>>(MuonTag_);
-  ElecTok_ = consumes<edm::View<pat::Electron>>(ElecTag_);
-  PrimVtxTok_ = consumes<reco::VertexCollection>(PrimVtxTag_);
-  metTok_ = consumes<edm::View<pat::MET>>(metTag_);
-  PFCandTok_ = consumes<pat::PackedCandidateCollection>(PFCandTag_);
-  RhoTok_ = consumes<double>(RhoTag_);
-        
+  MuonTag_                               (iConfig.getParameter<edm::InputTag>("MuonTag")),
+  ElecTag_                               (iConfig.getParameter<edm::InputTag>("ElectronTag")),
+  PrimVtxTag_                            (iConfig.getParameter<edm::InputTag>("PrimaryVertex")),
+  metTag_                                (iConfig.getParameter<edm::InputTag> ("METTag")),
+  PFCandTag_                             (edm::InputTag("packedPFCandidates")),
+  RhoTag_                                (edm::InputTag("fixedGridRhoFastjetCentralNeutral")),
+  MuonTok_                               (consumes<edm::View<pat::Muon>>(MuonTag_)),
+  ElecTok_                               (consumes<edm::View<pat::Electron>>(ElecTag_)),
+  PrimVtxTok_                            (consumes<reco::VertexCollection>(PrimVtxTag_)),
+  metTok_                                (consumes<edm::View<pat::MET>>(metTag_)),
+  PFCandTok_                             (consumes<pat::PackedCandidateCollection>(PFCandTag_)),
+  RhoTok_                                (consumes<double>(RhoTag_)),
+  minElecPt_                             (iConfig.getParameter<double>("minElecPt")),
+  maxElecEta_                            (iConfig.getParameter<double>("maxElecEta")),
+  elecIsoValue_                          (iConfig.getParameter<double>("elecIsoValue")),
+  eb_ieta_cut_                           (iConfig.getParameter<std::vector<double>>("eb_ieta_cut")),
+  eb_deta_cut_                           (iConfig.getParameter<std::vector<double>>("eb_deta_cut")),
+  eb_dphi_cut_                           (iConfig.getParameter<std::vector<double>>("eb_dphi_cut")),
+  eb_hovere_cut_                         (iConfig.getParameter<std::vector<double>>("eb_hovere_cut")),
+  eb_hovere_parameters_                  (iConfig.getParameter<std::vector<double>>("eb_hovere_parameters")),
+  eb_ooeminusoop_cut_                    (iConfig.getParameter<std::vector<double>>("eb_ooeminusoop_cut")),
+  eb_d0_cut_                             (iConfig.getParameter<std::vector<double>>("eb_d0_cut")),
+  eb_dz_cut_                             (iConfig.getParameter<std::vector<double>>("eb_dz_cut")),
+  eb_misshits_cut_                       (iConfig.getParameter<std::vector<int>>("eb_misshits_cut")),
+  ee_ieta_cut_                           (iConfig.getParameter<std::vector<double>>("ee_ieta_cut")),
+  ee_deta_cut_                           (iConfig.getParameter<std::vector<double>>("ee_deta_cut")),
+  ee_dphi_cut_                           (iConfig.getParameter<std::vector<double>>("ee_dphi_cut")),
+  ee_hovere_cut_                         (iConfig.getParameter<std::vector<double>>("ee_hovere_cut")),
+  ee_hovere_parameters_                  (iConfig.getParameter<std::vector<double>>("ee_hovere_parameters")),
+  ee_ooeminusoop_cut_                    (iConfig.getParameter<std::vector<double>>("ee_ooeminusoop_cut")),
+  ee_d0_cut_                             (iConfig.getParameter<std::vector<double>>("ee_d0_cut")),
+  ee_dz_cut_                             (iConfig.getParameter<std::vector<double>>("ee_dz_cut")),
+  ee_misshits_cut_                       (iConfig.getParameter<std::vector<int>>("ee_misshits_cut")),
+  hovere_constant_                       (iConfig.getParameter<bool>("hovere_constant")),
+  minMuPt_                               (iConfig.getParameter<double>("minMuPt")),
+  maxMuEta_                              (iConfig.getParameter<double>("maxMuEta")),
+  muIsoValue_                            (iConfig.getParameter<double>("muIsoValue")),
+  muNormalizedChi2Max_                   (iConfig.getParameter<double>("muNormalizedChi2Max")),
+  muChi2LocalPositionMax_                (iConfig.getParameter<double>("muChi2LocalPositionMax")),
+  muTrkKink_                             (iConfig.getParameter<double>("muTrkKink")),
+  muValidFractionMin_                    (iConfig.getParameter<double>("muValidFractionMin")),
+  muSegmentCompatibilityMin_             (iConfig.getParameter<std::vector<double>>("muSegmentCompatibilityMin")),
+  mudBMax_                               (iConfig.getParameter<double>("mudBMax")),
+  mudZMax_                               (iConfig.getParameter<double>("mudZMax")),
+  tightMuNormalizedChi2Max_              (iConfig.getParameter<double>("tightMuNormalizedChi2Max")),
+  tightMuNumberOfValidMuonHitsMin_       (iConfig.getParameter<int>("tightMuNumberOfValidMuonHitsMin")),
+  tightMuNumberOfMatchedStationsMin_     (iConfig.getParameter<int>("tightMuNumberOfMatchedStationsMin")),
+  tightMudBMax_                          (iConfig.getParameter<double>("tightMudBMax")),
+  tightMudZMax_                          (iConfig.getParameter<double>("tightMudZMax")),
+  tightMuNumberOfValidPixelHitsMin_      (iConfig.getParameter<int>("tightMuNumberOfValidPixelHitsMin")),
+  tightMuTrackerLayersWithMeasurementMin_(iConfig.getParameter<int>("tightMuTrackerLayersWithMeasurementMin")),
+  useMiniIsolation_                      (iConfig.getParameter<bool>("UseMiniIsolation")),
+  electronEAValues_                      (iConfig.getParameter<std::vector<double>>("electronEAValues")),
+  muonEAValues_                          (iConfig.getParameter<std::vector<double>>("muonEAValues"))
+{
+  if (eb_hovere_parameters_.size()!=2 || ee_hovere_parameters_.size()!=2)
+    throw cms::Exception("The vectors containing the hovere function parameters must be of size 2.");
+
+  SUSYIsolationHelper.SetEAVectors(electronEAValues_, muonEAValues_);
+
   produces<std::vector<pat::Muon>>("IdMuon");
   produces<std::vector<bool>>("IdMuonTightID");
   produces<std::vector<int>>("IdMuonCharge");
@@ -222,13 +273,13 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
           double mt2_act = 0.0;
           SUSYIsolationHelper.GetMiniIsolation(pfcands, &aEle, SUSYIsolation::electron, rho, miniIso, mt2_act);
 
-          if(ElectronID(aEle, vtx, VETO)) // check VETO id
+          if(ElectronID(aEle, vtx, VETO, rho)) // check VETO id
             {
               // id passed
               idElectrons->push_back(aEle);
               elecIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),aEle.pt(),aEle.phi()));
-              elecIDMedium->push_back(ElectronID(aEle, vtx, MEDIUM));
-              elecIDTight->push_back(ElectronID(aEle, vtx, TIGHT));
+              elecIDMedium->push_back(ElectronID(aEle, vtx, MEDIUM, rho));
+              elecIDTight->push_back(ElectronID(aEle, vtx, TIGHT, rho));
               ElectronCharge->push_back(aEle.charge());
               elecIDPassIso->push_back(miniIso<elecIsoValue_);
               if(elecIDPassIso->back())
@@ -285,14 +336,15 @@ float LeptonProducer::MTWCalculator(double metPt,double  metPhi,double  lepPt,do
 
 bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const {
   //medium WP + dz/dxy cuts
-  bool goodGlob = muon.isGlobalMuon() && 
-                  muon.globalTrack()->normalizedChi2() < 3 && 
-                  muon.combinedQuality().chi2LocalPosition < 12 && 
-                  muon.combinedQuality().trkKink < 20; 
-  bool isMedium = muon.isLooseMuon() && 
-                  muon.innerTrack()->validFraction() > 0.8 && 
-                  muon.segmentCompatibility() > (goodGlob ? 0.303 : 0.451);
-  bool isMediumPlus = isMedium && muon.dB() < 0.2 && fabs(muon.muonBestTrack()->dz(vtx.position())) < 0.5;
+  bool goodGlob      = muon.isGlobalMuon() && 
+                       muon.globalTrack()->normalizedChi2() < muNormalizedChi2Max_ && 
+                       muon.combinedQuality().chi2LocalPosition < muChi2LocalPositionMax_ && 
+                       muon.combinedQuality().trkKink < muTrkKink_; 
+  bool isMedium      = muon.isLooseMuon() && 
+                       muon.innerTrack()->validFraction() > muValidFractionMin_ && 
+                       muon.segmentCompatibility() > (goodGlob ? muSegmentCompatibilityMin_[0] : muSegmentCompatibilityMin_[1]);
+  bool susyIP2DLoose = muon.dB() < mudBMax_ && fabs(muon.muonBestTrack()->dz(vtx.position())) < mudZMax_;
+  bool isMediumPlus  = isMedium && susyIP2DLoose;
   return isMediumPlus; 
 }
 
@@ -300,44 +352,20 @@ bool LeptonProducer::MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx
   //tight WP
   bool isTight = muon.isGlobalMuon() &&
                  muon.isPFMuon() &&
-                 muon.globalTrack()->normalizedChi2() < 10. &&
-                 muon.globalTrack()->hitPattern().numberOfValidMuonHits() > 0 &&
-                 muon.numberOfMatchedStations() > 1 &&
-                 muon.dB() < 0.2 &&
-                 fabs(muon.muonBestTrack()->dz(vtx.position())) < 0.5 &&
-                 muon.innerTrack()->hitPattern().numberOfValidPixelHits() > 0 &&
-                 muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > 5;
+                 muon.globalTrack()->normalizedChi2() < tightMuNormalizedChi2Max_ &&
+                 muon.globalTrack()->hitPattern().numberOfValidMuonHits() > tightMuNumberOfValidMuonHitsMin_ &&
+                 muon.numberOfMatchedStations() > tightMuNumberOfMatchedStationsMin_ &&
+                 muon.dB() < tightMudBMax_ &&
+                 fabs(muon.muonBestTrack()->dz(vtx.position())) < tightMudZMax_ &&
+                 muon.innerTrack()->hitPattern().numberOfValidPixelHits() > tightMuNumberOfValidPixelHitsMin_ &&
+                 muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > tightMuTrackerLayersWithMeasurementMin_;
 
   return isTight;
 }
 
-bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level) const {
-  // electron ID cuts, updated for Spring15 25ns MC and Run2015C-D data 
+bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level, const double rho) const {
+  // electron ID cuts
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
-
-  // barrel electrons
-  double eb_ieta_cut[4] = {0.0115, 0.011, 0.00998, 0.00998};
-  double eb_deta_cut[4] = {0.00749, 0.00477, 0.00311, 0.00308};
-  double eb_dphi_cut[4] = {0.228, 0.222, 0.103, 0.0816};
-  double eb_hovere_cut[4] = {0.356, 0.298, 0.253, 0.0414};
-  double eb_ooeminusoop_cut[4] = {0.299, 0.241, 0.134, 0.0129};
-  double eb_d0_cut[4] = {0.05, 0.05, 0.05, 0.05};
-  double eb_dz_cut[4] = {0.10, 0.10, 0.10, 0.10};
-  int eb_misshits_cut[4] = {2, 1, 1, 1};
-
-  // endcap electrons
-  double ee_ieta_cut[4] = {0.037, 0.0314, 0.0298, 0.0292};
-  double ee_deta_cut[4] = {0.00895, 0.00868, 0.00609, 0.00605};
-  double ee_dphi_cut[4] = {0.213, 0.213, 0.045, 0.0394};
-  double ee_hovere_cut[4] = {0.211, 0.101, 0.0878, 0.0641};
-  double ee_ooeminusoop_cut[4] = {0.15, 0.14, 0.13, 0.0129};
-  double ee_d0_cut[4] = {0.10, 0.10, 0.10, 0.10};
-  double ee_dz_cut[4] = {0.20, 0.20, 0.20, 0.20};
-  int ee_misshits_cut[4] = {3, 1, 1, 1};
-
-  // common
-  bool reqConvVeto[4] = {true, true, true, true};
-
   double sieie = electron.full5x5_sigmaIetaIeta();
   bool convVeto = electron.passConversionVeto();
   int mhits = electron.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);;
@@ -347,27 +375,31 @@ bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vert
   double ooemoop = fabs(1.0/electron.ecalEnergy() - electron.eSuperClusterOverP()/electron.ecalEnergy());
   double d0vtx = electron.gsfTrack()->dxy(vtx.position());
   double dzvtx = electron.gsfTrack()->dz(vtx.position());
+  bool hovere_pass = false;
+  bool reqConvVeto[4] = {true, true, true, true};
 
   if (electron.isEB()) {
-    return eb_deta_cut[level] > fabs(dEtaIn)
-      && eb_dphi_cut[level] > fabs(dPhiIn)
-      && eb_ieta_cut[level] > sieie
-      && eb_hovere_cut[level] > hoe
-      && eb_d0_cut[level] > fabs(d0vtx)
-      && eb_dz_cut[level] > fabs(dzvtx)
-      && eb_ooeminusoop_cut[level] > fabs(ooemoop)
+    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : eb_hovere_cut_[level] + (eb_hovere_parameters_[0]/electron.energy()) + (eb_hovere_parameters_[1]*rho/electron.energy()) > hoe;
+    return eb_deta_cut_[level] > fabs(dEtaIn)
+      && eb_dphi_cut_[level] > fabs(dPhiIn)
+      && eb_ieta_cut_[level] > sieie
+      && hovere_pass
+      && eb_d0_cut_[level] > fabs(d0vtx)
+      && eb_dz_cut_[level] > fabs(dzvtx)
+      && eb_ooeminusoop_cut_[level] > fabs(ooemoop)
       && (!reqConvVeto[level] || convVeto)
-      && (eb_misshits_cut[level] >= mhits);
+      && (eb_misshits_cut_[level] >= mhits);
   } else if (electron.isEE()) {
-    return ee_deta_cut[level] > fabs(dEtaIn)
-      && ee_dphi_cut[level] > fabs(dPhiIn)
-      && ee_ieta_cut[level] > sieie
-      && ee_hovere_cut[level] > hoe
-      && ee_d0_cut[level] > fabs(d0vtx)
-      && ee_dz_cut[level] > fabs(dzvtx)
-      && ee_ooeminusoop_cut[level] > fabs(ooemoop)
+    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : eb_hovere_cut_[level] + (ee_hovere_parameters_[0]/electron.energy()) + (ee_hovere_parameters_[1]*rho/electron.energy()) > hoe;
+    return ee_deta_cut_[level] > fabs(dEtaIn)
+      && ee_dphi_cut_[level] > fabs(dPhiIn)
+      && ee_ieta_cut_[level] > sieie
+      && hovere_pass
+      && ee_d0_cut_[level] > fabs(d0vtx)
+      && ee_dz_cut_[level] > fabs(dzvtx)
+      && ee_ooeminusoop_cut_[level] > fabs(ooemoop)
       && (!reqConvVeto[level] || convVeto)
-      && (ee_misshits_cut[level] >= mhits);
+      && (ee_misshits_cut_[level] >= mhits);
   } else return false;
 
 }

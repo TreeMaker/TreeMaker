@@ -37,16 +37,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
     TMeras.TM2016.toModify(GoodJets,
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
-        maxJetEta                 = cms.double(5.0),
-        minNconstituents          = cms.int32(1),
-        minNneutralsHF            = cms.int32(10),
-        minNcharged               = cms.int32(0),
-        maxNeutralFraction        = cms.double(0.99),
-        maxPhotonFraction         = cms.double(0.99),
-        maxPhotonFractionHF       = cms.double(0.90),
-        minChargedFraction        = cms.double(0),
-        maxChargedEMFraction      = cms.double(0.99),
-        jetPtFilter               = cms.double(30),
+        jetPtFilter               = cms.double(20 if self.fastsim else 30),
         ExcludeLepIsoTrackPhotons = cms.bool(True),
         JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
@@ -56,28 +47,20 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
     TMeras.TM2017.toModify(GoodJets,
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
-        maxJetEta                 = cms.double(5.0),
-        minNconstituents          = cms.int32(1),
-        minNneutralsHE            = cms.int32(2),
-        minNneutralsHF            = cms.int32(10),
-        minNcharged               = cms.int32(0),
         maxNeutralFraction        = cms.double(0.90),
         maxNeutralFractionHE      = cms.double(1.00), #Turned off as not needed for the tight WP
         minNeutralFractionHF      = cms.double(0.02),
         maxPhotonFraction         = cms.double(0.90),
         minPhotonFractionHE       = cms.double(0.02),
         maxPhotonFractionHE       = cms.double(0.99),
-        maxPhotonFractionHF       = cms.double(0.90),
-        minChargedFraction        = cms.double(0.00),
         maxChargedEMFraction      = cms.double(1.00), #Turned off as not needed for the tight WP
-        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30),
+        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 20 if self.fastsim else 30),
         ExcludeLepIsoTrackPhotons = cms.bool(True),
         JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
         SaveAllJetsId             = True,
         SaveAllJetsPt             = False, # exclude low pt jets from good collection
     )
-    if self.fastsim: GoodJets.jetPtFilter = cms.double(20)
     setattr(process,"GoodJets"+suff,GoodJets)
     GoodJetsTag = cms.InputTag("GoodJets"+suff)
     self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])

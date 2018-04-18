@@ -8,18 +8,25 @@ def doLostLeptonBkg(self,process,METTag):
             pfCandsTag  = cms.InputTag('packedPFCandidates')
         )
 
+    from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.isolationproducer_cfi import isolationproducer
     process.IDMuonMiniIso = isolationproducer.clone(
         LeptonTag = cms.InputTag('LeptonsNew:IdMuon'),
-        LeptonType = cms.string('muon'),
-        PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
+        LeptonType = cms.string('muon')
+    )
+    electronEAValuesLocal = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
+    muonEAValuesLocal     = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577)
+    TMeras.TM2017.toModify(process.IDMuonMiniIso,
+        electronEAValues = electronEAValuesLocal,
+        muonEAValues     = muonEAValuesLocal
     )
     process.IDElectronMiniIso = isolationproducer.clone(
         LeptonTag = cms.InputTag('LeptonsNew:IdElectron'), 
-        LeptonType = cms.string('electron'),
-        PFCandTag = cms.InputTag('packedPFCandidates'),
-        JetTag = cms.InputTag('HTJets')
+        LeptonType = cms.string('electron')
+    )
+    TMeras.TM2017.toModify(process.IDElectronMiniIso,
+        electronEAValues = electronEAValuesLocal,
+        muonEAValues     = muonEAValuesLocal
     )
 
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -66,21 +73,27 @@ def doLostLeptonBkg(self,process,METTag):
     if self.geninfo:
         process.GenMuonMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Muon'), 
-            LeptonType = cms.string('gen'),
-            PFCandTag = cms.InputTag('packedPFCandidates'),
-            JetTag = cms.InputTag('HTJets')
+            LeptonType = cms.string('gen')
+        )
+        TMeras.TM2017.toModify(process.GenMuonMiniIso,
+            electronEAValues = electronEAValuesLocal,
+            muonEAValues     = muonEAValuesLocal
         )
         process.GenElectronMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Electron'), 
-            LeptonType = cms.string('gen'),
-            PFCandTag = cms.InputTag('packedPFCandidates'),
-            JetTag = cms.InputTag('HTJets')
+            LeptonType = cms.string('gen')
+        )
+        TMeras.TM2017.toModify(process.GenElectronMiniIso,
+            electronEAValues = electronEAValuesLocal,
+            muonEAValues     = muonEAValuesLocal
         )
         process.GenTauMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Tau'), 
-            LeptonType = cms.string('gen'),
-            PFCandTag = cms.InputTag('packedPFCandidates'),
-            JetTag = cms.InputTag('HTJets')
+            LeptonType = cms.string('gen')
+        )
+        TMeras.TM2017.toModify(process.GenTauMiniIso,
+            electronEAValues = electronEAValuesLocal,
+            muonEAValues     = muonEAValuesLocal
         )
 
 #    from TreeMaker.Utils.extrapolationproducer_cfi import extrapolationproducer
