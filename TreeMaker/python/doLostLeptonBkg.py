@@ -10,25 +10,19 @@ def doLostLeptonBkg(self,process,METTag):
 
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.isolationproducer_cfi import isolationproducer
-    process.IDMuonMiniIso = isolationproducer.clone()
-    TMeras.TM2016.toModify(process.IDMuonMiniIso,
+    process.IDMuonMiniIso = isolationproducer.clone(
         LeptonTag = cms.InputTag('LeptonsNew:IdMuon'),
         LeptonType = cms.string('muon')
     )
     TMeras.TM2017.toModify(process.IDMuonMiniIso,
-        LeptonTag = cms.InputTag('LeptonsNew:IdMuon'),
-        LeptonType = cms.string('muon'),
         electronEAValues = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
         muonEAValues = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577)
     )
-    process.IDElectronMiniIso = isolationproducer.clone()
-    TMeras.TM2016.toModify(process.IDElectronMiniIso,
+    process.IDElectronMiniIso = isolationproducer.clone(
         LeptonTag = cms.InputTag('LeptonsNew:IdElectron'), 
         LeptonType = cms.string('electron')
     )
     TMeras.TM2017.toModify(process.IDElectronMiniIso,
-        LeptonTag = cms.InputTag('LeptonsNew:IdElectron'), 
-        LeptonType = cms.string('electron'),
         electronEAValues = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
         muonEAValues = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577)
     )
@@ -75,36 +69,27 @@ def doLostLeptonBkg(self,process,METTag):
             )
 
     if self.geninfo:
-        process.GenMuonMiniIso = isolationproducer.clone()
-        TMeras.TM2016.toModify(process.GenMuonMiniIso,
+        process.GenMuonMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Muon'), 
             LeptonType = cms.string('gen')
         )
         TMeras.TM2017.toModify(process.GenMuonMiniIso,
-            LeptonTag = cms.InputTag('GenLeptons:Muon'), 
-            LeptonType = cms.string('gen'),
             electronEAValues = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
             muonEAValues = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577)
         )
-        process.GenElectronMiniIso = isolationproducer.clone()
-        TMeras.TM2016.toModify(process.GenElectronMiniIso,
+        process.GenElectronMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Electron'), 
             LeptonType = cms.string('gen')
         )
         TMeras.TM2017.toModify(process.GenElectronMiniIso,
-            LeptonTag = cms.InputTag('GenLeptons:Electron'), 
-            LeptonType = cms.string('gen'),
             electronEAValues = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
             muonEAValues = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577)
         )
-        process.GenTauMiniIso = isolationproducer.clone()
-        TMeras.TM2016.toModify(process.GenTauMiniIso,
+        process.GenTauMiniIso = isolationproducer.clone(
             LeptonTag = cms.InputTag('GenLeptons:Tau'), 
             LeptonType = cms.string('gen')
         )
         TMeras.TM2017.toModify(process.GenTauMiniIso,
-            LeptonTag = cms.InputTag('GenLeptons:Tau'), 
-            LeptonType = cms.string('gen'),
             electronEAValues = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
             muonEAValues = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577)
         )
