@@ -40,6 +40,9 @@ public:
 
   // Effective areas from https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF
   double GetMuonEA(double eta) const {
+    if (muonEAValues.size()!=5)
+      throw cms::Exception("The muon effective area vector does not have the proper size (5).");
+
     double abseta = fabs(eta);
     if (abseta < 0.8) return muonEAValues[0];
     else if (abseta < 1.3) return muonEAValues[1];
@@ -50,6 +53,9 @@ public:
   }
 
   double GetElectronEA(double eta) const {
+    if (electronEAValues.size()!=7)
+      throw cms::Exception("The electron effective area vector does not have the proper size (7).");
+
     double abseta = fabs(eta);
     if (abseta < 1) return electronEAValues[0];
     else if (abseta < 1.479) return electronEAValues[1];
