@@ -22,7 +22,7 @@ def makeJetVarsHadTau(self,process,JetTag,suff,storeProperties=0):
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetProperties = jetproperties.clone(
             JetTag       = GoodJetsTag,
-            properties   = cms.vstring("jecFactor","jecUnc","bDiscriminatorCSV")
+            properties   = cms.vstring("jecFactor","jecUnc","bDiscriminatorCSV","bDiscriminatorDeepCSVBvsAll")
         )
         if self.geninfo:
             JetProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
@@ -34,7 +34,8 @@ def makeJetVarsHadTau(self,process,JetTag,suff,storeProperties=0):
         setattr(process,"HadTauJetProperties"+suff,JetProperties)
         self.VectorDouble.extend(['HadTauJetProperties:jecFactor(SoftJets'+suff+'_jecFactor)',
                                                 'HadTauJetProperties:jecUnc(SoftJets'+suff+'_jecUnc)',
-                                                'HadTauJetProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)'])
+                                                'HadTauJetProperties:bDiscriminatorCSV(SoftJets'+suff+'_bDiscriminatorCSV)',
+                                                'HadTauJetProperties:bDiscriminatorDeepCSVBvsAll(SoftJets'+suff+'_bJetTagDeepCSVBvsAll)'])
         if self.geninfo:
             self.VectorDouble.extend(['HadTauJetProperties:jerFactor(SoftJets'+suff+'_jerFactor)',
                                                     'HadTauJetProperties:jerFactorUp(SoftJets'+suff+'_jerFactorUp)',
@@ -72,7 +73,7 @@ def doHadTauBkg(self,process,JetTag,recluster):
             elSource           = cms.InputTag('slimmedElectrons'),
             muSource           = cms.InputTag('slimmedMuons'),
             jetCorrections     = jetCorrectionLevels,
-            btagDiscriminators = [ 'pfCombinedInclusiveSecondaryVertexV2BJetTags' ],  # 74x
+            btagDiscriminators = [ 'pfCombinedInclusiveSecondaryVertexV2BJetTags','pfDeepCSVDiscriminatorsJetTags:BvsAll' ],  # 74x
             genJetCollection   = cms.InputTag('ak4GenJets'),
             genParticles       = cms.InputTag('prunedGenParticles'),
             algo               = 'AK',
@@ -104,8 +105,6 @@ def doHadTauBkg(self,process,JetTag,recluster):
 
     process.JetsForHadTau = JetsForHadTauProducer.clone(
         JetTag                 = JetTag,
-        reclusJetTag           = cms.InputTag('patJetsAK4PFCHS'),
-        maxJetEta              = cms.double(5.0), 
         MCflag                 = cms.bool(self.geninfo),
         useReclusteredJets     = cms.bool(recluster),
         requireLeptonMatch     = cms.bool(False)
