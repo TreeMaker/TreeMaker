@@ -145,6 +145,9 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   electronEAValues_                      (iConfig.getParameter<std::vector<double>>("electronEAValues")),
   muonEAValues_                          (iConfig.getParameter<std::vector<double>>("muonEAValues"))
 {
+  if (eb_hovere_parameters_.size()!=2 || ee_hovere_parameters_.size()!=2)
+    throw cms::Exception("The vectors containing the hovere function parameters must be of size 2.");
+
   SUSYIsolationHelper.SetEAVectors(electronEAValues_, muonEAValues_);
 
   produces<std::vector<pat::Muon>>("IdMuon");
