@@ -97,6 +97,7 @@ DEFAULT_NAMED_PTR(D,NsubjettinessTau3);
 DEFAULT_NAMED_PTR(D,overflow);
 DEFAULT_NAMED_PTR(D,girth);
 DEFAULT_NAMED_PTR(D,momenthalf);
+DEFAULT_NAMED_PTR(D,ptdrlog);
 
 class NamedPtr_I : public NamedPtr<int> {
 	public:
