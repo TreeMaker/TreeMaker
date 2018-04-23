@@ -306,14 +306,17 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
         self.VectorDouble.extend([
-                             'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
-                             'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
-                             'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
-                             'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
-                             'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
-                             'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)'])
-        self.VectorInt.extend(['JetProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
-                          'JetProperties'+suff+':NumChadrons(Jets'+suff+'_NumChadrons)'])
+            'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
+            'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
+            'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
+            'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
+            'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
+            'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)'
+        ])
+        self.VectorInt.extend([
+            'JetProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
+            'JetProperties'+suff+':NumChadrons(Jets'+suff+'_NumChadrons)'
+        ])
         self.VectorVectorTLorentzVector.extend([
             'JetProperties'+suff+':subjets(Jets'+suff+'_subjets)',
         ])
