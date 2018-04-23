@@ -20,14 +20,9 @@ def makeTest(scenario, name, numevents, command, dataset="", inputFilesConfig=""
 
     return mytest
 
-def printTest(mytest, itest, shell):
-    tmp = str(itest)+":\n  "+" \\\n  ".join(mytest[0:-1])+" \\\n "
+def printTest(mytest, itest):
     logname = mytest[-1]
-    if shell=="tcsh":
-        tmp += " >& "+logname+" &"
-    elif shell=="bash" or shell=="sh":
-        tmp += " > "+logname+" 2>&1 &"
-    
+    tmp = str(itest)+":\n  "+" \\\n  ".join(mytest[0:-1])+" \\\n "+" >& "+logname+" &"
     print tmp
     
 # Read parameters
@@ -38,7 +33,6 @@ name=parameters.value("name","")
 run=parameters.value("run",False)
 numevents=parameters.value("numevents",100)
 command=parameters.value("command","")
-shell=parameters.value("shell","tcsh")
 
 # only set name for a specific test
 if test==-1: name = ""
@@ -57,9 +51,9 @@ mytests.append(makeTest("2016ReMiniAOD03Feb","MET16ReMiniAOD" if len(name)==0 el
 if test<0 or test>len(mytests):
     print "Predefined tests:"
     for itest, mytest in enumerate(mytests):
-        printTest(mytest,itest,shell)
+        printTest(mytest,itest)
 else:
-    printTest(mytests[test],test,shell)
+    printTest(mytests[test],test)
     if run:
         # fork the cmsRun process and exit
         fork_pid = os.fork()
