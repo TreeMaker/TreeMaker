@@ -24,6 +24,7 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
 
 #include "TLorentzVector.h"
 
@@ -238,6 +239,25 @@ class NamedPtr_softDropMass : public NamedPtr<double> {
 		}
 };
 DEFINE_NAMED_PTR(softDropMass);
+
+//deltaR of axes for tau1_beta1, tau1_beta2
+class NamedPtr_lean : public NamedPtr<double> {
+	public:
+		using NamedPtr<double>::NamedPtr;
+		virtual void get_property(const pat::Jet* Jet) {
+			if(extraInfo.size()==4){
+				//eta,phi,eta,phi
+				double eta1 = Jet->userFloat(extraInfo.at(0));
+				double phi1 = Jet->userFloat(extraInfo.at(1));
+				double eta2 = Jet->userFloat(extraInfo.at(2));
+				double phi2 = Jet->userFloat(extraInfo.at(3));
+				double dphi = reco::deltaPhi(phi1,phi2);
+				push_back(std::sqrt(std::pow(eta1-eta2,2)+std::pow(dphi,2)));
+			}
+			else push_back(-10);
+		}
+};
+DEFINE_NAMED_PTR(lean);
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 //ints
