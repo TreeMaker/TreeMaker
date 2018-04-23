@@ -99,6 +99,10 @@ DEFAULT_NAMED_PTR(D,overflow);
 DEFAULT_NAMED_PTR(D,girth);
 DEFAULT_NAMED_PTR(D,momenthalf);
 DEFAULT_NAMED_PTR(D,ptdrlog);
+DEFAULT_NAMED_PTR(D,ecfN2b1);
+DEFAULT_NAMED_PTR(D,ecfN2b2);
+DEFAULT_NAMED_PTR(D,ecfN3b1);
+DEFAULT_NAMED_PTR(D,ecfN3b2);
 
 class NamedPtr_I : public NamedPtr<int> {
 	public:

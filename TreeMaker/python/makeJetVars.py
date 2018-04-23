@@ -287,6 +287,10 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 "NsubjettinessTau1"     ,
                 "NsubjettinessTau2"     ,
                 "NsubjettinessTau3"     ,
+                "ecfN2b1"               ,
+                "ecfN2b2"               ,
+                "ecfN3b1"               ,
+                "ecfN3b2"               ,
                 "bDiscriminatorCSV"     ,
                 "bJetTagDeepCSVprobb"   ,
                 "bJetTagDeepCSVprobc"   ,
@@ -303,6 +307,10 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
         JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
         JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
+        JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN2')
+        JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN2')
+        JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN3')
+        JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN3')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
         self.VectorDouble.extend([
@@ -311,7 +319,11 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
             'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
             'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
-            'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)'
+            'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)',
+            'JetProperties'+suff+':ecfN2b1(Jets'+suff+'_ecfN2b1)',
+            'JetProperties'+suff+':ecfN2b2(Jets'+suff+'_ecfN2b2)',
+            'JetProperties'+suff+':ecfN3b1(Jets'+suff+'_ecfN3b1)',
+            'JetProperties'+suff+':ecfN3b2(Jets'+suff+'_ecfN3b2)',
         ])
         self.VectorInt.extend([
             'JetProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
