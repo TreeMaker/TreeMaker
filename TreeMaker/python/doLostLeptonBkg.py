@@ -14,7 +14,7 @@ def doLostLeptonBkg(self,process,METTag):
         LeptonTag = cms.InputTag('LeptonsNew:IdMuon'),
         LeptonType = cms.string('muon')
     )
-    electronEAValuesLocal = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
+    electronEAValuesLocal = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524)
     muonEAValuesLocal     = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577)
     TMeras.TM2017.toModify(process.IDMuonMiniIso,
         electronEAValues = electronEAValuesLocal,
