@@ -6,7 +6,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
 
     # https://twiki.cern.ch/CMS/JetToolbox
     from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-    listBTagInfos = ['pfInclusiveSecondaryVertexFinderTagInfos'] 
+    listBTagInfos = ['pfInclusiveSecondaryVertexFinderTagInfos','pfImpactParameterTagInfos'] 
     listBtagDiscriminatorsAK8 = [
          'pfBoostedDoubleSecondaryVertexAK8BJetTags',
     ]
