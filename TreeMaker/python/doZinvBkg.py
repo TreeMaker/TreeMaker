@@ -6,10 +6,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
 
     # https://twiki.cern.ch/CMS/JetToolbox
     from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-    listBTagInfos = ['pfInclusiveSecondaryVertexFinderTagInfos'] 
+    listBTagInfos = ['pfInclusiveSecondaryVertexFinderTagInfos','pfImpactParameterTagInfos'] 
     listBtagDiscriminatorsAK8 = [
-        'pfCombinedInclusiveSecondaryVertexV2BJetTags',
-        'pfBoostedDoubleSecondaryVertexAK8BJetTags'
+         'pfBoostedDoubleSecondaryVertexAK8BJetTags',
     ]
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if self.residual: jecLevels.append("L2L3Residual")
@@ -17,7 +16,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         'ak8',
         'jetSequence',
         'out',
-        PUMethod = 'CHS',
+        PUMethod = 'Puppi',
         miniAOD = True,
         runOnMC = self.geninfo,
         postFix='Clean',
@@ -33,7 +32,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         JETCorrLevels = jecLevels,
         subJETCorrLevels = jecLevels,
     )
-    JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFCHSCleanSoftDrop")
+    JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
     # temporary bug fix for jet toolbox (see https://github.com/cms-jet/JetToolbox/issues/51)
     if hasattr(process,'out'): del process.out
     if hasattr(process,'endpath'): del process.endpath
@@ -45,11 +44,11 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     )
 
     # update some userfloat names
-    process.JetPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsCHSCleanPrunedMass')
+    process.JetPropertiesAK8Clean.prunedMass = cms.vstring('ak8PFJetsPuppiCleanPrunedMass')
     process.JetPropertiesAK8Clean.softDropMass = cms.vstring('SoftDrop')
-    process.JetPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8CHSClean:tau1')
-    process.JetPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8CHSClean:tau2')
-    process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8CHSClean:tau3')
+    process.JetPropertiesAK8Clean.NsubjettinessTau1 = cms.vstring('NjettinessAK8PuppiClean:tau1')
+    process.JetPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiClean:tau2')
+    process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiClean:tau3')
     process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
 
     ### end AK8 detour

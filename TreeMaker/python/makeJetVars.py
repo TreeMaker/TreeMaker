@@ -286,19 +286,11 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
         JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
-        JetPropertiesAK8.bJetTagDeepCSVprobb = cms.vstring('pfDeepCSVJetTags:probb')
-        JetPropertiesAK8.bJetTagDeepCSVprobc = cms.vstring('pfDeepCSVJetTags:probc')
-        JetPropertiesAK8.bJetTagDeepCSVprobudsg = cms.vstring('pfDeepCSVJetTags:probudsg')
-        JetPropertiesAK8.bJetTagDeepCSVprobbb = cms.vstring('pfDeepCSVJetTags:probbb')
         JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
         self.VectorDouble.extend([
                              'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
                              'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
                              'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
-                             'JetProperties'+suff+':bJetTagDeepCSVprobb(Jets'+suff+'_bJetTagDeepCSVprobb)',
-                             'JetProperties'+suff+':bJetTagDeepCSVprobc(Jets'+suff+'_bJetTagDeepCSVprobc)',
-                             'JetProperties'+suff+':bJetTagDeepCSVprobudsg(Jets'+suff+'_bJetTagDeepCSVprobudsg)',
-                             'JetProperties'+suff+':bJetTagDeepCSVprobbb(Jets'+suff+'_bJetTagDeepCSVprobbb)',
                              'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
                              'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
                              'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)'])
