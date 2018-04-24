@@ -131,6 +131,13 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     self.VarsDouble.extend(['DeltaPhi'+suff+':DeltaPhi1(DeltaPhi1'+suff+')','DeltaPhi'+suff+':DeltaPhi2(DeltaPhi2'+suff+')',
                                           'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
 
+    # extra HT version using MHT collection w/ |eta| < 5, to filter forward beam halo events
+    HT5 = htdouble.clone(
+        JetTag = MHTJetsTag,
+    )
+    setattr(process,"HT5"+suff,HT5)
+    self.VarsDouble.extend(['HT5'+suff])
+
     ## ----------------------------------------------------------------------------------------------
     ## ISR jets
     ## ----------------------------------------------------------------------------------------------
