@@ -12,6 +12,11 @@
 #include <memory>
 #include <algorithm>
 #include <sstream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <utility>
+#include <algorithm>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/global/EDProducer.h"
@@ -148,17 +153,28 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   iEvent.getByToken(trigPrescalesTok_,trigPrescales);
 
   //Find the matching triggers
-  std::string testTriggerName;
+  std::unordered_map<std::string,std::pair<unsigned,std::string>> trigMap;
+  for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
+    std::string testTriggerName = trigNames.triggerName(trigIndex);
+    if(testTriggerName.compare(0,3,"HLT")!=0) continue;
+    //standardize format - remove version number (but save for later)
+    std::string trigVersion;
+    while(!testTriggerName.empty() and testTriggerName.back()!='v'){
+      trigVersion += testTriggerName.back();
+      testTriggerName.pop_back();
+    }
+    std::reverse(trigVersion.begin(),trigVersion.end());
+    if(!testTriggerName.empty()) trigMap.emplace(testTriggerName,std::make_pair(trigIndex,trigVersion));
+  }
   for(unsigned int parsedIndex = 0; parsedIndex < parsedTrigNamesVec.size(); parsedIndex++){
     trigNamesVec->at(parsedIndex) = parsedTrigNamesVec[parsedIndex];
-    for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
-      testTriggerName = trigNames.triggerName(trigIndex);
-      if(testTriggerName.find(parsedTrigNamesVec.at(parsedIndex)) != std::string::npos){
-        trigNamesVec->at(parsedIndex) = testTriggerName;
-        passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
-        trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
-        break; //We only match one trigger to each trigger name fragment passed
-      }
+    auto trigItr = trigMap.find(parsedTrigNamesVec[parsedIndex]);
+    if(trigItr != trigMap.end()){
+      //append known version
+      trigNamesVec->at(parsedIndex) += trigItr->second.second;
+      unsigned trigIndex = trigItr->second.first;
+      passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
+      trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
     }
   }
 
