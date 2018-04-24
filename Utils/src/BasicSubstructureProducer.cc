@@ -44,6 +44,7 @@ BasicSubstructureProducer::BasicSubstructureProducer(const edm::ParameterSet& iC
 	produces<edm::ValueMap<float>>("ptD");
 	produces<edm::ValueMap<float>>("axismajor");
 	produces<edm::ValueMap<float>>("axisminor");
+	produces<edm::ValueMap<float>>("ptdrlog");
 }
 
 template <class T>
@@ -62,7 +63,7 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 	edm::Handle<edm::View<pat::Jet>> h_jets;
 	iEvent.getByToken(JetTok_, h_jets);
 
-	std::vector<float> overflow, girth, momenthalf, ptD, axismajor, axisminor;
+	std::vector<float> overflow, girth, momenthalf, ptD, axismajor, axisminor, ptdrlog;
 	std::vector<int> multiplicity;
 
 	for(const auto& i_jet : *(h_jets.product())){
@@ -70,6 +71,7 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 		//calculate jet "overflow": 1 - (scalar sum of pT w/ dR<0.4 over scalar sum of pT w/ dR<0.8)
 		float i_numer = 0.0, i_denom = 0.0;
 		float i_girth = 0.0, i_momenthalf = 0.0;
+		float i_ptdrlog = 0.0;
 		float sumPt = 0.0, sumPt2 = 0.0;
 		float sumDeta = 0.0, sumDphi = 0.0, sumDeta2 = 0.0, sumDphi2 = 0.0, sumDetaDphi = 0.0;
 
@@ -86,6 +88,9 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 				float pT = i_part->pt();
 				if(dR < 0.8) i_denom += pT;
 				if(dR < 0.4) i_numer += pT;
+
+				//ptdrlog
+				i_ptdrlog += std::log(pT/dR);
 
 				//moment calcs
 				i_girth += pT*dR;
@@ -137,6 +142,7 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 		ptD.push_back(i_ptD);
 		axismajor.push_back(i_axis1);
 		axisminor.push_back(i_axis2);
+		ptdrlog.push_back(i_ptdrlog);
 	}
 
 	//make userfloat maps
@@ -147,6 +153,7 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 	helpProduce(iEvent,h_jets,ptD,"ptD");
 	helpProduce(iEvent,h_jets,axismajor,"axismajor");
 	helpProduce(iEvent,h_jets,axisminor,"axisminor");
+	helpProduce(iEvent,h_jets,ptdrlog,"ptdrlog");
 }
 
 DEFINE_FWK_MODULE(BasicSubstructureProducer);

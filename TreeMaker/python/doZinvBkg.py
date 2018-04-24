@@ -50,6 +50,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     process.JetPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiClean:tau2')
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiClean:tau3')
     process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
+    # temporarily disable ECFs
+    process.JetPropertiesAK8Clean.properties = cms.vstring([x for x in process.JetPropertiesAK8Clean.properties if "ecf" not in x])
+    self.VectorDouble.setValue([x for x in self.VectorDouble if "JetPropertiesAK8Clean:ecf" not in x])
 
     ### end AK8 detour
 
