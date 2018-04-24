@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 # import functions to be assigned as class methods
 from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
-from TreeMaker.TreeMaker.makeJetVars import makeJetVars, makeMHTVars, makeGoodJets, makeJetVarsAK8
+from TreeMaker.TreeMaker.makeJetVars import makeJetVars, makeGoodJets, makeJetVarsAK8
 from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg, makeJetVarsHadTau
 from TreeMaker.TreeMaker.doLostLeptonBkg import doLostLeptonBkg
 from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg, reclusterZinv
@@ -130,7 +130,6 @@ class makeTree:
     makeGoodJets = makeGoodJets
     makeJetVars = makeJetVars
     makeJetVarsAK8 = makeJetVarsAK8
-    makeMHTVars = makeMHTVars
     doHadTauBkg = doHadTauBkg
     makeJetVarsHadTau = makeJetVarsHadTau
     doLostLeptonBkg = doLostLeptonBkg
