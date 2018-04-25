@@ -42,12 +42,12 @@ class TriggerProducer : public edm::global::EDProducer<> {
 public:
   explicit TriggerProducer(const edm::ParameterSet&);
   ~TriggerProducer();
-	
+
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-	
+
 private:
   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
-	
+
   // ----------member data ---------------------------
   void GetInputTag(edm::InputTag& tag, std::string arg1, std::string arg2, std::string arg3, std::string arg1_default);
   int GetVersion(std::string& triggerName) const;
@@ -134,7 +134,7 @@ TriggerProducer::GetInputTag(edm::InputTag& tag, std::string arg1, std::string a
     tag = edm::InputTag(arg1);
   } else {
     tag = edm::InputTag(arg1,arg2,arg3);
-  }	
+  }
 }
 
 int
@@ -199,12 +199,12 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
       obj.unpackPathNames(trigNames);
       const std::vector<std::string>& pathNamesAll = obj.pathNames(false);
       for (const auto& pathName : pathNamesAll){
-	bool isBoth = obj.hasPathName( pathName, true, true );//object is associated wih l3 filter and associated to the last filter of a successfull path. this object caused the trigger to fire.
-	const std::string& path_i = pathName;
-	if(isBoth && path_i.find("HLT_Ele27_WPTight_Gsf_v")!= std::string::npos){
-	  hltEleObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
-	  break;
-	}
+        bool isBoth = obj.hasPathName( pathName, true, true );//object is associated with l3 filter and associated to the last filter of a successful path. this object caused the trigger to fire.
+        const std::string& path_i = pathName;
+        if(isBoth && path_i.find("HLT_Ele27_WPTight_Gsf_v")!= std::string::npos){
+          hltEleObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
+          break;
+        }
       }
     }
     iEvent.put(std::move(hltEleObj),"HLTElectronObjects");    
