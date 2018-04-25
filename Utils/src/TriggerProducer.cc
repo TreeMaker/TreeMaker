@@ -57,6 +57,7 @@ private:
   std::vector<std::string> parsedTrigNamesVec;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> trigObjCollToken;
   bool saveHLTObj = false;
+  std::unordered_map<std::string,std::pair<unsigned,int>> parsedTrigMap;
 };
 
 //
@@ -84,6 +85,14 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
     message << t << ": " << parsedTrigNamesVec[t] << "\n";
   }
   edm::LogInfo("TreeMaker") << message.str();
+
+  //fill map
+  for(unsigned int trigIndex = 0; trigIndex < parsedTrigNamesVec.size(); trigIndex++){
+    std::string parsedTrigName = parsedTrigNamesVec[trigIndex];
+    //standardize format - remove version number (but save for later)
+    int trigV = GetVersion(parsedTrigName);
+    if(!parsedTrigName.empty()) parsedTrigMap.emplace(parsedTrigName,std::make_pair(trigIndex,trigV));
+  }
   
   GetInputTag(trigResultsTag_,
               iConfig.getParameter <std::string> ("trigTagArg1"),
@@ -156,7 +165,7 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   auto passTrigVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),-1);
   auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
   auto trigVersionVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),0);
-  auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec.size(),"");
+  auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec);
   auto hltEleObj = std::make_unique<std::vector<TLorentzVector>>();
 
   //int passesTrigger;
@@ -167,25 +176,20 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   iEvent.getByToken(trigPrescalesTok_,trigPrescales);
 
   //Find the matching triggers
-  std::unordered_map<std::string,std::pair<unsigned,int>> trigMap;
   for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
     std::string testTriggerName = trigNames.triggerName(trigIndex);
     if(testTriggerName.compare(0,3,"HLT")!=0) continue;
-    //standardize format - remove version number (but save for later)
     int trigV = GetVersion(testTriggerName);
-    if(!testTriggerName.empty()) trigMap.emplace(testTriggerName,std::make_pair(trigIndex,trigV));
-  }
-  for(unsigned int parsedIndex = 0; parsedIndex < parsedTrigNamesVec.size(); parsedIndex++){
-    std::string parsedTrigName = parsedTrigNamesVec[parsedIndex];
-    int parsedTrigV = GetVersion(parsedTrigName);
-    trigNamesVec->at(parsedIndex) = parsedTrigName;
-    auto trigItr = trigMap.find(parsedTrigName);
+    if(testTriggerName.empty()) continue;
+    auto trigItr = parsedTrigMap.find(testTriggerName);
     //handle case where specific version is requested
-    if(trigItr != trigMap.end() and (parsedTrigV==0 or parsedTrigV==trigItr->second.second)){
-      unsigned trigIndex = trigItr->second.first;
+    if(trigItr != parsedTrigMap.end()){
+      int parsedTrigV = trigItr->second.second;
+      if(parsedTrigV != 0 and parsedTrigV != trigV) continue;
+      unsigned parsedIndex = trigItr->second.first;
       passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
       trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
-      trigVersionVec->at(parsedIndex) = trigItr->second.second;
+      trigVersionVec->at(parsedIndex) = trigV;
     }
   }
 
