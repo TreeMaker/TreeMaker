@@ -12,6 +12,10 @@
 #include <memory>
 #include <algorithm>
 #include <sstream>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <utility>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/global/EDProducer.h"
@@ -38,20 +42,22 @@ class TriggerProducer : public edm::global::EDProducer<> {
 public:
   explicit TriggerProducer(const edm::ParameterSet&);
   ~TriggerProducer();
-	
+
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-	
+
 private:
   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
-	
+
   // ----------member data ---------------------------
   void GetInputTag(edm::InputTag& tag, std::string arg1, std::string arg2, std::string arg3, std::string arg1_default);
+  int GetVersion(std::string& triggerName) const;
   edm::InputTag trigResultsTag_, trigPrescalesTag_;
   edm::EDGetTokenT<edm::TriggerResults> trigResultsTok_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> trigPrescalesTok_;
   std::vector<std::string> parsedTrigNamesVec;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> trigObjCollToken;
   bool saveHLTObj = false;
+  std::unordered_map<std::string,std::pair<unsigned,int>> parsedTrigMap;
 };
 
 //
@@ -79,6 +85,14 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
     message << t << ": " << parsedTrigNamesVec[t] << "\n";
   }
   edm::LogInfo("TreeMaker") << message.str();
+
+  //fill map
+  for(unsigned int trigIndex = 0; trigIndex < parsedTrigNamesVec.size(); trigIndex++){
+    std::string parsedTrigName = parsedTrigNamesVec[trigIndex];
+    //standardize format - remove version number (but save for later)
+    int trigV = GetVersion(parsedTrigName);
+    if(!parsedTrigName.empty()) parsedTrigMap.emplace(parsedTrigName,std::make_pair(trigIndex,trigV));
+  }
   
   GetInputTag(trigResultsTag_,
               iConfig.getParameter <std::string> ("trigTagArg1"),
@@ -101,6 +115,7 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   produces<std::vector<std::string> >("TriggerNames");
   produces<std::vector<int> >("TriggerPass");
   produces<std::vector<int> >("TriggerPrescales");
+  produces<std::vector<int> >("TriggerVersion");
   saveHLTObj = iConfig.getParameter<bool>("saveHLTObj");
   if(saveHLTObj) produces<std::vector<TLorentzVector> >("HLTElectronObjects");
 }
@@ -128,7 +143,19 @@ TriggerProducer::GetInputTag(edm::InputTag& tag, std::string arg1, std::string a
     tag = edm::InputTag(arg1);
   } else {
     tag = edm::InputTag(arg1,arg2,arg3);
-  }	
+  }
+}
+
+int
+TriggerProducer::GetVersion(std::string& triggerName) const {
+    //standardize format - remove version number (but save for later)
+    unsigned indexVersion = triggerName.size();
+    while(indexVersion>0 and triggerName[indexVersion-1]!='v') --indexVersion;
+    std::string trigVersion = triggerName.substr(indexVersion);
+    int trigV = (trigVersion.empty() or indexVersion==0) ? 0 : std::stoi(trigVersion);
+    //side effect - remove version from name
+    triggerName = triggerName.substr(0,indexVersion);
+    return trigV;
 }
 
 // ------------ method called to produce the data  ------------
@@ -137,7 +164,8 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 {
   auto passTrigVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),-1);
   auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
-  auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec.size(),"");
+  auto trigVersionVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),0);
+  auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec);
   auto hltEleObj = std::make_unique<std::vector<TLorentzVector>>();
 
   //int passesTrigger;
@@ -148,17 +176,20 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   iEvent.getByToken(trigPrescalesTok_,trigPrescales);
 
   //Find the matching triggers
-  std::string testTriggerName;
-  for(unsigned int parsedIndex = 0; parsedIndex < parsedTrigNamesVec.size(); parsedIndex++){
-    trigNamesVec->at(parsedIndex) = parsedTrigNamesVec[parsedIndex];
-    for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
-      testTriggerName = trigNames.triggerName(trigIndex);
-      if(testTriggerName.find(parsedTrigNamesVec.at(parsedIndex)) != std::string::npos){
-        trigNamesVec->at(parsedIndex) = testTriggerName;
-        passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
-        trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
-        break; //We only match one trigger to each trigger name fragment passed
-      }
+  for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
+    std::string testTriggerName = trigNames.triggerName(trigIndex);
+    if(testTriggerName.compare(0,3,"HLT")!=0) continue;
+    int trigV = GetVersion(testTriggerName);
+    if(testTriggerName.empty()) continue;
+    auto trigItr = parsedTrigMap.find(testTriggerName);
+    //handle case where specific version is requested
+    if(trigItr != parsedTrigMap.end()){
+      int parsedTrigV = trigItr->second.second;
+      if(parsedTrigV != 0 and parsedTrigV != trigV) continue;
+      unsigned parsedIndex = trigItr->second.first;
+      passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
+      trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
+      trigVersionVec->at(parsedIndex) = trigV;
     }
   }
 
@@ -172,12 +203,12 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
       obj.unpackPathNames(trigNames);
       const std::vector<std::string>& pathNamesAll = obj.pathNames(false);
       for (const auto& pathName : pathNamesAll){
-	bool isBoth = obj.hasPathName( pathName, true, true );//object is associated wih l3 filter and associated to the last filter of a successfull path. this object caused the trigger to fire.
-	const std::string& path_i = pathName;
-	if(isBoth && path_i.find("HLT_Ele27_WPTight_Gsf_v")!= std::string::npos){
-	  hltEleObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
-	  break;
-	}
+        bool isBoth = obj.hasPathName( pathName, true, true );//object is associated with l3 filter and associated to the last filter of a successful path. this object caused the trigger to fire.
+        const std::string& path_i = pathName;
+        if(isBoth && path_i.find("HLT_Ele27_WPTight_Gsf_v")!= std::string::npos){
+          hltEleObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
+          break;
+        }
       }
     }
     iEvent.put(std::move(hltEleObj),"HLTElectronObjects");    
@@ -185,6 +216,7 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 
   iEvent.put(std::move(passTrigVec),"TriggerPass");
   iEvent.put(std::move(trigPrescaleVec),"TriggerPrescales");
+  iEvent.put(std::move(trigVersionVec),"TriggerVersion");
   iEvent.put(std::move(trigNamesVec),"TriggerNames");
 }
 
