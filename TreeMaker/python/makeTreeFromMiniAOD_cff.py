@@ -495,10 +495,11 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
 
     # The trigger results are saved to the tree as a vector
-    # Three vectors are saved:
+    # Four vectors are saved:
     # 1) names of the triggers
     # 2) trigger results
     # 3) trigger prescales
+    # 4) trigger versions
     # the indexing of these vectors must match
     # If the version number of the input trigger name is omitted,
     # any matching trigger will be included (default behavior)
@@ -515,7 +516,7 @@ def makeTreeFromMiniAOD(self,process):
         saveHLTObj = cms.bool("SingleElectron" in process.source.fileNames[0]),
         triggerNameList = _triggerNameList
     )
-    self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales'])
+    self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales','TriggerProducer:TriggerVersion'])
     self.VectorString.extend(['TriggerProducer:TriggerNames'])
     if "SingleElectron" in process.source.fileNames[0]:
         self.VectorTLorentzVector.extend(['TriggerProducer:HLTElectronObjects'])

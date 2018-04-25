@@ -16,7 +16,6 @@
 #include <vector>
 #include <unordered_map>
 #include <utility>
-#include <algorithm>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/global/EDProducer.h"
@@ -51,6 +50,7 @@ private:
 	
   // ----------member data ---------------------------
   void GetInputTag(edm::InputTag& tag, std::string arg1, std::string arg2, std::string arg3, std::string arg1_default);
+  int GetVersion(std::string& triggerName) const;
   edm::InputTag trigResultsTag_, trigPrescalesTag_;
   edm::EDGetTokenT<edm::TriggerResults> trigResultsTok_;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> trigPrescalesTok_;
@@ -106,6 +106,7 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   produces<std::vector<std::string> >("TriggerNames");
   produces<std::vector<int> >("TriggerPass");
   produces<std::vector<int> >("TriggerPrescales");
+  produces<std::vector<int> >("TriggerVersion");
   saveHLTObj = iConfig.getParameter<bool>("saveHLTObj");
   if(saveHLTObj) produces<std::vector<TLorentzVector> >("HLTElectronObjects");
 }
@@ -136,12 +137,25 @@ TriggerProducer::GetInputTag(edm::InputTag& tag, std::string arg1, std::string a
   }	
 }
 
+int
+TriggerProducer::GetVersion(std::string& triggerName) const {
+    //standardize format - remove version number (but save for later)
+    unsigned indexVersion = triggerName.size();
+    while(indexVersion>0 and triggerName[indexVersion-1]!='v') --indexVersion;
+    std::string trigVersion = triggerName.substr(indexVersion);
+    int trigV = (trigVersion.empty() or indexVersion==0) ? 0 : std::stoi(trigVersion);
+    //side effect - remove version from name
+    triggerName = triggerName.substr(0,indexVersion);
+    return trigV;
+}
+
 // ------------ method called to produce the data  ------------
 void
 TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
   auto passTrigVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),-1);
   auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
+  auto trigVersionVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),0);
   auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec.size(),"");
   auto hltEleObj = std::make_unique<std::vector<TLorentzVector>>();
 
@@ -153,28 +167,25 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   iEvent.getByToken(trigPrescalesTok_,trigPrescales);
 
   //Find the matching triggers
-  std::unordered_map<std::string,std::pair<unsigned,std::string>> trigMap;
+  std::unordered_map<std::string,std::pair<unsigned,int>> trigMap;
   for(unsigned int trigIndex = 0; trigIndex < trigNames.size(); trigIndex++){
     std::string testTriggerName = trigNames.triggerName(trigIndex);
     if(testTriggerName.compare(0,3,"HLT")!=0) continue;
     //standardize format - remove version number (but save for later)
-    std::string trigVersion;
-    while(!testTriggerName.empty() and testTriggerName.back()!='v'){
-      trigVersion += testTriggerName.back();
-      testTriggerName.pop_back();
-    }
-    std::reverse(trigVersion.begin(),trigVersion.end());
-    if(!testTriggerName.empty()) trigMap.emplace(testTriggerName,std::make_pair(trigIndex,trigVersion));
+    int trigV = GetVersion(testTriggerName);
+    if(!testTriggerName.empty()) trigMap.emplace(testTriggerName,std::make_pair(trigIndex,trigV));
   }
   for(unsigned int parsedIndex = 0; parsedIndex < parsedTrigNamesVec.size(); parsedIndex++){
-    trigNamesVec->at(parsedIndex) = parsedTrigNamesVec[parsedIndex];
-    auto trigItr = trigMap.find(parsedTrigNamesVec[parsedIndex]);
-    if(trigItr != trigMap.end()){
-      //append known version
-      trigNamesVec->at(parsedIndex) += trigItr->second.second;
+    std::string parsedTrigName = parsedTrigNamesVec[parsedIndex];
+    int parsedTrigV = GetVersion(parsedTrigName);
+    trigNamesVec->at(parsedIndex) = parsedTrigName;
+    auto trigItr = trigMap.find(parsedTrigName);
+    //handle case where specific version is requested
+    if(trigItr != trigMap.end() and (parsedTrigV==0 or parsedTrigV==trigItr->second.second)){
       unsigned trigIndex = trigItr->second.first;
       passTrigVec->at(parsedIndex) = trigResults->accept(trigIndex);
       trigPrescaleVec->at(parsedIndex) = trigPrescales->getPrescaleForIndex(trigIndex);
+      trigVersionVec->at(parsedIndex) = trigItr->second.second;
     }
   }
 
@@ -201,6 +212,7 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 
   iEvent.put(std::move(passTrigVec),"TriggerPass");
   iEvent.put(std::move(trigPrescaleVec),"TriggerPrescales");
+  iEvent.put(std::move(trigVersionVec),"TriggerVersion");
   iEvent.put(std::move(trigNamesVec),"TriggerNames");
 }
 
