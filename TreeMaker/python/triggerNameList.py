@@ -1,5 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
+# trigger names should be written as:
+# 'HLT_name_v' or 'HLT_name_v#'
+# i.e. '_v' must be present at the end, no errant spaces
+# specify '_v#' if only that specific version is desired (not typical)
+
 triggerNameList = cms.vstring(
     # handle duplicates
 	list(sorted(set([
