@@ -80,6 +80,7 @@ Python:
 * `-N, --nFiles [num]`: number of files to process per job
 * `-A, --args [list]`: additional common args to use for all jobs (passed to [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
 * `-v, --verbose`: enable verbose output (default = False)
+* `-x, --redir`: input file redirector
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):
 * `-o [dir]`: output directory
