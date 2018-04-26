@@ -31,6 +31,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         bTagDiscriminators = listBtagDiscriminatorsAK8,
         JETCorrLevels = jecLevels,
         subJETCorrLevels = jecLevels,
+		addEnergyCorrFunc = True,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
     # temporary bug fix for jet toolbox (see https://github.com/cms-jet/JetToolbox/issues/51)
@@ -50,9 +51,10 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     process.JetPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiClean:tau2')
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiClean:tau3')
     process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
-    # temporarily disable ECFs
-    process.JetPropertiesAK8Clean.properties = cms.vstring([x for x in process.JetPropertiesAK8Clean.properties if "ecf" not in x])
-    self.VectorDouble.setValue([x for x in self.VectorDouble if "JetPropertiesAK8Clean:ecf" not in x])
+    process.JetPropertiesAK8Clean.ecfN2b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN2')
+    process.JetPropertiesAK8Clean.ecfN3b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN3')
+    process.JetPropertiesAK8Clean.ecfN2b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN2')
+    process.JetPropertiesAK8Clean.ecfN3b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN3')
 
     ### end AK8 detour
 
