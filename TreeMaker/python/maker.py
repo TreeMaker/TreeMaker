@@ -7,7 +7,7 @@ from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg, makeJetVarsHadTau
 from TreeMaker.TreeMaker.doLostLeptonBkg import doLostLeptonBkg
 from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg, reclusterZinv
 
-class makeTree:
+class maker:
     def __init__(self,parameters):
         self.parameters = parameters
     

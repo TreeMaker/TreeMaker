@@ -4,8 +4,8 @@ import sys
 from TreeMaker.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
 
-from TreeMaker.TreeMaker.makeTree import makeTree
-maker = makeTree(parameters)
+from TreeMaker.TreeMaker.maker import maker
+theMaker = maker(parameters)
 
 # run-only parameters
 reportfreq=parameters.value("reportfreq",1000)
@@ -19,7 +19,7 @@ verbose=parameters.value("verbose",True)
 
 # print out settings
 print "***** SETUP ************************************"
-maker.printSetup()
+theMaker.printSetup()
 if mp: print " running memory profile"
 if threads>1:
     print " threads: "+str(threads)
@@ -32,10 +32,10 @@ import FWCore.ParameterSet.Config as cms
 from Configuration.StandardSequences.Eras import eras
 from TreeMaker.TreeMaker.TMEras import TMeras
 eralist = []
-if len(maker.era)>0:
-	eralist.append(getattr(eras,maker.era))
-if len(maker.localera)>0:
-	eralist.append(getattr(TMeras,maker.localera))
+if len(theMaker.era)>0:
+	eralist.append(getattr(eras,theMaker.era))
+if len(theMaker.localera)>0:
+	eralist.append(getattr(TMeras,theMaker.localera))
 process = cms.Process("RA2EventSelection",*eralist)
 
 # configure geometry & conditions
@@ -43,7 +43,7 @@ process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_AutoFromDBCurrent_cff")
 
 process.load("Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff")
-process.GlobalTag.globaltag = maker.globaltag
+process.GlobalTag.globaltag = theMaker.globaltag
 
 # log output
 process.load("FWCore.MessageService.MessageLogger_cfi")
@@ -82,7 +82,7 @@ if trace:
     process.add_(cms.Service("Tracer", dumpPathsAndConsumes = cms.untracked.bool(True)))
 
 # setup makeTree modules
-process = maker.makeTreeFromMiniAOD(process)
+process = theMaker.makeTreeFromMiniAOD(process)
     
 # if requested, dump and exit
 if dump:
