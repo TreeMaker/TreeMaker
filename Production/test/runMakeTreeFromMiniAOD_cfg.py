@@ -15,6 +15,7 @@ threads=parameters.value("threads",1)
 streams=parameters.value("streams",0)
 tmi=parameters.value("tmi",False)
 trace=parameters.value("trace",False)
+verbose=parameters.value("verbose",True)
 
 # print out settings
 print "***** SETUP ************************************"
@@ -47,11 +48,12 @@ process.GlobalTag.globaltag = maker.globaltag
 # log output
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = reportfreq
-process.MessageLogger.categories.append('TreeMaker')
-process.MessageLogger.cerr.TreeMaker = cms.untracked.PSet(
-    optionalPSet = cms.untracked.bool(True),
-    limit = cms.untracked.int32(10000000),
-)
+if verbose:
+    process.MessageLogger.categories.append('TreeMaker')
+    process.MessageLogger.cerr.TreeMaker = cms.untracked.PSet(
+        optionalPSet = cms.untracked.bool(True),
+        limit = cms.untracked.int32(10000000),
+    )
 process.options = cms.untracked.PSet(
     allowUnscheduled = cms.untracked.bool(True),
     SkipEvent = cms.untracked.vstring('ProductNotFound'),
