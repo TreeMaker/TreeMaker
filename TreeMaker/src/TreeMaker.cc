@@ -17,6 +17,7 @@
 //
 //
 #include "TreeMaker/TreeMaker/interface/TreeMaker.h"
+#include <set>
 
 using namespace std;
 using namespace edm;
@@ -38,11 +39,19 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 	doLorentz = iConfig.getParameter<bool>("doLorentz");
 	sortBranches = iConfig.getParameter<bool>("sortBranches");
 	//loop over all var type names to initialize TreeObjects
+	set<string> nameSet;
+	stringstream skipMessage;
 	stringstream message;
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
 		vector<string> VarNames = iConfig.getParameter< vector<string> >(VarTypeNames.at(v));
 		message << VarTypeNames.at(v) << ":" << "\n";
 		for(unsigned t = 0; t < VarNames.size(); ++t){
+			//check for an exact repeat of an existing name
+			if(nameSet.find(VarNames[t])!=nameSet.end()){
+				skipMessage << VarNames[t] << "\n";
+				continue;
+			}
+			else nameSet.emplace(VarNames[t]);
 			//check for the right type
 			TreeObjectBase* tmp = NULL;
 			switch(VarTypes[v]){
@@ -67,6 +76,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 		}
 	}
 	//print info
+	if(!skipMessage.str().empty()) edm::LogInfo("TreeMaker") << "Skipping repeated branches:\n" << skipMessage.str();
 	edm::LogInfo("TreeMaker") << message.str();
 }
 

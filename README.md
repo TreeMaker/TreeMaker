@@ -80,6 +80,7 @@ Python:
 * `-N, --nFiles [num]`: number of files to process per job
 * `-A, --args [list]`: additional common args to use for all jobs (passed to [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
 * `-v, --verbose`: enable verbose output (default = False)
+* `-x, --redir`: input file redirector
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):
 * `-o [dir]`: output directory
@@ -209,6 +210,7 @@ The following parameters take their default values from the specified scenario:
 * `redir`: xrootd redirector, storage element address, or site name (default="root://cmsxrootd.fnal.gov/") (`fastsim` default="root://cmseos.fnal.gov/")
 
 Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py):
+* `verbose`: print messages from modules in the `TreeMaker` category (default=True)
 * `reportfreq`: frequency of CMSSW log output (default=1000)
 * `dump`: equivalent to `edmConfigDump`, but accounts for all command-line settings; exits without running (default=False)
 * `mp`: enable igprof hooks for memory profiling (default=False)
