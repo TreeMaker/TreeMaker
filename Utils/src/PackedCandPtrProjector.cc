@@ -17,9 +17,9 @@
 class PackedCandPtrProjector : public edm::global::EDProducer<> {
   public:
     explicit PackedCandPtrProjector(const edm::ParameterSet & iConfig);
-    ~PackedCandPtrProjector();
+    ~PackedCandPtrProjector() override;
 
-    virtual void produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup& iSetup) const override;
+    void produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup& iSetup) const override;
 
   private:
     edm::EDGetTokenT<edm::View<pat::PackedCandidate> > packedCandSrcToken_;

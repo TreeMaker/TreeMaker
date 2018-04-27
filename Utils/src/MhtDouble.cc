@@ -37,12 +37,12 @@
 class MhtDouble : public edm::global::EDProducer<> {
    public:
       explicit MhtDouble(const edm::ParameterSet&);
-      ~MhtDouble();
+      ~MhtDouble() override;
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
    private:
-      virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+      void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
       
       // ----------member data ---------------------------
       edm::InputTag JetTag_;

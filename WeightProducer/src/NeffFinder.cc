@@ -19,13 +19,13 @@
 class NeffFinder: public edm::one::EDAnalyzer<> {
 	public:
 		explicit NeffFinder(const edm::ParameterSet&);
-		~NeffFinder();
+		~NeffFinder() override;
 		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
 	private:
-		virtual void beginJob();
-		virtual void analyze(const edm::Event&, const edm::EventSetup&);
-		virtual void endJob();
+		void beginJob() override;
+		void analyze(const edm::Event&, const edm::EventSetup&) override;
+		void endJob() override;
 	
 		//member variables
 		std::string name;

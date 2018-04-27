@@ -41,12 +41,12 @@
 class TriggerProducer : public edm::global::EDProducer<> {
 public:
   explicit TriggerProducer(const edm::ParameterSet&);
-  ~TriggerProducer();
+  ~TriggerProducer() override;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
   // ----------member data ---------------------------
   void GetInputTag(edm::InputTag& tag, std::string arg1, std::string arg2, std::string arg3, std::string arg1_default);

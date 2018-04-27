@@ -37,12 +37,12 @@
 class HTDouble : public edm::global::EDProducer<> {
 public:
 	explicit HTDouble(const edm::ParameterSet&);
-	~HTDouble();
+	~HTDouble() override;
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+	void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
 	// ----------member data ---------------------------
 	edm::InputTag JetTag_;
@@ -85,9 +85,9 @@ HTDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSet
 	edm::Handle< reco::CandidateView > Jets;
 	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
-		for(unsigned int i=0; i<Jets->size();i++)
+		for(const auto & i : *Jets)
 		{
-			ht_ +=Jets->at(i).pt();
+			ht_ +=i.pt();
 		}
 	}
 	else edm::LogWarning("TreeMaker")<<"HTDouble::Invalid Tag: "<<JetTag_.label();

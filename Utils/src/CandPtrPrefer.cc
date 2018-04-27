@@ -17,9 +17,9 @@
 class CandPtrPrefer : public edm::global::EDProducer<> {
   public:
     explicit CandPtrPrefer(const edm::ParameterSet & iConfig);
-    ~CandPtrPrefer();
+    ~CandPtrPrefer() override;
 
-    virtual void produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup& iSetup) const override;
+    void produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup& iSetup) const override;
 
   private:
     edm::EDGetTokenT<edm::View<reco::Candidate> > firstSrcToken_;
@@ -47,7 +47,7 @@ CandPtrPrefer::produce(edm::StreamID, edm::Event & iEvent, const edm::EventSetup
   iEvent.getByToken(secondSrcToken_, secondGroup);
 
   auto result = std::make_unique<PtrVector<reco::Candidate>>();
-  if(firstGroup->size()==0){
+  if(firstGroup->empty()){
     for(size_t i = 0; i< secondGroup->size();  ++i) {
         result->push_back(secondGroup->ptrAt(i));
     }  

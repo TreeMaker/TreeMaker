@@ -44,12 +44,12 @@ template <class T>
 class SubJetSelectionT : public edm::global::EDProducer<> {
 public:
    explicit SubJetSelectionT(const edm::ParameterSet&);
-   ~SubJetSelectionT();
+   ~SubJetSelectionT() override;
    
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
-   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    
    // ----------member data ---------------------------
    edm::InputTag JetTag_;

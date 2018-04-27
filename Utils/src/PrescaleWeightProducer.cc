@@ -19,7 +19,7 @@
 #include <iostream>
 #include <vector>
 #include <map>
-#include <stdlib.h> 
+#include <cstdlib> 
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -43,11 +43,11 @@ using namespace edm;
 class PrescaleWeightProducer: public edm::global::EDProducer<> {
 public:
   explicit PrescaleWeightProducer(const edm::ParameterSet&);
-  ~PrescaleWeightProducer();
+  ~PrescaleWeightProducer() override;
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
   edm::EDGetTokenT<edm::TriggerResults> _triggerBits;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> _triggerObjects;
@@ -90,7 +90,7 @@ void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
   double mht = 0.0;
 
   for (unsigned int i = 0; i < triggerBits->size(); i++) {
-    const string trigName = trigNames.triggerName(i);
+    const string& trigName = trigNames.triggerName(i);
     size_t found;
     found = trigName.find("HLT_PFHT");
     if (found == string::npos)

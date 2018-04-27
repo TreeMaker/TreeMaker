@@ -42,12 +42,12 @@
 class JetsForHadTauProducer : public edm::global::EDProducer<> {
 public:
     explicit JetsForHadTauProducer(const edm::ParameterSet&);
-    ~JetsForHadTauProducer();
+    ~JetsForHadTauProducer() override;
     
     static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
     
 private:
-    virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+    void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
     const reco::GenParticle* TauFound(const reco::GenParticle * particle) const;
     bool matchJetLepton(const pat::Jet* otjet, const edm::Handle<edm::View<reco::GenParticle> >& pruned,
@@ -131,8 +131,8 @@ JetsForHadTauProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Eve
   // finalJets should contain all jets (high-pt duplicates will be discarded after JER smearing)
   // use lepton matching to save space
   if(Jets.isValid()){
-    for(unsigned int ij=0; ij< Jets->size(); ij++){
-      if(!requireLeptonMatch_ || matchJetLepton(&(Jets->at(ij)),pruned,muon,electron)) finalJets->push_back(Jets->at(ij));
+    for(const auto & ij : *Jets){
+      if(!requireLeptonMatch_ || matchJetLepton(&ij,pruned,muon,electron)) finalJets->push_back(ij);
     }
   }
   

@@ -45,12 +45,12 @@
 class FilterDecisionProducer : public edm::global::EDProducer<> {
 public:
   explicit FilterDecisionProducer(const edm::ParameterSet&);
-  ~FilterDecisionProducer();
+  ~FilterDecisionProducer() override;
 	
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
   // ----------member data ---------------------------
   edm::InputTag trigResultsTag_;

@@ -26,7 +26,7 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
 	public:
 		explicit HiddenSectorProducer(const edm::ParameterSet&);
 	private:
-		virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+		void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 		//helper
 		double TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const;
 		edm::InputTag JetTag_, MetTag_, GenTag_;

@@ -45,12 +45,12 @@
 class METDouble : public edm::global::EDProducer<> {
 public:
    explicit METDouble(const edm::ParameterSet&);
-   ~METDouble();
+   ~METDouble() override;
    
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
-   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    virtual double DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets ) const;
    
    // ----------member data ---------------------------
@@ -142,7 +142,7 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
    double dpnhat[3];
    unsigned int goodcount=0;
    
-   for(int i=0; i<3; ++i)dpnhat[i]=-999;
+   for(double & i : dpnhat)i=-999;
    reco::MET::LorentzVector metLorentz(0,0,0,0);
    if(MET.isValid() ){
       
@@ -220,8 +220,8 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
    auto htp5 = std::make_unique<double>(dpnhat[2]);
    iEvent.put(std::move(htp5),"DeltaPhiN3");
    float mindpn=9999;
-   for(int i=0; i<3; ++i){
-      if(mindpn>fabs(dpnhat[i]))mindpn=fabs(dpnhat[i]);
+   for(double i : dpnhat){
+      if(mindpn>fabs(i))mindpn=fabs(i);
    }
    auto htp6 = std::make_unique<double>(mindpn);
    iEvent.put(std::move(htp6),"minDeltaPhiN");

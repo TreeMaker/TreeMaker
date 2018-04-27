@@ -48,12 +48,12 @@ class PhotonIDisoProducer : public edm::global::EDProducer<> {
 
 public:
   explicit PhotonIDisoProducer(const edm::ParameterSet&);
-  ~PhotonIDisoProducer();
+  ~PhotonIDisoProducer() override;
   
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   bool hasMatchedPromptElectron(const reco::SuperClusterRef &sc, const edm::Handle<std::vector<pat::Electron> > &eleCol,
 				const edm::Handle<reco::ConversionCollection> &convCol, const math::XYZPoint &beamspot,
@@ -296,7 +296,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     if( passAcc && passIDLoose && passIsoLoose && iPhoton->pt() > 100.0){//pure photons
       goodPhotons->push_back( *iPhoton );
       photon_isEB->push_back( iPhoton->isEB() );
-      photon_genMatched->push_back( iPhoton->genPhoton() != NULL );
+      photon_genMatched->push_back( iPhoton->genPhoton() != nullptr );
       photon_hadTowOverEM->push_back( iPhoton->hadTowOverEm() ) ;
       photon_sigmaIetaIeta->push_back( sieie );
       photon_pfChargedIso->push_back(      iPhoton->chargedHadronIso() );
@@ -387,13 +387,13 @@ bool PhotonIDisoProducer::hasMatchedPromptElectron(const reco::SuperClusterRef &
                                                    float lxyMin, float probMin, unsigned int nHitsBeforeVtxMax) const
 {
   if (sc.isNull()) return false;
-  for (std::vector<pat::Electron>::const_iterator it = eleCol->begin(); it!=eleCol->end(); ++it) {
+  for (const auto & it : *eleCol) {
     //match electron to supercluster
-    if (it->superCluster()!=sc) continue;
+    if (it.superCluster()!=sc) continue;
     //check expected inner hits
-    if (it->gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS) > 0) continue;
+    if (it.gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS) > 0) continue;
     //check if electron is matching to a conversion
-    if (ConversionTools::hasMatchedConversion(*it,convCol,beamspot,lxyMin,probMin,nHitsBeforeVtxMax)) continue;
+    if (ConversionTools::hasMatchedConversion(it,convCol,beamspot,lxyMin,probMin,nHitsBeforeVtxMax)) continue;
     return true;
   }
   return false;

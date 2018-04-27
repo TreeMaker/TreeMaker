@@ -15,13 +15,13 @@ class GenTopProducer : public edm::global::EDProducer<> {
 
 public:
   explicit GenTopProducer(const edm::ParameterSet&);
-  ~GenTopProducer();
+  ~GenTopProducer() override;
   
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
 private:
   double getSF(const reco::GenParticle& part) const;
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   // ----------member data ---------------------------
   
@@ -65,7 +65,7 @@ GenTopProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup
   auto genTop_vec = std::make_unique<std::vector<reco::GenParticle>>();
 
   //store t, then tbar (if present)
-  const reco::GenParticle* tmp = NULL;
+  const reco::GenParticle* tmp = nullptr;
   tmp = genEvt->top();
   if(tmp) genTop_vec->push_back(*tmp);
   tmp = genEvt->topBar();

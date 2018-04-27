@@ -26,7 +26,7 @@ class ISRJetProducer : public edm::global::EDProducer<> {
 	public:
 		explicit ISRJetProducer(const edm::ParameterSet&);
 	private:
-		virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+		void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 		edm::InputTag GenPartTag_; 
 		edm::EDGetTokenT<edm::View<reco::GenParticle>> GenPartTok_; 
 		edm::InputTag JetTag_;

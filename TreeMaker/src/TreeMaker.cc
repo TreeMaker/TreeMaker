@@ -28,7 +28,7 @@ using namespace pat;
 // constructors and destructor
 //
 TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
-: tree(0),
+: tree(nullptr),
   VarTypeNames{"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorVectorTLorentzVector","VectorRecoCand"},
   VarTypes{t_bool,t_int,t_double,t_string,t_lorentz,t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_vvlorentz,t_recocand}
 {
@@ -45,28 +45,28 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
 		vector<string> VarNames = iConfig.getParameter< vector<string> >(VarTypeNames.at(v));
 		message << VarTypeNames.at(v) << ":" << "\n";
-		for(unsigned t = 0; t < VarNames.size(); ++t){
+		for(auto & VarName : VarNames){
 			//check for an exact repeat of an existing name
-			if(nameSet.find(VarNames[t])!=nameSet.end()){
-				skipMessage << VarNames[t] << "\n";
+			if(nameSet.find(VarName)!=nameSet.end()){
+				skipMessage << VarName << "\n";
 				continue;
 			}
-			else nameSet.emplace(VarNames[t]);
+			else nameSet.emplace(VarName);
 			//check for the right type
-			TreeObjectBase* tmp = NULL;
+			TreeObjectBase* tmp = nullptr;
 			switch(VarTypes[v]){
-				case TreeTypes::t_bool     : tmp = new TreeObject<bool>(VarNames[t]); break;
-				case TreeTypes::t_int      : tmp = new TreeObject<int>(VarNames[t]); break;
-				case TreeTypes::t_double   : tmp = new TreeObject<double>(VarNames[t]); break;
-				case TreeTypes::t_string   : tmp = new TreeObject<string>(VarNames[t]); break;
-				case TreeTypes::t_lorentz  : tmp = new TreeObject<TLorentzVector>(VarNames[t]); break;
-				case TreeTypes::t_vbool    : tmp = new TreeObject<vector<bool> >(VarNames[t]); break;
-				case TreeTypes::t_vint     : tmp = new TreeObject<vector<int> >(VarNames[t]); break;
-				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double> >(VarNames[t]); break;
-				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string> >(VarNames[t]); break;
-				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector> >(VarNames[t]); break;
-				case TreeTypes::t_vvlorentz: tmp = new TreeObject<vector<vector<TLorentzVector>>>(VarNames[t]); break;
-				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarNames[t],doLorentz); break;
+				case TreeTypes::t_bool     : tmp = new TreeObject<bool>(VarName); break;
+				case TreeTypes::t_int      : tmp = new TreeObject<int>(VarName); break;
+				case TreeTypes::t_double   : tmp = new TreeObject<double>(VarName); break;
+				case TreeTypes::t_string   : tmp = new TreeObject<string>(VarName); break;
+				case TreeTypes::t_lorentz  : tmp = new TreeObject<TLorentzVector>(VarName); break;
+				case TreeTypes::t_vbool    : tmp = new TreeObject<vector<bool> >(VarName); break;
+				case TreeTypes::t_vint     : tmp = new TreeObject<vector<int> >(VarName); break;
+				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double> >(VarName); break;
+				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string> >(VarName); break;
+				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector> >(VarName); break;
+				case TreeTypes::t_vvlorentz: tmp = new TreeObject<vector<vector<TLorentzVector>>>(VarName); break;
+				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarName,doLorentz); break;
 			}
 			//if a known type was found, initialize and store the object
 			if(tmp) {
@@ -96,14 +96,14 @@ TreeMaker::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 	evtNum = 0;
 
 	// Event information
-	edm::EventAuxiliary aux = iEvent.eventAuxiliary();
+	const edm::EventAuxiliary& aux = iEvent.eventAuxiliary();
 	runNum       = aux.run();
 	lumiBlockNum = aux.luminosityBlock();
 	evtNum       = aux.event();
 	
 	// get all variable values
-	for(unsigned t = 0; t < variables.size(); ++t){
-		variables[t]->FillTree(iEvent);
+	for(auto & variable : variables){
+		variable->FillTree(iEvent);
 	}
 	
 	tree->Fill();
@@ -127,9 +127,9 @@ TreeMaker::beginJob()
 	if(sortBranches) sort(variables.begin(),variables.end(),TreeObjectComp());
 	
 	//add branches to tree
-	for(unsigned t = 0; t < variables.size(); ++t){
-		variables[t]->SetTree(tree);
-		variables[t]->AddBranch();
+	for(auto & variable : variables){
+		variable->SetTree(tree);
+		variable->AddBranch();
 	}
 }
 
@@ -137,8 +137,8 @@ TreeMaker::beginJob()
 void 
 TreeMaker::endJob() {
 	//memory management
-	for(unsigned t = 0; t < variables.size(); ++t){
-		delete (variables[t]);
+	for(auto & variable : variables){
+		delete variable;
 	}
 	variables.clear();
 

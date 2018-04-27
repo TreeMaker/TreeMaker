@@ -28,12 +28,12 @@
 class GenJetProperties : public edm::global::EDProducer<> {
 public:
   explicit GenJetProperties(const edm::ParameterSet&);
-  ~GenJetProperties();
+  ~GenJetProperties() override;
 	
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
   edm::InputTag GenJetTag;
   edm::EDGetTokenT<edm::View<reco::GenJet>> GenJetTok;

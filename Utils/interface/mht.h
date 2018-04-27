@@ -8,8 +8,8 @@ namespace utils {
 	//for MHT calculation
 	inline reco::MET::LorentzVector calculateMHT(const edm::View<reco::Candidate>* Jets){
 		reco::MET::LorentzVector mhtLorentz(0,0,0,0);
-		for(unsigned i = 0; i < Jets->size(); ++i){
-			mhtLorentz -= Jets->at(i).p4();
+		for(const auto & Jet : *Jets){
+			mhtLorentz -= Jet.p4();
 		}
 		return mhtLorentz;
 	}

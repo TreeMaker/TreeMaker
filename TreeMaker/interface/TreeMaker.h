@@ -46,13 +46,13 @@ class TreeObjectBase;
 class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 	public:
 		explicit TreeMaker(const edm::ParameterSet&);
-		~TreeMaker();
+		~TreeMaker() override;
 		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 	private:
-		virtual void beginJob() override;
-		virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-		virtual void endJob() override;
+		void beginJob() override;
+		void analyze(const edm::Event&, const edm::EventSetup&) override;
+		void endJob() override;
 		// ----------member data ---------------------------
 		edm::Service<TFileService> fs;
 		string treeName;
@@ -62,9 +62,9 @@ class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 		vector<TreeTypes> VarTypes;
 		map<string,unsigned> nameCache;
 		// general event information
-		UInt_t runNum;
-		UInt_t lumiBlockNum;
-		ULong64_t evtNum;
+		UInt_t runNum{};
+		UInt_t lumiBlockNum{};
+		ULong64_t evtNum{};
 		vector<TreeObjectBase*> variables;
 };
 
@@ -73,7 +73,7 @@ class TreeObjectBase {
 	public:
 		//constructor
 		TreeObjectBase() : tempFull(""), branchType("") {}
-		TreeObjectBase(string tempFull_) : tempFull(tempFull_), nameInTree(tempFull_), tagName(tempFull_), tree(NULL) {}
+		TreeObjectBase(string tempFull_) : tempFull(tempFull_), nameInTree(tempFull_), tagName(tempFull_), tree(nullptr) {}
 		//destructor
 		virtual ~TreeObjectBase() {}
 		//functions
@@ -104,7 +104,7 @@ class TreeObjectBase {
 	protected:
 		//member variables
 		string tempFull, nameInTree, tagName, branchType;
-		TTree* tree;
+		TTree* tree{};
 		edm::InputTag tag;
 };
 
@@ -129,9 +129,9 @@ class TreeObject : public TreeObjectBase {
 		TreeObject() : TreeObjectBase() {}
 		TreeObject(string tempFull_) : TreeObjectBase(tempFull_) {}
 		//destructor
-		virtual ~TreeObject() {}
+		~TreeObject() override {}
 		//functions
-		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) {
+		void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) override {
 			//case 1: x      -> tag = x,   name = x
 			//case 2: x:y    -> tag = x:y, name = y
 			//case 3: x(y)   -> tag = x,   name = y
@@ -165,7 +165,7 @@ class TreeObject : public TreeObjectBase {
 		virtual void SetConsumes(edm::ConsumesCollector && iC){
 			tok = iC.consumes<T>(tag);
 		}
-		virtual void FillTree(const edm::Event& iEvent){
+		void FillTree(const edm::Event& iEvent) override{
 			SetDefault();
 			edm::Handle<T> var;
 			iEvent.getByToken(tok,var);
@@ -177,8 +177,8 @@ class TreeObject : public TreeObjectBase {
 			}
 		}
 		//these will be implemented below for specializations
-		virtual void AddBranch() {}
-		virtual void SetDefault() {}
+		void AddBranch() override {}
+		void SetDefault() override {}
 		
 	protected:
 		//member variables
@@ -242,13 +242,13 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 		TreeRecoCand() : TreeObject<vector<TLorentzVector> >() {}
 		TreeRecoCand(string tempFull_, bool doLorentz_=true) : TreeObject<vector<TLorentzVector> >(tempFull_), doLorentz(doLorentz_) {}
 		//destructor
-		virtual ~TreeRecoCand() {}
+		~TreeRecoCand() override {}
 		
 		//functions
-		virtual void SetConsumes(edm::ConsumesCollector && iC){
+		void SetConsumes(edm::ConsumesCollector && iC) override{
 			candTok = iC.consumes<edm::View<reco::Candidate>>(tag);
 		}
-		virtual void FillTree(const edm::Event& iEvent){
+		void FillTree(const edm::Event& iEvent) override{
 			SetDefault();
 			edm::Handle< edm::View<reco::Candidate> > cands;
 			iEvent.getByToken(candTok,cands);
@@ -276,7 +276,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 				edm::LogWarning("TreeMaker") << "WARNING ... " << tagName << " is NOT valid?!";
 			}
 		}
-		virtual void AddBranch() {
+		void AddBranch() override {
 			if(tree){
 				if(doLorentz){
 					tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0);
@@ -289,7 +289,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 				}
 			}
 		}
-		virtual void SetDefault() {
+		void SetDefault() override {
 			if(doLorentz){
 				value.clear();
 			}
@@ -304,6 +304,6 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 	protected:
 		//member variables
 		edm::EDGetTokenT<edm::View<reco::Candidate>> candTok;
-		bool doLorentz;
+		bool doLorentz{};
 		vector<double> pt, eta, phi, energy;
 };

@@ -15,7 +15,7 @@ class MinDeltaRDouble : public edm::global::EDProducer<> {
 public:
 	explicit MinDeltaRDouble(const edm::ParameterSet&);
 private:
-   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    edm::EDGetTokenT<std::vector<reco::GenParticle>> genParticlesToken_;
 };
 
@@ -37,9 +37,9 @@ void MinDeltaRDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
       reco::GenParticle * gen;
       // try to get the hard process photon or Z (DY/Zinv/GJets MC)
       bool haveGen = false;
-      for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
-         if ((iG->pdgId()==22&&iG->status()==23) || (iG->pdgId()==23&&iG->status()==22)) {
-            gen = iG->clone();
+      for (const auto & iG : *pruned) {
+         if ((iG.pdgId()==22&&iG.status()==23) || (iG.pdgId()==23&&iG.status()==22)) {
+            gen = iG.clone();
             haveGen = true;
             status = gen->status();
             break;
@@ -48,15 +48,15 @@ void MinDeltaRDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
       // try to get the highest pT photon with a parton mother (QCD)
       if (!haveGen) {
          double maxPt = 0.;
-         for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
-            if (iG->pdgId()==22) {
-               const int motherID = std::abs(iG->mother()->pdgId());
+         for (const auto & iG : *pruned) {
+            if (iG.pdgId()==22) {
+               const int motherID = std::abs(iG.mother()->pdgId());
                if ((motherID>=1 && motherID<=6) || motherID==21) {
-                  if (iG->pt() > maxPt) {
-                     gen = iG->clone();
+                  if (iG.pt() > maxPt) {
+                     gen = iG.clone();
                      haveGen = true;
                      status = gen->status();
-                     maxPt = iG->pt();
+                     maxPt = iG.pt();
                   }
                }
             }
@@ -65,24 +65,24 @@ void MinDeltaRDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
       // try to get the highest pT photon
       if (!haveGen) {
          double maxPt = 0.;
-         for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
-            if (iG->pdgId()==22) {
-               if (iG->pt() > maxPt) {
-                  gen = iG->clone();
+         for (const auto & iG : *pruned) {
+            if (iG.pdgId()==22) {
+               if (iG.pt() > maxPt) {
+                  gen = iG.clone();
                   haveGen = true;
                   status = -gen->status();
-                  maxPt = iG->pt();
+                  maxPt = iG.pt();
                }
             }
          }
       }
       // now calculate deltaR
       if (haveGen) {
-         for (auto iG = pruned->begin(); iG != pruned->end(); ++iG) {
-            if (iG->status()==23) {
-               const int tempID = std::abs(iG->pdgId());
+         for (const auto & iG : *pruned) {
+            if (iG.status()==23) {
+               const int tempID = std::abs(iG.pdgId());
                if ((tempID>=1 && tempID<=6) || tempID==21) {
-                  double tempDR = deltaR(gen->p4(), iG->p4());
+                  double tempDR = deltaR(gen->p4(), iG.p4());
                   if (tempDR < minDR) minDR = tempDR;
                }
             }

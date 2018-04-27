@@ -26,7 +26,7 @@
 class ExtrapolationProducer : public edm::global::EDProducer<> {
 public:
   explicit ExtrapolationProducer(const edm::ParameterSet&);
-  ~ExtrapolationProducer();
+  ~ExtrapolationProducer() override;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
@@ -65,7 +65,7 @@ public:
   }
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
   edm::InputTag MuonTag_, ElecTag_, MHTPtTag_, MHTPhiTag_;
   edm::EDGetTokenT<edm::View<pat::Muon>> MuonTok_;
@@ -126,10 +126,10 @@ void ExtrapolationProducer::produce(edm::StreamID, edm::Event& iEvent, const edm
   edm::Handle<edm::View<pat::Muon> > muonHandle;
   iEvent.getByToken(MuonTok_, muonHandle);
   if(muonHandle.isValid()) {
-    for(unsigned int m=0; m<muonHandle->size(); ++m)
+    for(const auto & m : *muonHandle)
       {
-	muPTW->push_back(GetWVec(MHT, MHTPhi, muonHandle->at(m).pt(), muonHandle->at(m).phi()).Mod());
-	muCDTT->push_back(GetCDTT(MHT, MHTPhi, muonHandle->at(m).pt(), muonHandle->at(m).phi()));
+	muPTW->push_back(GetWVec(MHT, MHTPhi, m.pt(), m.phi()).Mod());
+	muCDTT->push_back(GetCDTT(MHT, MHTPhi, m.pt(), m.phi()));
       }
   }
 
@@ -137,10 +137,10 @@ void ExtrapolationProducer::produce(edm::StreamID, edm::Event& iEvent, const edm
   iEvent.getByToken(ElecTok_, eleHandle);
   if(eleHandle.isValid())
     {
-      for(unsigned int e=0; e<eleHandle->size(); ++e)
+      for(const auto & e : *eleHandle)
 	{
-	  elecPTW->push_back(GetWVec(MHT, MHTPhi, eleHandle->at(e).pt(), eleHandle->at(e).phi()).Mod());
-	  elecCDTT->push_back(GetCDTT(MHT, MHTPhi, eleHandle->at(e).pt(), eleHandle->at(e).phi()));
+	  elecPTW->push_back(GetWVec(MHT, MHTPhi, e.pt(), e.phi()).Mod());
+	  elecCDTT->push_back(GetCDTT(MHT, MHTPhi, e.pt(), e.phi()));
 	}
     }
 

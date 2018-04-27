@@ -26,13 +26,13 @@
 class SusyScanProducer : public edm::stream::EDProducer<> {
 	public:
 		explicit SusyScanProducer(const edm::ParameterSet&);
-		~SusyScanProducer();
+		~SusyScanProducer() override;
 		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 	private:
-		virtual void produce(edm::Event&, const edm::EventSetup&) override;
+		void produce(edm::Event&, const edm::EventSetup&) override;
 		
-		virtual void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+		void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 		
 		void getModelInfo(std::string comment);
 		
