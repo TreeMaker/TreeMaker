@@ -45,7 +45,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
 		vector<string> VarNames = iConfig.getParameter< vector<string> >(VarTypeNames.at(v));
 		message << VarTypeNames.at(v) << ":" << "\n";
-		for(auto & VarName : VarNames){
+		for(const auto & VarName : VarNames){
 			//check for an exact repeat of an existing name
 			if(nameSet.find(VarName)!=nameSet.end()){
 				skipMessage << VarName << "\n";

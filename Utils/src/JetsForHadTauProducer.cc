@@ -131,8 +131,8 @@ JetsForHadTauProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Eve
   // finalJets should contain all jets (high-pt duplicates will be discarded after JER smearing)
   // use lepton matching to save space
   if(Jets.isValid()){
-    for(const auto & ij : *Jets){
-      if(!requireLeptonMatch_ || matchJetLepton(&ij,pruned,muon,electron)) finalJets->push_back(ij);
+    for(const auto & iJet : *Jets){
+      if(!requireLeptonMatch_ || matchJetLepton(&iJet,pruned,muon,electron)) finalJets->push_back(iJet);
     }
   }
   

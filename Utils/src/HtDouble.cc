@@ -85,9 +85,9 @@ HTDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSet
 	edm::Handle< reco::CandidateView > Jets;
 	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
-		for(const auto & i : *Jets)
+		for(const auto & iJet : *Jets)
 		{
-			ht_ +=i.pt();
+			ht_ += iJet.pt();
 		}
 	}
 	else edm::LogWarning("TreeMaker")<<"HTDouble::Invalid Tag: "<<JetTag_.label();

@@ -112,9 +112,9 @@ BTagInt::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetu
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
-		for(const auto & i : *Jets)
+		for(const auto & iJet : *Jets)
 		{
-		  if(i.bDiscriminator(btagname_) >btagvalue_)BTags++;
+		  if(iJet.bDiscriminator(btagname_) >btagvalue_)BTags++;
 		}
 	}
 	else edm::LogWarning("TreeMaker")<<"BTagInt::Invalid Tag: "<<JetTag_.label();

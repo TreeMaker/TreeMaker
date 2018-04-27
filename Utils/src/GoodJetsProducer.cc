@@ -165,26 +165,26 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
       prodJets->reserve(Jets->size());
       jetsMask->reserve(Jets->size());
       leptonMask->reserve(Jets->size());
-      for(const auto & i : *Jets)
+      for(const auto & iJet : *Jets)
       {
-         if (std::abs(i.eta())>maxEta_) continue;
+         if (std::abs(iJet.eta())>maxEta_) continue;
          if (!saveAllPt_ &&
-              ( (!invertJetPtFilter_ && i.pt() <= jetPtFilter_) ||
-                (invertJetPtFilter_ && i.pt() > jetPtFilter_) ) ) continue;
-         float neufrac=i.neutralHadronEnergyFraction();//gives raw energy in the denominator
-         float phofrac=i.neutralEmEnergyFraction();//gives raw energy in the denominator
-         float chgfrac=i.chargedHadronEnergyFraction();
-         float chgEMfrac=i.chargedEmEnergyFraction();
-         int chgmulti=i.chargedMultiplicity();
-         int neumulti=i.neutralMultiplicity();
+              ( (!invertJetPtFilter_ && iJet.pt() <= jetPtFilter_) ||
+                (invertJetPtFilter_ && iJet.pt() > jetPtFilter_) ) ) continue;
+         float neufrac=iJet.neutralHadronEnergyFraction();//gives raw energy in the denominator
+         float phofrac=iJet.neutralEmEnergyFraction();//gives raw energy in the denominator
+         float chgfrac=iJet.chargedHadronEnergyFraction();
+         float chgEMfrac=iJet.chargedEmEnergyFraction();
+         int chgmulti=iJet.chargedMultiplicity();
+         int neumulti=iJet.neutralMultiplicity();
          int nconstit=chgmulti+neumulti;
          bool skip=false;
          if(ExcludeLeptonIsoTrackPhotons_ && !excludeHandles.empty())
          {
             for(auto & excludeHandle : excludeHandles){
                 for(unsigned ih=0; ih<excludeHandle->size(); ++ih){
-                    if(std::abs(i.pt() - excludeHandle->at(ih).pt() ) / excludeHandle->at(ih).pt() < 1 && 
-                       deltaR(i.p4(),excludeHandle->at(ih).p4()) < JetConeSize_ )
+                    if(std::abs(iJet.pt() - excludeHandle->at(ih).pt() ) / excludeHandle->at(ih).pt() < 1 && 
+                       deltaR(iJet.p4(),excludeHandle->at(ih).p4()) < JetConeSize_ )
                     {
                        skip=true;
                        break;
@@ -194,7 +194,7 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
             }
             if(skip)
             {
-               prodJets->push_back(Jet(i));
+               prodJets->push_back(Jet(iJet));
                jetsMask->push_back(true);
                leptonMask->push_back(true);
                continue;
@@ -203,11 +203,11 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
          }
          else leptonMask->push_back(false);
          bool good = true;
-         if (std::abs(i.eta()) <= 2.7){
+         if (std::abs(iJet.eta()) <= 2.7){
             good = neufrac<maxNeutralFraction_ && phofrac<maxPhotonFraction_ && nconstit>minNconstituents_;
-            if(std::abs(i.eta()) < 2.4) good &= chgfrac>minChargedFraction_ && chgmulti>minNcharged_ && chgEMfrac<maxChargedEMFraction_;
+            if(std::abs(iJet.eta()) < 2.4) good &= chgfrac>minChargedFraction_ && chgmulti>minNcharged_ && chgEMfrac<maxChargedEMFraction_;
          }
-         else if(std::abs(i.eta()) <= 3.0){
+         else if(std::abs(iJet.eta()) <= 3.0){
             good = phofrac>minPhotonFractionHE_ && phofrac<maxPhotonFractionHE_ && neufrac<maxNeutralFractionHE_ && neumulti>minNneutralsHE_;
          }
          else {
@@ -215,12 +215,12 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
          }
         //save good jets, potentially regardless of id or pt
         if (good || saveAllId_) {
-           prodJets->push_back(Jet(i));
+           prodJets->push_back(Jet(iJet));
            jetsMask->push_back(good);
         } 
         //calculate event filter only for jets that pass pT cut
-        if ( (!invertJetPtFilter_ && i.pt() > jetPtFilter_) ||
-                (invertJetPtFilter_ && i.pt() <= jetPtFilter_) ) {
+        if ( (!invertJetPtFilter_ && iJet.pt() > jetPtFilter_) ||
+                (invertJetPtFilter_ && iJet.pt() <= jetPtFilter_) ) {
            if(!good && !TagMode_) return false;
            result &= good;
         }

@@ -37,9 +37,9 @@ void MinDeltaRDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
       reco::GenParticle * gen;
       // try to get the hard process photon or Z (DY/Zinv/GJets MC)
       bool haveGen = false;
-      for (const auto & iG : *pruned) {
-         if ((iG.pdgId()==22&&iG.status()==23) || (iG.pdgId()==23&&iG.status()==22)) {
-            gen = iG.clone();
+      for (const auto & iGen : *pruned) {
+         if ((iGen.pdgId()==22&&iGen.status()==23) || (iGen.pdgId()==23&&iGen.status()==22)) {
+            gen = iGen.clone();
             haveGen = true;
             status = gen->status();
             break;
@@ -48,15 +48,15 @@ void MinDeltaRDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
       // try to get the highest pT photon with a parton mother (QCD)
       if (!haveGen) {
          double maxPt = 0.;
-         for (const auto & iG : *pruned) {
-            if (iG.pdgId()==22) {
-               const int motherID = std::abs(iG.mother()->pdgId());
+         for (const auto & iGen : *pruned) {
+            if (iGen.pdgId()==22) {
+               const int motherID = std::abs(iGen.mother()->pdgId());
                if ((motherID>=1 && motherID<=6) || motherID==21) {
-                  if (iG.pt() > maxPt) {
-                     gen = iG.clone();
+                  if (iGen.pt() > maxPt) {
+                     gen = iGen.clone();
                      haveGen = true;
                      status = gen->status();
-                     maxPt = iG.pt();
+                     maxPt = iGen.pt();
                   }
                }
             }
@@ -65,24 +65,24 @@ void MinDeltaRDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
       // try to get the highest pT photon
       if (!haveGen) {
          double maxPt = 0.;
-         for (const auto & iG : *pruned) {
-            if (iG.pdgId()==22) {
-               if (iG.pt() > maxPt) {
-                  gen = iG.clone();
+         for (const auto & iGen : *pruned) {
+            if (iGen.pdgId()==22) {
+               if (iGen.pt() > maxPt) {
+                  gen = iGen.clone();
                   haveGen = true;
                   status = -gen->status();
-                  maxPt = iG.pt();
+                  maxPt = iGen.pt();
                }
             }
          }
       }
       // now calculate deltaR
       if (haveGen) {
-         for (const auto & iG : *pruned) {
-            if (iG.status()==23) {
-               const int tempID = std::abs(iG.pdgId());
+         for (const auto & iGen : *pruned) {
+            if (iGen.status()==23) {
+               const int tempID = std::abs(iGen.pdgId());
                if ((tempID>=1 && tempID<=6) || tempID==21) {
-                  double tempDR = deltaR(gen->p4(), iG.p4());
+                  double tempDR = deltaR(gen->p4(), iGen.p4());
                   if (tempDR < minDR) minDR = tempDR;
                }
             }

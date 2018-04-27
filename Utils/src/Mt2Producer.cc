@@ -102,7 +102,7 @@ double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVe
   vector<float> Evec;
   vector<int> grouping;
            
-  for (auto & jet : jets)
+  for (const auto & jet : jets)
     {
       pxvec.push_back(jet.Px());
       pyvec.push_back(jet.Py());
@@ -169,10 +169,10 @@ Mt2Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& i
 
   std::vector<TLorentzVector > jets; 
   if( Jets.isValid() ) {
-    for(const auto & i : *Jets)
+    for(const auto & iJet : *Jets)
       {
 	TLorentzVector jet;
-	jet.SetPtEtaPhiE(i.p4().Pt(),i.p4().Eta(),i.p4().Phi(),i.p4().E());
+	jet.SetPtEtaPhiE(iJet.p4().Pt(),iJet.p4().Eta(),iJet.p4().Phi(),iJet.p4().E());
 	jets.push_back(jet);
       }
   }

@@ -387,13 +387,13 @@ bool PhotonIDisoProducer::hasMatchedPromptElectron(const reco::SuperClusterRef &
                                                    float lxyMin, float probMin, unsigned int nHitsBeforeVtxMax) const
 {
   if (sc.isNull()) return false;
-  for (const auto & it : *eleCol) {
+  for (const auto & ele : *eleCol) {
     //match electron to supercluster
-    if (it.superCluster()!=sc) continue;
+    if (ele.superCluster()!=sc) continue;
     //check expected inner hits
-    if (it.gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS) > 0) continue;
+    if (ele.gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS) > 0) continue;
     //check if electron is matching to a conversion
-    if (ConversionTools::hasMatchedConversion(it,convCol,beamspot,lxyMin,probMin,nHitsBeforeVtxMax)) continue;
+    if (ConversionTools::hasMatchedConversion(ele,convCol,beamspot,lxyMin,probMin,nHitsBeforeVtxMax)) continue;
     return true;
   }
   return false;
