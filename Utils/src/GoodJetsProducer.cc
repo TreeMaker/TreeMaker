@@ -181,10 +181,10 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
          bool skip=false;
          if(ExcludeLeptonIsoTrackPhotons_ && !excludeHandles.empty())
          {
-            for(auto & excludeHandle : excludeHandles){
-                for(unsigned ih=0; ih<excludeHandle->size(); ++ih){
-                    if(std::abs(iJet.pt() - excludeHandle->at(ih).pt() ) / excludeHandle->at(ih).pt() < 1 && 
-                       deltaR(iJet.p4(),excludeHandle->at(ih).p4()) < JetConeSize_ )
+            for(const auto & excludeHandle : excludeHandles){
+                for(const auto & exclude : *excludeHandle){
+                    if(std::abs(iJet.pt() - exclude.pt() ) / exclude.pt() < 1 && 
+                       deltaR(iJet.p4(),exclude.p4()) < JetConeSize_ )
                     {
                        skip=true;
                        break;
