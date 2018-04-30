@@ -28,13 +28,13 @@
 class IsolationProducer : public edm::global::EDProducer<> {
 public:
   explicit IsolationProducer(const edm::ParameterSet&);
-  ~IsolationProducer();
+  ~IsolationProducer() override;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
     
   edm::InputTag LeptonTag_, PFCandTag_, JetTag_, RhoTag_;
   edm::EDGetTokenT<edm::View<reco::Candidate>> LeptonTok_;

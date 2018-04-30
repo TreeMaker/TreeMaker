@@ -40,12 +40,12 @@
 class DeltaPhiDouble : public edm::global::EDProducer<> {
 public:
    explicit DeltaPhiDouble(const edm::ParameterSet&);
-   ~DeltaPhiDouble();
+   ~DeltaPhiDouble() override;
    
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
-   virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    
    edm::InputTag MHTPhiTag_, MHTJetTag_, DeltaPhiJetTag_;
    edm::EDGetTokenT<edm::View<reco::Candidate>> MHTJetTok_, DeltaPhiJetTok_;
@@ -72,7 +72,7 @@ DeltaPhiDouble::DeltaPhiDouble(const edm::ParameterSet& iConfig) :
    MHTPhiTag_(iConfig.getParameter<edm::InputTag>("MHTPhi")),
    MHTJetTag_(iConfig.getParameter<edm::InputTag>("MHTJets")),
    DeltaPhiJetTag_(iConfig.getParameter<edm::InputTag>("DeltaPhiJets")),
-   usePhi(MHTPhiTag_.label().size()>0)
+   usePhi(!MHTPhiTag_.label().empty())
 {
    //register your products
    if(usePhi) MHTPhiTok_ = consumes<double>(MHTPhiTag_);

@@ -36,12 +36,12 @@
 class DoubleFilter : public edm::global::EDFilter<> {
 public:
 	explicit DoubleFilter(const edm::ParameterSet&);
-	~DoubleFilter();
+	~DoubleFilter() override;
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+	bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
 	// ----------member data ---------------------------
 	edm::InputTag DoubleTag_;

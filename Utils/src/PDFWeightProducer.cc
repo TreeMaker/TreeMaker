@@ -26,12 +26,12 @@
 class PDFWeightProducer : public edm::global::EDProducer<> {
 public:
   explicit PDFWeightProducer(const edm::ParameterSet&);
-  ~PDFWeightProducer();
+  ~PDFWeightProducer() override;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   // ----------member data ---------------------------
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;

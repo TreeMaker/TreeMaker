@@ -39,12 +39,12 @@ typedef std::unordered_set<Triple,triple_hash> TripleSet;
 class EventListFilter : public edm::global::EDFilter<> {
 public:
 	explicit EventListFilter(const edm::ParameterSet&);
-	~EventListFilter();
+	~EventListFilter() override;
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;	
+	bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;	
 
 	// ----------member data ---------------------------
 	std::string inputFileList_;
@@ -60,7 +60,7 @@ EventListFilter::EventListFilter(const edm::ParameterSet& iConfig) :
 	TagMode_(iConfig.getParameter<bool>("TagMode"))
 {
 	//initialize the set of events
-	if(inputFileList_.size()>0){
+	if(!inputFileList_.empty()){
 		std::ifstream infile(inputFileList_.c_str());
 		if(infile.is_open()){
 			std::string line;

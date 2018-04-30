@@ -26,11 +26,11 @@
 class PmssmProducer : public edm::global::EDProducer<> {
 public:
   explicit PmssmProducer(const edm::ParameterSet&);
-  ~PmssmProducer();
+  ~PmssmProducer() override;
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
   // ----------member data ---------------------------
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;

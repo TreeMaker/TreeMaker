@@ -39,12 +39,12 @@
 class IntFilter : public edm::global::EDFilter<> {
 public:
 	explicit IntFilter(const edm::ParameterSet&);
-	~IntFilter();
+	~IntFilter() override;
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+	bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
 	// ----------member data ---------------------------
 	

@@ -35,12 +35,12 @@
 class NJetInt : public edm::global::EDProducer<> {
 public:
 	explicit NJetInt(const edm::ParameterSet&);
-	~NJetInt();
+	~NJetInt() override;
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+	void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
 	// ----------member data ---------------------------
 	edm::InputTag JetTag_;

@@ -26,7 +26,7 @@ class BasicSubstructureProducer : public edm::global::EDProducer<> {
 	public:
 		explicit BasicSubstructureProducer(const edm::ParameterSet&);
 	private:
-		virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+		void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 		template <class T>
 		void helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, std::string name) const;
 		edm::InputTag JetTag_;

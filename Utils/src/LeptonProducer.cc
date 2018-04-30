@@ -47,7 +47,7 @@ class LeptonProducer : public edm::global::EDProducer<> {
   enum elecIDLevel {VETO, LOOSE, MEDIUM, TIGHT};
 public:
   explicit LeptonProducer(const edm::ParameterSet&);
-  ~LeptonProducer();
+  ~LeptonProducer() override;
         
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   float MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi) const;
@@ -56,7 +56,7 @@ public:
   bool ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level, const double rho = 0.0) const;
         
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
         
   // ----------member data ---------------------------
   edm::InputTag MuonTag_, ElecTag_, PrimVtxTag_, metTag_, PFCandTag_, RhoTag_;
@@ -229,9 +229,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   iEvent.getByToken(MuonTok_, muonHandle);
   if(muonHandle.isValid())
     {
-      for(unsigned int m=0; m<muonHandle->size(); ++m)
+      for(const auto & aMu : *muonHandle)
         {
-          const pat::Muon& aMu = muonHandle->at(m);
           if(aMu.pt()<minMuPt_ || fabs(aMu.eta())>maxMuEta_) continue;
                         
           if(MuonID(aMu,vtx_h->at(0)))
@@ -263,9 +262,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   iEvent.getByToken(ElecTok_, eleHandle);
   if(eleHandle.isValid())
     {
-      for(unsigned int e=0; e<eleHandle->size(); ++e)
+      for(const auto & aEle : *eleHandle)
         {
-          const pat::Electron& aEle = eleHandle->at(e);
           if(fabs(aEle.superCluster()->eta())>maxElecEta_ || aEle.pt()<minElecPt_) continue;
           const reco::Vertex vtx = vtx_h->at(0);
 

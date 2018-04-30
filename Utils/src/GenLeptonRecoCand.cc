@@ -45,12 +45,12 @@
 class GenLeptonRecoCand : public edm::global::EDProducer<> {
 public:
   explicit GenLeptonRecoCand(const edm::ParameterSet&);
-  ~GenLeptonRecoCand();
+  ~GenLeptonRecoCand() override;
 	
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 	
   edm::InputTag PrunedGenParticleTag_;
   edm::InputTag pfCandsTag_;
@@ -190,7 +190,7 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
 	      if(abs(FinalBoson->daughter(ii)->pdgId())== 11) 
 		{
 		  selectedElectron->push_back(*((reco::GenParticle*) FinalBoson->daughter(ii) ));
-		  selectedElectronTauDecay->push_back(0);
+		  selectedElectronTauDecay->push_back(false);
 		  int matchedPFCand(MatchToPFCand(pfcands, &selectedElectron->back()));
 		  selectedElectronGenRecoD3->push_back(GetGenRecoD3(pfcands, matchedPFCand, &selectedElectron->back()));
 		  float trkiso = 0.;
@@ -202,7 +202,7 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
 	      if(abs(FinalBoson->daughter(ii)->pdgId())== 13) 
 		{
 		  selectedMuon->push_back(*((reco::GenParticle*) FinalBoson->daughter(ii) ));
-		  selectedMuonTauDecay->push_back(0);
+		  selectedMuonTauDecay->push_back(false);
 		  int matchedPFCand(MatchToPFCand(pfcands, &selectedMuon->back()));
 		  selectedMuonGenRecoD3->push_back(GetGenRecoD3(pfcands, matchedPFCand, &selectedMuon->back()));
 		  float trkiso = 0.;
@@ -254,13 +254,13 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
 		      }
 		    }
 
-		  bool hadTauDecay=1;
+		  bool hadTauDecay=true;
 		  for(size_t iii=0; iii<FinalTauDecay->numberOfDaughters();iii++)
 		    {
 		      if(abs(FinalTauDecay->daughter(iii)->pdgId())== 11) 
 			{
 			  selectedElectron->push_back(*((reco::GenParticle*) FinalTauDecay->daughter(iii) ));
-			  selectedElectronTauDecay->push_back(1);
+			  selectedElectronTauDecay->push_back(true);
 			  int matchedPFCand(MatchToPFCand(pfcands, &selectedElectron->back()));
 			  selectedElectronGenRecoD3->push_back(GetGenRecoD3(pfcands, matchedPFCand, &selectedElectron->back()));
 			  float trkiso = 0.;
@@ -268,12 +268,12 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
 			  GetTrkIso(pfcands, matchedPFCand, trkiso, activity);
 			  selectedElectronTrkIso->push_back(trkiso);
 			  selectedElectronTrkAct->push_back(activity);
-			  hadTauDecay=0;
+			  hadTauDecay=false;
 			}
 		      else if(abs(FinalTauDecay->daughter(iii)->pdgId())== 13) 
 			{
 			  selectedMuon->push_back(*((reco::GenParticle*) FinalTauDecay->daughter(iii) ));
-			  selectedMuonTauDecay->push_back(1);
+			  selectedMuonTauDecay->push_back(true);
 			  int matchedPFCand(MatchToPFCand(pfcands, &selectedMuon->back()));
 			  selectedMuonGenRecoD3->push_back(GetGenRecoD3(pfcands, matchedPFCand, &selectedMuon->back()));
 			  float trkiso = 0.;
@@ -281,7 +281,7 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
 			  GetTrkIso(pfcands, matchedPFCand, trkiso, activity);
 			  selectedMuonTrkIso->push_back(trkiso);
 			  selectedMuonTrkAct->push_back(activity);
-			  hadTauDecay=0;
+			  hadTauDecay=false;
 			}
 		      // store all decay productes of the tau in a new colleciton
           }
@@ -317,10 +317,10 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
       // find the leading track
       double maxPt(0.);
       int leadTrk(0);
-      for (unsigned int itk(0); itk<tau_trks.size(); itk++) {
-  	if (selectedTauDecayCands->at(tau_trks[itk]).pt()>maxPt) {
-  	  maxPt=tau_trks[itk];
-  	  leadTrk=tau_trks[itk];
+      for (int tau_trk : tau_trks) {
+  	if (selectedTauDecayCands->at(tau_trk).pt()>maxPt) {
+  	  maxPt=tau_trk;
+  	  leadTrk=tau_trk;
   	}
       }
       TLorentzVector p4(selectedTauDecayCands->at(leadTrk).px(),selectedTauDecayCands->at(leadTrk).py(),selectedTauDecayCands->at(leadTrk).pz(),selectedTauDecayCands->at(leadTrk).energy());

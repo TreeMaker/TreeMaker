@@ -25,7 +25,7 @@ class JetUncertaintyProducer : public edm::global::EDProducer<> {
 	public:
 		explicit JetUncertaintyProducer(const edm::ParameterSet&);
 	private:
-		virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+		void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 		GreaterByPt<pat::Jet> pTComparator_;
 		edm::InputTag JetTag_;
 		edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;

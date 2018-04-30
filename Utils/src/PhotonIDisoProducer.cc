@@ -48,12 +48,12 @@ class PhotonIDisoProducer : public edm::global::EDProducer<> {
 
 public:
   explicit PhotonIDisoProducer(const edm::ParameterSet&);
-  ~PhotonIDisoProducer();
+  ~PhotonIDisoProducer() override;
   
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   bool hasMatchedPromptElectron(const reco::SuperClusterRef &sc, const edm::Handle<std::vector<pat::Electron> > &eleCol,
 				const edm::Handle<reco::ConversionCollection> &convCol, const math::XYZPoint &beamspot,
@@ -215,21 +215,21 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 
   /// setup cluster tools
   noZS::EcalClusterLazyTools clusterTools_(iEvent, iSetup, ecalRecHitsInputTag_EB_Token_, ecalRecHitsInputTag_EE_Token_);
-  for( View< pat::Photon >::const_iterator iPhoton = photonCands->begin(); iPhoton != photonCands->end(); ++iPhoton){
+  for(const auto& iPhoton : *photonCands){
 
     if( debug ) {
       edm::LogInfo("TreeMaker")
-        << "photon pt: " << iPhoton->pt() << "\n"
-        << "photon eta: " << iPhoton->eta() << "\n"
-        << "photon phi: " << iPhoton->phi() << "\n";
+        << "photon pt: " << iPhoton.pt() << "\n"
+        << "photon eta: " << iPhoton.eta() << "\n"
+        << "photon phi: " << iPhoton.phi() << "\n";
     }
 
-    std::vector<float> vCov = clusterTools_.localCovariances( *(iPhoton->superCluster()->seed()) ); 
+    std::vector<float> vCov = clusterTools_.localCovariances( *(iPhoton.superCluster()->seed()) ); 
     const float sieie = (isnan(vCov[0]) ? 0. : sqrt(vCov[0])); 
     
-    double chIso = effAreas.rhoCorrectedIso(  pfCh  , iPhoton->chargedHadronIso() , iPhoton->eta() , rho ); 
-    double nuIso = effAreas.rhoCorrectedIso(  pfNu  , iPhoton->neutralHadronIso() , iPhoton->eta() , rho ); 
-    double gamIso = effAreas.rhoCorrectedIso( pfGam , iPhoton->photonIso()        , iPhoton->eta() , rho ); 
+    double chIso = effAreas.rhoCorrectedIso(  pfCh  , iPhoton.chargedHadronIso() , iPhoton.eta() , rho ); 
+    double nuIso = effAreas.rhoCorrectedIso(  pfNu  , iPhoton.neutralHadronIso() , iPhoton.eta() , rho ); 
+    double gamIso = effAreas.rhoCorrectedIso( pfGam , iPhoton.photonIso()        , iPhoton.eta() , rho ); 
 
     // apply photon selection -- all good photons will be saved
     // use loose selection with no sieie or chiso cuts
@@ -241,7 +241,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     bool passIsoLoose=false;
     bool passAcc=false;
 
-    double PhEta=iPhoton->eta();
+    double PhEta=iPhoton.eta();
 
     if(fabs(PhEta) < 1.4442  ){
       isBarrelPhoton=true;
@@ -261,14 +261,14 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 
     // apply id cuts using https://twiki.cern.ch/twiki/bin/view/CMS/CutBasedPhotonIdentificationRun2#Working_points_for_92X_and_later
     if (isBarrelPhoton) {
-      if (iPhoton->hadTowOverEm() < hadTowOverEm_EB_cut_ && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+      if (iPhoton.hadTowOverEm() < hadTowOverEm_EB_cut_ && !hasMatchedPromptElectron(iPhoton.superCluster(), electrons, conversions, beamSpot->position())) {
 	passIDLoose = true;
 	if (sieie < sieie_EB_cut_) {
 	  passID = true;
 	}
       }
     } else if (isEndcapPhoton) {
-      if (iPhoton->hadTowOverEm() < hadTowOverEm_EE_cut_ && !hasMatchedPromptElectron(iPhoton->superCluster(), electrons, conversions, beamSpot->position())) {
+      if (iPhoton.hadTowOverEm() < hadTowOverEm_EE_cut_ && !hasMatchedPromptElectron(iPhoton.superCluster(), electrons, conversions, beamSpot->position())) {
 	passIDLoose = true;
 	if (sieie < sieie_EE_cut_) {
 	  passID = true;
@@ -278,14 +278,14 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
  
     // apply isolation cuts
     if (isBarrelPhoton) {
-      if (nuIso < (pfNuIsoRhoCorr_EB_cut_[0] + pfNuIsoRhoCorr_EB_cut_[1]*iPhoton->pt() + pfNuIsoRhoCorr_EB_cut_[2]*iPhoton->pt()*iPhoton->pt()) && gamIso < ( pfGmIsoRhoCorr_EB_cut_[0] +  pfGmIsoRhoCorr_EB_cut_[1]*iPhoton->pt())) {
+      if (nuIso < (pfNuIsoRhoCorr_EB_cut_[0] + pfNuIsoRhoCorr_EB_cut_[1]*iPhoton.pt() + pfNuIsoRhoCorr_EB_cut_[2]*iPhoton.pt()*iPhoton.pt()) && gamIso < ( pfGmIsoRhoCorr_EB_cut_[0] +  pfGmIsoRhoCorr_EB_cut_[1]*iPhoton.pt())) {
 	passIsoLoose = true;
 	if (chIso < pfChIsoRhoCorr_EB_cut_) {
 	  passIso = true;
 	}
       }
     } else if (isEndcapPhoton) {
-      if (nuIso < (pfNuIsoRhoCorr_EE_cut_[0] + pfNuIsoRhoCorr_EE_cut_[1]*iPhoton->pt() + pfNuIsoRhoCorr_EE_cut_[2]*iPhoton->pt()*iPhoton->pt())  && gamIso < (pfGmIsoRhoCorr_EE_cut_[0] + pfGmIsoRhoCorr_EE_cut_[1]*iPhoton->pt())) {
+      if (nuIso < (pfNuIsoRhoCorr_EE_cut_[0] + pfNuIsoRhoCorr_EE_cut_[1]*iPhoton.pt() + pfNuIsoRhoCorr_EE_cut_[2]*iPhoton.pt()*iPhoton.pt())  && gamIso < (pfGmIsoRhoCorr_EE_cut_[0] + pfGmIsoRhoCorr_EE_cut_[1]*iPhoton.pt())) {
 	passIsoLoose = true;
 	if (chIso <  pfChIsoRhoCorr_EE_cut_) {
 	  passIso = true;
@@ -293,20 +293,20 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       }
     }
     // check if photon is a good loose photon
-    if( passAcc && passIDLoose && passIsoLoose && iPhoton->pt() > 100.0){//pure photons
-      goodPhotons->push_back( *iPhoton );
-      photon_isEB->push_back( iPhoton->isEB() );
-      photon_genMatched->push_back( iPhoton->genPhoton() != NULL );
-      photon_hadTowOverEM->push_back( iPhoton->hadTowOverEm() ) ;
+    if( passAcc && passIDLoose && passIsoLoose && iPhoton.pt() > 100.0){//pure photons
+      goodPhotons->push_back( iPhoton );
+      photon_isEB->push_back( iPhoton.isEB() );
+      photon_genMatched->push_back( iPhoton.genPhoton() != nullptr );
+      photon_hadTowOverEM->push_back( iPhoton.hadTowOverEm() ) ;
       photon_sigmaIetaIeta->push_back( sieie );
-      photon_pfChargedIso->push_back(      iPhoton->chargedHadronIso() );
-      photon_pfGammaIso->push_back(        iPhoton->photonIso() );
-      photon_pfNeutralIso->push_back(      iPhoton->neutralHadronIso() );
+      photon_pfChargedIso->push_back(      iPhoton.chargedHadronIso() );
+      photon_pfGammaIso->push_back(        iPhoton.photonIso() );
+      photon_pfNeutralIso->push_back(      iPhoton.neutralHadronIso() );
       photon_pfChargedIsoRhoCorr->push_back( chIso  );
       photon_pfGammaIsoRhoCorr->push_back(   gamIso  );
       photon_pfNeutralIsoRhoCorr->push_back( nuIso );
-      photon_hasPixelSeed->push_back( iPhoton->hasPixelSeed() );
-      photon_passElectronVeto->push_back( !hasMatchedPromptElectron(iPhoton->superCluster(),electrons, conversions, beamSpot->position()) );
+      photon_hasPixelSeed->push_back( iPhoton.hasPixelSeed() );
+      photon_passElectronVeto->push_back( !hasMatchedPromptElectron(iPhoton.superCluster(),electrons, conversions, beamSpot->position()) );
       photon_fullID->push_back(passID&&passIso);
 
       if (genParticles.isValid()){//genLevel Stuff
@@ -314,20 +314,20 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
         int matchedGenPrompt = 0;
         int matchedGenNonPrompt = 0 ;
         bool photonMatchGenE = false;        
-        for(View<reco::GenParticle>::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen){
+        for(const auto& iGen : *genParticles){
           // check for non-prompt photons ----------------------
-          if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
-            if( deltaR(iGen->p4(),iPhoton->p4()) < 0.2 ){ /// I LEFT OFF HERE!!!!!!
-              if( abs(iGen->mother()->pdgId()) > 100 && abs(iGen->mother()->pdgId()) < 1000000 && abs(iGen->mother()->pdgId()) != 2212 ) matchedGenNonPrompt++ ;
-              if( abs(iGen->mother()->pdgId()) <= 100 || abs(iGen->mother()->pdgId()) == 2212 ){
-                if( iGen->pt()/iPhoton->pt() > 0.5 && iGen->pt()/iPhoton->pt() < 1.5 )
+          if( iGen.pdgId() == 22 && ( ( iGen.status() / 10 ) == 2 || iGen.status() == 1 || iGen.status() == 2 ) ){
+            if( deltaR(iGen.p4(),iPhoton.p4()) < 0.2 ){ /// I LEFT OFF HERE!!!!!!
+              if( abs(iGen.mother()->pdgId()) > 100 && abs(iGen.mother()->pdgId()) < 1000000 && abs(iGen.mother()->pdgId()) != 2212 ) matchedGenNonPrompt++ ;
+              if( abs(iGen.mother()->pdgId()) <= 100 || abs(iGen.mother()->pdgId()) == 2212 ){
+                if( iGen.pt()/iPhoton.pt() > 0.5 && iGen.pt()/iPhoton.pt() < 1.5 )
                   matchedGenPrompt++ ;
               }//for prompt photons
             }//gen matching
           }
           //check whether photon has matched to a gen electron or not
-          if( abs(iGen->pdgId()) == 11 && iGen->status() == 1 && abs(iGen->mother()->pdgId()) <=25 ){
-            if( deltaR(iGen->p4(),iPhoton->p4()) < 0.2 && (iGen->pt()/iPhoton->pt() > 0.9 && iGen->pt()/iPhoton->pt() < 1.1) ){
+          if( abs(iGen.pdgId()) == 11 && iGen.status() == 1 && abs(iGen.mother()->pdgId()) <=25 ){
+            if( deltaR(iGen.p4(),iPhoton.p4()) < 0.2 && (iGen.pt()/iPhoton.pt() > 0.9 && iGen.pt()/iPhoton.pt() < 1.1) ){
               photonMatchGenE = true;
             }
           }
@@ -348,9 +348,9 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   }// end loop over candidate photons
   bool foundGenPrompt = false;
   if (genParticles.isValid()){
-    for(View<reco::GenParticle>::const_iterator iGen = genParticles->begin(); iGen != genParticles->end(); ++iGen){  
-      if( iGen->pdgId() == 22 && ( ( iGen->status() / 10 ) == 2 || iGen->status() == 1 || iGen->status() == 2 ) ){
-        if( iGen->pt() > 40.0 && (abs(iGen->mother()->pdgId()) <= 100 || abs(iGen->mother()->pdgId()) == 2212 ) ){
+    for(const auto& iGen : *genParticles){
+      if( iGen.pdgId() == 22 && ( ( iGen.status() / 10 ) == 2 || iGen.status() == 1 || iGen.status() == 2 ) ){
+        if( iGen.pt() > 40.0 && (abs(iGen.mother()->pdgId()) <= 100 || abs(iGen.mother()->pdgId()) == 2212 ) ){
           foundGenPrompt = true;
           break;
         }//if there is a photon with pt > 40 and its parent PdgID <=100, then consider the event as having a hard scattered photon.
@@ -387,13 +387,13 @@ bool PhotonIDisoProducer::hasMatchedPromptElectron(const reco::SuperClusterRef &
                                                    float lxyMin, float probMin, unsigned int nHitsBeforeVtxMax) const
 {
   if (sc.isNull()) return false;
-  for (std::vector<pat::Electron>::const_iterator it = eleCol->begin(); it!=eleCol->end(); ++it) {
+  for (const auto & ele : *eleCol) {
     //match electron to supercluster
-    if (it->superCluster()!=sc) continue;
+    if (ele.superCluster()!=sc) continue;
     //check expected inner hits
-    if (it->gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS) > 0) continue;
+    if (ele.gsfTrack()->hitPattern().numberOfAllHits(reco::HitPattern::MISSING_INNER_HITS) > 0) continue;
     //check if electron is matching to a conversion
-    if (ConversionTools::hasMatchedConversion(*it,convCol,beamspot,lxyMin,probMin,nHitsBeforeVtxMax)) continue;
+    if (ConversionTools::hasMatchedConversion(ele,convCol,beamspot,lxyMin,probMin,nHitsBeforeVtxMax)) continue;
     return true;
   }
   return false;

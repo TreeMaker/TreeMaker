@@ -64,10 +64,10 @@ using namespace std;
 class TrackIsolationFilter : public edm::global::EDFilter<> {
 public:
      explicit TrackIsolationFilter (const edm::ParameterSet&);
-     ~TrackIsolationFilter();
+     ~TrackIsolationFilter() override;
 
 private:
-  virtual bool filter(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const override;
+  bool filter(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const override;
 
   // ----------member data ---------------------------
   double dR_;
@@ -162,7 +162,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByToken(vertexInputTok_, vertices);
 	bool hasGoodVtx = false;
-	if(vertices->size() > 0) hasGoodVtx = true;
+	if(!vertices->empty()) hasGoodVtx = true;
 	
 	//-------------------------------------------------------------------------------------------------
 	// loop over PFCandidates and calculate the trackIsolation and dz w.r.t. 1st good PV for each one
@@ -254,7 +254,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		prodminiAOD->push_back( pfCand );
 	}
 
-	bool result = (doTrkIsoVeto_ ? (prodminiAOD->size() == 0) : true);
+	bool result = (doTrkIsoVeto_ ? (prodminiAOD->empty()) : true);
 	
 	int isoTracks=prodminiAOD->size();
 	auto htp = std::make_unique<int>(isoTracks);

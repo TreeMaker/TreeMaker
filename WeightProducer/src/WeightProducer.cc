@@ -51,10 +51,10 @@
 class WeightProducer: public edm::global::EDProducer<> {
 public:
   explicit WeightProducer(const edm::ParameterSet&);
-  ~WeightProducer();
+  ~WeightProducer() override;
   
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, FastSim = 3, other = 4 };
   
@@ -86,7 +86,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _genEvtTag(edm::InputTag("generator")),
    _puInfoTag(edm::InputTag("slimmedAddPileupInfo")),
    _SusyMotherTag(iConfig.getParameter<edm::InputTag> ("modelIdentifier")),
-   pu_central(0), pu_up(0), pu_down(0), _weightingMethod(other)
+   pu_central(nullptr), pu_up(nullptr), pu_down(nullptr), _weightingMethod(other)
 {
    // Option 1: weight constant, as defined in cfg file
    if (_startWeight >= 0) {
@@ -121,7 +121,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       //setup xsec map
       std::string inputXsecName = iConfig.getParameter<std::string> ("XsecFile");
 	  bool foundXsec = true;
-      if(inputXsecName.size()>0){
+      if(!inputXsecName.empty()){
          edm::FileInPath fileXsec(inputXsecName);
          std::ifstream infile(fileXsec.fullPath().c_str());
          if(infile.is_open()){
@@ -168,11 +168,11 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
         << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'";
       TFile* file = TFile::Open(filePUDataDistr.fullPath().c_str(), "READ");
       pu_central = (TH1*)file->Get("pu_weights_central");
-      if(pu_central) pu_central->SetDirectory(0);
+      if(pu_central) pu_central->SetDirectory(nullptr);
       pu_up = (TH1*)file->Get("pu_weights_up");
-      if(pu_up) pu_up->SetDirectory(0);
+      if(pu_up) pu_up->SetDirectory(nullptr);
       pu_down = (TH1*)file->Get("pu_weights_down");
-      if(pu_down) pu_down->SetDirectory(0);
+      if(pu_down) pu_down->SetDirectory(nullptr);
 
       if(!pu_central || !pu_up || !pu_down) {
          edm::LogWarning("TreeMaker") << "ERROR in WeightProducer: Pileup histograms missing from file '" << filePUDataDistr.fullPath();

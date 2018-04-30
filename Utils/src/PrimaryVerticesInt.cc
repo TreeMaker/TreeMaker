@@ -38,12 +38,12 @@
 class PrimaryVerticesInt : public edm::global::EDProducer<> {
 public:
 	explicit PrimaryVerticesInt(const edm::ParameterSet&);
-	~PrimaryVerticesInt();
+	~PrimaryVerticesInt() override;
 	
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 	
 private:
-	virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+	void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
 	// ----------member data ---------------------------
 	edm::InputTag vertexCollectionTag_;

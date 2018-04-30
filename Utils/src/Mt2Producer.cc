@@ -38,12 +38,12 @@ using namespace std;
 class Mt2Producer : public edm::global::EDProducer<> {
 public:
   explicit Mt2Producer(const edm::ParameterSet&);
-  ~Mt2Producer();
+  ~Mt2Producer() override;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
       
   edm::InputTag MetTag_, JetTag_;
   edm::EDGetTokenT<reco::CandidateView> JetTok_;
@@ -102,12 +102,12 @@ double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVe
   vector<float> Evec;
   vector<int> grouping;
            
-  for (unsigned int j=0; j< jets.size(); j++)
+  for (const auto & jet : jets)
     {
-      pxvec.push_back(jets[j].Px());
-      pyvec.push_back(jets[j].Py());
-      pzvec.push_back(jets[j].Pz());
-      Evec.push_back(jets[j].E());
+      pxvec.push_back(jet.Px());
+      pyvec.push_back(jet.Py());
+      pzvec.push_back(jet.Pz());
+      Evec.push_back(jet.E());
     }
   heppy::Hemisphere hemisphere(pxvec, pyvec, pzvec, Evec, 2, 3);
   grouping=hemisphere.getGrouping();
@@ -169,17 +169,17 @@ Mt2Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& i
 
   std::vector<TLorentzVector > jets; 
   if( Jets.isValid() ) {
-    for(unsigned int i=0; i<Jets->size();i++)
+    for(const auto & iJet : *Jets)
       {
 	TLorentzVector jet;
-	jet.SetPtEtaPhiE(Jets->at(i).p4().Pt(),Jets->at(i).p4().Eta(),Jets->at(i).p4().Phi(),Jets->at(i).p4().E());
+	jet.SetPtEtaPhiE(iJet.p4().Pt(),iJet.p4().Eta(),iJet.p4().Phi(),iJet.p4().E());
 	jets.push_back(jet);
       }
   }
 
   //disable stupid couts from heppy
   streambuf* orig_buf = std::cout.rdbuf();
-  std::cout.rdbuf(NULL);
+  std::cout.rdbuf(nullptr);
   double Mt2 = getMT2Hemi( jets, metvec);
   std::cout.rdbuf(orig_buf);
   

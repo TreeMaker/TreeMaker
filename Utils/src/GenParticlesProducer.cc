@@ -27,12 +27,12 @@ class GenParticlesProducer : public edm::global::EDProducer<> {
 
 public:
   explicit GenParticlesProducer(const edm::ParameterSet&);
-  ~GenParticlesProducer();
+  ~GenParticlesProducer() override;
 
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
-  virtual void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
   // ----------member data ---------------------------
 
@@ -96,27 +96,27 @@ GenParticlesProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
     edm::LogInfo("TreeMaker")<< "======new event============"<<"\n"
       <<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t";
   }
-  for(View<reco::GenParticle>::const_iterator iPart = genPartCands->begin(); iPart != genPartCands->end(); ++iPart)
+  for(const auto& iPart : *genPartCands)
     {
-      bool typicalChild=(typicalChildIds.find(abs(iPart->pdgId()))!=typicalChildIds.end());
-      bool typicalParent=(typicalParentIds.find(abs(iPart->pdgId()))!=typicalParentIds.end());
+      bool typicalChild=(typicalChildIds.find(abs(iPart.pdgId()))!=typicalChildIds.end());
+      bool typicalParent=(typicalParentIds.find(abs(iPart.pdgId()))!=typicalParentIds.end());
       if (!(typicalChild || typicalParent)) continue;
 
-      int status = abs(iPart->status());
-      bool acceptableParent = typicalParent && (iPart->isLastCopy() || status==21);
+      int status = abs(iPart.status());
+      bool acceptableParent = typicalParent && (iPart.isLastCopy() || status==21);
       //bool acceptableChild = typicalChild && (status==1 || status==2 || (status>20 && status<30));
-      bool acceptableChild = typicalChild && iPart->isLastCopy();
+      bool acceptableChild = typicalChild && iPart.isLastCopy();
       if (!(acceptableChild || acceptableParent)) continue;
 
       TLorentzVector temp;
-      temp.SetPxPyPzE(iPart->px(), iPart->py(), iPart->pz(), iPart->energy());
+      temp.SetPxPyPzE(iPart.px(), iPart.py(), iPart.pz(), iPart.energy());
       genParticle_vec->push_back(temp);
-      PdgId_vec->push_back(iPart->pdgId());
+      PdgId_vec->push_back(iPart.pdgId());
       Status_vec->push_back(status);
       TLorentzVector parent; parent.SetPxPyPzE(0,0,0,0);
       int parentid = 0;
       const reco::GenParticle *Parent;
-      Parent = static_cast<const reco::GenParticle *>(iPart->mother());
+      Parent = static_cast<const reco::GenParticle *>(iPart.mother());
       while(true)
         {
           if(!(Parent)) break;
