@@ -8,7 +8,7 @@ class Scenario:
                 fastsim=True,
                 signal=True,
                 jecfile="data/jec/Spring16_25nsFastSimMC_V1",
-                jerfile="data/jer/Spring16_25nsV6_MC",
+                jerfile="data/jer/Summer16_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
                 era="Run2_2016",
                 localera="TM2016",
@@ -22,7 +22,7 @@ class Scenario:
                 signal=True,
                 pmssm=True,
                 jecfile="data/jec/Spring16_25nsFastSimMC_V1",
-                jerfile="data/jer/Spring16_25nsV6_MC",
+                jerfile="data/jer/Summer16_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
                 era="Run2_2016",
                 localera="TM2016",
@@ -33,7 +33,7 @@ class Scenario:
                 tagname="PAT",
                 geninfo=True,
                 jecfile="data/jec/Summer16_23Sep2016V3_MC",
-                jerfile="data/jer/Spring16_25nsV6_MC",
+                jerfile="data/jer/Summer16_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
                 era="Run2_2016",
                 localera="TM2016",
@@ -45,7 +45,7 @@ class Scenario:
                 geninfo=True,
                 signal=True,
                 jecfile="data/jec/Summer16_23Sep2016V3_MC",
-                jerfile="data/jer/Spring16_25nsV6_MC",
+                jerfile="data/jer/Summer16_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
                 era="Run2_2016",
                 localera="TM2016",
@@ -80,13 +80,46 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
+        elif sname == "Summer16LegacyReMiniAOD":
+            self.set_vars(
+                globaltag="80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                tagname="PAT",
+                geninfo=True,
+                jecfile="data/jec/Summer16_07Aug2017_V9_MC",
+                jerfile="data/jer/Summer16_25nsV1_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
+                era="Run2_2016",
+                localera="TM2016",
+            )
+        elif sname == "Summer16LegacyReMiniAODsig":
+            self.set_vars(
+                globaltag="80X_mcRun2_asymptotic_2016_TrancheIV_v6",
+                tagname="PAT",
+                geninfo=True,
+                signal=True,
+                jecfile="data/jec/Summer16_07Aug2017_V9_MC",
+                jerfile="data/jer/Summer16_25nsV1_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
+                era="Run2_2016",
+                localera="TM2016",
+            )
+        elif sname == "2016LegacyReMiniAOD":
+            self.set_vars(
+                globaltag="80X_dataRun2_2016SeptRepro_v7",
+                tagname="PAT",
+                jsonfile="data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
+                jecfile="data/jec/Summer16_07Aug2017All_V9_DATA",
+                residual=True,
+                era="Run2_2016",
+                localera="TM2016",
+            )
         elif sname == "Fall17":
             self.set_vars(
                 globaltag="94X_mc2017_realistic_v13",
                 tagname="PAT",
                 geninfo=True,
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
-                jerfile="data/jer/Spring16_25nsV6_MC",
+                jerfile="data/jer/Summer16_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
                 era="Run2_2017",
                 localera="TM2017",
@@ -98,7 +131,7 @@ class Scenario:
                 geninfo=True,
                 signal=True,
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
-                jerfile="data/jer/Spring16_25nsV6_MC",
+                jerfile="data/jer/Summer16_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
                 era="Run2_2017",
                 localera="TM2017",
