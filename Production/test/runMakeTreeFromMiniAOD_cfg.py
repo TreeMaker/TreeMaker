@@ -15,7 +15,6 @@ threads=parameters.value("threads",1)
 streams=parameters.value("streams",0)
 tmi=parameters.value("tmi",False)
 trace=parameters.value("trace",False)
-verbose=parameters.value("verbose",True)
 
 # print out settings
 print "***** SETUP ************************************"
@@ -48,7 +47,7 @@ process.GlobalTag.globaltag = theMaker.globaltag
 # log output
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = reportfreq
-if verbose:
+if theMaker.verbose:
     process.MessageLogger.categories.append('TreeMaker')
     process.MessageLogger.cerr.TreeMaker = cms.untracked.PSet(
         optionalPSet = cms.untracked.bool(True),

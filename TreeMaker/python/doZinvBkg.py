@@ -34,6 +34,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         subJETCorrLevels = jecLevels,
 		addEnergyCorrFunc = True,
 		associateTask = False,
+		verbosity = 2 if self.verbose else 0,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
 

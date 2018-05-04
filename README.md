@@ -208,9 +208,9 @@ The following parameters take their default values from the specified scenario:
 * `residual`: switch to enable residual JECs for data
 * `era`: CMS detector era for the dataset
 * `redir`: xrootd redirector, storage element address, or site name (default="root://cmsxrootd.fnal.gov/") (`fastsim` default="root://cmseos.fnal.gov/")
+* `verbose`: print messages from modules in the `TreeMaker` category (and from JetToolbox) (default=True)
 
 Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py):
-* `verbose`: print messages from modules in the `TreeMaker` category (default=True)
 * `reportfreq`: frequency of CMSSW log output (default=1000)
 * `dump`: equivalent to `edmConfigDump`, but accounts for all command-line settings; exits without running (default=False)
 * `mp`: enable igprof hooks for memory profiling (default=False)

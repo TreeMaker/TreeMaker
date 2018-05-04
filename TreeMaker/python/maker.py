@@ -16,6 +16,7 @@ class maker:
         from TreeMaker.Production.scenarios import Scenario
         self.scenario = Scenario(self.scenarioName)
         
+        self.getParamDefault("verbose",True)
         self.getParamDefault("inputFilesConfig","")
         self.getParamDefault("dataset",[])
         self.getParamDefault("nstart",0)
