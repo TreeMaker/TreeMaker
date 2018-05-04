@@ -29,14 +29,13 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         maxTau = 3,
         bTagInfos = listBTagInfos, 
         bTagDiscriminators = listBtagDiscriminatorsAK8,
+		subjetBTagDiscriminators = None,
         JETCorrLevels = jecLevels,
         subJETCorrLevels = jecLevels,
 		addEnergyCorrFunc = True,
+		associateTask = False,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
-    # temporary bug fix for jet toolbox (see https://github.com/cms-jet/JetToolbox/issues/51)
-    if hasattr(process,'out'): del process.out
-    if hasattr(process,'endpath'): del process.endpath
 
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
