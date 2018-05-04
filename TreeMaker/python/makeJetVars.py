@@ -1,14 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
-def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4):
+def makeGoodJets(self, process, JetTag, suff, storeProperties, systematic=False, SkipTag=cms.VInputTag(), jetConeSize=0.4):
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
-    GoodJets = GoodJetsProducer.clone()
-    TMeras.TM2016.toModify(GoodJets,
+    GoodJets = GoodJetsProducer.clone(
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
-        jetPtFilter               = cms.double(20 if self.fastsim else 30),
+        # keep lower-pt central jets in case they fluctuate up in systematic collections
+        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30 if systematic else 0),
         ExcludeLepIsoTrackPhotons = cms.bool(True),
         JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
@@ -16,8 +16,6 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         SaveAllJetsPt             = False, # exclude low pt jets from good collection
     )
     TMeras.TM2017.toModify(GoodJets,
-        TagMode                   = cms.bool(True),
-        JetTag                    = JetTag,
         maxNeutralFraction        = cms.double(0.90),
         maxNeutralFractionHE      = cms.double(1.00), #Turned off as not needed for the tight WP
         minNeutralFractionHF      = cms.double(0.02),
@@ -25,31 +23,28 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         minPhotonFractionHE       = cms.double(0.02),
         maxPhotonFractionHE       = cms.double(0.99),
         maxChargedEMFraction      = cms.double(1.00), #Turned off as not needed for the tight WP
-        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 20 if self.fastsim else 30),
-        ExcludeLepIsoTrackPhotons = cms.bool(True),
-        JetConeSize               = cms.double(jetConeSize),
-        SkipTag                   = SkipTag,
-        SaveAllJetsId             = True,
-        SaveAllJetsPt             = False, # exclude low pt jets from good collection
     )
     setattr(process,"GoodJets"+suff,GoodJets)
     GoodJetsTag = cms.InputTag("GoodJets"+suff)
     self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
+    self.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
     if storeProperties>0:
-        self.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
         self.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
         if len(SkipTag)>0: self.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(Jets'+suff+'_LeptonMask)'])
     return (process,GoodJetsTag)
 
-
-def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+# AK4 storeProperties levels:
+# 0 = goodJets and scalars (+ origIndex for syst)
+# 1 = 0 + masks, minimal set of properties
+# 2 = all properties
+def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, systematic=False, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
     if skipGoodJets:
         GoodJetsTag = JetTag
     else:
-        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag,0.4)
+        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,systematic,SkipTag,0.4)
         if onlyGoodJets:
             return process
     
@@ -153,13 +148,21 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
         setattr(process,"ISRJets"+suff,ISRJets)
         if storeProperties>0:
             self.VectorBool.extend(['ISRJets'+suff+':SubJetMask(Jets'+suff+'_ISRMask)'])
-            self.VarsInt.extend(['ISRJets'+suff+'(NJetsISR'+suff+')'])
+        self.VarsInt.extend(['ISRJets'+suff+'(NJetsISR'+suff+')'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties
     ## ----------------------------------------------------------------------------------------------
-    
-    if storeProperties>0:
+    if storeProperties==0 and systematic:
+        JetProperties = cms.EDProducer("JetProperties",
+            JetTag = GoodJetsTag,
+            debug = cms.bool(False),
+            properties = cms.vstring("origIndex"),
+            origIndex = cms.vstring("origIndex"),
+        )
+        setattr(process,"JetProperties"+suff,JetProperties)
+        self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
+    elif storeProperties>0:
         # make jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetProperties = jetproperties.clone(

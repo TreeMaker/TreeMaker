@@ -71,7 +71,8 @@ void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 		edm::Ptr<pat::Jet> jetPtr = jets->ptrAt(idx);
 		pat::Jet ajet(jetPtr);
 		math::XYZTLorentzVector vjet = ajet.p4();
-		
+		ajet.addUserInt("origIndex",idx);
+
 		//get JEC unc for this jet, using corrected pT
 		jecUnc->setJetEta(itJet->eta());
 		jecUnc->setJetPt(itJet->pt());

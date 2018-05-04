@@ -584,7 +584,8 @@ def makeTreeFromMiniAOD(self,process):
                               JetTag=JetTagJECup,
                               suff='JECup',
                               skipGoodJets=False,
-                              storeProperties=1,
+                              storeProperties=0,
+                              systematic=True,
                               SkipTag=SkipTag
         )
         
@@ -599,7 +600,8 @@ def makeTreeFromMiniAOD(self,process):
                               JetTag=JetTagJECdown,
                               suff='JECdown',
                               skipGoodJets=False,
-                              storeProperties=1,
+                              storeProperties=0,
+                              systematic=True,
                               SkipTag=SkipTag
         )
 
@@ -614,7 +616,8 @@ def makeTreeFromMiniAOD(self,process):
                               JetTag=JetTagJERup,
                               suff='JERup',
                               skipGoodJets=False,
-                              storeProperties=1,
+                              storeProperties=0,
+                              systematic=True,
                               SkipTag=SkipTag
         )
         
@@ -629,7 +632,8 @@ def makeTreeFromMiniAOD(self,process):
                               JetTag=JetTagJERdown,
                               suff='JERdown',
                               skipGoodJets=False,
-                              storeProperties=1,
+                              storeProperties=0,
+                              systematic=True,
                               SkipTag=SkipTag
         )
 
