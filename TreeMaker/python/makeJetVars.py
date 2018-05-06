@@ -7,13 +7,13 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, systematic=False,
     GoodJets = GoodJetsProducer.clone(
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
-        # keep lower-pt central jets in case they fluctuate up in systematic collections
-        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30 if systematic else 0),
+        jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30),
         ExcludeLepIsoTrackPhotons = cms.bool(True),
         JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
         SaveAllJetsId             = True,
-        SaveAllJetsPt             = False, # exclude low pt jets from good collection
+        # keep lower-pt central jets in case they fluctuate up in systematic collections (only for AK4)
+        SaveAllJetsPt             = (jetConeSize==0.4),
     )
     TMeras.TM2017.toModify(GoodJets,
         maxNeutralFraction        = cms.double(0.90),
@@ -27,8 +27,8 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, systematic=False,
     setattr(process,"GoodJets"+suff,GoodJets)
     GoodJetsTag = cms.InputTag("GoodJets"+suff)
     self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
-    self.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
     if storeProperties>0:
+        self.VectorRecoCand.extend(['GoodJets'+suff+'(Jets'+suff+')'])
         self.VectorBool.extend(['GoodJets'+suff+':JetIDMask(Jets'+suff+'_ID)'])
         if len(SkipTag)>0: self.VectorBool.extend(['GoodJets'+suff+':JetLeptonMask(Jets'+suff+'_LeptonMask)'])
     return (process,GoodJetsTag)
