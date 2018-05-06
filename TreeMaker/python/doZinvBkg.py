@@ -192,7 +192,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
-        systematic=True,
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble

@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
-def makeGoodJets(self, process, JetTag, suff, storeProperties, systematic=False, SkipTag=cms.VInputTag(), jetConeSize=0.4):
+def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4):
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
     GoodJets = GoodJetsProducer.clone(
@@ -37,14 +37,14 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, systematic=False,
 # 0 = goodJets and scalars (+ origIndex for syst)
 # 1 = 0 + masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, systematic=False, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
     if skipGoodJets:
         GoodJetsTag = JetTag
     else:
-        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,systematic,SkipTag,0.4)
+        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag,0.4)
         if onlyGoodJets:
             return process
     
@@ -153,7 +153,8 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, syst
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties
     ## ----------------------------------------------------------------------------------------------
-    if storeProperties==0 and systematic:
+    if storeProperties==0:
+        # for systematics
         JetProperties = cms.EDProducer("JetProperties",
             JetTag = GoodJetsTag,
             debug = cms.bool(False),
