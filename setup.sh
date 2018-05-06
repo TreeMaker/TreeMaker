@@ -22,7 +22,7 @@ eval `scramv1 runtime -sh`
 git cms-init
 git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
 git cms-merge-topic -u TreeMaker:MET_942_FixEGdR
-git cms-merge-topic -u TreeMaker:storeJERFactor942
+git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_942
 git clone git@github.com:TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
