@@ -13,7 +13,6 @@
 
 <!-- /MarkdownTOC -->
 
-<a name="instructions"></a>
 ## Instructions
 
 The following installation instructions assume the user wants to process 2016 or 2017 miniAOD.
@@ -47,7 +46,6 @@ The available scenarios are:
 9.  `Fall17sig`: for Fall17 miniAOD 25ns MC (signal)
 10. `2017ReReco17Nov`: for 2017 ReReco (17Nov) 25ns data, periods B-F
 
-<a name="unit-tests"></a>
 ## Unit Tests (Interactive Runs)
 
 Several predefined run commands (at least one for each scenario) are defined in a script called [unitTest.py](./Production/test/unitTest.py). It has several parameters:
@@ -69,7 +67,6 @@ python unitTest.py test=2 run=True
 
 Note that all of the background estimation processes (and some processes necessary to estimate systematic uncertainties) are turned *ON* by default in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py).
 
-<a name="submit-production-to-condor"></a>
 ## Submit Production to Condor
 
 Condor submission is supported for the LPC batch system or for the global pool via [CMS Connect](https://connect.uscms.org/).
@@ -110,7 +107,6 @@ To get the number of the first new job, just use `len(readFiles)` from the pytho
 
 When submitting jobs for prompt data, each data file will be checked to see if the run it contains is certified in the corresponding JSON file. The JSON file is taken by default from the scenario; an alternative can be specified with the `--json` option, e.g. if the JSON is updated and you want to submit jobs only for the newly certified runs. (Use [compareJSON.py](https://github.com/cms-sw/cmssw/blob/CMSSW_7_6_X/FWCore/PythonUtilities/scripts/compareJSON.py) to subtract one JSON list from another, following [this twiki](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideGoodLumiSectionsJSONFile#How_to_compare_Good_Luminosity_f).)
 
-<a name="calculate-integrated-luminosity"></a>
 ## Calculate Integrated Luminosity
 
 Scripts are available to calculate the integrated luminosity from data ntuples (produced with TreeMaker):
@@ -126,7 +122,6 @@ file for each sample consisting of the lumisections which were actually processe
 The resulting JSON file can be run through [brilcalc](http://cms-service-lumi.web.cern.ch/cms-service-lumi/brilwsdoc.html) using [calcLumi.py](./Production/test/calcLumi.py)
 to determine the integrated luminosity for the dataset. Run `python calcLumi.py --help` to see the available options. (NB: this only works on lxplus with brilcalc installed.)
 
-<a name="calculate-pileup-corrections"></a>
 ## Calculate Pileup Corrections
 
 A script is available to calculate the pileup corrections for MC:
@@ -136,7 +131,6 @@ python pileupCorr.py
 
 A ROOT file containing the data, MC, and data/MC histograms (with uncertainty variations) is produced. Run `python pileupCorr.py --help` to see the available options.
 
-<a name="info-for-new-samples"></a>
 ## Info for New Samples
 
 The script [get_mcm.py](./Production/test/get_mcm.py) can search the McM database for given samples (with wildcard support) to discern the status of the sample (whether it has finished running), the generator cross section, and the full dataset path for the sample ("/X/Y/Z" format).
@@ -167,7 +161,6 @@ To check for new samples, use the above script [get_mcm.py](./Production/test/ge
 das_client.py --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0 | & less
 ```
 
-<a name="samples-with-negative-weight-events"></a>
 ### Samples with Negative Weight Events
 
 Samples produced at NLO by amcatnlo have events with negative weights, which must be handled correctly. To get the effective number of events used to weight the sample, there is a multi-step process.
@@ -193,7 +186,6 @@ Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate Wei
 python get_py.py dict=dictNLO.py py=False
 ```
 
-<a name="options"></a>
 ## Options
 
 Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py)
