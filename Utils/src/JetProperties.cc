@@ -111,6 +111,7 @@ class NamedPtr_I : public NamedPtr<int> {
 		void get_property(const pat::Jet* Jet) override { push_back(Jet->userInt(extraInfo.at(0))); }
 };
 DEFAULT_NAMED_PTR(I,multiplicity);
+DEFAULT_NAMED_PTR(I,origIndex);
 
 // specialized helper classes (for non-userfloats)
 

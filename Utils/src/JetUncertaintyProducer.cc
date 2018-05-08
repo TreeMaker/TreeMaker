@@ -64,17 +64,16 @@ void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 	auto jecUncVec  = std::make_unique<std::vector<double>>();
 	jecUncVec->reserve(jets->size());
 
-	for (edm::View<pat::Jet>::const_iterator itJet = jets->begin(); itJet != jets->end(); itJet++) {
+	for (unsigned idx = 0; idx < jets->size(); ++idx) {
 		// construct the Jet from the ref -> save ref to original object
-		unsigned int idx = std::distance(jets->begin(),itJet);
-		edm::RefToBase<pat::Jet> jetRef = jets->refAt(idx);
 		edm::Ptr<pat::Jet> jetPtr = jets->ptrAt(idx);
 		pat::Jet ajet(jetPtr);
 		math::XYZTLorentzVector vjet = ajet.p4();
-		
+		ajet.addUserInt("origIndex",idx);
+
 		//get JEC unc for this jet, using corrected pT
-		jecUnc->setJetEta(itJet->eta());
-		jecUnc->setJetPt(itJet->pt());
+		jecUnc->setJetEta(jets->at(idx).eta());
+		jecUnc->setJetPt(jets->at(idx).pt());
 		double uncertainty = jecUnc->getUncertainty(true);
 		//safety check if uncertainty is not available for a jet
 		if(uncertainty==-999.) uncertainty = 0;

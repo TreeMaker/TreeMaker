@@ -4,7 +4,7 @@ def makeJetVarsHadTau(self,process,JetTag,suff,storeProperties=0):
     # clone GoodJetsProducer
     GoodJetsForHadTau = process.GoodJets.clone(
         JetTag = JetTag,
-        jetPtFilter = cms.double(30),
+        jetPtFilter = cms.double(10),
         invertJetPtFilter = cms.bool(True),
         SaveAllJetsId = cms.bool(True),
         SaveAllJetsPt = cms.bool(False), # save only jets *below* pt cut
