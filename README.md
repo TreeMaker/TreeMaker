@@ -1,5 +1,18 @@
 # TreeMaker
 
+<!-- MarkdownTOC levels="2,3" autolink="true" -->
+
+- [Instructions](#instructions)
+- [Unit Tests \(Interactive Runs\)](#unit-tests-interactive-runs)
+- [Submit Production to Condor](#submit-production-to-condor)
+- [Calculate Integrated Luminosity](#calculate-integrated-luminosity)
+- [Calculate Pileup Corrections](#calculate-pileup-corrections)
+- [Info for New Samples](#info-for-new-samples)
+    - [Samples with Negative Weight Events](#samples-with-negative-weight-events)
+- [Options](#options)
+
+<!-- /MarkdownTOC -->
+
 ## Instructions
 
 The following installation instructions assume the user wants to process 2016 or 2017 miniAOD.
