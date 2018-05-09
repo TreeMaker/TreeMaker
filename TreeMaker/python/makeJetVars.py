@@ -34,8 +34,8 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
     return (process,GoodJetsTag)
 
 # AK4 storeProperties levels:
-# 0 = goodJets and scalars (+ origIndex for syst)
-# 1 = 0 + masks, minimal set of properties
+# 0 = scalars (+ origIndex for syst)
+# 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
 def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
