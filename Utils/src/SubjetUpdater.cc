@@ -47,22 +47,22 @@ void SubjetUpdater::produce(edm::StreamID, edm::Event& iEvent, const edm::EventS
 	iEvent.getByToken(SubjetTok_, subjets);
 
 	//construct map of old subjets to jets
-	std::map<edm::Ptr<pat::Jet>,unsigned> oldMap;
+	std::map<edm::Ptr<reco::Candidate>,unsigned> oldMap;
 	for(unsigned ij = 0; ij < jets->size(); ++ij){
 		const auto& oldSubjets = jets->at(ij).subjets(SubjetOldName_);
 		for(unsigned isj = 0; isj < oldSubjets.size(); ++isj){
-			oldMap.emplace(oldSubjets[isj],ij);
+			oldMap.emplace(oldSubjets[isj]->originalObjectRef(),ij);
 		}
 	}
 
 	//construct map of jets to new subjets (using prev map)
 	std::map<unsigned,std::vector<edm::Ptr<pat::Jet>>> newMap;
 	for(unsigned isj = 0; isj < subjets->size(); ++isj){
-		auto itr = oldMap.find(subjets->ptrAt(isj));
+		auto itr = oldMap.find(subjets->at(isj).originalObjectRef());
 		if(itr!=oldMap.end()){
 			unsigned ij = itr->second;
 			auto& vec = newMap[ij];
-			vec.push_back(itr->first);			
+			vec.push_back(subjets->ptrAt(isj));
 		}
 	}
 
