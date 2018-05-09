@@ -395,6 +395,7 @@ public:
 	
 private:
 	void produce(edm::Event&, const edm::EventSetup&) override;
+	std::string debugMessage(const pat::Jet& Jet, const std::string& name, int indent=0);
 	
 	edm::InputTag JetTag_;
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
@@ -453,30 +454,10 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 			for(auto & Ptr : Ptrs_){
 				Ptr->get_property(Jet);
 			}
-			//for debugging: print out available subjet collections & btag discriminators
+			//for debugging: print out available subjet collections, btag discriminators, userfloats/ints
+			//will recurse through subjet collections if any
 			if(debug){
-				std::stringstream message;
-				const auto& subjetLabels = Jet.subjetCollectionNames();
-				message << "subjetCollectionNames: ";
-				std::copy(subjetLabels.begin(), subjetLabels.end(), std::ostream_iterator<std::string>(message, " "));
-				message << "\n";
-				
-				const auto& btagLabels = Jet.getPairDiscri();
-				message << "btagDiscriminatorNames: ";
-				for(const auto& bt : btagLabels) message << bt.first << " ";
-				message << "\n";
-				
-				const auto& floatLabels = Jet.userFloatNames();
-				message << "userFloatNames: ";
-				std::copy(floatLabels.begin(), floatLabels.end(), std::ostream_iterator<std::string>(message, " "));
-				message << "\n";
-
-				const auto& intLabels = Jet.userIntNames();
-				message << "userIntNames: ";
-				std::copy(intLabels.begin(), intLabels.end(), std::ostream_iterator<std::string>(message, " "));
-				message << "\n";
-
-				edm::LogInfo("TreeMaker") << message.str();
+				edm::LogInfo("TreeMaker") << debugMessage(Jet,JetTag_.encode());
 			}
 		}
 	}
@@ -487,6 +468,43 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 
 }
+
+std::string
+JetProperties::debugMessage(const pat::Jet& Jet, const std::string& name, int indent)
+{
+	std::string s_indent(indent,'\t');
+
+	std::stringstream message;
+	message << s_indent << name << ":\n";
+
+	const auto& subjetLabels = Jet.subjetCollectionNames();
+	message << s_indent << "subjetCollectionNames: ";
+	std::copy(subjetLabels.begin(), subjetLabels.end(), std::ostream_iterator<std::string>(message, " "));
+	message << "\n";
+	
+	const auto& btagLabels = Jet.getPairDiscri();
+	message << s_indent << "btagDiscriminatorNames: ";
+	for(const auto& bt : btagLabels) message << bt.first << " ";
+	message << "\n";
+	
+	const auto& floatLabels = Jet.userFloatNames();
+	message << s_indent << "userFloatNames: ";
+	std::copy(floatLabels.begin(), floatLabels.end(), std::ostream_iterator<std::string>(message, " "));
+	message << "\n";
+
+	const auto& intLabels = Jet.userIntNames();
+	message << s_indent << "userIntNames: ";
+	std::copy(intLabels.begin(), intLabels.end(), std::ostream_iterator<std::string>(message, " "));
+	message << "\n";
+
+	std::string s_message = message.str();
+	for(const auto& subjetLabel: subjetLabels){
+		if(!Jet.subjets(subjetLabel).empty()) s_message += debugMessage(Jet.subjets(subjetLabel)[0], subjetLabel, indent+1);
+	}
+
+	return s_message;
+}
+
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void
