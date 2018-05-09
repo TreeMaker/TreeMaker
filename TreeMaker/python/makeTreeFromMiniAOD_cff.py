@@ -585,11 +585,11 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=0
         )
         process = self.makeJetVars(process,
-                              JetTag=JetTagJECup,
-                              suff='JECup',
-                              skipGoodJets=False,
-                              storeProperties=0,
-                              SkipTag=SkipTag
+            JetTag=JetTagJECup,
+            suff='JECup',
+            skipGoodJets=False,
+            storeProperties=0,
+            SkipTag=SkipTag
         )
         
         # JEC unc down
@@ -600,11 +600,11 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=0
         )
         process = self.makeJetVars(process,
-                              JetTag=JetTagJECdown,
-                              suff='JECdown',
-                              skipGoodJets=False,
-                              storeProperties=0,
-                              SkipTag=SkipTag
+            JetTag=JetTagJECdown,
+            suff='JECdown',
+            skipGoodJets=False,
+            storeProperties=0,
+            SkipTag=SkipTag
         )
 
         # JER unc up
@@ -615,11 +615,11 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=1
         )
         process = self.makeJetVars(process,
-                              JetTag=JetTagJERup,
-                              suff='JERup',
-                              skipGoodJets=False,
-                              storeProperties=0,
-                              SkipTag=SkipTag
+            JetTag=JetTagJERup,
+            suff='JERup',
+            skipGoodJets=False,
+            storeProperties=0,
+            SkipTag=SkipTag
         )
         
         # JER unc down
@@ -630,11 +630,11 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=-1
         )
         process = self.makeJetVars(process,
-                              JetTag=JetTagJERdown,
-                              suff='JERdown',
-                              skipGoodJets=False,
-                              storeProperties=0,
-                              SkipTag=SkipTag
+            JetTag=JetTagJERdown,
+            suff='JERdown',
+            skipGoodJets=False,
+            storeProperties=0,
+            SkipTag=SkipTag
         )
 
     if self.geninfo:
@@ -685,11 +685,11 @@ def makeTreeFromMiniAOD(self,process):
     process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2', 'QGTagger:axis1'], ['QGTagger:mult'])
     
     process = self.makeJetVars(process,
-                          JetTag=JetTag,
-                          suff='',
-                          skipGoodJets=False,
-                          storeProperties=2,
-                          SkipTag=SkipTag
+        JetTag=JetTag,
+        suff='',
+        skipGoodJets=False,
+        storeProperties=2,
+        SkipTag=SkipTag
     )
 
     # get QG tagging discriminant for subjets
