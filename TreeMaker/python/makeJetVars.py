@@ -241,10 +241,11 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
 # AK8 storeProperties levels:
 # 0 = ID scalar from goodJets
 # 1 = 0 + 4vecs, most properties
-# 2 = 1 + subjet properties
+# 2 = 1 + subjet properties + extra substructure
+# 3 = 2 + constituents (large)
 def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
     # get more substructure
-    if self.semivisible:
+    if self.semivisible and storeProperties>1:
         from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
         NjettinessBeta1 = Njettiness.clone(
             src = JetTag,
@@ -362,7 +363,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 'JetProperties'+suff+':SJmultiplicity(Jets'+suff+'_subjets_multiplicity)',
             ])
 
-        if self.semivisible:
+        if self.semivisible and storeProperties>1:
             JetPropertiesAK8.properties.extend([
                 'overflow',
                 'girth',
@@ -373,7 +374,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 'multiplicity',
                 'ptdrlog',
                 'lean',
-#                'constituents',
             ])
             JetPropertiesAK8.overflow = cms.vstring('BasicSubstructure'+suff+':overflow')
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
@@ -402,9 +402,12 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             self.VectorInt.extend([
                 'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
             ])
-#            self.VectorVectorTLorentzVector.extend([
-#                'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
-#            ])
+
+            if storeProperties>2:
+                JetPropertiesAK8.properties.extend(['constituents'])
+                self.VectorVectorTLorentzVector.extend([
+                    'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
+                ])
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
     return process        
