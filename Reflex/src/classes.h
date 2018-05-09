@@ -14,6 +14,9 @@ namespace {
 	edm::PtrVector<pat::PackedCandidate> rv2pp;
     edm::Wrapper<std::vector<TLorentzVector> > wvlv;
     edm::Wrapper<std::vector<std::vector<TLorentzVector> > > wvvlv;
+    edm::Wrapper<std::vector<std::vector<double> > > wvvd;
+    edm::Wrapper<std::vector<std::vector<int> > > wvvi;
+    edm::Wrapper<std::vector<std::vector<bool> > > wvvb;
 	edm::Wrapper<edm::PtrVector<pat::PackedCandidate> > wrv2pp;
   };
 }

@@ -6,5 +6,8 @@
   <class name="edm::PtrVector<pat::PackedCandidate>"/>
   <class name="edm::Wrapper<std::vector<TLorentzVector> >"/>
   <class name="edm::Wrapper<std::vector<std::vector<TLorentzVector> > >"/>
+  <class name="edm::Wrapper<std::vector<std::vector<double> > >"/>
+  <class name="edm::Wrapper<std::vector<std::vector<int> > >"/>
+  <class name="edm::Wrapper<std::vector<std::vector<bool> > >"/>
   <class name="edm::Wrapper<edm::PtrVector<pat::PackedCandidate> >"/>
 </lcgdict>
