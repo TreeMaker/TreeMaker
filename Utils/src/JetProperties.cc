@@ -372,15 +372,66 @@ class NamedPtr_subjets : public NamedPtr<std::vector<TLorentzVector>> {
 		using NamedPtr<std::vector<TLorentzVector>>::NamedPtr;
 		void get_property(const pat::Jet& Jet) override {
 			std::vector<TLorentzVector> subvecs;
-			auto const & subjets = Jet.subjets(extraInfo.at(0));
-			for ( auto const & it : subjets ) {
-				const auto& p4 = it->correctedP4(0);
+			const auto& subjets = Jet.subjets(extraInfo.at(0));
+			subvecs.reserve(subjets.size());
+			for (const auto& subjet : subjets) {
+				const auto& p4 = subjet->correctedP4(0);
 				subvecs.emplace_back(p4.px(),p4.py(),p4.pz(),p4.energy());
 			}
 			ptr->push_back(subvecs);
 		}
 };
 DEFINE_NAMED_PTR(subjets);
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+//subjet floats
+
+class NamedPtr_SJD : public NamedPtr<std::vector<double>> {
+	public:
+		using NamedPtr<std::vector<double>>::NamedPtr;
+		void get_property(const pat::Jet& Jet) override {
+			std::vector<double> vec;
+			const auto& subjets = Jet.subjets(extraInfo.at(0));
+			vec.reserve(subjets.size());
+			for (const auto& subjet : subjets) {
+				vec.push_back(subjet->userFloat(extraInfo.at(1)));
+			}
+			ptr->push_back(vec);
+		}
+};
+DEFAULT_NAMED_PTR(SJD,SJptD);
+DEFAULT_NAMED_PTR(SJD,SJaxisminor);
+DEFAULT_NAMED_PTR(SJD,SJaxismajor);
+
+class NamedPtr_SJI : public NamedPtr<std::vector<int>> {
+	public:
+		using NamedPtr<std::vector<int>>::NamedPtr;
+		void get_property(const pat::Jet& Jet) override {
+			std::vector<int> vec;
+			const auto& subjets = Jet.subjets(extraInfo.at(0));
+			vec.reserve(subjets.size());
+			for (const auto& subjet : subjets) {
+				vec.push_back(subjet->userInt(extraInfo.at(1)));
+			}
+			ptr->push_back(vec);
+		}
+};
+DEFAULT_NAMED_PTR(SJI,SJmultiplicity);
+
+class NamedPtr_SJbDiscriminator : public NamedPtr<std::vector<double>> {
+	public:
+		using NamedPtr<std::vector<double>>::NamedPtr;
+		void get_property(const pat::Jet& Jet) override {
+			std::vector<double> vec;
+			const auto& subjets = Jet.subjets(extraInfo.at(0));
+			vec.reserve(subjets.size());
+			for (const auto& subjet : subjets) {
+				vec.push_back(subjet->bDiscriminator(extraInfo.at(1)));
+			}
+			ptr->push_back(vec);
+		}
+};
+DEFAULT_NAMED_PTR(SJbDiscriminator,SJbDiscriminatorCSV);
 
 //
 // class declaration
