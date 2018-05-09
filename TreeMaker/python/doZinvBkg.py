@@ -10,6 +10,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     listBtagDiscriminatorsAK8 = [
          'pfBoostedDoubleSecondaryVertexAK8BJetTags',
     ]
+    listBtagDiscriminatorsSubjetAK8 = [
+        'pfCombinedInclusiveSecondaryVertexV2BJetTags',
+    ]
     jecLevels = ['L1FastJet', 'L2Relative', 'L3Absolute']
     if self.residual: jecLevels.append("L2L3Residual")
     jetToolbox(process,
@@ -29,7 +32,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         maxTau = 3,
         bTagInfos = listBTagInfos, 
         bTagDiscriminators = listBtagDiscriminatorsAK8,
-		subjetBTagDiscriminators = None,
+		subjetBTagDiscriminators = listBtagDiscriminatorsSubjetAK8,
         JETCorrLevels = jecLevels,
         subJETCorrLevels = jecLevels,
 		addEnergyCorrFunc = True,
@@ -51,6 +54,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     process.JetPropertiesAK8Clean.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiClean:tau2')
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiClean:tau3')
     process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
+    process.JetPropertiesAK8Clean.SJbDiscriminatorCSV = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
     process.JetPropertiesAK8Clean.ecfN2b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN2')
     process.JetPropertiesAK8Clean.ecfN3b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN3')
     process.JetPropertiesAK8Clean.ecfN2b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN2')

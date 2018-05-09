@@ -7,7 +7,8 @@ def addJetInfo(process, JetTag, userFloats=[], userInts=[], btagDiscrs=cms.VInpu
     # default suffix
     if len(suff)==0: suff = "Auxiliary"
     
-    JetTagOut = cms.InputTag(JetTag.value()+suff)
+    # avoid forbidden characters
+    JetTagOut = cms.InputTag(JetTag.value().replace(':','')+suff)
     patJetsAuxiliary = patJetsUpdated.clone(
         jetSource = JetTag,
         addJetCorrFactors = cms.bool(False),

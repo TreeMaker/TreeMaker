@@ -691,6 +691,27 @@ def makeTreeFromMiniAOD(self,process):
                           storeProperties=2,
                           SkipTag=SkipTag
     )
+
+    # get QG tagging discriminant for subjets
+    SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
+    process.QGTaggerSubjets = process.QGTagger.clone(
+        srcJets = SubjetTag
+    )
+    
+    # add userfloats & update subjet tag
+    process, SubjetTag = addJetInfo(process, SubjetTag,
+        ['QGTaggerSubjets:qgLikelihood','QGTaggerSubjets:ptD', 'QGTaggerSubjets:axis2', 'QGTaggerSubjets:axis1'], ['QGTaggerSubjets:mult'])
+    # update subjets in jet coll
+    JetAK8TagSJU = cms.InputTag(JetAK8Tag.value()+'SJUpdate')
+    setattr(process, JetAK8TagSJU.value(),
+        cms.EDProducer('SubjetUpdater',
+            JetTag = JetAK8Tag,
+            SubjetTag = SubjetTag,
+            OldName = cms.string("SoftDropPuppi"),
+            NewName = cms.string("SoftDropPuppiUpdated"),
+        )
+    )
+    JetAK8Tag = JetAK8TagSJU
     
     # get double b-tagger (w/ miniAOD customizations)
     process.load("RecoBTag.ImpactParameter.pfImpactParameterAK8TagInfos_cfi")
@@ -711,7 +732,7 @@ def makeTreeFromMiniAOD(self,process):
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8Tag,
         suff='AK8',
-        storeProperties=1,
+        storeProperties=2,
     )    
 
     ## ----------------------------------------------------------------------------------------------
