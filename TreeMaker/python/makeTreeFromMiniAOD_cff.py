@@ -41,6 +41,10 @@ def makeTreeFromMiniAOD(self,process):
         VectorInt                  = self.VectorInt,
         VectorString               = self.VectorString,
         VectorBool                 = self.VectorBool,
+        VectorVectorBool           = self.VectorVectorBool,
+        VectorVectorInt            = self.VectorVectorInt,
+        VectorVectorDouble         = self.VectorVectorDouble,
+        VectorVectorString         = self.VectorVectorString,
         VectorVectorTLorentzVector = self.VectorVectorTLorentzVector,
     )
 
