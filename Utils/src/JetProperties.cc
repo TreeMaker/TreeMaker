@@ -43,7 +43,7 @@ class NamedPtrBase {
 		//accessors
 		virtual void put(edm::Event& iEvent) { }
 		virtual void reset() { }
-		virtual void get_property(const pat::Jet* Jet) { }
+		virtual void get_property(const pat::Jet& Jet) { }
 	
 		//member variables
 		std::string name;
@@ -81,7 +81,7 @@ class NamedPtr_D : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
 		//default for user floats
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->userFloat(extraInfo.at(0))); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.userFloat(extraInfo.at(0))); }
 };
 DEFAULT_NAMED_PTR(D,jecUnc);
 DEFAULT_NAMED_PTR(D,jerFactor);
@@ -108,7 +108,7 @@ class NamedPtr_I : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
 		//default for user ints
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->userInt(extraInfo.at(0))); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.userInt(extraInfo.at(0))); }
 };
 DEFAULT_NAMED_PTR(I,multiplicity);
 DEFAULT_NAMED_PTR(I,origIndex);
@@ -121,77 +121,77 @@ DEFAULT_NAMED_PTR(I,origIndex);
 class NamedPtr_jetArea : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->jetArea()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.jetArea()); }
 };
 DEFINE_NAMED_PTR(jetArea);
 
 class NamedPtr_chargedHadronEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->chargedHadronEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.chargedHadronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(chargedHadronEnergyFraction);
 
 class NamedPtr_neutralHadronEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->neutralHadronEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.neutralHadronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(neutralHadronEnergyFraction);
 
 class NamedPtr_chargedEmEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->chargedEmEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.chargedEmEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(chargedEmEnergyFraction);
 
 class NamedPtr_neutralEmEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->neutralEmEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.neutralEmEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(neutralEmEnergyFraction);
 
 class NamedPtr_electronEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->electronEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.electronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(electronEnergyFraction);
 
 class NamedPtr_photonEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->photonEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.photonEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(photonEnergyFraction);
 
 class NamedPtr_muonEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->muonEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.muonEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(muonEnergyFraction);
 
 class NamedPtr_hfEMEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->HFEMEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.HFEMEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(hfEMEnergyFraction);
 
 class NamedPtr_hfHadronEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->HFHadronEnergyFraction()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.HFHadronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(hfHadronEnergyFraction);
 
 class NamedPtr_bDiscriminator : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->bDiscriminator(extraInfo.at(0))); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.bDiscriminator(extraInfo.at(0))); }
 };
 DEFAULT_NAMED_PTR(bDiscriminator,bDiscriminatorCSV);
 DEFAULT_NAMED_PTR(bDiscriminator,bDiscriminatorMVA);
@@ -212,7 +212,7 @@ DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobuds);
 class NamedPtr_jecFactor : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->jecFactor(Jet->availableJECLevels().back())/Jet->jecFactor("Uncorrected")); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.jecFactor(Jet.availableJECLevels().back())/Jet.jecFactor("Uncorrected")); }
 };
 DEFINE_NAMED_PTR(jecFactor);
 
@@ -220,23 +220,23 @@ DEFINE_NAMED_PTR(jecFactor);
 class NamedPtr_bDiscriminatorSubjet1 : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(!Jet->subjets(extraInfo.at(0)).empty() ? Jet->subjets(extraInfo.at(0)).at(0)->bDiscriminator(extraInfo.at(1)) : -10.); }
+		void get_property(const pat::Jet& Jet) override { push_back(!Jet.subjets(extraInfo.at(0)).empty() ? Jet.subjets(extraInfo.at(0)).at(0)->bDiscriminator(extraInfo.at(1)) : -10.); }
 };
 DEFINE_NAMED_PTR(bDiscriminatorSubjet1);
 
 class NamedPtr_bDiscriminatorSubjet2 : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->subjets(extraInfo.at(0)).size() > 1 ? Jet->subjets(extraInfo.at(0)).at(1)->bDiscriminator(extraInfo.at(1)) : -10.); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.subjets(extraInfo.at(0)).size() > 1 ? Jet.subjets(extraInfo.at(0)).at(1)->bDiscriminator(extraInfo.at(1)) : -10.); }
 };
 DEFINE_NAMED_PTR(bDiscriminatorSubjet2);
 
 class NamedPtr_softDropMass : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override {
+		void get_property(const pat::Jet& Jet) override {
 			LorentzVector fatJet;
-			auto const & subjets = Jet->subjets(extraInfo.at(0));
+			auto const & subjets = Jet.subjets(extraInfo.at(0));
 			for ( auto const & it : subjets ) {
 				fatJet += it->correctedP4(0);
 			}
@@ -249,13 +249,13 @@ DEFINE_NAMED_PTR(softDropMass);
 class NamedPtr_lean : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override {
+		void get_property(const pat::Jet& Jet) override {
 			if(extraInfo.size()==4){
 				//eta,phi,eta,phi
-				double eta1 = Jet->userFloat(extraInfo.at(0));
-				double phi1 = Jet->userFloat(extraInfo.at(1));
-				double eta2 = Jet->userFloat(extraInfo.at(2));
-				double phi2 = Jet->userFloat(extraInfo.at(3));
+				double eta1 = Jet.userFloat(extraInfo.at(0));
+				double phi1 = Jet.userFloat(extraInfo.at(1));
+				double eta2 = Jet.userFloat(extraInfo.at(2));
+				double phi2 = Jet.userFloat(extraInfo.at(3));
 				double dphi = reco::deltaPhi(phi1,phi2);
 				push_back(std::sqrt(std::pow(eta1-eta2,2)+std::pow(dphi,2)));
 			}
@@ -270,77 +270,77 @@ DEFINE_NAMED_PTR(lean);
 class NamedPtr_chargedHadronMultiplicity : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->chargedHadronMultiplicity()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.chargedHadronMultiplicity()); }
 };
 DEFINE_NAMED_PTR(chargedHadronMultiplicity);
 
 class NamedPtr_neutralHadronMultiplicity : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->neutralHadronMultiplicity()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.neutralHadronMultiplicity()); }
 };
 DEFINE_NAMED_PTR(neutralHadronMultiplicity);
 
 class NamedPtr_electronMultiplicity : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->electronMultiplicity()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.electronMultiplicity()); }
 };
 DEFINE_NAMED_PTR(electronMultiplicity);
 
 class NamedPtr_photonMultiplicity : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->photonMultiplicity()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.photonMultiplicity()); }
 };
 DEFINE_NAMED_PTR(photonMultiplicity);
 
 class NamedPtr_muonMultiplicity : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->muonMultiplicity()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.muonMultiplicity()); }
 };
 DEFINE_NAMED_PTR(muonMultiplicity);
 
 class NamedPtr_chargedMultiplicity : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->chargedMultiplicity()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.chargedMultiplicity()); }
 };
 DEFINE_NAMED_PTR(chargedMultiplicity);
 
 class NamedPtr_neutralMultiplicity : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->neutralMultiplicity()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.neutralMultiplicity()); }
 };
 DEFINE_NAMED_PTR(neutralMultiplicity);
 
 class NamedPtr_partonFlavor : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->partonFlavour()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.partonFlavour()); }
 };
 DEFINE_NAMED_PTR(partonFlavor);
 
 class NamedPtr_hadronFlavor : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->hadronFlavour()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.hadronFlavour()); }
 };
 DEFINE_NAMED_PTR(hadronFlavor);
 
 class NamedPtr_NumBhadrons : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->jetFlavourInfo().getbHadrons().size()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.jetFlavourInfo().getbHadrons().size()); }
 };
 DEFINE_NAMED_PTR(NumBhadrons);
 
 class NamedPtr_NumChadrons : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override { push_back(Jet->jetFlavourInfo().getcHadrons().size()); }
+		void get_property(const pat::Jet& Jet) override { push_back(Jet.jetFlavourInfo().getcHadrons().size()); }
 };
 DEFINE_NAMED_PTR(NumChadrons);
 
@@ -350,10 +350,10 @@ DEFINE_NAMED_PTR(NumChadrons);
 class NamedPtr_constituents : public NamedPtr<std::vector<TLorentzVector>> {
 	public:
 		using NamedPtr<std::vector<TLorentzVector>>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override {
+		void get_property(const pat::Jet& Jet) override {
 			std::vector<TLorentzVector> partvecs;
-			for(unsigned k = 0; k < Jet->numberOfDaughters(); ++k){
-				const reco::Candidate* part = Jet->daughter(k);
+			for(unsigned k = 0; k < Jet.numberOfDaughters(); ++k){
+				const reco::Candidate* part = Jet.daughter(k);
 				//for AK8, subjets stored as daughters, need to get constituents from them
 				unsigned numdau = part->numberOfDaughters();
 				for(unsigned m = 0; m < std::max(numdau,1u); ++m){
@@ -370,17 +370,68 @@ DEFINE_NAMED_PTR(constituents);
 class NamedPtr_subjets : public NamedPtr<std::vector<TLorentzVector>> {
 	public:
 		using NamedPtr<std::vector<TLorentzVector>>::NamedPtr;
-		void get_property(const pat::Jet* Jet) override {
+		void get_property(const pat::Jet& Jet) override {
 			std::vector<TLorentzVector> subvecs;
-			auto const & subjets = Jet->subjets(extraInfo.at(0));
-			for ( auto const & it : subjets ) {
-				const auto& p4 = it->correctedP4(0);
+			const auto& subjets = Jet.subjets(extraInfo.at(0));
+			subvecs.reserve(subjets.size());
+			for (const auto& subjet : subjets) {
+				const auto& p4 = subjet->correctedP4(0);
 				subvecs.emplace_back(p4.px(),p4.py(),p4.pz(),p4.energy());
 			}
 			ptr->push_back(subvecs);
 		}
 };
 DEFINE_NAMED_PTR(subjets);
+
+//----------------------------------------------------------------------------------------------------------------------------------------
+//subjet floats
+
+class NamedPtr_SJD : public NamedPtr<std::vector<double>> {
+	public:
+		using NamedPtr<std::vector<double>>::NamedPtr;
+		void get_property(const pat::Jet& Jet) override {
+			std::vector<double> vec;
+			const auto& subjets = Jet.subjets(extraInfo.at(0));
+			vec.reserve(subjets.size());
+			for (const auto& subjet : subjets) {
+				vec.push_back(subjet->userFloat(extraInfo.at(1)));
+			}
+			ptr->push_back(vec);
+		}
+};
+DEFAULT_NAMED_PTR(SJD,SJptD);
+DEFAULT_NAMED_PTR(SJD,SJaxisminor);
+DEFAULT_NAMED_PTR(SJD,SJaxismajor);
+
+class NamedPtr_SJI : public NamedPtr<std::vector<int>> {
+	public:
+		using NamedPtr<std::vector<int>>::NamedPtr;
+		void get_property(const pat::Jet& Jet) override {
+			std::vector<int> vec;
+			const auto& subjets = Jet.subjets(extraInfo.at(0));
+			vec.reserve(subjets.size());
+			for (const auto& subjet : subjets) {
+				vec.push_back(subjet->userInt(extraInfo.at(1)));
+			}
+			ptr->push_back(vec);
+		}
+};
+DEFAULT_NAMED_PTR(SJI,SJmultiplicity);
+
+class NamedPtr_SJbDiscriminator : public NamedPtr<std::vector<double>> {
+	public:
+		using NamedPtr<std::vector<double>>::NamedPtr;
+		void get_property(const pat::Jet& Jet) override {
+			std::vector<double> vec;
+			const auto& subjets = Jet.subjets(extraInfo.at(0));
+			vec.reserve(subjets.size());
+			for (const auto& subjet : subjets) {
+				vec.push_back(subjet->bDiscriminator(extraInfo.at(1)));
+			}
+			ptr->push_back(vec);
+		}
+};
+DEFAULT_NAMED_PTR(SJbDiscriminator,SJbDiscriminatorCSV);
 
 //
 // class declaration
@@ -395,6 +446,7 @@ public:
 	
 private:
 	void produce(edm::Event&, const edm::EventSetup&) override;
+	std::string debugMessage(const pat::Jet& Jet, const std::string& name, int indent=0);
 	
 	edm::InputTag JetTag_;
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
@@ -449,34 +501,14 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	edm::Handle< edm::View<pat::Jet> > Jets;
 	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
-		for(auto Jet = Jets->begin();  Jet != Jets->end(); ++Jet){
+		for(const auto& Jet : *Jets){
 			for(auto & Ptr : Ptrs_){
-				Ptr->get_property(&(*Jet));
+				Ptr->get_property(Jet);
 			}
-			//for debugging: print out available subjet collections & btag discriminators
+			//for debugging: print out available subjet collections, btag discriminators, userfloats/ints
+			//will recurse through subjet collections if any
 			if(debug){
-				std::stringstream message;
-				const auto& subjetLabels = Jet->subjetCollectionNames();
-				message << "subjetCollectionNames: ";
-				std::copy(subjetLabels.begin(), subjetLabels.end(), std::ostream_iterator<std::string>(message, " "));
-				message << "\n";
-				
-				const auto& btagLabels = Jet->getPairDiscri();
-				message << "btagDiscriminatorNames: ";
-				for(const auto& bt : btagLabels) message << bt.first << " ";
-				message << "\n";
-				
-				const auto& floatLabels = Jet->userFloatNames();
-				message << "userFloatNames: ";
-				std::copy(floatLabels.begin(), floatLabels.end(), std::ostream_iterator<std::string>(message, " "));
-				message << "\n";
-
-				const auto& intLabels = Jet->userIntNames();
-				message << "userIntNames: ";
-				std::copy(intLabels.begin(), intLabels.end(), std::ostream_iterator<std::string>(message, " "));
-				message << "\n";
-
-				edm::LogInfo("TreeMaker") << message.str();
+				edm::LogInfo("TreeMaker") << debugMessage(Jet,JetTag_.encode());
 			}
 		}
 	}
@@ -487,6 +519,43 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	}
 
 }
+
+std::string
+JetProperties::debugMessage(const pat::Jet& Jet, const std::string& name, int indent)
+{
+	std::string s_indent(indent,'\t');
+
+	std::stringstream message;
+	message << s_indent << name << ":\n";
+
+	const auto& subjetLabels = Jet.subjetCollectionNames();
+	message << s_indent << "subjetCollectionNames: ";
+	std::copy(subjetLabels.begin(), subjetLabels.end(), std::ostream_iterator<std::string>(message, " "));
+	message << "\n";
+	
+	const auto& btagLabels = Jet.getPairDiscri();
+	message << s_indent << "btagDiscriminatorNames: ";
+	for(const auto& bt : btagLabels) message << bt.first << " ";
+	message << "\n";
+	
+	const auto& floatLabels = Jet.userFloatNames();
+	message << s_indent << "userFloatNames: ";
+	std::copy(floatLabels.begin(), floatLabels.end(), std::ostream_iterator<std::string>(message, " "));
+	message << "\n";
+
+	const auto& intLabels = Jet.userIntNames();
+	message << s_indent << "userIntNames: ";
+	std::copy(intLabels.begin(), intLabels.end(), std::ostream_iterator<std::string>(message, " "));
+	message << "\n";
+
+	std::string s_message = message.str();
+	for(const auto& subjetLabel: subjetLabels){
+		if(!Jet.subjets(subjetLabel).empty()) s_message += debugMessage(Jet.subjets(subjetLabel)[0], subjetLabel, indent+1);
+	}
+
+	return s_message;
+}
+
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void

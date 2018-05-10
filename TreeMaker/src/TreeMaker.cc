@@ -27,10 +27,20 @@ using namespace pat;
 //
 // constructors and destructor
 //
-TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
-: tree(nullptr),
-  VarTypeNames{"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorVectorTLorentzVector","VectorRecoCand"},
-  VarTypes{t_bool,t_int,t_double,t_string,t_lorentz,t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_vvlorentz,t_recocand}
+TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
+	tree(nullptr),
+	VarTypeNames{
+		"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector",
+		"VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector",
+		"VectorVectorBool","VectorVectorInt","VectorVectorDouble","VectorVectorString","VectorVectorTLorentzVector",
+		"VectorRecoCand"
+	},
+	VarTypes{
+		t_bool,t_int,t_double,t_string,t_lorentz,
+		t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,
+		t_vvbool,t_vvint,t_vvdouble,t_vvstring,t_vvlorentz,
+		t_recocand
+	}
 {
 	usesResource("TFileService");
 
@@ -65,6 +75,10 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig)
 				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double> >(VarName); break;
 				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string> >(VarName); break;
 				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector> >(VarName); break;
+				case TreeTypes::t_vvbool   : tmp = new TreeObject<vector<vector<bool>>>(VarName); break;
+				case TreeTypes::t_vvint    : tmp = new TreeObject<vector<vector<int>>>(VarName); break;
+				case TreeTypes::t_vvdouble : tmp = new TreeObject<vector<vector<double>>>(VarName); break;
+				case TreeTypes::t_vvstring : tmp = new TreeObject<vector<vector<string>>>(VarName); break;
 				case TreeTypes::t_vvlorentz: tmp = new TreeObject<vector<vector<TLorentzVector>>>(VarName); break;
 				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarName,doLorentz); break;
 			}

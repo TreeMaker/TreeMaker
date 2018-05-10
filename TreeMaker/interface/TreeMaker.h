@@ -34,7 +34,12 @@
 using namespace std;
 
 //enum with known types
-enum TreeTypes { t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4, t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104, t_vvlorentz=204, t_recocand=1000 };
+enum TreeTypes { 
+	t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4,
+	t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104,
+	t_vvbool=200, t_vvint=201, t_vvdouble=202, t_vvstring=203, t_vvlorentz=204,
+	t_recocand=1000
+};
 
 //forward declaration of helper class
 class TreeObjectBase;
@@ -209,6 +214,14 @@ void TreeObject<vector<string> >::AddBranch() { if(tree) tree->Branch(nameInTree
 template<>
 void TreeObject<vector<TLorentzVector> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0); }
 template<>
+void TreeObject<vector<vector<bool>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<bool>>",&value,32000,0); }
+template<>
+void TreeObject<vector<vector<int>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<int>>",&value,32000,0); }
+template<>
+void TreeObject<vector<vector<double>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<double>>",&value,32000,0); }
+template<>
+void TreeObject<vector<vector<string>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<string>>",&value,32000,0); }
+template<>
 void TreeObject<vector<vector<TLorentzVector>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<TLorentzVector>>",&value,32000,0); }
 
 template<>
@@ -231,6 +244,14 @@ template<>
 void TreeObject<vector<string> >::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<TLorentzVector> >::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<vector<bool>>>::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<vector<int>>>::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<vector<double>>>::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<vector<string>>>::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<vector<TLorentzVector>>>::SetDefault() { value.clear(); }
 

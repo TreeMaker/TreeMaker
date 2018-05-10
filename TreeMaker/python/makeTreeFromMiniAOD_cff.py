@@ -41,6 +41,10 @@ def makeTreeFromMiniAOD(self,process):
         VectorInt                  = self.VectorInt,
         VectorString               = self.VectorString,
         VectorBool                 = self.VectorBool,
+        VectorVectorBool           = self.VectorVectorBool,
+        VectorVectorInt            = self.VectorVectorInt,
+        VectorVectorDouble         = self.VectorVectorDouble,
+        VectorVectorString         = self.VectorVectorString,
         VectorVectorTLorentzVector = self.VectorVectorTLorentzVector,
     )
 
@@ -581,11 +585,11 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=0
         )
         process = self.makeJetVars(process,
-                              JetTag=JetTagJECup,
-                              suff='JECup',
-                              skipGoodJets=False,
-                              storeProperties=0,
-                              SkipTag=SkipTag
+            JetTag=JetTagJECup,
+            suff='JECup',
+            skipGoodJets=False,
+            storeProperties=0,
+            SkipTag=SkipTag
         )
         
         # JEC unc down
@@ -596,11 +600,11 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=0
         )
         process = self.makeJetVars(process,
-                              JetTag=JetTagJECdown,
-                              suff='JECdown',
-                              skipGoodJets=False,
-                              storeProperties=0,
-                              SkipTag=SkipTag
+            JetTag=JetTagJECdown,
+            suff='JECdown',
+            skipGoodJets=False,
+            storeProperties=0,
+            SkipTag=SkipTag
         )
 
         # JER unc up
@@ -611,11 +615,11 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=1
         )
         process = self.makeJetVars(process,
-                              JetTag=JetTagJERup,
-                              suff='JERup',
-                              skipGoodJets=False,
-                              storeProperties=0,
-                              SkipTag=SkipTag
+            JetTag=JetTagJERup,
+            suff='JERup',
+            skipGoodJets=False,
+            storeProperties=0,
+            SkipTag=SkipTag
         )
         
         # JER unc down
@@ -626,11 +630,11 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=-1
         )
         process = self.makeJetVars(process,
-                              JetTag=JetTagJERdown,
-                              suff='JERdown',
-                              skipGoodJets=False,
-                              storeProperties=0,
-                              SkipTag=SkipTag
+            JetTag=JetTagJERdown,
+            suff='JERdown',
+            skipGoodJets=False,
+            storeProperties=0,
+            SkipTag=SkipTag
         )
 
     if self.geninfo:
@@ -681,12 +685,33 @@ def makeTreeFromMiniAOD(self,process):
     process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2', 'QGTagger:axis1'], ['QGTagger:mult'])
     
     process = self.makeJetVars(process,
-                          JetTag=JetTag,
-                          suff='',
-                          skipGoodJets=False,
-                          storeProperties=2,
-                          SkipTag=SkipTag
+        JetTag=JetTag,
+        suff='',
+        skipGoodJets=False,
+        storeProperties=2,
+        SkipTag=SkipTag
     )
+
+    # get QG tagging discriminant for subjets
+    SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
+    process.QGTaggerSubjets = process.QGTagger.clone(
+        srcJets = SubjetTag
+    )
+    
+    # add userfloats & update subjet tag
+    process, SubjetTag = addJetInfo(process, SubjetTag,
+        ['QGTaggerSubjets:qgLikelihood','QGTaggerSubjets:ptD', 'QGTaggerSubjets:axis2', 'QGTaggerSubjets:axis1'], ['QGTaggerSubjets:mult'])
+    # update subjets in jet coll
+    JetAK8TagSJU = cms.InputTag(JetAK8Tag.value()+'SJUpdate')
+    setattr(process, JetAK8TagSJU.value(),
+        cms.EDProducer('SubjetUpdater',
+            JetTag = JetAK8Tag,
+            SubjetTag = SubjetTag,
+            OldName = cms.string("SoftDropPuppi"),
+            NewName = cms.string("SoftDropPuppiUpdated"),
+        )
+    )
+    JetAK8Tag = JetAK8TagSJU
     
     # get double b-tagger (w/ miniAOD customizations)
     process.load("RecoBTag.ImpactParameter.pfImpactParameterAK8TagInfos_cfi")
@@ -707,7 +732,7 @@ def makeTreeFromMiniAOD(self,process):
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8Tag,
         suff='AK8',
-        storeProperties=1,
+        storeProperties=2,
     )    
 
     ## ----------------------------------------------------------------------------------------------

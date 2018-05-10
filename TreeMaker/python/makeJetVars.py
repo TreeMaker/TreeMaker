@@ -34,8 +34,8 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
     return (process,GoodJetsTag)
 
 # AK4 storeProperties levels:
-# 0 = goodJets and scalars (+ origIndex for syst)
-# 1 = 0 + masks, minimal set of properties
+# 0 = scalars (+ origIndex for syst)
+# 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
 def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
     ## ----------------------------------------------------------------------------------------------
@@ -238,9 +238,14 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                                              
     return process
 
+# AK8 storeProperties levels:
+# 0 = ID scalar from goodJets
+# 1 = 0 + 4vecs, most properties
+# 2 = 1 + subjet properties + extra substructure
+# 3 = 2 + constituents (large)
 def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
     # get more substructure
-    if self.semivisible:
+    if self.semivisible and storeProperties>1:
         from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
         NjettinessBeta1 = Njettiness.clone(
             src = JetTag,
@@ -303,6 +308,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 "NumBhadrons"           ,
                 "NumChadrons"           ,
                 "subjets"               ,
+                "SJbDiscriminatorCSV"   ,
             )
         )
         # specify userfloats
@@ -317,6 +323,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN3')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
+        JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDropPuppi','pfCombinedInclusiveSecondaryVertexV2BJetTags')
         self.VectorDouble.extend([
             'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
             'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
@@ -336,8 +343,27 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         self.VectorVectorTLorentzVector.extend([
             'JetProperties'+suff+':subjets(Jets'+suff+'_subjets)',
         ])
+        self.VectorVectorDouble.extend([
+            'JetProperties'+suff+':SJbDiscriminatorCSV(Jets'+suff+'_subjets_bDiscriminatorCSV)',
+        ])
 
-        if self.semivisible:
+        if storeProperties>1:
+            # extra stuff for subjets
+            JetPropertiesAK8.properties.extend(["SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
+            JetPropertiesAK8.SJptD = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:ptD')
+            JetPropertiesAK8.SJaxismajor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis1')
+            JetPropertiesAK8.SJaxisminor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis2')
+            JetPropertiesAK8.SJmultiplicity = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:mult')
+            self.VectorVectorDouble.extend([
+                'JetProperties'+suff+':SJptD(Jets'+suff+'_subjets_ptD)',
+                'JetProperties'+suff+':SJaxismajor(Jets'+suff+'_subjets_axismajor)',
+                'JetProperties'+suff+':SJaxisminor(Jets'+suff+'_subjets_axisminor)',
+            ])
+            self.VectorVectorInt.extend([
+                'JetProperties'+suff+':SJmultiplicity(Jets'+suff+'_subjets_multiplicity)',
+            ])
+
+        if self.semivisible and storeProperties>1:
             JetPropertiesAK8.properties.extend([
                 'overflow',
                 'girth',
@@ -348,7 +374,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 'multiplicity',
                 'ptdrlog',
                 'lean',
-#                'constituents',
             ])
             JetPropertiesAK8.overflow = cms.vstring('BasicSubstructure'+suff+':overflow')
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
@@ -377,9 +402,12 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             self.VectorInt.extend([
                 'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
             ])
-#            self.VectorVectorTLorentzVector.extend([
-#                'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
-#            ])
+
+            if storeProperties>2:
+                JetPropertiesAK8.properties.extend(['constituents'])
+                self.VectorVectorTLorentzVector.extend([
+                    'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
+                ])
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
     return process        
