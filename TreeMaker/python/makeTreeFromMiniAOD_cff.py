@@ -136,7 +136,10 @@ def makeTreeFromMiniAOD(self,process):
                 1000001,1000002,1000003,1000004,1000005,1000006,
                 2000001,2000002,2000003,2000004,2000005,2000006,
                 4900023,4900101,4900111,4900211,
+                5000001,5000002,
             ),
+            keepIds = cms.vint32(6,23,24,25),
+            keepFirst = cms.bool(True),
         )
         # store gluons for signals with Higgs
         if "T5qqqqZH" in process.source.fileNames[0]: process.genParticles.childIds.append(21)
@@ -145,6 +148,7 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorInt.append("genParticles:Status(GenParticles_Status)")
         self.VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
         self.VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
+        self.VectorBool.append("genParticles:TTFlag(GenParticles_TTFlag)")
         
         # for ttbar pT reweighting
         # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
