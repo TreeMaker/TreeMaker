@@ -68,25 +68,20 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 		float i_ptdrlog = 0.0;
 
 		for(unsigned k = 0; k < i_jet.numberOfDaughters(); ++k){
-			const reco::Candidate* part = i_jet.daughter(k);
-			//for AK8, subjets stored as daughters, need to get constituents from them
-			unsigned numdau = part->numberOfDaughters();
-			for(unsigned m = 0; m < std::max(numdau,1u); ++m){
-				const reco::Candidate* i_part = numdau==0 ? part : part->daughter(m);
+			const reco::Candidate* i_part = i_jet.daughter(k);
 
-				//overflow
-				float dR = reco::deltaR(i_jet.p4(),i_part->p4());
-				float pT = i_part->pt();
-				if(dR < 0.8) i_denom += pT;
-				if(dR < 0.4) i_numer += pT;
+			//overflow
+			float dR = reco::deltaR(i_jet.p4(),i_part->p4());
+			float pT = i_part->pt();
+			if(dR < 0.8) i_denom += pT;
+			if(dR < 0.4) i_numer += pT;
 
-				//ptdrlog
-				i_ptdrlog += std::log(pT/dR);
+			//ptdrlog
+			i_ptdrlog += std::log(pT/dR);
 
-				//moment calcs
-				i_girth += pT*dR;
-				i_momenthalf += pT*std::sqrt(dR);
-			}
+			//moment calcs
+			i_girth += pT*dR;
+			i_momenthalf += pT*std::sqrt(dR);
 		}
 
 		//finish overflow calc
