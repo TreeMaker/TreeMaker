@@ -277,11 +277,11 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             'NjettinessBeta2'+suff+':tau1etaAxis1',
             'NjettinessBeta2'+suff+':tau1phiAxis1',
             'QGTagger'+suff+':ptD',
-            'QGTagger'+suff+':axismajor',
-            'QGTagger'+suff+':axisminor',
+            'QGTagger'+suff+':axis1',
+            'QGTagger'+suff+':axis2',
         ]
         ak8ints = [
-            'QGTagger'+suff+':multiplicity',
+            'QGTagger'+suff+':mult',
         ]
     
         # add discriminator and update tag
@@ -383,9 +383,9 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
             JetPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure'+suff+':momenthalf')
             JetPropertiesAK8.ptD = cms.vstring('QGTagger'+suff+':ptD')
-            JetPropertiesAK8.axismajor = cms.vstring('QGTagger'+suff+':axismajor')
-            JetPropertiesAK8.axisminor = cms.vstring('QGTagger'+suff+':axisminor')
-            JetPropertiesAK8.multiplicity = cms.vstring('QGTagger'+suff+':multiplicity')
+            JetPropertiesAK8.axismajor = cms.vstring('QGTagger'+suff+':axis1')
+            JetPropertiesAK8.axisminor = cms.vstring('QGTagger'+suff+':axis2')
+            JetPropertiesAK8.multiplicity = cms.vstring('QGTagger'+suff+':mult')
             JetPropertiesAK8.ptdrlog = cms.vstring('BasicSubstructure'+suff+':ptdrlog')
             JetPropertiesAK8.lean = cms.vstring(
                 'NjettinessBeta1'+suff+':tau1etaAxis1',
