@@ -14,12 +14,13 @@ done
 
 export SCRAM_ARCH=slc6_amd64_gcc630
 # cmsrel
-CMSSWVER=CMSSW_9_4_2
+CMSSWVER=CMSSW_9_4_8
 scram project ${CMSSWVER}
 cd ${CMSSWVER}/src/
 # cmsenv
 eval `scramv1 runtime -sh`
 git cms-init
+git cms-merge-topic TreeMaker:JERFormula942 # this one has dependencies
 git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
 git cms-merge-topic -u TreeMaker:MET_942_FixEGdR
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942

@@ -353,13 +353,8 @@ class NamedPtr_constituents : public NamedPtr<std::vector<TLorentzVector>> {
 		void get_property(const pat::Jet& Jet) override {
 			std::vector<TLorentzVector> partvecs;
 			for(unsigned k = 0; k < Jet.numberOfDaughters(); ++k){
-				const reco::Candidate* part = Jet.daughter(k);
-				//for AK8, subjets stored as daughters, need to get constituents from them
-				unsigned numdau = part->numberOfDaughters();
-				for(unsigned m = 0; m < std::max(numdau,1u); ++m){
-					const reco::Candidate* subpart = numdau==0 ? part : part->daughter(m);
-					partvecs.emplace_back(subpart->px(),subpart->py(),subpart->pz(),subpart->energy());			
-				}
+				const reco::Candidate* subpart = Jet.daughter(k);
+				partvecs.emplace_back(subpart->px(),subpart->py(),subpart->pz(),subpart->energy());			
 			}
 			std::sort(partvecs.begin(), partvecs.end(), [] (const TLorentzVector& a, const TLorentzVector& b){return a.Pt() > b.Pt();} );
 			ptr->push_back(partvecs);

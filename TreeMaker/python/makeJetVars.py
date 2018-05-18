@@ -263,21 +263,25 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             JetTag = JetTag
         )
         setattr(process,"BasicSubstructure"+suff,BasicSubstructure)
+        QGTagger = process.QGTagger.clone(
+            srcJets = JetTag
+        )
+        setattr(process,"QGTagger"+suff,QGTagger)
         ak8floats = [
             'BasicSubstructure'+suff+':overflow',
             'BasicSubstructure'+suff+':girth',
             'BasicSubstructure'+suff+':momenthalf',
-            'BasicSubstructure'+suff+':ptD',
-            'BasicSubstructure'+suff+':axismajor',
-            'BasicSubstructure'+suff+':axisminor',
             'BasicSubstructure'+suff+':ptdrlog',
             'NjettinessBeta1'+suff+':tau1etaAxis1',
             'NjettinessBeta1'+suff+':tau1phiAxis1',
             'NjettinessBeta2'+suff+':tau1etaAxis1',
             'NjettinessBeta2'+suff+':tau1phiAxis1',
+            'QGTagger'+suff+':ptD',
+            'QGTagger'+suff+':axis1',
+            'QGTagger'+suff+':axis2',
         ]
         ak8ints = [
-            'BasicSubstructure'+suff+':multiplicity',
+            'QGTagger'+suff+':mult',
         ]
     
         # add discriminator and update tag
@@ -378,10 +382,10 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             JetPropertiesAK8.overflow = cms.vstring('BasicSubstructure'+suff+':overflow')
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
             JetPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure'+suff+':momenthalf')
-            JetPropertiesAK8.ptD = cms.vstring('BasicSubstructure'+suff+':ptD')
-            JetPropertiesAK8.axismajor = cms.vstring('BasicSubstructure'+suff+':axismajor')
-            JetPropertiesAK8.axisminor = cms.vstring('BasicSubstructure'+suff+':axisminor')
-            JetPropertiesAK8.multiplicity = cms.vstring('BasicSubstructure'+suff+':multiplicity')
+            JetPropertiesAK8.ptD = cms.vstring('QGTagger'+suff+':ptD')
+            JetPropertiesAK8.axismajor = cms.vstring('QGTagger'+suff+':axis1')
+            JetPropertiesAK8.axisminor = cms.vstring('QGTagger'+suff+':axis2')
+            JetPropertiesAK8.multiplicity = cms.vstring('QGTagger'+suff+':mult')
             JetPropertiesAK8.ptdrlog = cms.vstring('BasicSubstructure'+suff+':ptdrlog')
             JetPropertiesAK8.lean = cms.vstring(
                 'NjettinessBeta1'+suff+':tau1etaAxis1',
