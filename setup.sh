@@ -26,6 +26,7 @@ git cms-merge-topic -u TreeMaker:MET_942_FixEGdR
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_942
+git cms-merge-topic -u TreeMaker:SpeedupPuppi948
 git clone git@github.com:TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
 git clone git@github.com:kpedro88/CondorProduction.git Condor/Production  
 git clone git@github.com:${FORK}/TreeMaker.git -b ${BRANCH}
