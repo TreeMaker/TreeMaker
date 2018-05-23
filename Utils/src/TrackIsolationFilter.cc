@@ -175,11 +175,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
     for(size_t i=0; i<pfCandidates->size();i++)
     {
 		const pat::PackedCandidate pfCand = (*pfCandidates)[i];
-		
-		//calculated mT value
-		double dphiMET = fabs(pfCand.phi()-metLorentz.phi());
-		double mT = sqrt(2 *metLorentz.pt() * pfCand.pt() * (1 - cos(dphiMET)));
-		
+
 		//to keep track of cuts in debug case (when continues are not used)
 		bool goodCand = true;
 		
@@ -218,6 +214,10 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		//-------------------------------------------------------------------------------------
 		// cut on mT of track and MET
 		//-------------------------------------------------------------------------------------
+		//calculated mT value
+		double dphiMET = fabs(pfCand.phi()-metLorentz.phi());
+		double mT = sqrt(2 *metLorentz.pt() * pfCand.pt() * (1 - cos(dphiMET)));
+		
 		if(mTCut_>0.01 && mT>mTCut_) {
 			if(debug_) goodCand &= false;
 			else continue;
@@ -282,20 +282,21 @@ void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate>
   trkiso = 0.;
   activity = 0.;
   double r_iso = 0.3;
+  const auto& pfTkInd = pfcands->at(tkInd);
   for (unsigned int iPF(0); iPF<pfcands->size(); iPF++) {
+    if (iPF==tkInd) continue; // don't count track in its own sum
     const pat::PackedCandidate &pfc = pfcands->at(iPF);
     if (pfc.charge()==0) continue;
-    if (iPF==tkInd) continue; // don't count track in its own sum
-    float dz_other = pfc.dz();
-    if( fabs(dz_other) > 0.1 ) continue;
-    double dr = deltaR(pfc, pfcands->at(tkInd));
+    if( fabs(pfc.dz()) > 0.1 ) continue;
+    double dr = deltaR(pfc, pfTkInd);
     // activity annulus
     if (dr >= r_iso && dr <= 0.4) activity += pfc.pt();
     // mini iso cone
     if (dr <= r_iso) trkiso += pfc.pt();
   }
-  trkiso = trkiso/pfcands->at(tkInd).pt();
-  activity = activity/pfcands->at(tkInd).pt();
+  double invpt = 1.0/pfTkInd.pt();
+  trkiso = trkiso*invpt;
+  activity = activity*invpt;
 }
 
 //define this as a plug-in
