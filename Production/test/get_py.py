@@ -9,6 +9,7 @@ parser.add_option("-d", "--dict", dest="dict", default="", help="check for sampl
 parser.add_option("-p", "--py", dest="py", default=False, action="store_true", help="generate python w/ list of files (default = %default)")
 parser.add_option("-w", "--wp", dest="wp", default=False, action="store_true", help="generate WeightProducer lines (default = %default)")
 parser.add_option("-s", "--se", dest="se", default=False, action="store_true", help="make list of sites with 100% hosting (default = %default)")
+parser.add_option("-u", "--use-full-name", dest="fn", default=False, action="store_true", help="Use the full name of the dataset rather than just the first part (default = %default)")
 (options, args) = parser.parse_args()
 
 dictname = options.dict.replace(".py","");
@@ -16,6 +17,7 @@ flist = __import__(dictname).flist
 makepy = options.py
 makewp = options.wp
 makese = options.se
+makefn = options.fn
 if not makepy and not makewp and not makese:
     parser.error("No operations selected!")
 
@@ -44,13 +46,15 @@ for fitem in flist:
     for f in ff: # in case of extended samples
         print f
 
+        # get sample name
         if makepy:
-            # get sample name
-            oname = f.split('/')[1]
-            
-            # check for extended sample
-            extcheck = re.search("ext[0-9]",f.split('/')[2])
-            if not extcheck==None and len(extcheck.group(0))>0: oname = oname+"_"+extcheck.group(0)
+            if makefn:
+                oname = f.replace('/','_')[1:]
+            else:
+                oname = f.split('/')[1]
+                # check for extended sample
+                extcheck = re.search("ext[0-9]",f.split('/')[2])
+                if not extcheck==None and len(extcheck.group(0))>0: oname = oname+"_"+extcheck.group(0)
             
             # make python file with preamble
             pfile = open(oname+"_cff.py",'w')
