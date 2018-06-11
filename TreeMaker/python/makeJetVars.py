@@ -34,10 +34,10 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
     return (process,GoodJetsTag)
 
 # AK4 storeProperties levels:
-# 0 = scalars (+ origIndex for syst)
+# 0 = scalars (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False):
+def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType=""):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -159,8 +159,14 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
             JetTag = GoodJetsTag,
             debug = cms.bool(False),
             properties = cms.vstring("origIndex"),
-            origIndex = cms.vstring("origIndex"),
         )
+        if systType=="JEC":
+            JetProperties.properties.append("jerFactor")
+            JetProperties.jerFactor = cms.vstring("jerFactor")
+            JetProperties.origIndex = cms.vstring("jecOrigIndex")
+            self.VectorDouble.extend(['JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)'])
+        elif systType=="JER":
+            JetProperties.origIndex = cms.vstring("jerOrigIndex")
         setattr(process,"JetProperties"+suff,JetProperties)
         self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
     elif storeProperties>0:
@@ -177,8 +183,6 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                                                    "bJetTagDeepFlavourprobc","bJetTagDeepFlavourprobg","bJetTagDeepFlavourproblepb",
                                                    "bJetTagDeepFlavourprobbb","bJetTagDeepFlavourprobuds","muonEnergyFraction",
                                                    "chargedHadronEnergyFraction","partonFlavor","hadronFlavor")
-        if storeProperties>1 and self.geninfo:
-            JetProperties.properties.extend(["jerFactor", "jerFactorUp","jerFactorDown"])
         setattr(process,"JetProperties"+suff,JetProperties)
         self.VectorDouble.extend([
             'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
@@ -211,19 +215,23 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                 'JetProperties'+suff+':electronEnergyFraction(Jets'+suff+'_electronEnergyFraction)',
                 'JetProperties'+suff+':hfEMEnergyFraction(Jets'+suff+'_hfEMEnergyFraction)',
                 'JetProperties'+suff+':hfHadronEnergyFraction(Jets'+suff+'_hfHadronEnergyFraction)',
-                'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
-                'JetProperties'+suff+':jecUnc(Jets'+suff+'_jecUnc)',
                 'JetProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
                 'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
                 'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
                 'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
             ])
             if self.geninfo:
+                JetProperties.properties.extend(["jerFactor","jecFactor"])
+                JetProperties.jerFactor = cms.vstring("jerFactor")
                 self.VectorDouble.extend([
                     'JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
-                    'JetProperties'+suff+':jerFactorUp(Jets'+suff+'_jerFactorUp)',
-                    'JetProperties'+suff+':jerFactorDown(Jets'+suff+'_jerFactorDown)',
+                    'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
                 ])
+                if self.systematics:
+                    # account for central JER smearing
+                    JetProperties.properties.extend(["origIndex"])
+                    JetProperties.origIndex = cms.vstring("jerOrigIndex")
+                    self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
 
             self.VectorInt.extend([
                 'JetProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',

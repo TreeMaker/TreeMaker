@@ -182,11 +182,12 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     
     if doJERsmearing:
         # do central smearing and replace jet tag
-        process, JetTagClean = JetDepot(process,
+        process, _, JetTagClean = JetDepot(process,
             JetTag=JetTagClean,
             jecUncDir=0,
             doSmear=doJERsmearing,
-            jerUncDir=0
+            jerUncDir=0,
+            storeJer=2,
         )
     
     # make the event variables
