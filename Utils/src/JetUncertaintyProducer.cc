@@ -70,7 +70,6 @@ void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 		// construct the Jet from the ref -> save ref to original object
 		edm::Ptr<pat::Jet> jetPtr = jets->ptrAt(idx);
 		pat::Jet ajet(jetPtr);
-		math::XYZTLorentzVector vjet = ajet.p4();
 		ajet.addUserInt("jecOrigIndex",idx);
 
 		//get JEC unc for this jet, using corrected pT
@@ -94,11 +93,8 @@ void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 			jesUncScale = 1 + uncertainty;
 		}
 		
-		//apply variation
-		vjet *= jesUncScale;
-		
-		//set new p4 in jet object
-		ajet.setP4(vjet);
+		//apply variation to p4 in jet object
+		ajet.scaleEnergy(jesUncScale);
 		
 		//store varied jet
 		newJets->push_back(ajet);		
