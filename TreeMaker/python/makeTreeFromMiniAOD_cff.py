@@ -225,8 +225,8 @@ def makeTreeFromMiniAOD(self,process):
                 ),
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK8PFchs"),
-                    label  = cms.untracked.string("AK8PFchs")
+                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK8PFPuppi"),
+                    label  = cms.untracked.string("AK8PFPuppi")
                 ),
             )
         )
@@ -252,7 +252,7 @@ def makeTreeFromMiniAOD(self,process):
             jetSource = cms.InputTag('slimmedJetsAK8'),
             labelName = 'AK8',
             postfix = 'UpdatedJEC',
-            jetCorrections = ('AK8PFchs', levels, 'None')
+            jetCorrections = ('AK8PFPuppi', levels, 'None')
         )
         
         JetAK8Tag = cms.InputTag('updatedPatJetsAK8UpdatedJEC')
