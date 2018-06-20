@@ -22,7 +22,6 @@ eval `scramv1 runtime -sh`
 git clone https://gitlab.cern.ch/DeepAK8/NNKit.git
 cp NNKit/misc/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
 scram setup mxnet_predict
-rm $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnet_predict.so
 cp NNKit/misc/lib/libmxnet_predict.so $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnet_predict.so
 
 git cms-init

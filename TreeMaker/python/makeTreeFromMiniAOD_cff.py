@@ -729,8 +729,11 @@ def makeTreeFromMiniAOD(self,process):
     process.load("RecoBTag.SecondaryVertex.candidateBoostedDoubleSecondaryVertexAK8Computer_cfi")
     process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSecondaryVertexAK8BJetTags_cfi")
 
+    from TreeMaker.Utils.deepak8producer_cfi import DeepAK8Producer
+    process.deepAK8 = DeepAK8Producer.clone()
+
     # add discriminator and update tag
-    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, [], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
+    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, [], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")), ['deepAK8'])
 
     # apply jet ID and get properties
     process = self.makeJetVarsAK8(process,
