@@ -51,27 +51,23 @@ void DeepAK8Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
     edm::Handle<edm::View<pat::Jet>> jetDeepAK8;
     iEvent.getByToken(JetAK8Tok_, jetDeepAK8);
 
-    auto deepAK8LVec = std::make_unique<std::vector<TLorentzVector>>();
-    auto deepAK8btop = std::make_unique<std::vector<double>>();
-    auto deepAK8bW = std::make_unique<std::vector<double>>();
+    auto tDiscriminatorDeep = std::make_unique<std::vector<double>>();
+    auto wDiscriminatorDeep = std::make_unique<std::vector<double>>();
 
     for(const pat::Jet& fatjet : *jetDeepAK8) 
     {
-        deepAK8LVec->emplace_back(fatjet.p4().X(), fatjet.p4().Y(), fatjet.p4().Z(), fatjet.p4().T());
-
         // Run the NN predictions
         deepntuples::JetHelper jet_helper(&fatjet);
         const auto& nnpreds = fatjetNN_->predict(jet_helper);
         deepntuples::FatJetNNHelper nn(nnpreds);
         
         // Get the scores
-        deepAK8btop->push_back(nn.get_binarized_score_top());
-        deepAK8bW->push_back(nn.get_binarized_score_w());
+        tDiscriminatorDeep->push_back(nn.get_binarized_score_top());
+        wDiscriminatorDeep->push_back(nn.get_binarized_score_w());
     }
 
-    iEvent.put(std::move(deepAK8LVec));
-    iEvent.put(std::move(deepAK8btop));
-    iEvent.put(std::move(deepAK8bW));
+    iEvent.put(std::move(tDiscriminatorDeep));
+    iEvent.put(std::move(wDiscriminatorDeep));
 }
 
 DEFINE_FWK_MODULE(DeepAK8Producer);
