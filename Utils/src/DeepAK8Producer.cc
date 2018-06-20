@@ -37,9 +37,9 @@ DeepAK8Producer::DeepAK8Producer(const edm::ParameterSet& iConfig) :
     auto cc = consumesCollector();
     fatjetNN_ = new deepntuples::FatJetNN(iConfig, cc);
     // Load json for input variable transformation
-    fatjetNN_->load_json("preprocessing.json"); // use the full path or put the file in the current working directory (i.e., where you run cmsRun)
+    fatjetNN_->load_json("data/preprocessing.json"); // use the full path or put the file in the current working directory (i.e., where you run cmsRun)
     // Load DNN model and parameter files
-    fatjetNN_->load_model("resnet-symbol.json", "resnet.params"); // use the full path or put the file in the current working directory (i.e., where you run cmsRun)
+    fatjetNN_->load_model("data/resnet-symbol.json", "data/resnet.params"); // use the full path or put the file in the current working directory (i.e., where you run cmsRun)
 
     // Declare what is produced
     produces<edm::ValueMap<float>>("tDiscriminatorDeep");
