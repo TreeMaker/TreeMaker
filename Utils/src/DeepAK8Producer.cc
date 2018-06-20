@@ -42,8 +42,9 @@ DeepAK8Producer::DeepAK8Producer(const edm::ParameterSet& iConfig) :
     fatjetNN_->load_model("resnet-symbol.json", "resnet.params"); // use the full path or put the file in the current working directory (i.e., where you run cmsRun)
 
     // Declare what is produced
-    produces<std::vector<double>>("tDiscriminatorDeep");
-    produces<std::vector<double>>("wDiscriminatorDeep");
+    produces<edm::ValueMap<float>>("tDiscriminatorDeep");
+    produces<edm::ValueMap<float>>("wDiscriminatorDeep");
+    std::cout<<"---------------------------DeepAK8Producer::DeepAK8Producer-----------------------------------"<<std::endl;
 }
 
 void DeepAK8Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
@@ -72,6 +73,7 @@ void DeepAK8Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
 
     iEvent.put(std::move(tDiscriminatorDeep), "tDiscriminatorDeep");
     iEvent.put(std::move(wDiscriminatorDeep), "wDiscriminatorDeep");
+    std::cout<<"---------------------------DeepAK8Producer::produce-----------------------------------"<<std::endl;
 }
 
 DEFINE_FWK_MODULE(DeepAK8Producer);

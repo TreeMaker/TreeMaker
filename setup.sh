@@ -19,6 +19,7 @@ scram project ${CMSSWVER}
 cd ${CMSSWVER}/src/
 # cmsenv
 eval `scramv1 runtime -sh`
+echo "Needs your CERN username and pass word: NNKit is being cloned from gitlab"
 git clone https://gitlab.cern.ch/DeepAK8/NNKit.git
 cp NNKit/misc/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
 scram setup mxnet_predict
@@ -38,3 +39,6 @@ git clone git@github.com:${FORK}/TreeMaker.git -b ${BRANCH}
 scram b -j 8
 cd TreeMaker/Production/test/condorSub/
 python $CMSSW_BASE/src/Condor/Production/python/linkScripts.py
+ln -s ${CMSSW_BASE}/src/NNKit/data/ak8/full/preprocessing.json ${CMSSW_BASE}/src/TreeMaker/Production/test/.
+ln -s ${CMSSW_BASE}/src/NNKit/data/ak8/full/resnet-symbol.json ${CMSSW_BASE}/src/TreeMaker/Production/test/.
+ln -s ${CMSSW_BASE}/src/NNKit/data/ak8/full/resnet.params ${CMSSW_BASE}/src/TreeMaker/Production/test/.
