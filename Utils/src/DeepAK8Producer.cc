@@ -24,6 +24,8 @@ public:
     explicit DeepAK8Producer(const edm::ParameterSet&);
 private:
     void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+    template <class T>
+    void helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, std::string name) const;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetAK8Tok_;
 
     deepntuples::FatJetNN* fatjetNN_;
@@ -46,6 +48,17 @@ DeepAK8Producer::DeepAK8Producer(const edm::ParameterSet& iConfig) :
     produces<edm::ValueMap<float>>("wDiscriminatorDeep");
 }
 
+template <class T>
+void DeepAK8Producer::helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, std::string name) const
+{
+    // Store as userfloat
+    auto out = std::make_unique<edm::ValueMap<T>>();
+    typename edm::ValueMap<T>::Filler filler(*out);
+    filler.insert(jets, vec.begin(), vec.end());
+    filler.fill();
+    iEvent.put(std::move(out),name);
+}
+
 void DeepAK8Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
     // Need to access event info
@@ -55,8 +68,7 @@ void DeepAK8Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
     edm::Handle<edm::View<pat::Jet>> jetDeepAK8;
     iEvent.getByToken(JetAK8Tok_, jetDeepAK8);
 
-    auto tDiscriminatorDeep = std::make_unique<std::vector<double>>();
-    auto wDiscriminatorDeep = std::make_unique<std::vector<double>>();
+    std::vector<float> tDiscriminatorDeep, wDiscriminatorDeep; 
 
     for(const pat::Jet& fatjet : *jetDeepAK8) 
     {
@@ -66,12 +78,13 @@ void DeepAK8Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::Even
         deepntuples::FatJetNNHelper nn(nnpreds);
         
         // Get the scores
-        tDiscriminatorDeep->push_back(nn.get_binarized_score_top());
-        wDiscriminatorDeep->push_back(nn.get_binarized_score_w());
+        tDiscriminatorDeep.push_back(nn.get_binarized_score_top());
+        wDiscriminatorDeep.push_back(nn.get_binarized_score_w());
     }
 
-    iEvent.put(std::move(tDiscriminatorDeep), "tDiscriminatorDeep");
-    iEvent.put(std::move(wDiscriminatorDeep), "wDiscriminatorDeep");
+    // Make userfloat maps
+    helpProduce(iEvent,jetDeepAK8,tDiscriminatorDeep,"tDiscriminatorDeep");
+    helpProduce(iEvent,jetDeepAK8,wDiscriminatorDeep,"wDiscriminatorDeep");
 }
 
 DEFINE_FWK_MODULE(DeepAK8Producer);
