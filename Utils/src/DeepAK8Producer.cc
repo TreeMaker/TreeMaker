@@ -32,7 +32,7 @@ private:
 };
 
 DeepAK8Producer::DeepAK8Producer(const edm::ParameterSet& iConfig) :
-    JetAK8Tok_(consumes<edm::View<pat::Jet>>(iConfig.getUntrackedParameter<edm::InputTag>("JetDeepAK8", edm::InputTag("slimmedJetsAK8")))),
+    JetAK8Tok_(consumes<edm::View<pat::Jet>>(iConfig.getParameter<edm::InputTag>("JetAK8"))),
     fatjetNN_(nullptr)
 {
     // Initialize the FatJetNN class in the constructor
