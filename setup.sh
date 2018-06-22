@@ -1,4 +1,18 @@
-#!/bin/bash
+#!/bin/bash -e
+
+usage(){
+	EXIT=$1
+
+	echo "setup.sh [options]"
+	echo ""
+	echo "-f [fork]           clone from specified fork (default = TreeMaker)"
+	echo "-b [branch]         clone specified branch (default = Run2_2017)"
+	echo "-a [protocol]       use protocol to clone (default = ssh, alternative = https)"
+	echo "-j [cores]          run CMSSW compilation on # cores (default = 8)"
+	echo "-h                  display this message and exit"
+
+	exit $EXIT
+}
 
 FORK=TreeMaker
 BRANCH=Run2_2017
@@ -6,7 +20,7 @@ ACCESS=ssh
 CORES=8
 
 # process options
-while getopts "f:b:a:j:" opt; do
+while getopts "f:b:a:j:h" opt; do
 	case "$opt" in
 	f) FORK=$OPTARG
 	;;
@@ -16,6 +30,8 @@ while getopts "f:b:a:j:" opt; do
 	;;
 	j) CORES=$OPTARG
 	;;
+	h) usage 0
+	;;
 	esac
 done
 
@@ -23,11 +39,11 @@ done
 if [ "$ACCESS" = "ssh" ]; then
 	ACCESS_GITHUB=git@github.com:
 	ACCESS_GITLAB=ssh://git@gitlab.cern.ch:7999/
-else if [ "$ACCESS" = "https" ]; then
+elif [ "$ACCESS" = "https" ]; then
 	ACCESS_GITHUB=https://github.com/
 	ACCESS_GITLAB=https://gitlab.cern.ch/
 else
-	exit 1
+	usage 1
 fi
 
 # get CMSSW release
