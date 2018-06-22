@@ -225,8 +225,8 @@ def makeTreeFromMiniAOD(self,process):
                 ),
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK8PFchs"),
-                    label  = cms.untracked.string("AK8PFchs")
+                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK8PFPuppi"),
+                    label  = cms.untracked.string("AK8PFPuppi")
                 ),
             )
         )
@@ -252,7 +252,7 @@ def makeTreeFromMiniAOD(self,process):
             jetSource = cms.InputTag('slimmedJetsAK8'),
             labelName = 'AK8',
             postfix = 'UpdatedJEC',
-            jetCorrections = ('AK8PFchs', levels, 'None')
+            jetCorrections = ('AK8PFPuppi', levels, 'None')
         )
         
         JetAK8Tag = cms.InputTag('updatedPatJetsAK8UpdatedJEC')
@@ -274,35 +274,6 @@ def makeTreeFromMiniAOD(self,process):
 
     # keep jets before any further modifications for hadtau
     JetTagBeforeSmearing = JetTag
-    # JEC uncertainty - after JECs are updated
-    from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
-    process.jecUnc = JetUncertaintyProducer.clone(
-        JetTag = JetTag,
-        jecUncDir = cms.int32(0)
-    )
-    _infosToAdd = ['jecUnc']
-    if self.geninfo:
-        # JER factors - central, up, down
-        from TreeMaker.Utils.smearedpatjet_cfi import SmearedPATJetProducer
-        process.jerFactor = SmearedPATJetProducer.clone(
-            src = JetTag,
-            variation = cms.int32(0),
-            store_factor = cms.bool(True)
-        )
-        process.jerFactorUp = SmearedPATJetProducer.clone(
-            src = JetTag,
-            variation = cms.int32(1),
-            store_factor = cms.bool(True)
-        )
-        process.jerFactorDown = SmearedPATJetProducer.clone(
-            src = JetTag,
-            variation = cms.int32(-1),
-            store_factor = cms.bool(True)
-        )
-        _infosToAdd.extend(['jerFactor','jerFactorUp','jerFactorDown'])
-    # add userfloat & update tag
-    from TreeMaker.TreeMaker.addJetInfo import addJetInfo
-    process, JetTag = addJetInfo(process, JetTag, _infosToAdd, [])
 
     ## ----------------------------------------------------------------------------------------------
     ## IsoTracks
@@ -579,75 +550,89 @@ def makeTreeFromMiniAOD(self,process):
     # skip all jet smearing and uncertainties for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
     from TreeMaker.TreeMaker.makeJetVars import makeJetVars
-    
+    from TreeMaker.TreeMaker.addJetInfo import addJetInfo
+
     if self.geninfo and self.systematics:
         # JEC unc up
-        process, JetTagJECup = JetDepot(process,
+        process, JetTagJECupTmp, JetTagJECup = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=1,
+            storeJec=True, # get JER unc value (in intermediate tag Tmp)
             doSmear=True,
-            jerUncDir=0
+            jerUncDir=0,
+            storeJer=2, # get JER smearing factor w/ JEC variation
         )
         process = self.makeJetVars(process,
             JetTag=JetTagJECup,
             suff='JECup',
             skipGoodJets=False,
             storeProperties=0,
-            SkipTag=SkipTag
+            SkipTag=SkipTag,
+            systType="JEC",
         )
         
         # JEC unc down
-        process, JetTagJECdown = JetDepot(process,
+        process, _, JetTagJECdown = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=-1,
             doSmear=True,
-            jerUncDir=0
+            jerUncDir=0,
+            storeJer=2, # get JER smearing factor w/ JEC variation
         )
         process = self.makeJetVars(process,
             JetTag=JetTagJECdown,
             suff='JECdown',
             skipGoodJets=False,
             storeProperties=0,
-            SkipTag=SkipTag
+            SkipTag=SkipTag,
+            systType="JEC",
         )
 
         # JER unc up
-        process, JetTagJERup = JetDepot(process,
+        process, _, JetTagJERup = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
             doSmear=True,
-            jerUncDir=1
+            jerUncDir=1,
+            storeJer=1,
         )
         process = self.makeJetVars(process,
             JetTag=JetTagJERup,
             suff='JERup',
             skipGoodJets=False,
             storeProperties=0,
-            SkipTag=SkipTag
+            SkipTag=SkipTag,
+            systType="JER",
         )
         
         # JER unc down
-        process, JetTagJERdown = JetDepot(process,
+        process, _, JetTagJERdown = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
             doSmear=True,
-            jerUncDir=-1
+            jerUncDir=-1,
+            storeJer=1,
         )
         process = self.makeJetVars(process,
             JetTag=JetTagJERdown,
             suff='JERdown',
             skipGoodJets=False,
             storeProperties=0,
-            SkipTag=SkipTag
+            SkipTag=SkipTag,
+            systType="JER",
         )
+
+        # append factors to central collection
+        process, JetTag = addJetInfo(process, JetTag, [JetTagJECupTmp.value(),JetTagJERup.value(),JetTagJERdown.value()], [])
 
     if self.geninfo:
         # finally, do central smearing and replace jet tag
-        process, JetTag = JetDepot(process,
+        process, _, JetTag = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
             doSmear=True,
-            jerUncDir=0
+            jerUncDir=0,
+            storeJer=2, # get central jet smearing factor
         )
         
     ## ----------------------------------------------------------------------------------------------
@@ -695,6 +680,16 @@ def makeTreeFromMiniAOD(self,process):
         storeProperties=2,
         SkipTag=SkipTag
     )
+    if self.geninfo and self.systematics:
+        process.JetProperties.properties.extend(["jerFactorUp","jerFactorDown","jecUnc"])
+        process.JetProperties.jerFactorUp = cms.vstring(JetTagJERup.value())
+        process.JetProperties.jerFactorDown = cms.vstring(JetTagJERdown.value())
+        process.JetProperties.jecUnc = cms.vstring(JetTagJECupTmp.value())
+        self.VectorDouble.extend([
+            'JetProperties:jecUnc(Jets_jecUnc)',
+            'JetProperties:jerFactorUp(Jets_jerFactorUp)',
+            'JetProperties:jerFactorDown(Jets_jerFactorDown)',
+        ])
 
     # get QG tagging discriminant for subjets
     SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
