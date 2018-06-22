@@ -25,13 +25,13 @@ git clone https://gitlab.cern.ch/DeepAK8/NNKit.git
 cp NNKit/misc/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
 scram setup mxnet_predict
 cp NNKit/misc/lib/libmxnet_predict.so $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnet_predict.so
-git cms-merge-topic TreeMaker:JERFormula942 # this one has dependencies
+git cms-merge-topic TreeMaker:JERFormula942 # this one has dependencies (will be included in next 94X)
 git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
-git cms-merge-topic -u TreeMaker:MET_942_FixEGdR
+git cms-merge-topic -u TreeMaker:MET_942_FixEGdR # only for 2016 re-miniAOD MET egamma fix
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_942
-git cms-merge-topic -u TreeMaker:SpeedupPuppi948
+git cms-merge-topic -u TreeMaker:SpeedupPuppi948 # will be included in next 94X
 git clone git@github.com:TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
 git clone git@github.com:kpedro88/CondorProduction.git Condor/Production  
 git clone git@github.com:${FORK}/TreeMaker.git -b ${BRANCH}
