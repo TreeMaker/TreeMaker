@@ -59,6 +59,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     process.JetPropertiesAK8Clean.ecfN3b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN3')
     process.JetPropertiesAK8Clean.ecfN2b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN2')
     process.JetPropertiesAK8Clean.ecfN3b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN3')
+    # disable deepAK8
+    process.JetPropertiesAK8Clean.properties = cms.vstring([x for x in process.JetPropertiesAK8Clean.properties if "DiscriminatorDeep" not in x])
+    self.VectorDouble.setValue([x for x in self.VectorDouble if not ("JetPropertiesAK8Clean" in x and "DiscriminatorDeep" in x)])
 
     ### end AK8 detour
 
