@@ -20,6 +20,7 @@ cd ${CMSSWVER}/src/
 # cmsenv
 eval `scramv1 runtime -sh`
 git cms-init
+git config gc.auto 0
 echo "Needs your CERN username and password: NNKit is being cloned from gitlab"
 git clone https://gitlab.cern.ch/DeepAK8/NNKit.git
 cp NNKit/misc/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
