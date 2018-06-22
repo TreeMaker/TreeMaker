@@ -2,3 +2,8 @@ __init__.py
 *.pyc
 *~
 *.so
+
+# data files linked from DeepAK8
+/Production/test/data/preprocessing.json
+/Production/test/data/resnet-symbol.json
+/Production/test/data/resnet.params
