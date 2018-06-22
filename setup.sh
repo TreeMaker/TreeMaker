@@ -67,7 +67,6 @@ cp --remove-destination NNKit/misc/lib/libmxnet_predict.so $CMSSW_BASE/external/
 # CMSSW patches
 git cms-merge-topic TreeMaker:JERFormula942 # this one has dependencies (will be included in next 94X)
 git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
-git cms-merge-topic -u TreeMaker:MET_942_FixEGdR # only for 2016 re-miniAOD MET egamma fix
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_948
