@@ -70,7 +70,7 @@ git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from
 git cms-merge-topic -u TreeMaker:MET_942_FixEGdR # only for 2016 re-miniAOD MET egamma fix
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
-git cms-merge-topic -u TreeMaker:NjettinessAxis_942
+git cms-merge-topic -u TreeMaker:NjettinessAxis_948
 git cms-merge-topic -u TreeMaker:SpeedupPuppi948 # will be included in next 94X
 
 # outside repositories
