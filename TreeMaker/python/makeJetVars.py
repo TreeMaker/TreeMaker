@@ -321,10 +321,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 "NumChadrons"           ,
                 "subjets"               ,
                 "SJbDiscriminatorCSV"   ,
-                "tDiscriminatorDeep"    ,
-                "wDiscriminatorDeep"    ,
-                "zDiscriminatorDeep"    ,
-                "hDiscriminatorDeep"    ,
             )
         )
         # specify userfloats
@@ -340,10 +336,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
         JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDropPuppi','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-        JetPropertiesAK8.tDiscriminatorDeep = cms.vstring('deepAK8:tDiscriminatorDeep')
-        JetPropertiesAK8.wDiscriminatorDeep = cms.vstring('deepAK8:wDiscriminatorDeep')
-        JetPropertiesAK8.zDiscriminatorDeep = cms.vstring('deepAK8:zDiscriminatorDeep')
-        JetPropertiesAK8.hDiscriminatorDeep = cms.vstring('deepAK8:hDiscriminatorDeep')
         self.VectorDouble.extend([
             'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
             'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
@@ -355,10 +347,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
             'JetProperties'+suff+':ecfN2b2(Jets'+suff+'_ecfN2b2)',
             'JetProperties'+suff+':ecfN3b1(Jets'+suff+'_ecfN3b1)',
             'JetProperties'+suff+':ecfN3b2(Jets'+suff+'_ecfN3b2)',
-            'JetProperties'+suff+':tDiscriminatorDeep(Jets'+suff+'_tDiscriminatorDeep)',
-            'JetProperties'+suff+':wDiscriminatorDeep(Jets'+suff+'_wDiscriminatorDeep)',
-            'JetProperties'+suff+':zDiscriminatorDeep(Jets'+suff+'_zDiscriminatorDeep)',
-            'JetProperties'+suff+':hDiscriminatorDeep(Jets'+suff+'_hDiscriminatorDeep)',
         ])
         self.VectorInt.extend([
             'JetProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
@@ -370,6 +358,24 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
         self.VectorVectorDouble.extend([
             'JetProperties'+suff+':SJbDiscriminatorCSV(Jets'+suff+'_subjets_bDiscriminatorCSV)',
         ])
+
+        if self.deepAK8:
+            JetPropertiesAK8.properties.extend([
+                "tDiscriminatorDeep",
+                "wDiscriminatorDeep",
+                "zDiscriminatorDeep",
+                "hDiscriminatorDeep",
+            ])
+            JetPropertiesAK8.tDiscriminatorDeep = cms.vstring('deepAK8:tDiscriminatorDeep')
+            JetPropertiesAK8.wDiscriminatorDeep = cms.vstring('deepAK8:wDiscriminatorDeep')
+            JetPropertiesAK8.zDiscriminatorDeep = cms.vstring('deepAK8:zDiscriminatorDeep')
+            JetPropertiesAK8.hDiscriminatorDeep = cms.vstring('deepAK8:hDiscriminatorDeep')
+            self.VectorDouble.extend([
+                'JetProperties'+suff+':tDiscriminatorDeep(Jets'+suff+'_tDiscriminatorDeep)',
+                'JetProperties'+suff+':wDiscriminatorDeep(Jets'+suff+'_wDiscriminatorDeep)',
+                'JetProperties'+suff+':zDiscriminatorDeep(Jets'+suff+'_zDiscriminatorDeep)',
+                'JetProperties'+suff+':hDiscriminatorDeep(Jets'+suff+'_hDiscriminatorDeep)',
+            ])
 
         if storeProperties>1:
             # extra stuff for subjets
