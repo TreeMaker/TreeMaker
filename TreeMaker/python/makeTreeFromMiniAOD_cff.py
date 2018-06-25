@@ -708,7 +708,7 @@ def makeTreeFromMiniAOD(self,process):
     )
 
     # add discriminator and update tag
-    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, ['deepAK8:tDiscriminatorDeep','deepAK8:wDiscriminatorDeep'], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
+    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, ['deepAK8:tDiscriminatorDeep','deepAK8:wDiscriminatorDeep','deepAK8:zDiscriminatorDeep','deepAK8:hDiscriminatorDeep'], [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
 
     # apply jet ID and get properties
     process = self.makeJetVarsAK8(process,

@@ -42,6 +42,8 @@ DeepAK8Producer::DeepAK8Producer(const edm::ParameterSet& iConfig) :
     // Declare what is produced
     produces<edm::ValueMap<float>>("tDiscriminatorDeep");
     produces<edm::ValueMap<float>>("wDiscriminatorDeep");
+    produces<edm::ValueMap<float>>("zDiscriminatorDeep");
+    produces<edm::ValueMap<float>>("hDiscriminatorDeep");
 }
 
 template <class T>
@@ -64,7 +66,7 @@ void DeepAK8Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     edm::Handle<edm::View<pat::Jet>> jetDeepAK8;
     iEvent.getByToken(JetAK8Tok_, jetDeepAK8);
 
-    std::vector<float> tDiscriminatorDeep, wDiscriminatorDeep; 
+    std::vector<float> tDiscriminatorDeep, wDiscriminatorDeep, zDiscriminatorDeep, hDiscriminatorDeep;
 
     for(const pat::Jet& fatjet : *jetDeepAK8) 
     {
@@ -76,11 +78,15 @@ void DeepAK8Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         // Get the scores
         tDiscriminatorDeep.push_back(nn.get_binarized_score_top());
         wDiscriminatorDeep.push_back(nn.get_binarized_score_w());
+        zDiscriminatorDeep.push_back(nn.get_binarized_score_z());
+        hDiscriminatorDeep.push_back(nn.get_binarized_score_hbb());
     }
 
     // Make userfloat maps
     helpProduce(iEvent,jetDeepAK8,tDiscriminatorDeep,"tDiscriminatorDeep");
     helpProduce(iEvent,jetDeepAK8,wDiscriminatorDeep,"wDiscriminatorDeep");
+    helpProduce(iEvent,jetDeepAK8,zDiscriminatorDeep,"zDiscriminatorDeep");
+    helpProduce(iEvent,jetDeepAK8,hDiscriminatorDeep,"hDiscriminatorDeep");
 }
 
 DEFINE_FWK_MODULE(DeepAK8Producer);
