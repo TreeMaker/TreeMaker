@@ -25,16 +25,15 @@ private:
     void helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, std::string name) const;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetAK8Tok_;
 
-    deepntuples::FatJetNN* fatjetNN_;
+    std::unique_ptr<deepntuples::FatJetNN> fatjetNN_;
 };
 
 DeepAK8Producer::DeepAK8Producer(const edm::ParameterSet& iConfig) :
-    JetAK8Tok_(consumes<edm::View<pat::Jet>>(iConfig.getParameter<edm::InputTag>("JetAK8"))),
-    fatjetNN_(nullptr)
+    JetAK8Tok_(consumes<edm::View<pat::Jet>>(iConfig.getParameter<edm::InputTag>("JetAK8")))
 {
     // Initialize the FatJetNN class in the constructor
     auto cc = consumesCollector();
-    fatjetNN_ = new deepntuples::FatJetNN(iConfig, cc);
+    fatjetNN_ = std::make_unique<deepntuples::FatJetNN>(iConfig, cc);
     // Load json for input variable transformation
     fatjetNN_->load_json("data/preprocessing.json"); // use the full path or put the file in the current working directory (i.e., where you run cmsRun)
     // Load DNN model and parameter files
