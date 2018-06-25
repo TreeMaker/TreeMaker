@@ -2,9 +2,6 @@
 #include <memory>
 #include <vector>
 #include <string>
-#include <iterator>
-#include <algorithm>
-#include <TMath.h>
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EventSetup.h"
