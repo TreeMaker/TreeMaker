@@ -9,7 +9,7 @@
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/EventSetup.h"
 #include "FWCore/Framework/interface/ESHandle.h"
-#include "FWCore/Framework/interface/global/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
@@ -19,11 +19,11 @@
 
 #include "TLorentzVector.h"
 
-class DeepAK8Producer : public edm::global::EDProducer<> {
+class DeepAK8Producer : public edm::stream::EDProducer<> {
 public:
     explicit DeepAK8Producer(const edm::ParameterSet&);
 private:
-    void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+    void produce(edm::Event&, const edm::EventSetup&) override;
     template <class T>
     void helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, std::string name) const;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetAK8Tok_;
@@ -59,7 +59,7 @@ void DeepAK8Producer::helpProduce(edm::Event& iEvent, const edm::Handle<edm::Vie
     iEvent.put(std::move(out),name);
 }
 
-void DeepAK8Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
+void DeepAK8Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
     // Need to access event info
     fatjetNN_->readEvent(iEvent, iSetup);
