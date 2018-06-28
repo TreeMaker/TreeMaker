@@ -8,15 +8,7 @@
 #    process.WeightProducer = getWeightProducer(process.source.fileNames[0])
 
 import FWCore.ParameterSet.Config as cms
-
-class MCSample:
-    def __init__(self, name, production, mcVersion, Method, XS, NumberEvts):
-        self.name = name
-        self.production = production
-        self.mcVersion = mcVersion
-        self.Method = Method
-        self.XS = XS
-        self.NumberEvts = NumberEvts
+from TreeMaker.WeightProducer.MCSample import MCSample
 
 def getWeightProducer(fileName,fastsim=False, pmssm=False):
 
