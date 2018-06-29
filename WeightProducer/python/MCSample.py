@@ -1,4 +1,5 @@
 from collections import namedtuple
+from decimal import Decimal
 import re
 
 class MCSampleHelper():
@@ -200,7 +201,7 @@ class MCSample():
 
     '''
     Example use:
-    from MCSample import MCSample
+    from TreeMaker.WeightProducer.MCSample import MCSample
     m = MCSample("TTJets_TuneCUETP8M1_13TeV-madgraphMLM","PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 10139950, 0)
     '''
 
@@ -228,6 +229,9 @@ class MCSample():
         return self.__helper.get_xs(name)
 
     def __repr__(self):
+        return "%s(%r, %r, %r, %r, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal) if self.NumberEvtsTotal==self.NumberEvtsDiff else "%s(%r, %r, %r, %r, %i, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.NumberEvtsDiff)
+
+    def __str__(self):
         dict_of_members = self.__dict__
         list_of_keys = dict_of_members.keys()
         list_of_values = dict_of_members.values()
