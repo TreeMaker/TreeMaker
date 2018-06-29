@@ -79,7 +79,7 @@ class MCSampleHelper():
         "ST_tW_top_5f_NoFullyHadronicDecays"                             : XSValues(-1.0, -1.0, 19.4674,     -1.0),
         "ST_tW_antitop_5f_inclusiveDecays"                               : XSValues(-1.0, -1.0, 35.6,        -1.0),
         "ST_tW_top_5f_inclusiveDecays"                                   : XSValues(-1.0, -1.0, 35.6,        -1.0),
-        "tZq_W_lept_Z_hadron_4f_ckm_NLO_amcatnlo"                        : XSValues(-1.0, -1.0, 0.0758,      -1.0),
+        "tZq_W_lept_Z_hadron_4f_ckm"                                     : XSValues(-1.0, -1.0, 0.0758,      -1.0),
         "WW"                                                             : XSValues(-1.0, -1.0, 51.723,      -1.0),
         "WZ"                                                             : XSValues(-1.0, -1.0, 47.13,       -1.0),
         "ZZ"                                                             : XSValues(-1.0, -1.0, 16.523,      -1.0),
@@ -179,6 +179,7 @@ class MCSampleHelper():
     __names_to_strip = {
         "generators" : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"      : ["(.Tune)([^_]*)"],
+        "other"      : ["(.NLO)([^_-]*)"],
     }
 
     def get_cm_energy(self, name):
@@ -205,14 +206,14 @@ class MCSample():
 
     __helper = MCSampleHelper()
 
-    def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, NumberEvtsDiff):
+    def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, NumberEvtsDiff = None):
         self.name = name
         self.production = production
         self.mcVersion = mcVersion
         self.Method = Method
         self.XS = self.get_xs(name)
         self.NumberEvtsTotal = NumberEvtsTotal
-        self.NumberEvtsDiff = NumberEvtsDiff
+        self.NumberEvtsDiff = NumberEvtsTotal if NumberEvtsDiff==None else NumberEvtsDiff
 
     def get_effective_lumi(self):
         #NumberEvtsTotal = NumberEvtsPos + NumberEvtsNeg
