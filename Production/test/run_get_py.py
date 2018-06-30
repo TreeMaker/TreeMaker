@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import argparse
-import TreeMaker.Production.get_py
+import TreeMaker.Production.get_py as get_py
 
 '''
 Example of how to run:
