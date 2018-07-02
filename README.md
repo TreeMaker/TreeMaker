@@ -44,7 +44,7 @@ The available scenarios are:
 7.  `2016ReMiniAOD03Feb`: for 2016 ReMiniAOD (03Feb) 25ns data, periods B-H
 8.  `Fall17`: for Fall17 miniAOD 25ns MC
 9.  `Fall17sig`: for Fall17 miniAOD 25ns MC (signal)
-10. `2017ReReco17Nov`: for 2017 ReReco (17Nov) 25ns data, periods B-F
+10. `2017ReReco31Mar`: for 2017 ReReco (31Mar) 25ns data, periods B-F
 
 ## Unit Tests (Interactive Runs)
 
