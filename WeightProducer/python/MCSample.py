@@ -1,5 +1,4 @@
 from collections import namedtuple
-from decimal import Decimal
 import re
 
 class MCSampleHelper():
@@ -248,12 +247,3 @@ class MCSample():
                 rep_format += (key_format+": {:<"+str(len(str(self.NumberEvtsDiff)))+"}")
                 rep_format += ")"
         return rep_format.format('name',self.name,' ','production',self.production,' ','mcVersion',self.mcVersion,' ','Method',self.Method,' ','XS',self.XS,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ','NumberEvtsDiff',self.NumberEvtsDiff)
-
-class MCSample_legacy:
-    def __init__(self, name, production, mcVersion, Method, XS, NumberEvts):
-        self.name = name
-        self.production = production
-        self.mcVersion = mcVersion
-        self.Method = Method
-        self.XS = XS
-        self.NumberEvts = NumberEvts
