@@ -133,7 +133,7 @@ A ROOT file containing the data, MC, and data/MC histograms (with uncertainty va
 
 ## Info for New Samples
 
-The script [get_mcm.py](./Production/test/get_mcm.py) can search the McM database for given samples (with wildcard support) to discern the status of the sample (whether it has finished running), the generator cross section, and the full dataset path for the sample ("/X/Y/Z" format).
+The script [get_mcm.py](./Production/python/get_mcm.py) can search the McM database for given samples (with wildcard support) to discern the status of the sample (whether it has finished running), the generator cross section, and the full dataset path for the sample ("/X/Y/Z" format).
 Command line options exist to specify campaign names and other information, which can be viewed with the `--help` option.
 An example dictionary of samples and extensions to check can be found at [dict_mcm.py](./Production/test/dict_mcm.py).
 This script requires [cern-get-sso-cookie](http://linux.web.cern.ch/linux/docs/cernssocookie.shtml) to access the McM database, which is installed on lxplus and cmslpc.
@@ -141,8 +141,8 @@ Kerberos-based access is used by default, but certificate-based access is also a
 Kerberos access requires a ticket for CERN.CH, and currently only works on lxplus. To configure your certificate for access, see the "User certificates" section of the [cern-get-sso-cookie](http://linux.web.cern.ch/linux/docs/cernssocookie.shtml) documentation.
 The same arguments `--cert` and `--key` can be used with the `get_mcm.py` script.
 
-The script [get_py.py](./Production/test/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (enabled with `-p`).
-For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py), if the cross section is specified (enabled with `-w`).
+The script [get_py.py](./Production/python/get_py.py) will automatically create the "_cff.py" python file containing the list of ROOT files for samples specified in a Python ordered dictionary, e.g. [dict.py](./Production/test/dict.py) (enabled with `-p`).
+For MC samples, it can also automatically generate the appropriate configuration line to add the sample to [getWeightProducer_cff.py](./WeightProducer/python/getWeightProducer_cff.py). This is enabled with the `-w` option and is used for MC samples only.
 The script can also check to see which sites (if any) have 100% dataset presence for the sample (enabled with `-s`).
 (You may also need `export SSL_CERT_DIR='/etc/pki/tls/certs:/etc/grid-security/certificates'` (bash) or `setenv SSL_CERT_DIR '/etc/pki/tls/certs:/etc/grid-security/certificates'` (tcsh) to avoid the error `SSL: CERTIFICATE_VERIFY_FAILED` from `urllib2`.)
 
