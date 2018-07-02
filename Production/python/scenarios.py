@@ -136,7 +136,7 @@ class Scenario:
                 era="Run2_2017",
                 localera="TM2017",
             )
-        elif sname == "2017ReReco17Nov":
+        elif sname == "2017ReReco31Mar":
             self.set_vars(
                 globaltag="94X_dataRun2_v6",
                 tagname="RECO",
