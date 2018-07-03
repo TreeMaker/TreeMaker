@@ -9,5 +9,10 @@ prescaleTagArg2  = cms.string(''),
 prescaleTagArg3  = cms.string(''),
 VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
 saveHLTObj = cms.bool(False),
+trigObj = cms.InputTag('selectedPatTrigger'),
 triggerNameList    =   cms.vstring()
 )
+
+from TreeMaker.TreeMaker.TMEras import TMeras
+TMeras.TM2017.toModify(triggerProducer, trigObj = cms.InputTag("slimmedPatTrigger"))
+

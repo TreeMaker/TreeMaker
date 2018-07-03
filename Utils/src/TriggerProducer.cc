@@ -109,7 +109,7 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   trigResultsTok_ = consumes<edm::TriggerResults>(trigResultsTag_);
   trigPrescalesTok_ = consumes<pat::PackedTriggerPrescales>(trigPrescalesTag_);
 
-  edm::InputTag theTrigObjLabel("selectedPatTrigger");
+  edm::InputTag theTrigObjLabel(iConfig.getParameter<edm::InputTag>("trigObj"));
   trigObjCollToken = consumes<pat::TriggerObjectStandAloneCollection>(theTrigObjLabel);
   
   produces<std::vector<std::string> >("TriggerNames");
