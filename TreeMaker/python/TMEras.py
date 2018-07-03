@@ -7,6 +7,7 @@ class TMEras(object):
         allEras = [
             'TM2016',
             'TM2017',
+            'TM2018',
         ]
 
         for e in allEras:
