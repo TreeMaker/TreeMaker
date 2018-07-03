@@ -6,7 +6,7 @@ usage(){
 	echo "setup.sh [options]"
 	echo ""
 	echo "-f [fork]           clone from specified fork (default = TreeMaker)"
-	echo "-b [branch]         clone specified branch (default = Run2_2017)"
+	echo "-b [branch]         clone specified branch (default = Run2_2018_prompt)"
 	echo "-a [protocol]       use protocol to clone (default = ssh, alternative = https)"
 	echo "-j [cores]          run CMSSW compilation on # cores (default = 8)"
 	echo "-h                  display this message and exit"
