@@ -49,6 +49,7 @@ mytests.append(makeTest("2016ReReco23Sep","MET16ReReco" if len(name)==0 else nam
 mytests.append(makeTest("2016ReMiniAOD03Feb","MET16ReMiniAOD" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2016C-03Feb2017-v1.MET",nstart=0,nfiles=10))
 mytests.append(makeTest("Fall17","gjet17" if len(name)==0 else name,numevents,command,dataset="/store/mc/RunIIFall17MiniAODv2/GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/10000/CEB1CF27-F670-E811-BB3F-FA163E528207.root"))
 mytests.append(makeTest("2017ReReco31Mar","MET17ReReco" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2017B-31Mar2018-v1.MET",nstart=0,nfiles=10))
+mytests.append(makeTest("2018Prompt","MET18Prompt" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2018A-PromptReco-v1.MET",nstart=0,nfiles=10))
 
 
 if test<0 or test>len(mytests):
