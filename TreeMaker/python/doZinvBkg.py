@@ -104,9 +104,12 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
        muSource = cms.InputTag("slimmedMuons"),
        elSource = cms.InputTag("slimmedElectrons")
     )
-    # turn on/off GEN matching (different than hadronFlavour()?)
+    # turn on/off GEN matching
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenPartonMatch = cms.bool(False)
     getattr(process,'patJetsAK4PFCLEAN'+suff).addGenJetMatch = cms.bool(False)
+    # turn off some flags for data
+    getattr(process,'patJetsAK4PFCLEAN'+suff).addJetFlavourInfo = cms.bool(self.geninfo)
+    getattr(process,'patJetsAK4PFCLEAN'+suff).getJetMCFlavour = cms.bool(self.geninfo)
 
     # apply pt cut to final jet collection (done in slimmedJets)
     reclusteredJets = cms.EDFilter("PATJetSelector",
