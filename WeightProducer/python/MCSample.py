@@ -73,8 +73,8 @@ class MCSampleHelper():
         "ZJetsToNuNu_Zpt-200toInf"                                       : XSValues(-1.0, -1.0, 5.28654,     -1.0),
         "ST_s-channel_4f_leptonDecays"                                   : XSValues(-1.0, -1.0, 3.34,        -1.0),
         "ST_s-channel_4f_InclusiveDecays"                                : XSValues(-1.0, -1.0, 10.32,       -1.0),
-        "ST_t-channel_top_4f_inclusiveDecaysV2"                          : XSValues(-1.0, -1.0, 136.02,      -1.0),
-        "ST_t-channel_antitop_4f_inclusiveDecaysV2"                      : XSValues(-1.0, -1.0, 80.95,       -1.0),
+        "ST_t-channel_top_4f_inclusiveDecays"                            : XSValues(-1.0, -1.0, 136.02,      -1.0),
+        "ST_t-channel_antitop_4f_inclusiveDecays"                        : XSValues(-1.0, -1.0, 80.95,       -1.0),
         "ST_tW_antitop_5f_NoFullyHadronicDecays"                         : XSValues(-1.0, -1.0, 19.4674,     -1.0),
         "ST_tW_top_5f_NoFullyHadronicDecays"                             : XSValues(-1.0, -1.0, 19.4674,     -1.0),
         "ST_tW_antitop_5f_inclusiveDecays"                               : XSValues(-1.0, -1.0, 35.6,        -1.0),
@@ -183,7 +183,10 @@ class MCSampleHelper():
     }
 
     def get_cm_energy(self, name):
-        return (re.sub("(_[0-9]*TeV)","",name),re.search("(_[0-9]*TeV)",name).group(0))
+        energy_result = re.search("(_[0-9]*TeV)",name)
+        # allow a default value
+        energy = "_13TeV" if energy_result is None else energy_result.group(0)
+        return (re.sub("(_[0-9]*TeV)","",name),energy)
 
     def get_minimal_name(self, name):
         for category, values_to_strip in self.__names_to_strip.iteritems():
