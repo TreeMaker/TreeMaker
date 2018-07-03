@@ -15,13 +15,13 @@
 
 ## Instructions
 
-The following installation instructions assume the user wants to process 2016 or 2017 miniAOD.
+The following installation instructions assume the user wants to process 2018 prompt data.
 
 ```
-wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017/setup.sh
+wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2018_prompt/setup.sh
 chmod +x setup.sh
 ./setup.sh
-cd CMSSW_9_4_8/src/
+cd CMSSW_10_1_7/src/
 cmsenv
 cd TreeMaker/Production/test
 ```
@@ -29,7 +29,7 @@ cd TreeMaker/Production/test
 The script [setup.sh](./setup.sh) has options to allow installing a different fork or branch of TreeMaker
 (though some branches may have different setup scripts, so check carefully which one you download):
 * `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
-* `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017)
+* `-b [branch]`: which branch to download (`-b branch`, default = Run2_2018_prompt)
 * `-a [protocol]`: which protocol to use for `git clone` (default = ssh, alternative = https)
 * `-j [cores]`: run CMSSW compilation on # cores (default = 8)
 * `-h`: display help message and exit
