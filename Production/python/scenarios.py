@@ -153,7 +153,7 @@ class Scenario:
                 jsonfile="data/Cert_314472-317591_13TeV_PromptReco_Collisions18_JSON.txt",
                 jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
                 residual=True,
-                era="Run2_2018_prompt",
+                era="Run2_2018",
                 localera="TM2018",
             )
         else: # if no recognized scenario, cannot go forward

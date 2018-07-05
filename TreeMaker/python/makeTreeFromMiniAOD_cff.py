@@ -324,7 +324,7 @@ def makeTreeFromMiniAOD(self,process):
         METTag             = METTag  ,
         rhoCollection      = cms.InputTag("fixedGridRhoFastjetCentralNeutral")  
     )
-    TMeras.TM2017.toModify(process.LeptonsNew,
+    (TMeras.TM2017 | TMeras.TM2018).toModify(process.LeptonsNew,
         # barrel electrons
         eb_ieta_cut        = cms.vdouble(0.0128,  0.0105,  0.0105,  0.0104),
         eb_deta_cut        = cms.vdouble(0.00523, 0.00387, 0.00365, 0.00353),

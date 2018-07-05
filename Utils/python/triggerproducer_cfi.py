@@ -14,5 +14,5 @@ triggerNameList    =   cms.vstring()
 )
 
 from TreeMaker.TreeMaker.TMEras import TMeras
-TMeras.TM2017.toModify(triggerProducer, trigObj = cms.InputTag("slimmedPatTrigger"))
+(TMeras.TM2017 | TMeras.TM2018).toModify(triggerProducer, trigObj = cms.InputTag("slimmedPatTrigger"))
 
