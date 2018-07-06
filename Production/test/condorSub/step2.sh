@@ -30,13 +30,6 @@ echo "PROCESS:    $PROCESS"
 echo "REDIR:      $REDIR"
 echo ""
 
-ls -l $CMSSW_BASE/external/slc6_amd64_gcc630/lib/
-ls -l /cvmfs/cms-lpc.opensciencegrid.org/sl6/opt/
-LSEXIT=$?
-if [[ $LSEXIT -ne 0 ]]; then
-	exit $LSEXIT
-fi
-
 # link files from CMSSW dir
 ln -s ${CMSSWVER}/src/TreeMaker/Production/test/data
 ln -s ${CMSSWVER}/src/TreeMaker/Production/test/runMakeTreeFromMiniAOD_cfg.py
