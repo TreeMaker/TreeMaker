@@ -9,6 +9,7 @@ usage(){
 	echo "-b [branch]         clone specified branch (default = Run2_2018_prompt)"
 	echo "-a [protocol]       use protocol to clone (default = ssh, alternative = https)"
 	echo "-j [cores]          run CMSSW compilation on # cores (default = 8)"
+	echo "-l                  link to mxnet library from cvmfs (default = use local version)"
 	echo "-h                  display this message and exit"
 
 	exit $EXIT
@@ -18,9 +19,10 @@ FORK=TreeMaker
 BRANCH=Run2_2018_prompt
 ACCESS=ssh
 CORES=8
+LINKMXNET=""
 
 # process options
-while getopts "f:b:a:j:h" opt; do
+while getopts "f:b:a:j:lh" opt; do
 	case "$opt" in
 	f) FORK=$OPTARG
 	;;
@@ -29,6 +31,8 @@ while getopts "f:b:a:j:h" opt; do
 	a) ACCESS=$OPTARG
 	;;
 	j) CORES=$OPTARG
+	;;
+	l) LINKMXNET=true
 	;;
 	h) usage 0
 	;;
@@ -59,9 +63,15 @@ git config gc.auto 0
 
 # DeepAK8 setup
 if [ "$ACCESS" = "https" ]; then echo "Needs your CERN username and password: NNKit is being cloned from gitlab"; fi
-git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements
-cp /cvmfs/cms-lpc.opensciencegrid.org/sl6/opt/mxnet-1.1.0/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
-scram setup mxnet_predict
+git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b avoid_exceptions
+if [ -n "$LINKMXNET" ]; then
+	cp /cvmfs/cms-lpc.opensciencegrid.org/sl6/opt/mxnet-1.1.0/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
+	scram setup mxnet_predict
+else
+	cp NNKit/misc/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
+	scram setup mxnet_predict
+	cp --remove-destination NNKit/misc/lib/libmxnet_predict.so $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnet_predict.so
+fi
 
 # CMSSW patches
 git cms-merge-topic TreeMaker:JERFormula1017 # this one has dependencies (will be included in next 94X)

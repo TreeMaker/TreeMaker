@@ -73,13 +73,22 @@ void DeepAK8Producer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
         // Run the NN predictions
         deepntuples::JetHelper jet_helper(&fatjet);
         const auto& nnpreds = fatjetNN_->predict(jet_helper);
-        deepntuples::FatJetNNHelper nn(nnpreds);
+        if(nnpreds.size()>0){
+            deepntuples::FatJetNNHelper nn(nnpreds);
         
-        // Get the scores
-        tDiscriminatorDeep.push_back(nn.get_binarized_score_top());
-        wDiscriminatorDeep.push_back(nn.get_binarized_score_w());
-        zDiscriminatorDeep.push_back(nn.get_binarized_score_z());
-        hDiscriminatorDeep.push_back(nn.get_binarized_score_hbb());
+            // Get the scores
+            tDiscriminatorDeep.push_back(nn.get_binarized_score_top());
+            wDiscriminatorDeep.push_back(nn.get_binarized_score_w());
+            zDiscriminatorDeep.push_back(nn.get_binarized_score_z());
+            hDiscriminatorDeep.push_back(nn.get_binarized_score_hbb());
+        }
+        else {
+            // dummy scores
+            tDiscriminatorDeep.push_back(-1);
+            wDiscriminatorDeep.push_back(-1);
+            zDiscriminatorDeep.push_back(-1);
+            hDiscriminatorDeep.push_back(-1);
+        }
     }
 
     // Make userfloat maps
