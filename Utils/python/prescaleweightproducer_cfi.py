@@ -2,7 +2,7 @@ import FWCore.ParameterSet.Config as cms
 
 prescaleweightProducer = cms.EDProducer('PrescaleWeightProducer',
 
-   bits = cms.InputTag("TriggerResults","","HLT"),
+   bits = cms.InputTag("TriggerResults","","reHLT"),
 
    prescales = cms.InputTag("patTrigger"),
 

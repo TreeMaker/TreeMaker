@@ -150,7 +150,27 @@ class Scenario:
             self.set_vars(
                 globaltag="101X_dataRun2_Prompt_v11",
                 tagname="RECO",
-                jsonfile="data/Cert_314472-317591_13TeV_PromptReco_Collisions18_JSON.txt",
+                jsonfile="data/Cert_314472-318876_13TeV_PromptReco_Collisions18_JSON.txt",
+                jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
+                residual=True,
+                era="Run2_2018",
+                localera="TM2018",
+            )
+        elif sname == "2018PromptRelVal":
+            self.set_vars(
+                globaltag="101X_dataRun2_Prompt_v11",
+                tagname="reRECO",
+                jsonfile="data/Cert_314472-318876_13TeV_PromptReco_Collisions18_JSON.txt",
+                jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
+                residual=True,
+                era="Run2_2018",
+                localera="TM2018",
+            )
+        elif sname == "2018PromptRelValHEMiss":
+            self.set_vars(
+                globaltag="101X_dataRun2_Prompt_HEmiss_v1",
+                tagname="reRECO",
+                jsonfile="data/Cert_314472-318876_13TeV_PromptReco_Collisions18_JSON.txt",
                 jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
                 residual=True,
                 era="Run2_2018",
