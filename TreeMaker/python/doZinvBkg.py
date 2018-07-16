@@ -129,6 +129,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         pfCandColl=cleanedCandidates.value(),
         recoMetFromPFCs=True, # to recompute
         reclusterJets=False, # without reclustering
+        reapplyJEC=False,
         postfix=postfix
     )
     METTag = cms.InputTag('slimmedMETs'+postfix)

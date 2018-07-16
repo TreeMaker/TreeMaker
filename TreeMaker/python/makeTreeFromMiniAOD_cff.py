@@ -240,15 +240,9 @@ def makeTreeFromMiniAOD(self,process):
         runMetCorAndUncFromMiniAOD(
             process,
             isData=not self.geninfo, # controls gen met
+            reapplyJEC=False,
         )
         METTag = cms.InputTag('slimmedMETs','',process.name_())
-    else:
-        # pointless run of MET tool because it is barely functional
-        from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-        runMetCorAndUncFromMiniAOD(
-            process,
-            isData=not self.geninfo, # controls gen met
-        )
 
     # keep jets before any further modifications for hadtau
     JetTagBeforeSmearing = JetTag
