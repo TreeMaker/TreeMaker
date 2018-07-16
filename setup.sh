@@ -49,7 +49,7 @@ fi
 # get CMSSW release
 export SCRAM_ARCH=slc6_amd64_gcc630
 # cmsrel
-CMSSWVER=CMSSW_9_4_8
+CMSSWVER=CMSSW_9_4_9
 scram project ${CMSSWVER}
 cd ${CMSSWVER}/src/
 # cmsenv
@@ -64,12 +64,10 @@ cp /cvmfs/cms-lpc.opensciencegrid.org/sl6/opt/mxnet-1.1.0/mxnet_predict.xml $CMS
 scram setup mxnet_predict
 
 # CMSSW patches
-git cms-merge-topic TreeMaker:JERFormula942 # this one has dependencies (will be included in next 94X)
 git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_948
-git cms-merge-topic -u TreeMaker:SpeedupPuppi948 # will be included in next 94X
 
 # outside repositories
 git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
