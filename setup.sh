@@ -59,9 +59,10 @@ git config gc.auto 0
 
 # DeepAK8 setup
 if [ "$ACCESS" = "https" ]; then echo "Needs your CERN username and password: NNKit is being cloned from gitlab"; fi
-git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements
-cp /cvmfs/cms-lpc.opensciencegrid.org/sl6/opt/mxnet-1.1.0/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
-scram setup mxnet_predict
+git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements-2 --depth 1
+cp NNKit/misc/mxnet-predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
+scram setup mxnet-predict
+cp --remove-destination NNKit/misc/lib/libmxnetpredict.so $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnetpredict.so
 
 # CMSSW patches
 git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
