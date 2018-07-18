@@ -146,6 +146,30 @@ class Scenario:
                 era="Run2_2017",
                 localera="TM2017",
             )
+        elif sname == "RelValCMSSW101X":
+            self.set_vars(
+                globaltag="101X_upgrade2018_realistic_v7",
+                tagname="PAT",
+                geninfo=True,
+                signal=True,
+                jecfile="data/jec/Fall17_17Nov2017_V6_MC",
+                jerfile="data/jer/Fall17_25nsV1_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
+                era="Run2_2018",
+                localera="TM2018",
+            )
+        elif sname == "RelValCMSSW101XHEMiss":
+            self.set_vars(
+                globaltag="101X_upgrade2018_realistic_HEmiss_v1",
+                tagname="PAT",
+                geninfo=True,
+                signal=True,
+                jecfile="data/jec/Fall17_17Nov2017_V6_MC",
+                jerfile="data/jer/Fall17_25nsV1_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
+                era="Run2_2018",
+                localera="TM2018",
+            )
         elif sname == "2018Prompt":
             self.set_vars(
                 globaltag="101X_dataRun2_Prompt_v11",
