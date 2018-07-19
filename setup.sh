@@ -69,6 +69,7 @@ git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_948
+git cms-merge-topic -u TreeMaker:METFixEE2017_949
 
 # outside repositories
 git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
