@@ -130,9 +130,24 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         recoMetFromPFCs=True, # to recompute
         reclusterJets=False, # without reclustering
         reapplyJEC=False,
-        postfix=postfix
+        fixEE2017=self.doMETfix,
+        postfix=postfix,
     )
     METTag = cms.InputTag('slimmedMETs'+postfix)
+    if self.doMETfix:
+        runMetCorAndUncFromMiniAOD(
+            process,
+            isData=not self.geninfo, # controls gen met
+            jetCollUnskimmed='patJetsAK4PFCLEAN'+suff,
+            pfCandColl=cleanedCandidates.value(),
+            recoMetFromPFCs=True, # to recompute
+            reclusterJets=False, # without reclustering
+            reapplyJEC=False,
+            postfix=postfix+'Orig',
+        )
+        METTagOrig = cms.InputTag('slimmedMETs+postfix+'Orig')
+    else:
+        METTagOrig = None
     
     # isolated tracks
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -213,6 +228,13 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     )
     setattr(process,"METclean"+suff,METclean)
     self.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')','METclean'+suff+':Significance(METSignificanceclean'+suff+')'])
+
+    if self.doMETfix:
+        METcleanOrig = METclean.clone(
+            METTag = METTagOrig
+        )
+        self.VarsDouble.extend(['METclean'+suff+'Orig:Pt(METclean'+suff+'Orig)','METclean'+suff+'Orig:Phi(METPhiclean'+suff+'Orig)'])
+
     return process
 
 def doZinvBkg(self,process):
