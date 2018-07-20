@@ -112,7 +112,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     
     from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
     MHT = mhtdouble.clone(
-        JetTag  = MHTJetTagExt if MHTJetTagExt is not None else MHTJetsTag,
+        JetTag  = MHTJetsTag,
     )
     setattr(process,"MHT"+suff,MHT)
     self.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHTPhi'+suff+')'])
@@ -128,10 +128,8 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
 
     # keep orig MHT, dphi values if ext tag was given
     if MHTJetTagExt is not None:
-        MHTJetsOrig = SubJetSelection.clone(
+        MHTJetsOrig = MHTJets.clone(
             JetTag = JetTag,
-            MinPt  = cms.double(30),
-            MaxEta = cms.double(5.0),
         )
         setattr(process,"MHTJets"+suff+"Orig",MHTJetsOrig)
         if storeProperties>0: self.VectorBool.extend(['MHTJets'+suff+'Orig:SubJetMask(Jets'+suff+'_MHTOrig'+'Mask)'])
