@@ -481,6 +481,7 @@ def makeTreeFromMiniAOD(self,process):
     if not self.geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
         process.PrescaleWeightProducer = prescaleweightProducer.clone()
+        process.PrescaleWeightProducer.bits.setProcessName(self.hlttagname)
         self.VarsDouble.extend(['PrescaleWeightProducer:weight(PrescaleWeightHT)'])
         self.VarsDouble.extend(['PrescaleWeightProducer:ht(HTOnline)'])
         self.VarsDouble.extend(['PrescaleWeightProducer:mht(MHTOnline)'])

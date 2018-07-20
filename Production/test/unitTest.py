@@ -66,3 +66,7 @@ else:
                 print "\nRunning test... ["+str(p.pid)+"]"
                 sts = os.waitpid(p.pid, 0)[1]
                 print "\nTest is done! ["+str(p.pid)+"]"
+
+
+#Example:
+#  python unitTest.py numevents=1000 run=True test=0
