@@ -386,6 +386,14 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsInt.extend(['CSCTightHaloFilter'])
         
+        process.globalTightHalo2016Filter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(self.tagname),
+            filterName  = cms.string("Flag_globalTightHalo2016Filter"),
+        )
+        self.VarsInt.extend(['globalTightHalo2016Filter'])
+
         process.globalSuperTightHalo2016Filter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
@@ -418,13 +426,13 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
         
-        #process.eeBadScFilter = filterDecisionProducer.clone(
-        #    trigTagArg1  = cms.string('TriggerResults'),
-        #    trigTagArg2  = cms.string(''),
-        #    trigTagArg3  = cms.string(self.tagname),
-        #    filterName  =   cms.string("Flag_eeBadScFilter"),
-        #)
-        #self.VarsInt.extend(['eeBadScFilter'])
+        process.eeBadScFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_eeBadScFilter"),
+        )
+        self.VarsInt.extend(['eeBadScFilter'])
         
         process.ecalBadCalibFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
@@ -441,11 +449,11 @@ def makeTreeFromMiniAOD(self,process):
         process.BadChargedCandidateFilter.taggingMode = True
         self.VarsBool.extend(['BadChargedCandidateFilter'])
         
-        #process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
-        #process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
-        #process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
-        #process.BadPFMuonFilter.taggingMode = True
-        #self.VarsBool.extend(['BadPFMuonFilter'])
+        process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
+        process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
+        process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+        process.BadPFMuonFilter.taggingMode = True
+        self.VarsBool.extend(['BadPFMuonFilter'])
         
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
