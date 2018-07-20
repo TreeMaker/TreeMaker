@@ -254,7 +254,7 @@ def makeTreeFromMiniAOD(self,process):
                 postfix="Orig"
             )
             METTagOrig = cms.InputTag('slimmedMETsOrig')
-            MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise","jets","process.name_())
+            MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise","jets",process.name_())
         else:
             METTagOrig = None
             MHTJetTagExt = None

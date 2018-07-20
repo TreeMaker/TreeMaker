@@ -145,7 +145,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
             reapplyJEC=False,
             postfix=postfix+'Orig',
         )
-        METTagOrig = cms.InputTag('slimmedMETs+postfix+'Orig')
+        METTagOrig = cms.InputTag('slimmedMETs'+postfix+'Orig')
         MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise"+postfix,"jets")
     else:
         METTagOrig = None
@@ -236,6 +236,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         METcleanOrig = METclean.clone(
             METTag = METTagOrig
         )
+        setattr(process,"METclean"+suff+"Orig",METcleanOrig)
         self.VarsDouble.extend(['METclean'+suff+'Orig:Pt(METclean'+suff+'Orig)','METclean'+suff+'Orig:Phi(METPhiclean'+suff+'Orig)'])
 
     return process
