@@ -146,8 +146,10 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
             postfix=postfix+'Orig',
         )
         METTagOrig = cms.InputTag('slimmedMETs+postfix+'Orig')
+        MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise"+postfix,"jets")
     else:
         METTagOrig = None
+        MHTJetTagExt = None
     
     # isolated tracks
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -219,6 +221,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
+        MHTJetTagExt=MHTJetTagExt,
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble

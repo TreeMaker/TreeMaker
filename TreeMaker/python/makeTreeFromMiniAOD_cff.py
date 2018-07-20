@@ -254,8 +254,10 @@ def makeTreeFromMiniAOD(self,process):
                 postfix="Orig"
             )
             METTagOrig = cms.InputTag('slimmedMETsOrig')
+            MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise","jets","process.name_())
         else:
             METTagOrig = None
+            MHTJetTagExt = None
 
     # keep jets before any further modifications for hadtau
     JetTagBeforeSmearing = JetTag
@@ -663,7 +665,8 @@ def makeTreeFromMiniAOD(self,process):
         suff='',
         skipGoodJets=False,
         storeProperties=2,
-        SkipTag=SkipTag
+        SkipTag=SkipTag,
+        MHTJetTagExt = MHTJetTagExt,
     )
     if self.geninfo and self.systematics:
         process.JetProperties.properties.extend(["jerFactorUp","jerFactorDown","jecUnc"])

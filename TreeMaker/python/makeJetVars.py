@@ -37,7 +37,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
 # 0 = scalars (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType=""):
+def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", MHTJetTagExt=None):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     ## MHT, DeltaPhi
     ## ----------------------------------------------------------------------------------------------
     MHTJets = SubJetSelection.clone(
-        JetTag = JetTag,
+        JetTag = MHTJetTagExt if MHTJetTagExt is not None else JetTag,
         MinPt  = cms.double(30),
         MaxEta = cms.double(5.0),
     )
@@ -112,7 +112,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     
     from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
     MHT = mhtdouble.clone(
-        JetTag  = MHTJetsTag,
+        JetTag  = MHTJetTagExt if MHTJetTagExt is not None else MHTJetsTag,
     )
     setattr(process,"MHT"+suff,MHT)
     self.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHTPhi'+suff+')'])
@@ -124,11 +124,37 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     )
     setattr(process,"DeltaPhi"+suff,DeltaPhi)
     self.VarsDouble.extend(['DeltaPhi'+suff+':DeltaPhi1(DeltaPhi1'+suff+')','DeltaPhi'+suff+':DeltaPhi2(DeltaPhi2'+suff+')',
-                                          'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
+                            'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
+
+    # keep orig MHT, dphi values if ext tag was given
+    if MHTJetTagExt is not None:
+        MHTJetsOrig = SubJetSelection.clone(
+            JetTag = JetTag,
+            MinPt  = cms.double(30),
+            MaxEta = cms.double(5.0),
+        )
+        setattr(process,"MHTJets"+suff+"Orig",MHTJetsOrig)
+        if storeProperties>0: self.VectorBool.extend(['MHTJets'+suff+'Orig:SubJetMask(Jets'+suff+'_MHTOrig'+'Mask)'])
+        MHTJetsTagOrig = cms.InputTag("MHTJets"+suff+"Orig")
+    
+        MHTOrig = mhtdouble.clone(
+            JetTag  = MHTJetsTagOrig,
+        )
+        setattr(process,"MHT"+suff+"Orig",MHTOrig)
+        self.VarsDouble.extend(['MHT'+suff+'Orig:Pt(MHT'+suff+'Orig)','MHT'+suff+'Orig:Phi(MHTPhi'+suff+'Orig)'])
+        
+        DeltaPhiOrig = DeltaPhi.clone(
+            MHTPhi       = cms.InputTag('MHT'+suff+'Orig:Phi'),
+        )
+        setattr(process,"DeltaPhi"+suff+"Orig",DeltaPhiOrig)
+        self.VarsDouble.extend(['DeltaPhi'+suff+'Orig:DeltaPhi1(DeltaPhi1'+suff+'Orig)','DeltaPhi'+suff+'Orig:DeltaPhi2(DeltaPhi2'+suff+'Orig)',
+                                'DeltaPhi'+suff+'Orig:DeltaPhi3(DeltaPhi3'+suff+'Orig)','DeltaPhi'+suff+'Orig:DeltaPhi4(DeltaPhi4'+suff+'Orig)'])
+    else:
+        MHTJetsTagOrig = None
 
     # extra HT version using MHT collection w/ |eta| < 5, to filter forward beam halo events
     HT5 = htdouble.clone(
-        JetTag = MHTJetsTag,
+        JetTag = MHTJetsTagOrig if MHTJetsTagOrig is not None else MHTJetsTag,
     )
     setattr(process,"HT5"+suff,HT5)
     self.VarsDouble.extend(['HT5'+suff])
