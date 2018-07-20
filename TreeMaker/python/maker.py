@@ -48,6 +48,7 @@ class maker:
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
         self.getParamDefault("tagname",self.scenario.tagname)
+        self.getParamDefault("hlttagname",self.scenario.hlttagname)
         self.getParamDefault("geninfo",self.scenario.geninfo)
         self.getParamDefault("pmssm",self.scenario.pmssm)
         self.getParamDefault("fastsim",self.scenario.fastsim)
@@ -121,6 +122,7 @@ class maker:
         print " scenario: "+self.scenarioName
         print " global tag: "+self.globaltag
         print " Instance name of tag information: "+self.tagname
+        print " Instance name of HLT tag information: "+self.hlttagname
         print " Including gen-level information: "+str(self.geninfo)
         print " Including pMSSM-related information: "+str(self.pmssm)
         print " Using fastsim settings: "+str(self.fastsim)
