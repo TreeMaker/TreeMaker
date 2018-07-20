@@ -48,7 +48,12 @@ The available scenarios are:
 8.  `Fall17`: for Fall17 miniAOD 25ns MC
 9.  `Fall17sig`: for Fall17 miniAOD 25ns MC (signal)
 10. `2017ReReco31Mar`: for 2017 ReReco (31Mar) 25ns data, periods B-F
-11. `2018Prompt`: for 2018 prompt 25ns data, periods A-B
+11. `RelValCMSSW101X`: for 101X miniAOD 25ns relval MC samples
+12. `RelValCMSSW101XHEMiss`: for 101X miniAOD 25ns relval MC samples with the HEM 15/16 issue
+13. `2018Prompt`: for 2018 prompt 25ns data, periods A-B
+14. `2018PromptRelVal`: for 2018 prompt 25ns relval data, partial period B
+15. `2018PromptRelValHEMiss`: for 2018 prompt 25ns relval data, partial period B, with the HEM 15/16 issue
+
 
 ## Unit Tests (Interactive Runs)
 
