@@ -4,6 +4,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_mcRun2_asymptotic_2016_miniAODv2",
                 tagname="PAT",
+                hlttagname="HLT",
                 geninfo=True,
                 fastsim=True,
                 signal=True,
@@ -17,6 +18,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_mcRun2_asymptotic_2016_miniAODv2",
                 tagname="PAT",
+                hlttagname="HLT",
                 geninfo=True,
                 fastsim=True,
                 signal=True,
@@ -31,6 +33,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                 tagname="PAT",
+                hlttagname="HLT",
                 geninfo=True,
                 jecfile="data/jec/Summer16_23Sep2016V3_MC",
                 jerfile="data/jer/Summer16_25nsV1_MC",
@@ -42,6 +45,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                 tagname="PAT",
+                hlttagname="HLT",
                 geninfo=True,
                 signal=True,
                 jecfile="data/jec/Summer16_23Sep2016V3_MC",
@@ -54,6 +58,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_dataRun2_Prompt_v14",
                 tagname="RECO",
+                hlttagname="HLT",
                 jsonfile="data/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt",
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
@@ -64,6 +69,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_dataRun2_2016SeptRepro_v3",
                 tagname="RECO",
+                hlttagname="HLT",
                 jsonfile="data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
@@ -74,6 +80,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_dataRun2_2016SeptRepro_v7",
                 tagname="PAT",
+                hlttagname="HLT",
                 jsonfile="data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
                 jecfile="data/jec/Summer16_23Sep2016AllV3_DATA",
                 residual=True,
@@ -84,6 +91,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                 tagname="PAT",
+                hlttagname="HLT",
                 geninfo=True,
                 jecfile="data/jec/Summer16_07Aug2017_V10_MC",
                 jerfile="data/jer/Summer16_25nsV1_MC",
@@ -95,6 +103,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                 tagname="PAT",
+                hlttagname="HLT",
                 geninfo=True,
                 signal=True,
                 jecfile="data/jec/Summer16_07Aug2017_V10_MC",
@@ -107,6 +116,7 @@ class Scenario:
             self.set_vars(
                 globaltag="80X_dataRun2_2016SeptRepro_v7",
                 tagname="PAT",
+                hlttagname="HLT",
                 jsonfile="data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
                 jecfile="data/jec/Summer16_07Aug2017All_V10_DATA",
                 residual=True,
@@ -117,6 +127,7 @@ class Scenario:
             self.set_vars(
                 globaltag="94X_mc2017_realistic_v13",
                 tagname="PAT",
+                hlttagname="HLT",
                 geninfo=True,
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                 jerfile="data/jer/Fall17_25nsV1_MC",
@@ -128,6 +139,7 @@ class Scenario:
             self.set_vars(
                 globaltag="94X_mc2017_realistic_v13",
                 tagname="PAT",
+                hlttagname="HLT",
                 geninfo=True,
                 signal=True,
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
@@ -140,17 +152,67 @@ class Scenario:
             self.set_vars(
                 globaltag="94X_dataRun2_v6",
                 tagname="PAT",
+                hlttagname="HLT",
                 jsonfile="data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt",
                 jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
                 residual=True,
                 era="Run2_2017",
                 localera="TM2017",
             )
+        elif sname == "RelValCMSSW101X":
+            self.set_vars(
+                globaltag="101X_upgrade2018_realistic_v7",
+                tagname="PAT",
+                hlttagname="reHLT",
+                geninfo=True,
+                signal=True,
+                jecfile="data/jec/Fall17_17Nov2017_V6_MC",
+                jerfile="data/jer/Fall17_25nsV1_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
+                era="Run2_2018",
+                localera="TM2018",
+            )
+        elif sname == "RelValCMSSW101XHEMiss":
+            self.set_vars(
+                globaltag="101X_upgrade2018_realistic_HEmiss_v1",
+                tagname="PAT",
+                hlttagname="reHLT",
+                geninfo=True,
+                signal=True,
+                jecfile="data/jec/Fall17_17Nov2017_V6_MC",
+                jerfile="data/jer/Fall17_25nsV1_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
+                era="Run2_2018",
+                localera="TM2018",
+            )
         elif sname == "2018Prompt":
             self.set_vars(
                 globaltag="101X_dataRun2_Prompt_v11",
                 tagname="RECO",
-                jsonfile="data/Cert_314472-317591_13TeV_PromptReco_Collisions18_JSON.txt",
+                hlttagname="HLT",
+                jsonfile="data/Cert_314472-318876_13TeV_PromptReco_Collisions18_JSON.txt",
+                jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
+                residual=True,
+                era="Run2_2018",
+                localera="TM2018",
+            )
+        elif sname == "2018PromptRelVal":
+            self.set_vars(
+                globaltag="101X_dataRun2_Prompt_v11",
+                tagname="reRECO",
+                hlttagname="reHLT",
+                jsonfile="data/Cert_314472-318876_13TeV_PromptReco_Collisions18_JSON.txt",
+                jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
+                residual=True,
+                era="Run2_2018",
+                localera="TM2018",
+            )
+        elif sname == "2018PromptRelValHEMiss":
+            self.set_vars(
+                globaltag="101X_dataRun2_Prompt_HEmiss_v1",
+                tagname="reRECO",
+                hlttagname="reHLT",
+                jsonfile="data/Cert_314472-318876_13TeV_PromptReco_Collisions18_JSON.txt",
                 jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
                 residual=True,
                 era="Run2_2018",
@@ -159,9 +221,10 @@ class Scenario:
         else: # if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
-    def set_vars(self, globaltag, era, localera, tagname, geninfo=False, fastsim=False, signal=False, pmssm=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile=""):
+    def set_vars(self, globaltag, era, localera, tagname, hlttagname="", geninfo=False, fastsim=False, signal=False, pmssm=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile=""):
         self.globaltag  = globaltag
         self.tagname    = tagname
+        self.hlttagname = hlttagname
         self.geninfo    = geninfo
         self.fastsim    = fastsim
         self.signal     = signal

@@ -393,6 +393,14 @@ def makeTreeFromMiniAOD(self,process):
             filterName  = cms.string("Flag_globalTightHalo2016Filter"),
         )
         self.VarsInt.extend(['globalTightHalo2016Filter'])
+
+        process.globalSuperTightHalo2016Filter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(self.tagname),
+            filterName  = cms.string("Flag_globalSuperTightHalo2016Filter"),
+        )
+        self.VarsInt.extend(['globalSuperTightHalo2016Filter'])
         
         process.HBHENoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
@@ -481,6 +489,7 @@ def makeTreeFromMiniAOD(self,process):
     if not self.geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
         process.PrescaleWeightProducer = prescaleweightProducer.clone()
+        process.PrescaleWeightProducer.bits.setProcessName(self.hlttagname)
         self.VarsDouble.extend(['PrescaleWeightProducer:weight(PrescaleWeightHT)'])
         self.VarsDouble.extend(['PrescaleWeightProducer:ht(HTOnline)'])
         self.VarsDouble.extend(['PrescaleWeightProducer:mht(MHTOnline)'])

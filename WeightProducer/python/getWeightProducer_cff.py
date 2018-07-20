@@ -275,6 +275,23 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("rpv_stop_650_t3j_uds", "", "", "Constant", 59334),
         MCSample("rpv_stop_750_t3j_uds", "", "", "Constant", 58016),
         MCSample("rpv_stop_850_t3j_uds", "", "", "Constant", 57069),
+
+        MCSample('RelValTTbar_13', 'PU25ns_101X_upgrade2018_realistic_HEmiss_v1-v1', 'CMSSW_10_1_7', 'Constant', 9000),
+        MCSample('RelValTTbar_13', 'PU25ns_101X_upgrade2018_realistic_v7-v1', 'CMSSW_10_1_1', 'Constant', 9000),
+        MCSample('RelValTTbar_13', '101X_upgrade2018_realistic_HEmiss_v1-v1', 'CMSSW_10_1_7', 'Constant', 9000),
+        MCSample('RelValTTbar_13', '101X_upgrade2018_realistic_v7-v1', 'CMSSW_10_1_1', 'Constant', 9000),
+        MCSample('RelValSMS-T1tttt_mGl-1500_mLSP-100_13', 'PU25ns_101X_upgrade2018_realistic_HEmiss_v1-v1', 'CMSSW_10_1_7', 'Constant', 9000),
+        MCSample('RelValSMS-T1tttt_mGl-1500_mLSP-100_13', 'PU25ns_101X_upgrade2018_realistic_v7-v1', 'CMSSW_10_1_1', 'Constant', 9000),
+        MCSample('RelValSMS-T1tttt_mGl-1500_mLSP-100_13', '101X_upgrade2018_realistic_HEmiss_v1-v1', 'CMSSW_10_1_7', 'Constant', 9000),
+        MCSample('RelValSMS-T1tttt_mGl-1500_mLSP-100_13', '101X_upgrade2018_realistic_v7-v1', 'CMSSW_10_1_1', 'Constant', 9000),
+        MCSample('RelValQCD_Pt_80_120_13', '101X_upgrade2018_realistic_HEmiss_v1-v1', 'CMSSW_10_1_7', 'Constant', 9000),
+        MCSample('RelValQCD_Pt_80_120_13', '101X_upgrade2018_realistic_v7-v1', 'CMSSW_10_1_1', 'Constant', 9000),
+        MCSample('RelValQCD_Pt_600_800_13', '101X_upgrade2018_realistic_HEmiss_v1-v1', 'CMSSW_10_1_7', 'Constant', 9000),
+        MCSample('RelValQCD_Pt_600_800_13', '101X_upgrade2018_realistic_v7-v1', 'CMSSW_10_1_1', 'Constant', 9000),
+        MCSample('RelValQCD_FlatPt_15_3000HS_13', '101X_upgrade2018_realistic_HEmiss_v1-v1', 'CMSSW_10_1_7', 'Constant', 50000),
+        MCSample('RelValQCD_FlatPt_15_3000HS_13', '101X_upgrade2018_realistic_v7-v1', 'CMSSW_10_1_1', 'Constant', 50000),
+        MCSample('RelValQCD_FlatPt_15_3000HS_13', 'PU25ns_101X_upgrade2018_realistic_HEmiss_v1-v1', 'CMSSW_10_1_7', 'Constant', 50000),
+        MCSample('RelValQCD_FlatPt_15_3000HS_13', 'PU25ns_101X_upgrade2018_realistic_v7-v1', 'CMSSW_10_1_1', 'Constant', 50000),
     ]
     
     # loop over all samples until we find a match

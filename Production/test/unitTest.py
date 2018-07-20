@@ -50,7 +50,8 @@ mytests.append(makeTest("2016ReMiniAOD03Feb","MET16ReMiniAOD" if len(name)==0 el
 mytests.append(makeTest("Fall17","gjet17" if len(name)==0 else name,numevents,command,dataset="/store/mc/RunIIFall17MiniAODv2/GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/10000/CEB1CF27-F670-E811-BB3F-FA163E528207.root"))
 mytests.append(makeTest("2017ReReco31Mar","MET17ReReco" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2017B-31Mar2018-v1.MET",nstart=0,nfiles=10))
 mytests.append(makeTest("2018Prompt","MET18Prompt" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2018A-PromptReco-v1.MET",nstart=0,nfiles=10))
-
+mytests.append(makeTest("2018PromptRelVal","MET18RelVal" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2018B-RelVal-v1.MET",nstart=0,nfiles=10))
+mytests.append(makeTest("2018PromptRelValHEMiss","MET18RelValHEMiss" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2018B-RelVal-HEMiss-v1.MET",nstart=0,nfiles=10))
 
 if test<0 or test>len(mytests):
     print "Predefined tests:"
@@ -67,3 +68,7 @@ else:
                 print "\nRunning test... ["+str(p.pid)+"]"
                 sts = os.waitpid(p.pid, 0)[1]
                 print "\nTest is done! ["+str(p.pid)+"]"
+
+
+#Example:
+#  python unitTest.py numevents=1000 run=True test=0
