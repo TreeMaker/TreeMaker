@@ -144,6 +144,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
             reclusterJets=False, # without reclustering
             reapplyJEC=False,
             postfix=postfix+'Orig',
+            computeMETSignificance=False,
         )
         METTagOrig = cms.InputTag('slimmedMETs'+postfix+'Orig')
         MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise"+postfix,"jets")

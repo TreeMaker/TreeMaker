@@ -251,7 +251,8 @@ def makeTreeFromMiniAOD(self,process):
                 process,
                 isData=not self.geninfo, # controls gen met
                 reapplyJEC=False,
-                postfix="Orig"
+                postfix="Orig",
+                computeMETSignificance=False,
             )
             METTagOrig = cms.InputTag('slimmedMETsOrig')
             MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise","jets",process.name_())
