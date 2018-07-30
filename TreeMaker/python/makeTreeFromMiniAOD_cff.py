@@ -715,11 +715,15 @@ def makeTreeFromMiniAOD(self,process):
 
     _floatsAK8 = []
     if self.deepAK8:
-        from TreeMaker.Utils.deepak8producer_cfi import DeepAK8Producer
+        from TreeMaker.Utils.deepak8producer_cfi import DeepAK8Producer, DeepAK8DecorrelProducer
         process.deepAK8 = DeepAK8Producer.clone(
             JetAK8 = JetAK8Tag
         )
-        _floatsAK8 = ['deepAK8:tDiscriminatorDeep','deepAK8:wDiscriminatorDeep','deepAK8:zDiscriminatorDeep','deepAK8:hDiscriminatorDeep']
+        _floatsAK8.extend(['deepAK8:tDiscriminatorDeep','deepAK8:wDiscriminatorDeep','deepAK8:zDiscriminatorDeep','deepAK8:hDiscriminatorDeep'])
+        process.deepAK8decorrel = DeepAK8DecorrelProducer.clone(
+            JetAK8 = JetAK8Tag
+        )
+        _floatsAK8.extend(['deepAK8decorrel:tDiscriminatorDeep','deepAK8decorrel:wDiscriminatorDeep','deepAK8decorrel:zDiscriminatorDeep','deepAK8decorrel:hDiscriminatorDeep'])
 
     # add discriminator and update tag
     process, JetAK8Tag = addJetInfo(process, JetAK8Tag, _floatsAK8, [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))

@@ -83,8 +83,3 @@ scram b -j ${CORES}
 # extra setup
 cd TreeMaker/Production/test/condorSub/
 python $CMSSW_BASE/src/Condor/Production/python/linkScripts.py
-DEEPDATA=${CMSSW_BASE}/src/NNKit/data/ak8/full
-TMDATA=${CMSSW_BASE}/src/TreeMaker/Production/test/data
-cp ${DEEPDATA}/preprocessing.json ${TMDATA}/
-cp ${DEEPDATA}/resnet-symbol.json ${TMDATA}/
-cp ${DEEPDATA}/resnet.params ${TMDATA}/

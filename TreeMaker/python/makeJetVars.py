@@ -389,16 +389,28 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 "wDiscriminatorDeep",
                 "zDiscriminatorDeep",
                 "hDiscriminatorDeep",
+                "tDiscriminatorDeepDecorrel",
+                "wDiscriminatorDeepDecorrel",
+                "zDiscriminatorDeepDecorrel",
+                "hDiscriminatorDeepDecorrel",
             ])
             JetPropertiesAK8.tDiscriminatorDeep = cms.vstring('deepAK8:tDiscriminatorDeep')
             JetPropertiesAK8.wDiscriminatorDeep = cms.vstring('deepAK8:wDiscriminatorDeep')
             JetPropertiesAK8.zDiscriminatorDeep = cms.vstring('deepAK8:zDiscriminatorDeep')
             JetPropertiesAK8.hDiscriminatorDeep = cms.vstring('deepAK8:hDiscriminatorDeep')
+            JetPropertiesAK8.tDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel:tDiscriminatorDeep')
+            JetPropertiesAK8.wDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel:wDiscriminatorDeep')
+            JetPropertiesAK8.zDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel:zDiscriminatorDeep')
+            JetPropertiesAK8.hDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel:hDiscriminatorDeep')
             self.VectorDouble.extend([
                 'JetProperties'+suff+':tDiscriminatorDeep(Jets'+suff+'_tDiscriminatorDeep)',
                 'JetProperties'+suff+':wDiscriminatorDeep(Jets'+suff+'_wDiscriminatorDeep)',
                 'JetProperties'+suff+':zDiscriminatorDeep(Jets'+suff+'_zDiscriminatorDeep)',
                 'JetProperties'+suff+':hDiscriminatorDeep(Jets'+suff+'_hDiscriminatorDeep)',
+                'JetProperties'+suff+':tDiscriminatorDeepDecorrel(Jets'+suff+'_tDiscriminatorDeepDecorrel)',
+                'JetProperties'+suff+':wDiscriminatorDeepDecorrel(Jets'+suff+'_wDiscriminatorDeepDecorrel)',
+                'JetProperties'+suff+':zDiscriminatorDeepDecorrel(Jets'+suff+'_zDiscriminatorDeepDecorrel)',
+                'JetProperties'+suff+':hDiscriminatorDeepDecorrel(Jets'+suff+'_hDiscriminatorDeepDecorrel)',
             ])
 
         if storeProperties>1:
