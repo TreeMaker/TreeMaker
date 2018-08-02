@@ -231,6 +231,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
             'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)',
         ])
         if storeProperties>1:
+            JetProperties.properties.extend(["jecFactor"])
             self.VectorDouble.extend([
                 'JetProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
                 'JetProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
@@ -243,13 +244,13 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
                 'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
                 'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
                 'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
+                'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
             ])
             if self.geninfo:
-                JetProperties.properties.extend(["jerFactor","jecFactor"])
+                JetProperties.properties.extend(["jerFactor"])
                 JetProperties.jerFactor = cms.vstring("jerFactor")
                 self.VectorDouble.extend([
                     'JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
-                    'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
                 ])
                 if self.systematics:
                     # account for central JER smearing

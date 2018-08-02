@@ -543,7 +543,7 @@ def makeTreeFromMiniAOD(self,process):
 
     if self.geninfo and self.systematics:
         # JEC unc up
-        process, JetTagJECupTmp, JetTagJECup = JetDepot(process,
+        process, JetTagJECTmp, JetTagJECup = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=1,
             storeJec=True, # get JER unc value (in intermediate tag Tmp)
@@ -612,7 +612,17 @@ def makeTreeFromMiniAOD(self,process):
         )
 
         # append factors to central collection
-        process, JetTag = addJetInfo(process, JetTag, [JetTagJECupTmp.value(),JetTagJERup.value(),JetTagJERdown.value()], [])
+        process, JetTag = addJetInfo(process, JetTag, [JetTagJECTmp.value(),JetTagJERup.value(),JetTagJERdown.value()], [])
+    elif not self.geninfo:
+        # get JEC unc for data
+        process, JetTagJECTmp, _ = JetDepot(process,
+            JetTag=JetTag,
+            jecUncDir=0,
+            storeJec=True, # get JER unc value (in intermediate tag Tmp)
+            doSmear=False,
+        )
+        # append unc to central collection
+        process, JetTag = addJetInfo(process, JetTag, [JetTagJECTmp.value()], [])
 
     if self.geninfo:
         # finally, do central smearing and replace jet tag
@@ -670,13 +680,17 @@ def makeTreeFromMiniAOD(self,process):
         SkipTag=SkipTag,
         MHTJetTagExt = MHTJetTagExt,
     )
-    if self.geninfo and self.systematics:
-        process.JetProperties.properties.extend(["jerFactorUp","jerFactorDown","jecUnc"])
-        process.JetProperties.jerFactorUp = cms.vstring(JetTagJERup.value())
-        process.JetProperties.jerFactorDown = cms.vstring(JetTagJERdown.value())
-        process.JetProperties.jecUnc = cms.vstring(JetTagJECupTmp.value())
+    if self.systematics:
+        process.JetProperties.properties.extend(["jecUnc"])
+        process.JetProperties.jecUnc = cms.vstring(JetTagJECTmp.value())
         self.VectorDouble.extend([
             'JetProperties:jecUnc(Jets_jecUnc)',
+        ])
+    if self.geninfo and self.systematics:
+        process.JetProperties.properties.extend(["jerFactorUp","jerFactorDown"])
+        process.JetProperties.jerFactorUp = cms.vstring(JetTagJERup.value())
+        process.JetProperties.jerFactorDown = cms.vstring(JetTagJERdown.value())
+        self.VectorDouble.extend([
             'JetProperties:jerFactorUp(Jets_jerFactorUp)',
             'JetProperties:jerFactorDown(Jets_jerFactorDown)',
         ])

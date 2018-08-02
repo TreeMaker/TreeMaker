@@ -44,7 +44,9 @@ JetUncertaintyProducer::JetUncertaintyProducer(const edm::ParameterSet& iConfig)
 	if(storeUnc_){
 		produces<edm::ValueMap<float>>("");
 	}
-	produces<std::vector<pat::Jet>>();
+	if(jecUncDir_ != 0){
+		produces<std::vector<pat::Jet>>();
+	}
 }
 
 void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
@@ -60,7 +62,9 @@ void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 	iEvent.getByToken(JetTok_, jets);
 
 	auto newJets  = std::make_unique<std::vector<pat::Jet>>();
-	newJets->reserve(jets->size());
+	if(jecUncDir_ != 0){
+		newJets->reserve(jets->size());
+	}
 	auto jecUncVec  = std::make_unique<std::vector<double>>();
 	if(storeUnc_){
 		jecUncVec->reserve(jets->size());
@@ -94,10 +98,11 @@ void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 		}
 		
 		//apply variation to p4 in jet object
-		ajet.scaleEnergy(jesUncScale);
-		
-		//store varied jet
-		newJets->push_back(ajet);		
+		if(jecUncDir_ != 0){
+			ajet.scaleEnergy(jesUncScale);
+			//store varied jet
+			newJets->push_back(ajet);
+		}
 	}
 
 	if(storeUnc_){
@@ -108,10 +113,11 @@ void JetUncertaintyProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 		filler.fill();
 		iEvent.put(std::move(out),"");
 	}
-	//sort jets in pt
-	std::sort(newJets->begin(), newJets->end(), pTComparator_);
-	
-	iEvent.put(std::move(newJets));
+	if(jecUncDir_ != 0){
+		//sort jets in pt
+		std::sort(newJets->begin(), newJets->end(), pTComparator_);
+		iEvent.put(std::move(newJets));
+	}
 }
 
 DEFINE_FWK_MODULE(JetUncertaintyProducer);
