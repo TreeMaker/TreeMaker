@@ -240,15 +240,25 @@ def makeTreeFromMiniAOD(self,process):
         runMetCorAndUncFromMiniAOD(
             process,
             isData=not self.geninfo, # controls gen met
+            reapplyJEC=False,
+            fixEE2017=self.doMETfix,
         )
         METTag = cms.InputTag('slimmedMETs','',process.name_())
-    else:
-        # pointless run of MET tool because it is barely functional
-        from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
-        runMetCorAndUncFromMiniAOD(
-            process,
-            isData=not self.geninfo, # controls gen met
-        )
+
+        # additional run to keep orig values
+        if self.doMETfix:
+            runMetCorAndUncFromMiniAOD(
+                process,
+                isData=not self.geninfo, # controls gen met
+                reapplyJEC=False,
+                postfix="Orig",
+                computeMETSignificance=False,
+            )
+            METTagOrig = cms.InputTag('slimmedMETsOrig')
+            MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise","jets",process.name_())
+        else:
+            METTagOrig = None
+            MHTJetTagExt = None
 
     # keep jets before any further modifications for hadtau
     JetTagBeforeSmearing = JetTag
@@ -657,7 +667,8 @@ def makeTreeFromMiniAOD(self,process):
         suff='',
         skipGoodJets=False,
         storeProperties=2,
-        SkipTag=SkipTag
+        SkipTag=SkipTag,
+        MHTJetTagExt = MHTJetTagExt,
     )
     if self.geninfo and self.systematics:
         process.JetProperties.properties.extend(["jerFactorUp","jerFactorDown","jecUnc"])
@@ -705,11 +716,15 @@ def makeTreeFromMiniAOD(self,process):
 
     _floatsAK8 = []
     if self.deepAK8:
-        from TreeMaker.Utils.deepak8producer_cfi import DeepAK8Producer
+        from TreeMaker.Utils.deepak8producer_cfi import DeepAK8Producer, DeepAK8DecorrelProducer
         process.deepAK8 = DeepAK8Producer.clone(
             JetAK8 = JetAK8Tag
         )
-        _floatsAK8 = ['deepAK8:tDiscriminatorDeep','deepAK8:wDiscriminatorDeep','deepAK8:zDiscriminatorDeep','deepAK8:hDiscriminatorDeep']
+        _floatsAK8.extend(['deepAK8:tDiscriminatorDeep','deepAK8:wDiscriminatorDeep','deepAK8:zDiscriminatorDeep','deepAK8:hDiscriminatorDeep'])
+        process.deepAK8decorrel = DeepAK8DecorrelProducer.clone(
+            JetAK8 = JetAK8Tag
+        )
+        _floatsAK8.extend(['deepAK8decorrel:tDiscriminatorDeep','deepAK8decorrel:wDiscriminatorDeep','deepAK8decorrel:zDiscriminatorDeep','deepAK8decorrel:hDiscriminatorDeep'])
 
     # add discriminator and update tag
     process, JetAK8Tag = addJetInfo(process, JetAK8Tag, _floatsAK8, [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
@@ -829,6 +844,12 @@ def makeTreeFromMiniAOD(self,process):
     if self.geninfo:
         self.VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
         self.VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
+
+    if self.doMETfix:
+        process.METOrig = process.MET.clone(
+            METTag = METTagOrig
+        )
+        self.VarsDouble.extend(['METOrig:Pt(METOrig)','METOrig:Phi(METPhiOrig)'])
 
     from TreeMaker.Utils.mt2producer_cfi import mt2Producer
     process.Mt2Producer = mt2Producer.clone(

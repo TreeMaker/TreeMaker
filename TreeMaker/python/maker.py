@@ -15,6 +15,9 @@ class maker:
         self.scenarioName=self.parameters.value("scenario","")
         from TreeMaker.Production.scenarios import Scenario
         self.scenario = Scenario(self.scenarioName)
+
+        # to keep track of MET fix, currently applied to all 2017 data and MC
+        self.doMETfix = ("Fall17" in self.scenarioName or "2017" in self.scenarioName)
         
         self.getParamDefault("verbose",True)
         self.getParamDefault("inputFilesConfig","")

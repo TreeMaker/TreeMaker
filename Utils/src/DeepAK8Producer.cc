@@ -10,6 +10,7 @@
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ParameterSet/interface/FileInPath.h"
 // new includes
 #include "NNKit/FatJetNN/interface/FatJetNN.h"
 #include "NNKit/FatJetNN/interface/FatJetNNHelper.h"
@@ -34,10 +35,11 @@ DeepAK8Producer::DeepAK8Producer(const edm::ParameterSet& iConfig) :
     // Initialize the FatJetNN class in the constructor
     auto cc = consumesCollector();
     fatjetNN_ = std::make_unique<deepntuples::FatJetNN>(iConfig, cc);
+    const auto& datapath_(iConfig.getParameter<std::string>("datapath"));
     // Load json for input variable transformation
-    fatjetNN_->load_json("data/preprocessing.json"); // use the full path or put the file in the current working directory (i.e., where you run cmsRun)
+    fatjetNN_->load_json(edm::FileInPath(datapath_+"/preprocessing.json").fullPath());
     // Load DNN model and parameter files
-    fatjetNN_->load_model("data/resnet-symbol.json", "data/resnet.params"); // use the full path or put the file in the current working directory (i.e., where you run cmsRun)
+    fatjetNN_->load_model(edm::FileInPath(datapath_+"/resnet-symbol.json").fullPath(), edm::FileInPath(datapath_+"/resnet.params").fullPath());
 
     // Declare what is produced
     produces<edm::ValueMap<float>>("tDiscriminatorDeep");

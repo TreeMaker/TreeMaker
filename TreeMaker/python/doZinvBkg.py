@@ -129,9 +129,28 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         pfCandColl=cleanedCandidates.value(),
         recoMetFromPFCs=True, # to recompute
         reclusterJets=False, # without reclustering
-        postfix=postfix
+        reapplyJEC=False,
+        fixEE2017=self.doMETfix,
+        postfix=postfix,
     )
     METTag = cms.InputTag('slimmedMETs'+postfix)
+    if self.doMETfix:
+        runMetCorAndUncFromMiniAOD(
+            process,
+            isData=not self.geninfo, # controls gen met
+            jetCollUnskimmed='patJetsAK4PFCLEAN'+suff,
+            pfCandColl=cleanedCandidates.value(),
+            recoMetFromPFCs=True, # to recompute
+            reclusterJets=False, # without reclustering
+            reapplyJEC=False,
+            postfix=postfix+'Orig',
+            computeMETSignificance=False,
+        )
+        METTagOrig = cms.InputTag('slimmedMETs'+postfix+'Orig')
+        MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise"+postfix,"jets")
+    else:
+        METTagOrig = None
+        MHTJetTagExt = None
     
     # isolated tracks
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -203,6 +222,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         suff=postfix,
         skipGoodJets=False,
         storeProperties=1,
+        MHTJetTagExt=MHTJetTagExt,
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
@@ -212,6 +232,14 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     )
     setattr(process,"METclean"+suff,METclean)
     self.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')','METclean'+suff+':Significance(METSignificanceclean'+suff+')'])
+
+    if self.doMETfix:
+        METcleanOrig = METclean.clone(
+            METTag = METTagOrig
+        )
+        setattr(process,"METclean"+suff+"Orig",METcleanOrig)
+        self.VarsDouble.extend(['METclean'+suff+'Orig:Pt(METclean'+suff+'Orig)','METclean'+suff+'Orig:Phi(METPhiclean'+suff+'Orig)'])
+
     return process
 
 def doZinvBkg(self,process):

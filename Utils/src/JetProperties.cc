@@ -107,6 +107,10 @@ DEFAULT_NAMED_PTR(D,tDiscriminatorDeep);
 DEFAULT_NAMED_PTR(D,wDiscriminatorDeep);
 DEFAULT_NAMED_PTR(D,zDiscriminatorDeep);
 DEFAULT_NAMED_PTR(D,hDiscriminatorDeep);
+DEFAULT_NAMED_PTR(D,tDiscriminatorDeepDecorrel);
+DEFAULT_NAMED_PTR(D,wDiscriminatorDeepDecorrel);
+DEFAULT_NAMED_PTR(D,zDiscriminatorDeepDecorrel);
+DEFAULT_NAMED_PTR(D,hDiscriminatorDeepDecorrel);
 
 class NamedPtr_I : public NamedPtr<int> {
 	public:

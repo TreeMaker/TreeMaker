@@ -171,6 +171,7 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
          if (!saveAllPt_ &&
               ( (!invertJetPtFilter_ && iJet.pt() <= jetPtFilter_) ||
                 (invertJetPtFilter_ && iJet.pt() > jetPtFilter_) ) ) continue;
+         if (!iJet.isPFJet()) continue;
          float neufrac=iJet.neutralHadronEnergyFraction();//gives raw energy in the denominator
          float phofrac=iJet.neutralEmEnergyFraction();//gives raw energy in the denominator
          float chgfrac=iJet.chargedHadronEnergyFraction();

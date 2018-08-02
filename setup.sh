@@ -49,7 +49,7 @@ fi
 # get CMSSW release
 export SCRAM_ARCH=slc6_amd64_gcc630
 # cmsrel
-CMSSWVER=CMSSW_9_4_8
+CMSSWVER=CMSSW_9_4_9
 scram project ${CMSSWVER}
 cd ${CMSSWVER}/src/
 # cmsenv
@@ -59,17 +59,18 @@ git config gc.auto 0
 
 # DeepAK8 setup
 if [ "$ACCESS" = "https" ]; then echo "Needs your CERN username and password: NNKit is being cloned from gitlab"; fi
-git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements
-cp /cvmfs/cms-lpc.opensciencegrid.org/sl6/opt/mxnet-1.1.0/mxnet_predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
-scram setup mxnet_predict
+git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements-2 --depth 1
+cp NNKit/misc/mxnet-predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
+scram setup mxnet-predict
+cp --remove-destination NNKit/misc/lib/libmxnetpredict.so $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnetpredict.so
 
 # CMSSW patches
-git cms-merge-topic TreeMaker:JERFormula942 # this one has dependencies (will be included in next 94X)
 git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_948
-git cms-merge-topic -u TreeMaker:SpeedupPuppi948 # will be included in next 94X
+git cms-merge-topic -u TreeMaker:METFixEE2017_949
+git cms-merge-topic -u TreeMaker:SpeedupMETSig_949
 
 # outside repositories
 git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
@@ -82,8 +83,3 @@ scram b -j ${CORES}
 # extra setup
 cd TreeMaker/Production/test/condorSub/
 python $CMSSW_BASE/src/Condor/Production/python/linkScripts.py
-DEEPDATA=${CMSSW_BASE}/src/NNKit/data/ak8/full
-TMDATA=${CMSSW_BASE}/src/TreeMaker/Production/test/data
-cp ${DEEPDATA}/preprocessing.json ${TMDATA}/
-cp ${DEEPDATA}/resnet-symbol.json ${TMDATA}/
-cp ${DEEPDATA}/resnet.params ${TMDATA}/

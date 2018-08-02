@@ -37,7 +37,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
 # 0 = scalars (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType=""):
+def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", MHTJetTagExt=None):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -102,7 +102,7 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     ## MHT, DeltaPhi
     ## ----------------------------------------------------------------------------------------------
     MHTJets = SubJetSelection.clone(
-        JetTag = JetTag,
+        JetTag = MHTJetTagExt if MHTJetTagExt is not None else JetTag,
         MinPt  = cms.double(30),
         MaxEta = cms.double(5.0),
     )
@@ -124,11 +124,35 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     )
     setattr(process,"DeltaPhi"+suff,DeltaPhi)
     self.VarsDouble.extend(['DeltaPhi'+suff+':DeltaPhi1(DeltaPhi1'+suff+')','DeltaPhi'+suff+':DeltaPhi2(DeltaPhi2'+suff+')',
-                                          'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
+                            'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
+
+    # keep orig MHT, dphi values if ext tag was given
+    if MHTJetTagExt is not None:
+        MHTJetsOrig = MHTJets.clone(
+            JetTag = JetTag,
+        )
+        setattr(process,"MHTJets"+suff+"Orig",MHTJetsOrig)
+        if storeProperties>0: self.VectorBool.extend(['MHTJets'+suff+'Orig:SubJetMask(Jets'+suff+'_MHTOrig'+'Mask)'])
+        MHTJetsTagOrig = cms.InputTag("MHTJets"+suff+"Orig")
+    
+        MHTOrig = mhtdouble.clone(
+            JetTag  = MHTJetsTagOrig,
+        )
+        setattr(process,"MHT"+suff+"Orig",MHTOrig)
+        self.VarsDouble.extend(['MHT'+suff+'Orig:Pt(MHT'+suff+'Orig)','MHT'+suff+'Orig:Phi(MHTPhi'+suff+'Orig)'])
+        
+        DeltaPhiOrig = DeltaPhi.clone(
+            MHTPhi       = cms.InputTag('MHT'+suff+'Orig:Phi'),
+        )
+        setattr(process,"DeltaPhi"+suff+"Orig",DeltaPhiOrig)
+        self.VarsDouble.extend(['DeltaPhi'+suff+'Orig:DeltaPhi1(DeltaPhi1'+suff+'Orig)','DeltaPhi'+suff+'Orig:DeltaPhi2(DeltaPhi2'+suff+'Orig)',
+                                'DeltaPhi'+suff+'Orig:DeltaPhi3(DeltaPhi3'+suff+'Orig)','DeltaPhi'+suff+'Orig:DeltaPhi4(DeltaPhi4'+suff+'Orig)'])
+    else:
+        MHTJetsTagOrig = None
 
     # extra HT version using MHT collection w/ |eta| < 5, to filter forward beam halo events
     HT5 = htdouble.clone(
-        JetTag = MHTJetsTag,
+        JetTag = MHTJetsTagOrig if MHTJetsTagOrig is not None else MHTJetsTag,
     )
     setattr(process,"HT5"+suff,HT5)
     self.VarsDouble.extend(['HT5'+suff])
@@ -365,16 +389,28 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties):
                 "wDiscriminatorDeep",
                 "zDiscriminatorDeep",
                 "hDiscriminatorDeep",
+                "tDiscriminatorDeepDecorrel",
+                "wDiscriminatorDeepDecorrel",
+                "zDiscriminatorDeepDecorrel",
+                "hDiscriminatorDeepDecorrel",
             ])
             JetPropertiesAK8.tDiscriminatorDeep = cms.vstring('deepAK8:tDiscriminatorDeep')
             JetPropertiesAK8.wDiscriminatorDeep = cms.vstring('deepAK8:wDiscriminatorDeep')
             JetPropertiesAK8.zDiscriminatorDeep = cms.vstring('deepAK8:zDiscriminatorDeep')
             JetPropertiesAK8.hDiscriminatorDeep = cms.vstring('deepAK8:hDiscriminatorDeep')
+            JetPropertiesAK8.tDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel:tDiscriminatorDeep')
+            JetPropertiesAK8.wDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel:wDiscriminatorDeep')
+            JetPropertiesAK8.zDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel:zDiscriminatorDeep')
+            JetPropertiesAK8.hDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel:hDiscriminatorDeep')
             self.VectorDouble.extend([
                 'JetProperties'+suff+':tDiscriminatorDeep(Jets'+suff+'_tDiscriminatorDeep)',
                 'JetProperties'+suff+':wDiscriminatorDeep(Jets'+suff+'_wDiscriminatorDeep)',
                 'JetProperties'+suff+':zDiscriminatorDeep(Jets'+suff+'_zDiscriminatorDeep)',
                 'JetProperties'+suff+':hDiscriminatorDeep(Jets'+suff+'_hDiscriminatorDeep)',
+                'JetProperties'+suff+':tDiscriminatorDeepDecorrel(Jets'+suff+'_tDiscriminatorDeepDecorrel)',
+                'JetProperties'+suff+':wDiscriminatorDeepDecorrel(Jets'+suff+'_wDiscriminatorDeepDecorrel)',
+                'JetProperties'+suff+':zDiscriminatorDeepDecorrel(Jets'+suff+'_zDiscriminatorDeepDecorrel)',
+                'JetProperties'+suff+':hDiscriminatorDeepDecorrel(Jets'+suff+'_hDiscriminatorDeepDecorrel)',
             ])
 
         if storeProperties>1:
