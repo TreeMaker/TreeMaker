@@ -11,14 +11,14 @@ def JetDepot(process, JetTag, jecUncDir=0, storeJec=False, doSmear=True, jerUncD
 
     from TreeMaker.Utils.jetuncertainty_cfi import JetUncertaintyProducer
 
-    if jecUncDir!=0:
+    if jecUncDir!=0 or storeJec:
         #JEC unc up or down
         patJetsJEC = JetUncertaintyProducer.clone(
             JetTag = JetTagOut,
             jecUncDir = cms.int32(jecUncDir),
             storeUnc = cms.bool(storeJec),
         )
-        dir = "up" if jecUncDir>0 else "down"
+        dir = "up" if jecUncDir>0 else "down" if jecUncDir<0 else "unc"
         JetTagOut = cms.InputTag(JetTagOut.value()+"JEC"+dir)
         setattr(process,JetTagOut.value(),patJetsJEC)
 

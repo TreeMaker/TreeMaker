@@ -543,7 +543,7 @@ def makeTreeFromMiniAOD(self,process):
 
     if self.geninfo and self.systematics:
         # JEC unc up
-        process, JetTagJECupTmp, JetTagJECup = JetDepot(process,
+        process, JetTagJECTmp, JetTagJECup = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=1,
             storeJec=True, # get JER unc value (in intermediate tag Tmp)
@@ -612,7 +612,17 @@ def makeTreeFromMiniAOD(self,process):
         )
 
         # append factors to central collection
-        process, JetTag = addJetInfo(process, JetTag, [JetTagJECupTmp.value(),JetTagJERup.value(),JetTagJERdown.value()], [])
+        process, JetTag = addJetInfo(process, JetTag, [JetTagJECTmp.value(),JetTagJERup.value(),JetTagJERdown.value()], [])
+    elif not self.geninfo:
+        # get JEC unc for data
+        process, JetTagJECTmp, _ = JetDepot(process,
+            JetTag=JetTag,
+            jecUncDir=0,
+            storeJec=True, # get JER unc value (in intermediate tag Tmp)
+            doSmear=False,
+        )
+        # append unc to central collection
+        process, JetTag = addJetInfo(process, JetTag, [JetTagJECTmp.value()], [])
 
     if self.geninfo:
         # finally, do central smearing and replace jet tag
@@ -670,13 +680,17 @@ def makeTreeFromMiniAOD(self,process):
         SkipTag=SkipTag,
         MHTJetTagExt = MHTJetTagExt,
     )
-    if self.geninfo and self.systematics:
-        process.JetProperties.properties.extend(["jerFactorUp","jerFactorDown","jecUnc"])
-        process.JetProperties.jerFactorUp = cms.vstring(JetTagJERup.value())
-        process.JetProperties.jerFactorDown = cms.vstring(JetTagJERdown.value())
-        process.JetProperties.jecUnc = cms.vstring(JetTagJECupTmp.value())
+    if self.systematics:
+        process.JetProperties.properties.extend(["jecUnc"])
+        process.JetProperties.jecUnc = cms.vstring(JetTagJECTmp.value())
         self.VectorDouble.extend([
             'JetProperties:jecUnc(Jets_jecUnc)',
+        ])
+    if self.geninfo and self.systematics:
+        process.JetProperties.properties.extend(["jerFactorUp","jerFactorDown"])
+        process.JetProperties.jerFactorUp = cms.vstring(JetTagJERup.value())
+        process.JetProperties.jerFactorDown = cms.vstring(JetTagJERdown.value())
+        self.VectorDouble.extend([
             'JetProperties:jerFactorUp(Jets_jerFactorUp)',
             'JetProperties:jerFactorDown(Jets_jerFactorDown)',
         ])
@@ -702,33 +716,6 @@ def makeTreeFromMiniAOD(self,process):
     )
     JetAK8Tag = JetAK8TagSJU
     
-    # get double b-tagger (w/ miniAOD customizations)
-    process.load("RecoBTag.ImpactParameter.pfImpactParameterAK8TagInfos_cfi")
-    process.pfImpactParameterAK8TagInfos.primaryVertex = cms.InputTag("offlineSlimmedPrimaryVertices")
-    process.pfImpactParameterAK8TagInfos.candidates = cms.InputTag("packedPFCandidates")
-    process.pfImpactParameterAK8TagInfos.jets = JetAK8Tag
-    process.load("RecoBTag.SecondaryVertex.pfInclusiveSecondaryVertexFinderAK8TagInfos_cfi")
-    process.pfInclusiveSecondaryVertexFinderAK8TagInfos.extSVCollection = cms.InputTag("slimmedSecondaryVertices")
-    process.pfInclusiveSecondaryVertexFinderAK8TagInfos.trackIPTagInfos = cms.InputTag("pfImpactParameterAK8TagInfos")
-    process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSVAK8TagInfos_cfi")
-    process.load("RecoBTag.SecondaryVertex.candidateBoostedDoubleSecondaryVertexAK8Computer_cfi")
-    process.load("RecoBTag.SecondaryVertex.pfBoostedDoubleSecondaryVertexAK8BJetTags_cfi")
-
-    _floatsAK8 = []
-    if self.deepAK8:
-        from TreeMaker.Utils.deepak8producer_cfi import DeepAK8Producer, DeepAK8DecorrelProducer
-        process.deepAK8 = DeepAK8Producer.clone(
-            JetAK8 = JetAK8Tag
-        )
-        _floatsAK8.extend(['deepAK8:tDiscriminatorDeep','deepAK8:wDiscriminatorDeep','deepAK8:zDiscriminatorDeep','deepAK8:hDiscriminatorDeep'])
-        process.deepAK8decorrel = DeepAK8DecorrelProducer.clone(
-            JetAK8 = JetAK8Tag
-        )
-        _floatsAK8.extend(['deepAK8decorrel:tDiscriminatorDeep','deepAK8decorrel:wDiscriminatorDeep','deepAK8decorrel:zDiscriminatorDeep','deepAK8decorrel:hDiscriminatorDeep'])
-
-    # add discriminator and update tag
-    process, JetAK8Tag = addJetInfo(process, JetAK8Tag, _floatsAK8, [], cms.VInputTag(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags")))
-
     # apply jet ID and get properties
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8Tag,
