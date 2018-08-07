@@ -162,7 +162,7 @@ class Scenario:
         elif sname == "RelValCMSSW101X":
             self.set_vars(
                 globaltag="101X_upgrade2018_realistic_v7",
-                tagname="PAT",
+                tagname="RECO",
                 hlttagname="reHLT",
                 geninfo=True,
                 signal=True,
@@ -175,7 +175,7 @@ class Scenario:
         elif sname == "RelValCMSSW101XHEMiss":
             self.set_vars(
                 globaltag="101X_upgrade2018_realistic_HEmiss_v1",
-                tagname="PAT",
+                tagname="RECO",
                 hlttagname="reHLT",
                 geninfo=True,
                 signal=True,
