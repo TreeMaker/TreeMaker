@@ -59,7 +59,7 @@ git config gc.auto 0
 
 # DeepAK8 setup
 if [ "$ACCESS" = "https" ]; then echo "Needs your CERN username and password: NNKit is being cloned from gitlab"; fi
-git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements-2 --depth 1
+git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements-3 --depth 1
 cp NNKit/misc/mxnet-predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
 scram setup mxnet-predict
 cp --remove-destination NNKit/misc/lib/libmxnetpredict.so $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnetpredict.so
