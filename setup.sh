@@ -59,18 +59,19 @@ git config gc.auto 0
 
 # DeepAK8 setup
 if [ "$ACCESS" = "https" ]; then echo "Needs your CERN username and password: NNKit is being cloned from gitlab"; fi
-git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements-2 --depth 1
+git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements-3 --depth 1
 cp NNKit/misc/mxnet-predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
 scram setup mxnet-predict
 cp --remove-destination NNKit/misc/lib/libmxnetpredict.so $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnetpredict.so
 
 # CMSSW patches
+git cms-merge-topic TreeMaker:fixFormulaEvaluator_949 # this one has dependencies, might be in a future 9_4_X release
 git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
 git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_948
 git cms-merge-topic -u TreeMaker:METFixEE2017_949
-git cms-merge-topic -u TreeMaker:SpeedupMETSig_949
+git cms-merge-topic -u TreeMaker:SpeedupMETSig_949 # will be in a future 9_4_X release
 
 # outside repositories
 git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
