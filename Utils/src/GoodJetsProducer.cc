@@ -113,6 +113,7 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig)
    
    produces<std::vector<Jet> >();
    produces<bool>("JetID");
+   produces<bool>("JetInfCand");
    produces<std::vector<bool> >("JetIDMask");
    produces<std::vector<bool> >("JetLeptonMask");
 }
@@ -158,6 +159,7 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
    auto jetsMask = std::make_unique<std::vector<bool>>();
    auto leptonMask = std::make_unique<std::vector<bool>>();
    bool result=true;
+   bool inf_result = false;
    edm::Handle< edm::View<Jet> > Jets;
    iEvent.getByToken(JetTok_,Jets);
    if(Jets.isValid())
@@ -172,6 +174,11 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
               ( (!invertJetPtFilter_ && iJet.pt() <= jetPtFilter_) ||
                 (invertJetPtFilter_ && iJet.pt() > jetPtFilter_) ) ) continue;
          if (!iJet.isPFJet()) continue;
+         //check for a candidate with infinite energy, drop the associated jet
+         if(iJet.numberOfDaughters()>0 and std::isinf(iJet.daughterPtr(0)->energy())){
+            inf_result = true;
+            continue;
+         }
          float neufrac=iJet.neutralHadronEnergyFraction();//gives raw energy in the denominator
          float phofrac=iJet.neutralEmEnergyFraction();//gives raw energy in the denominator
          float chgfrac=iJet.chargedHadronEnergyFraction();
@@ -233,6 +240,8 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
    iEvent.put(std::move(leptonMask),"JetLeptonMask");
    auto passing = std::make_unique<bool>(result);
    iEvent.put(std::move(passing),"JetID");
+   auto inf_out = std::make_unique<bool>(inf_result);
+   iEvent.put(std::move(inf_out),"JetInfCand");
    return true;
    
 }
