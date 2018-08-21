@@ -826,6 +826,8 @@ def makeTreeFromMiniAOD(self,process):
         GenMETTag = cms.InputTag("slimmedMETs","",self.tagname), #original collection used deliberately here
         JetTag = cms.InputTag('HTJets'),
         geninfo = cms.untracked.bool(self.geninfo),
+        InfTagAK4 = cms.InputTag('GoodJets:JetInfCand'),
+        InfTagAK8 = cms.InputTag('GoodJetsAK8:JetInfCand'),
     )
     self.VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)','MET:Significance(METSignificance)'])
     if self.geninfo:
