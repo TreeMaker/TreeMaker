@@ -185,6 +185,19 @@ class Scenario:
                 era="Run2_2018",
                 localera="TM2018",
             )
+        elif sname == "MCHEMissStudies":
+            self.set_vars(
+                globaltag="100X_upgrade2018_realistic_v10",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                signal=True,
+                jecfile="data/jec/Fall17_17Nov2017_V6_MC",
+                jerfile="data/jer/Fall17_25nsV1_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
+                era="Run2_2018",
+                localera="TM2018",
+            )
         elif sname == "2018Prompt":
             self.set_vars(
                 globaltag="101X_dataRun2_Prompt_v11",
