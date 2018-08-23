@@ -52,6 +52,8 @@ mytests.append(makeTest("2017ReReco31Mar","MET17ReReco" if len(name)==0 else nam
 mytests.append(makeTest("2018Prompt","MET18Prompt" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2018A-PromptReco-v1.MET",nstart=0,nfiles=10))
 mytests.append(makeTest("2018PromptRelVal","MET18RelVal" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2018B-RelVal-v1.MET",nstart=0,nfiles=10))
 mytests.append(makeTest("2018PromptRelValHEMiss","MET18RelValHEMiss" if len(name)==0 else name,numevents,command,inputFilesConfig="Run2018B-RelVal-HEMiss-v1.MET",nstart=0,nfiles=10))
+mytests.append(makeTest("MCHEMissStudies","TTToSemiLeptonic" if len(name)==0 else name,numevents,command,inputFilesConfig="MC-HEMissStudies.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8_ext1",nstart=0,nfiles=10))
+mytests.append(makeTest("MCHEMissStudies","TTToSemiLeptonicHEMiss" if len(name)==0 else name,numevents,command,inputFilesConfig="MCHEMiss-HEMissStudies.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=10))
 
 if test<0 or test>len(mytests):
     print "Predefined tests:"
