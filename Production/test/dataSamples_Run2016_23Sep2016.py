@@ -1,40 +1,40 @@
 dataSamples = [
-    # 2016B datasets: prompt reco
+    # 2016B datasets: 23Sep2016 Re-Reco
     [ "HTMHT_2016B",          "Run2016B-23Sep2016-v3.HTMHT_*"] ,
     [ "JetHT_2016B",          "Run2016B-23Sep2016-v3.JetHT_*"] ,
     [ "MET_2016B",            "Run2016B-23Sep2016-v3.MET_*"] ,
     [ "SingleElectron_2016B", "Run2016B-23Sep2016-v3.SingleElectron_*"] ,
     [ "SingleMuon_2016B",     "Run2016B-23Sep2016-v3.SingleMuon_*"] ,
     [ "SinglePhoton_2016B",   "Run2016B-23Sep2016-v3.SinglePhoton_*"] ,
-    # 2016C datasets: prompt reco
+    # 2016C datasets: 23Sep2016 Re-Reco
     [ "HTMHT_2016C",          "Run2016C-23Sep2016-v1.HTMHT_*"] ,
     [ "JetHT_2016C",          "Run2016C-23Sep2016-v1.JetHT_*"] ,
     [ "MET_2016C",            "Run2016C-23Sep2016-v1.MET_*"] ,
     [ "SingleElectron_2016C", "Run2016C-23Sep2016-v1.SingleElectron_*"] ,
     [ "SingleMuon_2016C",     "Run2016C-23Sep2016-v1.SingleMuon_*"] ,
     [ "SinglePhoton_2016C",   "Run2016C-23Sep2016-v1.SinglePhoton_*"] ,
-    # 2016D datasets: prompt reco
+    # 2016D datasets: 23Sep2016 Re-Reco
     [ "HTMHT_2016D",          "Run2016D-23Sep2016-v1.HTMHT_*"] ,
     [ "JetHT_2016D",          "Run2016D-23Sep2016-v1.JetHT_*"] ,
     [ "MET_2016D",            "Run2016D-23Sep2016-v1.MET_*"] ,
     [ "SingleElectron_2016D", "Run2016D-23Sep2016-v1.SingleElectron_*"] ,
     [ "SingleMuon_2016D",     "Run2016D-23Sep2016-v1.SingleMuon_*"] ,
     [ "SinglePhoton_2016D",   "Run2016D-23Sep2016-v1.SinglePhoton_*"] ,
-    # 2016E datasets: prompt reco
+    # 2016E datasets: 23Sep2016 Re-Reco
     [ "HTMHT_2016E",          "Run2016E-23Sep2016-v1.HTMHT_*"] ,
     [ "JetHT_2016E",          "Run2016E-23Sep2016-v1.JetHT_*"] ,
     [ "MET_2016E",            "Run2016E-23Sep2016-v1.MET_*"] ,
     [ "SingleElectron_2016E", "Run2016E-23Sep2016-v1.SingleElectron_*"] ,
     [ "SingleMuon_2016E",     "Run2016E-23Sep2016-v1.SingleMuon_*"] ,
     [ "SinglePhoton_2016E",   "Run2016E-23Sep2016-v1.SinglePhoton_*"] ,
-    # 2016F datasets: prompt reco
+    # 2016F datasets: 23Sep2016 Re-Reco
     [ "HTMHT_2016F",          "Run2016F-23Sep2016-v1.HTMHT_*"] ,
     [ "JetHT_2016F",          "Run2016F-23Sep2016-v1.JetHT_*"] ,
     [ "MET_2016F",            "Run2016F-23Sep2016-v1.MET_*"] ,
     [ "SingleElectron_2016F", "Run2016F-23Sep2016-v1.SingleElectron_*"] ,
     [ "SingleMuon_2016F",     "Run2016F-23Sep2016-v1.SingleMuon_*"] ,
     [ "SinglePhoton_2016F",   "Run2016F-23Sep2016-v1.SinglePhoton_*"] ,
-    # 2016G datasets: prompt reco
+    # 2016G datasets: 23Sep2016 Re-Reco
     [ "HTMHT_2016G",          "Run2016G-23Sep2016-v1.HTMHT_*"] ,
     [ "JetHT_2016G",          "Run2016G-23Sep2016-v1.JetHT_*"] ,
     [ "MET_2016G",            "Run2016G-23Sep2016-v1.MET_*"] ,
