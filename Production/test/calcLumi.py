@@ -6,7 +6,7 @@ def runBril(output,category,pd,section,file,normtag):
     key = section+"_"+category
 
     # run bril
-    cmd = "./brilcalc lumi -b \"STABLE BEAMS\" " + ("--normtag "+normtag+" " if len(normtag)>0 else "") + "-u /pb -i "+file
+    cmd = "brilcalc lumi -b \"STABLE BEAMS\" " + ("--normtag "+normtag+" " if len(normtag)>0 else "") + "-u /pb -i "+file
     #print cmd
     brilout = os.popen(cmd).read()
     brilsplit = brilout.split('\n')
