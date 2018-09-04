@@ -175,7 +175,7 @@ class MCSampleHelper():
     __names_to_strip = {
         "generators" : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"      : ["(.Tune)([^_]*)"],
-        "other"      : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$"],
+        "other"      : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)"],
     }
 
     def get_cm_energy(self, name):
