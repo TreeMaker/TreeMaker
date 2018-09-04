@@ -1,6 +1,6 @@
 class Scenario:
     def __init__(self,sname):
-        elif sname == "Summer16MiniAODv3":
+        if sname == "Summer16MiniAODv3":
             self.set_vars(
                 globaltag="80X_mcRun2_asymptotic_2016_TrancheIV_v6",
                 tagname="PAT",
