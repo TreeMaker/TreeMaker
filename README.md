@@ -21,7 +21,7 @@ The following installation instructions assume the user wants to process 2016 or
 wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017/setup.sh
 chmod +x setup.sh
 ./setup.sh
-cd CMSSW_9_4_9/src/
+cd CMSSW_9_4_10/src/
 cmsenv
 cd TreeMaker/Production/test
 ```

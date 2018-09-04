@@ -49,7 +49,7 @@ fi
 # get CMSSW release
 export SCRAM_ARCH=slc6_amd64_gcc630
 # cmsrel
-CMSSWVER=CMSSW_9_4_9
+CMSSWVER=CMSSW_9_4_10
 scram project ${CMSSWVER}
 cd ${CMSSWVER}/src/
 # cmsenv
@@ -71,7 +71,6 @@ git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
 git cms-merge-topic -u TreeMaker:AddJetAxis1_942
 git cms-merge-topic -u TreeMaker:NjettinessAxis_948
 git cms-merge-topic -u TreeMaker:METFixEE2017_949
-git cms-merge-topic -u TreeMaker:SpeedupMETSig_949 # will be in a future 9_4_X release
 
 # outside repositories
 git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
