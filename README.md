@@ -41,9 +41,9 @@ The available scenarios are:
 1.  `Summer16MiniAODv3`: for Summer16 miniAODv3 MC  
 2.  `Summer16MiniAODv3sig`: for Summer16 miniAODv3 MC (signal)  
 3.  `2016MiniAODv3`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
-4.  `Fall17`: for Fall17 miniAOD 25ns MC
-5.  `Fall17sig`: for Fall17 miniAOD 25ns MC (signal)
-6.  `2017ReReco31Mar`: for 2017 ReReco (31Mar) 25ns data, periods B-F
+4.  `Fall17`: for Fall17 miniAOD MC
+5.  `Fall17sig`: for Fall17 miniAOD MC (signal)
+6.  `2017ReReco31Mar`: for 2017 ReReco data (31Mar), periods B-F
 
 ## Unit Tests (Interactive Runs)
 
