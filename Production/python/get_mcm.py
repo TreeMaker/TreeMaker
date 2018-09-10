@@ -165,6 +165,8 @@ def main(args):
         goodfile.write(cols+"\n")
         badfile = open("results_"+dictname+"_unfinished.txt",'w')
         badfile.write(cols+"\n")
+        invalidfile = open("results_"+dictname+"_finished_invalid.txt",'w')
+        invalidfile.write(cols+"\n")
     else:
         print cols
         
@@ -174,6 +176,7 @@ def main(args):
         allcols = []
         goodcols = []
         badcols = []
+        invalidcols = []
         for ext in datasets[ds]:
             # keep track of all found dataset names (wildcard support)
             found_list = set()
@@ -200,6 +203,7 @@ def main(args):
                     elif ireq['status']=='submitted': hlight = ''
                     if options.file:
                         if ireq['status']=='done' and pu_valid: goodcols.append(toprint)
+                        elif ireq['status']=='done' and not pu_valid: invalidcols.append(toprint)
                         else: badcols.append(toprint)
                     else:
                         allcols.append(hlight+toprint+col.endc)
@@ -230,6 +234,7 @@ def main(args):
         if options.file:
             if len(goodcols)>0: goodfile.write('\n'.join(sorted(goodcols))+'\n')
             if len(badcols)>0: badfile.write('\n'.join(sorted(badcols))+'\n')
+            if len(invalidcols)>0: invalidfile.write('\n'.join(sorted(invalidcols))+'\n')
         else:
             if len(allcols)>0: print '\n'.join(sorted(allcols))
     
@@ -237,6 +242,7 @@ def main(args):
     if options.file:
         goodfile.close()
         badfile.close()
+        invalidfile.close()
 
 if __name__ == '__main__':
     import sys
