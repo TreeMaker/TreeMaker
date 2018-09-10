@@ -83,15 +83,21 @@ def preq(req,gensim,comment='',debug=False):
 
 def pu_dataset_validity(req,digireco,condition='',debug=False):
     if condition == '': return True
-    qry='dataset_name='+req['dataset_name']+'*&extension='+str(req['extension'])+'&member_of_campaign='+digireco
-    req_dr = getA(qry,debug)
-    # look at the last result, assuming that that is the correct one to choose
-    final_dr = req_dr[-1]
-    if len(final_dr)>0:
-        if condition in final_dr['pileup_dataset_name']: return True
-        else: return False
-    else:
+    qry='dataset_name='+req['dataset_name']+'*&extension='+str(req['extension'])+'&member_of_chain='+str(req['member_of_chain'][0])
+    req_chain = getA(qry,debug)
+    all_prepids = []
+    for chain in req_chain:
+        all_prepids.append(chain['prepid'])
+    prepids = [x for x in all_prepids if any(substr in x for substr in ["DRPremix","DRStdmix"])]
+    if len(prepids)!=1:
+        print "ERROR Something went wrong in checking the pileup dataset validity."
+        print " There can only be 1 prepid with \"DRPremix\" in the name (" + str(len(prepids)) + ")."
+        print " " + str(all_prepids)
         return False
+    qry='prepid='+str(prepids[0])
+    req_prepid = getA(qry,debug)
+    if condition in req_prepid[0]['pileup_dataset_name']: return True
+    else: return False
 
 def main(args):
     parser = OptionParser()
@@ -187,9 +193,9 @@ def main(args):
                     if dname in found_list: continue
                     found_list.add(dname)
                     hlight = col.red
-                    toprint = preq(ireq,options.gensim,'',options.debug)
                     pu_valid = pu_dataset_validity(ireq,options.digireco,options.pu,options.debug)
-                    if not pu_valid: hlight = col.yellow
+                    toprint = preq(ireq,options.gensim,'' if pu_valid else 'Invalid Pileup Dataset',options.debug)
+                    if not pu_valid and ireq['status']!='new': hlight = col.yellow
                     elif ireq['status']=='done': hlight = col.green
                     elif ireq['status']=='submitted': hlight = ''
                     if options.file:
