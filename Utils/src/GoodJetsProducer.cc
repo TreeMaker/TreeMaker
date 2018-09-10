@@ -169,7 +169,7 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
       leptonMask->reserve(Jets->size());
       for(const auto & iJet : *Jets)
       {
-         if (std::abs(iJet.eta())>maxEta_) continue;
+         if (maxEta_>0 and std::abs(iJet.eta())>maxEta_) continue;
          if (!saveAllPt_ &&
               ( (!invertJetPtFilter_ && iJet.pt() <= jetPtFilter_) ||
                 (invertJetPtFilter_ && iJet.pt() > jetPtFilter_) ) ) continue;

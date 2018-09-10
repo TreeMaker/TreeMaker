@@ -14,6 +14,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         SaveAllJetsId             = True,
         # keep lower-pt central jets in case they fluctuate up in systematic collections (only for AK4)
         SaveAllJetsPt             = (jetConeSize==0.4),
+        maxJetEta                 = cms.double(5.0 if jetConeSize==0.8 else -1),
     )
     TMeras.TM2017.toModify(GoodJets,
         maxNeutralFraction        = cms.double(0.90),
