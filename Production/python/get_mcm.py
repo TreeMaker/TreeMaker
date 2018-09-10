@@ -83,15 +83,21 @@ def preq(req,gensim,comment='',debug=False):
 
 def pu_dataset_validity(req,digireco,condition='',debug=False):
     if condition == '': return True
-    qry='dataset_name='+req['dataset_name']+'*&extension='+str(req['extension'])+'&member_of_campaign='+digireco
-    req_dr = getA(qry,debug)
-    # look at the last result, assuming that that is the correct one to choose
-    final_dr = req_dr[-1]
-    if len(final_dr)>0:
-        if condition in final_dr['pileup_dataset_name']: return True
-        else: return False
-    else:
+    qry='dataset_name='+req['dataset_name']+'*&extension='+str(req['extension'])+'&member_of_chain='+str(req['member_of_chain'][0])
+    req_chain = getA(qry,debug)
+    all_prepids = []
+    for chain in req_chain:
+        all_prepids.append(chain['prepid'])
+    prepids = [x for x in all_prepids if any(substr in x for substr in ["DRPremix","DRStdmix"])]
+    if len(prepids)!=1:
+        print "ERROR Something went wrong in checking the pileup dataset validity."
+        print " There can only be 1 prepid with \"DRPremix\" in the name (" + str(len(prepids)) + ")."
+        print " " + str(all_prepids)
         return False
+    qry='prepid='+str(prepids[0])
+    req_prepid = getA(qry,debug)
+    if condition in req_prepid[0]['pileup_dataset_name']: return True
+    else: return False
 
 def main(args):
     parser = OptionParser()
@@ -159,6 +165,8 @@ def main(args):
         goodfile.write(cols+"\n")
         badfile = open("results_"+dictname+"_unfinished.txt",'w')
         badfile.write(cols+"\n")
+        invalidfile = open("results_"+dictname+"_finished_invalid.txt",'w')
+        invalidfile.write(cols+"\n")
     else:
         print cols
         
@@ -168,6 +176,7 @@ def main(args):
         allcols = []
         goodcols = []
         badcols = []
+        invalidcols = []
         for ext in datasets[ds]:
             # keep track of all found dataset names (wildcard support)
             found_list = set()
@@ -187,13 +196,14 @@ def main(args):
                     if dname in found_list: continue
                     found_list.add(dname)
                     hlight = col.red
-                    toprint = preq(ireq,options.gensim,'',options.debug)
                     pu_valid = pu_dataset_validity(ireq,options.digireco,options.pu,options.debug)
-                    if not pu_valid: hlight = col.yellow
+                    toprint = preq(ireq,options.gensim,'' if pu_valid else 'Invalid Pileup Dataset',options.debug)
+                    if not pu_valid and ireq['status']!='new': hlight = col.yellow
                     elif ireq['status']=='done': hlight = col.green
                     elif ireq['status']=='submitted': hlight = ''
                     if options.file:
                         if ireq['status']=='done' and pu_valid: goodcols.append(toprint)
+                        elif ireq['status']=='done' and not pu_valid: invalidcols.append(toprint)
                         else: badcols.append(toprint)
                     else:
                         allcols.append(hlight+toprint+col.endc)
@@ -224,6 +234,7 @@ def main(args):
         if options.file:
             if len(goodcols)>0: goodfile.write('\n'.join(sorted(goodcols))+'\n')
             if len(badcols)>0: badfile.write('\n'.join(sorted(badcols))+'\n')
+            if len(invalidcols)>0: invalidfile.write('\n'.join(sorted(invalidcols))+'\n')
         else:
             if len(allcols)>0: print '\n'.join(sorted(allcols))
     
@@ -231,6 +242,7 @@ def main(args):
     if options.file:
         goodfile.close()
         badfile.close()
+        invalidfile.close()
 
 if __name__ == '__main__':
     import sys
