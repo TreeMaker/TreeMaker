@@ -214,13 +214,14 @@ class MCSample():
 
     __helper = MCSampleHelper()
 
-    def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, NumberEvtsDiff = None):
+    def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, WrongPU = False, NumberEvtsDiff = None):
         self.name = name
         self.production = production
         self.mcVersion = mcVersion
         self.Method = Method
         self.XS = self.get_xs(name)
         self.NumberEvtsTotal = NumberEvtsTotal
+        self.WrongPU = WrongPu
         self.NumberEvtsDiff = NumberEvtsTotal if NumberEvtsDiff==None else NumberEvtsDiff
 
     def get_effective_lumi(self):
@@ -236,7 +237,7 @@ class MCSample():
         return self.__helper.get_xs(name)
 
     def __repr__(self):
-        return "%s(%r, %r, %r, %r, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal) if self.NumberEvtsTotal==self.NumberEvtsDiff else "%s(%r, %r, %r, %r, %i, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.NumberEvtsDiff)
+        return "%s(%r, %r, %r, %r, %i, %r)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.WrongPU) if self.NumberEvtsTotal==self.NumberEvtsDiff else "%s(%r, %r, %r, %r, %i, %r, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.WrongPU,self.NumberEvtsDiff)
 
     def __str__(self):
         dict_of_members = self.__dict__
@@ -254,4 +255,4 @@ class MCSample():
             else:
                 rep_format += (key_format+": {:<"+str(len(str(self.NumberEvtsDiff)))+"}")
                 rep_format += ")"
-        return rep_format.format('name',self.name,' ','production',self.production,' ','mcVersion',self.mcVersion,' ','Method',self.Method,' ','XS',self.XS,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ','NumberEvtsDiff',self.NumberEvtsDiff)
+        return rep_format.format('name',self.name,' ','production',self.production,' ','mcVersion',self.mcVersion,' ','Method',self.Method,' ','XS',self.XS,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ','WrongPU',self.WrongPU,' ','NumberEvtsDiff',self.NumberEvtsDiff)
