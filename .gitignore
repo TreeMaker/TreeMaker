@@ -7,3 +7,11 @@ __init__.py
 /Production/test/data/preprocessing.json
 /Production/test/data/resnet-symbol.json
 /Production/test/data/resnet.params
+
+# condor & log files
+*.stdout
+*.stderr
+*.condor
+jobExecCondor_*.jdl
+jobExecCondorNeff_*.jdl
+*.tar.gz
