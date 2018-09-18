@@ -11,7 +11,7 @@ class jobSubmitterNeff(jobSubmitterTM):
     def addExtraOptions(self,parser):
         super(jobSubmitterNeff,self).addExtraOptions(parser)
         
-        self.removeOptions(parser,"-d","--dicts","-o","--output","--json","--cpus")
+        self.removeOptions(parser,"-d","--dicts","--json","--cpus")
         self.cpus = 1
         
         parser.add_option("-d", "--dict", dest="dict", default="neff", help="input dict, prefixed by dict_ and list of samples (default = %default)")
@@ -91,7 +91,7 @@ class jobSubmitterNeff(jobSubmitterTM):
                 if self.prepare:
                     jname = job.makeName(job.nums[-1])
                     with open("input/argsNeff_"+jname+".txt",'w') as argfile:
-                        args = (self.args+" " if len(self.args)>0 else "")+"name="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)
+                        args = (self.args+" " if len(self.args)>0 else "")+"name="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" part="+str(job.nums[-1])
                         argfile.write(args)
 
             # append queue comment
