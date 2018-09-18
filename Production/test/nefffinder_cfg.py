@@ -4,7 +4,7 @@ parameters = CommandLineParams()
 name = parameters.value("name","")
 nstart = parameters.value("nstart",0)
 nfiles = parameters.value("nfiles",-1)
-part = parameters.value("part",0)
+part = parameters.value("part",-1)
 redir = parameters.value("redir","root://cmsxrootd.fnal.gov/")
 
 # handle site name usage
@@ -43,7 +43,7 @@ for f,val in enumerate(process.source.fileNames):
 
 # output file
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("TrueNumInt_"+name+"_part"+str(part)+".root"),
+    fileName = cms.string("TrueNumInt_"+name+("_part"+str(part) if part>=0 else "")+".root"),
     closeFileFast = cms.untracked.bool(True),
 )
 

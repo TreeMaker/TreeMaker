@@ -72,7 +72,6 @@ class jobSubmitterNeff(jobSubmitterTM):
             self.generatePerJob(job)
                 
             # start loop over N jobs
-            nActualJobs = 0
             for iJob in range( nJobs ) :
                 # get starting file number
                 nstart = iJob*int(self.nFiles)
@@ -91,7 +90,7 @@ class jobSubmitterNeff(jobSubmitterTM):
                 if self.prepare:
                     jname = job.makeName(job.nums[-1])
                     with open("input/argsNeff_"+jname+".txt",'w') as argfile:
-                        args = (self.args+" " if len(self.args)>0 else "")+"name="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" part="+str(job.nums[-1])
+                        args = (self.args+" " if len(self.args)>0 else "")+"name="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+(" part="+str(job.nums[-1]) if nJobs>1 else "")
                         argfile.write(args)
 
             # append queue comment
