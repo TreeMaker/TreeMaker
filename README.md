@@ -162,7 +162,7 @@ das_client.py --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0 | 
 
 ### Samples with Negative Weight Events
 
-Samples produced at NLO by amcatnlo have events with negative weights, which must be handled correctly. To get the effective number of events used to weight the sample, there is a multi-step process.
+Samples produced at NLO by amcatnlo have events with negative weights, which must be handled correctly. To get the effective number of events used to weight the sample, there is a multi-step process. This process also produces a histogram of `TrueNumInteractions` for pileup reweighting.
 
 Step 1: Get the "_cff.py" files, without generating WeightProducer lines (assuming samples are listed in `dictNLO.py`).
 ```
@@ -175,9 +175,10 @@ Be sure to sanity-check the results, as xrootd failures can cause jobs to termin
 ```
 ./lnbatch.sh myNeff
 cd myNeff
-python submitJobsNeff.py -p -d neff -N 50 -s
+python submitJobsNeff.py -p -d neff -N 50 -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myNeff
 (after jobs are finished)
 python getResults.py
+./haddEOS.sh -d /store/user/YOURUSERNAME/myNeff -g _part -r
 ```
 
 Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines.
