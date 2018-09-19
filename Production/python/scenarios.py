@@ -45,6 +45,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                 jerfile="data/jer/Fall17_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
+                pudir="root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Fall17PU",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -58,6 +59,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                 jerfile="data/jer/Fall17_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
+                pudir="root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Fall17PU",
                 era="Run2_2017",
                 localera="TM2017",
             )

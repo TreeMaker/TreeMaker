@@ -221,7 +221,7 @@ class MCSample():
         self.Method = Method
         self.XS = self.get_xs(name)
         self.NumberEvtsTotal = NumberEvtsTotal
-        self.WrongPU = WrongPu
+        self.WrongPU = WrongPU
         self.NumberEvtsDiff = NumberEvtsTotal if NumberEvtsDiff==None else NumberEvtsDiff
 
     def get_effective_lumi(self):
