@@ -26,6 +26,10 @@ class maker:
         self.getParamDefault("nfiles",-1)
         self.getParamDefault("numevents",-1)
         self.getParamDefault("outfile","test_run")
+        # get base sample name, assuming format is name or name_#
+        outfilesplit = self.outfile.split('_')
+        if isdigit(outfilesplit[-1]): outfilesplit = outfilesplit[:-1]
+        self.sample = '_'.join(outfilesplit)
         outfilesuff=self.parameters.value("outfilesuff","_RA2AnalysisTree")
         self.outfile += outfilesuff
         self.getParamDefault("treename","PreSelection")
@@ -61,6 +65,7 @@ class maker:
         self.getParamDefault("residual",self.scenario.residual)
         self.getParamDefault("jerfile",self.scenario.jerfile)
         self.getParamDefault("pufile",self.scenario.pufile)
+        self.getParamDefault("pudir",self.scenario.pudir)
         self.getParamDefault("era",self.scenario.era)
         self.getParamDefault("localera",self.scenario.localera)
         

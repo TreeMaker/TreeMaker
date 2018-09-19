@@ -75,7 +75,7 @@ class Scenario:
         else: # if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
-    def set_vars(self, globaltag, era, localera, tagname, hlttagname="", geninfo=False, fastsim=False, signal=False, pmssm=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile=""):
+    def set_vars(self, globaltag, era, localera, tagname, hlttagname="", geninfo=False, fastsim=False, signal=False, pmssm=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile="", pudir=""):
         self.globaltag  = globaltag
         self.tagname    = tagname
         self.hlttagname = hlttagname
@@ -88,5 +88,6 @@ class Scenario:
         self.residual   = residual
         self.jerfile    = jerfile
         self.pufile     = pufile
+        self.pudir      = pudir
         self.era        = era
         self.localera   = localera

@@ -2,10 +2,7 @@
 #
 # Returns a WeightProducer module that knows at runtime
 # which data sample is produced and thus, what weights
-# are required. The function can be used as follows:
-#
-#    from RA2Classic.WeightProducer.getWeightProducer_cff import getWeightProducer
-#    process.WeightProducer = getWeightProducer(process.source.fileNames[0])
+# are required.
 
 import FWCore.ParameterSet.Config as cms
 from TreeMaker.WeightProducer.MCSample import MCSample
@@ -22,7 +19,8 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
     # Set default values to produce an event weight of 1
     weightProducer.weight = cms.double(1.0)
     weightProducer.Method = cms.string("Constant")
-    weightProducer.FileNamePUDataDistribution = cms.string("NONE")
+    weightProducer.FileNamePUDataDistribution = cms.string("")
+    weightProducer.FileNamePUMCDistribution = cms.string("")
 
     # assign cross sections for fastsim
     # assume privately-produced samples do not have mixed mass points
@@ -283,6 +281,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
             weightProducer.Method     = cms.string(sample.Method)
             weightProducer.XS         = cms.double(sample.XS)
             weightProducer.NumberEvts = cms.double(sample.NumberEvtsDiff)
+            weightProducer.RemakePU   = cms.bool(sample.WrongPU)
             print sample.name+", "+sample.production+" : '"+fileName+"'"
             applyWeight = True
             weightProducer.weight = cms.double(-1.)

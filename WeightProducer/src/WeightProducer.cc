@@ -48,6 +48,15 @@
 // class declaration
 //
 
+//helper function to get histogram and disconnect from file
+namespace {
+    TH1* getHisto(TFile* file, std::string name){
+        TH1* hist = (TH1*)file->Get(name.c_str());
+        if(hist) hist->SetDirectory(nullptr);
+        return hist;
+    }
+}
+
 class WeightProducer: public edm::global::EDProducer<> {
 public:
   explicit WeightProducer(const edm::ParameterSet&);
@@ -69,7 +78,7 @@ private:
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puInfoTok;
   TH1 *pu_central, *pu_up, *pu_down;
   double _weightFactor;
-  bool _applyPUWeights;
+  bool _remakePU, _applyPUWeights;
   weight_method _weightingMethod;
   std::unordered_map<double,double> _FastSimXsec;
   
@@ -86,7 +95,9 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _genEvtTag(edm::InputTag("generator")),
    _puInfoTag(edm::InputTag("slimmedAddPileupInfo")),
    _SusyMotherTag(iConfig.getParameter<edm::InputTag> ("modelIdentifier")),
-   pu_central(nullptr), pu_up(nullptr), pu_down(nullptr), _weightingMethod(other)
+   pu_central(nullptr), pu_up(nullptr), pu_down(nullptr),
+   _remakePU(iConfig.getParameter<bool>("RemakePU")),
+   _weightingMethod(other)
 {
    // Option 1: weight constant, as defined in cfg file
    if (_startWeight >= 0) {
@@ -160,25 +171,52 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    // expected data distribution is given as a histogram from a ROOT file.
    // See https://twiki.cern.ch/twiki/bin/viewauth/CMS/PileupReweighting
    std::string fileNamePU = iConfig.getParameter<std::string> ("FileNamePUDataDistribution");
-   if (fileNamePU.length() != 0 && fileNamePU != "NONE") {
+   std::string fileNamePUMC = iConfig.getParameter<std::string> ("FileNamePUMCDistribution");
+   if (!fileNamePU.empty()) {
       _applyPUWeights = true;
-      edm::FileInPath filePUDataDistr(fileNamePU);
+      fileNamePU = edm::FileInPath(fileNamePU).fullPath();
+      if(!fileNamePUMC.empty()) fileNamePUMC = edm::FileInPath(fileNamePUMC).fullPath();
+      else fileNamePUMC = "";
 
       edm::LogInfo("TreeMaker") << "WeightProducer: Applying multiplicative PU weights" << "\n"
-        << "  Reading PU scenario from '" << filePUDataDistr.fullPath() << "'";
-      TFile* file = TFile::Open(filePUDataDistr.fullPath().c_str(), "READ");
-      pu_central = (TH1*)file->Get("pu_weights_central");
-      if(pu_central) pu_central->SetDirectory(nullptr);
-      pu_up = (TH1*)file->Get("pu_weights_up");
-      if(pu_up) pu_up->SetDirectory(nullptr);
-      pu_down = (TH1*)file->Get("pu_weights_down");
-      if(pu_down) pu_down->SetDirectory(nullptr);
+        << "  Reading PU scenario from '" << fileNamePU << "'"
+        << (!fileNamePUMC.empty() ? "and '"+fileNamePUMC+"'" : "");
+
+      TFile* dfile = TFile::Open(fileNamePU.c_str(), "READ");
+
+      //recalculate from provided MC and data histos
+      if(!fileNamePUMC.empty() and _remakePU){
+        TFile* mfile = TFile::Open(fileNamePUMC.c_str(), "READ");
+        TH1* pu_mc_in = getHisto(mfile,"TrueNumInteractions");
+
+        pu_central = getHisto(dfile,"data_pu_central");
+        pu_up = getHisto(dfile,"data_pu_up");
+        pu_down = getHisto(dfile,"data_pu_down");
+
+        TH1* pu_mc = new TH1F("hMC25ns","",pu_central->GetNbinsX(),0,pu_central->GetNbinsX());
+        for(int b = 0; b < pu_central->GetNbinsX(); ++b){
+          pu_mc->SetBinContent(b+1, b < pu_mc_in->GetNbinsX() ? pu_mc_in->GetBinContent(b+1) : 0);
+          pu_mc->SetBinError(b+1, 0);
+        }
+
+        pu_central->Divide(pu_mc);
+        pu_up->Divide(pu_mc);
+        pu_down->Divide(pu_mc);
+
+        mfile->Close();
+      }
+      //use already calculated ones
+      else {
+        pu_central = getHisto(dfile,"pu_weights_central");
+        pu_up = getHisto(dfile,"pu_weights_up");
+        pu_down = getHisto(dfile,"pu_weights_down");
+      }
 
       if(!pu_central || !pu_up || !pu_down) {
-         edm::LogWarning("TreeMaker") << "ERROR in WeightProducer: Pileup histograms missing from file '" << filePUDataDistr.fullPath();
+         edm::LogWarning("TreeMaker") << "ERROR in WeightProducer: Pileup histograms missing from file '" << fileNamePU;
          _applyPUWeights = false;
       }
-      file->Close();
+      dfile->Close();
    } else {
       _applyPUWeights = false;
    }
@@ -252,12 +290,11 @@ void WeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
        double _PUSysDown = 1.;
        
        //get PU info
-       std::vector<PileupSummaryInfo>::const_iterator PVI;
-       for(PVI = puInfo->begin(); PVI != puInfo->end(); ++PVI) {
+       for(const auto& PVI : *puInfo) {
            //look only at primary BX (in-time)
-           if(PVI->getBunchCrossing()==0){
-               _NumInt = PVI->getPU_NumInteractions();
-               _TrueNumInt = PVI->getTrueNumInteractions();
+           if(PVI.getBunchCrossing()==0){
+               _NumInt = PVI.getPU_NumInteractions();
+               _TrueNumInt = PVI.getTrueNumInteractions();
                break;
            }
        }       
