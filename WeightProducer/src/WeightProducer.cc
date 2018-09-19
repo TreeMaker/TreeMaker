@@ -49,10 +49,14 @@
 //
 
 //helper function to get histogram and disconnect from file
+//and optionally normalize
 namespace {
-    TH1* getHisto(TFile* file, std::string name){
+    TH1* getHisto(TFile* file, std::string name, bool norm=false){
         TH1* hist = (TH1*)file->Get(name.c_str());
-        if(hist) hist->SetDirectory(nullptr);
+        if(hist) {
+          hist->SetDirectory(nullptr);
+          if(norm) hist->Scale(1.0/hist->Integral(1,hist->GetNbinsX()));
+        }
         return hist;
     }
 }
@@ -189,15 +193,16 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
         TFile* mfile = TFile::Open(fileNamePUMC.c_str(), "READ");
         TH1* pu_mc_in = getHisto(mfile,"NeffFinder/TrueNumInteractions");
 
-        pu_central = getHisto(dfile,"data_pu_central");
-        pu_up = getHisto(dfile,"data_pu_up");
-        pu_down = getHisto(dfile,"data_pu_down");
+        pu_central = getHisto(dfile,"data_pu_central",true);
+        pu_up = getHisto(dfile,"data_pu_up",true);
+        pu_down = getHisto(dfile,"data_pu_down",true);
 
         TH1* pu_mc = new TH1F("hMC25ns","",pu_central->GetNbinsX(),0,pu_central->GetNbinsX());
         for(int b = 0; b < pu_central->GetNbinsX(); ++b){
           pu_mc->SetBinContent(b+1, b < pu_mc_in->GetNbinsX() ? pu_mc_in->GetBinContent(b+1) : 0);
           pu_mc->SetBinError(b+1, 0);
         }
+        pu_mc->Scale(1.0/pu_mc->Integral(1,pu_mc->GetNbinsX()));
 
         pu_central->Divide(pu_mc);
         pu_up->Divide(pu_mc);
