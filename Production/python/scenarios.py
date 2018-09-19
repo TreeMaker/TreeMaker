@@ -28,7 +28,7 @@ class Scenario:
         elif sname == "2016MiniAODv3":
             self.set_vars(
                 globaltag="94X_dataRun2_v10",
-                tagname="PAT",
+                tagname="DQM",
                 hlttagname="HLT",
                 jsonfile="data/Cert_271036-284044_13TeV_23Sep2016ReReco_Collisions16_JSON.txt",
                 jecfile="data/jec/Summer16_07Aug2017All_V11_DATA",
