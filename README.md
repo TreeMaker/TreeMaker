@@ -52,7 +52,6 @@ Several predefined run commands (at least one for each scenario) are defined in 
 * `name`: name of the output ROOT and log files for the test (default="", each test has its own default name)
 * `run`: run the selected test (default=False)
 * `numevents`: how many events to run (default=100)
-* `shell`: how to format the command (default="tcsh", also knows "bash")
 
 A few examples of how to run the script:  
 1) To see all tests:
@@ -157,7 +156,7 @@ python get_py.py -d dict.py [options]
 
 To check for new samples, use the above script [get_mcm.py](./Production/test/get_mcm.py) or query DAS, e.g.:
 ```
-das_client.py --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0 | & less
+dasgoclient -query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM"
 ```
 
 ### Samples with Negative Weight Events
