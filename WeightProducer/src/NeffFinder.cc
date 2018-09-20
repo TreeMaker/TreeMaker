@@ -88,7 +88,7 @@ NeffFinder::beginJob() {
 	if( !fs ) {
 		throw edm::Exception(edm::errors::Configuration, "TFile Service is not registered in cfg file");
 	}
-	hTrueNumInt = fs->make<TH1F>("TrueNumInteractions","TrueNumInteractions",nbins,0,nbins);
+	hTrueNumInt = fs->make<TH1F>(("TrueNumInteractions_"+name).c_str(),("TrueNumInteractions_"+name).c_str(),nbins,0,nbins);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------

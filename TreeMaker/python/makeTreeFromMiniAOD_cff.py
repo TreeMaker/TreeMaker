@@ -87,7 +87,8 @@ def makeTreeFromMiniAOD(self,process):
         process.WeightProducer = getWeightProducer(process.source.fileNames[0],self.fastsim and self.signal, self.pmssm)
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string(self.pufile)
-        if len(self.pudir)>0: process.WeightProducer.FileNamePUMCDistribution = cms.string(self.pudir+"/TrueNumInt_"+self.sample+".root")
+        process.WeightProducer.FileNamePUMCDistribution = cms.string(self.wrongpufile)
+        process.WeightProducer.SampleName = cms.string(self.sample)
         self.VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
         self.VarsInt.extend(['WeightProducer:NumInteractions'])

@@ -65,7 +65,7 @@ class maker:
         self.getParamDefault("residual",self.scenario.residual)
         self.getParamDefault("jerfile",self.scenario.jerfile)
         self.getParamDefault("pufile",self.scenario.pufile)
-        self.getParamDefault("pudir",self.scenario.pudir)
+        self.getParamDefault("wrongpufile",self.scenario.wrongpufile)
         self.getParamDefault("era",self.scenario.era)
         self.getParamDefault("localera",self.scenario.localera)
         

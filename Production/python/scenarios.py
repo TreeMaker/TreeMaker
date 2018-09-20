@@ -45,7 +45,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                 jerfile="data/jer/Fall17_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                pudir="root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Fall17PU",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -59,7 +59,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V6_MC",
                 jerfile="data/jer/Fall17_25nsV1_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                pudir="root://cmseos.fnal.gov//store/user/lpcsusyhad/SusyRA2Analysis2015/Fall17PU",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -77,7 +77,7 @@ class Scenario:
         else: # if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
-    def set_vars(self, globaltag, era, localera, tagname, hlttagname="", geninfo=False, fastsim=False, signal=False, pmssm=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile="", pudir=""):
+    def set_vars(self, globaltag, era, localera, tagname, hlttagname="", geninfo=False, fastsim=False, signal=False, pmssm=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile="", wrongpufile=""):
         self.globaltag  = globaltag
         self.tagname    = tagname
         self.hlttagname = hlttagname
@@ -90,6 +90,6 @@ class Scenario:
         self.residual   = residual
         self.jerfile    = jerfile
         self.pufile     = pufile
-        self.pudir      = pudir
+        self.wrongpufile= wrongpufile
         self.era        = era
         self.localera   = localera

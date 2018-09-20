@@ -83,6 +83,7 @@ private:
   TH1 *pu_central, *pu_up, *pu_down;
   double _weightFactor;
   bool _remakePU, _applyPUWeights;
+  std::string _sampleName;
   weight_method _weightingMethod;
   std::unordered_map<double,double> _FastSimXsec;
   
@@ -101,6 +102,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _SusyMotherTag(iConfig.getParameter<edm::InputTag> ("modelIdentifier")),
    pu_central(nullptr), pu_up(nullptr), pu_down(nullptr),
    _remakePU(iConfig.getParameter<bool>("RemakePU")),
+   _sampleName(iConfig.getParameter<std::string>("SampleName")),
    _weightingMethod(other)
 {
    // Option 1: weight constant, as defined in cfg file
@@ -179,19 +181,18 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    if (!fileNamePU.empty()) {
       _applyPUWeights = true;
       fileNamePU = edm::FileInPath(fileNamePU).fullPath();
-      //don't use FileInPath for xrootd
-      if(!fileNamePUMC.empty() and fileNamePUMC.compare(0,5,"root:")!=0) fileNamePUMC = edm::FileInPath(fileNamePUMC).fullPath();
+      fileNamePUMC = edm::FileInPath(fileNamePUMC).fullPath();
 
       edm::LogInfo("TreeMaker") << "WeightProducer: Applying multiplicative PU weights" << "\n"
         << "  Reading PU scenario from '" << fileNamePU << "'"
-        << ((!fileNamePUMC.empty() and _remakePU) ? "and '"+fileNamePUMC+"'" : "");
+        << ((!fileNamePUMC.empty() and _remakePU) ? "and '"+fileNamePUMC+"' for "+_sampleName : "");
 
       TFile* dfile = TFile::Open(fileNamePU.c_str(), "READ");
 
       //recalculate from provided MC and data histos
       if(!fileNamePUMC.empty() and _remakePU){
         TFile* mfile = TFile::Open(fileNamePUMC.c_str(), "READ");
-        TH1* pu_mc_in = getHisto(mfile,"NeffFinder/TrueNumInteractions");
+        TH1* pu_mc_in = getHisto(mfile,"NeffFinder/TrueNumInteractions_"+_sampleName);
 
         pu_central = getHisto(dfile,"data_pu_central",true);
         pu_up = getHisto(dfile,"data_pu_up",true);

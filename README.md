@@ -180,8 +180,11 @@ python getResults.py
 ./haddEOS.sh -d /store/user/YOURUSERNAME/myNeff -g _part -r
 ```
 
-Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines.
+Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines. Combine all pileup distributions into a single file.
 ```
+cd $CMSSW_BASE/src/TreeMaker/Production/test/myNeff
+./haddWrongPU.sh -L /store/user/YOURUSERNAME/myNeff
+cd $CMSSW_BASE/src/TreeMaker/Production/python
 python get_py.py dict=dictNLO.py py=False
 ```
 
@@ -219,6 +222,8 @@ The following parameters take their default values from the specified scenario:
 * `jecfile`: name of a database file from which to get JECs
 * `jerfile`: name of a database file from which to get JERs
 * `residual`: switch to enable residual JECs for data
+* `pufile`: name of a ROOT file from which to get pileup weights
+* `wrongpufile`: name of a ROOT file from which to get per-sample pileup distributions (for Fall17 samples produced w/ wrong PU)
 * `era`: CMS detector era for the dataset
 * `redir`: xrootd redirector, storage element address, or site name (default="root://cmsxrootd.fnal.gov/") (`fastsim` default="root://cmseos.fnal.gov/")
 * `verbose`: print messages from modules in the `TreeMaker` category (and from JetToolbox) (default=True)

@@ -19,6 +19,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
     # Set default values to produce an event weight of 1
     weightProducer.weight = cms.double(1.0)
     weightProducer.Method = cms.string("Constant")
+    weightProducer.SampleName = cms.string("")
     weightProducer.FileNamePUDataDistribution = cms.string("")
     weightProducer.FileNamePUMCDistribution = cms.string("")
 

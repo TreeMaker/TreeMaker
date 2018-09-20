@@ -26,6 +26,7 @@ if __name__ == "__main__":
     parser.add_option("-s", "--scenario", dest="scenario", default="SimGeneral.MixingModule.mix_2017_25ns_WinterMC_PUScenarioV1_PoissonOOTPU_cfi", help="CMSSW python file for pileup scenario (default = %default)")
     parser.add_option("-D", "--data", dest="data", default="", help="ROOT file w/ data pileup distributions (in case already computed)")
     parser.add_option("-M", "--mc", dest="mc", default="", help="ROOT file w/ MC pileup distribution (overrides scenario)")
+    parser.add_option("-n", "--name", dest="name", default="", help="Name for input MC pileup distribution (TrueNumInteractions_###)")
     parser.add_option("-m", "--minbias", dest="minbias", default=71300, help="minbias xsec in mb (default = %default)")
     parser.add_option("-u", "--uncertainty", dest="uncertainty", default=0.0485, help="minbias xsec uncertainty (default = %default)")
     parser.add_option("-b", "--nbins", dest="nbins", default=50, help="max number of bins for histos (default = %default)")
@@ -76,7 +77,7 @@ if __name__ == "__main__":
     # get scenario or ROOT file
     if len(options.mc)>0:
         mfile = TFile.Open(options.mc)
-        hMCneff = mfile.Get("NeffFinder/TrueNumInteractions")
+        hMCneff = mfile.Get("NeffFinder/TrueNumInteractions_"+options.name)
     else:
         mix = getattr(__import__(options.scenario,fromlist=["mix"]),"mix")
         probvalue = mix.input.nbPileupEvents.probValue
