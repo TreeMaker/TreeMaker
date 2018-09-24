@@ -762,9 +762,6 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
     
-        # store all AK8 genjets
-        self.VectorRecoCand.extend ( [ 'slimmedGenJetsAK8(GenJetsAK8)' ] )
-
         # substructure for genjets
         from RecoJets.Configuration.RecoGenJets_cff import ak8GenJetsNoNu
         from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
@@ -795,11 +792,14 @@ def makeTreeFromMiniAOD(self,process):
             PrunedGenJetTag = cms.InputTag("ak8GenJetsPruned"),
             SoftDropGenJetTag = cms.InputTag("ak8GenJetsSoftDrop"),
             distMax = cms.double(0.8),
+            jetPtFilter = cms.double(150),
         )
         self.VectorDouble.extend([
             'ak8GenJetProperties:prunedMass(GenJetsAK8_prunedMass)',
             'ak8GenJetProperties:softDropMass(GenJetsAK8_softDropMass)',
         ])
+        # store AK8 genjets above pt cut
+        self.VectorRecoCand.extend (['ak8GenJetProperties(GenJetsAK8)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
