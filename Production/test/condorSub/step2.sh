@@ -1,5 +1,13 @@
 #!/bin/bash
 
+# check for incorrect pilot cert
+vomsident = $(voms-proxy-info -identity)
+echo $vomsident
+if [[ $vomsident = *"cmsgli"* ]]; then
+	# this is the exit code for "User is not authorized to write to destination site."
+	exit 60322
+fi
+
 export JOBNAME=""
 export PROCESS=""
 export OUTDIR=""
