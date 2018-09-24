@@ -39,7 +39,7 @@ private:
   edm::EDGetTokenT<edm::View<reco::GenJet>> GenJetTok;
   edm::InputTag PrunedTag, SoftDropTag;
   edm::EDGetTokenT<std::vector<reco::BasicJet>> PrunedTok, SoftDropTok;
-  double distMax;
+  double distMax, jetPtFilter;
 	
 	
   // ----------member data ---------------------------
@@ -64,9 +64,11 @@ GenJetProperties::GenJetProperties(const edm::ParameterSet& iConfig) :
   SoftDropTag(iConfig.getParameter<edm::InputTag>("SoftDropGenJetTag")),
   PrunedTok(consumes<std::vector<reco::BasicJet>>(PrunedTag)),
   SoftDropTok(consumes<std::vector<reco::BasicJet>>(SoftDropTag)),
-  distMax(iConfig.getParameter<double>("distMax"))
+  distMax(iConfig.getParameter<double>("distMax")),
+  jetPtFilter(iConfig.getParameter<double>("jetPtFilter"))
 {
   //register your products
+  produces<std::vector<reco::GenJet>>();
   produces<std::vector<double>>("invisibleEnergy");
   produces<std::vector<double>>("prunedMass");
   produces<std::vector<double>>("softDropMass");
@@ -92,6 +94,7 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
 {
   using namespace edm;
 	
+  auto genJetsOut = std::make_unique<std::vector<reco::GenJet>>();
   auto invisibleEnergy = std::make_unique<std::vector<double>>();
   auto prunedMass = std::make_unique<std::vector<double>>();
   auto softDropMass = std::make_unique<std::vector<double>>();
@@ -108,6 +111,9 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
     bool doSoftDrop = SoftDropJets.isValid();
 
     for(const auto& GenJet: *GenJets){
+      if(jetPtFilter>0. and GenJet.pt()<jetPtFilter) continue;
+      genJetsOut->push_back(GenJet);
+
       invisibleEnergy->push_back( GenJet.invisibleEnergy() );
       double pruned = 0.0;
       double softdrop = 0.0;
@@ -134,6 +140,7 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
     }
   }
 
+  iEvent.put(std::move(genJetsOut));
   iEvent.put(std::move(invisibleEnergy),"invisibleEnergy");
   iEvent.put(std::move(prunedMass),"prunedMass");
   iEvent.put(std::move(softDropMass),"softDropMass");
