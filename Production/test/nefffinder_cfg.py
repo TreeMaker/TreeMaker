@@ -4,6 +4,7 @@ parameters = CommandLineParams()
 name = parameters.value("name","")
 nstart = parameters.value("nstart",0)
 nfiles = parameters.value("nfiles",-1)
+part = parameters.value("part",-1)
 redir = parameters.value("redir","root://cmsxrootd.fnal.gov/")
 
 # handle site name usage
@@ -40,10 +41,17 @@ for f,val in enumerate(process.source.fileNames):
     if process.source.fileNames[f][0:6]=="/store":
         process.source.fileNames[f] = redir+process.source.fileNames[f]
 
-process.demo = cms.EDAnalyzer('NeffFinder',
-    name = cms.string(name)
+# output file
+process.TFileService = cms.Service("TFileService",
+    fileName = cms.string("TrueNumInteractions_"+name+("_part"+str(part) if part>=0 else "")+".root"),
+    closeFileFast = cms.untracked.bool(True),
 )
 
-process.p = cms.Path(process.demo)
+process.NeffFinder = cms.EDAnalyzer('NeffFinder',
+    name = cms.string(name),
+    nbins = cms.uint32(1000),
+)
+
+process.p = cms.Path(process.NeffFinder)
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 10000

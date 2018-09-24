@@ -52,7 +52,6 @@ Several predefined run commands (at least one for each scenario) are defined in 
 * `name`: name of the output ROOT and log files for the test (default="", each test has its own default name)
 * `run`: run the selected test (default=False)
 * `numevents`: how many events to run (default=100)
-* `shell`: how to format the command (default="tcsh", also knows "bash")
 
 A few examples of how to run the script:  
 1) To see all tests:
@@ -157,12 +156,12 @@ python get_py.py -d dict.py [options]
 
 To check for new samples, use the above script [get_mcm.py](./Production/test/get_mcm.py) or query DAS, e.g.:
 ```
-das_client.py --query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM" --limit=0 | & less
+dasgoclient -query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM"
 ```
 
 ### Samples with Negative Weight Events
 
-Samples produced at NLO by amcatnlo have events with negative weights, which must be handled correctly. To get the effective number of events used to weight the sample, there is a multi-step process.
+Samples produced at NLO by amcatnlo have events with negative weights, which must be handled correctly. To get the effective number of events used to weight the sample, there is a multi-step process. This process also produces a histogram of `TrueNumInteractions` for pileup reweighting.
 
 Step 1: Get the "_cff.py" files, without generating WeightProducer lines (assuming samples are listed in `dictNLO.py`).
 ```
@@ -175,13 +174,17 @@ Be sure to sanity-check the results, as xrootd failures can cause jobs to termin
 ```
 ./lnbatch.sh myNeff
 cd myNeff
-python submitJobsNeff.py -p -d neff -N 50 -s
+python submitJobsNeff.py -p -d neff -N 50 -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myNeff
 (after jobs are finished)
 python getResults.py
+./haddEOS.sh -d /store/user/YOURUSERNAME/myNeff -g _part -r
 ```
 
-Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines.
+Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines. Combine all pileup distributions into a single file.
 ```
+cd $CMSSW_BASE/src/TreeMaker/Production/test/myNeff
+./haddWrongPU.sh -L /store/user/YOURUSERNAME/myNeff
+cd $CMSSW_BASE/src/TreeMaker/Production/python
 python get_py.py dict=dictNLO.py py=False
 ```
 
@@ -219,6 +222,8 @@ The following parameters take their default values from the specified scenario:
 * `jecfile`: name of a database file from which to get JECs
 * `jerfile`: name of a database file from which to get JERs
 * `residual`: switch to enable residual JECs for data
+* `pufile`: name of a ROOT file from which to get pileup weights
+* `wrongpufile`: name of a ROOT file from which to get per-sample pileup distributions (for Fall17 samples produced w/ wrong PU)
 * `era`: CMS detector era for the dataset
 * `redir`: xrootd redirector, storage element address, or site name (default="root://cmsxrootd.fnal.gov/") (`fastsim` default="root://cmseos.fnal.gov/")
 * `verbose`: print messages from modules in the `TreeMaker` category (and from JetToolbox) (default=True)

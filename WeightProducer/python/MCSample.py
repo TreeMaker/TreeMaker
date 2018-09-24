@@ -148,19 +148,10 @@ class MCSampleHelper():
         "SMS-T5qqqqZH-mGluino2000"                                       : XSValues(-1.0, -1.0, 0.000981077,  -1.0),
         "SMS-T5qqqqZH-mGluino2100"                                       : XSValues(-1.0, -1.0, 0.000591918,  -1.0),
         "SMS-T5qqqqZH-mGluino2200"                                       : XSValues(-1.0, -1.0, 0.000359318,  -1.0),
-        "step4_MINIAOD_mZprime-1000_mDark-20_rinv-0.3_alpha-0.2_n-1000"  : XSValues(-1.0, -1.0, 4.612,        -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.2_n-1000"  : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.1_n-1000"  : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.5_alpha-0.2_n-1000"  : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-2000_mDark-20_rinv-0.3_alpha-0.2_n-1000"  : XSValues(-1.0, -1.0, 0.1849,       -1.0),
-        "step4_MINIAOD_mZprime-4000_mDark-20_rinv-0.3_alpha-0.2_n-1000"  : XSValues(-1.0, -1.0, 0.001688,     -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-1_rinv-0.3_alpha-0.2_n-1000"   : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-50_rinv-0.3_alpha-0.2_n-1000"  : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-100_rinv-0.3_alpha-0.2_n-1000" : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.1_alpha-0.2_n-1000"  : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.7_alpha-0.2_n-1000"  : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.5_n-1000"  : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-1000"    : XSValues(-1.0, -1.0, 0.0155,       -1.0),
+        "mZprime-1000"                                                   : XSValues(-1.0, -1.0, 4.612,        -1.0),
+        "mZprime-2000"                                                   : XSValues(-1.0, -1.0, 0.1849,       -1.0),
+        "mZprime-3000"                                                   : XSValues(-1.0, -1.0, 0.0155,       -1.0),
+        "mZprime-4000"                                                   : XSValues(-1.0, -1.0, 0.001688,     -1.0),
         "stealth_stop_350_singlino_SYY"                                  : XSValues(-1.0, -1.0, 3.78661,      -1.0),
         "stealth_stop_450_singlino_SYY"                                  : XSValues(-1.0, -1.0, 0.948333,     -1.0),
         "stealth_stop_550_singlino_SYY"                                  : XSValues(-1.0, -1.0, 0.296128,     -1.0),
@@ -184,7 +175,7 @@ class MCSampleHelper():
     __names_to_strip = {
         "generators" : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"      : ["(.Tune)([^_]*)"],
-        "other"      : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$"],
+        "other"      : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)"],
     }
 
     def get_cm_energy(self, name):
@@ -214,13 +205,14 @@ class MCSample():
 
     __helper = MCSampleHelper()
 
-    def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, NumberEvtsDiff = None):
+    def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, WrongPU = False, NumberEvtsDiff = None):
         self.name = name
         self.production = production
         self.mcVersion = mcVersion
         self.Method = Method
         self.XS = self.get_xs(name)
         self.NumberEvtsTotal = NumberEvtsTotal
+        self.WrongPU = WrongPU
         self.NumberEvtsDiff = NumberEvtsTotal if NumberEvtsDiff==None else NumberEvtsDiff
 
     def get_effective_lumi(self):
@@ -236,7 +228,7 @@ class MCSample():
         return self.__helper.get_xs(name)
 
     def __repr__(self):
-        return "%s(%r, %r, %r, %r, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal) if self.NumberEvtsTotal==self.NumberEvtsDiff else "%s(%r, %r, %r, %r, %i, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.NumberEvtsDiff)
+        return "%s(%r, %r, %r, %r, %i, %r)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.WrongPU) if self.NumberEvtsTotal==self.NumberEvtsDiff else "%s(%r, %r, %r, %r, %i, %r, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.WrongPU,self.NumberEvtsDiff)
 
     def __str__(self):
         dict_of_members = self.__dict__
@@ -254,4 +246,4 @@ class MCSample():
             else:
                 rep_format += (key_format+": {:<"+str(len(str(self.NumberEvtsDiff)))+"}")
                 rep_format += ")"
-        return rep_format.format('name',self.name,' ','production',self.production,' ','mcVersion',self.mcVersion,' ','Method',self.Method,' ','XS',self.XS,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ','NumberEvtsDiff',self.NumberEvtsDiff)
+        return rep_format.format('name',self.name,' ','production',self.production,' ','mcVersion',self.mcVersion,' ','Method',self.Method,' ','XS',self.XS,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ','WrongPU',self.WrongPU,' ','NumberEvtsDiff',self.NumberEvtsDiff)

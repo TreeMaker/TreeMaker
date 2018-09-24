@@ -45,7 +45,8 @@ def main(args):
         sfile = open(ofolder+sname,'w')
         
     for fitem in flist:
-        is_data = fitem[0]
+        is_data = fitem[0]==0
+        wrong_pu = fitem[0]==2
         ff = fitem[1]
         x = fitem[2]
         nevents_all = []
@@ -148,7 +149,7 @@ def main(args):
             
             for i,f in enumerate(ff):
                 #make line for weightproducer
-                line = (" "*8)+repr(MCSample(f.split('/')[1],"-".join(f.split('/')[2].split('-')[1:3]),f.split('/')[2].split('-')[0],"Constant",nevents,neff if neff>0 else None))+","
+                line = (" "*8)+repr(MCSample(f.split('/')[1],"-".join(f.split('/')[2].split('-')[1:3]),f.split('/')[2].split('-')[0],"Constant",nevents,wrong_pu,neff if neff>0 else None))+","
                 if neff>0:
                     if len(ff)>1: line = line+" # subtotal = "+str(x[i])+", straight subtotal = "+str(nevents_all[i])+"\n"
                 else:

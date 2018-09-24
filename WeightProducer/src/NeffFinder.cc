@@ -1,6 +1,6 @@
 // system include files
 #include <string>
-#include <iostream>
+#include <vector>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -9,14 +9,19 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "FWCore/ServiceRegistry/interface/Service.h"
+#include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+
+#include "TH1.h"
 
 //
 // class declaration
 //
 
-class NeffFinder: public edm::one::EDAnalyzer<> {
+class NeffFinder: public edm::one::EDAnalyzer<edm::one::SharedResources> {
 	public:
 		explicit NeffFinder(const edm::ParameterSet&);
 		~NeffFinder() override;
@@ -28,14 +33,28 @@ class NeffFinder: public edm::one::EDAnalyzer<> {
 		void endJob() override;
 	
 		//member variables
+		edm::Service<TFileService> fs;
+		TH1F* hTrueNumInt;
 		std::string name;
+		unsigned nbins;
 		unsigned long pos, neg;
-		edm::InputTag genEvtTag_;
+		edm::InputTag genEvtTag_, puInfoTag_;
 		edm::EDGetTokenT<GenEventInfoProduct> genEvtTok_;
+		edm::EDGetTokenT<std::vector<PileupSummaryInfo>> puInfoTok_;
 };
 
 NeffFinder::NeffFinder(const edm::ParameterSet& iConfig) :
-name(iConfig.getParameter<std::string>("name")), pos(0), neg(0), genEvtTag_(edm::InputTag("generator")), genEvtTok_(consumes<GenEventInfoProduct>(genEvtTag_)) { }
+	hTrueNumInt(nullptr),
+	name(iConfig.getParameter<std::string>("name")),
+	nbins(iConfig.getParameter<unsigned>("nbins")),
+	pos(0), neg(0),
+	genEvtTag_(edm::InputTag("generator")),
+	puInfoTag_(edm::InputTag("slimmedAddPileupInfo")),
+	genEvtTok_(consumes<GenEventInfoProduct>(genEvtTag_)),
+	puInfoTok_(consumes<std::vector<PileupSummaryInfo>>(puInfoTag_))
+{
+	usesResource("TFileService");
+}
 
 NeffFinder::~NeffFinder() { }
 
@@ -49,12 +68,28 @@ NeffFinder::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup) {
 		double genweight_ = genEvtInfoHandle->weight();
 		if(genweight_ < 0) ++neg;
 		else ++pos;
-	}	
+	}
+
+	//fill PU histogram
+	edm::Handle<std::vector<PileupSummaryInfo>> puInfo;
+	iEvent.getByToken(puInfoTok_, puInfo);
+	for(const auto& PVI : *puInfo) {
+		//look only at primary BX (in-time)
+		if(PVI.getBunchCrossing()==0){
+			hTrueNumInt->Fill(PVI.getTrueNumInteractions());
+			break;
+		}
+	}
 }
 
 // ------------ method called once each job just before starting event loop  ------------
 void 
-NeffFinder::beginJob() { }
+NeffFinder::beginJob() {
+	if( !fs ) {
+		throw edm::Exception(edm::errors::Configuration, "TFile Service is not registered in cfg file");
+	}
+	hTrueNumInt = fs->make<TH1F>(("TrueNumInteractions_"+name).c_str(),("TrueNumInteractions_"+name).c_str(),nbins,0,nbins);
+}
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 

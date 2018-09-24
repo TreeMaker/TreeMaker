@@ -55,7 +55,6 @@ if theMaker.verbose:
     )
 process.options = cms.untracked.PSet(
     allowUnscheduled = cms.untracked.bool(True),
-    SkipEvent = cms.untracked.vstring('ProductNotFound'),
 )
 
 # memory profiling
