@@ -1,5 +1,28 @@
-import os,glob,re,json
+import os,glob,re,json,sys
 from optparse import OptionParser
+
+class Logger(object):
+    def __init__(self, ofile):
+        self.ofile = ofile
+        self.terminal = sys.stdout
+        try:
+            self.log = open(ofile, "a", 0)
+        except IOError:
+            print "ERROR::Logger::Could not open output file!"
+        
+
+    def write(self, message):
+        self.terminal.write(message)
+        try:
+            self.log.write(message)  
+        except AttributeError:
+            pass
+
+    def flush(self):
+        #this flush method is needed for python 3 compatibility.
+        #this handles the flush command by doing nothing.
+        #you might want to specify some extra behavior here.
+        pass    
 
 def runBril(output,category,pd,section,file,normtag):
     # setup output
@@ -20,10 +43,13 @@ def runBril(output,category,pd,section,file,normtag):
 
 parser = OptionParser()
 parser.add_option("-i", "--indir", dest="indir", default="json", help="input directory for JSON files (default = %default)")
+parser.add_option("-o", "--ofile", dest="ofile", default="", help="if set, print to file rather than terminal (default = %default)")
 parser.add_option("-t", "--normtag", dest="normtag", default="", help="normtag for lumi calculation (default = %default)")
 parser.add_option("-l", "--lastUnblindRun", dest="lastUnblindRun", default=258750, help="last unblind run number (-1 = all unblind) (default = %default)")
 parser.add_option("-f", "--firstUnblindRun", dest="firstUnblindRun", default=0, help="first unblind run number (-1 = all unblind) (default = %default)")
 (options, args) = parser.parse_args()
+
+sys.stdout = Logger(options.ofile)
 
 lastUnblindRun = int(options.lastUnblindRun)
 firstUnblindRun = int(options.firstUnblindRun)
