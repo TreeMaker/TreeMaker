@@ -12,6 +12,12 @@ from optparse import OptionParser
 
 class sampleInfo : 
 
+    '''
+    Example Use:
+    from lumiSummary import sampleInfo
+    si = sampleInfo("data2016Lumi/","/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV15/",["Run2016B-17Jul2018_ver1-v1.HTMHT_*"])
+    '''
+
     def __init__( self , outName, baseDir, fileNames ) :
         self.fileNames = fileNames
         self.outName = outName
@@ -28,6 +34,27 @@ class sampleInfo :
                 f = redirector+f[11:]
             self.fileList.append(f)
 
+    def __repr__(self):
+        return "%s(%r, %r)" % (self.__class__.__name__, self.outName,self.fileNames)
+
+    def __str__(self):
+        dict_of_members = self.__dict__
+        list_of_keys = dict_of_members.keys()
+        list_of_values = dict_of_members.values()
+        max_len_keys = max(len(str(x)) for x in list_of_keys)
+        min_len_values = min(len(str(x)) for x in list_of_values)
+        key_format="{:<"+str(max_len_keys)+"}"
+        value_format="{:<"+str(min_len_values)+"}"
+        rep_format = "sampleInfo("
+        for ikey, key in enumerate(list_of_keys):
+            if ikey != len(list_of_keys)-1:
+                rep_format += (key_format+": "+value_format)
+                rep_format += ("\n{:<11}")
+            else:
+                rep_format += (key_format+": {:<"+str(len(str(self.fileNames)))+"}")
+                rep_format += ")"
+        return rep_format.format('outName',self.outName,' ','fileNames',self.fileNames,' ','fileList',self.fileList)
+
 # ------------------------------------------------------------
 # ------------------------------------------------------------
 # ------------------------------------------------------------
@@ -39,16 +66,25 @@ class sampleInfo :
 def makeJSON(optlist):
     outdir = optlist[0]
     basedir = optlist[1]
-    name = optlist[2]
-    files = optlist[3:]
+    verbose = optlist[2]
+    name = optlist[3]
+    files = optlist[4:]
     s = sampleInfo(name,basedir,files)
     
     #lumi set for this sample
     mergedLumis = set()
 
     for f in s.fileList:
+        # skip empty paths
+        if f == '': continue
+
+        # open the file or skip the file if it can't be opened
+        if verbose: print "Trying to open file \"" + f +"\""
         file = TFile.Open(f)
-        if file == None: continue
+        if file == None: 
+            if verbose: print "\tWARNING: Can't open file \"" + f + "\" from sample" + s
+            continue
+
         # only keep necessary branches
         t = file.Get("TreeMaker2/PreSelection")
         if t == None: continue
@@ -97,6 +133,7 @@ if __name__ == "__main__":
     parser.add_option("-b", "--basedir", dest="basedir", default="/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV4", help="location of data ntuples (default = %default)")
     parser.add_option("-d", "--dict", dest="dictfile", default="dataSamples.py", help="list of data sample names and files (default = %default)")
     parser.add_option("-n", "--npool", dest="npool", default=4, help="number of processes to run (default = %default)")
+    parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="print extra error messages (default = %default)")
     (options, args) = parser.parse_args()
 
     from ROOT import *
@@ -108,7 +145,7 @@ if __name__ == "__main__":
     dict = __import__(options.dictfile.replace(".py",""))
 
     #common list of options
-    optlist = [options.outdir, options.basedir]
+    optlist = [options.outdir, options.basedir, options.verbose]
     
     #prepend common list to dict
     for i,d in enumerate(dict.dataSamples):
