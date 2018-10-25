@@ -242,6 +242,7 @@ def makeTreeFromMiniAOD(self,process):
         runMetCorAndUncFromMiniAOD(
             process,
             isData=not self.geninfo, # controls gen met
+            jetCollUnskimmed=JetTag,
             reapplyJEC=False,
             fixEE2017=self.doMETfix,
         )
@@ -252,6 +253,7 @@ def makeTreeFromMiniAOD(self,process):
             runMetCorAndUncFromMiniAOD(
                 process,
                 isData=not self.geninfo, # controls gen met
+                jetCollUnskimmed=JetTag,
                 reapplyJEC=False,
                 postfix="Orig",
                 computeMETSignificance=False,
