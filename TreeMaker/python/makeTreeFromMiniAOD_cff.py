@@ -533,6 +533,16 @@ def makeTreeFromMiniAOD(self,process):
                     tag    = cms.string('JR_'+JERera+'_SF_AK4PFchs'),
                     label  = cms.untracked.string('AK4PFchs')
                 ),
+                cms.PSet(
+                    record = cms.string('JetResolutionRcd'),
+                    tag    = cms.string('JR_'+JERera+'_PtResolution_AK8PFPuppi'),
+                    label  = cms.untracked.string('AK8PFPuppi_pt')
+                ),
+                cms.PSet(
+                    record = cms.string('JetResolutionScaleFactorRcd'),
+                    tag    = cms.string('JR_'+JERera+'_SF_AK8PFPuppi'),
+                    label  = cms.untracked.string('AK8PFPuppi')
+                ),
             ),
         )
 
@@ -540,87 +550,17 @@ def makeTreeFromMiniAOD(self,process):
 
     # skip all jet smearing and uncertainties for data
     from TreeMaker.TreeMaker.JetDepot import JetDepot
-    from TreeMaker.TreeMaker.makeJetVars import makeJetVars
     from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
+    # AK4 jet uncertainties
     if self.geninfo and self.systematics:
-        # JEC unc up
-        process, JetTagJECTmp, JetTagJECup = JetDepot(process,
-            JetTag=JetTag,
-            jecUncDir=1,
-            storeJec=True, # get JER unc value (in intermediate tag Tmp)
-            doSmear=True,
-            jerUncDir=0,
-            storeJer=2, # get JER smearing factor w/ JEC variation
-        )
-        process = self.makeJetVars(process,
-            JetTag=JetTagJECup,
-            suff='JECup',
-            skipGoodJets=False,
-            storeProperties=0,
-            SkipTag=SkipTag,
-            systType="JEC",
-        )
-        
-        # JEC unc down
-        process, _, JetTagJECdown = JetDepot(process,
-            JetTag=JetTag,
-            jecUncDir=-1,
-            doSmear=True,
-            jerUncDir=0,
-            storeJer=2, # get JER smearing factor w/ JEC variation
-        )
-        process = self.makeJetVars(process,
-            JetTag=JetTagJECdown,
-            suff='JECdown',
-            skipGoodJets=False,
-            storeProperties=0,
-            SkipTag=SkipTag,
-            systType="JEC",
-        )
-
-        # JER unc up
-        process, _, JetTagJERup = JetDepot(process,
-            JetTag=JetTag,
-            jecUncDir=0,
-            doSmear=True,
-            jerUncDir=1,
-            storeJer=1,
-        )
-        process = self.makeJetVars(process,
-            JetTag=JetTagJERup,
-            suff='JERup',
-            skipGoodJets=False,
-            storeProperties=0,
-            SkipTag=SkipTag,
-            systType="JER",
-        )
-        
-        # JER unc down
-        process, _, JetTagJERdown = JetDepot(process,
-            JetTag=JetTag,
-            jecUncDir=0,
-            doSmear=True,
-            jerUncDir=-1,
-            storeJer=1,
-        )
-        process = self.makeJetVars(process,
-            JetTag=JetTagJERdown,
-            suff='JERdown',
-            skipGoodJets=False,
-            storeProperties=0,
-            SkipTag=SkipTag,
-            systType="JER",
-        )
-
-        # append factors to central collection
-        process, JetTag = addJetInfo(process, JetTag, [JetTagJECTmp.value(),JetTagJERup.value(),JetTagJERdown.value()], [])
+        process, JetTagJECTmp, JetTagJECup, JetTagJECdown, JetTagJERup, JetTagJERdown, JetTag = self.JetVariations(process, JetTag, SkipTag)
     elif not self.geninfo:
         # get JEC unc for data
         process, JetTagJECTmp, _ = JetDepot(process,
             JetTag=JetTag,
             jecUncDir=0,
-            storeJec=True, # get JER unc value (in intermediate tag Tmp)
+            storeJec=True, # get JEC unc value (in intermediate tag Tmp)
             doSmear=False,
         )
         # append unc to central collection
@@ -630,6 +570,30 @@ def makeTreeFromMiniAOD(self,process):
         # finally, do central smearing and replace jet tag
         process, _, JetTag = JetDepot(process,
             JetTag=JetTag,
+            jecUncDir=0,
+            doSmear=True,
+            jerUncDir=0,
+            storeJer=2, # get central jet smearing factor
+        )
+
+    # AK8 jet uncertainties
+    if self.geninfo and self.systematics:
+        process, JetAK8TagJECTmp, JetAK8TagJECup, JetAK8TagJECdown, JetAK8TagJERup, JetAK8TagJERdown, JetAK8Tag = self.JetVariations(process, JetAK8Tag, SkipTag, suff="AK8", vars="makeJetVarsAK8")
+    elif not self.geninfo:
+        # get JEC unc for data
+        process, JetAK8TagJECTmp, _ = JetDepot(process,
+            JetTag=JetAK8Tag,
+            jecUncDir=0,
+            storeJec=True, # get JEC unc value (in intermediate tag Tmp)
+            doSmear=False,
+        )
+        # append unc to central collection
+        process, JetAK8Tag = addJetInfo(process, JetAK8Tag, [JetAK8TagJECTmp.value()], [])
+
+    if self.geninfo:
+        # finally, do central smearing and replace jet tag
+        process, _, JetAK8Tag = JetDepot(process,
+            JetTag=JetAK8Tag,
             jecUncDir=0,
             doSmear=True,
             jerUncDir=0,
@@ -677,7 +641,6 @@ def makeTreeFromMiniAOD(self,process):
     process = self.makeJetVars(process,
         JetTag=JetTag,
         suff='',
-        skipGoodJets=False,
         storeProperties=2,
         SkipTag=SkipTag,
         MHTJetTagExt = MHTJetTagExt,
@@ -724,6 +687,20 @@ def makeTreeFromMiniAOD(self,process):
         suff='AK8',
         storeProperties=2,
     )    
+    if self.systematics:
+        process.JetPropertiesAK8.properties.extend(["jecUnc"])
+        process.JetPropertiesAK8.jecUnc = cms.vstring(JetAK8TagJECTmp.value())
+        self.VectorDouble.extend([
+            'JetPropertiesAK8:jecUnc(JetsAK8_jecUnc)',
+        ])
+    if self.geninfo and self.systematics:
+        process.JetPropertiesAK8.properties.extend(["jerFactorUp","jerFactorDown"])
+        process.JetPropertiesAK8.jerFactorUp = cms.vstring(JetAK8TagJERup.value())
+        process.JetPropertiesAK8.jerFactorDown = cms.vstring(JetAK8TagJERdown.value())
+        self.VectorDouble.extend([
+            'JetPropertiesAK8:jerFactorUp(JetsAK8_jerFactorUp)',
+            'JetPropertiesAK8:jerFactorDown(JetsAK8_jerFactorDown)',
+        ])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables
