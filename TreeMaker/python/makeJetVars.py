@@ -11,10 +11,11 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         ExcludeLepIsoTrackPhotons = cms.bool(True),
         JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
-        SaveAllJetsId             = True,
-        # keep lower-pt central jets in case they fluctuate up in systematic collections (only for AK4)
-        SaveAllJetsPt             = (jetConeSize==0.4),
-        maxJetEta                 = cms.double(5.0 if jetConeSize==0.8 else -1),
+        SaveAllJetsId             = cms.bool(True),
+        # keep lower-pt central jets in case they fluctuate up in systematic collections (for all)
+        SaveAllJetsPt             = cms.bool(True),
+        # keep all eta jets to preserve ordering
+        maxJetEta                 = cms.double(-1),
     )
     TMeras.TM2017.toModify(GoodJets,
         maxNeutralFraction        = cms.double(0.90),
@@ -38,16 +39,13 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
 # 0 = scalars (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", MHTJetTagExt=None):
+def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", MHTJetTagExt=None):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
-    if skipGoodJets:
-        GoodJetsTag = JetTag
-    else:
-        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag,0.4)
-        if onlyGoodJets:
-            return process
+    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag,0.4)
+    if onlyGoodJets:
+        return process
     
     ## ----------------------------------------------------------------------------------------------
     ## HT
@@ -273,11 +271,12 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     return process
 
 # AK8 storeProperties levels:
-# 0 = ID scalar from goodJets
+# 0 = ID scalar from goodJets (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, most properties
 # 2 = 1 + subjet properties + extra substructure
 # 3 = 2 + constituents (large)
-def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True, doDoubleB=True, CandTag=cms.InputTag("packedPFCandidates")):
+# SkipTag is not used, but just there to make interfaces consistent
+def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doDeepAK8=True, doDoubleB=True, CandTag=cms.InputTag("packedPFCandidates")):
     # select good jets before anything else - eliminates bad AK8 jets (low pT, no constituents stored, etc.)
     process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8)
 
@@ -286,7 +285,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
     ak8ints = []
     ak8tags = cms.VInputTag()
 
-    if doDoubleB:
+    if storeProperties>0 and doDoubleB:
         # get double b-tagger (w/ miniAOD customizations)
         from RecoBTag.ImpactParameter.pfImpactParameterAK8TagInfos_cfi import pfImpactParameterAK8TagInfos
         pfImpactParameterAK8TagInfosMod = pfImpactParameterAK8TagInfos.clone(
@@ -317,7 +316,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
         setattr(process,"pfBoostedDoubleSecondaryVertexAK8BJetTags"+suff,pfBoostedDoubleSecondaryVertexAK8BJetTagsMod)
         ak8tags.append(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags"+suff))
 
-    if self.deepAK8 and doDeepAK8:
+    if storeProperties>0 and self.deepAK8 and doDeepAK8:
         from TreeMaker.Utils.deepak8producer_cfi import DeepAK8Producer, DeepAK8DecorrelProducer
         deepAK8 = DeepAK8Producer.clone(
             JetAK8 = GoodJetsTag
@@ -384,7 +383,23 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
     if len(ak8floats)>0 or len(ak8ints)>0 or len(ak8tags)>0:
         process, GoodJetsTag = addJetInfo(process, GoodJetsTag, ak8floats, ak8ints, ak8tags)
 
-    if storeProperties>0:
+    if storeProperties==0:
+        # for systematics
+        JetPropertiesAK8 = cms.EDProducer("JetProperties",
+            JetTag = GoodJetsTag,
+            debug = cms.bool(False),
+            properties = cms.vstring("origIndex"),
+        )
+        if systType=="JEC":
+            JetPropertiesAK8.properties.append("jerFactor")
+            JetPropertiesAK8.jerFactor = cms.vstring("jerFactor")
+            JetPropertiesAK8.origIndex = cms.vstring("jecOrigIndex")
+            self.VectorDouble.extend(['JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)'])
+        elif systType=="JER":
+            JetPropertiesAK8.origIndex = cms.vstring("jerOrigIndex")
+        setattr(process,"JetProperties"+suff,JetPropertiesAK8)
+        self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
+    elif storeProperties>0:
         # AK8 jet variables - separate instance of jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetPropertiesAK8 = jetproperties.clone(
@@ -477,6 +492,21 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
             ])
 
         if storeProperties>1:
+            JetPropertiesAK8.properties.extend(["jecFactor"])
+            self.VectorDouble.extend([
+                'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
+            ])
+            if self.geninfo:
+                JetPropertiesAK8.properties.extend(["jerFactor"])
+                JetPropertiesAK8.jerFactor = cms.vstring("jerFactor")
+                self.VectorDouble.extend([
+                    'JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
+                ])
+                if self.systematics:
+                    # account for central JER smearing
+                    JetPropertiesAK8.properties.extend(["origIndex"])
+                    JetPropertiesAK8.origIndex = cms.vstring("jerOrigIndex")
+                    self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
             # extra stuff for subjets
             JetPropertiesAK8.properties.extend(["SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
             JetPropertiesAK8.SJptD = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:ptD')
@@ -540,3 +570,4 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
     return process        
+

@@ -1,7 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
 def reclusterZinv(self, process, cleanedCandidates, suff):
-    
+    # skip all jet smearing for data
+    from TreeMaker.TreeMaker.JetDepot import JetDepot
+    doJERsmearing = self.geninfo
+
     ### AK8 detour
 
     # https://twiki.cern.ch/CMS/JetToolbox
@@ -32,21 +35,31 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         maxTau = 3,
         bTagInfos = listBTagInfos, 
         bTagDiscriminators = listBtagDiscriminatorsAK8,
-		subjetBTagDiscriminators = listBtagDiscriminatorsSubjetAK8,
+        subjetBTagDiscriminators = listBtagDiscriminatorsSubjetAK8,
         JETCorrLevels = jecLevels,
         subJETCorrLevels = jecLevels,
-		addEnergyCorrFunc = True,
-		associateTask = False,
-		verbosity = 2 if self.verbose else 0,
+        addEnergyCorrFunc = True,
+        associateTask = False,
+        verbosity = 2 if self.verbose else 0,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
 
+    if doJERsmearing:
+        # do central smearing and replace jet tag
+        process, _, JetAK8CleanTag = JetDepot(process,
+            JetTag=JetAK8CleanTag,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=0,
+            storeJer=2,
+        )
+    
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
         storeProperties=1,
-		doDeepAK8=False, # currently disabled
-		doDoubleB=False, # already done above
+        doDeepAK8=False, # currently disabled
+        doDoubleB=False, # already done above
     )
 
     # update some userfloat names
@@ -200,10 +213,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     self.VarsInt.extend(['IsolatedMuonTracksVetoClean'+suff+':isoTracks(isoMuonTracksclean'+suff+')'])
     self.VarsInt.extend(['IsolatedPionTracksVetoClean'+suff+':isoTracks(isoPionTracksclean'+suff+')'])
 
-    # skip all jet smearing for data
-    from TreeMaker.TreeMaker.JetDepot import JetDepot
-    doJERsmearing = self.geninfo
-    
     if doJERsmearing:
         # do central smearing and replace jet tag
         process, _, JetTagClean = JetDepot(process,
@@ -219,7 +228,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         process,
         JetTag = JetTagClean,
         suff=postfix,
-        skipGoodJets=False,
         storeProperties=1,
         MHTJetTagExt=MHTJetTagExt,
     )
