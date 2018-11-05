@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-CMSSWVER=CMSSW_9_4_10
+CMSSWVER=CMSSW_9_4_11
 FORK=TreeMaker
 BRANCH=Run2_2017
 ACCESS=ssh
@@ -84,13 +84,6 @@ cd ${DIR}/${NAME}/src
 eval `scramv1 runtime -sh`
 git cms-init
 git config gc.auto 0
-
-# DeepAK8 setup
-if [ "$ACCESS" = "https" ]; then echo "Needs your CERN username and password: NNKit is being cloned from gitlab"; fi
-git clone ${ACCESS_GITLAB}TreeMaker/NNKit.git -b cmssw-improvements-4 --depth 1
-cp NNKit/misc/mxnet-predict.xml $CMSSW_BASE/config/toolbox/$SCRAM_ARCH/tools/selected
-scram setup mxnet-predict
-cp --remove-destination NNKit/misc/lib/libmxnetpredict.so $CMSSW_BASE/external/$SCRAM_ARCH/lib/libmxnetpredict.so
 
 # CMSSW patches
 git cms-merge-topic TreeMaker:fixFormulaEvaluator_949 # this one has dependencies, might be in a future 9_4_X release
