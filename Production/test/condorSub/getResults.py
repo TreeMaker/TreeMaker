@@ -1,4 +1,14 @@
-import os
+import os, shutil
+from optparse import OptionParser
+
+parser = OptionParser()
+parser.add_option("-l", "--clean", dest="clean", default=False, action="store_true", help="clean up failed log files (default = %default)")
+(options, args) = parser.parse_args()
+
+if options.clean:
+    fdir = "failures"
+    if not os.path.isdir(fdir):
+        os.mkdir(fdir)
 
 def getList(cmd):
     return filter(None,os.popen(cmd).read().split('\n'))
@@ -16,6 +26,7 @@ for result in results:
     rfile = rsplit[0].split(':')[0]
     if rfile in failures:
         print "failed: "+rfile
+        if options.clean: shutil.move(rfile,fdir+"/"+rfile)
         continue
     
     # structure of output:
