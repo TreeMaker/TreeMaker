@@ -100,7 +100,11 @@ class jobSubmitterNeff(jobSubmitterTM):
             self.protoJobs.append(job)
 
     def finishedToJobName(self,val):
-        return val.split("/")[-1].replace("TrueNumInteractions_","").replace("_part","_").replace(".root","")
+        tmp = val.split("/")[-1].replace("TrueNumInteractions_","").replace(".root","")
+        # handle case where there is no part number because only one job
+        if "_part" in tmp: tmp = tmp.replace("_part","")
+        else: tmp = tmp+"_0"
+        return tmp
 
     def generateJdl(self,job):
         job.jdl = self.jdl.replace(".jdl","Neff_"+job.name+".jdl")
