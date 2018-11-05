@@ -23,5 +23,4 @@
 <use name="lhapdf"/>
 <use name="fastjet"/>
 <use name="PhysicsTools/Heppy"/>
-<use name="NNKit/FatJetNN"/>
 <flags   EDM_PLUGIN="1"/>
