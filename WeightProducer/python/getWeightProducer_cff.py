@@ -22,6 +22,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
     weightProducer.SampleName = cms.string("")
     weightProducer.FileNamePUDataDistribution = cms.string("")
     weightProducer.FileNamePUMCDistribution = cms.string("")
+    weightProducer.RemakePU = cms.bool(False)
 
     # assign cross sections for fastsim
     # assume privately-produced samples do not have mixed mass points

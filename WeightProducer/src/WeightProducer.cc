@@ -181,7 +181,6 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    if (!fileNamePU.empty()) {
       _applyPUWeights = true;
       fileNamePU = edm::FileInPath(fileNamePU).fullPath();
-      fileNamePUMC = edm::FileInPath(fileNamePUMC).fullPath();
 
       edm::LogInfo("TreeMaker") << "WeightProducer: Applying multiplicative PU weights" << "\n"
         << "  Reading PU scenario from '" << fileNamePU << "'"
@@ -191,6 +190,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
 
       //recalculate from provided MC and data histos
       if(!fileNamePUMC.empty() and _remakePU){
+        fileNamePUMC = edm::FileInPath(fileNamePUMC).fullPath();
         TFile* mfile = TFile::Open(fileNamePUMC.c_str(), "READ");
         TH1* pu_mc_in = getHisto(mfile,"NeffFinder/TrueNumInteractions_"+_sampleName);
 
