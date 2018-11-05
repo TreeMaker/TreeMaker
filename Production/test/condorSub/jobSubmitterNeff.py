@@ -50,7 +50,7 @@ class jobSubmitterNeff(jobSubmitterTM):
             # grab full file list from config files
             readFiles = getattr(__import__("TreeMaker.Production."+filesConfig+"_cff",fromlist=["readFiles"]),"readFiles")
 
-            # to keep track of how many data files have been divied up
+            # to keep track of how many data files have been divvied up
             fileListLen = len(readFiles)
 
             if self.verbose: print "There are "+str(fileListLen)+" files in your sample"
@@ -100,7 +100,7 @@ class jobSubmitterNeff(jobSubmitterTM):
             self.protoJobs.append(job)
 
     def finishedToJobName(self,val):
-        pass
+        return val.split("/")[-1].replace("TrueNumInteractions_","").replace("_part","_").replace(".root","")
 
     def generateJdl(self,job):
         job.jdl = self.jdl.replace(".jdl","Neff_"+job.name+".jdl")
