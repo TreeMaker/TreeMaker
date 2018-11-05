@@ -102,7 +102,7 @@ class jobSubmitterNeff(jobSubmitterTM):
     def finishedToJobName(self,val):
         tmp = val.split("/")[-1].replace("TrueNumInteractions_","").replace(".root","")
         # handle case where there is no part number because only one job
-        if "_part" in tmp: tmp = tmp.replace("_part","")
+        if "_part" in tmp: tmp = tmp.replace("_part","_")
         else: tmp = tmp+"_0"
         return tmp
 
