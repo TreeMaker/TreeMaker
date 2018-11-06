@@ -508,13 +508,21 @@ def makeTreeFromMiniAOD(self,process):
         prescaleTagArg1  = cms.string('patTrigger'),
         prescaleTagArg2  = cms.string(''),
         prescaleTagArg3  = cms.string(''),
-        saveHLTObj = cms.bool("SingleElectron" in process.source.fileNames[0] or "EGamma" in process.source.fileNames[0]),
+        saveHLTObj = cms.bool(False),
         triggerNameList = _triggerNameList
     )
     self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales','TriggerProducer:TriggerVersion'])
     self.VectorString.extend(['TriggerProducer:TriggerNames'])
-    if "SingleElectron" in process.source.fileNames[0] or "EGamma" in process.source.fileNames[0]):
+    if "SingleElectron" in process.source.fileNames[0] or "EGamma" in process.source.fileNames[0]:
+        process.TriggerProducer.saveHLTObj = cms.bool(True)
+        process.TriggerProducer.saveHLTObjPath = cms.string("HLT_Ele27_WPTight_Gsf_v")
+        process.TriggerProducer.saveHLTObjName = cms.string("HLTElectronObjects")
         self.VectorTLorentzVector.extend(['TriggerProducer:HLTElectronObjects'])
+    elif "SingleMuon" in process.source.fileNames[0]:
+        process.TriggerProducer.saveHLTObj = cms.bool(True)
+        process.TriggerProducer.saveHLTObjPath = cms.string("HLT_Mu50_v")
+        process.TriggerProducer.saveHLTObjName = cms.string("HLTMuonObjects")
+        self.VectorTLorentzVector.extend(['TriggerProducer:HLTMuonObjects'])
 
     if not self.geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer

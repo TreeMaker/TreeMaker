@@ -57,6 +57,7 @@ private:
   std::vector<std::string> parsedTrigNamesVec;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> trigObjCollToken;
   bool saveHLTObj = false;
+  std::string saveHLTObjPath, saveHLTObjName;
   std::unordered_map<std::string,std::pair<unsigned,int>> parsedTrigMap;
 };
 
@@ -116,8 +117,13 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   produces<std::vector<int> >("TriggerPass");
   produces<std::vector<int> >("TriggerPrescales");
   produces<std::vector<int> >("TriggerVersion");
+
   saveHLTObj = iConfig.getParameter<bool>("saveHLTObj");
-  if(saveHLTObj) produces<std::vector<TLorentzVector> >("HLTElectronObjects");
+  if(saveHLTObj) {
+    saveHLTObjPath = iConfig.getParameter<std::string>("saveHLTObjPath");
+    saveHLTObjName = iConfig.getParameter<std::string>("saveHLTObjName");
+    produces<std::vector<TLorentzVector> >(saveHLTObjName);
+  }
 }
 
 
@@ -166,7 +172,7 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
   auto trigVersionVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),0);
   auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec);
-  auto hltEleObj = std::make_unique<std::vector<TLorentzVector>>();
+  auto hltObj = std::make_unique<std::vector<TLorentzVector>>();
 
   //int passesTrigger;
   edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
@@ -196,7 +202,7 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   if(saveHLTObj){
     edm::Handle<pat::TriggerObjectStandAloneCollection> triggerObjects;
     iEvent.getByToken(trigObjCollToken,triggerObjects);
-    //save the trigger object corresponding to the trigger HLT_Ele27_WPTight_Gsf_v*. Obtained code from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#Trigger
+    //save the trigger object corresponding to the trigger path. Obtained code from https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2016#Trigger
     // loop over selected trigger objects                                                                                              
     for (pat::TriggerObjectStandAlone obj : *triggerObjects) {
       if(obj.pt() < 25.0) continue;//look for HLT objects with Pt > 25GeV only.
@@ -204,14 +210,13 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
       const std::vector<std::string>& pathNamesAll = obj.pathNames(false);
       for (const auto& pathName : pathNamesAll){
         bool isBoth = obj.hasPathName( pathName, true, true );//object is associated with l3 filter and associated to the last filter of a successful path. this object caused the trigger to fire.
-        const std::string& path_i = pathName;
-        if(isBoth && path_i.find("HLT_Ele27_WPTight_Gsf_v")!= std::string::npos){
-          hltEleObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
+        if(isBoth && pathName.find(saveHLTObjPath)!= std::string::npos){
+          hltObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
           break;
         }
       }
     }
-    iEvent.put(std::move(hltEleObj),"HLTElectronObjects");    
+    iEvent.put(std::move(hltObj),saveHLTObjName);
   }
 
   iEvent.put(std::move(passTrigVec),"TriggerPass");
