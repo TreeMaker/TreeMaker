@@ -45,6 +45,7 @@ class maker:
         self.getParamDefault("systematics",True);
         self.getParamDefault("semivisible",True);
         self.getParamDefault("deepAK8",True);
+        self.getParamDefault("deepDoubleB",True);
         
         # compute the PDF weights
         self.getParamDefault("doPDFs", True);
@@ -121,6 +122,7 @@ class maker:
         print " storing Zinv variables: "+str(self.doZinv)
         print " storing semi-visible jet variables: "+str(self.semivisible)
         print " storing deepAK8 variables: "+str(self.deepAK8)
+        print " storing deepDoubleB variables: "+str(self.deepDoubleB)
         print " "
         print " storing JEC/JER systematics: "+str(self.systematics)
         print " storing PDF weights: "+str(self.doPDFs)
