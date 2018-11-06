@@ -103,6 +103,7 @@ def doLostLeptonBkg(self,process,METTag):
 #    )
     
     # may eventually save track isolation, activity
+    self.VectorBool.extend(['LeptonsNew:IdMuonMediumID(Muons_mediumID)'])
     self.VectorBool.extend(['LeptonsNew:IdMuonTightID(Muons_tightID)'])
     self.VectorBool.extend(['LeptonsNew:IdElectronMediumID(Electrons_mediumID)'])
     self.VectorBool.extend(['LeptonsNew:IdElectronTightID(Electrons_tightID)'])
