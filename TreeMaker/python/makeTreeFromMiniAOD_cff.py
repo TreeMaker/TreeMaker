@@ -283,7 +283,7 @@ def makeTreeFromMiniAOD(self,process):
                 computeMETSignificance=False,
             )
             METTagOrig = cms.InputTag('slimmedMETsOrig')
-            MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise","jets",process.name_())
+            MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise","good",process.name_())
         else:
             METTagOrig = None
             MHTJetTagExt = None
@@ -835,6 +835,7 @@ def makeTreeFromMiniAOD(self,process):
         InfTagAK8 = cms.InputTag('GoodJetsAK8:JetInfCand'),
     )
     self.VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)','MET:Significance(METSignificance)'])
+#    self.VarsDouble.extend(['MET:RawPt(RawMET)','MET:RawPhi(RawMETPhi)'])
     if self.geninfo:
         self.VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
         self.VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
@@ -844,6 +845,7 @@ def makeTreeFromMiniAOD(self,process):
             METTag = METTagOrig
         )
         self.VarsDouble.extend(['METOrig:Pt(METOrig)','METOrig:Phi(METPhiOrig)'])
+#        self.VarsDouble.extend(['METOrig:RawPt(RawMETOrig)','METOrig:RawPhi(RawMETPhiOrig)'])
 
     from TreeMaker.Utils.mt2producer_cfi import mt2Producer
     process.Mt2Producer = mt2Producer.clone(
