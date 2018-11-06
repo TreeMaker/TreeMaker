@@ -51,7 +51,8 @@ public:
         
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   float MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi) const;
-  bool MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const;
+  bool MuonIDloose(const pat::Muon & muon, const reco::Vertex& vtx) const;
+  bool MuonIDmedium(const pat::Muon & muon, const reco::Vertex& vtx) const;
   bool MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx) const;
   bool ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level, const double rho = 0.0) const;
         
@@ -151,6 +152,7 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   SUSYIsolationHelper.SetEAVectors(electronEAValues_, muonEAValues_);
 
   produces<std::vector<pat::Muon>>("IdMuon");
+  produces<std::vector<bool>>("IdMuonMediumID");
   produces<std::vector<bool>>("IdMuonTightID");
   produces<std::vector<int>>("IdMuonCharge");
   produces<std::vector<double>>("IdMuonMTW");
@@ -198,6 +200,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   auto ElectronCharge = std::make_unique<std::vector<int>>();
 
   auto muIDMTW = std::make_unique<std::vector<double>>();
+  auto muIDMedium = std::make_unique<std::vector<bool>>();
   auto muIDTight = std::make_unique<std::vector<bool>>();
   auto muIDPassIso = std::make_unique<std::vector<bool>>();
   auto elecIDMTW = std::make_unique<std::vector<double>>();
@@ -232,10 +235,11 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       for(const auto & aMu : *muonHandle)
         {
           if(aMu.pt()<minMuPt_ || fabs(aMu.eta())>maxMuEta_) continue;
-                        
-          if(MuonID(aMu,vtx_h->at(0)))
+
+          if(MuonIDloose(aMu,vtx_h->at(0)))
             {
               idMuons->push_back(aMu);
+              muIDMedium->push_back(MuonIDmedium(aMu,vtx_h->at(0)));
               muIDTight->push_back(MuonIDtight(aMu,vtx_h->at(0)));
               muIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),aMu.pt(),aMu.phi()));
               MuonCharge->push_back(aMu.charge());
@@ -248,7 +252,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
                 SUSYIsolationHelper.GetMiniIsolation(pfcands, &aMu, SUSYIsolation::muon, rho, dBIsoMu, mt2_act);
               }
               muIDPassIso->push_back(dBIsoMu<muIsoValue_);
-              if(muIDPassIso->back())
+              if(muIDPassIso->back() and muIDMedium->back())
                 {
                   nmuons++;
                   isoMuons->push_back(aMu);
@@ -306,6 +310,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   iEvent.put(std::move(MuonCharge),"IdMuonCharge");
 
   iEvent.put(std::move(muIDMTW),"IdMuonMTW");
+  iEvent.put(std::move(muIDTight),"IdMuonMediumID");
   iEvent.put(std::move(muIDTight),"IdMuonTightID");
   iEvent.put(std::move(muIDPassIso),"IdMuonPassIso");
   iEvent.put(std::move(elecIDMTW),"IdElectronMTW");
@@ -332,7 +337,11 @@ float LeptonProducer::MTWCalculator(double metPt,double  metPhi,double  lepPt,do
   return sqrt(2*lepPt*metPt*(1-cos(deltaPhi)) );
 }
 
-bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const {
+bool LeptonProducer::MuonIDloose(const pat::Muon & muon, const reco::Vertex& vtx) const {
+  return muon.isLooseMuon();
+}
+
+bool LeptonProducer::MuonIDmedium(const pat::Muon & muon, const reco::Vertex& vtx) const {
   //medium WP + dz/dxy cuts
   bool goodGlob      = muon.isGlobalMuon() && 
                        muon.globalTrack()->normalizedChi2() < muNormalizedChi2Max_ && 
