@@ -59,6 +59,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         suff='AK8Clean',
         storeProperties=1,
         doDeepAK8=False, # currently disabled
+        doDeepDoubleB=False, # currently disabled
     )
 
     # update some userfloat names

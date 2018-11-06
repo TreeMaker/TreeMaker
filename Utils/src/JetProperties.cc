@@ -216,6 +216,8 @@ DEFAULT_NAMED_PTR(bDiscriminator,tDiscriminatorDeepDecorrel);
 DEFAULT_NAMED_PTR(bDiscriminator,wDiscriminatorDeepDecorrel);
 DEFAULT_NAMED_PTR(bDiscriminator,zDiscriminatorDeepDecorrel);
 DEFAULT_NAMED_PTR(bDiscriminator,hDiscriminatorDeepDecorrel);
+DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorH);
+DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorQ);
 
 class NamedPtr_jecFactor : public NamedPtr<double> {
 	public:

@@ -242,6 +242,9 @@ def makeTreeFromMiniAOD(self,process):
             ak8updates.extend(["pfDeepBoostedDiscriminatorsJetTags:"+x for x in discrs])
             ak8updates.extend(["pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:"+x for x in discrs])
 
+        if self.deepDoubleB:
+            ak8updates.extend(['pfDeepDoubleBJetTags:probQ','pfDeepDoubleBJetTags:probH'])
+
         # also update the corrections for AK8 jets
         # and add any extra discriminators
         updateJetCollection(
