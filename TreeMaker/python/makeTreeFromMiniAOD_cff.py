@@ -174,6 +174,13 @@ def makeTreeFromMiniAOD(self,process):
     ## JECs
     ## ----------------------------------------------------------------------------------------------
 
+    JetTag = cms.InputTag("slimmedJets")
+    # get rid of the pointless low-pt AK8 jets ASAP
+    process.slimmedJetsAK8Good = cms.EDProducer("BasicJetRemover",
+        JetTag = cms.InputTag("slimmedJetsAK8")
+    )
+    JetAK8Tag = cms.InputTag('slimmedJetsAK8Good')
+
     process.load("CondCore.DBCommon.CondDBCommon_cfi")
     from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
     
@@ -219,23 +226,40 @@ def makeTreeFromMiniAOD(self,process):
         
         updateJetCollection(
             process,
-            jetSource = cms.InputTag('slimmedJets'),
+            jetSource = JetTag,
             postfix = 'UpdatedJEC',
             jetCorrections = ('AK4PFchs', levels, 'None')
         )
         
         JetTag = cms.InputTag('updatedPatJetsUpdatedJEC')
         
+        # select double b-tagger
+        ak8updates = []
+        ak8updates.append("pfBoostedDoubleSecondaryVertexAK8BJetTags")
+
+        if self.deepAK8:
+            discrs = ["TvsQCD","WvsQCD","ZvsQCD","HbbvsQCD"]
+            ak8updates.extend(["pfDeepBoostedDiscriminatorsJetTags:"+x for x in discrs])
+            ak8updates.extend(["pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:"+x for x in discrs])
+
+        if self.deepDoubleB:
+            ak8updates.extend(['pfDeepDoubleBJetTags:probQ','pfDeepDoubleBJetTags:probH'])
+
         # also update the corrections for AK8 jets
+        # and add any extra discriminators
         updateJetCollection(
             process,
-            jetSource = cms.InputTag('slimmedJetsAK8'),
+            jetSource = JetAK8Tag,
             labelName = 'AK8',
             postfix = 'UpdatedJEC',
-            jetCorrections = ('AK8PFPuppi', levels, 'None')
+            jetCorrections = ('AK8PFPuppi', levels, 'None'),
+            pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+            svSource = cms.InputTag('slimmedSecondaryVertices'),
+            rParam = 0.8,
+            btagDiscriminators = ak8updates,
         )
         
-        JetAK8Tag = cms.InputTag('updatedPatJetsAK8UpdatedJEC')
+        JetAK8Tag = cms.InputTag('updatedPatJetsTransientCorrectedAK8UpdatedJEC')
         
         # update the MET to account for the new JECs
         from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD

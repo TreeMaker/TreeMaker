@@ -21,7 +21,7 @@ The following installation instructions assume the user wants to process 2016 or
 wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017/setup.sh
 chmod +x setup.sh
 ./setup.sh
-cd CMSSW_9_4_10/src/
+cd CMSSW_9_4_11/src/
 cmsenv
 cd TreeMaker/Production/test
 ```
@@ -207,6 +207,7 @@ Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py
 * `systematics`: switch to enable JEC- and JER-related systematics (default=True)
 * `semivisible`: switch to enable variables for semi-visible jets (default=True)
 * `deepAK8`: switch to enable variables from the DeepAK8 tagger (default=True)
+* `deepDoubleB`: switch to enable variables from the DeepDoubleB tagger (default=True)
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
