@@ -164,6 +164,8 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   produces<std::vector<bool>>("IdElectronMediumID");
   produces<std::vector<bool>>("IdElectronTightID");
   produces<std::vector<int>>("IdElectronCharge");
+  produces<std::vector<double>>("IdElectronEnergyCorr");
+  produces<std::vector<double>>("IdElectronTrkEnergyCorr");
   produces<std::vector<double>>("IdElectronMTW");
   produces<std::vector<bool>>("IdElectronPassIso");
   produces<std::vector<pat::Electron>>("IdIsoElectron");
@@ -203,6 +205,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   auto muIDMedium = std::make_unique<std::vector<bool>>();
   auto muIDTight = std::make_unique<std::vector<bool>>();
   auto muIDPassIso = std::make_unique<std::vector<bool>>();
+  auto elecIDEnergyCorr = std::make_unique<std::vector<double>>();
+  auto elecIDTrkEnergyCorr = std::make_unique<std::vector<double>>();
   auto elecIDMTW = std::make_unique<std::vector<double>>();
   auto elecIDMedium = std::make_unique<std::vector<bool>>();
   auto elecIDTight = std::make_unique<std::vector<bool>>();
@@ -283,6 +287,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
               elecIDMedium->push_back(ElectronID(aEle, vtx, MEDIUM, rho));
               elecIDTight->push_back(ElectronID(aEle, vtx, TIGHT, rho));
               ElectronCharge->push_back(aEle.charge());
+              elecIDEnergyCorr->push_back(aEle.userFloat("ecalEnergyPostCorr"));
+              elecIDTrkEnergyCorr->push_back(aEle.userFloat("ecalTrkEnergyPostCorr"));
               elecIDPassIso->push_back(miniIso<elecIsoValue_);
               if(elecIDPassIso->back())
                 {
@@ -314,6 +320,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   iEvent.put(std::move(muIDTight),"IdMuonTightID");
   iEvent.put(std::move(muIDPassIso),"IdMuonPassIso");
   iEvent.put(std::move(elecIDMTW),"IdElectronMTW");
+  iEvent.put(std::move(elecIDEnergyCorr),"IdElectronEnergyCorr");
+  iEvent.put(std::move(elecIDTrkEnergyCorr),"IdElectronTrkEnergyCorr");
   iEvent.put(std::move(elecIDMedium),"IdElectronMediumID");
   iEvent.put(std::move(elecIDTight),"IdElectronTightID");
   iEvent.put(std::move(elecIDPassIso),"IdElectronPassIso");
