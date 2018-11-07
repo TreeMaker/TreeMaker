@@ -274,6 +274,133 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("rpv_stop_650_t3j_uds", "", "", "Constant", 59334),
         MCSample("rpv_stop_750_t3j_uds", "", "", "Constant", 58016),
         MCSample("rpv_stop_850_t3j_uds", "", "", "Constant", 57069),
+
+
+        # 13 TeV miniAODv2 samples - Fall17
+        # NB: amcatnlo samples have negative weight events, so NumberEvts = # positive - # negative
+        # NLO powheg 
+        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrdown-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 58420151, False), # subtotal = 28504600, straight subtotal = 28504600
+        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrdown-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1', 'RunIISummer16MiniAODv3', 'Constant', 58420151, False), # subtotal = 29915551, straight subtotal = 29915551
+        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-fsrup-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1', 'RunIISummer16MiniAODv3', 'Constant', 29501065, False),
+        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-fsrdown-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1', 'RunIISummer16MiniAODv3', 'Constant', 29602576, False),
+        # ttbar single lep & dilep xsecs scaled by PDG BR, assume t=tbar (hadronic: 377.96)
+        MCSample('TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 61761347, True, 61692445),
+        MCSample('TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 56705550, False, 56643562),
+        MCSample('TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 28380110, False, 28349068),
+        MCSample('TTJets_SingleLeptFromTbar_genMET-150_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 8233477, False, 8213871),
+        # HT jets: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs MCM), 831.76/502.2 = 1.6562
+        MCSample('TTJets_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v3', 'RunIIFall17MiniAODv2', 'Constant', 5155687, False, 4798753),
+        # WJets: k-factor of 1.21 applied, extensions included
+        MCSample('WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 35862893, False, 35804623),
+        MCSample('WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 21250517, False, 21192211),
+        MCSample('WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 14313274, False, 14250114),
+        MCSample('WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 21709087, False, 21582309),
+        MCSample('WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 20432728, False, 20272990),
+        MCSample('WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 20258624, False, 19991892),
+        MCSample('WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v3', 'RunIIFall17MiniAODv2', 'Constant', 21495421, False, 20629585),
+        # QCD pT-hat binned: cross sections from AN2017_013_v17, extensions included
+        MCSample('QCD_Pt_80to120_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2', 'RunIIFall17MiniAODv2', 'Constant', 27957000, False),
+        MCSample('QCD_Pt_120to170_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 29854280, False),
+        MCSample('QCD_Pt_170to300_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 29829920, True),
+        MCSample('QCD_Pt_300to470_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 111229780, True), # subtotal = 53798780, straight subtotal = 53798780
+        MCSample('QCD_Pt_300to470_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v3', 'RunIIFall17MiniAODv2', 'Constant', 111229780, True), # subtotal = 57431000, straight subtotal = 57431000
+        MCSample('QCD_Pt_470to600_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 27881028, False),
+        MCSample('QCD_Pt_600to800_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 66134964, True),
+        MCSample('QCD_Pt_800to1000_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 78116008, False), # subtotal = 39529008, straight subtotal = 39529008
+        MCSample('QCD_Pt_800to1000_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2', 'RunIIFall17MiniAODv2', 'Constant', 78116008, False), # subtotal = 38587000, straight subtotal = 38587000
+        MCSample('QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2', 'RunIIFall17MiniAODv2', 'Constant', 35819814, True), # subtotal = 19631814, straight subtotal = 16188000
+        MCSample('QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 35819814, True), # subtotal = 16188000, straight subtotal = 19631814
+        MCSample('QCD_Pt_1400to1800_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5685270, True),
+        MCSample('QCD_Pt_1800to2400_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 2923941, True),
+        MCSample('QCD_Pt_2400to3200_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 1910526, True),
+        MCSample('QCD_Pt_3200toInf_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 757837, True),
+        # QCD: extensions included
+        MCSample('QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 58689666, True, 58623306),
+        MCSample('QCD_HT300to500_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 60316577, True, 60205669),
+        MCSample('QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 56207744, False, 56041018),
+        MCSample('QCD_HT700to1000_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 47724800, True, 47518924),
+        MCSample('QCD_HT1000to1500_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 16595628, True, 16485296),
+        MCSample('QCD_HT1500to2000_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 11634434, False, 11508604),
+        MCSample('QCD_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 5941306, False, 5825566),
+        # DY/Z: k-factor of 1.23 applied, available extensions included
+        MCSample('DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 14185757, True, 14163583), # subtotal = 10219538, straight subtotal = 10235418
+        MCSample('DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1', 'RunIIFall17MiniAODv2', 'Constant', 14185757, True, 14163583), # subtotal = 3944045, straight subtotal = 3950339
+        MCSample('DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 11499275, True, 11467829), # subtotal = 10270122, straight subtotal = 10298412
+        MCSample('DYJetsToLL_M-50_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1', 'RunIIFall17MiniAODv2', 'Constant', 11499275, True, 11467829), # subtotal = 1197707, straight subtotal = 1200863
+        MCSample('DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 10657929, True, 10611153), # subtotal = 9491947, straight subtotal = 9533635
+        MCSample('DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1', 'RunIIFall17MiniAODv2', 'Constant', 10657929, True, 10611153), # subtotal = 1119206, straight subtotal = 1124294
+        MCSample('DYJetsToLL_M-50_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 8153358, True, 8104916),
+        MCSample('DYJetsToLL_M-50_HT-800to1200_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 3089861, True, 3064779),
+        MCSample('DYJetsToLL_M-50_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 625517, True, 616923),
+        MCSample('DYJetsToLL_M-50_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 404986, True, 387646),
+        MCSample('DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 97800939, True, 97714787), # subtotal = 48632630, straight subtotal = 48675378
+        MCSample('DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017RECOSIMstep_12Apr2018_94X_mc2017_realistic_v14_ext1-v1', 'RunIIFall17MiniAODv2', 'Constant', 97800939, True, 97714787), # subtotal = 49082157, straight subtotal = 49125561
+        MCSample('ZJetsToNuNu_HT-100To200_13TeV-madgraph', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 22737266, True, 22702468),
+        MCSample('ZJetsToNuNu_HT-200To400_13TeV-madgraph', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 21675916, True, 21618510),
+        MCSample('ZJetsToNuNu_HT-400To600_13TeV-madgraph', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 9134120, True, 9094890),
+        MCSample('ZJetsToNuNu_HT-600To800_13TeV-madgraph', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5697594, True, 5664642),
+        MCSample('ZJetsToNuNu_HT-800To1200_13TeV-madgraph', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 2058077, True, 2041779),
+        MCSample('ZJetsToNuNu_HT-1200To2500_13TeV-madgraph', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 338948, True, 334332),
+        MCSample('ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 6734, True, 6446),
+        MCSample('GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 9959190, True, 9957110),
+        MCSample('GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 18536907, True, 18524305),
+        MCSample('GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 4646958, False, 4640128),
+        MCSample('GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 537295, False, 535335),
+        MCSample('GJets_DR-0p4_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 26207004, False, 26163710),
+        MCSample('GJets_DR-0p4_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 12028839, True, 12028589),
+        MCSample('GJets_DR-0p4_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 8392881, False, 8361249),
+        # single top: NoFullyHadronicDecays xsec scaled by BF for non-fully-hadronic (1-(1-3*0.108)^2
+        MCSample('ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 9568575, True, 5970607),
+        MCSample('ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5865875, True),
+        MCSample('ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 3939990, True),
+        MCSample('ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 11502515, True, 8399349), # subtotal = 5334538, straight subtotal = 5375230
+        MCSample('ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1', 'RunIIFall17MiniAODv2', 'Constant', 11502515, True, 8399349), # subtotal = 3064811, straight subtotal = 6127285
+        MCSample('ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 4974435, True, 4936387),
+        MCSample('ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 7780870, True, 7721566),
+        MCSample('ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 7581624, True, 7523294),
+        # rare backgrounds
+        MCSample('WGJets_MonoPhoton_PtG-40to130_TuneCP5_13TeV-madgraph', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 4121843, False, 4110545),
+        MCSample('WWTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5054286, True, 3169582),
+        MCSample('WZTo1L1Nu2Q_13TeV_amcatnloFXFX_madspin_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 19086373, False, 11347099),
+        MCSample('WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8_v2', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 4994395, False, 2717911),
+        MCSample('ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 27840918, False, 17768294),
+        MCSample('TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 7563490, True, 3570720),
+        MCSample('TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 750000, True, 356286),
+        MCSample('TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 4925829, True, 2678775),
+        MCSample('TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 811306, True, 441560),
+        MCSample('TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 14026117, True, 5441639), # subtotal = 1795589, straight subtotal = 4623345
+        MCSample('TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1', 'RunIIFall17MiniAODv2', 'Constant', 14026117, True, 5441639), # subtotal = 3646050, straight subtotal = 9402772
+        MCSample('ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 9659185, True, 3324103),
+        MCSample('ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 9911561, True, 3409351),
+        MCSample('TTGamma_SingleLeptFromT_TuneCP5_PSweights_13TeV_madgraph_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 4911716, False, 4910406),
+        MCSample('TTGamma_SingleLeptFromTbar_TuneCP5_PSweights_13TeV_madgraph_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 4809392, False, 4807960),
+        MCSample('TTGamma_Dilept_TuneCP5_PSweights_13TeV_madgraph_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 4642344, False, 4641882),
+        MCSample('TTTT_TuneCP5_13TeV-amcatnlo-pythia8', 'PU2017_pilot_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 993804, True, 371504),
+        MCSample('TTHH_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 200000, True, 199374),
+        MCSample('TTTW_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 200000, True, 199704),
+        MCSample('TTWH_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 200000, True, 198982),
+        MCSample('TTWZ_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 200000, True, 198758),
+        MCSample('TTZH_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 200000, True, 199286),
+        MCSample('TTZZ_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 200000, True, 199372),
+        MCSample('WZZ_TuneCP5_13TeV-amcatnlo-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 250000, True, 219660),
+        MCSample('ZZZ_TuneCP5_13TeV-amcatnlo-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 250000, True, 213514),
+        # signal
+        MCSample('SMS-T2tt_mStop-650_mLSP-350_TuneCP2_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 91673, False),
+        MCSample('SMS-T2tt_mStop-650_mLSP-350_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 99440, False, 98520),
+        MCSample('SMS-T2tt_mStop-850_mLSP-100_TuneCP2_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 222410, False),
+        MCSample('SMS-T2tt_mStop-850_mLSP-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 248828, False, 243114),
+        MCSample('SMS-T2tt_mStop-1200_mLSP-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 250392, False, 231034),
+        MCSample('SMS_TChiWH_WToLNu_HToBB_mChargino850_mLSP1_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 101040, False, 98806),
+        MCSample('SMS-TChiWZ_ZToLL_mZMin-0p1_mChargino250_mLSP230_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 106831, False, 106515),
+        # stealth/rpv stop signals
+        MCSample('RPV_2t6j_mStop-350_mN1-100_TuneCP2_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 507649, False),
+        MCSample('RPV_2t6j_mStop-350_mN1-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 523220, False, 521846),
+        MCSample('RPV_2t6j_mStop-500_mN1-100_TuneCP2_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 210725, False),
+        MCSample('RPV_2t6j_mStop-500_mN1-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 220618, False, 219422),
+        MCSample('StealthSYY_2t6j_mStop-500_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 215579, False, 214375),
+        MCSample('StealthSHH_2t4b_mStop-500_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 211657, False, 210577),
+        MCSample('StealthSYY_2t6j_mStop-300_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 532773, False, 531723),
+        MCSample('StealthSHH_2t4b_mStop-350_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 566558, False, 565120),
     ]
     
     # loop over all samples until we find a match

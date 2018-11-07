@@ -152,6 +152,7 @@ def main(args):
                 line = (" "*8)+repr(MCSample(f.split('/')[1],"-".join(f.split('/')[2].split('-')[1:3]),f.split('/')[2].split('-')[0],"Constant",nevents,wrong_pu,neff if neff>0 else None))+","
                 if neff>0:
                     if len(ff)>1: line = line+" # subtotal = "+str(x[i])+", straight subtotal = "+str(nevents_all[i])+"\n"
+                    else: line = line+"\n"
                 else:
                     if len(ff)>1: line = line+" # subtotal = "+str(nevents_all[i])+"\n"
                     else: line = line+"\n"
