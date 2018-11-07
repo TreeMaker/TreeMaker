@@ -108,6 +108,7 @@ def doLostLeptonBkg(self,process,METTag):
     self.VectorBool.extend(['LeptonsNew:IdElectronMediumID(Electrons_mediumID)'])
     self.VectorBool.extend(['LeptonsNew:IdElectronTightID(Electrons_tightID)'])
     self.VectorDouble.extend(['LeptonsNew:IdMuonMTW(Muons_MTW)','LeptonsNew:IdElectronMTW(Electrons_MTW)'])
+    self.VectorDouble.extend(['LeptonsNew:IdElectronEnergyCorr(Electrons_EnergyCorr)','LeptonsNew:IdElectronTrkEnergyCorr(Electrons_TrkEnergyCorr)'])
     self.VectorDouble.extend(['IDMuonMiniIso:MiniIso(Muons_MiniIso)','IDElectronMiniIso:MiniIso(Electrons_MiniIso)'])
     self.VectorDouble.extend(['IDMuonMiniIso:MT2Activity(Muons_MT2Activity)','IDElectronMiniIso:MT2Activity(Electrons_MT2Activity)'])
 #    self.VectorDouble.extend(['PTWExtrapolation:MuPTW(Muons_PTW)','PTWExtrapolation:ElecPTW(Electrons_PTW)'])
