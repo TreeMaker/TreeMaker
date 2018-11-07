@@ -1,9 +1,33 @@
-import os, shutil
+import os, sys, shutil, difflib
 from optparse import OptionParser
 
+def printHeader(file):
+
+    header = ["# format for dict entries:\n",
+              "#                                                data: [0,  ['sample'] , []]\n",
+              "#                                                  MC: [1, ['sample'] , []]\n",
+              "#                                      MC w/ wrong PU: [2, ['sample'] , []]\n",
+              "#                               MC w/ extended sample: [1, ['sample','sample_ext'] , []]\n",
+              "#                   MC w/ negative weights (amcatnlo): [1, ['sample'] , [neff]]\n",
+              "# MC w/ negative weights (amcatnlo) + extended sample: [1, ['sample','sample_ext'] , [neff, neff_ext]]\n",
+              "\n",
+              "flist = [\n"
+              ]
+    file.writelines(header)
+
+
 parser = OptionParser()
+parser.add_option("-d", "--debug", dest="debug", default=False, action="store_true", help="print additional debugging information (default = %default)")
+parser.add_option("-g", "--gen_dict", dest="gen_dict", default=False, action="store_true", help="flag to turn on the updating of the get_py.py dictionary (default = %default)")
+parser.add_option("-i", "--in_dict", dest="in_dict", default="dict.py", help="input dictionary to update with neff values (default = %default)")
 parser.add_option("-l", "--clean", dest="clean", default=False, action="store_true", help="clean up failed log files (default = %default)")
+parser.add_option("-o", "--out_dict", dest="out_dict", default="dictNeff.py", help="the name of the output dictionary with updated neff values (default = %default)")
 (options, args) = parser.parse_args()
+
+# sanity check the options
+if options.gen_dict and (len(options.in_dict)==0 or len(options.out_dict)==0):
+    print "Must specify the input and output dictionaries if using the option --gen_dict (-d)"
+    exit(-1)
 
 if options.clean:
     fdir = "failures"
@@ -56,3 +80,37 @@ for result in results:
 for rname,rvals in sorted(rdict.iteritems()):
     # reassemble structure
     print rname+" : "+str(rvals["eff"])+" (pos = "+str(rvals["pos"])+", neg = "+str(rvals["neg"])+", tot = "+str(rvals["tot"])+")"
+
+# generate a new dictionary if in_dict and out_dict are set
+if options.gen_dict:
+    outf = open(options.out_dict,'w')
+    printHeader(outf)
+
+    sys.path.append(os.path.abspath(os.path.dirname(options.in_dict)))
+    dictname = os.path.basename(options.in_dict.replace(".py",""))
+    flist = __import__(dictname).flist
+
+    for fitem in flist:
+        if fitem[0]==0: continue #skip the data samples
+        ff = fitem[1]
+        x = fitem[2]
+        nevents_all = []
+        line = "    [" + str(fitem[0]) + ", " + str(ff) + ", ["
+        for idataset, dataset in enumerate(ff):
+            sample = dataset.split("/")[1]
+            close_matches = difflib.get_close_matches(sample, rdict, n=10)
+            selected_indices = [i for i, s in enumerate(close_matches) if sample in s]
+            if len(selected_indices)>1:
+                print "WARNING: Double check values with extensions or close names"
+            if options.debug:
+                print sample + ": " + str(close_matches)
+                print "\tSelected indices: " + str(selected_indices)
+                print "\tSelected match: " + str(selected_indices[idataset])
+            rval = rdict[close_matches[selected_indices[idataset]]]
+            line += str(rval["eff"])
+            if idataset<len(ff)-1: line += ", "
+        line += "]],\n"
+        outf.write(line)
+  
+    outf.write("]\n")
+    outf.close()
