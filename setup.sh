@@ -98,6 +98,8 @@ git cms-merge-topic -u TreeMaker:AddDecorrelDeepTags9411
 git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
 git clone ${ACCESS_GITHUB}kpedro88/CondorProduction.git Condor/Production
 git clone ${ACCESS_GITHUB}${FORK}/TreeMaker.git -b ${BRANCH}
+# get egamma config file without recompiling whole package
+wget https://github.com/TreeMaker/cmssw/raw/EgammaPostRecoTools_940/RecoEgamma/EgammaTools/python/EgammaPostRecoTools.py -P TreeMaker/Utils/python/
 
 # compile
 scram b -j ${CORES}

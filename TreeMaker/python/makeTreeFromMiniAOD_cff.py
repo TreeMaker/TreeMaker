@@ -355,6 +355,9 @@ def makeTreeFromMiniAOD(self,process):
     ## Electrons/Muons
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.TreeMaker.TMEras import TMeras
+    if TMeras.TM2017.isChosen():
+        from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq
+        process = setupEgammaPostRecoSeq(process, runVID=False, era='2017-Nov17ReReco')
     from TreeMaker.Utils.leptonproducer_cfi import leptonproducer
     process.LeptonsNew = leptonproducer.clone(
         elecIsoValue       = cms.double(0.1), # only has an effect when used with miniIsolation
@@ -390,6 +393,8 @@ def makeTreeFromMiniAOD(self,process):
         hovere_constant    = cms.bool(False),
         # from: https://github.com/cms-sw/cmssw/blob/1fbada01f097fbd446e7a431140f83bc9f5a0ff0/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
         electronEAValues   = cms.vdouble(0.1440, 0.1562, 0.1032, 0.0859, 0.1116, 0.1321, 0.1654),
+        # new collection from reco tool (to get user floats)
+        ElectronTag = cms.InputTag('slimmedElectrons','',process.name_()),
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
