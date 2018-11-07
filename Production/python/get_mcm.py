@@ -56,16 +56,15 @@ def preq(req,gensim,comment='',debug=False):
     req_gs = getA(qry,debug)
     xsec = 0.0
     for igs in req_gs:
-        found_ich = False
         # find intersection
         if len(set(igs['member_of_chain']) & set(req['member_of_chain']))>0:
             # reverse generator_parameters list: assume latest submission is best
             igp = next((ig for ig in reversed(igs["generator_parameters"]) if "cross_section" in ig), None)
             if igp:
                 xsec = igp["cross_section"]
-            if pct_done<0:
-                pct_done = float(cmpl)/float(igs['completed_events'])*100. if igs['completed_events']>0 else 0.0
-                tot = igs['completed_events']
+            # use GS total as denom
+            tot = igs['total_events']
+            pct_done = float(cmpl)/float(tot)*100.
             break
     type = 'None'
     if ('MiniAOD' in req['member_of_campaign']): type = 'MiniAOD '
