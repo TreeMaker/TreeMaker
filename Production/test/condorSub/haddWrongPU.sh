@@ -40,6 +40,6 @@ if [ -z "$INPUT" ] || [ -z "$XRDLOC" ] || [ -z "$OUTPUT" ]; then
 fi
 
 # concatenate contents of dir (with pfns)
-NAMES=$(xrdfs $XRDLOC ls $INPUT | sed 's~^/store~'$XRDLOC'/store~' | tr '\n' ' ')
+NAMES=$(xrdfs $XRDLOC ls $INPUT | grep ".root" | grep -v "_part" | sed 's~^/store~'$XRDLOC'/store~' | tr '\n' ' ')
 
 hadd -f $OUTPUT $NAMES
