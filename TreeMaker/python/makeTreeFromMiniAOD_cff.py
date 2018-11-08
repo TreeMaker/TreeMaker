@@ -141,7 +141,7 @@ def makeTreeFromMiniAOD(self,process):
                 1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
                 1000001,1000002,1000003,1000004,1000005,1000006,
                 2000001,2000002,2000003,2000004,2000005,2000006,
-                4900023,4900101,4900111,4900211,
+                4900021,4900023,4900101,4900102,4900111,4900113,4900211,4900213,51,52,53,
                 5000001,5000002,
             ),
             keepIds = cms.vint32(6,23,24,25),
@@ -917,7 +917,7 @@ def makeTreeFromMiniAOD(self,process):
             JetTag = JetAK8Tag,
             MetTag = METTag,
             GenTag = cms.InputTag("prunedGenParticles"),
-            DarkIDs = cms.vuint32(4900211),
+            DarkIDs = cms.vuint32(51,52,53),
         )
         self.VarsDouble.extend([
             'HiddenSector:MJJ(MJJ_AK8)',
