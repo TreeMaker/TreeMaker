@@ -13,14 +13,15 @@ class MCSampleHelper():
         "TTJets_SingleLeptFromT"                                         : XSValues(-1.0, -1.0, 182.72,       -1.0),
         "TTJets_SingleLeptFromTbar"                                      : XSValues(-1.0, -1.0, 182.72,       -1.0),
         "TTJets_DiLept"                                                  : XSValues(-1.0, -1.0, 88.34,        -1.0),
-        "TTJets_SingleLeptFromT_genMET-150"                              : XSValues(-1.0, -1.0, 5.979,        -1.0),
-        "TTJets_SingleLeptFromTbar_genMET-150"                           : XSValues(-1.0, -1.0, 5.936,        -1.0),
-        "TTJets_DiLept_genMET-150"                                       : XSValues(-1.0, -1.0, 3.666,        -1.0),
-        # HT binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs MCM), 831.76/502.2 = 1.6562
-        "TTJets_HT-600to800"                                             : XSValues(-1.0, -1.0, 2.7343862,    -1.0),
-        "TTJets_HT-800to1200"                                            : XSValues(-1.0, -1.0, 1.12075054,   -1.0),
-        "TTJets_HT-1200to2500"                                           : XSValues(-1.0, -1.0, 0.1979159,    -1.0),
-        "TTJets_HT-2500toInf"                                            : XSValues(-1.0, -1.0, 0.002368366,  -1.0),
+        # MET binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
+        "TTJets_SingleLeptFromT_genMET-150"                              : XSValues(-1.0, -1.0, 9.683904,     -1.0),
+        "TTJets_SingleLeptFromTbar_genMET-150"                           : XSValues(-1.0, -1.0, 9.657872,     -1.0),
+        "TTJets_DiLept_genMET-150"                                       : XSValues(-1.0, -1.0, 5.919026,     -1.0),
+        # HT binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
+        "TTJets_HT-600to800"                                             : XSValues(-1.0, -1.0, 2.68455,      -1.0),
+        "TTJets_HT-800to1200"                                            : XSValues(-1.0, -1.0, 1.0959472,    -1.0),
+        "TTJets_HT-1200to2500"                                           : XSValues(-1.0, -1.0, 0.1942638,    -1.0),
+        "TTJets_HT-2500toInf"                                            : XSValues(-1.0, -1.0, 0.002351015,  -1.0),
         "TTGamma_SingleLeptFromT"                                        : XSValues(-1.0, -1.0, 0.704,        -1.0),
         "TTGamma_SingleLeptFromTbar"                                     : XSValues(-1.0, -1.0, 0.704,        -1.0),
         "TTGamma_Dilept"                                                 : XSValues(-1.0, -1.0, 0.5804,       -1.0),
