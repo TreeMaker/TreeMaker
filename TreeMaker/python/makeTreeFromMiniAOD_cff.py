@@ -918,6 +918,7 @@ def makeTreeFromMiniAOD(self,process):
             MetTag = METTag,
             GenTag = cms.InputTag("prunedGenParticles"),
             DarkIDs = cms.vuint32(51,52,53),
+            DarkParentID = cms.uint32(4900101),
         )
         self.VarsDouble.extend([
             'HiddenSector:MJJ(MJJ_AK8)',
@@ -926,6 +927,9 @@ def makeTreeFromMiniAOD(self,process):
             'HiddenSector:DeltaPhi1(DeltaPhi1_AK8)',
             'HiddenSector:DeltaPhi2(DeltaPhi2_AK8)',
             'HiddenSector:DeltaPhiMin(DeltaPhiMin_AK8)',
+        ])
+        self.VectorBool.extend([
+            'HiddenSector:isHV(JetsAK8_isHV)'
         ])
 
     ## ----------------------------------------------------------------------------------------------

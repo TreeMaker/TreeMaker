@@ -36,6 +36,7 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
 		edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
 		edm::EDGetTokenT<edm::View<reco::GenParticle>> GenTok_;
 		std::unordered_set<unsigned> DarkIDs_;
+		unsigned DarkParentID_;
 };
 
 HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
@@ -44,7 +45,8 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
 	GenTag_(iConfig.getParameter<edm::InputTag>("GenTag")),
 	JetTok_(consumes<edm::View<pat::Jet>>(JetTag_)),
 	MetTok_(consumes<edm::View<pat::MET>>(MetTag_)),
-	GenTok_(consumes<edm::View<reco::GenParticle>>(GenTag_))
+	GenTok_(consumes<edm::View<reco::GenParticle>>(GenTag_)),
+	DarkParentID_(iConfig.getParameter<unsigned>("DarkParentID"))
 {
 	const auto& ids = iConfig.getParameter<std::vector<unsigned>>("DarkIDs");
 	DarkIDs_.insert(ids.begin(),ids.end());
@@ -55,13 +57,7 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
 	produces<double>("DeltaPhi1");
 	produces<double>("DeltaPhi2");
 	produces<double>("DeltaPhiMin");
-	produces<std::vector<double>>("ISRminDeltaRsm");
-	produces<std::vector<double>>("ISRminDeltaRhv");
-	produces<std::vector<int>>("nSMISRparts");
-	produces<std::vector<int>>("nHVISRparts");
-	produces<std::vector<double>>("fracptISR");
-	produces<std::vector<double>>("fracptHV");
-	produces<std::vector<bool>>("isISR");
+	produces<std::vector<bool>>("isHV");
 }
 
 double HiddenSectorProducer::TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const{
@@ -83,16 +79,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 	edm::Handle<edm::View<reco::GenParticle>> h_parts;
 	iEvent.getByToken(GenTok_, h_parts);
 
-	auto jet_minDRsm_vec = std::make_unique<std::vector<double>>();
-	auto jet_minDRhv_vec = std::make_unique<std::vector<double>>();
-
-	auto jet_fracptISR_vec = std::make_unique<std::vector<double>>();
-	auto jet_fracptHV_vec = std::make_unique<std::vector<double>>();
-
-	auto jet_nSMISRparts_vec = std::make_unique<std::vector<int>>();
-	auto jet_nHVISRparts_vec = std::make_unique<std::vector<int>>();
-
-	auto jet_isISR_vec = std::make_unique<std::vector<bool>>();
+	auto jet_isHV_vec = std::make_unique<std::vector<bool>>();
 
 	LorentzVector vpartsSum;
 	if(h_parts.isValid()){
@@ -124,119 +111,6 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 		MT = TransverseMass(vjj.Px(),vjj.Py(),vjj.M(),MET*std::cos(METPhi),MET*std::sin(METPhi),0);
 	}
 	
-	//determining jet ISR status, minDR is junk
-	// minDR: HV and SM
-	// record, for each jet, the minimum deltaR between it and all SM and HV particles (seperatly) that are part of the ISR process (code 43, 44)
-	double deltaRjp = 15.;
-	for(const auto& i_jet : *(h_jets.product())){ // loop over AK8 jets
-		double minDRhv = 15.;
-		double minDRsm = 15.;
-		int nSMISR = 0;
-		int nHVISR = 0;
-		for(const auto& i_part : *(h_parts.product())){ // loop over GenParticles
-			if(!(std::abs(i_part.status())==43 || std::abs(i_part.status())==44)) continue; // skip non-outgoing ISR particles
-			if(i_part.pt() == 0) continue; //skip particles that are eta == inf
-			deltaRjp = deltaR(i_jet,i_part);
-			if(std::abs(i_part.pdgId())>=4900000){ 
-				nHVISR++;
-				if(deltaRjp < minDRhv) minDRhv = deltaRjp;
-			}
-			else if(std::abs(i_part.pdgId())< 4900000){
-				nSMISR++;
-				if(deltaRjp < minDRsm) minDRsm = deltaRjp;
-			}
-		} // end loop over GenParticles
-		jet_minDRsm_vec->push_back(minDRsm);
-		jet_minDRhv_vec->push_back(minDRhv);
-		jet_nSMISRparts_vec->push_back(nSMISR);
-		jet_nHVISRparts_vec->push_back(nHVISR);
-	}  //  end loop over AK8 jets
-
-
-	//Second method: fracPt
-	// first, determine which GenParticles are from HVQuarks
-	// only care about status == 1 particles, though
-	std::vector<int> isHVdec;
-	// loop over all genParticles
-	for(const auto& i_part : *(h_parts.product())){ // loop over Genparticles
-		int partIsHV = 3;
-		if(!(i_part.status()==1)) partIsHV = 0; // dont care about parts not status == 1
-		const reco::Candidate *ancestor = i_part.mother();
-		while (partIsHV == 3){
-			if(std::abs(ancestor->pdgId()) == 4900101){// specifcally find HVQuark in ancestry, not just any HVParticle (Z'->qqbar problem)
-				partIsHV = 1;
-			}
-			if(std::abs(ancestor->pdgId()) == 2212){
-				partIsHV = 0;
-			}
-			ancestor = ancestor->mother();
-		}
-		isHVdec.push_back(partIsHV);
-	} //end Genpartiles loop
-
-	// now, calculate fracpt for each jet
-	for(const auto& i_jet : *(h_jets.product())){ // loop over AK8 jets
-		double jetPt = 0.;
-		double HVPt = 0.;
-		double ISRPt = 0.;
-		for (unsigned imc=0; imc < h_parts->size(); ++imc){ // loop over GenParticles
-			const reco::GenParticle &i_part = (*h_parts)[imc];
-			if(!(i_part.status()==1)) continue;
-			if(deltaR(i_jet,i_part)<0.8){
-				jetPt += i_part.pt();
-				if(isHVdec[imc] == 1) HVPt += i_part.pt();
-				if(isHVdec[imc] == 0) ISRPt += i_part.pt();
-			}
-		} // end loop over GenParticles
-		jet_fracptHV_vec->push_back(HVPt/jetPt);
-		jet_fracptISR_vec->push_back(ISRPt/jetPt);
-	}  //  end loop over AK8 jets
-/*
-	//Second method: fracPt, new algorithm. Don't store HVQuarkDecendant status..., dont work.
-	// first, determine which GenParticles are from HVQuarks
-	// only care about status == 1 particles, though
-	// loop over all genParticles
-	std::vector<double> jetPt;
-	std::vector<double> HVPt;
-	std::vector<double> ISRPt;
-	jetPt.reserve(h_jets->size());
-	HVPt.reserve(h_jets->size());
-	ISRPt.reserve(h_jets->size());
-	for(unsigned i_jet=0 ; i_jet<h_jets->size(); ++i_jet){ // loop over AK8 jets
-		jetPt[i_jet] = 0.;
-		HVPt[i_jet] = 0.;
-		ISRPt[i_jet] = 0.;
-	}
-
-	for(const auto& i_part : *(h_parts.product())){ // loop over Genparticles
-		int partIsHV = 3;
-		if(!(i_part.status()==1)) partIsHV = 0; // dont care about parts not status == 1
-		const reco::Candidate *ancestor = i_part.mother();
-		while (partIsHV == 3){
-			if(std::abs(ancestor->pdgId()) >= 4900000){
-				partIsHV = 1;
-			}
-			if(std::abs(ancestor->pdgId()) == 2212){
-				partIsHV = 0;
-			}
-			ancestor = ancestor->mother();
-		}
-		for(unsigned i_jet=0 ; i_jet<h_jets->size(); ++i_jet){ // loop over AK8 jets
-			const pat::Jet &iJet = (*h_jets)[i_jet];
-			if(deltaR(iJet, i_part)<0.8){
-				jetPt[i_jet] += i_part.pt();
-				if(partIsHV == 1) HVPt[i_jet] += i_part.pt();
-				if(partIsHV == 0) ISRPt[i_jet] += i_part.pt();
-				if(partIsHV == 3) std::cout << "Particle HV status is still 3!" <<std::endl;
-			}
-		}
-	} //end Genpartiles loop
-	// loop over jets again to fill out branches
-	for(unsigned i_jet=0 ; i_jet<h_jets->size(); ++i_jet){ // loop over AK8 jets
-		jet_fracptHV_vec->push_back(HVPt[i_jet]/jetPt[i_jet]);
-		jet_fracptISR_vec->push_back(ISRPt[i_jet]/jetPt[i_jet]);
-	}
-*/
 	//ISRJetProducer method, find jets with hard process particles at their 'core' and other jets are ISR
 	for(const auto& i_jet : *(h_jets.product())){ // loop over AK8 jets
 		bool matched = false; // matched == true means that this jet has a hardprocess (decendant particle of the Z') at their 'core'
@@ -254,14 +128,14 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 				//reco::CandidatePtr dau = edm::refToPtr(i_part.daughterRef(idau));
 				const reco::Candidate *dau = i_part.daughter(idau);
 				listOfDaughters.push_back(dau);
-				if( std::abs(dau->pdgId())==4900101) nHVQuarksInDaughterList++; // note how many HV-quarks(gluons) (copies) are in the list
+				if( std::abs(dau->pdgId())==DarkParentID_) nHVQuarksInDaughterList++; // note how many HV-quarks(gluons) (copies) are in the list
 			}
 			while(nHVQuarksInDaughterList>0){// while there are copies...
 				unsigned numOldHVQuarks = (unsigned) nHVQuarksInDaughterList;
 				nHVQuarksInDaughterList=0;
 				for (unsigned i = 0; i<listOfDaughters.size();i++) { 
 					const reco::Candidate *daughter = listOfDaughters.at(i);
-					if(!(std::abs(daughter->pdgId())==4900101)) continue;// find the copies
+					if(!(std::abs(daughter->pdgId())==DarkParentID_)) continue;// find the copies
 					for (unsigned idau=0; idau < daughter->numberOfDaughters(); ++idau) {
 						const reco::Candidate *dau = daughter->daughter(idau);
 						listOfDaughters.push_back(dau);// add copies' daughters to list
@@ -270,7 +144,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 				for (unsigned i = 0; i<numOldHVQuarks;i++) { 
 					for (unsigned i=0; i < listOfDaughters.size(); ++i){
 						const reco::Candidate *daughter = listOfDaughters.at(i);
-						if(std::abs(daughter->pdgId())==4900101){
+						if(std::abs(daughter->pdgId())==DarkParentID_){
 							listOfDaughters.erase(listOfDaughters.begin()+i); // remove the copies
 							break;
 						}
@@ -278,7 +152,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 				}
 				for (unsigned i = 0; i<listOfDaughters.size();i++) {
 					const reco::Candidate *daughter = listOfDaughters.at(i);
-					if(std::abs(daughter->pdgId())==4900101) nHVQuarksInDaughterList++; // count the copies	
+					if(std::abs(daughter->pdgId())==DarkParentID_) nHVQuarksInDaughterList++; // count the copies	
 				}
 			}
 			for (unsigned i = 0; i<listOfDaughters.size();i++) {//for (unsigned idau=0; idau < i_part.numberOfDaughters(); ++idau) {
@@ -290,17 +164,10 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 				}
 			}
 		}
-		jet_isISR_vec->push_back(!matched);
+		jet_isHV_vec->push_back(matched);
 	}
 	
-	
-	iEvent.put(std::move(jet_minDRsm_vec), "ISRminDeltaRsm");
-	iEvent.put(std::move(jet_minDRhv_vec), "ISRminDeltaRhv");
-	iEvent.put(std::move(jet_nSMISRparts_vec), "nSMISRparts");
-	iEvent.put(std::move(jet_nHVISRparts_vec), "nHVISRparts");
-	iEvent.put(std::move(jet_fracptISR_vec), "fracptISR");
-	iEvent.put(std::move(jet_fracptHV_vec), "fracptHV");
-	iEvent.put(std::move(jet_isISR_vec),"isISR");
+	iEvent.put(std::move(jet_isHV_vec),"isHV");
 	auto pMJJ = std::make_unique<double>(MJJ);
 	iEvent.put(std::move(pMJJ),"MJJ");
 	auto pMmc = std::make_unique<double>(Mmc);
