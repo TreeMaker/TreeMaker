@@ -441,6 +441,14 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsInt.extend(['globalTightHalo2016Filter'])
         
+        process.globalSuperTightHalo2016Filter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(self.tagname),
+            filterName  = cms.string("Flag_globalSuperTightHalo2016Filter"),
+        )
+        self.VarsInt.extend(['globalSuperTightHalo2016Filter'])
+        
         process.HBHENoiseFilter = filterDecisionProducer.clone(
             trigTagArg1 = cms.string('TriggerResults'),
             trigTagArg2 = cms.string(''),
