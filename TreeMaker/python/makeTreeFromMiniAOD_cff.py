@@ -355,6 +355,9 @@ def makeTreeFromMiniAOD(self,process):
     ## Electrons/Muons
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.TreeMaker.TMEras import TMeras
+    if TMeras.TM2017.isChosen():
+        from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq
+        process = setupEgammaPostRecoSeq(process, runVID=False, era='2017-Nov17ReReco')
     from TreeMaker.Utils.leptonproducer_cfi import leptonproducer
     process.LeptonsNew = leptonproducer.clone(
         elecIsoValue       = cms.double(0.1), # only has an effect when used with miniIsolation
@@ -362,30 +365,36 @@ def makeTreeFromMiniAOD(self,process):
         METTag             = METTag  ,
         rhoCollection      = cms.InputTag("fixedGridRhoFastjetCentralNeutral")  
     )
+    # from: https://indico.cern.ch/event/732971/contributions/3022843/attachments/1658685/2656462/eleIdTuning.pdf
     TMeras.TM2017.toModify(process.LeptonsNew,
         # barrel electrons
-        eb_ieta_cut        = cms.vdouble(0.0128,  0.0105,  0.0105,  0.0104),
-        eb_deta_cut        = cms.vdouble(0.00523, 0.00387, 0.00365, 0.00353),
-        eb_dphi_cut        = cms.vdouble(0.159,   0.0716,  0.0588,  0.0499),
-        eb_hovere_cut      = cms.vdouble(0.05,    0.05,    0.026,   0.026),
-        eb_ooeminusoop_cut = cms.vdouble(0.193,   0.129,   0.0327,  0.0278),
+        eb_ieta_cut        = cms.vdouble(0.0126,  0.0112,  0.0106,  0.0104),
+        eb_deta_cut        = cms.vdouble(0.00463, 0.00377, 0.0032,  0.00255),
+        eb_dphi_cut        = cms.vdouble(0.148,   0.0884,  0.0547,  0.022),
+        eb_hovere_cut      = cms.vdouble(0.05,    0.05,    0.046,   0.026),
+        eb_hovere_cut2     = cms.vdouble(1.16,    1.16,    1.16,    1.15),
+        eb_hovere_cut3     = cms.vdouble(0.0324,  0.0324,  0.0324,  0.0324),
+        eb_ooeminusoop_cut = cms.vdouble(0.209,   0.193,   0.184,   0.159),
         eb_d0_cut          = cms.vdouble(0.05,    0.05,    0.05,    0.05),
         eb_dz_cut          = cms.vdouble(0.10,    0.10,    0.10,    0.10),
         eb_misshits_cut    = cms.vint32 (2,       1,       1,       1),
         # endcap electrons
-        ee_ieta_cut        = cms.vdouble(0.0445,  0.0356,  0.0309,  0.0305),
-        ee_deta_cut        = cms.vdouble(0.00984, 0.0072,  0.00625, 0.00567),
-        ee_dphi_cut        = cms.vdouble(0.157,   0.147,   0.0355,  0.0165),
-        ee_hovere_cut      = cms.vdouble(0.05,    0.0414,  0.026,   0.026),
-        ee_ooeminusoop_cut = cms.vdouble(0.0962,  0.0875,  0.0335,  0.0158),
+        ee_ieta_cut        = cms.vdouble(0.0457,  0.0425,  0.0387,  0.0353),
+        ee_deta_cut        = cms.vdouble(0.00814, 0.00674, 0.00632, 0.00501),
+        ee_dphi_cut        = cms.vdouble(0.19,    0.169,   0.0394,  0.0236),
+        ee_hovere_cut      = cms.vdouble(0.05,    0.0441,  0.0275,  0.0188),
+        ee_hovere_cut2     = cms.vdouble(2.54,    2.54,    2.52,    2.06),
+        ee_hovere_cut3     = cms.vdouble(0.183,   0.183,   0.183,   0.183),
+        ee_ooeminusoop_cut = cms.vdouble(0.132,   0.111,   0.0721,  0.0197),
         ee_d0_cut          = cms.vdouble(0.10,    0.10,    0.10,    0.10),
         ee_dz_cut          = cms.vdouble(0.20,    0.20,    0.20,    0.20),
         ee_misshits_cut    = cms.vint32 (3,       1,       1,       1),
         # common electrons
         hovere_constant    = cms.bool(False),
-        electronEAValues   = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524),
-            # Newer values exist at https://github.com/lsoffi/cmssw/blob/CMSSW_9_2_X_TnP/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_92X.txt,
-            #  but the SUSY group says to use the older values as of 04/17/2018 (https://twiki.cern.ch/twiki/bin/view/CMS/SUSLeptonSF#Electrons).
+        # from: https://github.com/cms-sw/cmssw/blob/1fbada01f097fbd446e7a431140f83bc9f5a0ff0/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
+        electronEAValues   = cms.vdouble(0.1440, 0.1562, 0.1032, 0.0859, 0.1116, 0.1321, 0.1654),
+        # new collection from reco tool (to get user floats)
+        ElectronTag = cms.InputTag('slimmedElectrons','',process.name_()),
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
@@ -508,13 +517,21 @@ def makeTreeFromMiniAOD(self,process):
         prescaleTagArg1  = cms.string('patTrigger'),
         prescaleTagArg2  = cms.string(''),
         prescaleTagArg3  = cms.string(''),
-        saveHLTObj = cms.bool("SingleElectron" in process.source.fileNames[0]),
+        saveHLTObj = cms.bool(False),
         triggerNameList = _triggerNameList
     )
     self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales','TriggerProducer:TriggerVersion'])
     self.VectorString.extend(['TriggerProducer:TriggerNames'])
-    if "SingleElectron" in process.source.fileNames[0]:
+    if "SingleElectron" in process.source.fileNames[0] or "EGamma" in process.source.fileNames[0]:
+        process.TriggerProducer.saveHLTObj = cms.bool(True)
+        process.TriggerProducer.saveHLTObjPath = cms.string("HLT_Ele27_WPTight_Gsf_v")
+        process.TriggerProducer.saveHLTObjName = cms.string("HLTElectronObjects")
         self.VectorTLorentzVector.extend(['TriggerProducer:HLTElectronObjects'])
+    elif "SingleMuon" in process.source.fileNames[0]:
+        process.TriggerProducer.saveHLTObj = cms.bool(True)
+        process.TriggerProducer.saveHLTObjPath = cms.string("HLT_Mu50_v")
+        process.TriggerProducer.saveHLTObjName = cms.string("HLTMuonObjects")
+        self.VectorTLorentzVector.extend(['TriggerProducer:HLTMuonObjects'])
 
     if not self.geninfo:
         from TreeMaker.Utils.prescaleweightproducer_cfi import prescaleweightProducer
