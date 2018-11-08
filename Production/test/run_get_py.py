@@ -3,9 +3,12 @@ import argparse
 import TreeMaker.Production.get_py as get_py
 
 '''
-Example of how to run:
+Examples of how to run:
+
 python run_get_py.py -d dict_Run2017B-31Mar2018-v1.py dict_Run2017C-31Mar2018-v1.py dict_Run2017D-31Mar2018-v1.py dict_Run2017E-31Mar2018-v1.py dict_Run2017F-31Mar2018-v1.py \
  -o ../python/Run2017B-31Mar2018-v1/ ../python/Run2017C-31Mar2018-v1/ ../python/Run2017D-31Mar2018-v1/ ../python/Run2017E-31Mar2018-v1/ ../python/Run2017F-31Mar2018-v1/ -p -s
+
+python run_get_py.py -d dict_RunIIFall17MiniAODv2_12Apr2018_Neff.py -o ./ -w
 '''
 
 # Read parameters
