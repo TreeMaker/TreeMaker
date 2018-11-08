@@ -80,20 +80,23 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     ## ----------------------------------------------------------------------------------------------
     ## BTags
     ## ----------------------------------------------------------------------------------------------
+    from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.btagint_cfi import btagint
     BTags = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
         BTagCutValue = cms.double(0.8484)
     )
+    TMeras.TM2017.toModify(BTags,BTagCutValue = cms.double(0.8838))
     setattr(process,"BTags"+suff,BTags)
     self.VarsInt.extend(['BTags'+suff])
 
     BTagsDeepCSV = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
-        BTagCutValue = cms.double(0.4941 )
+        BTagCutValue = cms.double(0.6324)
     )
+    TMeras.TM2017.toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
     setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
     self.VarsInt.extend(['BTagsDeepCSV'+suff])
     

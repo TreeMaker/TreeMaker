@@ -9,19 +9,23 @@ class MCSampleHelper():
         "TT"                                                             : XSValues(-1.0, -1.0, 831.76,       -1.0),
         "TTJets"                                                         : XSValues(-1.0, -1.0, 831.76,       -1.0),
         "TTbar"                                                          : XSValues(-1.0, -1.0, 831.76,       -1.0),
+        # ttbar single lep & dilep xsecs scaled by PDG BR, assume t=tbar (hadronic: 377.96)
         "TTJets_SingleLeptFromT"                                         : XSValues(-1.0, -1.0, 182.72,       -1.0),
         "TTJets_SingleLeptFromTbar"                                      : XSValues(-1.0, -1.0, 182.72,       -1.0),
         "TTJets_DiLept"                                                  : XSValues(-1.0, -1.0, 88.34,        -1.0),
-        "TTJets_SingleLeptFromT_genMET-150"                              : XSValues(-1.0, -1.0, 5.979,        -1.0),
-        "TTJets_SingleLeptFromTbar_genMET-150"                           : XSValues(-1.0, -1.0, 5.936,        -1.0),
-        "TTJets_DiLept_genMET-150"                                       : XSValues(-1.0, -1.0, 3.666,        -1.0),
-        "TTJets_HT-600to800"                                             : XSValues(-1.0, -1.0, 2.7343862,    -1.0),
-        "TTJets_HT-800to1200"                                            : XSValues(-1.0, -1.0, 1.12075054,   -1.0),
-        "TTJets_HT-1200to2500"                                           : XSValues(-1.0, -1.0, 0.1979159,    -1.0),
-        "TTJets_HT-2500toInf"                                            : XSValues(-1.0, -1.0, 0.002368366,  -1.0),
+        # MET binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
+        "TTJets_SingleLeptFromT_genMET-150"                              : XSValues(-1.0, -1.0, 9.683904,     -1.0),
+        "TTJets_SingleLeptFromTbar_genMET-150"                           : XSValues(-1.0, -1.0, 9.657872,     -1.0),
+        "TTJets_DiLept_genMET-150"                                       : XSValues(-1.0, -1.0, 5.919026,     -1.0),
+        # HT binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
+        "TTJets_HT-600to800"                                             : XSValues(-1.0, -1.0, 2.68455,      -1.0),
+        "TTJets_HT-800to1200"                                            : XSValues(-1.0, -1.0, 1.0959472,    -1.0),
+        "TTJets_HT-1200to2500"                                           : XSValues(-1.0, -1.0, 0.1942638,    -1.0),
+        "TTJets_HT-2500toInf"                                            : XSValues(-1.0, -1.0, 0.002351015,  -1.0),
         "TTGamma_SingleLeptFromT"                                        : XSValues(-1.0, -1.0, 0.704,        -1.0),
         "TTGamma_SingleLeptFromTbar"                                     : XSValues(-1.0, -1.0, 0.704,        -1.0),
         "TTGamma_Dilept"                                                 : XSValues(-1.0, -1.0, 0.5804,       -1.0),
+        # WJets: k-factor of 1.21 applied
         "WJetsToLNu_HT-100To200"                                         : XSValues(-1.0, -1.0, 1627.45,      -1.0),
         "WJetsToLNu_HT-200To400"                                         : XSValues(-1.0, -1.0, 435.24,       -1.0),
         "WJetsToLNu_HT-400To600"                                         : XSValues(-1.0, -1.0, 59.18,        -1.0),
@@ -38,6 +42,7 @@ class MCSampleHelper():
         "QCD_HT1000to1500"                                               : XSValues(-1.0, -1.0, 1206,         -1.0),
         "QCD_HT1500to2000"                                               : XSValues(-1.0, -1.0, 120.4,        -1.0),
         "QCD_HT2000toInf"                                                : XSValues(-1.0, -1.0, 25.24,        -1.0),
+        # QCD pT-hat binned: cross sections from AN2017_013_v17
         "QCD_Pt_50to80"                                                  : XSValues(-1.0, -1.0, 19204300,     -1.0),
         "QCD_Pt_80to120"                                                 : XSValues(-1.0, -1.0, 2762530,      -1.0),
         "QCD_Pt_80_120"                                                  : XSValues(-1.0, -1.0, 2762530,      -1.0),
@@ -53,6 +58,7 @@ class MCSampleHelper():
         "QCD_Pt_1800to2400"                                              : XSValues(-1.0, -1.0, 0.114943,     -1.0),
         "QCD_Pt_2400to3200"                                              : XSValues(-1.0, -1.0, 0.00682981,   -1.0),
         "QCD_Pt_3200toInf"                                               : XSValues(-1.0, -1.0, 0.000165445,  -1.0),
+        # DY/Z: k-factor of 1.23 applied
         "DYJetsToLL_M-50_HT-100to200"                                    : XSValues(-1.0, -1.0, 181.302,      -1.0),
         "DYJetsToLL_M-50_HT-200to400"                                    : XSValues(-1.0, -1.0, 50.4177,      -1.0),
         "DYJetsToLL_M-50_HT-400to600"                                    : XSValues(-1.0, -1.0, 6.98394,      -1.0),
@@ -78,6 +84,7 @@ class MCSampleHelper():
         "GJets_DR-0p4_HT-600ToInf"                                       : XSValues(-1.0, -1.0, 43.36,        -1.0),
         "ZJetsToNuNu_Zpt-100to200"                                       : XSValues(-1.0, -1.0, 43.5543,      -1.0),
         "ZJetsToNuNu_Zpt-200toInf"                                       : XSValues(-1.0, -1.0, 5.28654,      -1.0),
+        # single top: NoFullyHadronicDecays xsec scaled by BF for non-fully-hadronic (1-(1-3*0.108)^2)
         "ST_s-channel_4f_leptonDecays"                                   : XSValues(-1.0, -1.0, 3.34,         -1.0),
         "ST_s-channel_4f_InclusiveDecays"                                : XSValues(-1.0, -1.0, 10.32,        -1.0),
         "ST_t-channel_top_4f_inclusiveDecays"                            : XSValues(-1.0, -1.0, 136.02,       -1.0),
