@@ -44,6 +44,10 @@ The available scenarios are:
 4.  `Fall17`: for Fall17 miniAOD MC
 5.  `Fall17sig`: for Fall17 miniAOD MC (signal)
 6.  `2017ReReco31Mar`: for 2017 ReReco data (31Mar), periods B-F
+7.  `Spring16Fastsig`: for Spring16 miniAOD FastSim MC (80X) (signal scans)
+8.  `Spring16Pmssm`: for Spring16 miniAOD 25ns PMSSM MC scan (80X) (signal)
+9.  `Summer16`: for Summer16 miniAOD 25ns MC (80X)
+10. `Summer16sig`: for Summer16 miniAOD 25ns MC (80X) (signal)
 
 ## Unit Tests (Interactive Runs)
 
