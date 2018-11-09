@@ -31,6 +31,8 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
 		void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 		//helper
 		double TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const;
+		template <class P>
+		void addDaughters(const P* i_part, std::vector<const reco::Candidate*>& listOfDaughters) const;
 		edm::InputTag JetTag_, MetTag_, GenTag_;
 		edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 		edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
@@ -60,11 +62,20 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
 	produces<std::vector<bool>>("isHV");
 }
 
-double HiddenSectorProducer::TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const{
+double HiddenSectorProducer::TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const {
 	double E1 = std::sqrt(std::pow(px1,2)+std::pow(py1,2)+std::pow(m1,2));
 	double E2 = std::sqrt(std::pow(px2,2)+std::pow(py2,2)+std::pow(m2,2));
 	double MTsq = std::pow(E1+E2,2)-std::pow(px1+px2,2)-std::pow(py1+py2,2);
 	return std::sqrt(std::max(MTsq,0.0));
+}
+
+template <class P>
+void HiddenSectorProducer::addDaughters(const P* i_part, std::vector<const reco::Candidate*>& listOfDaughters) const {
+	for (unsigned idau=0; idau < i_part->numberOfDaughters(); ++idau) { // add all daughters of HVquark to list
+		const reco::Candidate *dau = i_part->daughter(idau);
+		if(std::abs(dau->pdgId())==DarkParentID_) addDaughters(dau,listOfDaughters); // recurse down to HV-quark copy's daughters
+		else listOfDaughters.push_back(dau);
+	}
 }
 
 void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
@@ -113,50 +124,16 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 	
 	//ISRJetProducer method, find jets with hard process particles at their 'core' and other jets are ISR
 	for(const auto& i_jet : *(h_jets.product())){ // loop over AK8 jets
-		bool matched = false; // matched == true means that this jet has a hardprocess (decendant particle of the Z') at their 'core'
-		for (unsigned imc=0; imc < h_parts->size(); ++imc){ // loop over GenParticles
+		bool matched = false; // matched == true means that this jet has a hard process (descendant particle of the Z') at its 'core'
+		for (const auto& i_part : *(h_parts.product())){ // loop over GenParticles
 			if (matched) break; // only need to match one particle to the jet to tag it as FSR
-			const reco::GenParticle &i_part = (*h_parts)[imc];
-			if(!(i_part.status()==23)) continue; // only want particles outgoing from the hard process
+			if(i_part.status()!=23) continue; // only want particles outgoing from the hard process
 			int momid = std::abs(i_part.mother()->pdgId());
-			if(!(momid==4900023)) continue; // only want direct decendants of Z' (kind of redundant)
+			if(momid!=4900023) continue; // only want direct descendants of Z' (kind of redundant)
 			//check against daughters in case of hard initial splitting, from ISRJetProducer...
-			//std::vector<reco::CandidatePtr> listOfDaughters;
 			std::vector<const reco::Candidate*> listOfDaughters;
-			int nHVQuarksInDaughterList = 0;
-			for (unsigned idau=0; idau < i_part.numberOfDaughters(); ++idau) { // add all daughters of HVquark to list
-				//reco::CandidatePtr dau = edm::refToPtr(i_part.daughterRef(idau));
-				const reco::Candidate *dau = i_part.daughter(idau);
-				listOfDaughters.push_back(dau);
-				if( std::abs(dau->pdgId())==DarkParentID_) nHVQuarksInDaughterList++; // note how many HV-quarks(gluons) (copies) are in the list
-			}
-			while(nHVQuarksInDaughterList>0){// while there are copies...
-				unsigned numOldHVQuarks = (unsigned) nHVQuarksInDaughterList;
-				nHVQuarksInDaughterList=0;
-				for (unsigned i = 0; i<listOfDaughters.size();i++) { 
-					const reco::Candidate *daughter = listOfDaughters.at(i);
-					if(!(std::abs(daughter->pdgId())==DarkParentID_)) continue;// find the copies
-					for (unsigned idau=0; idau < daughter->numberOfDaughters(); ++idau) {
-						const reco::Candidate *dau = daughter->daughter(idau);
-						listOfDaughters.push_back(dau);// add copies' daughters to list
-					}
-				}
-				for (unsigned i = 0; i<numOldHVQuarks;i++) { 
-					for (unsigned i=0; i < listOfDaughters.size(); ++i){
-						const reco::Candidate *daughter = listOfDaughters.at(i);
-						if(std::abs(daughter->pdgId())==DarkParentID_){
-							listOfDaughters.erase(listOfDaughters.begin()+i); // remove the copies
-							break;
-						}
-					}
-				}
-				for (unsigned i = 0; i<listOfDaughters.size();i++) {
-					const reco::Candidate *daughter = listOfDaughters.at(i);
-					if(std::abs(daughter->pdgId())==DarkParentID_) nHVQuarksInDaughterList++; // count the copies	
-				}
-			}
-			for (unsigned i = 0; i<listOfDaughters.size();i++) {//for (unsigned idau=0; idau < i_part.numberOfDaughters(); ++idau) {
-				const reco::Candidate *daughter = listOfDaughters.at(i);
+			addDaughters(&i_part,listOfDaughters);
+			for (const auto& daughter : listOfDaughters) {
 				float dR = deltaR(i_jet, daughter->p4());//float dR = deltaR(i_jet, i_part.daughter(idau)->p4());
 				if(dR<0.8){
 					matched = true;
