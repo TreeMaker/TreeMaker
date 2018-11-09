@@ -183,6 +183,7 @@ def makeTreeFromMiniAOD(self,process):
         cut = cms.string("isPFJet"),
     )
     JetAK8Tag = cms.InputTag('slimmedJetsAK8Good')
+    SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
 
     process.load("CondCore.DBCommon.CondDBCommon_cfi")
     from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
@@ -220,13 +221,24 @@ def makeTreeFromMiniAOD(self,process):
         levels  = ['L1FastJet','L2Relative','L3Absolute']
         if self.residual: levels.append('L2L3Residual')
         
+        from TreeMaker.TreeMaker.TMEras import TMeras
         from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
         
+        # rerun DeepCSV on AK4 jets for 2016 80X MC
+        ak4updates = cms.PSet(discrs = cms.vstring())
+        TMeras.TM80X.toModify(ak4updates,
+            discrs = cms.vstring(
+                ['pfDeepCSVJetTags:'+x for x in ['probb','probc','probudsg','probbb']] +
+                ['pfDeepCSVDiscriminatorsJetTags:'+x for x in ['BvsAll','CvsB','CvsL']]
+            )
+        )
+
         updateJetCollection(
             process,
             jetSource = JetTag,
             postfix = 'UpdatedJEC',
-            jetCorrections = ('AK4PFchs', levels, 'None')
+            jetCorrections = ('AK4PFchs', levels, 'None'),
+            btagDiscriminators = ak4updates.discrs.value(),
         )
         
         JetTag = cms.InputTag('updatedPatJetsUpdatedJEC')
@@ -240,9 +252,37 @@ def makeTreeFromMiniAOD(self,process):
             ak8updates.extend(["pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:"+x for x in ["TvsQCD","WvsQCD","ZHbbvsQCD"]])
 
         if self.deepDoubleB:
-            ak8updates.extend(['pfDeepDoubleBJetTags:probQ','pfDeepDoubleBJetTags:probH'])
+            ak8updates.extend(['pfDeepDoubleBJetTags:'+x for x in ['probQ','probH']])
 
-        # also update the corrections for AK8 jets
+        if TMeras.TM80X.isChosen():
+            # use jet toolbox to rerun puppi, recluster AK8 jets, and compute substructure variables
+            # do not add discriminators here, several issues
+            from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+            jetToolbox(process,
+                'ak8',
+                'jetSequence',
+                'out',
+                PUMethod = 'Puppi',
+                miniAOD = True,
+                runOnMC = self.geninfo,
+                postFix = '94Xlike',
+                Cut = 'pt>170.',
+                addPruning = True,
+                addSoftDropSubjets = True,
+                addNsub = True,
+                maxTau = 3,
+                subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
+                JETCorrLevels = levels,
+                subJETCorrLevels = levels,
+                addEnergyCorrFunc = True,
+                associateTask = False,
+                verbosity = 2 if self.verbose else 0,
+            )
+
+            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppi94XlikeSoftDrop")
+            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppi94XlikeSoftDropPacked:SubJets")
+
+        # update the corrections for AK8 jets
         # and add any extra discriminators
         updateJetCollection(
             process,
@@ -709,7 +749,6 @@ def makeTreeFromMiniAOD(self,process):
         ])
 
     # get QG tagging discriminant for subjets
-    SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
     process.QGTaggerSubjets = process.QGTagger.clone(
         srcJets = SubjetTag
     )
