@@ -174,23 +174,18 @@ def makeTreeFromMiniAOD(self,process):
     ## JECs
     ## ----------------------------------------------------------------------------------------------
 
+    # default miniAOD tags
     JetTag = cms.InputTag("slimmedJets")
+    METTag = cms.InputTag('slimmedMETs')
     # get rid of the pointless low-pt AK8 jets ASAP
-    process.slimmedJetsAK8Good = cms.EDProducer("PATJetSelector",
+    process.slimmedJetsAK8Good = cms.EDFilter("PATJetSelector",
         src = cms.InputTag("slimmedJetsAK8"),
         cut = cms.string("isPFJet"),
-        cutLoose = cms.string(""),
-        nLoose = cms.uint32(0),
     )
     JetAK8Tag = cms.InputTag('slimmedJetsAK8Good')
 
     process.load("CondCore.DBCommon.CondDBCommon_cfi")
     from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
-    
-    # default miniAOD tags
-    JetTag = cms.InputTag('slimmedJets')
-    JetAK8Tag = cms.InputTag('slimmedJetsAK8')
-    METTag = cms.InputTag('slimmedMETs')
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
