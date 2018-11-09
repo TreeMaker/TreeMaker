@@ -918,7 +918,8 @@ def makeTreeFromMiniAOD(self,process):
             MetTag = METTag,
             GenTag = cms.InputTag("prunedGenParticles"),
             DarkIDs = cms.vuint32(51,52,53),
-            DarkParentID = cms.uint32(4900101),
+            DarkQuarkID = cms.uint32(4900101),
+            DarkMediatorID = cms.uint32(4900023),
         )
         self.VarsDouble.extend([
             'HiddenSector:MJJ(MJJ_AK8)',
