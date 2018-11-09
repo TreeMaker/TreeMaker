@@ -176,8 +176,11 @@ def makeTreeFromMiniAOD(self,process):
 
     JetTag = cms.InputTag("slimmedJets")
     # get rid of the pointless low-pt AK8 jets ASAP
-    process.slimmedJetsAK8Good = cms.EDProducer("BasicJetRemover",
-        JetTag = cms.InputTag("slimmedJetsAK8")
+    process.slimmedJetsAK8Good = cms.EDProducer("PATJetSelector",
+        src = cms.InputTag("slimmedJetsAK8"),
+        cut = cms.string("isPFJet"),
+        cutLoose = cms.string(""),
+        nLoose = cms.uint32(0),
     )
     JetAK8Tag = cms.InputTag('slimmedJetsAK8Good')
 
