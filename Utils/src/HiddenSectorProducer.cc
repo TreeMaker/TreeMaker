@@ -14,13 +14,11 @@
 // new includes
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include "DataFormats/Candidate/interface/CandidateFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
-#include "DataFormats/Common/interface/RefToPtr.h"
 
 typedef math::XYZTLorentzVector LorentzVector;
 
@@ -135,7 +133,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 			std::vector<const reco::Candidate*> listOfDaughters;
 			addDaughters(&i_part,listOfDaughters);
 			for (const auto& daughter : listOfDaughters) {
-				float dR = deltaR(i_jet, daughter->p4());//float dR = deltaR(i_jet, i_part.daughter(idau)->p4());
+				float dR = deltaR(i_jet, daughter->p4());
 				if(dR<0.8){
 					matched = true;
 					break;
