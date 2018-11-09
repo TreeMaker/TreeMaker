@@ -826,6 +826,9 @@ def makeTreeFromMiniAOD(self,process):
             'ak8GenJetProperties:prunedMass(GenJetsAK8_prunedMass)',
             'ak8GenJetProperties:softDropMass(GenJetsAK8_softDropMass)',
         ])
+        self.VectorInt.extend([
+            'ak8GenJetProperties:multiplicity(GenJetsAK8_multiplicity)',
+        ])
         # store AK8 genjets above pt cut
         self.VectorRecoCand.extend (['ak8GenJetProperties(GenJetsAK8)'])
 
