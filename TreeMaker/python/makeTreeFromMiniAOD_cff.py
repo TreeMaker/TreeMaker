@@ -241,7 +241,7 @@ def makeTreeFromMiniAOD(self,process):
             btagDiscriminators = ak4updates.discrs.value(),
         )
         
-        JetTag = cms.InputTag('updatedPatJetsUpdatedJEC')
+        JetTag = cms.InputTag('updatedPatJetsUpdatedJEC' if len(ak4updates.discrs.value())==0 else 'updatedPatJetsTransientCorrectedUpdatedJEC')
         
         # select double b-tagger
         ak8updates = []
@@ -392,9 +392,12 @@ def makeTreeFromMiniAOD(self,process):
     ## Electrons/Muons
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.TreeMaker.TMEras import TMeras
-    if TMeras.TM2017.isChosen():
-        from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq
-        process = setupEgammaPostRecoSeq(process, runVID=False, era='2017-Nov17ReReco')
+    from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq
+    elePostRecoEra = cms.PSet(value = cms.string(""))
+    TMeras.TM2017.toModify(elePostRecoEra, value = "2017-Nov17ReReco")
+    TMeras.TM80X.toModify(elePostRecoEra, value = "2016-Legacy")
+    if len(elePostRecoEra.value.value())>0:
+        process = setupEgammaPostRecoSeq(process, runVID=False, era=elePostRecoEra.value.value())
     from TreeMaker.Utils.leptonproducer_cfi import leptonproducer
     process.LeptonsNew = leptonproducer.clone(
         elecIsoValue       = cms.double(0.1), # only has an effect when used with miniIsolation
@@ -716,11 +719,11 @@ def makeTreeFromMiniAOD(self,process):
     
     # get QG tagging discriminant
     process.QGTagger = cms.EDProducer('QGTagger',
-        srcJets	            = JetTag,
+        srcJets             = JetTag,
         jetsLabel           = cms.string('QGL_AK4PFchs'),
-        srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),		
-        srcVertexCollection	= cms.InputTag('offlinePrimaryVerticesWithBS'),
-        useQualityCuts	    = cms.bool(False)
+        srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),
+        srcVertexCollection = cms.InputTag('offlinePrimaryVerticesWithBS'),
+        useQualityCuts      = cms.bool(False)
     )
     
     # add userfloats & update tag
@@ -766,6 +769,7 @@ def makeTreeFromMiniAOD(self,process):
             NewName = cms.string("SoftDropPuppiUpdated"),
         )
     )
+    TMeras.TM80X.toModify(getattr(process, JetAK8TagSJU.value()), OldName = "SoftDrop")
     JetAK8Tag = JetAK8TagSJU
     
     # apply jet ID and get properties
@@ -773,7 +777,20 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetAK8Tag,
         suff='AK8',
         storeProperties=2,
-    )    
+    )
+    TMeras.TM80X.toModify(process.JetPropertiesAK8,
+        NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi94Xlike:tau1'),
+        NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi94Xlike:tau2'),
+        NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi94Xlike:tau3'),
+        ecfN2b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN2'),
+        ecfN2b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN2'),
+        ecfN3b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN3'),
+        ecfN3b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN3'),
+        prunedMass = cms.vstring('ak8PFJetsPuppi94XlikePrunedMass'),
+        softDropMass = cms.vstring('SoftDrop'),
+        subjets = cms.vstring('SoftDrop'),
+        SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+    )
     if self.systematics:
         process.JetPropertiesAK8.properties.extend(["jecUnc"])
         process.JetPropertiesAK8.jecUnc = cms.vstring(JetAK8TagJECTmp.value())

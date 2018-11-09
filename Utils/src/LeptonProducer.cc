@@ -110,8 +110,6 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   eb_deta_cut_                           (iConfig.getParameter<std::vector<double>>("eb_deta_cut")),
   eb_dphi_cut_                           (iConfig.getParameter<std::vector<double>>("eb_dphi_cut")),
   eb_hovere_cut_                         (iConfig.getParameter<std::vector<double>>("eb_hovere_cut")),
-  eb_hovere_cut2_                        (iConfig.getParameter<std::vector<double>>("eb_hovere_cut2")),
-  eb_hovere_cut3_                        (iConfig.getParameter<std::vector<double>>("eb_hovere_cut3")),
   eb_ooeminusoop_cut_                    (iConfig.getParameter<std::vector<double>>("eb_ooeminusoop_cut")),
   eb_d0_cut_                             (iConfig.getParameter<std::vector<double>>("eb_d0_cut")),
   eb_dz_cut_                             (iConfig.getParameter<std::vector<double>>("eb_dz_cut")),
@@ -120,8 +118,6 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   ee_deta_cut_                           (iConfig.getParameter<std::vector<double>>("ee_deta_cut")),
   ee_dphi_cut_                           (iConfig.getParameter<std::vector<double>>("ee_dphi_cut")),
   ee_hovere_cut_                         (iConfig.getParameter<std::vector<double>>("ee_hovere_cut")),
-  ee_hovere_cut2_                        (iConfig.getParameter<std::vector<double>>("ee_hovere_cut2")),
-  ee_hovere_cut3_                        (iConfig.getParameter<std::vector<double>>("ee_hovere_cut3")),
   ee_ooeminusoop_cut_                    (iConfig.getParameter<std::vector<double>>("ee_ooeminusoop_cut")),
   ee_d0_cut_                             (iConfig.getParameter<std::vector<double>>("ee_d0_cut")),
   ee_dz_cut_                             (iConfig.getParameter<std::vector<double>>("ee_dz_cut")),
@@ -148,6 +144,13 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   electronEAValues_                      (iConfig.getParameter<std::vector<double>>("electronEAValues")),
   muonEAValues_                          (iConfig.getParameter<std::vector<double>>("muonEAValues"))
 {
+
+  if(!hovere_constant_){
+    eb_hovere_cut2_ = iConfig.getParameter<std::vector<double>>("eb_hovere_cut2");
+    eb_hovere_cut3_ = iConfig.getParameter<std::vector<double>>("eb_hovere_cut3");
+    ee_hovere_cut2_ = iConfig.getParameter<std::vector<double>>("ee_hovere_cut2");
+    ee_hovere_cut3_ = iConfig.getParameter<std::vector<double>>("ee_hovere_cut3");
+  }
 
   SUSYIsolationHelper.SetEAVectors(electronEAValues_, muonEAValues_);
 
