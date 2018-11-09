@@ -214,8 +214,7 @@ DEFAULT_NAMED_PTR(bDiscriminator,zDiscriminatorDeep);
 DEFAULT_NAMED_PTR(bDiscriminator,hDiscriminatorDeep);
 DEFAULT_NAMED_PTR(bDiscriminator,tDiscriminatorDeepDecorrel);
 DEFAULT_NAMED_PTR(bDiscriminator,wDiscriminatorDeepDecorrel);
-DEFAULT_NAMED_PTR(bDiscriminator,zDiscriminatorDeepDecorrel);
-DEFAULT_NAMED_PTR(bDiscriminator,hDiscriminatorDeepDecorrel);
+DEFAULT_NAMED_PTR(bDiscriminator,zhDiscriminatorDeepDecorrel);
 DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorH);
 DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorQ);
 
