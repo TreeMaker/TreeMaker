@@ -38,7 +38,7 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
 		edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
 		edm::EDGetTokenT<edm::View<reco::GenParticle>> GenTok_;
 		std::unordered_set<unsigned> DarkIDs_;
-		unsigned DarkParentID_;
+		unsigned DarkQuarkID_, DarkMediatorID_;
 };
 
 HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
@@ -48,7 +48,8 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
 	JetTok_(consumes<edm::View<pat::Jet>>(JetTag_)),
 	MetTok_(consumes<edm::View<pat::MET>>(MetTag_)),
 	GenTok_(consumes<edm::View<reco::GenParticle>>(GenTag_)),
-	DarkParentID_(iConfig.getParameter<unsigned>("DarkParentID"))
+	DarkQuarkID_(iConfig.getParameter<unsigned>("DarkQuarkID")),
+	DarkMediatorID_(iConfig.getParameter<unsigned>("DarkMediatorID"))
 {
 	const auto& ids = iConfig.getParameter<std::vector<unsigned>>("DarkIDs");
 	DarkIDs_.insert(ids.begin(),ids.end());
@@ -73,7 +74,7 @@ template <class P>
 void HiddenSectorProducer::addDaughters(const P* i_part, std::vector<const reco::Candidate*>& listOfDaughters) const {
 	for (unsigned idau=0; idau < i_part->numberOfDaughters(); ++idau) { // add all daughters of HVquark to list
 		const reco::Candidate *dau = i_part->daughter(idau);
-		if(std::abs(dau->pdgId())==DarkParentID_) addDaughters(dau,listOfDaughters); // recurse down to HV-quark copy's daughters
+		if(std::abs(dau->pdgId())==DarkQuarkID_) addDaughters(dau,listOfDaughters); // recurse down to HV-quark copy's daughters
 		else listOfDaughters.push_back(dau);
 	}
 }
@@ -128,8 +129,8 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 		for (const auto& i_part : *(h_parts.product())){ // loop over GenParticles
 			if (matched) break; // only need to match one particle to the jet to tag it as FSR
 			if(i_part.status()!=23) continue; // only want particles outgoing from the hard process
-			int momid = std::abs(i_part.mother()->pdgId());
-			if(momid!=4900023) continue; // only want direct descendants of Z' (kind of redundant)
+			unsigned momid = std::abs(i_part.mother()->pdgId());
+			if(momid!=DarkMediatorID_) continue; // only want direct descendants of Z' (kind of redundant)
 			//check against daughters in case of hard initial splitting, from ISRJetProducer...
 			std::vector<const reco::Candidate*> listOfDaughters;
 			addDaughters(&i_part,listOfDaughters);
