@@ -238,7 +238,7 @@ def makeTreeFromMiniAOD(self,process):
             jetSource = JetTag,
             postfix = 'UpdatedJEC',
             jetCorrections = ('AK4PFchs', levels, 'None'),
-            btagDiscriminators = ak4updates.discrs.value(),
+            btagDiscriminators = ak4updates.discrs.value() if len(ak4updates.discrs.value())>0 else ['None'],
         )
         
         JetTag = cms.InputTag('updatedPatJetsUpdatedJEC' if len(ak4updates.discrs.value())==0 else 'updatedPatJetsTransientCorrectedUpdatedJEC')
@@ -293,7 +293,7 @@ def makeTreeFromMiniAOD(self,process):
             pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
             svSource = cms.InputTag('slimmedSecondaryVertices'),
             rParam = 0.8,
-            btagDiscriminators = ak8updates,
+            btagDiscriminators = ak8updates if len(ak8updates)>0 else ['None'],
         )
         
         JetAK8Tag = cms.InputTag('updatedPatJetsTransientCorrectedAK8UpdatedJEC')
