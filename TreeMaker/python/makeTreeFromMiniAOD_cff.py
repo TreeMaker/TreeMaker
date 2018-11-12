@@ -238,7 +238,8 @@ def makeTreeFromMiniAOD(self,process):
             jetSource = JetTag,
             postfix = 'UpdatedJEC',
             jetCorrections = ('AK4PFchs', levels, 'None'),
-            btagDiscriminators = ak4updates.discrs.value(),
+            btagDiscriminators = ak4updates.discrs.value() if len(ak4updates.discrs.value())>0 else ['None'],
+            printWarning = self.verbose,
         )
         
         JetTag = cms.InputTag('updatedPatJetsUpdatedJEC' if len(ak4updates.discrs.value())==0 else 'updatedPatJetsTransientCorrectedUpdatedJEC')
@@ -274,7 +275,7 @@ def makeTreeFromMiniAOD(self,process):
                 subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
                 JETCorrLevels = levels,
                 subJETCorrLevels = levels,
-                addEnergyCorrFunc = True,
+                addEnergyCorrFunc = False,
                 associateTask = False,
                 verbosity = 2 if self.verbose else 0,
             )
@@ -293,9 +294,14 @@ def makeTreeFromMiniAOD(self,process):
             pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
             svSource = cms.InputTag('slimmedSecondaryVertices'),
             rParam = 0.8,
-            btagDiscriminators = ak8updates,
+            btagDiscriminators = ak8updates if len(ak8updates)>0 else ['None'],
+            printWarning = self.verbose,
         )
         
+        # remove pt cut to avoid default values for some jets
+        if self.deepAK8:
+            process.pfDeepBoostedJetTagInfosAK8UpdatedJEC.min_jet_pt = cms.double(0)
+
         JetAK8Tag = cms.InputTag('updatedPatJetsTransientCorrectedAK8UpdatedJEC')
         
         # update the MET to account for the new JECs
@@ -777,15 +783,16 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetAK8Tag,
         suff='AK8',
         storeProperties=2,
+        doECFs = not TMeras.TM80X.isChosen(), # temporarily disabled
     )
     TMeras.TM80X.toModify(process.JetPropertiesAK8,
         NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi94Xlike:tau1'),
         NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi94Xlike:tau2'),
         NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi94Xlike:tau3'),
-        ecfN2b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN2'),
-        ecfN2b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN2'),
-        ecfN3b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN3'),
-        ecfN3b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN3'),
+#        ecfN2b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN2'),
+#        ecfN2b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN2'),
+#        ecfN3b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN3'),
+#        ecfN3b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN3'),
         prunedMass = cms.vstring('ak8PFJetsPuppi94XlikePrunedMass'),
         softDropMass = cms.vstring('SoftDrop'),
         subjets = cms.vstring('SoftDrop'),
