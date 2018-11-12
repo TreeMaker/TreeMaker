@@ -232,6 +232,9 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
             'JetProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
             'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)',
         ])
+        if TMeras.TM80X.isChosen():
+            JetProperties.properties = cms.vstring([x for x in JetProperties.properties.value() if not "DeepFlavour" in x])
+            self.VectorDouble.setValue([x for x in self.VectorDouble.value() if not "DeepFlavour" in x])
         if storeProperties>1:
             JetProperties.properties.extend(["jecFactor"])
             self.VectorDouble.extend([
