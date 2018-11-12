@@ -298,6 +298,10 @@ def makeTreeFromMiniAOD(self,process):
             printWarning = self.verbose,
         )
         
+        # remove pt cut to avoid default values for some jets
+        if self.deepAK8:
+            process.pfDeepBoostedJetTagInfosAK8UpdatedJEC.min_jet_pt = cms.double(0)
+
         JetAK8Tag = cms.InputTag('updatedPatJetsTransientCorrectedAK8UpdatedJEC')
         
         # update the MET to account for the new JECs
