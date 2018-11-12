@@ -282,7 +282,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
 # 2 = 1 + subjet properties + extra substructure
 # 3 = 2 + constituents (large)
 # SkipTag is not used, but just there to make interfaces consistent
-def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates")):
+def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates")):
     # select good jets before anything else - eliminates bad AK8 jets (low pT, no constituents stored, etc.)
     process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8)
 
@@ -314,7 +314,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
         )
         setattr(process,"QGTagger"+suff,QGTagger)
         ak8floats.extend([
-            'BasicSubstructure'+suff+':overflow',
             'BasicSubstructure'+suff+':girth',
             'BasicSubstructure'+suff+':momenthalf',
             'BasicSubstructure'+suff+':ptdrlog',
@@ -361,15 +360,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 "NsubjettinessTau1"     ,
                 "NsubjettinessTau2"     ,
                 "NsubjettinessTau3"     ,
-                "ecfN2b1"               ,
-                "ecfN2b2"               ,
-                "ecfN3b1"               ,
-                "ecfN3b2"               ,
                 "bDiscriminatorCSV"     ,
-                "bJetTagDeepCSVprobb"   ,
-                "bJetTagDeepCSVprobc"   ,
-                "bJetTagDeepCSVprobudsg",
-                "bJetTagDeepCSVprobbb"  ,
                 "NumBhadrons"           ,
                 "NumChadrons"           ,
                 "subjets"               ,
@@ -382,10 +373,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
         JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
         JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
         JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
-        JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN2')
-        JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN2')
-        JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN3')
-        JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN3')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
         JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDropPuppi','pfCombinedInclusiveSecondaryVertexV2BJetTags')
@@ -396,10 +383,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
             'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
             'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)',
-            'JetProperties'+suff+':ecfN2b1(Jets'+suff+'_ecfN2b1)',
-            'JetProperties'+suff+':ecfN2b2(Jets'+suff+'_ecfN2b2)',
-            'JetProperties'+suff+':ecfN3b1(Jets'+suff+'_ecfN3b1)',
-            'JetProperties'+suff+':ecfN3b2(Jets'+suff+'_ecfN3b2)',
         ])
         self.VectorInt.extend([
             'JetProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
@@ -411,6 +394,24 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
         self.VectorVectorDouble.extend([
             'JetProperties'+suff+':SJbDiscriminatorCSV(Jets'+suff+'_subjets_bDiscriminatorCSV)',
         ])
+
+        if doECFs:
+            JetPropertiesAK8.properties.extend([
+                "ecfN2b1",
+                "ecfN2b2",
+                "ecfN3b1",
+                "ecfN3b2",
+            ])
+            JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN2')
+            JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN2')
+            JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN3')
+            JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN3')
+            self.VectorDouble.extend([
+                'JetProperties'+suff+':ecfN2b1(Jets'+suff+'_ecfN2b1)',
+                'JetProperties'+suff+':ecfN2b2(Jets'+suff+'_ecfN2b2)',
+                'JetProperties'+suff+':ecfN3b1(Jets'+suff+'_ecfN3b1)',
+                'JetProperties'+suff+':ecfN3b2(Jets'+suff+'_ecfN3b2)',
+            ])
 
         if self.deepAK8 and doDeepAK8:
             JetPropertiesAK8.properties.extend([
@@ -484,7 +485,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
 
         if self.semivisible and storeProperties>1:
             JetPropertiesAK8.properties.extend([
-                'overflow',
                 'girth',
                 'momenthalf',
                 'ptD',
@@ -494,7 +494,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 'ptdrlog',
                 'lean',
             ])
-            JetPropertiesAK8.overflow = cms.vstring('BasicSubstructure'+suff+':overflow')
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
             JetPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure'+suff+':momenthalf')
             JetPropertiesAK8.ptD = cms.vstring('QGTagger'+suff+':ptD')
@@ -509,7 +508,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 'NjettinessBeta2'+suff+':tau1phiAxis1',
             )
             self.VectorDouble.extend([
-                'JetProperties'+suff+':overflow(Jets'+suff+'_overflow)',
                 'JetProperties'+suff+':girth(Jets'+suff+'_girth)',
                 'JetProperties'+suff+':momenthalf(Jets'+suff+'_momenthalf)',
                 'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',

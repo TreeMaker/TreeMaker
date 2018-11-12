@@ -38,7 +38,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         subjetBTagDiscriminators = listBtagDiscriminatorsSubjetAK8,
         JETCorrLevels = jecLevels,
         subJETCorrLevels = jecLevels,
-        addEnergyCorrFunc = True,
+        addEnergyCorrFunc = False,
         associateTask = False,
         verbosity = 2 if self.verbose else 0,
     )
@@ -58,6 +58,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
         storeProperties=1,
+        doECFs=False, # currently disabled
         doDeepAK8=False, # currently disabled
         doDeepDoubleB=False, # currently disabled
     )
@@ -70,10 +71,10 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiClean:tau3')
     process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
     process.JetPropertiesAK8Clean.SJbDiscriminatorCSV = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.JetPropertiesAK8Clean.ecfN2b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN2')
-    process.JetPropertiesAK8Clean.ecfN3b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN3')
-    process.JetPropertiesAK8Clean.ecfN2b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN2')
-    process.JetPropertiesAK8Clean.ecfN3b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN3')
+#    process.JetPropertiesAK8Clean.ecfN2b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN2')
+#    process.JetPropertiesAK8Clean.ecfN3b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN3')
+#    process.JetPropertiesAK8Clean.ecfN2b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN2')
+#    process.JetPropertiesAK8Clean.ecfN3b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN3')
 
     ### end AK8 detour
 
