@@ -37,7 +37,6 @@ BasicSubstructureProducer::BasicSubstructureProducer(const edm::ParameterSet& iC
 	JetTag_(iConfig.getParameter<edm::InputTag>("JetTag")),
 	JetTok_(consumes<edm::View<pat::Jet>>(JetTag_))
 {
-	produces<edm::ValueMap<float>>("overflow");
 	produces<edm::ValueMap<float>>("girth");
 	produces<edm::ValueMap<float>>("momenthalf");
 	produces<edm::ValueMap<float>>("ptdrlog");
@@ -62,19 +61,13 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 	std::vector<float> overflow, girth, momenthalf, ptdrlog;
 
 	for(const auto& i_jet : *(h_jets.product())){
-		//calculate jet "overflow": 1 - (scalar sum of pT w/ dR<0.4 over scalar sum of pT w/ dR<0.8)
-		float i_numer = 0.0, i_denom = 0.0;
 		float i_girth = 0.0, i_momenthalf = 0.0;
 		float i_ptdrlog = 0.0;
 
 		for(unsigned k = 0; k < i_jet.numberOfDaughters(); ++k){
 			const reco::Candidate* i_part = i_jet.daughter(k);
-
-			//overflow
 			float dR = reco::deltaR(i_jet.p4(),i_part->p4());
 			float pT = i_part->pt();
-			if(dR < 0.8) i_denom += pT;
-			if(dR < 0.4) i_numer += pT;
 
 			//ptdrlog
 			i_ptdrlog += std::log(pT/dR);
@@ -84,23 +77,17 @@ void BasicSubstructureProducer::produce(edm::StreamID, edm::Event& iEvent, const
 			i_momenthalf += pT*std::sqrt(dR);
 		}
 
-		//finish overflow calc
-		float i_underflow = i_denom > 0.0 ? i_numer/i_denom : 0.0;
-		float i_overflow = 1.0 - i_underflow;
-
 		//finish moment calcs
 		i_girth /= i_jet.pt();
 		i_momenthalf /= i_jet.pt();
 
 		//store values
-		overflow.push_back(i_overflow);
 		girth.push_back(i_girth);
 		momenthalf.push_back(i_momenthalf);
 		ptdrlog.push_back(i_ptdrlog);
 	}
 
 	//make userfloat maps
-	helpProduce(iEvent,h_jets,overflow,"overflow");
 	helpProduce(iEvent,h_jets,girth,"girth");
 	helpProduce(iEvent,h_jets,momenthalf,"momenthalf");
 	helpProduce(iEvent,h_jets,ptdrlog,"ptdrlog");

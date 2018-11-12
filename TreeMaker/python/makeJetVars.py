@@ -314,7 +314,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
         )
         setattr(process,"QGTagger"+suff,QGTagger)
         ak8floats.extend([
-            'BasicSubstructure'+suff+':overflow',
             'BasicSubstructure'+suff+':girth',
             'BasicSubstructure'+suff+':momenthalf',
             'BasicSubstructure'+suff+':ptdrlog',
@@ -480,7 +479,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
 
         if self.semivisible and storeProperties>1:
             JetPropertiesAK8.properties.extend([
-                'overflow',
                 'girth',
                 'momenthalf',
                 'ptD',
@@ -490,7 +488,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 'ptdrlog',
                 'lean',
             ])
-            JetPropertiesAK8.overflow = cms.vstring('BasicSubstructure'+suff+':overflow')
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
             JetPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure'+suff+':momenthalf')
             JetPropertiesAK8.ptD = cms.vstring('QGTagger'+suff+':ptD')
@@ -505,7 +502,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 'NjettinessBeta2'+suff+':tau1phiAxis1',
             )
             self.VectorDouble.extend([
-                'JetProperties'+suff+':overflow(Jets'+suff+'_overflow)',
                 'JetProperties'+suff+':girth(Jets'+suff+'_girth)',
                 'JetProperties'+suff+':momenthalf(Jets'+suff+'_momenthalf)',
                 'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
