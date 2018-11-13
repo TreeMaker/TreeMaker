@@ -318,10 +318,10 @@ def doZinvBkg(self,process):
         src = cms.VInputTag("LeptonsNew:IdIsoElectron","LeptonsNew:IdIsoMuon")
     )
     
-    # if there are no leptons in the event, just remove photons (GJet)
+    # if there are no leptons in the event, just remove high-pt photons (GJet)
     # otherwise, just remove leptons (DY)
     process.selectedXons = cms.EDProducer("CandPtrPrefer",
-        first = cms.InputTag("selectedLeptons"), second = cms.InputTag("goodPhotons")
+        first = cms.InputTag("selectedLeptons"), second = cms.InputTag("goodPhotons","highpt")
     )
     
     # do the removal
