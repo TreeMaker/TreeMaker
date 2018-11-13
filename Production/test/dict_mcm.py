@@ -120,10 +120,7 @@ datasets = OrderedDict([
 ("SMS_TChiWH_WToLNu_HToBB_mChargino850_mLSP1",[0]),
 ("SMS-TChiWZ_ZToLL_mZMin-0p1_mChargino250_mLSP230",[0]),
 ("SMS-TChiWZ_ZToLL_mZMin-0p1",[0]),
-("RPV_2t6j_mStop-350_mN1-100",[0]),
-("RPV_2t6j_mStop-500_mN1-100",[0]),
-("StealthSYY_2t6j_mStop-500_mSo-100",[0]),
-("StealthSHH_2t4b_mStop-500_mSo-100",[0]),
-("StealthSYY_2t6j_mStop-300_mSo-100",[0]),
-("StealthSHH_2t4b_mStop-350_mSo-100",[0]),
+("RPV_2t6j_mStop-*_mN1-100",[0]),
+("StealthSYY_2t6j_mStop-*_mSo-100",[0]),
+("StealthSHH_2t4b_mStop-*_mSo-100",[0]),
 ])
