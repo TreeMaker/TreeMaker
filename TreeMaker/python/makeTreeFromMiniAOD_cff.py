@@ -702,21 +702,19 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
 
     # get updated QG training
-    QGPatch = cms.string('sqlite_file:data/QGL_80X.db')
-    if os.getenv('GC_CONF'): 
-        QGPatch = cms.string('sqlite_file:../src/data/QGL_80X.db')
+    QGPatch = cms.string('sqlite_file:data/QGL_cmssw8020_v2.db')
 
     process.qgdb = cms.ESSource("PoolDBESSource",CondDBSetup,
         connect = QGPatch,
         toGet   = cms.VPSet(
             cms.PSet(
                 record = cms.string('QGLikelihoodRcd'),
-                tag    = cms.string('QGLikelihoodObject_80X_AK4PFchs'),
+                tag    = cms.string('QGLikelihoodObject_cmssw8020_v2_AK4PFchs'),
                 label  = cms.untracked.string('QGL_AK4PFchs')
             ),
             cms.PSet(
                 record = cms.string('QGLikelihoodRcd'),
-                tag    = cms.string('QGLikelihoodObject_80X_AK4PFchs_antib'),
+                tag    = cms.string('QGLikelihoodObject_cmssw8020_v2_AK4PFchs_antib'),
                 label  = cms.untracked.string('QGL_AK4PFchs_antib')
             ),
         )
