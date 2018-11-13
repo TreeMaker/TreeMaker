@@ -78,6 +78,7 @@ private:
   edm::EDGetTokenT<edm::View<reco::GenParticle>> genParTok_;
   bool debug;
   effArea effAreas;
+  double pt_cut_, high_pt_cut_;
   double hadTowOverEm_EB_cut_, sieie_EB_cut_, pfChIsoRhoCorr_EB_cut_;
   double hadTowOverEm_EE_cut_, sieie_EE_cut_, pfChIsoRhoCorr_EE_cut_;
   std::vector<double> effArEtaLow_,effArEtaHigh_; //|eta| boundaries for effective areas
@@ -105,6 +106,8 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   rhoTok_(consumes<double>(rhoCollection)),
   genParTok_(consumes<edm::View<reco::GenParticle>>(genParCollection)),
   debug(iConfig.getUntrackedParameter<bool>("debug",true)),
+  pt_cut_(iConfig.getParameter<double>("pt_cut")),
+  high_pt_cut_(iConfig.getParameter<double>("high_pt_cut")),
   hadTowOverEm_EB_cut_(iConfig.getParameter<double>("hadTowOverEm_EB_cut")),
   sieie_EB_cut_(iConfig.getParameter<double>("sieie_EB_cut")),
   pfChIsoRhoCorr_EB_cut_(iConfig.getParameter<double>("pfChIsoRhoCorr_EB_cut")),
@@ -122,6 +125,7 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   pfGmIsoRhoCorr_EE_cut_(iConfig.getParameter <std::vector<double>> ("pfGmIsoRhoCorr_EE_cut"))
 {
   produces< std::vector< pat::Photon > >(); 
+  produces< std::vector< pat::Photon > >("highpt"); 
   produces< std::vector< double > >("isEB");
   produces< std::vector< double > >("genMatched"); 
   produces< std::vector< double > >("hadTowOverEM"); 
@@ -180,6 +184,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   using namespace edm;
   
   auto goodPhotons  = std::make_unique<std::vector<pat::Photon>>();
+  auto highPhotons  = std::make_unique<std::vector<pat::Photon>>();
   auto photon_isEB = std::make_unique<std::vector<double>>();
   auto photon_genMatched = std::make_unique<std::vector<double>>();
   auto photon_hadTowOverEM = std::make_unique<std::vector<double>>();
@@ -293,8 +298,9 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       }
     }
     // check if photon is a good loose photon
-    if( passAcc && passIDLoose && passIsoLoose && iPhoton.pt() > 100.0){//pure photons
+    if( passAcc && passIDLoose && passIsoLoose && iPhoton.pt() > pt_cut_){//pure photons
       goodPhotons->push_back( iPhoton );
+      if(iPhoton.pt() > high_pt_cut_) highPhotons->push_back( iPhoton );
       photon_isEB->push_back( iPhoton.isEB() );
       photon_genMatched->push_back( iPhoton.genPhoton() != nullptr );
       photon_hadTowOverEM->push_back( iPhoton.hadTowOverEm() ) ;
@@ -359,6 +365,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   }
   
   iEvent.put(std::move(goodPhotons)); 
+  iEvent.put(std::move(highPhotons),"highpt");
   iEvent.put(std::move(photon_isEB ), "isEB" );
   iEvent.put(std::move(photon_genMatched ), "genMatched" );
   iEvent.put(std::move(photon_hadTowOverEM ), "hadTowOverEM" );
