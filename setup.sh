@@ -1,26 +1,31 @@
 #!/bin/bash -e
 
+CMSSWVER=CMSSW_9_4_10
+FORK=TreeMaker
+BRANCH=Run2_2017
+ACCESS=ssh
+CORES=8
+NAME=""
+DIR="${PWD}"
+
 usage(){
 	EXIT=$1
 
 	echo "setup.sh [options]"
 	echo ""
-	echo "-f [fork]           clone from specified fork (default = TreeMaker)"
-	echo "-b [branch]         clone specified branch (default = Run2_2017)"
-	echo "-a [protocol]       use protocol to clone (default = ssh, alternative = https)"
-	echo "-j [cores]          run CMSSW compilation on # cores (default = 8)"
+	echo "-f [fork]           clone from specified fork (default = ${FORK})"
+	echo "-b [branch]         clone specified branch (default = ${BRANCH})"
+	echo "-a [protocol]       use protocol to clone (default = ${ACCESS}, alternative = https)"
+	echo "-j [cores]          run CMSSW compilation on # cores (default = ${CORES})"
+	echo "-n [name]           name of the CMSSW directory (default = ${CMSSWVER})"
+	echo "-d [dir]            project installation area for the CMSSW directory (default = ${DIR})"
 	echo "-h                  display this message and exit"
 
 	exit $EXIT
 }
 
-FORK=TreeMaker
-BRANCH=Run2_2017
-ACCESS=ssh
-CORES=8
-
 # process options
-while getopts "f:b:a:j:h" opt; do
+while getopts "f:b:a:j:n:d:h" opt; do
 	case "$opt" in
 	f) FORK=$OPTARG
 	;;
@@ -29,6 +34,10 @@ while getopts "f:b:a:j:h" opt; do
 	a) ACCESS=$OPTARG
 	;;
 	j) CORES=$OPTARG
+	;;
+	n) NAME=$OPTARG
+	;;
+	d) DIR=$OPTARG
 	;;
 	h) usage 0
 	;;
@@ -47,11 +56,30 @@ else
 fi
 
 # get CMSSW release
-export SCRAM_ARCH=slc6_amd64_gcc630
+if [[ `uname -r` == *"el6"* ]]; then
+	SLC_VERSION="slc6"
+elif [[ `uname -r` == *"el7"* ]]; then
+	SLC_VERSION="slc7"
+else
+	echo "WARNING::Unknown SLC version. Defaulting to SLC6."
+	SLC_VERSION="slc6"
+fi
+export SCRAM_ARCH=${SLC_VERSION}_amd64_gcc630
+
 # cmsrel
-CMSSWVER=CMSSW_9_4_10
-scram project ${CMSSWVER}
-cd ${CMSSWVER}/src/
+SCRAM_PROJECT_OPTIONS=""
+if [ "$DIR" != "${PWD}" ]; then
+	SCRAM_PROJECT_OPTIONS="$SCRAM_PROJECT_OPTIONS --dir ${DIR}"
+fi
+if [ "$NAME" != "" ]; then
+	SCRAM_PROJECT_OPTIONS="$SCRAM_PROJECT_OPTIONS --name ${NAME}"
+else
+	NAME=${CMSSWVER}
+fi
+SCRAM_PROJECT_OPTIONS="$SCRAM_PROJECT_OPTIONS ${CMSSWVER}"
+scram project ${SCRAM_PROJECT_OPTIONS}
+cd ${DIR}/${NAME}/src
+
 # cmsenv
 eval `scramv1 runtime -sh`
 git cms-init
