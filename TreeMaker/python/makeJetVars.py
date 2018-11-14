@@ -150,8 +150,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     # extra MHT using only central jets (skip for systematic variations)
     if storeProperties>0:
         process, _ = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "2p4", MaxEta=2.4, METfix=METfix)
-        if METfix:
-            process, _ = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "2p4Orig", MaxEta=2.4)
+        # no need to recompute w/ MET fix, doesn't affect |eta| < 2.4
 
     # extra HT version using MHT collection w/ |eta| < 5, to filter forward beam halo events
     HT5 = htdouble.clone(
