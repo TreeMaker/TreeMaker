@@ -1,7 +1,14 @@
 import FWCore.ParameterSet.Config as cms
 from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
-def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff, MaxEta=5.0):
+def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff, MaxEta=5.0, METfix=False):
+    if METfix:
+        MHTJetsMETFix = process.PFCandidateJetsWithEEnoise.clone(
+            jetsrc = JetTag,
+        )
+        setattr(process,"MHTJetsMETFix"+suff+MHTsuff,MHTJetsMETFix)
+        JetTag = cms.InputTag("MHTJetsMETFix"+suff+MHTsuff,"good",process.name_())
+
     from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
     MHTJets = SubJetSelection.clone(
         JetTag = JetTag,
@@ -68,7 +75,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
 # 0 = scalars (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", MHTJetTagExt=None):
+def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", METfix=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -132,18 +139,18 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     ## ----------------------------------------------------------------------------------------------
     ## MHT, DeltaPhi
     ## ----------------------------------------------------------------------------------------------
-    process, MHTJetsTag = self.makeMHTVars(process, MHTJetTagExt if MHTJetTagExt is not None else JetTag, HTJetsTag, storeProperties, suff, "")
+    process, MHTJetsTag = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "", METfix=METfix)
 
     # keep orig MHT, dphi values if ext tag was given
-    if MHTJetTagExt is not None:
+    if METfix:
         process, MHTJetsTagOrig = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "Orig")
     else:
         MHTJetsTagOrig = None
 
     # extra MHT using only central jets (skip for systematic variations)
     if storeProperties>0:
-        process, _ = self.makeMHTVars(process, MHTJetTagExt if MHTJetTagExt is not None else JetTag, HTJetsTag, storeProperties, suff, "2p4", MaxEta=2.4)
-        if MHTJetTagExt is not None:
+        process, _ = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "2p4", MaxEta=2.4, METfix=METfix)
+        if METfix:
             process, _ = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "2p4Orig", MaxEta=2.4)
 
     # extra HT version using MHT collection w/ |eta| < 5, to filter forward beam halo events
