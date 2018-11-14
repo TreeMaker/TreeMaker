@@ -12,3 +12,6 @@ saveHLTObj = cms.bool(False),
 trigObj = cms.InputTag('slimmedPatTrigger'),
 triggerNameList    =   cms.vstring()
 )
+
+from TreeMaker.TreeMaker.TMEras import TMeras
+TMeras.TM80X.toModify(triggerProducer, trigObj = cms.InputTag('selectedPatTrigger'))

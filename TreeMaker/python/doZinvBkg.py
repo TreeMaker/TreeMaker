@@ -1,7 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
 def reclusterZinv(self, process, cleanedCandidates, suff):
-    
+    # skip all jet smearing for data
+    from TreeMaker.TreeMaker.JetDepot import JetDepot
+    doJERsmearing = self.geninfo
+
     ### AK8 detour
 
     # https://twiki.cern.ch/CMS/JetToolbox
@@ -32,21 +35,32 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         maxTau = 3,
         bTagInfos = listBTagInfos, 
         bTagDiscriminators = listBtagDiscriminatorsAK8,
-		subjetBTagDiscriminators = listBtagDiscriminatorsSubjetAK8,
+        subjetBTagDiscriminators = listBtagDiscriminatorsSubjetAK8,
         JETCorrLevels = jecLevels,
         subJETCorrLevels = jecLevels,
-		addEnergyCorrFunc = True,
-		associateTask = False,
-		verbosity = 2 if self.verbose else 0,
+        addEnergyCorrFunc = False,
+        associateTask = False,
+        verbosity = 2 if self.verbose else 0,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
 
+    if doJERsmearing:
+        # do central smearing and replace jet tag
+        process, _, JetAK8CleanTag = JetDepot(process,
+            JetTag=JetAK8CleanTag,
+            jecUncDir=0,
+            doSmear=doJERsmearing,
+            jerUncDir=0,
+            storeJer=2,
+        )
+    
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
         storeProperties=1,
-		doDeepAK8=False, # currently disabled
-		doDoubleB=False, # already done above
+        doECFs=False, # currently disabled
+        doDeepAK8=False, # currently disabled
+        doDeepDoubleB=False, # currently disabled
     )
 
     # update some userfloat names
@@ -57,10 +71,10 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiClean:tau3')
     process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
     process.JetPropertiesAK8Clean.SJbDiscriminatorCSV = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-    process.JetPropertiesAK8Clean.ecfN2b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN2')
-    process.JetPropertiesAK8Clean.ecfN3b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN3')
-    process.JetPropertiesAK8Clean.ecfN2b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN2')
-    process.JetPropertiesAK8Clean.ecfN3b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN3')
+#    process.JetPropertiesAK8Clean.ecfN2b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN2')
+#    process.JetPropertiesAK8Clean.ecfN3b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN3')
+#    process.JetPropertiesAK8Clean.ecfN2b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN2')
+#    process.JetPropertiesAK8Clean.ecfN3b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN3')
 
     ### end AK8 detour
 
@@ -146,10 +160,8 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
             computeMETSignificance=False,
         )
         METTagOrig = cms.InputTag('slimmedMETs'+postfix+'Orig')
-        MHTJetTagExt = cms.InputTag("PFCandidateJetsWithEEnoise"+postfix,"jets")
     else:
         METTagOrig = None
-        MHTJetTagExt = None
     
     # isolated tracks
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -200,10 +212,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     self.VarsInt.extend(['IsolatedMuonTracksVetoClean'+suff+':isoTracks(isoMuonTracksclean'+suff+')'])
     self.VarsInt.extend(['IsolatedPionTracksVetoClean'+suff+':isoTracks(isoPionTracksclean'+suff+')'])
 
-    # skip all jet smearing for data
-    from TreeMaker.TreeMaker.JetDepot import JetDepot
-    doJERsmearing = self.geninfo
-    
     if doJERsmearing:
         # do central smearing and replace jet tag
         process, _, JetTagClean = JetDepot(process,
@@ -219,9 +227,8 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         process,
         JetTag = JetTagClean,
         suff=postfix,
-        skipGoodJets=False,
         storeProperties=1,
-        MHTJetTagExt=MHTJetTagExt,
+        METfix=self.doMETfix,
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
@@ -231,6 +238,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     )
     setattr(process,"METclean"+suff,METclean)
     self.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')','METclean'+suff+':Significance(METSignificanceclean'+suff+')'])
+#    self.VarsDouble.extend(['METclean'+suff+':RawPt(RawMETclean'+suff+')','METclean'+suff+':RawPhi(RawMETPhiclean'+suff+')'])
 
     if self.doMETfix:
         METcleanOrig = METclean.clone(
@@ -238,6 +246,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         )
         setattr(process,"METclean"+suff+"Orig",METcleanOrig)
         self.VarsDouble.extend(['METclean'+suff+'Orig:Pt(METclean'+suff+'Orig)','METclean'+suff+'Orig:Phi(METPhiclean'+suff+'Orig)'])
+#        self.VarsDouble.extend(['METclean'+suff+'Orig:RawPt(RawMETclean'+suff+'Orig)','METclean'+suff+'Orig:RawPhi(RawMETPhiclean'+suff+'Orig)'])
 
     return process
 
@@ -307,10 +316,10 @@ def doZinvBkg(self,process):
         src = cms.VInputTag("LeptonsNew:IdIsoElectron","LeptonsNew:IdIsoMuon")
     )
     
-    # if there are no leptons in the event, just remove photons (GJet)
+    # if there are no leptons in the event, just remove high-pt photons (GJet)
     # otherwise, just remove leptons (DY)
     process.selectedXons = cms.EDProducer("CandPtrPrefer",
-        first = cms.InputTag("selectedLeptons"), second = cms.InputTag("goodPhotons")
+        first = cms.InputTag("selectedLeptons"), second = cms.InputTag("goodPhotons","highpt")
     )
     
     # do the removal

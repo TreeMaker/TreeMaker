@@ -9,20 +9,22 @@ PhotonIDisoProducer = cms.EDProducer("PhotonIDisoProducer",
     ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
     rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
     genParCollection       = cms.untracked.InputTag("prunedGenParticles"), 
+    pt_cut                 = cms.double(30),
+    high_pt_cut            = cms.double(100),
     effArEtaLow            = cms.vdouble(0.,     1.000,  1.479,  2.0,    2.2,    2.3,     2.4), #lower boundaries of |eta| in effective area(EA) calculation
     effArEtaHigh           = cms.vdouble(1.,     1.479,  2.000,  2.2,    2.3,    2.4,     99.), #upper boundaries of |eta| in effective area(EA) calculation
-    effArChHad             = cms.vdouble(0.0385, 0.0468, 0.0435, 0.0378, 0.0338, 0.0314,  0.0269),#EA for charged hadrons in diiferent |eta| ranges
-    effArNuHad             = cms.vdouble(0.0636, 0.1103, 0.0759, 0.0236, 0.0151, 0.00007, 0.0132),#EA for neutral hadrons in diiferent |eta| ranges
-    effArGamma             = cms.vdouble(0.1240, 0.1093, 0.0631, 0.0779, 0.0999, 0.1155,  0.1373),#EA for photons(gamma) in diiferent |eta| ranges
-    hadTowOverEm_EB_cut    = cms.double(0.105), #H/E cut in EB
-    hadTowOverEm_EE_cut    = cms.double(0.029), #H/E cut in EE
-    sieie_EB_cut           = cms.double(0.0103), #Sigma ieta_ieta cut in EB
-    sieie_EE_cut           = cms.double(0.0276), #Sigma ieta_ieta cut in EE
-    pfChIsoRhoCorr_EB_cut  = cms.double(2.839), #Pho corrected PF charged ISO in EB
-    pfChIsoRhoCorr_EE_cut  = cms.double(2.150), #Pho corrected PF charged ISO in EE
-    pfNuIsoRhoCorr_EB_cut  = cms.vdouble(9.188,  0.0126, 0.000026), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
-    pfNuIsoRhoCorr_EE_cut  = cms.vdouble(10.471, 0.0119, 0.000025), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
-    pfGmIsoRhoCorr_EB_cut  = cms.vdouble(2.956, 0.0035), #Rho corrected gamma ISO = [0]+[1]*pt
-    pfGmIsoRhoCorr_EE_cut  = cms.vdouble(4.895, 0.0040), #Rho corrected gamma ISO = [0]+[1]*pt
+    effArChHad             = cms.vdouble(0.0112, 0.0108, 0.0106, 0.01002,0.0098, 0.0089,  0.0087),#EA for charged hadrons in diiferent |eta| ranges
+    effArNuHad             = cms.vdouble(0.0668, 0.1054, 0.0786, 0.0233, 0.0078, 0.0028,  0.0137),#EA for neutral hadrons in diiferent |eta| ranges
+    effArGamma             = cms.vdouble(0.1113, 0.0953, 0.0619, 0.0837, 0.1070, 0.1212,  0.1466),#EA for photons(gamma) in diiferent |eta| ranges
+    hadTowOverEm_EB_cut    = cms.double(0.04596), #H/E cut in EB
+    hadTowOverEm_EE_cut    = cms.double(0.0590), #H/E cut in EE
+    sieie_EB_cut           = cms.double(0.0106), #Sigma ieta_ieta cut in EB
+    sieie_EE_cut           = cms.double(0.0272), #Sigma ieta_ieta cut in EE
+    pfChIsoRhoCorr_EB_cut  = cms.double(1.694), #Pho corrected PF charged ISO in EB
+    pfChIsoRhoCorr_EE_cut  = cms.double(2.089), #Pho corrected PF charged ISO in EE
+    pfNuIsoRhoCorr_EB_cut  = cms.vdouble(24.032, 0.01512, 0.00002259), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
+    pfNuIsoRhoCorr_EE_cut  = cms.vdouble(19.722, 0.0117, 0.000023), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
+    pfGmIsoRhoCorr_EB_cut  = cms.vdouble(2.876, 0.004017), #Rho corrected gamma ISO = [0]+[1]*pt
+    pfGmIsoRhoCorr_EE_cut  = cms.vdouble(4.162, 0.0037), #Rho corrected gamma ISO = [0]+[1]*pt
     debug                  = cms.untracked.bool(False)
 )

@@ -72,6 +72,7 @@ GenJetProperties::GenJetProperties(const edm::ParameterSet& iConfig) :
   produces<std::vector<double>>("invisibleEnergy");
   produces<std::vector<double>>("prunedMass");
   produces<std::vector<double>>("softDropMass");
+  produces<std::vector<int>>("multiplicity");
 }
 
 
@@ -98,6 +99,7 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
   auto invisibleEnergy = std::make_unique<std::vector<double>>();
   auto prunedMass = std::make_unique<std::vector<double>>();
   auto softDropMass = std::make_unique<std::vector<double>>();
+  auto mult = std::make_unique<std::vector<int>>();
 
   edm::Handle< edm::View<reco::GenJet> > GenJets;
   iEvent.getByToken(GenJetTok,GenJets);
@@ -137,6 +139,8 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
 
       prunedMass->push_back(pruned);
       softDropMass->push_back(softdrop);
+
+      mult->push_back(GenJet.numberOfDaughters());
     }
   }
 
@@ -144,6 +148,7 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
   iEvent.put(std::move(invisibleEnergy),"invisibleEnergy");
   iEvent.put(std::move(prunedMass),"prunedMass");
   iEvent.put(std::move(softDropMass),"softDropMass");
+  iEvent.put(std::move(mult),"multiplicity");
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

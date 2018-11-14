@@ -1,6 +1,42 @@
 import FWCore.ParameterSet.Config as cms
 from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
+def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff, MaxEta=5.0, METfix=False):
+    if METfix:
+        MHTJetsMETFix = process.PFCandidateJetsWithEEnoise.clone(
+            jetsrc = JetTag,
+        )
+        setattr(process,"MHTJetsMETFix"+suff+MHTsuff,MHTJetsMETFix)
+        JetTag = cms.InputTag("MHTJetsMETFix"+suff+MHTsuff,"good",process.name_())
+
+    from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
+    MHTJets = SubJetSelection.clone(
+        JetTag = JetTag,
+        MinPt  = cms.double(30),
+        MaxEta = cms.double(MaxEta),
+    )
+    setattr(process,"MHTJets"+suff+MHTsuff,MHTJets)
+    if storeProperties>0: self.VectorBool.extend(['MHTJets'+suff+MHTsuff+':SubJetMask(Jets'+suff+'_MHT'+MHTsuff+'Mask)'])
+    MHTJetsTag = cms.InputTag("MHTJets"+suff+MHTsuff)
+    
+    from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
+    MHT = mhtdouble.clone(
+        JetTag  = MHTJetsTag,
+    )
+    setattr(process,"MHT"+suff+MHTsuff,MHT)
+    self.VarsDouble.extend(['MHT'+suff+MHTsuff+':Pt(MHT'+suff+MHTsuff+')','MHT'+suff+MHTsuff+':Phi(MHTPhi'+suff+MHTsuff+')'])
+    
+    from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
+    DeltaPhi = deltaphidouble.clone(
+        DeltaPhiJets = HTJetsTag,
+        MHTPhi       = cms.InputTag('MHT'+suff+MHTsuff+':Phi'),
+    )
+    setattr(process,"DeltaPhi"+suff+MHTsuff,DeltaPhi)
+    self.VarsDouble.extend(['DeltaPhi'+suff+MHTsuff+':DeltaPhi1(DeltaPhi1'+suff+MHTsuff+')','DeltaPhi'+suff+MHTsuff+':DeltaPhi2(DeltaPhi2'+suff+MHTsuff+')',
+                                          'DeltaPhi'+suff+MHTsuff+':DeltaPhi3(DeltaPhi3'+suff+MHTsuff+')','DeltaPhi'+suff+MHTsuff+':DeltaPhi4(DeltaPhi4'+suff+MHTsuff+')'])
+    
+    return process, MHTJetsTag
+
 def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4):
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
@@ -11,10 +47,11 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         ExcludeLepIsoTrackPhotons = cms.bool(True),
         JetConeSize               = cms.double(jetConeSize),
         SkipTag                   = SkipTag,
-        SaveAllJetsId             = True,
-        # keep lower-pt central jets in case they fluctuate up in systematic collections (only for AK4)
-        SaveAllJetsPt             = (jetConeSize==0.4),
-        maxJetEta                 = cms.double(5.0 if jetConeSize==0.8 else -1),
+        SaveAllJetsId             = cms.bool(True),
+        # keep lower-pt central jets in case they fluctuate up in systematic collections (for all)
+        SaveAllJetsPt             = cms.bool(True),
+        # keep all eta jets to preserve ordering
+        maxJetEta                 = cms.double(-1),
     )
     TMeras.TM2017.toModify(GoodJets,
         maxNeutralFraction        = cms.double(0.90),
@@ -38,16 +75,13 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
 # 0 = scalars (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", MHTJetTagExt=None):
+def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", METfix=False):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
-    if skipGoodJets:
-        GoodJetsTag = JetTag
-    else:
-        process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag,0.4)
-        if onlyGoodJets:
-            return process
+    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,SkipTag,0.4)
+    if onlyGoodJets:
+        return process
     
     ## ----------------------------------------------------------------------------------------------
     ## HT
@@ -82,74 +116,41 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     ## ----------------------------------------------------------------------------------------------
     ## BTags
     ## ----------------------------------------------------------------------------------------------
+    from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.btagint_cfi import btagint
     BTags = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
         BTagCutValue = cms.double(0.8484)
     )
+    TMeras.TM2017.toModify(BTags,BTagCutValue = cms.double(0.8838))
     setattr(process,"BTags"+suff,BTags)
     self.VarsInt.extend(['BTags'+suff])
 
     BTagsDeepCSV = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
-        BTagCutValue = cms.double(0.4941 )
+        BTagCutValue = cms.double(0.6324)
     )
+    TMeras.TM2017.toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
     setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
     self.VarsInt.extend(['BTagsDeepCSV'+suff])
     
     ## ----------------------------------------------------------------------------------------------
     ## MHT, DeltaPhi
     ## ----------------------------------------------------------------------------------------------
-    MHTJets = SubJetSelection.clone(
-        JetTag = MHTJetTagExt if MHTJetTagExt is not None else JetTag,
-        MinPt  = cms.double(30),
-        MaxEta = cms.double(5.0),
-    )
-    setattr(process,"MHTJets"+suff,MHTJets)
-    if storeProperties>0: self.VectorBool.extend(['MHTJets'+suff+':SubJetMask(Jets'+suff+'_MHT'+'Mask)'])
-    MHTJetsTag = cms.InputTag("MHTJets"+suff)
-    
-    from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
-    MHT = mhtdouble.clone(
-        JetTag  = MHTJetsTag,
-    )
-    setattr(process,"MHT"+suff,MHT)
-    self.VarsDouble.extend(['MHT'+suff+':Pt(MHT'+suff+')','MHT'+suff+':Phi(MHTPhi'+suff+')'])
-    
-    from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
-    DeltaPhi = deltaphidouble.clone(
-        DeltaPhiJets = HTJetsTag,
-        MHTPhi       = cms.InputTag('MHT'+suff+':Phi'),
-    )
-    setattr(process,"DeltaPhi"+suff,DeltaPhi)
-    self.VarsDouble.extend(['DeltaPhi'+suff+':DeltaPhi1(DeltaPhi1'+suff+')','DeltaPhi'+suff+':DeltaPhi2(DeltaPhi2'+suff+')',
-                            'DeltaPhi'+suff+':DeltaPhi3(DeltaPhi3'+suff+')','DeltaPhi'+suff+':DeltaPhi4(DeltaPhi4'+suff+')'])
+    process, MHTJetsTag = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "", METfix=METfix)
 
     # keep orig MHT, dphi values if ext tag was given
-    if MHTJetTagExt is not None:
-        MHTJetsOrig = MHTJets.clone(
-            JetTag = JetTag,
-        )
-        setattr(process,"MHTJets"+suff+"Orig",MHTJetsOrig)
-        if storeProperties>0: self.VectorBool.extend(['MHTJets'+suff+'Orig:SubJetMask(Jets'+suff+'_MHTOrig'+'Mask)'])
-        MHTJetsTagOrig = cms.InputTag("MHTJets"+suff+"Orig")
-    
-        MHTOrig = mhtdouble.clone(
-            JetTag  = MHTJetsTagOrig,
-        )
-        setattr(process,"MHT"+suff+"Orig",MHTOrig)
-        self.VarsDouble.extend(['MHT'+suff+'Orig:Pt(MHT'+suff+'Orig)','MHT'+suff+'Orig:Phi(MHTPhi'+suff+'Orig)'])
-        
-        DeltaPhiOrig = DeltaPhi.clone(
-            MHTPhi       = cms.InputTag('MHT'+suff+'Orig:Phi'),
-        )
-        setattr(process,"DeltaPhi"+suff+"Orig",DeltaPhiOrig)
-        self.VarsDouble.extend(['DeltaPhi'+suff+'Orig:DeltaPhi1(DeltaPhi1'+suff+'Orig)','DeltaPhi'+suff+'Orig:DeltaPhi2(DeltaPhi2'+suff+'Orig)',
-                                'DeltaPhi'+suff+'Orig:DeltaPhi3(DeltaPhi3'+suff+'Orig)','DeltaPhi'+suff+'Orig:DeltaPhi4(DeltaPhi4'+suff+'Orig)'])
+    if METfix:
+        process, MHTJetsTagOrig = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "Orig")
     else:
         MHTJetsTagOrig = None
+
+    # extra MHT using only central jets (skip for systematic variations)
+    if storeProperties>0:
+        process, _ = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "2p4", MaxEta=2.4, METfix=METfix)
+        # no need to recompute w/ MET fix, doesn't affect |eta| < 2.4
 
     # extra HT version using MHT collection w/ |eta| < 5, to filter forward beam halo events
     HT5 = htdouble.clone(
@@ -231,6 +232,9 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
             'JetProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
             'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)',
         ])
+        if TMeras.TM80X.isChosen():
+            JetProperties.properties = cms.vstring([x for x in JetProperties.properties.value() if not "DeepFlavour" in x])
+            self.VectorDouble.setValue([x for x in self.VectorDouble.value() if not "DeepFlavour" in x])
         if storeProperties>1:
             JetProperties.properties.extend(["jecFactor"])
             self.VectorDouble.extend([
@@ -273,72 +277,18 @@ def makeJetVars(self, process, JetTag, suff, skipGoodJets, storeProperties, Skip
     return process
 
 # AK8 storeProperties levels:
-# 0 = ID scalar from goodJets
+# 0 = ID scalar from goodJets (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, most properties
 # 2 = 1 + subjet properties + extra substructure
 # 3 = 2 + constituents (large)
-def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True, doDoubleB=True, CandTag=cms.InputTag("packedPFCandidates")):
+# SkipTag is not used, but just there to make interfaces consistent
+def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates")):
     # select good jets before anything else - eliminates bad AK8 jets (low pT, no constituents stored, etc.)
     process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8)
 
     # anything to be computed for AK8 jets
     ak8floats = []
     ak8ints = []
-    ak8tags = cms.VInputTag()
-
-    if doDoubleB:
-        # get double b-tagger (w/ miniAOD customizations)
-        from RecoBTag.ImpactParameter.pfImpactParameterAK8TagInfos_cfi import pfImpactParameterAK8TagInfos
-        pfImpactParameterAK8TagInfosMod = pfImpactParameterAK8TagInfos.clone(
-            primaryVertex = cms.InputTag("offlineSlimmedPrimaryVertices"),
-            candidates = CandTag,
-            jets = GoodJetsTag,
-        )
-        setattr(process,"pfImpactParameterAK8TagInfos"+suff,pfImpactParameterAK8TagInfosMod)
-        from RecoBTag.SecondaryVertex.pfInclusiveSecondaryVertexFinderAK8TagInfos_cfi import pfInclusiveSecondaryVertexFinderAK8TagInfos
-        pfInclusiveSecondaryVertexFinderAK8TagInfosMod = pfInclusiveSecondaryVertexFinderAK8TagInfos.clone(
-            extSVCollection = cms.InputTag("slimmedSecondaryVertices"),
-            trackIPTagInfos = cms.InputTag("pfImpactParameterAK8TagInfos"+suff),
-        )
-        setattr(process,"pfInclusiveSecondaryVertexFinderAK8TagInfos"+suff,pfInclusiveSecondaryVertexFinderAK8TagInfosMod)
-        from RecoBTag.SecondaryVertex.pfBoostedDoubleSVAK8TagInfos_cfi import pfBoostedDoubleSVAK8TagInfos
-        pfBoostedDoubleSVAK8TagInfosMod = pfBoostedDoubleSVAK8TagInfos.clone(
-            svTagInfos = cms.InputTag("pfInclusiveSecondaryVertexFinderAK8TagInfos"+suff),
-        )
-        setattr(process,"pfBoostedDoubleSVAK8TagInfos"+suff,pfBoostedDoubleSVAK8TagInfosMod)
-        from RecoBTag.SecondaryVertex.candidateBoostedDoubleSecondaryVertexAK8Computer_cfi import candidateBoostedDoubleSecondaryVertexAK8Computer
-        candidateBoostedDoubleSecondaryVertexAK8ComputerMod = candidateBoostedDoubleSecondaryVertexAK8Computer.clone()
-        setattr(process,"candidateBoostedDoubleSecondaryVertexAK8Computer"+suff,candidateBoostedDoubleSecondaryVertexAK8ComputerMod)
-        from RecoBTag.SecondaryVertex.pfBoostedDoubleSecondaryVertexAK8BJetTags_cfi import pfBoostedDoubleSecondaryVertexAK8BJetTags
-        pfBoostedDoubleSecondaryVertexAK8BJetTagsMod = pfBoostedDoubleSecondaryVertexAK8BJetTags.clone(
-            jetTagComputer = cms.string("candidateBoostedDoubleSecondaryVertexAK8Computer"+suff),
-            tagInfos = cms.VInputTag(cms.InputTag("pfBoostedDoubleSVAK8TagInfos"+suff)),
-        )
-        setattr(process,"pfBoostedDoubleSecondaryVertexAK8BJetTags"+suff,pfBoostedDoubleSecondaryVertexAK8BJetTagsMod)
-        ak8tags.append(cms.InputTag("pfBoostedDoubleSecondaryVertexAK8BJetTags"+suff))
-
-    if self.deepAK8 and doDeepAK8:
-        from TreeMaker.Utils.deepak8producer_cfi import DeepAK8Producer, DeepAK8DecorrelProducer
-        deepAK8 = DeepAK8Producer.clone(
-            JetAK8 = GoodJetsTag
-        )
-        setattr(process,"deepAK8"+suff,deepAK8)
-        ak8floats.extend([
-            'deepAK8'+suff+':tDiscriminatorDeep',
-            'deepAK8'+suff+':wDiscriminatorDeep',
-            'deepAK8'+suff+':zDiscriminatorDeep',
-            'deepAK8'+suff+':hDiscriminatorDeep'
-        ])
-        deepAK8decorrel = DeepAK8DecorrelProducer.clone(
-            JetAK8 = GoodJetsTag
-        )
-        setattr(process,"deepAK8decorrel"+suff,deepAK8decorrel)
-        ak8floats.extend([
-            'deepAK8decorrel'+suff+':tDiscriminatorDeep',
-            'deepAK8decorrel'+suff+':wDiscriminatorDeep',
-            'deepAK8decorrel'+suff+':zDiscriminatorDeep',
-            'deepAK8decorrel'+suff+':hDiscriminatorDeep'
-        ])
 
     # get more substructure
     if self.semivisible and storeProperties>1:
@@ -364,7 +314,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
         )
         setattr(process,"QGTagger"+suff,QGTagger)
         ak8floats.extend([
-            'BasicSubstructure'+suff+':overflow',
             'BasicSubstructure'+suff+':girth',
             'BasicSubstructure'+suff+':momenthalf',
             'BasicSubstructure'+suff+':ptdrlog',
@@ -381,10 +330,26 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
         ])
 
     # add discriminator and update tag
-    if len(ak8floats)>0 or len(ak8ints)>0 or len(ak8tags)>0:
-        process, GoodJetsTag = addJetInfo(process, GoodJetsTag, ak8floats, ak8ints, ak8tags)
+    if len(ak8floats)>0 or len(ak8ints)>0:
+        process, GoodJetsTag = addJetInfo(process, GoodJetsTag, ak8floats, ak8ints)
 
-    if storeProperties>0:
+    if storeProperties==0:
+        # for systematics
+        JetPropertiesAK8 = cms.EDProducer("JetProperties",
+            JetTag = GoodJetsTag,
+            debug = cms.bool(False),
+            properties = cms.vstring("origIndex"),
+        )
+        if systType=="JEC":
+            JetPropertiesAK8.properties.append("jerFactor")
+            JetPropertiesAK8.jerFactor = cms.vstring("jerFactor")
+            JetPropertiesAK8.origIndex = cms.vstring("jecOrigIndex")
+            self.VectorDouble.extend(['JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)'])
+        elif systType=="JER":
+            JetPropertiesAK8.origIndex = cms.vstring("jerOrigIndex")
+        setattr(process,"JetProperties"+suff,JetPropertiesAK8)
+        self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
+    elif storeProperties>0:
         # AK8 jet variables - separate instance of jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetPropertiesAK8 = jetproperties.clone(
@@ -395,15 +360,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
                 "NsubjettinessTau1"     ,
                 "NsubjettinessTau2"     ,
                 "NsubjettinessTau3"     ,
-                "ecfN2b1"               ,
-                "ecfN2b2"               ,
-                "ecfN3b1"               ,
-                "ecfN3b2"               ,
                 "bDiscriminatorCSV"     ,
-                "bJetTagDeepCSVprobb"   ,
-                "bJetTagDeepCSVprobc"   ,
-                "bJetTagDeepCSVprobudsg",
-                "bJetTagDeepCSVprobbb"  ,
                 "NumBhadrons"           ,
                 "NumChadrons"           ,
                 "subjets"               ,
@@ -416,10 +373,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
         JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
         JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
         JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
-        JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN2')
-        JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN2')
-        JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN3')
-        JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN3')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
         JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
         JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDropPuppi','pfCombinedInclusiveSecondaryVertexV2BJetTags')
@@ -430,10 +383,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
             'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
             'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
             'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)',
-            'JetProperties'+suff+':ecfN2b1(Jets'+suff+'_ecfN2b1)',
-            'JetProperties'+suff+':ecfN2b2(Jets'+suff+'_ecfN2b2)',
-            'JetProperties'+suff+':ecfN3b1(Jets'+suff+'_ecfN3b1)',
-            'JetProperties'+suff+':ecfN3b2(Jets'+suff+'_ecfN3b2)',
         ])
         self.VectorInt.extend([
             'JetProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
@@ -446,6 +395,24 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
             'JetProperties'+suff+':SJbDiscriminatorCSV(Jets'+suff+'_subjets_bDiscriminatorCSV)',
         ])
 
+        if doECFs:
+            JetPropertiesAK8.properties.extend([
+                "ecfN2b1",
+                "ecfN2b2",
+                "ecfN3b1",
+                "ecfN3b2",
+            ])
+            JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN2')
+            JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN2')
+            JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN3')
+            JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN3')
+            self.VectorDouble.extend([
+                'JetProperties'+suff+':ecfN2b1(Jets'+suff+'_ecfN2b1)',
+                'JetProperties'+suff+':ecfN2b2(Jets'+suff+'_ecfN2b2)',
+                'JetProperties'+suff+':ecfN3b1(Jets'+suff+'_ecfN3b1)',
+                'JetProperties'+suff+':ecfN3b2(Jets'+suff+'_ecfN3b2)',
+            ])
+
         if self.deepAK8 and doDeepAK8:
             JetPropertiesAK8.properties.extend([
                 "tDiscriminatorDeep",
@@ -454,17 +421,15 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
                 "hDiscriminatorDeep",
                 "tDiscriminatorDeepDecorrel",
                 "wDiscriminatorDeepDecorrel",
-                "zDiscriminatorDeepDecorrel",
-                "hDiscriminatorDeepDecorrel",
+                "zhDiscriminatorDeepDecorrel",
             ])
-            JetPropertiesAK8.tDiscriminatorDeep = cms.vstring('deepAK8'+suff+':tDiscriminatorDeep')
-            JetPropertiesAK8.wDiscriminatorDeep = cms.vstring('deepAK8'+suff+':wDiscriminatorDeep')
-            JetPropertiesAK8.zDiscriminatorDeep = cms.vstring('deepAK8'+suff+':zDiscriminatorDeep')
-            JetPropertiesAK8.hDiscriminatorDeep = cms.vstring('deepAK8'+suff+':hDiscriminatorDeep')
-            JetPropertiesAK8.tDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel'+suff+':tDiscriminatorDeep')
-            JetPropertiesAK8.wDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel'+suff+':wDiscriminatorDeep')
-            JetPropertiesAK8.zDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel'+suff+':zDiscriminatorDeep')
-            JetPropertiesAK8.hDiscriminatorDeepDecorrel = cms.vstring('deepAK8decorrel'+suff+':hDiscriminatorDeep')
+            JetPropertiesAK8.tDiscriminatorDeep = cms.vstring('pfDeepBoostedDiscriminatorsJetTags:TvsQCD')
+            JetPropertiesAK8.wDiscriminatorDeep = cms.vstring('pfDeepBoostedDiscriminatorsJetTags:WvsQCD')
+            JetPropertiesAK8.zDiscriminatorDeep = cms.vstring('pfDeepBoostedDiscriminatorsJetTags:ZvsQCD')
+            JetPropertiesAK8.hDiscriminatorDeep = cms.vstring('pfDeepBoostedDiscriminatorsJetTags:HbbvsQCD')
+            JetPropertiesAK8.tDiscriminatorDeepDecorrel = cms.vstring('pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:TvsQCD')
+            JetPropertiesAK8.wDiscriminatorDeepDecorrel = cms.vstring('pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:WvsQCD')
+            JetPropertiesAK8.zhDiscriminatorDeepDecorrel = cms.vstring('pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHbbvsQCD')
             self.VectorDouble.extend([
                 'JetProperties'+suff+':tDiscriminatorDeep(Jets'+suff+'_tDiscriminatorDeep)',
                 'JetProperties'+suff+':wDiscriminatorDeep(Jets'+suff+'_wDiscriminatorDeep)',
@@ -472,11 +437,37 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
                 'JetProperties'+suff+':hDiscriminatorDeep(Jets'+suff+'_hDiscriminatorDeep)',
                 'JetProperties'+suff+':tDiscriminatorDeepDecorrel(Jets'+suff+'_tDiscriminatorDeepDecorrel)',
                 'JetProperties'+suff+':wDiscriminatorDeepDecorrel(Jets'+suff+'_wDiscriminatorDeepDecorrel)',
-                'JetProperties'+suff+':zDiscriminatorDeepDecorrel(Jets'+suff+'_zDiscriminatorDeepDecorrel)',
-                'JetProperties'+suff+':hDiscriminatorDeepDecorrel(Jets'+suff+'_hDiscriminatorDeepDecorrel)',
+                'JetProperties'+suff+':zhDiscriminatorDeepDecorrel(Jets'+suff+'_zhDiscriminatorDeepDecorrel)',
+            ])
+
+        if self.deepDoubleB and doDeepDoubleB:
+            JetPropertiesAK8.properties.extend([
+                "deepDoubleBDiscriminatorH",
+                "deepDoubleBDiscriminatorQ",
+            ])
+            JetPropertiesAK8.deepDoubleBDiscriminatorH = cms.vstring('pfDeepDoubleBJetTags:probH')
+            JetPropertiesAK8.deepDoubleBDiscriminatorQ = cms.vstring('pfDeepDoubleBJetTags:probQ')
+            self.VectorDouble.extend([
+                'JetProperties'+suff+':deepDoubleBDiscriminatorH(Jets'+suff+'_deepDoubleBDiscriminatorH)',
+                'JetProperties'+suff+':deepDoubleBDiscriminatorQ(Jets'+suff+'_deepDoubleBDiscriminatorQ)',
             ])
 
         if storeProperties>1:
+            JetPropertiesAK8.properties.extend(["jecFactor"])
+            self.VectorDouble.extend([
+                'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
+            ])
+            if self.geninfo:
+                JetPropertiesAK8.properties.extend(["jerFactor"])
+                JetPropertiesAK8.jerFactor = cms.vstring("jerFactor")
+                self.VectorDouble.extend([
+                    'JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
+                ])
+                if self.systematics:
+                    # account for central JER smearing
+                    JetPropertiesAK8.properties.extend(["origIndex"])
+                    JetPropertiesAK8.origIndex = cms.vstring("jerOrigIndex")
+                    self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
             # extra stuff for subjets
             JetPropertiesAK8.properties.extend(["SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
             JetPropertiesAK8.SJptD = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:ptD')
@@ -494,7 +485,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
 
         if self.semivisible and storeProperties>1:
             JetPropertiesAK8.properties.extend([
-                'overflow',
                 'girth',
                 'momenthalf',
                 'ptD',
@@ -504,7 +494,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
                 'ptdrlog',
                 'lean',
             ])
-            JetPropertiesAK8.overflow = cms.vstring('BasicSubstructure'+suff+':overflow')
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
             JetPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure'+suff+':momenthalf')
             JetPropertiesAK8.ptD = cms.vstring('QGTagger'+suff+':ptD')
@@ -519,7 +508,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
                 'NjettinessBeta2'+suff+':tau1phiAxis1',
             )
             self.VectorDouble.extend([
-                'JetProperties'+suff+':overflow(Jets'+suff+'_overflow)',
                 'JetProperties'+suff+':girth(Jets'+suff+'_girth)',
                 'JetProperties'+suff+':momenthalf(Jets'+suff+'_momenthalf)',
                 'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
@@ -540,3 +528,4 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, doDeepAK8=True,
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
     return process        
+

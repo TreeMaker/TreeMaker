@@ -51,7 +51,8 @@ public:
         
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   float MTWCalculator(double metPt,double  metPhi,double  lepPt,double  lepPhi) const;
-  bool MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const;
+  bool MuonIDloose(const pat::Muon & muon, const reco::Vertex& vtx) const;
+  bool MuonIDmedium(const pat::Muon & muon, const reco::Vertex& vtx) const;
   bool MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx) const;
   bool ElectronID(const pat::Electron & electron, const reco::Vertex & vtx, const elecIDLevel level, const double rho = 0.0) const;
         
@@ -67,9 +68,9 @@ private:
   edm::EDGetTokenT<pat::PackedCandidateCollection> PFCandTok_;
   edm::EDGetTokenT<double> RhoTok_;
   double minElecPt_, maxElecEta_, elecIsoValue_;
-  std::vector<double> eb_ieta_cut_, eb_deta_cut_, eb_dphi_cut_, eb_hovere_cut_, eb_hovere_parameters_, eb_ooeminusoop_cut_, eb_d0_cut_, eb_dz_cut_;
+  std::vector<double> eb_ieta_cut_, eb_deta_cut_, eb_dphi_cut_, eb_hovere_cut_, eb_hovere_cut2_, eb_hovere_cut3_, eb_ooeminusoop_cut_, eb_d0_cut_, eb_dz_cut_;
   std::vector<int> eb_misshits_cut_;
-  std::vector<double> ee_ieta_cut_, ee_deta_cut_, ee_dphi_cut_, ee_hovere_cut_, ee_hovere_parameters_, ee_ooeminusoop_cut_, ee_d0_cut_, ee_dz_cut_;
+  std::vector<double> ee_ieta_cut_, ee_deta_cut_, ee_dphi_cut_, ee_hovere_cut_, ee_hovere_cut2_, ee_hovere_cut3_, ee_ooeminusoop_cut_, ee_d0_cut_, ee_dz_cut_;
   std::vector<int> ee_misshits_cut_;
   bool hovere_constant_;
   double minMuPt_, maxMuEta_, muIsoValue_;
@@ -109,7 +110,6 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   eb_deta_cut_                           (iConfig.getParameter<std::vector<double>>("eb_deta_cut")),
   eb_dphi_cut_                           (iConfig.getParameter<std::vector<double>>("eb_dphi_cut")),
   eb_hovere_cut_                         (iConfig.getParameter<std::vector<double>>("eb_hovere_cut")),
-  eb_hovere_parameters_                  (iConfig.getParameter<std::vector<double>>("eb_hovere_parameters")),
   eb_ooeminusoop_cut_                    (iConfig.getParameter<std::vector<double>>("eb_ooeminusoop_cut")),
   eb_d0_cut_                             (iConfig.getParameter<std::vector<double>>("eb_d0_cut")),
   eb_dz_cut_                             (iConfig.getParameter<std::vector<double>>("eb_dz_cut")),
@@ -118,7 +118,6 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   ee_deta_cut_                           (iConfig.getParameter<std::vector<double>>("ee_deta_cut")),
   ee_dphi_cut_                           (iConfig.getParameter<std::vector<double>>("ee_dphi_cut")),
   ee_hovere_cut_                         (iConfig.getParameter<std::vector<double>>("ee_hovere_cut")),
-  ee_hovere_parameters_                  (iConfig.getParameter<std::vector<double>>("ee_hovere_parameters")),
   ee_ooeminusoop_cut_                    (iConfig.getParameter<std::vector<double>>("ee_ooeminusoop_cut")),
   ee_d0_cut_                             (iConfig.getParameter<std::vector<double>>("ee_d0_cut")),
   ee_dz_cut_                             (iConfig.getParameter<std::vector<double>>("ee_dz_cut")),
@@ -145,12 +144,18 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   electronEAValues_                      (iConfig.getParameter<std::vector<double>>("electronEAValues")),
   muonEAValues_                          (iConfig.getParameter<std::vector<double>>("muonEAValues"))
 {
-  if (eb_hovere_parameters_.size()!=2 || ee_hovere_parameters_.size()!=2)
-    throw cms::Exception("The vectors containing the hovere function parameters must be of size 2.");
+
+  if(!hovere_constant_){
+    eb_hovere_cut2_ = iConfig.getParameter<std::vector<double>>("eb_hovere_cut2");
+    eb_hovere_cut3_ = iConfig.getParameter<std::vector<double>>("eb_hovere_cut3");
+    ee_hovere_cut2_ = iConfig.getParameter<std::vector<double>>("ee_hovere_cut2");
+    ee_hovere_cut3_ = iConfig.getParameter<std::vector<double>>("ee_hovere_cut3");
+  }
 
   SUSYIsolationHelper.SetEAVectors(electronEAValues_, muonEAValues_);
 
   produces<std::vector<pat::Muon>>("IdMuon");
+  produces<std::vector<bool>>("IdMuonMediumID");
   produces<std::vector<bool>>("IdMuonTightID");
   produces<std::vector<int>>("IdMuonCharge");
   produces<std::vector<double>>("IdMuonMTW");
@@ -162,6 +167,8 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   produces<std::vector<bool>>("IdElectronMediumID");
   produces<std::vector<bool>>("IdElectronTightID");
   produces<std::vector<int>>("IdElectronCharge");
+  produces<std::vector<double>>("IdElectronEnergyCorr");
+  produces<std::vector<double>>("IdElectronTrkEnergyCorr");
   produces<std::vector<double>>("IdElectronMTW");
   produces<std::vector<bool>>("IdElectronPassIso");
   produces<std::vector<pat::Electron>>("IdIsoElectron");
@@ -198,8 +205,11 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   auto ElectronCharge = std::make_unique<std::vector<int>>();
 
   auto muIDMTW = std::make_unique<std::vector<double>>();
+  auto muIDMedium = std::make_unique<std::vector<bool>>();
   auto muIDTight = std::make_unique<std::vector<bool>>();
   auto muIDPassIso = std::make_unique<std::vector<bool>>();
+  auto elecIDEnergyCorr = std::make_unique<std::vector<double>>();
+  auto elecIDTrkEnergyCorr = std::make_unique<std::vector<double>>();
   auto elecIDMTW = std::make_unique<std::vector<double>>();
   auto elecIDMedium = std::make_unique<std::vector<bool>>();
   auto elecIDTight = std::make_unique<std::vector<bool>>();
@@ -232,10 +242,11 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       for(const auto & aMu : *muonHandle)
         {
           if(aMu.pt()<minMuPt_ || fabs(aMu.eta())>maxMuEta_) continue;
-                        
-          if(MuonID(aMu,vtx_h->at(0)))
+
+          if(MuonIDloose(aMu,vtx_h->at(0)))
             {
               idMuons->push_back(aMu);
+              muIDMedium->push_back(MuonIDmedium(aMu,vtx_h->at(0)));
               muIDTight->push_back(MuonIDtight(aMu,vtx_h->at(0)));
               muIDMTW->push_back(MTWCalculator(metLorentz.pt(),metLorentz.phi(),aMu.pt(),aMu.phi()));
               MuonCharge->push_back(aMu.charge());
@@ -248,7 +259,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
                 SUSYIsolationHelper.GetMiniIsolation(pfcands, &aMu, SUSYIsolation::muon, rho, dBIsoMu, mt2_act);
               }
               muIDPassIso->push_back(dBIsoMu<muIsoValue_);
-              if(muIDPassIso->back())
+              if(muIDPassIso->back() and muIDMedium->back())
                 {
                   nmuons++;
                   isoMuons->push_back(aMu);
@@ -279,6 +290,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
               elecIDMedium->push_back(ElectronID(aEle, vtx, MEDIUM, rho));
               elecIDTight->push_back(ElectronID(aEle, vtx, TIGHT, rho));
               ElectronCharge->push_back(aEle.charge());
+              elecIDEnergyCorr->push_back(aEle.userFloat("ecalEnergyPostCorr"));
+              elecIDTrkEnergyCorr->push_back(aEle.userFloat("ecalTrkEnergyPostCorr"));
               elecIDPassIso->push_back(miniIso<elecIsoValue_);
               if(elecIDPassIso->back())
                 {
@@ -306,9 +319,12 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   iEvent.put(std::move(MuonCharge),"IdMuonCharge");
 
   iEvent.put(std::move(muIDMTW),"IdMuonMTW");
+  iEvent.put(std::move(muIDMedium),"IdMuonMediumID");
   iEvent.put(std::move(muIDTight),"IdMuonTightID");
   iEvent.put(std::move(muIDPassIso),"IdMuonPassIso");
   iEvent.put(std::move(elecIDMTW),"IdElectronMTW");
+  iEvent.put(std::move(elecIDEnergyCorr),"IdElectronEnergyCorr");
+  iEvent.put(std::move(elecIDTrkEnergyCorr),"IdElectronTrkEnergyCorr");
   iEvent.put(std::move(elecIDMedium),"IdElectronMediumID");
   iEvent.put(std::move(elecIDTight),"IdElectronTightID");
   iEvent.put(std::move(elecIDPassIso),"IdElectronPassIso");
@@ -332,7 +348,11 @@ float LeptonProducer::MTWCalculator(double metPt,double  metPhi,double  lepPt,do
   return sqrt(2*lepPt*metPt*(1-cos(deltaPhi)) );
 }
 
-bool LeptonProducer::MuonID(const pat::Muon & muon, const reco::Vertex& vtx) const {
+bool LeptonProducer::MuonIDloose(const pat::Muon & muon, const reco::Vertex& vtx) const {
+  return muon.isLooseMuon();
+}
+
+bool LeptonProducer::MuonIDmedium(const pat::Muon & muon, const reco::Vertex& vtx) const {
   //medium WP + dz/dxy cuts
   bool goodGlob      = muon.isGlobalMuon() && 
                        muon.globalTrack()->normalizedChi2() < muNormalizedChi2Max_ && 
@@ -377,7 +397,7 @@ bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vert
   bool reqConvVeto[4] = {true, true, true, true};
 
   if (electron.isEB()) {
-    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : eb_hovere_cut_[level] + (eb_hovere_parameters_[0]/electron.energy()) + (eb_hovere_parameters_[1]*rho/electron.energy()) > hoe;
+    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : eb_hovere_cut_[level] + (eb_hovere_cut2_[level]/electron.energy()) + (eb_hovere_cut3_[level]*rho/electron.energy()) > hoe;
     return eb_deta_cut_[level] > fabs(dEtaIn)
       && eb_dphi_cut_[level] > fabs(dPhiIn)
       && eb_ieta_cut_[level] > sieie
@@ -388,7 +408,7 @@ bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vert
       && (!reqConvVeto[level] || convVeto)
       && (eb_misshits_cut_[level] >= mhits);
   } else if (electron.isEE()) {
-    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : eb_hovere_cut_[level] + (ee_hovere_parameters_[0]/electron.energy()) + (ee_hovere_parameters_[1]*rho/electron.energy()) > hoe;
+    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : eb_hovere_cut_[level] + (ee_hovere_cut2_[level]/electron.energy()) + (ee_hovere_cut3_[level]*rho/electron.energy()) > hoe;
     return ee_deta_cut_[level] > fabs(dEtaIn)
       && ee_dphi_cut_[level] > fabs(dPhiIn)
       && ee_ieta_cut_[level] > sieie

@@ -93,6 +93,8 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    produces<double>("minDeltaPhiN");
    produces<double>("Pt");
    produces<double>("Phi");
+   produces<double>("RawPt");
+   produces<double>("RawPhi");
    produces<double>("CaloPt");
    produces<double>("CaloPhi");
    produces<double>("GenPt");
@@ -126,6 +128,7 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
 {
    using namespace edm;
    double metpt_=0, metphi_=0;
+   double rawmetpt_=0, rawmetphi_=0;
    double genmetpt_=0, genmetphi_=0;
    double calometpt_=0, calometphi_=0;
    double metsig_=0;
@@ -162,6 +165,9 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
         metPhiUp_[u] = MET->at(0).shiftedPhi(uncUpList[u], pat::MET::Type1);
         metPhiDown_[u] = MET->at(0).shiftedPhi(uncDownList[u], pat::MET::Type1);
       }
+
+      rawmetpt_=MET->at(0).uncorPt();
+      rawmetphi_=MET->at(0).uncorPhi();
    }
    else edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<metTag_.label();
 
@@ -183,6 +189,11 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
    iEvent.put(std::move(htp2),"Phi");
    auto htp0 = std::make_unique<double>(metsig_);
    iEvent.put(std::move(htp0),"Significance");
+
+   auto rhtp = std::make_unique<double>(rawmetpt_);
+   iEvent.put(std::move(rhtp),"RawPt");
+   auto rhtp2 = std::make_unique<double>(rawmetphi_);
+   iEvent.put(std::move(rhtp2),"RawPhi");
 
    auto chtp = std::make_unique<double>(calometpt_);
    iEvent.put(std::move(chtp),"CaloPt");

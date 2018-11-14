@@ -46,7 +46,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         # backgrounds
         # NB: amcatnlo samples have negative weight events, so NumberEvts = # positive - # negative
         MCSample("TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 10139950),
-        # ttbar single lep & dilep xsecs scaled by PDG BR, assume t=tbar (hadronic: 377.96)
+        # ttbar single lep & dilep
         MCSample("TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 61973977), # subtotal = 11957043
         MCSample("TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 61973977), # subtotal = 50016934
         MCSample("TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 60210394), # subtotal = 11944041
@@ -56,7 +56,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("TTJets_SingleLeptFromT_genMET-150_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 17363624),
         MCSample("TTJets_SingleLeptFromTbar_genMET-150_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 17264493),
         MCSample("TTJets_DiLept_genMET-150_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 9890329),
-        # HT jets: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs MCM), 831.76/502.2 = 1.6562
+        # HT binned
         MCSample("TTJets_HT-600to800_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 14277035),
         MCSample("TTJets_HT-800to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 10403610),
         MCSample("TTJets_HT-1200to2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 2932983),
@@ -64,7 +64,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         # NLO powheg 
         MCSample("TT_TuneCUETP8M2T4_13TeV-powheg-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 155235652), # subtotal = 77229341
         MCSample("TT_TuneCUETP8M2T4_13TeV-powheg-pythia8", "PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 155235652), # subtotal = 78006311
-        # WJets: k-factor of 1.21 applied, extensions included
+        # WJets: extensions included
         MCSample("WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 29503700),
         MCSample("WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 19766301), # subtotal = 4950373
         MCSample("WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 19766301), # subtotal = 14815928
@@ -95,7 +95,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 11826702), # subtotal = 7855883
         MCSample("QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 6039005), # subtotal = 1991645
         MCSample("QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 6039005), # subtotal = 4047360
-        # QCD pT-hat binned: cross sections from AN2017_013_v17, extensions included
+        # QCD pT-hat binned: extensions included
         MCSample("QCD_Pt_50to80_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 9954370),
         MCSample("QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1", "RunIISummer16MiniAODv2", "Constant", 14595570), # subtotal = 7608830
         MCSample("QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 14595570), # subtotal = 6986740
@@ -119,7 +119,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 996130), # subtotal = 596904
         MCSample("QCD_Pt_2400to3200_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 996130), # subtotal = 399226
         MCSample("QCD_Pt_3200toInf_TuneCUETP8M1_13TeV_pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v3", "RunIISummer16MiniAODv2", "Constant", 391735),
-        # DY/Z: k-factor of 1.23 applied, available extensions included
+        # DY/Z: available extensions included
         MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 10607207), # subtotal = 2751187
         MCSample("DYJetsToLL_M-50_HT-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 10607207), # subtotal = 7856020
         MCSample("DYJetsToLL_M-50_HT-200to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 9653731), # subtotal = 962195
@@ -158,7 +158,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("ZJetsToNuNu_Zpt-100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 10164959), # subtotal = 5087007
         MCSample("ZJetsToNuNu_Zpt-200toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 3956564), # subtotal = 1986102
         MCSample("ZJetsToNuNu_Zpt-200toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 3956564), # subtotal = 1970462
-        # single top: NoFullyHadronicDecays xsec scaled by BF for non-fully-hadronic (1-(1-3*0.108)^2
+        # single top:
         MCSample("ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 1000000, 622990), # straight total = 1000000
         MCSample("ST_s-channel_4f_InclusiveDecays_13TeV-amcatnlo-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 2989199, 1884837), # straight total = 2989199
         MCSample("ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 67240808),
@@ -242,20 +242,6 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("SMS-T5qqqqZH-mGluino2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 417293),
         MCSample("SMS-T5qqqqZH-mGluino2100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 391445),
         MCSample("SMS-T5qqqqZH-mGluino2200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 396083),
-        # semivisible jet signals
-        MCSample("step4_MINIAOD_mZprime-1000_mDark-20_rinv-0.3_alpha-0.2_n-1000", "", "", "Constant", 101734),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.2_n-1000", "", "", "Constant", 50686),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.1_n-1000", "", "", "Constant", 50485),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.5_alpha-0.2_n-1000", "", "", "Constant", 50977),
-        MCSample("step4_MINIAOD_mZprime-2000_mDark-20_rinv-0.3_alpha-0.2_n-1000", "", "", "Constant", 51109),
-        MCSample("step4_MINIAOD_mZprime-4000_mDark-20_rinv-0.3_alpha-0.2_n-1000", "", "", "Constant", 50998),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-1_rinv-0.3_alpha-0.2_n-1000", "", "", "Constant", 50700),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-50_rinv-0.3_alpha-0.2_n-1000", "", "", "Constant", 51089),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-100_rinv-0.3_alpha-0.2_n-1000", "", "", "Constant", 51000),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.1_alpha-0.2_n-1000", "", "", "Constant", 52779),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.7_alpha-0.2_n-1000", "", "", "Constant", 50733),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.5_n-1000", "", "", "Constant", 51081),
-        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-1_n-1000", "", "", "Constant", 50904),
         # stealth/rpv stop signals
         MCSample("stealth_stop_350_singlino_SYY", "", "", "Constant", 71695),
         MCSample("stealth_stop_450_singlino_SYY", "", "", "Constant", 66250),
@@ -402,6 +388,28 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('StealthSHH_2t4b_mStop-500_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 211657, False, 210577),
         MCSample('StealthSYY_2t6j_mStop-300_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 532773, False, 531723),
         MCSample('StealthSHH_2t4b_mStop-350_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 566558, False, 565120),
+        # semivisible jet signals
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49206),
+        MCSample("step4_MINIAOD_mZprime-1000_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49204),
+        MCSample("step4_MINIAOD_mZprime-1500_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48603),
+        MCSample("step4_MINIAOD_mZprime-2000_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49156),
+        MCSample("step4_MINIAOD_mZprime-2500_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48821),
+        MCSample("step4_MINIAOD_mZprime-3500_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48974),
+        MCSample("step4_MINIAOD_mZprime-4000_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48978),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-5_rinv-0.3_alpha-peak_n-1000" , "ProductionV3", "", "Constant", 49194),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-50_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48693),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0_alpha-peak_n-1000"  , "ProductionV3", "", "Constant", 98200),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.1_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49792),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.2_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48903),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.4_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49043),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.5_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48986),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.6_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49104),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.7_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48982),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.8_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49033),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.9_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49484),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-1_alpha-peak_n-1000"  , "ProductionV3", "", "Constant", 49204),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-high_n-1000", "ProductionV3", "", "Constant", 49001),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-low_n-1000" , "ProductionV3", "", "Constant", 49155),
     ]
     
     # loop over all samples until we find a match

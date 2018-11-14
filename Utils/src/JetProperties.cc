@@ -103,14 +103,6 @@ DEFAULT_NAMED_PTR(D,ecfN2b1);
 DEFAULT_NAMED_PTR(D,ecfN2b2);
 DEFAULT_NAMED_PTR(D,ecfN3b1);
 DEFAULT_NAMED_PTR(D,ecfN3b2);
-DEFAULT_NAMED_PTR(D,tDiscriminatorDeep);
-DEFAULT_NAMED_PTR(D,wDiscriminatorDeep);
-DEFAULT_NAMED_PTR(D,zDiscriminatorDeep);
-DEFAULT_NAMED_PTR(D,hDiscriminatorDeep);
-DEFAULT_NAMED_PTR(D,tDiscriminatorDeepDecorrel);
-DEFAULT_NAMED_PTR(D,wDiscriminatorDeepDecorrel);
-DEFAULT_NAMED_PTR(D,zDiscriminatorDeepDecorrel);
-DEFAULT_NAMED_PTR(D,hDiscriminatorDeepDecorrel);
 
 class NamedPtr_I : public NamedPtr<int> {
 	public:
@@ -216,6 +208,15 @@ DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobg);
 DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourproblepb);
 DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobbb);
 DEFAULT_NAMED_PTR(bDiscriminator,bJetTagDeepFlavourprobuds);
+DEFAULT_NAMED_PTR(bDiscriminator,tDiscriminatorDeep);
+DEFAULT_NAMED_PTR(bDiscriminator,wDiscriminatorDeep);
+DEFAULT_NAMED_PTR(bDiscriminator,zDiscriminatorDeep);
+DEFAULT_NAMED_PTR(bDiscriminator,hDiscriminatorDeep);
+DEFAULT_NAMED_PTR(bDiscriminator,tDiscriminatorDeepDecorrel);
+DEFAULT_NAMED_PTR(bDiscriminator,wDiscriminatorDeepDecorrel);
+DEFAULT_NAMED_PTR(bDiscriminator,zhDiscriminatorDeepDecorrel);
+DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorH);
+DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorQ);
 
 class NamedPtr_jecFactor : public NamedPtr<double> {
 	public:
