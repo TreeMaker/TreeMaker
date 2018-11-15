@@ -46,7 +46,7 @@ mytests = []
 #mytests.append(makeTest("Summer16MiniAODv3",name,numevents,command,inputFilesConfig="",nstart=0,nfiles=1))
 #mytests.append(makeTest("Summer16MiniAODv3",name,numevents,command,inputFilesConfig="",nstart=0,nfiles=1))
 #mytests.append(makeTest("Summer16MiniAODv3sig",name,numevents,command,inputFilesConfig="",nstart=0,nfiles=1))
-mytests.append(makeTest("2016MiniAODv3",name,numevents,command,inputFilesConfig="Run2016H-17Jul2018-v1.MET",nstart=0,nfiles=10))
+mytests.append(makeTest("2016MiniAODv3",name,numevents,command,inputFilesConfig="Run2016G-17Jul2018-v1.MET",nstart=0,nfiles=10))
 mytests.append(makeTest("Fall17","Fall17.GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8" if len(name)==0 else name,numevents,command,dataset="/store/mc/RunIIFall17MiniAODv2/GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/10000/CEB1CF27-F670-E811-BB3F-FA163E528207.root"))
 mytests.append(makeTest("2017ReReco31Mar",name,numevents,command,inputFilesConfig="Run2017B-31Mar2018-v1.MET",nstart=0,nfiles=10))
 mytests.append(makeTest("Summer16","GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,dataset="/store/mc/RunIISummer16MiniAODv2/GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/120000/0010CF3F-1EB7-E611-A46F-00266CFFA678.root"))
