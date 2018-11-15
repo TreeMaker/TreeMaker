@@ -990,9 +990,10 @@ def makeTreeFromMiniAOD(self,process):
             'HiddenSector:DeltaPhi2(DeltaPhi2_AK8)',
             'HiddenSector:DeltaPhiMin(DeltaPhiMin_AK8)',
         ])
-        self.VectorBool.extend([
-            'HiddenSector:isHV(JetsAK8_isHV)'
-        ])
+        if self.geninfo:
+            self.VectorBool.extend([
+                'HiddenSector:isHV(JetsAK8_isHV)'
+            ])
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

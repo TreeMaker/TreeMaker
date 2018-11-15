@@ -122,25 +122,27 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 	}
 	
 	//ISRJetProducer method, find jets with hard process particles at their 'core' and other jets are ISR
-	for(const auto& i_jet : *(h_jets.product())){ // loop over AK8 jets
-		bool matched = false; // matched == true means that this jet has a hard process (descendant particle of the Z') at its 'core'
-		for (const auto& i_part : *(h_parts.product())){ // loop over GenParticles
-			if (matched) break; // only need to match one particle to the jet to tag it as FSR
-			if(i_part.status()!=23) continue; // only want particles outgoing from the hard process
-			unsigned momid = std::abs(i_part.mother()->pdgId());
-			if(momid!=DarkMediatorID_) continue; // only want direct descendants of Z' (kind of redundant)
-			//check against daughters in case of hard initial splitting, from ISRJetProducer...
-			std::vector<const reco::Candidate*> listOfDaughters;
-			addDaughters(&i_part,listOfDaughters);
-			for (const auto& daughter : listOfDaughters) {
-				float dR = deltaR(i_jet, daughter->p4());
-				if(dR<0.8){
-					matched = true;
-					break;
+	if(h_parts.isValid()){
+		for(const auto& i_jet : *(h_jets.product())){ // loop over AK8 jets
+			bool matched = false; // matched == true means that this jet has a hard process (descendant particle of the Z') at its 'core'
+			for (const auto& i_part : *(h_parts.product())){ // loop over GenParticles
+				if (matched) break; // only need to match one particle to the jet to tag it as FSR
+				if(i_part.status()!=23) continue; // only want particles outgoing from the hard process
+				unsigned momid = std::abs(i_part.mother()->pdgId());
+				if(momid!=DarkMediatorID_) continue; // only want direct descendants of Z' (kind of redundant)
+				//check against daughters in case of hard initial splitting, from ISRJetProducer...
+				std::vector<const reco::Candidate*> listOfDaughters;
+				addDaughters(&i_part,listOfDaughters);
+				for (const auto& daughter : listOfDaughters) {
+					float dR = deltaR(i_jet, daughter->p4());
+					if(dR<0.8){
+						matched = true;
+						break;
+					}
 				}
 			}
+			jet_isHV_vec->push_back(matched);
 		}
-		jet_isHV_vec->push_back(matched);
 	}
 	
 	iEvent.put(std::move(jet_isHV_vec),"isHV");
