@@ -3,5 +3,4 @@ dir = .
 [submit]
 input = 2017B,2017C,2017D,2017E,2017F
 [caches]
-$CMSSW_BASE/src/NNKit/misc/lib = 1
 $CMSSW_BASE/test = 1
