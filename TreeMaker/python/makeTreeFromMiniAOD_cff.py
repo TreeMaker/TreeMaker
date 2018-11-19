@@ -97,9 +97,9 @@ def makeTreeFromMiniAOD(self,process):
     ## PDF weights for PDF systematics
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo and self.doPDFs:
-        process.PDFWeights = cms.EDProducer('PDFWeightProducer')
+        from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
+        process.PDFWeights = PDFWeightProducer.clone()
         self.VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
-        self.VectorInt.extend(['PDFWeights:PDFids'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples
