@@ -67,7 +67,7 @@ private:
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   // ----------member data ---------------------------
-  unsigned nScales_, nPDFs_;
+  unsigned nScales_, nPDFs_, nPSs_;
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
 
@@ -76,12 +76,14 @@ private:
 PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   nScales_(iConfig.getParameter<unsigned>("nScales")),
   nPDFs_(iConfig.getParameter<unsigned>("nPDFs")),
+  nPSs_(iConfig.getParameter<unsigned>("nPSs")),
   getterOfProducts_(edm::ProcessMatch("*"), this), 
   genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
 {
   callWhenNewProductsRegistered(getterOfProducts_);
   produces<std::vector<double> >("ScaleWeights");
   produces<std::vector<double> >("PDFweights");
+  produces<std::vector<double> >("PSweights");
 }
 
 PDFWeightProducer::~PDFWeightProducer()
@@ -102,9 +104,11 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   
   auto scaleweights = std::make_unique<std::vector<double>>();
   auto pdfweights = std::make_unique<std::vector<double>>();
+  auto psweights = std::make_unique<std::vector<double>>();
   
   bool found_scales = false;
   bool found_pdfs = false;
+  bool found_pss = false;
   
   if(!handles.empty()){
     edm::Handle<LHEEventProduct> LheInfo = handles[0];
@@ -116,19 +120,27 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   }
   
   //check GenEventInfoProduct if LHEEventProduct not found or empty
-  if(!found_scales or !found_pdfs){
-    edm::Handle<GenEventInfoProduct> genHandle;
-    iEvent.getByToken(genProductToken_, genHandle);
+  //if LHEEventProduct was filled, check GenEventInfoProduct for parton shower weights from Pythia8
+  edm::Handle<GenEventInfoProduct> genHandle;
+  iEvent.getByToken(genProductToken_, genHandle);
+  if(genHandle.isValid()){
     auto helper = makeHelper(genHandle.product());
-    unsigned offset = 1;
-    //renormalization/factorization scale weights
-    found_scales = helper.fillWeights(scaleweights.get(),offset,nScales_,false);
-    //pdf weights
-    if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,true);
+    if(!found_scales or !found_pdfs){
+      unsigned offset = 1;
+      //renormalization/factorization scale weights
+      found_scales = helper.fillWeights(scaleweights.get(),offset,nScales_,false);
+      //pdf weights
+      if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,true);
+    }
+    else if(!found_pss){
+      unsigned offset = 2;
+      found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,false);
+    }
   }
 
   iEvent.put(std::move(scaleweights),"ScaleWeights");
   iEvent.put(std::move(pdfweights),"PDFweights");
+  iEvent.put(std::move(psweights),"PSweights");
   
 }
 

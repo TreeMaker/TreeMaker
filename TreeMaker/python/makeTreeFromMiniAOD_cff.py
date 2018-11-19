@@ -99,7 +99,7 @@ def makeTreeFromMiniAOD(self,process):
     if self.geninfo and self.doPDFs:
         from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
         process.PDFWeights = PDFWeightProducer.clone()
-        self.VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights'])
+        self.VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples
