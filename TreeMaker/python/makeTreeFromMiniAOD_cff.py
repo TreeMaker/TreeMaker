@@ -98,7 +98,10 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo and self.doPDFs:
         from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
-        process.PDFWeights = PDFWeightProducer.clone()
+        process.PDFWeights = PDFWeightProducer.clone(
+            recalculatePDFs = cms.bool(self.signal),
+            pdfSetName = cms.string("NNPDF31_lo_as_0130"),
+        )
         self.VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
 
     ## ----------------------------------------------------------------------------------------------

@@ -23,10 +23,11 @@ class PDFWeightHelper {
     PDFWeightHelper(const P* prod) : product_(prod) {}
     bool fillWeights(std::vector<double>* output, unsigned offset, unsigned nWeights, bool isPDF) {
       if(offset > this->getMax()) return false;
-      double norm = this->getNorm(offset,isPDF);
+      double norm = 1./this->getNorm(offset,isPDF);
       unsigned max = std::min(nWeights+offset,this->getMax());
+      output->reserve(max-offset);
       for (unsigned int i = offset; i < max; i++) {
-        output->push_back(this->getWeight(i)/norm);
+        output->push_back(this->getWeight(i)*norm);
       }
       return !output->empty();
     }
@@ -56,6 +57,14 @@ template <> double PDFWeightHelper<GenEventInfoProduct>::getNorm(unsigned offset
   return this->getWeight(offset);
 }
 
+namespace LHAPDF {
+  void initPDFSet(int nset, const std::string& filename, int member=0);
+  int numberPDF(int nset);
+  void usePDFMember(int nset, int member);
+  double xfx(int nset, double x, double Q, int fl);
+  void setVerbosity(int v);
+}
+
 class PDFWeightProducer : public edm::global::EDProducer<> {
 public:
   explicit PDFWeightProducer(const edm::ParameterSet&);
@@ -68,6 +77,8 @@ private:
   
   // ----------member data ---------------------------
   unsigned nScales_, nPDFs_, nPSs_;
+  bool recalculatePDFs_;
+  std::string pdfSetName_;
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
 
@@ -77,9 +88,16 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   nScales_(iConfig.getParameter<unsigned>("nScales")),
   nPDFs_(iConfig.getParameter<unsigned>("nPDFs")),
   nPSs_(iConfig.getParameter<unsigned>("nPSs")),
+  recalculatePDFs_(iConfig.getParameter<bool>("recalculatePDFs")),
   getterOfProducts_(edm::ProcessMatch("*"), this), 
   genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
 {
+  if(recalculatePDFs_) pdfSetName_ = iConfig.getParameter<std::string>("pdfSetName");
+  if(!pdfSetName_.empty()){
+     LHAPDF::initPDFSet(1,pdfSetName_);
+     LHAPDF::setVerbosity(0);
+  }
+
   callWhenNewProductsRegistered(getterOfProducts_);
   produces<std::vector<double> >("ScaleWeights");
   produces<std::vector<double> >("PDFweights");
@@ -135,6 +153,38 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     else if(!found_pss){
       unsigned offset = 2;
       found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,false);
+    }
+
+    //if pdf weights still not found, recalculate them
+    //taken from https://github.com/cms-sw/cmssw/blob/master/ElectroWeakAnalysis/Utilities/src/PdfWeightProducer.cc
+    //not sure what to do about missing scale weights
+    if(!found_pdfs and recalculatePDFs_){
+      float Q = genHandle->pdf()->scalePDF;
+
+      int id1 = genHandle->pdf()->id.first;
+      double x1 = genHandle->pdf()->x.first;
+      double pdf1 = genHandle->pdf()->xPDF.first;
+
+      int id2 = genHandle->pdf()->id.second;
+      double x2 = genHandle->pdf()->x.second;
+      double pdf2 = genHandle->pdf()->xPDF.second;
+      if(pdf1 <= 0 && pdf2 <= 0) {
+         LHAPDF::usePDFMember(1,0);
+         pdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
+         pdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
+      }
+
+      unsigned nweights = 1;
+      if(LHAPDF::numberPDF(1)>1) nweights += LHAPDF::numberPDF(1);
+      pdfweights->reserve(nweights);
+      double norm = 1./(pdf1*pdf2);
+      for (unsigned int i=0; i<nweights; ++i) {
+        LHAPDF::usePDFMember(1,i);
+        double newpdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
+        double newpdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
+        pdfweights->push_back(newpdf1*newpdf2*norm);
+      }
+      found_pdfs = true;
     }
   }
 
