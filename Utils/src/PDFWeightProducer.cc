@@ -177,12 +177,14 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       unsigned nweights = 1;
       if(LHAPDF::numberPDF(1)>1) nweights += LHAPDF::numberPDF(1);
       pdfweights->reserve(nweights);
-      double norm = 1./(pdf1*pdf2);
+      double norm = 1.;
       for (unsigned int i=0; i<nweights; ++i) {
         LHAPDF::usePDFMember(1,i);
         double newpdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
         double newpdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
-        pdfweights->push_back(newpdf1*newpdf2*norm);
+        pdfweights->push_back(newpdf1*newpdf2);
+        if(i==0) norm = 1/pdfweights->back();
+        pdfweights->back() *= norm;
       }
       found_pdfs = true;
     }
