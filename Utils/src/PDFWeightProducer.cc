@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <memory>
+#include <mutex>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -81,8 +82,10 @@ private:
   std::string pdfSetName_;
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
-
+  static std::mutex mutex_;
 };
+
+std::mutex PDFWeightProducer::mutex_;
 
 PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   nScales_(iConfig.getParameter<unsigned>("nScales")),
@@ -169,6 +172,7 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       double x2 = genHandle->pdf()->x.second;
       double pdf2 = genHandle->pdf()->xPDF.second;
       if(pdf1 <= 0 && pdf2 <= 0) {
+         std::lock_guard<std::mutex> lock(mutex_);
          LHAPDF::usePDFMember(1,0);
          pdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
          pdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
@@ -178,13 +182,17 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       if(LHAPDF::numberPDF(1)>1) nweights += LHAPDF::numberPDF(1);
       pdfweights->reserve(nweights);
       double norm = 1.;
-      for (unsigned int i=0; i<nweights; ++i) {
-        LHAPDF::usePDFMember(1,i);
-        double newpdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
-        double newpdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
-        pdfweights->push_back(newpdf1*newpdf2);
-        if(i==0) norm = 1/pdfweights->back();
-        pdfweights->back() *= norm;
+      //make it thread safe
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (unsigned int i=0; i<nweights; ++i) {
+          LHAPDF::usePDFMember(1,i);
+          double newpdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
+          double newpdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
+          pdfweights->push_back(newpdf1*newpdf2);
+          if(i==0) norm = 1/pdfweights->back();
+          pdfweights->back() *= norm;
+        }
       }
       found_pdfs = true;
     }
