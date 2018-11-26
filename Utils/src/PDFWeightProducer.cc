@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cmath>
 #include <memory>
+#include <mutex>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -17,11 +18,53 @@
 
 #include "TVector2.h"
 
-//
-// class declaration
-//
+template <class P>
+class PDFWeightHelper {
+  public:
+    PDFWeightHelper(const P* prod) : product_(prod) {}
+    bool fillWeights(std::vector<double>* output, unsigned offset, unsigned nWeights, bool isPDF) {
+      if(offset > this->getMax()) return false;
+      double norm = 1./this->getNorm(offset,isPDF);
+      unsigned max = std::min(nWeights+offset,this->getMax());
+      output->reserve(max-offset);
+      for (unsigned int i = offset; i < max; i++) {
+        output->push_back(this->getWeight(i)*norm);
+      }
+      return !output->empty();
+    }
+    double getWeight(unsigned index) { return 1.; }
+    double getNorm(unsigned offset, bool isPDF) { return 1.; }
+    unsigned getMax() { return product_->weights().size(); }
 
+    //members
+    const P* product_;
+};
 
+//for template class inference
+template <class P>
+PDFWeightHelper<P> makeHelper(const P* prod) { return PDFWeightHelper<P>(prod); }
+
+template <> double PDFWeightHelper<LHEEventProduct>::getWeight(unsigned index){
+  return product_->weights()[index].wgt;
+}
+template <> double PDFWeightHelper<LHEEventProduct>::getNorm(unsigned offset, bool isPDF){
+  return isPDF ? product_->originalXWGTUP() : this->getWeight(offset);
+}
+
+template <> double PDFWeightHelper<GenEventInfoProduct>::getWeight(unsigned index){
+  return product_->weights()[index];
+}
+template <> double PDFWeightHelper<GenEventInfoProduct>::getNorm(unsigned offset, bool isPDF){
+  return this->getWeight(offset);
+}
+
+namespace LHAPDF {
+  void initPDFSet(int nset, const std::string& filename, int member=0);
+  int numberPDF(int nset);
+  void usePDFMember(int nset, int member);
+  double xfx(int nset, double x, double Q, int fl);
+  void setVerbosity(int v);
+}
 
 class PDFWeightProducer : public edm::global::EDProducer<> {
 public:
@@ -34,25 +77,42 @@ private:
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   // ----------member data ---------------------------
+  unsigned nScales_, nPDFs_, nPSs_;
+  bool recalculatePDFs_;
+  std::string pdfSetName_;
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
-
+  static std::mutex mutex_;
 };
 
-PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) : getterOfProducts_(edm::ProcessMatch("*"), this), genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
+std::mutex PDFWeightProducer::mutex_;
+
+PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
+  nScales_(iConfig.getParameter<unsigned>("nScales")),
+  nPDFs_(iConfig.getParameter<unsigned>("nPDFs")),
+  nPSs_(iConfig.getParameter<unsigned>("nPSs")),
+  recalculatePDFs_(iConfig.getParameter<bool>("recalculatePDFs")),
+  getterOfProducts_(edm::ProcessMatch("*"), this), 
+  genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
 {
+  if(recalculatePDFs_) pdfSetName_ = iConfig.getParameter<std::string>("pdfSetName");
+  if(!pdfSetName_.empty()){
+     LHAPDF::initPDFSet(1,pdfSetName_);
+     LHAPDF::setVerbosity(0);
+  }
+
   callWhenNewProductsRegistered(getterOfProducts_);
   produces<std::vector<double> >("ScaleWeights");
   produces<std::vector<double> >("PDFweights");
-  produces<std::vector<int> >("PDFids");
+  produces<std::vector<double> >("PSweights");
 }
 
 PDFWeightProducer::~PDFWeightProducer()
 {
-	
+    
   // do anything here that needs to be done at desctruction time
   // (e.g. close files, deallocate resources etc.)
-	
+    
 }
 
 void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
@@ -63,57 +123,84 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   std::vector<edm::Handle<LHEEventProduct> > handles;
   getterOfProducts_.fillHandles(iEvent, handles);
   
-  std::vector<double> scaleweights;
-  std::vector<double> pdfweights;
-  std::vector<int> pdfids;
+  auto scaleweights = std::make_unique<std::vector<double>>();
+  auto pdfweights = std::make_unique<std::vector<double>>();
+  auto psweights = std::make_unique<std::vector<double>>();
   
-  bool found_weights = false;
+  bool found_scales = false;
+  bool found_pdfs = false;
+  bool found_pss = false;
   
   if(!handles.empty()){
     edm::Handle<LHEEventProduct> LheInfo = handles[0];
-    
-    std::vector< gen::WeightsInfo > lheweights = LheInfo->weights();
-    if(!lheweights.empty()){
-      found_weights = true;
-      // these numbers are hard-coded by the LHEEventInfo
-      //renormalization/factorization scale weights
-      for (unsigned int i = 0; i < 9; i++){
-        scaleweights.push_back(lheweights[i].wgt/lheweights[0].wgt);
-      }
-      //pdf weights
-      for (unsigned int i = 9; i < 110; i++){
-        pdfweights.push_back(lheweights[i].wgt/lheweights[9].wgt);
-        pdfids.push_back(i-9);
-      }
-    }
+    auto helper = makeHelper(LheInfo.product());
+    //renormalization/factorization scale weights
+    found_scales = helper.fillWeights(scaleweights.get(),0,nScales_,false);
+    //pdf weights
+    if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_,nPDFs_,true);
   }
   
   //check GenEventInfoProduct if LHEEventProduct not found or empty
-  if(!found_weights){
-    edm::Handle<GenEventInfoProduct> genHandle;
-    iEvent.getByToken(genProductToken_, genHandle);
-
-	const std::vector<double>& genweights = genHandle->weights();
-    // these numbers are hard-coded by the GenEventInfo (shifted by 1 wrt LHE)
-    //renormalization/factorization scale weights
-    for (unsigned int i = 1; i < 10; i++){
-      scaleweights.push_back(genweights[i]/genweights[1]);
+  //if LHEEventProduct was filled, check GenEventInfoProduct for parton shower weights from Pythia8
+  edm::Handle<GenEventInfoProduct> genHandle;
+  iEvent.getByToken(genProductToken_, genHandle);
+  if(genHandle.isValid()){
+    auto helper = makeHelper(genHandle.product());
+    if(!found_scales or !found_pdfs){
+      unsigned offset = 1;
+      //renormalization/factorization scale weights
+      found_scales = helper.fillWeights(scaleweights.get(),offset,nScales_,false);
+      //pdf weights
+      if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,true);
     }
-    //pdf weights
-    for (unsigned int i = 10; i < 111; i++){
-      pdfweights.push_back(genweights[i]/genweights[10]);
-      pdfids.push_back(i-10);
+    else if(!found_pss){
+      unsigned offset = 2;
+      found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,false);
+    }
+
+    //if pdf weights still not found, recalculate them
+    //taken from https://github.com/cms-sw/cmssw/blob/master/ElectroWeakAnalysis/Utilities/src/PdfWeightProducer.cc
+    //not sure what to do about missing scale weights
+    if(!found_pdfs and recalculatePDFs_){
+      float Q = genHandle->pdf()->scalePDF;
+
+      int id1 = genHandle->pdf()->id.first;
+      double x1 = genHandle->pdf()->x.first;
+      double pdf1 = genHandle->pdf()->xPDF.first;
+
+      int id2 = genHandle->pdf()->id.second;
+      double x2 = genHandle->pdf()->x.second;
+      double pdf2 = genHandle->pdf()->xPDF.second;
+      if(pdf1 <= 0 && pdf2 <= 0) {
+         std::lock_guard<std::mutex> lock(mutex_);
+         LHAPDF::usePDFMember(1,0);
+         pdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
+         pdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
+      }
+
+      unsigned nweights = 1;
+      if(LHAPDF::numberPDF(1)>1) nweights += LHAPDF::numberPDF(1);
+      pdfweights->reserve(nweights);
+      double norm = 1.;
+      //make it thread safe
+      {
+        std::lock_guard<std::mutex> lock(mutex_);
+        for (unsigned int i=0; i<nweights; ++i) {
+          LHAPDF::usePDFMember(1,i);
+          double newpdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
+          double newpdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
+          pdfweights->push_back(newpdf1*newpdf2);
+          if(i==0) norm = 1/pdfweights->back();
+          pdfweights->back() *= norm;
+        }
+      }
+      found_pdfs = true;
     }
   }
 
-  auto scaleweights_ = std::make_unique<std::vector<double>>(scaleweights);
-  iEvent.put(std::move(scaleweights_),"ScaleWeights");
-  
-  auto pdfweights_ = std::make_unique<std::vector<double>>(pdfweights);
-  iEvent.put(std::move(pdfweights_),"PDFweights");
-  
-  auto pdfids_ = std::make_unique<std::vector<int>>(pdfids);
-  iEvent.put(std::move(pdfids_),"PDFids");
+  iEvent.put(std::move(scaleweights),"ScaleWeights");
+  iEvent.put(std::move(pdfweights),"PDFweights");
+  iEvent.put(std::move(psweights),"PSweights");
   
 }
 
