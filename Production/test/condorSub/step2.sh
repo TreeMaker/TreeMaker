@@ -53,9 +53,10 @@ if [[ -n "$THREADS" ]]; then
 fi
 echo "cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1"
 cmsRun runMakeTreeFromMiniAOD_cfg.py ${ARGS} 2>&1
-rm runMakeTreeFromMiniAOD_cfg.py
 
 CMSEXIT=$?
+
+rm runMakeTreeFromMiniAOD_cfg.py
 
 if [[ $CMSEXIT -ne 0 ]]; then
   rm *.root
