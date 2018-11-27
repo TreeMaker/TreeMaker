@@ -56,6 +56,8 @@ The available scenarios are:
 8.  `Spring16Pmssm`: for Spring16 miniAOD 25ns PMSSM MC scan (80X) (signal)
 9.  `Summer16`: for Summer16 miniAOD 25ns MC (80X)
 10. `Summer16sig`: for Summer16 miniAOD 25ns MC (80X) (signal)
+11. `2018B26Sep`: for 2018 prompt data, partial period B
+12. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
 
 ## Unit Tests (Interactive Runs)
 

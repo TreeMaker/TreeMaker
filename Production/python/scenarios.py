@@ -128,6 +128,28 @@ class Scenario:
                 era="Run2_2017",
                 localera="TM2017",
             )
+        elif sname == "2018B26Sep":
+            self.set_vars(
+                globaltag="102X_dataRun2_PromptLike_v7",
+                tagname="RECO",
+                hlttagname="HLT",
+                jsonfile="data/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt",
+                jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
+                residual=True,
+                era="Run2_2018",
+                localera="TM2018",
+            )
+        elif sname == "2018B26SepHEM":
+            self.set_vars(
+                globaltag="102X_dataRun2_PromptLike_HEfail_v1",
+                tagname="RECO",
+                hlttagname="HLT",
+                jsonfile="data/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt",
+                jecfile="data/jec/Fall17_17Nov2017BCDEF_V6_DATA",
+                residual=True,
+                era="Run2_2018",
+                localera="TM2018",
+            )
         else: # if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
