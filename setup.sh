@@ -15,6 +15,7 @@ usage(){
 	echo ""
 	echo "-f [fork]           clone from specified fork (default = ${FORK})"
 	echo "-b [branch]         clone specified branch (default = ${BRANCH})"
+	echo "-c [version]        use specified CMSSW version (default = ${CMSSWVER})"
 	echo "-a [protocol]       use protocol to clone (default = ${ACCESS}, alternative = https)"
 	echo "-j [cores]          run CMSSW compilation on # cores (default = ${CORES})"
 	echo "-n [name]           name of the CMSSW directory (default = ${CMSSWVER})"
@@ -25,11 +26,13 @@ usage(){
 }
 
 # process options
-while getopts "f:b:a:j:n:d:h" opt; do
+while getopts "f:b:a:j:n:d:c:h" opt; do
 	case "$opt" in
 	f) FORK=$OPTARG
 	;;
 	b) BRANCH=$OPTARG
+	;;
+	c) CMSSWVER=$OPTARG
 	;;
 	a) ACCESS=$OPTARG
 	;;
@@ -56,6 +59,15 @@ else
 fi
 
 # get CMSSW release
+if [[ "$CMSSWVER" == "CMSSW_9_4_"* ]]; then
+	GCC_VERSION=gcc630
+elif [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
+	GCC_VERSION=gcc700
+else
+	echo "Unsupported CMSSW version: $CMSSWVER"
+	exit 1
+fi
+
 if [[ `uname -r` == *"el6"* ]]; then
 	SLC_VERSION="slc6"
 elif [[ `uname -r` == *"el7"* ]]; then
@@ -64,7 +76,7 @@ else
 	echo "WARNING::Unknown SLC version. Defaulting to SLC6."
 	SLC_VERSION="slc6"
 fi
-export SCRAM_ARCH=${SLC_VERSION}_amd64_gcc630
+export SCRAM_ARCH=${SLC_VERSION}_amd64_${GCC_VERSION}
 
 # cmsrel
 SCRAM_PROJECT_OPTIONS=""
@@ -86,12 +98,19 @@ git cms-init
 git config gc.auto 0
 
 # CMSSW patches
-git cms-merge-topic TreeMaker:fixFormulaEvaluator_949 # this one has dependencies, might be in a future 9_4_X release
-git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
-git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
-git cms-merge-topic -u TreeMaker:AddJetAxis1_942
-git cms-merge-topic -u TreeMaker:NjettinessAxis_948
-git cms-merge-topic -u TreeMaker:METFixEE2017_949_v2
+if [[ "$CMSSWVER" == "CMSSW_9_4_"* ]]; then
+	git cms-merge-topic TreeMaker:fixFormulaEvaluator_949 # this one has dependencies, might be in a future 9_4_X release
+	git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
+	git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
+	git cms-merge-topic -u TreeMaker:AddJetAxis1_942
+	git cms-merge-topic -u TreeMaker:NjettinessAxis_948
+	git cms-merge-topic -u TreeMaker:METFixEE2017_949_v2
+elif [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
+	git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_10_2_7
+	git cms-merge-topic -u TreeMaker:storeJERFactorIndex1027
+	git cms-merge-topic -u TreeMaker:AddJetAxis1_1027
+	git cms-merge-topic -u TreeMaker:NjettinessAxis_1027
+fi
 
 # outside repositories
 git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
