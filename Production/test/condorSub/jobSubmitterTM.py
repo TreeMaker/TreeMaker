@@ -40,7 +40,7 @@ class jobSubmitterTM(jobSubmitter):
                 '    ( JobRunCount > 8 ) || \\\n'
                 '    ( JobStatus == 5 && CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 6 ) || \\\n'
                 '    ( DiskUsage > 38000000 ) || \\\n'
-                '    ( ResidentSetSize > RequestMemory * 950 ) )\n'
+                '    ( ifthenelse(ResidentSetSize isnt undefined, ResidentSetSize > RequestMemory * 950, false) ) )\n'
                 'periodic_hold_reason = strcat("Job held by PERIODIC_HOLD due to ", \\\n'
                 '    ifThenElse(( JobUniverse == 5 && JobStatus == 2 && CurrentTime - EnteredCurrentStatus > $(ONE_DAY) * 1.75 ), "runtime longer than 1.75 days", \\\n'
                 '    ifThenElse(( JobRunCount > 8 ), "JobRunCount greater than 8", \\\n'
