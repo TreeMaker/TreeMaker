@@ -54,6 +54,9 @@ mytests.append(makeTest("Summer16","TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-ma
 mytests.append(makeTest("Summer16sig","SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,dataset="/store/mc/RunIISummer16MiniAODv2/SMS-T1tttt_mGluino-1500_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/50000/0818BABF-64BE-E611-B201-008CFA000280.root"))
 mytests.append(makeTest("Spring16Fastsig","SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,dataset="/store/mc/RunIISpring16MiniAODv2/SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/00000/004A27F0-5132-E611-A936-02163E016171.root"))
 mytests.append(makeTest("Spring16Pmssm","pMSSM_MCMC1_mH-120to130_batch1_TuneCUETP8M1_13TeV-pythia8",numevents,command,dataset="/store/mc/RunIISpring16MiniAODv2/pMSSM_MCMC1_mH-120to130_batch1_TuneCUETP8M1_13TeV-pythia8/MINIAODSIM/pLHE_PUSpring16Fast_80X_mcRun2_asymptotic_2016_miniAODv2_v0-v1/60000/008EDC58-EDA2-E611-9608-FA163E1F94C5.root"))
+mytests.append(makeTest("2018B26Sep",name,numevents,command,inputFilesConfig="Run2018B-26Sep2018-v1.JetHT",nstart=0,nfiles=10))
+mytests.append(makeTest("2018B26SepHEM",name,numevents,command,inputFilesConfig="Run2018B-26Sep2018_HEM-v1.JetHT",nstart=0,nfiles=10))
+mytests.append(makeTest("2018B26SepHEM",name,numevents,command,inputFilesConfig="Run2018B-26Sep2018_HEMmitigation-v1.JetHT",nstart=0,nfiles=10))
 
 
 if test<0 or test>len(mytests):
