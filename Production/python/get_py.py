@@ -1,4 +1,4 @@
-import re,sys,getopt,urllib2,json
+import re,sys,getopt,urllib2,json,os
 from dbs.apis.dbsClient import DbsApi
 from optparse import OptionParser
 from collections import defaultdict
@@ -19,6 +19,8 @@ def main(args):
     flist = __import__(dictname).flist
     ofolder = options.of
     if ofolder[-1] != "/": ofolder += "/"
+    if not os.path.isdir(ofolder):
+        os.mkdir(ofolder)
     makepy = options.py
     makewp = options.wp
     makese = options.se
