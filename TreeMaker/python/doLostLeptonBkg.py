@@ -16,7 +16,7 @@ def doLostLeptonBkg(self,process,METTag):
     )
     electronEAValuesLocal = cms.vdouble(0.1566, 0.1626, 0.1073, 0.0854, 0.1051, 0.1204, 0.1524)
     muonEAValuesLocal     = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577)
-    TMeras.TM2017.toModify(process.IDMuonMiniIso,
+    (TMeras.TM2017 | TMeras.TM2018).toModify(process.IDMuonMiniIso,
         electronEAValues = electronEAValuesLocal,
         muonEAValues     = muonEAValuesLocal
     )
@@ -24,7 +24,7 @@ def doLostLeptonBkg(self,process,METTag):
         LeptonTag = cms.InputTag('LeptonsNew:IdElectron'), 
         LeptonType = cms.string('electron')
     )
-    TMeras.TM2017.toModify(process.IDElectronMiniIso,
+    (TMeras.TM2017 | TMeras.TM2018).toModify(process.IDElectronMiniIso,
         electronEAValues = electronEAValuesLocal,
         muonEAValues     = muonEAValuesLocal
     )
@@ -75,7 +75,7 @@ def doLostLeptonBkg(self,process,METTag):
             LeptonTag = cms.InputTag('GenLeptons:Muon'), 
             LeptonType = cms.string('gen')
         )
-        TMeras.TM2017.toModify(process.GenMuonMiniIso,
+        (TMeras.TM2017 | TMeras.TM2018).toModify(process.GenMuonMiniIso,
             electronEAValues = electronEAValuesLocal,
             muonEAValues     = muonEAValuesLocal
         )
@@ -83,7 +83,7 @@ def doLostLeptonBkg(self,process,METTag):
             LeptonTag = cms.InputTag('GenLeptons:Electron'), 
             LeptonType = cms.string('gen')
         )
-        TMeras.TM2017.toModify(process.GenElectronMiniIso,
+        (TMeras.TM2017 | TMeras.TM2018).toModify(process.GenElectronMiniIso,
             electronEAValues = electronEAValuesLocal,
             muonEAValues     = muonEAValuesLocal
         )
@@ -91,7 +91,7 @@ def doLostLeptonBkg(self,process,METTag):
             LeptonTag = cms.InputTag('GenLeptons:Tau'), 
             LeptonType = cms.string('gen')
         )
-        TMeras.TM2017.toModify(process.GenTauMiniIso,
+        (TMeras.TM2017 | TMeras.TM2018).toModify(process.GenTauMiniIso,
             electronEAValues = electronEAValuesLocal,
             muonEAValues     = muonEAValuesLocal
         )

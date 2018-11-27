@@ -53,7 +53,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         # keep all eta jets to preserve ordering
         maxJetEta                 = cms.double(-1),
     )
-    TMeras.TM2017.toModify(GoodJets,
+    (TMeras.TM2017 | TMeras.TM2018).toModify(GoodJets,
         maxNeutralFraction        = cms.double(0.90),
         maxNeutralFractionHE      = cms.double(1.00), #Turned off as not needed for the tight WP
         minNeutralFractionHF      = cms.double(0.02),
@@ -123,7 +123,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
         BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
         BTagCutValue = cms.double(0.8484)
     )
-    TMeras.TM2017.toModify(BTags,BTagCutValue = cms.double(0.8838))
+    (TMeras.TM2017 | TMeras.TM2018).toModify(BTags,BTagCutValue = cms.double(0.8838))
     setattr(process,"BTags"+suff,BTags)
     self.VarsInt.extend(['BTags'+suff])
 
@@ -132,7 +132,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
         BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
         BTagCutValue = cms.double(0.6324)
     )
-    TMeras.TM2017.toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
+    (TMeras.TM2017 | TMeras.TM2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
     setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
     self.VarsInt.extend(['BTagsDeepCSV'+suff])
     

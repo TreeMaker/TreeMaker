@@ -12,4 +12,4 @@ prescaleweightProducer = cms.EDProducer('PrescaleWeightProducer',
 
 from TreeMaker.TreeMaker.TMEras import TMeras
 (TMeras.TM2016 & ~TMeras.TM80X).toModify(prescaleweightProducer, objects = cms.InputTag("slimmedPatTrigger"))
-TMeras.TM2017.toModify(prescaleweightProducer, objects = cms.InputTag("slimmedPatTrigger"))
+(TMeras.TM2017 | TMeras.TM2018).toModify(prescaleweightProducer, objects = cms.InputTag("slimmedPatTrigger"))
