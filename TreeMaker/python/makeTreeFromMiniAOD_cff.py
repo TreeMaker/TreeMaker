@@ -413,7 +413,7 @@ def makeTreeFromMiniAOD(self,process):
         rhoCollection      = cms.InputTag("fixedGridRhoFastjetCentralNeutral")  
     )
     # from: https://indico.cern.ch/event/732971/contributions/3022843/attachments/1658685/2656462/eleIdTuning.pdf
-    TMeras.TM2017.toModify(process.LeptonsNew,
+    (TMeras.TM2017 | TMeras.TM2018).toModify(process.LeptonsNew,
         # barrel electrons
         eb_ieta_cut        = cms.vdouble(0.0126,  0.0112,  0.0106,  0.0104),
         eb_deta_cut        = cms.vdouble(0.00463, 0.00377, 0.0032,  0.00255),

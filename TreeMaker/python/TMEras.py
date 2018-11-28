@@ -9,6 +9,7 @@ class TMEras(object):
             'TM80X',
             'TM2016_80X',
             'TM2017',
+            'TM2018',
         ]
 
         for e in allEras:
