@@ -113,6 +113,7 @@ triggerNameList = cms.vstring(
     'HLT_PFHT890_v',
     'HLT_PFHT900_v',
     'HLT_PFHT1050_v',
+    'HLT_PFJet450_v',
     'HLT_PFJet500_v',
     'HLT_PFJet550_v',
     'HLT_PFMET90_PFMHT90_IDTight_v',
