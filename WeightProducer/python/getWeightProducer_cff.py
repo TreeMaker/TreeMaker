@@ -389,6 +389,8 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('StealthSYY_2t6j_mStop-300_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 532773, False, 531723),
         MCSample('StealthSHH_2t4b_mStop-350_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 566558, False, 565120),
         # semivisible jet signals
+        MCSample("step4_MINIAOD_2016_mZprime-3000_mDark-20_rinv-0.3_alpha-0.2_n-1000", "ProductionV3", "", "Constant", 48974),
+        MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-0.2_n-1000", "ProductionV3", "", "Constant", 49414),
         MCSample("step4_MINIAOD_mZprime-3000_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49206),
         MCSample("step4_MINIAOD_mZprime-1000_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 49204),
         MCSample("step4_MINIAOD_mZprime-1500_mDark-20_rinv-0.3_alpha-peak_n-1000", "ProductionV3", "", "Constant", 48603),
