@@ -29,7 +29,7 @@ class maker:
         self.getParamDefault("outfile","test_run")
         # get base sample name, assuming format is name or name_#
         outfilesplit = self.outfile.split('_')
-        if outfilesplit[-1].isdigit(): outfilesplit = outfilesplit[:-1]
+        if outfilesplit[-1][-1].isdigit(): outfilesplit = outfilesplit[:-1]
         self.sample = '_'.join(outfilesplit)
         outfilesuff=self.parameters.value("outfilesuff","_RA2AnalysisTree")
         self.outfile += outfilesuff
