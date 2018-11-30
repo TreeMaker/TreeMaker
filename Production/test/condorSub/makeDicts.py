@@ -1,8 +1,6 @@
 import os, glob, fnmatch
 from optparse import OptionParser
-
-def parser_callback(option, opt, value, parser):
-  setattr(parser.values, option.dest, value.split(','))
+from Condor.Production.parseConfig import list_callback
 
 meta_dict = {
     "diboson" : ('WGJets','WW','WZ','ZG','ZZ'),
@@ -26,14 +24,14 @@ def main(args):
 
     # Read parameters
     parser = OptionParser()
-    parser.add_option("-b", "--base",          dest="base",     default=os.environ["CMSSW_BASE"]+"/src/TreeMaker/Production/python/", help="Base path to the python folder containing the file lists (default = %default)")
-    parser.add_option("-c", "--categories",    dest="categories", default="", type="string", action='callback', callback=parser_callback, help="Comma separated list of categories to make dicts for rather than making all of the files (default = %default)")
-    parser.add_option("-d", "--debug",         dest="debug",    default=False, action="store_true",                                   help="Print extra debugging information (default = %default)")
-    parser.add_option("-e", "--era",           dest="era",      default='RunIIFall17MiniAODv2',                                       help="The era used in the naming of the ouput dictionaries (default = %default)")
-    parser.add_option("-l", "--location",      dest="location", default='RunIIFall17MiniAODv2/',                                      help="Location of the file lists which will be added to the dictionary (default = %default)")
-    parser.add_option("-o", "--output_folder", dest="ofolder",  default="./",                                                         help="Put the output files in the specified folder (default = %default)")
-    parser.add_option("-s", "--sig_scenario",  dest="sigsen",   default='Fall17sig',                                                  help="The scenario used for the signal samples (default = %default)")
-    parser.add_option("-S", "--bkg_scenario",  dest="bkgsen",   default='Fall17',                                                     help="The scenario used for the background samples (default = %default)")
+    parser.add_option("-b", "--base",          dest="base",     default=os.environ["CMSSW_BASE"]+"/src/TreeMaker/Production/python/",   help="Base path to the python folder containing the file lists (default = %default)")
+    parser.add_option("-c", "--categories",    dest="categories", default="", type="string", action='callback', callback=list_callback, help="Comma separated list of categories to make dicts for rather than making all of the files (default = %default)")
+    parser.add_option("-d", "--debug",         dest="debug",    default=False, action="store_true",                                     help="Print extra debugging information (default = %default)")
+    parser.add_option("-e", "--era",           dest="era",      default='RunIIFall17MiniAODv2',                                         help="The era used in the naming of the ouput dictionaries (default = %default)")
+    parser.add_option("-l", "--location",      dest="location", default='RunIIFall17MiniAODv2/',                                        help="Location of the file lists which will be added to the dictionary (default = %default)")
+    parser.add_option("-o", "--output_folder", dest="ofolder",  default="./",                                                           help="Put the output files in the specified folder (default = %default)")
+    parser.add_option("-s", "--sig_scenario",  dest="sigsen",   default='Fall17sig',                                                    help="The scenario used for the signal samples (default = %default)")
+    parser.add_option("-S", "--bkg_scenario",  dest="bkgsen",   default='Fall17',                                                       help="The scenario used for the background samples (default = %default)")
     (options, args) = parser.parse_args(args)
 
     nfiles_total = 0
