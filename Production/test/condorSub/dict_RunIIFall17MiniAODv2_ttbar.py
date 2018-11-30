@@ -12,5 +12,8 @@ flist = {
         ['RunIIFall17MiniAODv2.TTJets_HT-800to1200_TuneCP5_13TeV-madgraphMLM-pythia8'],
         ['RunIIFall17MiniAODv2.TTJets_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia8'],
         ['RunIIFall17MiniAODv2.TTJets_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8'],
+        ['RunIIFall17MiniAODv2.TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8'],
+        ['RunIIFall17MiniAODv2.TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8'],
+        ['RunIIFall17MiniAODv2.TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8'],
     ]
 }

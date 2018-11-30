@@ -12,7 +12,7 @@ meta_dict = {
     "qcd_pt"  : ('QCD_Pt',),
     "signal"  : ('SMS','RPV','StealthSYY','StealthSHH'),
     "singlet" : ('ST_s-channel','ST_t-channel','ST_tW','tZq'),
-    "ttbar"   : ('TTJets','TT_Tune'),
+    "ttbar"   : ('TTJets','TT_Tune','TTTo2L2Nu','TTToSemiLeptonic','TTToHadronic'),
     "tth"     : ('TTZTo','TTWJets','TTGJets','TTGamma','TTHH','TTTT','TTTW','TTWH','TTWW','TTWZ','TTZH','TTZZ','ttHJet'),
     "wjets"   : ('WJetsToLNu',),
     "zjets"   : ('ZJetsToNuNu',),
