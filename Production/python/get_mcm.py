@@ -4,6 +4,8 @@
 
 import sys,os,pycurl,json,cStringIO,subprocess
 from optparse import OptionParser
+from TreeMaker.Production.tm_common import printGetPyDictHeader
+from Condor.Production.parseConfig import list_callback
 
 # curl settings
 curl = pycurl.Curl()
@@ -22,6 +24,46 @@ class col:
     endc = '\033[0m'
     bold = '\033[1m'
     uline = '\033[4m'
+
+class pyline:
+    '''
+    Example Use:
+    from get_mcm import pyline
+    gpl = pyline('dname1',True)
+    print gpl
+    gpl.append('dname2',True)
+    print gpl
+    gpl.append('dname3',False)
+    print gpl
+    gpl.append(['dname4','dname5'],[False,False])
+    print gpl
+
+    or
+
+    gpl = pyline(['dname1','dname2'], [False,True])
+    '''
+    def __init__(self, dataset_names, pu_valids):
+        if type(dataset_names) in [str,unicode]: dataset_names = [dataset_names]
+        if type(pu_valids) == bool: pu_valids = [pu_valids]
+        if len(dataset_names) != len(pu_valids):
+            raise ValueError('The length of the dataset and pu validity lists must be the same.')
+        self.dataset_names = [str(x) for x in dataset_names]
+        self.pu_valids = pu_valids
+
+    def append(self, dataset_names, pu_valids):
+        if type(dataset_names) in [str,unicode]: dataset_names = [dataset_names]
+        if type(pu_valids) == bool: pu_valids = [pu_valids]
+        if len(dataset_names) != len(pu_valids):
+            raise ValueError('The length of the dataset and pu validity lists must be the same.')
+
+        self.dataset_names.extend([str(x) for x in dataset_names])
+        self.pu_valids.extend(pu_valids)
+
+    def __repr__(self):
+        return "%s(%r, %r)" % (self.__class__.__name__, self.dataset_names,self.pu_valids)
+
+    def __str__(self):
+        return "\t[%r, %r, []]," % (2 if False in self.pu_valids else 1, self.dataset_names)
 
 def getA(query,debug):
     global curl
@@ -46,6 +88,9 @@ def getA(query,debug):
         print traceback.format_exc()
         print jstr
         return None
+
+#def parser_callback(option, opt, value, parser):
+#  setattr(parser.values, option.dest, value.split(','))
 
 def preq(req,gensim,comment='',debug=False):
     tot = req['total_events'] 
@@ -103,12 +148,16 @@ def main(args):
     parser.add_option("-d", "--dict", dest="dict", default="dict_mcm", help="check for samples listed in this dict (default = %default)")
     parser.add_option("-f", "--file", dest="file", default=False, action="store_true", help="write to file instead of displaying in terminal, removes colors (default = %default)")
     parser.add_option("-p", "--pu", dest="pu", default="", help="string to check for in pu dataset to determine validity (default = %default)")
+    parser.add_option("-m", "--make", dest="make_dict", default="", help="if set, make a get_py.py dictionary out of the finished datasets (default = %default)")
+    parser.add_option("-i", "--inclusive", dest="inclusive", default=False, action="store_true", help="if make is set, include the finished_invalid datasets in the dict (default = %default)")
+    parser.add_option("-v", "--vgrep", dest="vgrep", default="", type="string", action='callback', callback=list_callback, help="comma separated list of patterns in the dataset name to ignore (default = %default). Watch for dangling commas!")
     parser.add_option("--miniaod", dest="miniaod", default="RunIISummer16MiniAODv2", help="miniAOD campaign name (default = %default)")
     parser.add_option("--digireco", dest="digireco", default="RunIISummer16DR80*", help="DIGI-RECO campaign name (default = %default)")
     parser.add_option("--gensim", dest="gensim", default="RunIISummer15*GS*", help="GEN-SIM campaign name (default = %default)")
     parser.add_option("--debug", dest="debug", default=False, action="store_true", help="print debug info (default = %default)")
     parser.add_option("--cert", dest="cert", default="", help="w/ --key, use certificate access for McM database (otherwise kerberos) (default = %default)")
     parser.add_option("--key", dest="key", default="", help="w/ --cert, use certificate access for McM database (otherwise kerberos) (default = %default)")
+    parser.add_option("--verbose", dest="verbose", default=False, action="store_true", help="print some extra messages (not quite as verbose as debug (default = %default)")
     (options, args) = parser.parse_args()
     
     # check options
@@ -168,6 +217,10 @@ def main(args):
         invalidfile.write(cols+"\n")
     else:
         print cols
+
+    if len(options.make_dict)>0:
+        getpyfile = open(options.make_dict,'w')
+        printGetPyDictHeader(getpyfile)
         
     for ds in datasets.keys():
         if options.file: print ds
@@ -176,6 +229,7 @@ def main(args):
         goodcols = []
         badcols = []
         invalidcols = []
+        getpylines = []
         for ext in datasets[ds]:
             # keep track of all found dataset names (wildcard support)
             found_list = set()
@@ -192,6 +246,9 @@ def main(args):
             if req_mini:
                 for ireq in req_mini:
                     dname = ireq['dataset_name']
+                    if any(pattern in dname for pattern in options.vgrep):
+                        if options.verbose: print "\tSkipping",dname,"because of vgrep"
+                        continue
                     if dname in found_list: continue
                     found_list.add(dname)
                     hlight = col.red
@@ -204,6 +261,16 @@ def main(args):
                         if ireq['status']=='done' and pu_valid: goodcols.append(toprint)
                         elif ireq['status']=='done' and not pu_valid: invalidcols.append(toprint)
                         else: badcols.append(toprint)
+
+                        if ireq['status']=='done' and len(options.make_dict)>0:
+                            output_dataset = ireq['output_dataset']
+                            if ext == 0:
+                                if pu_valid: getpylines.append(pyline(output_dataset,pu_valid))
+                                elif options.inclusive and not pu_valid: getpylines.append(pyline(output_dataset,pu_valid))
+                            else:
+                                if pu_valid: getpylines[-1].append(output_dataset,pu_valid)
+                                elif options.inclusive and not pu_valid: getpylines[-1].append(output_dataset,pu_valid)
+
                     else:
                         allcols.append(hlight+toprint+col.endc)
             
@@ -237,11 +304,18 @@ def main(args):
         else:
             if len(allcols)>0: print '\n'.join(sorted(allcols))
     
+        if len(options.make_dict)>0 and len(getpylines)>0:
+            getpyfile.write('\n'.join(sorted([str(item) for item in getpylines]))+'\n')
+
     # print sorted output
     if options.file:
         goodfile.close()
         badfile.close()
         invalidfile.close()
+
+    if len(options.make_dict)>0:
+        getpyfile.write("]\n")
+        getpyfile.close()
 
 if __name__ == '__main__':
     import sys
