@@ -91,19 +91,16 @@ void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 
   for (unsigned int i = 0; i < triggerBits->size(); i++) {
     const string& trigName = trigNames.triggerName(i);
-    size_t strpos;
-
-    strpos = trigName.find("HLT_PFHT");
+    size_t strpos = trigName.find("HLT_PFHT");
     if (strpos == string::npos)
       continue;
     strpos = trigName.find("0_v");
     if (!(strpos == 10 || strpos==11)) continue;
     bool pass = triggerBits->accept(i);
     int ps = triggerPrescales->getPrescaleForIndex(i);
-    string strthr;
-    if (strpos==10) strthr= trigName.substr(8, 3);
-    if (strpos==11) strthr= trigName.substr(8, 4);
-    int thresh = int(atof(strthr.c_str()));
+    string strthr = trigName.substr(8, strpos==10 ? 3 : 4);
+    int thresh = stoi(strthr.c_str());
+    
     //cout << "pure ht trigger name" << trigName << " thresh " << thresh << "accepted = " << pass << " with ps = "<<ps<< endl;
     trigNameVec.push_back(trigName);
     trigPassVec.push_back(pass);
