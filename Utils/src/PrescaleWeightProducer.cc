@@ -91,24 +91,27 @@ void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 
   for (unsigned int i = 0; i < triggerBits->size(); i++) {
     const string& trigName = trigNames.triggerName(i);
-    size_t found;
-    found = trigName.find("HLT_PFHT");
-    if (found == string::npos)
+    size_t strpos;
+
+    strpos = trigName.find("HLT_PFHT");
+    if (strpos == string::npos)
       continue;
-    found = trigName.find("0_v");
-    if (found != 10)
-      continue;
+    strpos = trigName.find("0_v");
+    if (!(strpos == 10 || strpos==11)) continue;
     bool pass = triggerBits->accept(i);
     int ps = triggerPrescales->getPrescaleForIndex(i);
-    string strthr = trigName.substr(8, 3);
+    string strthr;
+    if (strpos==10) strthr= trigName.substr(8, 3);
+    if (strpos==11) strthr= trigName.substr(8, 4);
     int thresh = int(atof(strthr.c_str()));
+    //cout << "pure ht trigger name" << trigName << " thresh " << thresh << "accepted = " << pass << " with ps = "<<ps<< endl;
     trigNameVec.push_back(trigName);
     trigPassVec.push_back(pass);
     trigThresholdVec.push_back(thresh);
     trigPrescaleVec.push_back(ps);
   }   
 
-  int gotht = 0; int gotmht = 0;
+  bool gotht = false; bool gotmht = false;
   for (pat::TriggerObjectStandAlone obj : *triggerObjects) 
     {
       obj.unpackPathNames(trigNames);
@@ -116,16 +119,16 @@ void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
       if ( abs(obj.filterIds()[0]) == 89) 
 	{
 	  ht = obj.pt();
-	  gotht = 1;
+	  gotht = true;
 	  continue;
 	}
       if ( abs((obj.filterIds()[0]) == 90) )
 	{
 	  mht = obj.pt(); 
-	  gotmht = 1;
+	  gotmht = true;
 	  continue;
 	}
-      if (gotht+gotmht>1.5)
+      if (gotht && gotmht)
 	{
 	  break;
 	}
@@ -158,6 +161,7 @@ void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 
   auto mhtOut = std::make_unique<double>((mht));
   iEvent.put(std::move(mhtOut), "mht");
+
   
 }
 

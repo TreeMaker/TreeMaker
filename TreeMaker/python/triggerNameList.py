@@ -75,6 +75,7 @@ triggerNameList = cms.vstring(
     'HLT_Mu50_IsoVVVL_PFHT400_v',
     'HLT_Mu50_IsoVVVL_PFHT450_v',
     'HLT_Mu55_v',
+    'HLT_PFHT180_v',    
     'HLT_PFHT200_v',
     'HLT_PFHT250_v',
     'HLT_PFHT300_v',
