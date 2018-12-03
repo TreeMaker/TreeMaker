@@ -52,12 +52,16 @@ private:
   edm::EDGetTokenT<edm::TriggerResults> _triggerBits;
   edm::EDGetTokenT<pat::TriggerObjectStandAloneCollection> _triggerObjects;
   edm::EDGetTokenT<pat::PackedTriggerPrescales> _triggerPrescales;
+  edm::EDGetTokenT<pat::PackedTriggerPrescales> _triggerPrescalesL1min;
+  edm::EDGetTokenT<pat::PackedTriggerPrescales> _triggerPrescalesL1max;
 };
 
 PrescaleWeightProducer::PrescaleWeightProducer(const edm::ParameterSet& iConfig) :
   _triggerBits(consumes<edm::TriggerResults>(iConfig.getParameter<edm::InputTag>("bits"))), 
   _triggerObjects(consumes<pat::TriggerObjectStandAloneCollection>(iConfig.getParameter<edm::InputTag>("objects"))), 
-  _triggerPrescales(consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescales"))) 
+  _triggerPrescales(consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescales"))), 
+  _triggerPrescalesL1min(consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescalesL1min"))), 
+  _triggerPrescalesL1max(consumes<pat::PackedTriggerPrescales>(iConfig.getParameter<edm::InputTag>("prescalesL1max"))) 
 {
 
   produces<double> ("weight");
@@ -79,6 +83,12 @@ void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
   iEvent.getByToken(_triggerObjects, triggerObjects);
   edm::Handle<pat::PackedTriggerPrescales> triggerPrescales;
   iEvent.getByToken(_triggerPrescales, triggerPrescales);
+  edm::Handle<pat::PackedTriggerPrescales> triggerPrescalesL1min;
+  iEvent.getByToken(_triggerPrescalesL1min, triggerPrescalesL1min);
+  edm::Handle<pat::PackedTriggerPrescales> triggerPrescalesL1max;
+  iEvent.getByToken(_triggerPrescalesL1max, triggerPrescalesL1max);
+
+
   const edm::TriggerNames & trigNames = iEvent.triggerNames(*triggerBits);
 
   vector<string> trigNameVec;
@@ -98,10 +108,12 @@ void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
     if (!(strpos == 10 || strpos==11)) continue;
     bool pass = triggerBits->accept(i);
     int ps = triggerPrescales->getPrescaleForIndex(i);
+    int psL1min = triggerPrescalesL1min->getPrescaleForIndex(i);
+    int psL1max = triggerPrescalesL1max->getPrescaleForIndex(i);
     string strthr = trigName.substr(8, strpos==10 ? 3 : 4);
     int thresh = stoi(strthr.c_str());
-    
-    //cout << "pure ht trigger name" << trigName << " thresh " << thresh << "accepted = " << pass << " with ps = "<<ps<< endl;
+    if (psL1min==psL1max || psL1min==1) ps*=psL1min; 
+    else ps = -1.0;
     trigNameVec.push_back(trigName);
     trigPassVec.push_back(pass);
     trigThresholdVec.push_back(thresh);
@@ -131,13 +143,15 @@ void PrescaleWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const ed
 	}
     }
 
-  int requiredTrigThreshold = 0;
+
+  //int requiredTrigThreshold = 0;
+  int requiredTrigPrescale = 9999999;
   int requiredTrigIndex = -1;
   for(unsigned int t=0; t<trigNameVec.size();t++)
       {
-	if(trigThresholdVec[t]>requiredTrigThreshold && trigThresholdVec[t]<ht)
+	if(trigPrescaleVec[t]<requiredTrigPrescale && trigThresholdVec[t]<ht)
 	  {
-	    requiredTrigThreshold = trigThresholdVec[t];
+	    requiredTrigPrescale = trigPrescaleVec[t];
 	    requiredTrigIndex = t;
 	  }
       }
