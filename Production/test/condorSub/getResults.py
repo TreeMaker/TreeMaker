@@ -70,7 +70,7 @@ for rname,rvals in sorted(rdict.iteritems()):
 # generate a new dictionary if in_dict and out_dict are set
 if options.gen_dict:
     outf = open(options.out_dict,'w')
-    printHeader(outf)
+    printGetPyDictHeader(outf)
 
     sys.path.append(os.path.abspath(os.path.dirname(options.in_dict)))
     dictname = os.path.basename(options.in_dict.replace(".py",""))
