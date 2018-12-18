@@ -150,7 +150,7 @@ class Scenario:
                 era="Run2_2018",
                 localera="TM2018",
             )
-        elif sname == "2018Prompt":
+        elif sname == "2018PromptReco":
             self.set_vars(
                 globaltag="102X_dataRun2_Prompt_v11",
                 tagname="RECO",

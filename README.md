@@ -58,6 +58,8 @@ The available scenarios are:
 10. `Summer16sig`: for Summer16 miniAOD 25ns MC (80X) (signal)
 11. `2018B26Sep`: for 2018 prompt data, partial period B
 12. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
+13. `2018PromptReco`: for 2018 prompt data, run period D
+14. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
 
 ## Unit Tests (Interactive Runs)
 
