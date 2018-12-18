@@ -59,6 +59,9 @@ class pyline:
         self.dataset_names.extend([str(x) for x in dataset_names])
         self.pu_valids.extend(pu_valids)
 
+    def get_process(self):
+        return self.dataset_names[0].split('/')[1]
+
     def __repr__(self):
         return "%s(%r, %r)" % (self.__class__.__name__, self.dataset_names,self.pu_valids)
 
@@ -111,7 +114,7 @@ def preq(req,gensim,comment='',debug=False):
             tot = igs['total_events']
             pct_done = float(cmpl)/float(tot)*100.
             break
-    type = 'None'
+    type = 'None '
     if ('MiniAOD' in req['member_of_campaign']): type = 'MiniAOD '
     elif ('DRPremix' in req['member_of_campaign']): type = 'DIG-REC '
     elif ('GS' in req['member_of_campaign']): type = 'GEN-SIM '
@@ -252,7 +255,7 @@ def main(args):
                     if dname in found_list: continue
                     found_list.add(dname)
                     hlight = col.red
-                    pu_valid = pu_dataset_validity(ireq,options.digireco,options.pu,options.debug)
+                    pu_valid = pu_dataset_validity(ireq,options.digireco,options.pu,options.debug) if options.pu!="" else True
                     toprint = preq(ireq,options.gensim,'' if pu_valid else 'Invalid Pileup Dataset',options.debug)
                     if not pu_valid and ireq['status']!='new': hlight = col.yellow
                     elif ireq['status']=='done': hlight = col.green
@@ -264,7 +267,7 @@ def main(args):
 
                         if ireq['status']=='done' and len(options.make_dict)>0:
                             output_dataset = ireq['output_dataset']
-                            if ext == 0:
+                            if len(getpylines)==0 or output_dataset[0].split('/')[1]!=getpylines[-1].get_process():
                                 if pu_valid: getpylines.append(pyline(output_dataset,pu_valid))
                                 elif options.inclusive and not pu_valid: getpylines.append(pyline(output_dataset,pu_valid))
                             else:
