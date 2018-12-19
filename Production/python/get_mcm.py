@@ -4,6 +4,7 @@
 
 import sys,os,pycurl,json,cStringIO,subprocess
 from optparse import OptionParser
+from collections import OrderedDict
 from TreeMaker.Production.tm_common import printGetPyDictHeader
 from Condor.Production.parseConfig import list_callback
 
@@ -232,7 +233,7 @@ def main(args):
         goodcols = []
         badcols = []
         invalidcols = []
-        getpylines = []
+        getpylines = OrderedDict()
         for ext in datasets[ds]:
             # keep track of all found dataset names (wildcard support)
             found_list = set()
@@ -267,12 +268,13 @@ def main(args):
 
                         if ireq['status']=='done' and len(options.make_dict)>0:
                             output_dataset = ireq['output_dataset']
-                            if len(getpylines)==0 or output_dataset[0].split('/')[1]!=getpylines[-1].get_process():
-                                if pu_valid: getpylines.append(pyline(output_dataset,pu_valid))
-                                elif options.inclusive and not pu_valid: getpylines.append(pyline(output_dataset,pu_valid))
+                            PD = output_dataset[0].split('/')[1]
+                            if len(getpylines)==0 or PD not in getpylines.keys():
+                                if pu_valid: getpylines[PD] = pyline(output_dataset,pu_valid)
+                                elif options.inclusive and not pu_valid: getpylines[PD] = pyline(output_dataset,pu_valid)
                             else:
-                                if pu_valid: getpylines[-1].append(output_dataset,pu_valid)
-                                elif options.inclusive and not pu_valid: getpylines[-1].append(output_dataset,pu_valid)
+                                if pu_valid: getpylines[PD].append(output_dataset,pu_valid)
+                                elif options.inclusive and not pu_valid: getpylines[PD].append(output_dataset,pu_valid)
 
                     else:
                         allcols.append(hlight+toprint+col.endc)
@@ -308,7 +310,7 @@ def main(args):
             if len(allcols)>0: print '\n'.join(sorted(allcols))
     
         if len(options.make_dict)>0 and len(getpylines)>0:
-            getpyfile.write('\n'.join(sorted([str(item) for item in getpylines]))+'\n')
+            getpyfile.write('\n'.join(sorted([str(item) for key, item in getpylines.iteritems()]))+'\n')
 
     # print sorted output
     if options.file:
