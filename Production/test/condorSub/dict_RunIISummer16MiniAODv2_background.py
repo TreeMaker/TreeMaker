@@ -1,6 +1,7 @@
 flist = {
     "scenario": "Summer16",
     "samples": [
+        ['Summer16.TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16.ZJetsToNuNu_HT-600To800_13TeV-madgraph'],
         ['Summer16.ZJetsToNuNu_HT-800To1200_13TeV-madgraph'],
         ['Summer16.ZJetsToNuNu_HT-1200To2500_13TeV-madgraph'],
