@@ -181,11 +181,17 @@ def makeTreeFromMiniAOD(self,process):
     JetTag = cms.InputTag("slimmedJets")
     METTag = cms.InputTag('slimmedMETs')
     # get rid of the pointless low-pt AK8 jets ASAP
+    # also get rid of jets w/ inf constituents (CutParser doesn't support isinf or bitwise operations, so use this hack)
     process.slimmedJetsAK8Good = cms.EDFilter("PATJetSelector",
         src = cms.InputTag("slimmedJetsAK8"),
-        cut = cms.string("isPFJet"),
+        cut = cms.string("isPFJet && abs(daughter(0).energy)!=exp(1000)"),
     )
     JetAK8Tag = cms.InputTag('slimmedJetsAK8Good')
+    process.slimmedJetsAK8Inf = cms.EDFilter("PATJetSelector",
+        src = cms.InputTag("slimmedJetsAK8"),
+        cut = cms.string("isPFJet && abs(daughter(0).energy)==exp(1000)"),
+    )
+    JetAK8TagInf = cms.InputTag('slimmedJetsAK8Inf')
     SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
 
     process.load("CondCore.DBCommon.CondDBCommon_cfi")
@@ -918,8 +924,7 @@ def makeTreeFromMiniAOD(self,process):
         GenMETTag = cms.InputTag("slimmedMETs","",self.tagname), #original collection used deliberately here
         JetTag = cms.InputTag('HTJets'),
         geninfo = cms.untracked.bool(self.geninfo),
-        InfTagAK4 = cms.InputTag('GoodJets:JetInfCand'),
-        InfTagAK8 = cms.InputTag('GoodJetsAK8:JetInfCand'),
+        InfTagAK8 = JetAK8TagInf,
     )
     self.VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)','MET:Significance(METSignificance)'])
 #    self.VarsDouble.extend(['MET:RawPt(RawMET)','MET:RawPhi(RawMETPhi)'])

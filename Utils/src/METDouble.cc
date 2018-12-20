@@ -57,7 +57,7 @@ private:
    edm::InputTag metTag_, genMetTag_, JetTag_, InfTagAK4_, InfTagAK8_;
    edm::EDGetTokenT<edm::View<pat::MET>> metTok_, genMetTok_;
    edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
-   edm::EDGetTokenT<bool> InfTokAK4_, InfTokAK8_;
+   edm::EDGetTokenT<edm::View<pat::Jet>> InfTokAK8_;
    double MinJetPt_,MaxJetEta_;
    bool geninfo_;
    std::vector<pat::MET::METUncertainty> uncUpList, uncDownList;
@@ -71,7 +71,6 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    metTag_    = iConfig.getParameter<edm::InputTag> ("METTag");
    genMetTag_ = iConfig.getParameter<edm::InputTag> ("GenMETTag");
    JetTag_    = iConfig.getParameter<edm::InputTag> ("JetTag");
-   InfTagAK4_ = iConfig.getParameter<edm::InputTag> ("InfTagAK4");
    InfTagAK8_ = iConfig.getParameter<edm::InputTag> ("InfTagAK8");
    MinJetPt_  = iConfig.getUntrackedParameter<double> ("minJetPt",30.);
    MaxJetEta_ = iConfig.getUntrackedParameter<double> ("minJetEta",5.);
@@ -80,8 +79,7 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    metTok_ = consumes<edm::View<pat::MET>>(metTag_);
    genMetTok_ = consumes<edm::View<pat::MET>>(genMetTag_);
    JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
-   InfTokAK4_ = consumes<bool>(InfTagAK4_);
-   InfTokAK8_ = consumes<bool>(InfTagAK8_);
+   InfTokAK8_ = consumes<edm::View<pat::Jet>>(InfTagAK8_);
    
    uncUpList = {pat::MET::JetResUp, pat::MET::JetEnUp, pat::MET::MuonEnUp, pat::MET::ElectronEnUp, pat::MET::TauEnUp, pat::MET::UnclusteredEnUp, pat::MET::PhotonEnUp};
    uncDownList = {pat::MET::JetResDown, pat::MET::JetEnDown, pat::MET::MuonEnDown, pat::MET::ElectronEnDown, pat::MET::TauEnDown, pat::MET::UnclusteredEnDown, pat::MET::PhotonEnDown};
@@ -202,12 +200,9 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
 
    double ratio = metpt_/calometpt_;
    double ratio_inf = 0.;
-   edm::Handle<bool> InfAK4;
-   iEvent.getByToken(InfTokAK4_,InfAK4);
-   if(InfAK4.isValid() and *(InfAK4.product())) ratio_inf -= 4;
-   edm::Handle<bool> InfAK8;
+   edm::Handle<edm::View<pat::Jet>> InfAK8;
    iEvent.getByToken(InfTokAK8_,InfAK8);
-   if(InfAK8.isValid() and *(InfAK8.product())) ratio_inf -= 8;
+   if(InfAK8.isValid() and InfAK8->size()>0) ratio_inf -= 8;
    auto chtp3 = std::make_unique<double>(ratio_inf<0 ? ratio_inf : ratio);
    iEvent.put(std::move(chtp3),"PFCaloPtRatio");
 
