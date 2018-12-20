@@ -34,7 +34,7 @@ def main(args):
     parser.add_option("-S", "--bkg_scenario",  dest="bkgsen",   default='Fall17',                                                       help="The scenario used for the background samples (default = %default)")
     (options, args) = parser.parse_args(args)
 
-    nfiles_total = 0
+    written_files = []
     location = options.base+options.location
 
     for category in meta_dict:
@@ -44,13 +44,15 @@ def main(args):
         ofile = open(options.ofolder+"/dict_"+options.era+"_"+category+".py",'w')
 
         for pattern in patterns:
-            files_grabbed.extend(glob.glob(location+pattern+'*'))
+            files_grabbed.extend(glob.glob(location+pattern+'*_cff.py'))
         files_grabbed = [options.location+os.path.basename(x) for x in files_grabbed]
-        nfiles_total+=len(files_grabbed)
+        #nfiles_total+=len(files_grabbed)
 
         ofile.write("flist = {\n" + (4 * ' ') + "\"scenario\": \""+(options.sigsen if category=="signal" else options.bkgsen)+"\",\n" + (4 * ' ') + "\"samples\": [\n")
         for f in files_grabbed:
-             ofile.write((8 * ' ') + "[\'"+f.replace("_cff.py","").replace("/",".")+"\'],\n")
+            filename = f.replace("_cff.py","").replace("/",".")
+            written_files.append(filename)
+            ofile.write((8 * ' ') + "[\'"+filename+"\'],\n")
         
         ofile.write((4 * ' ') + "]\n}\n")
         ofile.close()
@@ -58,11 +60,20 @@ def main(args):
     all_files = os.listdir(location)
     all_files = fnmatch.filter(all_files, "*_cff.py")
 
-    if nfiles_total != len(all_files):
-        print "WARNING Some files might be duplicated across dictionaries or missing."
-    if nfiles_total != len(all_files) or options.debug:
-        print "\tFound "+str(len(all_files))+" in the folder "+location
-        print "\tCounted "+str(nfiles_total)+" file lists in the dictionaries"
+    endc = '\033[0m'
+    if len(written_files) != len(all_files):
+        print "\033[91mWARNING Some files might be duplicated across dictionaries or missing."+endc
+    if len(written_files) != len(all_files) or options.debug:
+        color = '\033[92m' if options.debug else '\033[91m'
+        written_files = [x[x.find('.')+1:]+"_cff.py" for x in written_files]
+        missing = set(written_files).difference(all_files)
+        print color+"\tCounted "+str(len(written_files))+" file lists in the dictionaries"+endc
+        print "\t\tValues in the dictionaries that are not found at "+location+":"+endc
+        print '\033[93m',"\t\t",list(missing),endc
+        print color+"\tFound "+str(len(all_files))+" in the folder "+location+endc
+        add = set(all_files).difference(written_files)
+        print "\t\tValues at "+location+" not found in the dictionaries:"+endc
+        print '\033[93m',"\t\t",add,endc
 
 if __name__ == '__main__':
     import sys
