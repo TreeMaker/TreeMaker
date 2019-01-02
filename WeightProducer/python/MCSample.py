@@ -174,13 +174,6 @@ class MCSampleHelper():
         "SMS_TChiWH_WToLNu_HToBB_mChargino850_mLSP1"                     : XSValues(-1.0, -1.0, 0.002548,     -1.0),
         "SMS-TChiWZ_ZToLL_mZMin-0p1_mChargino250_mLSP230"                : XSValues(-1.0, -1.0, 0.6204,       -1.0),
         "SMS-TChiWZ_ZToLL_mZMin-0p1"                                     : XSValues(-1.0, -1.0, 0.6204,       -1.0),
-        "mZprime-1000"                                                   : XSValues(-1.0, -1.0, 4.612,        -1.0),
-        "mZprime-1500"                                                   : XSValues(-1.0, -1.0, 0.77,         -1.0),
-        "mZprime-2000"                                                   : XSValues(-1.0, -1.0, 0.1849,       -1.0),
-        "mZprime-2500"                                                   : XSValues(-1.0, -1.0, 0.04977,      -1.0),
-        "mZprime-3000"                                                   : XSValues(-1.0, -1.0, 0.0155,       -1.0),
-        "mZprime-3500"                                                   : XSValues(-1.0, -1.0, 0.005036,     -1.0),
-        "mZprime-4000"                                                   : XSValues(-1.0, -1.0, 0.001688,     -1.0),
         "stealth_stop_350_singlino_SYY"                                  : XSValues(-1.0, -1.0, 3.78661,      -1.0),
         "stealth_stop_450_singlino_SYY"                                  : XSValues(-1.0, -1.0, 0.948333,     -1.0),
         "stealth_stop_550_singlino_SYY"                                  : XSValues(-1.0, -1.0, 0.296128,     -1.0),
@@ -249,6 +242,11 @@ class MCSampleHelper():
         "other"      : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)"],
     }
 
+    def __init__(self, extra_dicts=None):
+        if extra_dicts is not None:
+            for extra in extra_dicts:
+                self.__xs_dict.update(extra)
+
     def get_cm_energy(self, name):
         energy_result = re.search("(_[0-9]*TeV)",name)
         # allow a default value
@@ -274,7 +272,8 @@ class MCSample():
     m = MCSample("TTJets_TuneCUETP8M1_13TeV-madgraphMLM","PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 10139950, 0)
     '''
 
-    __helper = MCSampleHelper()
+    from SVJxsecs import SVJxsecs
+    __helper = MCSampleHelper([SVJxsecs])
 
     def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, WrongPU = False, NumberEvtsDiff = None):
         self.name = name
