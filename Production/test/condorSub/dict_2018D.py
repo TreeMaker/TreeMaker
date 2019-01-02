@@ -1,5 +1,5 @@
 flist = {
-    "scenario": "2018Prompt",
+    "scenario": "2018PromptReco",
     "samples": [
         ['Run2018D-PromptReco-v1.EGamma'],
         ['Run2018D-PromptReco-v1.JetHT'],
