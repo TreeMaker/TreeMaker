@@ -164,7 +164,7 @@ class Scenario:
         elif sname == "2018ReReco17Sep":
             self.set_vars(
                 globaltag="102X_dataRun2_Sep2018Rereco_v1",
-                tagname="PAT",
+                tagname="RECO",
                 hlttagname="HLT",
                 jsonfile="data/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt",
                 jecfile="data/jec/Fall17_17Nov2017_V32_102X_DATA",
