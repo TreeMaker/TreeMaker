@@ -1,17 +1,11 @@
 dataSamples = [
     # 2016B datasets: 17Jul2018 Re-Reco
-    [ "HTMHT_2016B_ver1_v1",          "Run2016B-17Jul2018_ver1-v1.HTMHT_*"] ,
-    [ "JetHT_2016B_ver1_v1",          "Run2016B-17Jul2018_ver1-v1.JetHT_*"] ,
-    [ "MET_2016B_ver1_v1",            "Run2016B-17Jul2018_ver1-v1.MET_*"] ,
-    [ "SingleElectron_2016B_ver1_v1", "Run2016B-17Jul2018_ver1-v1.SingleElectron_*"] ,
-    [ "SingleMuon_2016B_ver1_v1",     "Run2016B-17Jul2018_ver1-v1.SingleMuon_*"] ,
-    [ "SinglePhoton_2016B_ver1_v1",   "Run2016B-17Jul2018_ver1-v1.SinglePhoton_*"] ,
-    [ "HTMHT_2016B_ver2_v1",          "Run2016B-17Jul2018_ver2-v1.HTMHT_*"] ,
-    [ "JetHT_2016B_ver2_v1",          "Run2016B-17Jul2018_ver2-v1.JetHT_*"] ,
-    [ "MET_2016B_ver2_v1",            "Run2016B-17Jul2018_ver2-v1.MET_*"] ,
-    [ "SingleElectron_2016B_ver2_v1", "Run2016B-17Jul2018_ver2-v1.SingleElectron_*"] ,
-    [ "SingleMuon_2016B_ver2_v1",     "Run2016B-17Jul2018_ver2-v1.SingleMuon_*"] ,
-    [ "SinglePhoton_2016B_ver2_v1",   "Run2016B-17Jul2018_ver2-v1.SinglePhoton_*"] ,
+    [ "HTMHT_2016B",          "Run2016B-17Jul2018_ver2-v1.HTMHT_*"] ,
+    [ "JetHT_2016B",          "Run2016B-17Jul2018_ver2-v2.JetHT_*"] ,
+    [ "MET_2016B",            "Run2016B-17Jul2018_ver2-v1.MET_*"] ,
+    [ "SingleElectron_2016B", "Run2016B-17Jul2018_ver2-v1.SingleElectron_*"] ,
+    [ "SingleMuon_2016B",     "Run2016B-17Jul2018_ver2-v1.SingleMuon_*"] ,
+    [ "SinglePhoton_2016B",   "Run2016B-17Jul2018_ver2-v1.SinglePhoton_*"] ,
     # 2016C datasets: 17Jul2018 Re-Reco
     [ "HTMHT_2016C",                  "Run2016C-17Jul2018-v1.HTMHT_*"] ,
     [ "JetHT_2016C",                  "Run2016C-17Jul2018-v1.JetHT_*"] ,
@@ -50,7 +44,7 @@ dataSamples = [
     # 2016H datasets: 17Jul2018 Re-Reco
     [ "HTMHT_2016H",                  "Run2016H-17Jul2018-v1.HTMHT_*"] ,
     [ "JetHT_2016H",                  "Run2016H-17Jul2018-v1.JetHT_*"] ,
-    [ "MET_2016H",                    "Run2016H-17Jul2018-v1.MET_*"] ,
+    [ "MET_2016H",                    "Run2016H-17Jul2018-v2.MET_*"] ,
     [ "SingleElectron_2016H",         "Run2016H-17Jul2018-v1.SingleElectron_*"] ,
     [ "SingleMuon_2016H",             "Run2016H-17Jul2018-v1.SingleMuon_*"] ,
     [ "SinglePhoton_2016H",           "Run2016H-17Jul2018-v1.SinglePhoton_*"] ,
