@@ -18,13 +18,15 @@
 
 #include "TVector2.h"
 
+enum class wtype { scale = 0, pdf = 1, ps = 2 };
+
 template <class P>
 class PDFWeightHelper {
   public:
     PDFWeightHelper(const P* prod) : product_(prod) {}
-    bool fillWeights(std::vector<double>* output, unsigned offset, unsigned nWeights, bool isPDF) {
+    bool fillWeights(std::vector<double>* output, unsigned offset, unsigned nWeights, wtype wt) {
       if(offset > this->getMax()) return false;
-      double norm = 1./this->getNorm(offset,isPDF);
+      double norm = 1./this->getNorm(offset,wt);
       unsigned max = std::min(nWeights+offset,this->getMax());
       output->reserve(max-offset);
       for (unsigned int i = offset; i < max; i++) {
@@ -33,7 +35,7 @@ class PDFWeightHelper {
       return !output->empty();
     }
     double getWeight(unsigned index) { return 1.; }
-    double getNorm(unsigned offset, bool isPDF) { return 1.; }
+    double getNorm(unsigned offset, wtype wt) { return 1.; }
     unsigned getMax() { return product_->weights().size(); }
 
     //members
@@ -47,15 +49,15 @@ PDFWeightHelper<P> makeHelper(const P* prod) { return PDFWeightHelper<P>(prod); 
 template <> double PDFWeightHelper<LHEEventProduct>::getWeight(unsigned index){
   return product_->weights()[index].wgt;
 }
-template <> double PDFWeightHelper<LHEEventProduct>::getNorm(unsigned offset, bool isPDF){
-  return isPDF ? product_->originalXWGTUP() : this->getWeight(offset);
+template <> double PDFWeightHelper<LHEEventProduct>::getNorm(unsigned offset, wtype wt){
+  return wt==wtype::pdf ? product_->originalXWGTUP() : this->getWeight(offset);
 }
 
 template <> double PDFWeightHelper<GenEventInfoProduct>::getWeight(unsigned index){
   return product_->weights()[index];
 }
-template <> double PDFWeightHelper<GenEventInfoProduct>::getNorm(unsigned offset, bool isPDF){
-  return this->getWeight(offset);
+template <> double PDFWeightHelper<GenEventInfoProduct>::getNorm(unsigned offset, wtype wt){
+  return wt==wtype::ps ? 1.0 : this->getWeight(offset);
 }
 
 namespace LHAPDF {
@@ -135,9 +137,9 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     edm::Handle<LHEEventProduct> LheInfo = handles[0];
     auto helper = makeHelper(LheInfo.product());
     //renormalization/factorization scale weights
-    found_scales = helper.fillWeights(scaleweights.get(),0,nScales_,false);
+    found_scales = helper.fillWeights(scaleweights.get(),0,nScales_,wtype::scale);
     //pdf weights
-    if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_,nPDFs_,true);
+    if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_,nPDFs_,wtype::pdf);
   }
   
   //check GenEventInfoProduct if LHEEventProduct not found or empty
@@ -149,13 +151,13 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     if(!found_scales or !found_pdfs){
       unsigned offset = 1;
       //renormalization/factorization scale weights
-      found_scales = helper.fillWeights(scaleweights.get(),offset,nScales_,false);
+      found_scales = helper.fillWeights(scaleweights.get(),offset,nScales_,wtype::scale);
       //pdf weights
-      if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,true);
+      if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,wtype::pdf);
     }
     else if(!found_pss){
-      unsigned offset = 2;
-      found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,false);
+      unsigned offset = 0;
+      found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,wtype::ps);
     }
 
     //if pdf weights still not found, recalculate them
