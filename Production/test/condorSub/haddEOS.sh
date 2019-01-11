@@ -142,6 +142,8 @@ for BASE in ${SAMPLES[@]}; do
 	#remove original files (only if hadd and xrdcp succeeded, and keep=0)
 	if [[ $KEEPINPUT -eq 0 ]]; then
 		for FILE in ${LGFILES[@]}; do
+			#don't remove base file
+			if [[ $UPDATE -eq 1 ]] && [[ "${FILE}" == "${DIR}/${BASE}.root" ]]; then continue; fi
 			xrdfs $XRDLOC rm ${FILE}
 		done
 	fi
