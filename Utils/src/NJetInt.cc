@@ -88,7 +88,7 @@ NJetInt::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetu
 			++NJets;
 		}
 	}
-	else edm::LogWarning("TreeMaker")<<"NJetInt::Invalid Tag: "<<JetTag_.label();
+	else edm::LogWarning("TreeMaker")<<"NJetInt::Invalid Tag: "<<JetTag_;
 	auto htp = std::make_unique<int>(NJets);
 	iEvent.put(std::move(htp));
 	

@@ -224,7 +224,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   if(MET.isValid() )
     {
       metLorentz=MET->at(0).p4();
-    } else edm::LogWarning("TreeMaker")<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label();
+    } else edm::LogWarning("TreeMaker")<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_;
 
   edm::Handle<pat::PackedCandidateCollection> pfcands;
   iEvent.getByToken(PFCandTok_, pfcands);
@@ -267,6 +267,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
             }
         }
     }
+    else edm::LogWarning("TreeMaker")<<"LeptonProducer::MuonTag Invalid Tag: "<<MuonTag_;
 
 
   edm::Handle<edm::View<pat::Electron> > eleHandle;
@@ -290,8 +291,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
               elecIDMedium->push_back(ElectronID(aEle, vtx, MEDIUM, rho));
               elecIDTight->push_back(ElectronID(aEle, vtx, TIGHT, rho));
               ElectronCharge->push_back(aEle.charge());
-              elecIDEnergyCorr->push_back(aEle.userFloat("ecalEnergyPostCorr"));
-              elecIDTrkEnergyCorr->push_back(aEle.userFloat("ecalTrkEnergyPostCorr"));
+              elecIDEnergyCorr->push_back(aEle.hasUserFloat("ecalEnergyPostCorr") ? aEle.userFloat("ecalEnergyPostCorr") : -1);
+              elecIDTrkEnergyCorr->push_back(aEle.hasUserFloat("ecalTrkEnergyPostCorr") ? aEle.userFloat("ecalTrkEnergyPostCorr") : -1);
               elecIDPassIso->push_back(miniIso<elecIsoValue_);
               if(elecIDPassIso->back())
                 {
@@ -302,6 +303,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
             }
         }
     }
+    else edm::LogWarning("TreeMaker")<<"LeptonProducer::ElectronTag Invalid Tag: "<<ElecTag_;
 
   auto htp1 = std::make_unique<int>(nmuons+nelectrons);
   auto htp2 = std::make_unique<int>(nmuons);

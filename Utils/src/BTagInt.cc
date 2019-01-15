@@ -117,7 +117,7 @@ BTagInt::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetu
 		  if(iJet.bDiscriminator(btagname_) >btagvalue_)BTags++;
 		}
 	}
-	else edm::LogWarning("TreeMaker")<<"BTagInt::Invalid Tag: "<<JetTag_.label();
+	else edm::LogWarning("TreeMaker")<<"BTagInt::Invalid Tag: "<<JetTag_;
 	auto htp = std::make_unique<int>(BTags);
 	iEvent.put(std::move(htp));
 	

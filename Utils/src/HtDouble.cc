@@ -90,7 +90,7 @@ HTDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSet
 			ht_ += iJet.pt();
 		}
 	}
-	else edm::LogWarning("TreeMaker")<<"HTDouble::Invalid Tag: "<<JetTag_.label();
+	else edm::LogWarning("TreeMaker")<<"HTDouble::Invalid Tag: "<<JetTag_;
 	auto htp = std::make_unique<double>(ht_);
 	iEvent.put(std::move(htp));
 	

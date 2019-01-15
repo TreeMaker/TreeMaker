@@ -120,7 +120,7 @@ DeltaPhiDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup
          reco::MET::LorentzVector mhtLorentz = utils::calculateMHT(MHTJets.product());
          mhtLorentzPhi = mhtLorentz.phi();
       }
-      else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Jet Tag: "<<MHTJetTag_.label();
+      else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Jet Tag: "<<MHTJetTag_;
    }
    edm::Handle< edm::View<reco::Candidate> > DeltaPhiJets;
    iEvent.getByToken(DeltaPhiJetTok_,DeltaPhiJets);
@@ -134,7 +134,7 @@ DeltaPhiDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup
          if(i==3) break;
       }
    }
-   else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid DeltaPhiJets Jet Tag: "<<DeltaPhiJetTag_.label();
+   else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid DeltaPhiJets Jet Tag: "<<DeltaPhiJetTag_;
    
    auto htp1c = std::make_unique<double>(deltaphi[0]);
    iEvent.put(std::move(htp1c),"DeltaPhi1");
