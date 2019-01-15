@@ -87,7 +87,7 @@ MhtDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
   if( Jets.isValid() ) {
     mhtLorentz = utils::calculateMHT(Jets.product());
   }
-  else edm::LogWarning("TreeMaker")<<"MHTDouble::Invalid Tag: "<<JetTag_.label();
+  else edm::LogWarning("TreeMaker")<<"MHTDouble::Invalid Tag: "<<JetTag_;
   auto Pt = std::make_unique<double>(mhtLorentz.pt());
   auto Phi = std::make_unique<double>(mhtLorentz.phi());
   iEvent.put(std::move(Pt),"Pt");

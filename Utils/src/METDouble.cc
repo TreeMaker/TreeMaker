@@ -167,7 +167,7 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
       rawmetpt_=MET->at(0).uncorPt();
       rawmetphi_=MET->at(0).uncorPhi();
    }
-   else edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<metTag_.label();
+   else edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<metTag_;
 
    //GenMET is really the original MET collection from the event (re-correction zeroes out some values)
    if(GenMET.isValid()){
@@ -179,7 +179,7 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
       calometpt_=GenMET->at(0).caloMETPt();
       calometphi_=GenMET->at(0).caloMETPhi();      
    }
-   else if(!GenMET.isValid()) edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<genMetTag_.label();
+   else if(!GenMET.isValid()) edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<genMetTag_;
    
    auto htp = std::make_unique<double>(metpt_);
    iEvent.put(std::move(htp),"Pt");

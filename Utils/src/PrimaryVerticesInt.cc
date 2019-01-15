@@ -87,7 +87,7 @@ PrimaryVerticesInt::produce(edm::StreamID, edm::Event& iEvent, const edm::EventS
 	if( vertices.isValid() ) {
 		nVertices = vertices->size();
 	}
-	else edm::LogWarning("TreeMaker")<<"Warning VertexCollection Tag not valid: "<<vertexCollectionTag_.label();
+	else edm::LogWarning("TreeMaker")<<"Warning VertexCollection Tag not valid: "<<vertexCollectionTag_;
 	auto htp = std::make_unique<int>(nVertices);
 	iEvent.put(std::move(htp));
 	

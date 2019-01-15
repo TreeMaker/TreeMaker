@@ -224,7 +224,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   if(MET.isValid() )
     {
       metLorentz=MET->at(0).p4();
-    } else edm::LogWarning("TreeMaker")<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_.label();
+    } else edm::LogWarning("TreeMaker")<<"LeptonProducer::MetTag Invalid Tag: "<<metTag_;
 
   edm::Handle<pat::PackedCandidateCollection> pfcands;
   iEvent.getByToken(PFCandTok_, pfcands);
