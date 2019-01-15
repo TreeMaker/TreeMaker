@@ -446,6 +446,8 @@ def makeTreeFromMiniAOD(self,process):
         hovere_constant    = cms.bool(False),
         # from: https://github.com/cms-sw/cmssw/blob/1fbada01f097fbd446e7a431140f83bc9f5a0ff0/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
         electronEAValues   = cms.vdouble(0.1440, 0.1562, 0.1032, 0.0859, 0.1116, 0.1321, 0.1654),
+    )
+    TMeras.TM2017.toModify(process.LeptonsNew,
         # new collection from reco tool (to get user floats)
         ElectronTag = cms.InputTag('slimmedElectrons','',process.name_()),
     )
