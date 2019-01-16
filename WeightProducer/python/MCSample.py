@@ -29,6 +29,7 @@ class MCSampleHelper():
         "TTGamma_SingleLeptFromTbar"                                     : XSValues(-1.0, -1.0, 0.704,        -1.0),
         "TTGamma_Dilept"                                                 : XSValues(-1.0, -1.0, 0.5804,       -1.0),
         # WJets: k-factor of 1.21 applied
+        "WJetsToLNu_HT-70To100"                                          : XSValues(-1.0, -1.0, 1637.13,      -1.0), #From XSDB and not summary page
         "WJetsToLNu_HT-100To200"                                         : XSValues(-1.0, -1.0, 1627.45,      -1.0),
         "WJetsToLNu_HT-200To400"                                         : XSValues(-1.0, -1.0, 435.24,       -1.0),
         "WJetsToLNu_HT-400To600"                                         : XSValues(-1.0, -1.0, 59.18,        -1.0),
@@ -45,6 +46,7 @@ class MCSampleHelper():
         "QCD_HT1000to1500"                                               : XSValues(-1.0, -1.0, 1206,         -1.0),
         "QCD_HT1500to2000"                                               : XSValues(-1.0, -1.0, 120.4,        -1.0),
         "QCD_HT2000toInf"                                                : XSValues(-1.0, -1.0, 25.24,        -1.0),
+        # QCD pT-hat binned MuEnrichedPt5: No k-factor applied (2017 TuneCP5 XSDB values)
         "QCD_Pt-15to20_MuEnrichedPt5"                                    : XSValues(-1.0, -1.0, 2799000.0,    -1.0),
         "QCD_Pt-20to30_MuEnrichedPt5"                                    : XSValues(-1.0, -1.0, 2526000.0,    -1.0),
         "QCD_Pt-30to50_MuEnrichedPt5"                                    : XSValues(-1.0, -1.0, 1362000.0,    -1.0),
@@ -54,6 +56,9 @@ class MCSampleHelper():
         "QCD_Pt-170to300_MuEnrichedPt5"                                  : XSValues(-1.0, -1.0, 7055.0,       -1.0),
         "QCD_Pt-300to470_MuEnrichedPt5"                                  : XSValues(-1.0, -1.0, 797.35,       -1.0),
         "QCD_Pt-470to600_MuEnrichedPt5"                                  : XSValues(-1.0, -1.0, 59.24,        -1.0),
+        "QCD_Pt-600to800_MuEnrichedPt5"                                  : XSValues(-1.0, -1.0, 25.25,        -1.0), #2016 TuneCUETP8M1 XSDB value
+        "QCD_Pt-800to1000_MuEnrichedPt5"                                 : XSValues(-1.0, -1.0, 4.723,        -1.0), #2016 TuneCUETP8M1 XSDB value
+        "QCD_Pt-1000toInf_MuEnrichedPt5"                                 : XSValues(-1.0, -1.0, 1.613,        -1.0), #2016 TuneCUETP8M1 XSDB value
         # QCD pT-hat binned: cross sections from AN2017_013_v17
         "QCD_Pt_50to80"                                                  : XSValues(-1.0, -1.0, 19204300,     -1.0),
         "QCD_Pt_80to120"                                                 : XSValues(-1.0, -1.0, 2762530,      -1.0),
@@ -146,11 +151,15 @@ class MCSampleHelper():
         "SMS-T1tttt_mGluino-2000_mLSP-100"                               : XSValues(-1.0, -1.0, 0.000981077,  -1.0),
         "SMS-T1qqqq_mGluino-1000_mLSP-800"                               : XSValues(-1.0, -1.0, 0.325388,     -1.0),
         "SMS-T1qqqq_mGluino-1400_mLSP-100"                               : XSValues(-1.0, -1.0, 0.0252977,    -1.0),
+        "SMS-T1qqqq_mGluino-1800_mLSP-200_ctau-1"                        : XSValues(-1.0, -1.0, 0.001273,     -1.0),
+        "SMS-T2tt_mStop-150_mLSP-50"                                     : XSValues(-1.0, -1.0, 162.6,        -1.0),
+        "SMS-T2tt_mStop-200_mLSP-50"                                     : XSValues(-1.0, -1.0, 40.84,        -1.0),
         "SMS-T2tt_mStop-225_mLSP-50"                                     : XSValues(-1.0, -1.0, 36.3818,      -1.0),
         "SMS-T2tt_mStop-250_mLSP-150"                                    : XSValues(-1.0, -1.0, 21.5949,      -1.0),
         "SMS-T2tt_mStop-250_mLSP-50"                                     : XSValues(-1.0, -1.0, 21.5949,      -1.0),
-        "SMS-T2tt_mStop-300_mLSP-150"                                    : XSValues(-1.0, -1.0, 249.409,      -1.0),
-        "SMS-T2tt_mStop-325_mLSP-150"                                    : XSValues(-1.0, -1.0, 249.409,      -1.0),
+        "SMS-T2tt_mStop-300_mLSP-150"                                    : XSValues(-1.0, -1.0, 8.51615,      -1.0),
+        "SMS-T2tt_mStop-325_mLSP-150"                                    : XSValues(-1.0, -1.0, 5.60471,      -1.0),
+        "SMS-T2tt_mStop-350_mLSP-150"                                    : XSValues(-1.0, -1.0, 3.78661,      -1.0),
         "SMS-T2tt_mStop-425_mLSP-325"                                    : XSValues(-1.0, -1.0, 1.31169,      -1.0),
         "SMS-T2tt_mStop-500_mLSP-325"                                    : XSValues(-1.0, -1.0, 0.51848,      -1.0),
         "SMS-T2tt_mStop-650_mLSP-350"                                    : XSValues(-1.0, -1.0, 0.107045,     -1.0),
@@ -188,18 +197,31 @@ class MCSampleHelper():
         "stealth_stop_850_singlino_SHuHd"                                : XSValues(-1.0, -1.0, 0.0189612,    -1.0),
         # Stealth taken From https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13TeVstopsbottom
         "StealthSYY_2t6j_mStop-300_mSo-100"                              : XSValues(-1.0, -1.0, 8.51615,      -1.0),
+        "StealthSYY_2t6j_mStop-300_mN1-100"                              : XSValues(-1.0, -1.0, 8.51615,      -1.0),
         "StealthSYY_2t6j_mStop-350_mSo-100"                              : XSValues(-1.0, -1.0, 3.78661,      -1.0),
+        "StealthSYY_2t6j_mStop-350_mN1-100"                              : XSValues(-1.0, -1.0, 3.78661,      -1.0),
         "StealthSYY_2t6j_mStop-400_mSo-100"                              : XSValues(-1.0, -1.0, 1.83537,      -1.0),
+        "StealthSYY_2t6j_mStop-400_mN1-100"                              : XSValues(-1.0, -1.0, 1.83537,      -1.0),
         "StealthSYY_2t6j_mStop-450_mSo-100"                              : XSValues(-1.0, -1.0, 0.948333,     -1.0),
+        "StealthSYY_2t6j_mStop-450_mN1-100"                              : XSValues(-1.0, -1.0, 0.948333,     -1.0),
         "StealthSYY_2t6j_mStop-500_mSo-100"                              : XSValues(-1.0, -1.0, 0.51848,      -1.0),
+        "StealthSYY_2t6j_mStop-500_mN1-100"                              : XSValues(-1.0, -1.0, 0.51848,      -1.0),
         "StealthSYY_2t6j_mStop-550_mSo-100"                              : XSValues(-1.0, -1.0, 0.296128,     -1.0),
+        "StealthSYY_2t6j_mStop-550_mN1-100"                              : XSValues(-1.0, -1.0, 0.296128,     -1.0),
         "StealthSYY_2t6j_mStop-600_mSo-100"                              : XSValues(-1.0, -1.0, 0.174599,     -1.0),
+        "StealthSYY_2t6j_mStop-600_mN1-100"                              : XSValues(-1.0, -1.0, 0.174599,     -1.0),
         "StealthSYY_2t6j_mStop-650_mSo-100"                              : XSValues(-1.0, -1.0, 0.107045,     -1.0),
+        "StealthSYY_2t6j_mStop-650_mN1-100"                              : XSValues(-1.0, -1.0, 0.107045,     -1.0),
         "StealthSYY_2t6j_mStop-700_mSo-100"                              : XSValues(-1.0, -1.0, 0.0670476,    -1.0),
+        "StealthSYY_2t6j_mStop-700_mN1-100"                              : XSValues(-1.0, -1.0, 0.0670476,    -1.0),
         "StealthSYY_2t6j_mStop-750_mSo-100"                              : XSValues(-1.0, -1.0, 0.0431418,    -1.0),
+        "StealthSYY_2t6j_mStop-750_mN1-100"                              : XSValues(-1.0, -1.0, 0.0431418,    -1.0),
         "StealthSYY_2t6j_mStop-800_mSo-100"                              : XSValues(-1.0, -1.0, 0.0283338,    -1.0),
+        "StealthSYY_2t6j_mStop-800_mN1-100"                              : XSValues(-1.0, -1.0, 0.0283338,    -1.0),
         "StealthSYY_2t6j_mStop-850_mSo-100"                              : XSValues(-1.0, -1.0, 0.0189612,    -1.0),
+        "StealthSYY_2t6j_mStop-850_mN1-100"                              : XSValues(-1.0, -1.0, 0.0189612,    -1.0),
         "StealthSYY_2t6j_mStop-900_mSo-100"                              : XSValues(-1.0, -1.0, 0.0128895,    -1.0),
+        "StealthSYY_2t6j_mStop-900_mN1-100"                              : XSValues(-1.0, -1.0, 0.0128895,    -1.0),
         "StealthSHH_2t4b_mStop-300_mSo-100"                              : XSValues(-1.0, -1.0, 8.51615,      -1.0),
         "StealthSHH_2t4b_mStop-350_mSo-100"                              : XSValues(-1.0, -1.0, 3.78661,      -1.0),
         "StealthSHH_2t4b_mStop-400_mSo-100"                              : XSValues(-1.0, -1.0, 1.83537,      -1.0),
@@ -239,7 +261,7 @@ class MCSampleHelper():
         "generators" : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"      : ["(.Tune)([^_]*)"],
         "added_info" : ["(.PSweights)([^_]*)"],
-        "other"      : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)"],
+        "other"      : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)"],
     }
 
     def __init__(self, extra_dicts=None):
