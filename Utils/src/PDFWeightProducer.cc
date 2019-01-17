@@ -25,9 +25,10 @@ class PDFWeightHelper {
   public:
     PDFWeightHelper(const P* prod) : product_(prod) {}
     bool fillWeights(std::vector<double>* output, unsigned offset, unsigned nWeights, wtype wt) {
-      if(offset > this->getMax()) return false;
+      unsigned max = this->getMax();
+      if(max==0 or offset > max) return false;
       double norm = 1./this->getNorm(offset,wt);
-      unsigned max = std::min(nWeights+offset,this->getMax());
+      max = std::min(nWeights+offset,max);
       output->reserve(max-offset);
       for (unsigned int i = offset; i < max; i++) {
         output->push_back(this->getWeight(i)*norm);
