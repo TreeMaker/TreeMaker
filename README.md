@@ -56,10 +56,12 @@ The available scenarios are:
 8.  `Spring16Pmssm`: for Spring16 miniAOD 25ns PMSSM MC scan (80X) (signal)
 9.  `Summer16`: for Summer16 miniAOD 25ns MC (80X)
 10. `Summer16sig`: for Summer16 miniAOD 25ns MC (80X) (signal)
-11. `2018B26Sep`: for 2018 prompt data, partial period B
-12. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
-13. `2018PromptReco`: for 2018 prompt data, run period D
-14. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
+11. `Autumn18`: for Autumn18 miniAOD 25ns MC (102X)
+12. `Autumn18sig`: for Autumn18 miniAOD 25ns MC (102X) (signal)
+13. `2018B26Sep`: for 2018 prompt data, partial period B
+14. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
+15. `2018PromptReco`: for 2018 prompt data, run period D
+16. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
 
 ## Unit Tests (Interactive Runs)
 

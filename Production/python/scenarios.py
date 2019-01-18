@@ -128,6 +128,31 @@ class Scenario:
                 era="Run2_2017",
                 localera="TM2017",
             )
+        elif sname == "Autumn18":
+            self.set_vars(
+                globaltag="102X_upgrade2018_realistic_v11",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
+                jerfile="data/jer/Fall17_V3_94X_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0118_63mb_pm5.root",
+                era="Run2_2018",
+                localera="TM2018",
+            )
+        elif sname == "Autumn18sig":
+            self.set_vars(
+                globaltag="102X_upgrade2018_realistic_v11",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                signal=True,
+                jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
+                jerfile="data/jer/Fall17_V3_94X_MC",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0118_63mb_pm5.root",
+                era="Run2_2018",
+                localera="TM2018",
+            )
         elif sname == "2018B26Sep":
             self.set_vars(
                 globaltag="102X_dataRun2_PromptLike_v7",

@@ -34,6 +34,9 @@ if __name__ == "__main__":
 
     from ROOT import *
     
+    # output file
+    fout = TFile.Open(options.outname,"RECREATE")
+
     if len(options.data)==0:
         # generate pileup histograms in data
         minbias = float(options.minbias)
@@ -81,9 +84,6 @@ if __name__ == "__main__":
     else:
         mix = getattr(__import__(options.scenario,fromlist=["mix"]),"mix")
         probvalue = mix.input.nbPileupEvents.probValue
-    
-    # output file
-    fout = TFile.Open(options.outname,"RECREATE")
 
     # save data histos
     hdata_central.Write()
