@@ -250,7 +250,8 @@ def main(args):
             if req_mini:
                 for ireq in req_mini:
                     dname = ireq['dataset_name']
-                    if any(pattern in dname for pattern in options.vgrep):
+                    output_dataset = ireq['output_dataset']
+                    if any(any(pattern in ds for ds in output_dataset) for pattern in options.vgrep):
                         if options.verbose: print "\tSkipping",dname,"because of vgrep"
                         continue
                     if dname in found_list: continue
@@ -267,7 +268,6 @@ def main(args):
                         else: badcols.append(toprint)
 
                         if ireq['status']=='done' and len(options.make_dict)>0:
-                            output_dataset = ireq['output_dataset']
                             PD = output_dataset[0].split('/')[1]
                             if len(getpylines)==0 or PD not in getpylines.keys():
                                 if pu_valid: getpylines[PD] = pyline(output_dataset,pu_valid)
