@@ -679,6 +679,63 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('StealthSHH_2t4b_mStop-800_mSo-100_TuneCUEP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 21785, False),
         MCSample('StealthSHH_2t4b_mStop-850_mSo-100_TuneCUEP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 22727, False),
         MCSample('StealthSHH_2t4b_mStop-900_mSo-100_TuneCUEP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 8410, False),
+
+        # 13 TeV miniAOD samples - Autumn18
+        # NB: amcatnlo samples have negative weight events, so NumberEvts = # positive - # negative
+        MCSample('TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 64310000, False, 63791484),
+        MCSample('TTToHadronic_TuneCP5_13TeV-powheg-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 133808000, False, 132725582),
+        MCSample('QCD_Pt_80to120_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 29535000, False),
+        MCSample('QCD_Pt_120to170_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 25255000, False),
+        MCSample('QCD_Pt_170to300_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 29710000, False),
+        MCSample('QCD_Pt_300to470_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 41744000, False),
+        MCSample('QCD_Pt_470to600_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 42459973, False), # subtotal = 17712000, straight subtotal = 17712000
+        MCSample('QCD_Pt_470to600_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 42459973, False), # subtotal = 24747973, straight subtotal = 24747973
+        MCSample('QCD_Pt_600to800_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 64061000, False),
+        MCSample('QCD_Pt_800to1000_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 37598000, False),
+        MCSample('QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 18485000, False),
+        MCSample('QCD_Pt_1400to1800_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 6928000, False), # subtotal = 2160000, straight subtotal = 2160000
+        MCSample('QCD_Pt_1400to1800_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 6928000, False), # subtotal = 4768000, straight subtotal = 4768000
+        MCSample('QCD_Pt_1800to2400_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 4017800, False), # subtotal = 1445800, straight subtotal = 1445800
+        MCSample('QCD_Pt_1800to2400_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 4017800, False), # subtotal = 2572000, straight subtotal = 2572000
+        MCSample('QCD_Pt_2400to3200_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 2394000, False), # subtotal = 1440000, straight subtotal = 1440000
+        MCSample('QCD_Pt_2400to3200_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 2394000, False), # subtotal = 954000, straight subtotal = 954000
+        MCSample('QCD_Pt_3200toInf_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 800000, False),
+        MCSample('QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v4', 'RunIIAutumn18MiniAOD', 'Constant', 30612338, False),
+        MCSample('QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v3', 'RunIIAutumn18MiniAOD', 'Constant', 29884616, False),
+        MCSample('QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v3', 'RunIIAutumn18MiniAOD', 'Constant', 20268872, False),
+        MCSample('QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 612919, False),
+        MCSample('QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 633668, False),
+        MCSample('QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v3', 'RunIIAutumn18MiniAOD', 'Constant', 35978539, False),
+        MCSample('QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v3', 'RunIIAutumn18MiniAOD', 'Constant', 492418, False),
+        MCSample('QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 16618977, False),
+        MCSample('QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 10719790, False),
+        MCSample('QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 54289442, False, 54251666),
+        MCSample('QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 54661579, False, 54600685),
+        MCSample('QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 55152960, False, 55056202),
+        MCSample('QCD_HT700to1000_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 48158738, False, 48038740),
+        MCSample('QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 15466225, False, 15407797),
+        MCSample('QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 10955087, False, 10887751),
+        MCSample('QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 5475677, False, 5414545),
+        MCSample('DYJetsToLL_M-50_HT-100to200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v2', 'RunIIAutumn18MiniAOD', 'Constant', 11530510, False, 11518130),
+        MCSample('DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8', 'PUAvg50ForMUOVal_102X_upgrade2018_realistic_v15_ext1-v1', 'RunIIAutumn18MiniAOD', 'Constant', 44651921, False, 44614689),
+        MCSample('ZJetsToNuNu_HT-100To200_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 23702894, False, 23678782),
+        MCSample('ZJetsToNuNu_HT-200To400_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 23276346, False, 23236674),
+        MCSample('ZJetsToNuNu_HT-600To800_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 5748975, False, 5728007),
+        MCSample('ZJetsToNuNu_HT-800To1200_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 2066798, False, 2056362),
+        MCSample('ZJetsToNuNu_HT-1200To2500_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 343198, False, 340302),
+        MCSample('GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8', '4cores5k_102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 9798176, False, 9796870),
+        MCSample('GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 19062809, False, 19055655),
+        MCSample('GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 4655985, False, 4652345),
+        MCSample('GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 4981121, False, 4971983),
+        MCSample('GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 15424758, False, 15423022),
+        MCSample('GJets_DR-0p4_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 49457520, False, 49438028),
+        MCSample('ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 1086487, False, 1081535),
+        MCSample('ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 1085847, False, 1080939),
+        MCSample('ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8', '102X_upgrade2018_realistic_v15_ext1-v1', 'RunIIAutumn18MiniAOD', 'Constant', 7623000, False, 7588180),
+        MCSample('ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8', '102X_upgrade2018_realistic_v15_ext1-v1', 'RunIIAutumn18MiniAOD', 'Constant', 9598000, False, 9553912),
+        MCSample('TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 4911941, False, 2686095),
+        MCSample('TTWW_TuneCP5_13TeV-madgraph-pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 185000, False, 184094),
+        MCSample('SMS-TChiWZ_ZToLL_mZMin-0p1_TuneCP2_13TeV-madgraphMLM-pythia8', 'GridpackScan_102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 14030301, False),
     ]
 
     from SVJsamples import SVJsamples
