@@ -88,13 +88,16 @@ if options.gen_dict:
             selected_indices = [i for i, s in enumerate(close_matches) if sample in s]
             if len(selected_indices)>1:
                 print "WARNING: Double check values with extensions or close names"
-            if options.debug:
-                print sample + ": " + str(close_matches)
-                print "\tSelected indices: " + str(selected_indices)
-                print "\tSelected match: " + str(selected_indices[idataset])
-            rval = rdict[close_matches[selected_indices[idataset]]]
-            line += str(rval["eff"])
-            if idataset<len(ff)-1: line += ", "
+            if len(selected_indices)==0:
+                continue
+            else:
+                if options.debug:
+                    print sample + ": " + str(close_matches)
+                    print "\tSelected indices: " + str(selected_indices)
+                    print "\tSelected match: " + str(selected_indices[idataset])
+                rval = rdict[close_matches[selected_indices[idataset]]]
+                line += str(rval["eff"])
+                if idataset<len(ff)-1: line += ", "
         line += "]],\n"
         outf.write(line)
   

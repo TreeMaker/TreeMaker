@@ -130,7 +130,7 @@ class Scenario:
             )
         elif sname == "Autumn18":
             self.set_vars(
-                globaltag="102X_upgrade2018_realistic_v11",
+                globaltag="102X_upgrade2018_realistic_v16",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -142,7 +142,7 @@ class Scenario:
             )
         elif sname == "Autumn18sig":
             self.set_vars(
-                globaltag="102X_upgrade2018_realistic_v11",
+                globaltag="102X_upgrade2018_realistic_v16",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
