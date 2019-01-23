@@ -135,7 +135,7 @@ class Scenario:
             self.set_vars(
                 globaltag="94X_mc2017_realistic_v13",
                 tagname="PAT",
-                hlttagname="HLT",
+                hlttagname="RECO",
                 geninfo=True,
                 fastsim=True,
                 signal=True,

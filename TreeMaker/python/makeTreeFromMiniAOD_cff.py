@@ -576,7 +576,7 @@ def makeTreeFromMiniAOD(self,process):
     process.TriggerProducer = triggerProducer.clone(
         trigTagArg1     = cms.string('TriggerResults'),
         trigTagArg2     = cms.string(''),
-        trigTagArg3     = cms.string('HLT'),
+        trigTagArg3     = cms.string(self.hlttagname),
         prescaleTagArg1  = cms.string('patTrigger'),
         prescaleTagArg2  = cms.string(''),
         prescaleTagArg3  = cms.string(''),
