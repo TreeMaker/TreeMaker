@@ -154,6 +154,7 @@ def main(args):
     parser.add_option("-p", "--pu", dest="pu", default="", help="string to check for in pu dataset to determine validity (default = %default)")
     parser.add_option("-m", "--make", dest="make_dict", default="", help="if set, make a get_py.py dictionary out of the finished datasets (default = %default)")
     parser.add_option("-i", "--inclusive", dest="inclusive", default=False, action="store_true", help="if make is set, include the finished_invalid datasets in the dict (default = %default)")
+    parser.add_option("-g", "--grep", dest="grep", default="", type="string", action='callback', callback=list_callback, help="comma separated list of patterns in the dataset name to select for (default = %default). Watch for dangling commas!")
     parser.add_option("-v", "--vgrep", dest="vgrep", default="", type="string", action='callback', callback=list_callback, help="comma separated list of patterns in the dataset name to ignore (default = %default). Watch for dangling commas!")
     parser.add_option("--miniaod", dest="miniaod", default="RunIISummer16MiniAODv2", help="miniAOD campaign name (default = %default)")
     parser.add_option("--digireco", dest="digireco", default="RunIISummer16DR80*", help="DIGI-RECO campaign name (default = %default)")
@@ -251,6 +252,9 @@ def main(args):
                 for ireq in req_mini:
                     dname = ireq['dataset_name']
                     output_dataset = ireq['output_dataset']
+                    if not any(any(pattern in ds for ds in output_dataset) for pattern in options.grep):
+                        if options.verbose: print "\tSkipping",dname,"because of grep"
+                        continue
                     if any(any(pattern in ds for ds in output_dataset) for pattern in options.vgrep):
                         if options.verbose: print "\tSkipping",dname,"because of vgrep"
                         continue
