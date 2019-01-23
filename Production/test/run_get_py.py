@@ -4,8 +4,8 @@ import TreeMaker.Production.get_py as get_py
 
 # Read parameters
 parser = argparse.ArgumentParser(description='Run get_py.py for multiple input dictionaries and output folders.\n You can also place any arguments you want passed to get_py.py here.', formatter_class=argparse.RawDescriptionHelpFormatter)
-parser.add_argument("-d",   "--dicts",          nargs='+',                default="[]",   help="check for samples listed in these dicts (default = %(default)s)")
-parser.add_argument("-o",   "--output-folders", nargs='+',                default="[./]", help="put the output files in the specified folders (default = %(default)s)")
+parser.add_argument("-d",   "--dicts",          nargs='+',                default=[],   help="check for samples listed in these dicts (default = %(default)s)")
+parser.add_argument("-o",   "--output-folders", nargs='+',                default=['./'], help="put the output files in the specified folders (default = %(default)s)")
 parser.epilog = "Examples of how to run:\n" \
                 "=======================\n" \
                 "1) python run_get_py.py -d dict_Run2017B-31Mar2018-v1.py dict_Run2017C-31Mar2018-v1.py dict_Run2017D-31Mar2018-v1.py dict_Run2017E-31Mar2018-v1.py dict_Run2017F-31Mar2018-v1.py -o ../python/Run2017B-31Mar2018-v1/ ../python/Run2017C-31Mar2018-v1/ ../python/Run2017D-31Mar2018-v1/ ../python/Run2017E-31Mar2018-v1/ ../python/Run2017F-31Mar2018-v1/ -p -s\n\n" \
