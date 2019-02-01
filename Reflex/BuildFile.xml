@@ -1,3 +1,4 @@
+<flags rootmap="yes"/>
 <use name="root"/>
 <use name="FWCore/Framework"/>
 <use name="FWCore/PluginManager"/>
