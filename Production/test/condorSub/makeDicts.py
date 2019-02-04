@@ -36,6 +36,7 @@ def main(args):
 
     written_files = []
     location = options.base+options.location
+    if location[-1]!="/": location += "/"
 
     for category in meta_dict:
         if len(options.categories)>0 and category not in options.categories: continue
