@@ -16,6 +16,7 @@ datasets = OrderedDict([
 ("TTTo2L2Nu_Tune*powheg-pythia8",[0]),
 ("TTToHadronic_Tune*powheg-pythia8",[0]),
 ("TTToSemiLeptonic_Tune*powheg-pythia8",[0]),
+("WJetsToLNu_Tune",[0,1,2]),
 ("WJetsToLNu_HT-70To100",[0,1,2]), # Needed for 2016, but won't be there 2017
 ("WJetsToLNu_HT-100To200",[0,1,2]),
 ("WJetsToLNu_HT-200To400",[0,1,2]),
