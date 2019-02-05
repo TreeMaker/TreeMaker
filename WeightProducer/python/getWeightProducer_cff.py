@@ -64,6 +64,8 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         # NLO powheg 
         MCSample("TT_TuneCUETP8M2T4_13TeV-powheg-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 155235652), # subtotal = 77229341
         MCSample("TT_TuneCUETP8M2T4_13TeV-powheg-pythia8", "PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 155235652), # subtotal = 78006311
+        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8', 'PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1', 'RunIISummer16MiniAODv2', 'Constant', 59033604, False),
+        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8', 'PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1', 'RunIISummer16MiniAODv2', 'Constant', 97436211, False),
         # WJets: extensions included
         MCSample("WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 29503700),
         MCSample("WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 19766301), # subtotal = 4950373
@@ -207,6 +209,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2", "RunIISummer16MiniAODv2", "Constant", 99142),
         MCSample("TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2", "RunIISummer16MiniAODv2", "Constant", 97855),
         MCSample("TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2", "RunIISummer16MiniAODv2", "Constant", 98713),
+        MCSample('TTTJ_TuneCUETP8M2T4_13TeV-madgraph-pythia8', 'PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2', 'RunIISummer16MiniAODv2', 'Constant', 96288, False),
         MCSample("WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 250000, False, 221468), # straight total = 250000
         MCSample("WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 246800, False, 216366), # straight total = 246800
         MCSample("ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 249237, False, 213197), # straight total = 249237

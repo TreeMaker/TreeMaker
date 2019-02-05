@@ -115,6 +115,7 @@ datasets = OrderedDict([
 ("TTWZ_Tune*_13TeV",[0]),
 ("TTZH_Tune*_13TeV",[0]),
 ("TTZZ_Tune*_13TeV",[0]),
+("TTTJ_Tune*_13TeV",[0]),
 ("WWWW_Tune*_13TeV",[0]), # For V17
 ("WWZ_Tune*_13TeV-amcatnlo",[0]),
 ("WZZ_Tune*_13TeV-amcatnlo",[0]),

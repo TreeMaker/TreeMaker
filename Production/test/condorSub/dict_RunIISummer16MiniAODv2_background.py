@@ -2,6 +2,8 @@ flist = {
     "scenario": "Summer16",
     "samples": [
         ['Summer16.TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16.TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8_ext1'],
+        ['Summer16.TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8_ext2'],
         ['Summer16.ZJetsToNuNu_HT-600To800_13TeV-madgraph'],
         ['Summer16.ZJetsToNuNu_HT-800To1200_13TeV-madgraph'],
         ['Summer16.ZJetsToNuNu_HT-1200To2500_13TeV-madgraph'],
@@ -23,5 +25,6 @@ flist = {
         ['Summer16.TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8'],
         ['Summer16.TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8'],
         ['Summer16.TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8'],
+        ['Summer16.TTTJ_TuneCUETP8M2T4_13TeV-madgraph-pythia8'],
     ]
 }
