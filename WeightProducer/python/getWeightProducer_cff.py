@@ -64,8 +64,8 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         # NLO powheg 
         MCSample("TT_TuneCUETP8M2T4_13TeV-powheg-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 155235652), # subtotal = 77229341
         MCSample("TT_TuneCUETP8M2T4_13TeV-powheg-pythia8", "PUMoriond17_backup_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 155235652), # subtotal = 78006311
-        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8', 'PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1', 'RunIISummer16MiniAODv2', 'Constant', 59033604, False),
-        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8', 'PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1', 'RunIISummer16MiniAODv2', 'Constant', 97436211, False),
+        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8', 'PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1', 'RunIISummer16MiniAODv2', 'Constant', 156469815, False), # subtotal = 59033604
+        MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8', 'PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1', 'RunIISummer16MiniAODv2', 'Constant', 156469815, False), # subtotal = 97436211
         # WJets: extensions included
         MCSample("WJetsToLNu_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1", "RunIISummer16MiniAODv2", "Constant", 29503700),
         MCSample("WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 19766301), # subtotal = 4950373
