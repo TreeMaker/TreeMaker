@@ -136,7 +136,7 @@ class MCSampleHelper():
         "TTHH"                                                           : XSValues(-1.0, -1.0, 0.000741,     -1.0),
         "TTTW"                                                           : XSValues(-1.0, -1.0, 0.000861,     -1.0),
         "TTWH"                                                           : XSValues(-1.0, -1.0, 0.00136,      -1.0),
-        "TTWW"                                                           : XSValues(-1.0, -1.0, 0.007834,     -1.0),
+        "TTWW"                                                           : XSValues(-1.0, -1.0, 0.006979,     -1.0),
         "TTWZ"                                                           : XSValues(-1.0, -1.0, 0.00297,      -1.0),
         "TTZH"                                                           : XSValues(-1.0, -1.0, 0.00125,      -1.0),
         "TTZZ"                                                           : XSValues(-1.0, -1.0, 0.00157,      -1.0),
