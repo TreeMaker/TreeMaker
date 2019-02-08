@@ -210,6 +210,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample("TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2", "RunIISummer16MiniAODv2", "Constant", 97855),
         MCSample("TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2", "RunIISummer16MiniAODv2", "Constant", 98713),
         MCSample('TTTJ_TuneCUETP8M2T4_13TeV-madgraph-pythia8', 'PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2', 'RunIISummer16MiniAODv2', 'Constant', 96288, False),
+        MCSample('WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 240000, False)
         MCSample("WWZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 250000, False, 221468), # straight total = 250000
         MCSample("WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 246800, False, 216366), # straight total = 246800
         MCSample("ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8", "PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 249237, False, 213197), # straight total = 249237
