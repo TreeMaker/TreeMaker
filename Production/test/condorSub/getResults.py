@@ -72,7 +72,7 @@ if options.gen_dict:
     outf = open(options.out_dict,'w')
     printGetPyDictHeader(outf)
 
-    sys.path.append(os.path.abspath(os.path.dirname(options.in_dict)))
+    sys.path.insert(0,os.path.abspath(os.path.dirname(options.in_dict)))
     dictname = os.path.basename(options.in_dict.replace(".py",""))
     flist = __import__(dictname).flist
 
