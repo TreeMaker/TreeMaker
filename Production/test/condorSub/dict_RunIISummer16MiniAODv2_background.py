@@ -1,16 +1,9 @@
 flist = {
     "scenario": "Summer16",
     "samples": [
-        ['Summer16.TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16.TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8_ext1'],
         ['Summer16.TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8_ext2'],
-        ['Summer16.ZJetsToNuNu_HT-600To800_13TeV-madgraph'],
-        ['Summer16.ZJetsToNuNu_HT-800To1200_13TeV-madgraph'],
-        ['Summer16.ZJetsToNuNu_HT-1200To2500_13TeV-madgraph'],
-        ['Summer16.ZJetsToNuNu_HT-1200To2500_13TeV-madgraph_ext1'],
-        ['Summer16.ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph'],
         ['Summer16.ST_s-channel_4f_InclusiveDecays_13TeV-amcatnlo-pythia8'],
-        ['Summer16.ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1'],
         ['Summer16.tZq_W_lept_Z_hadron_4f_ckm_NLO_13TeV_amcatnlo_pythia8'],
         ['Summer16.WGJets_MonoPhoton_PtG-130_TuneCUETP8M1_13TeV-madgraph'],
         ['Summer16.ZGTo2NuG_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8'],

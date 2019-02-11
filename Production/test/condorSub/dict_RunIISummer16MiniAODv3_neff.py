@@ -20,4 +20,5 @@ flist = [
 'RunIISummer16MiniAODv3.WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8',
 'RunIISummer16MiniAODv3.ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8',
 'RunIISummer16MiniAODv3.ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8',
+'RunIISummer16MiniAODv3.ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1',
 ]

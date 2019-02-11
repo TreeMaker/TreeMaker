@@ -476,6 +476,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
 
         # 13 TeV miniAODv3 samples - Summer16
         # NB: amcatnlo samples have negative weight events, so NumberEvts = # positive - # negative
+        MCSample('TTJets_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 10199051, False),
         MCSample('TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 61621218, False), # subtotal = 11957043
         MCSample('TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 61621218, False), # subtotal = 49664175
         MCSample('TTJets_SingleLeptFromTbar_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 60343752, False), # subtotal = 11955887
@@ -574,6 +575,11 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('ZJetsToNuNu_HT-200To400_13TeV-madgraph', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 24761211, False), # subtotal = 19625128
         MCSample('ZJetsToNuNu_HT-400To600_13TeV-madgraph', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 9862869, False), # subtotal = 1020309
         MCSample('ZJetsToNuNu_HT-400To600_13TeV-madgraph', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 9862869, False), # subtotal = 8842560
+        MCSample('ZJetsToNuNu_HT-600To800_13TeV-madgraph', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 5766322, False),
+        MCSample('ZJetsToNuNu_HT-800To1200_13TeV-madgraph', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 2170137, False),
+        MCSample('ZJetsToNuNu_HT-1200To2500_13TeV-madgraph', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 513471, False), # subtotal = 369514
+        MCSample('ZJetsToNuNu_HT-1200To2500_13TeV-madgraph', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1', 'RunIISummer16MiniAODv3', 'Constant', 513471, False), # subtotal = 143957
+        MCSample('ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 405030, False),
         MCSample('GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 10104155, False), # subtotal = 5131873
         MCSample('GJets_HT-100To200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 10104155, False), # subtotal = 4972282
         MCSample('GJets_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 20527506, False), # subtotal = 10122599
@@ -586,6 +592,7 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('GJets_DR-0p4_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_qcut19_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 50002467, False),
         MCSample('GJets_DR-0p4_HT-400To600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_qcut19_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 11702604, False),
         MCSample('GJets_DR-0p4_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_qcut19_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 11687048, False),
+        MCSample('ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 1000000, False, 622990),
         MCSample('ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 67105876, False),
         MCSample('ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 38811017, False),
         MCSample('ST_tW_antitop_5f_NoFullyHadronicDecays_13TeV-powheg_TuneCUETP8M1', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 3256407, False),
