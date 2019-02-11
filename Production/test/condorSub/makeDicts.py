@@ -35,8 +35,8 @@ def main(args):
     (options, args) = parser.parse_args(args)
 
     written_files = []
+    if options.location[-1]!="/": options.location += "/"
     location = options.base+options.location
-    if location[-1]!="/": location += "/"
 
     for category in meta_dict:
         if len(options.categories)>0 and category not in options.categories: continue
