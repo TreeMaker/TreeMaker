@@ -252,11 +252,11 @@ def main(args):
                 for ireq in req_mini:
                     dname = ireq['dataset_name']
                     output_dataset = ireq['output_dataset']
-                    if not any(any(pattern in ds for ds in output_dataset) for pattern in options.grep):
-                        if options.verbose: print "\tSkipping",dname,"because of grep"
+                    if len(options.grep)>0 and not any(any(pattern in ds for ds in output_dataset) for pattern in options.grep):
+                        if options.verbose: print "\tSkipping",output_dataset,"because of grep"
                         continue
-                    if any(any(pattern in ds for ds in output_dataset) for pattern in options.vgrep):
-                        if options.verbose: print "\tSkipping",dname,"because of vgrep"
+                    if len(options.vgrep)>0 and any(any(pattern in ds for ds in output_dataset) for pattern in options.vgrep):
+                        if options.verbose: print "\tSkipping",output_dataset,"because of vgrep"
                         continue
                     if dname in found_list: continue
                     found_list.add(dname)
