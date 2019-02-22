@@ -128,7 +128,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
         << "        Cross section (pb) : " << _xs << "\n"
         << "          Number of events : " << _NumberEvents;
       _genEvtTok = consumes<GenEventInfoProduct>(_genEvtTag);
-      if(_weightingMethodName.find("Flat")!=string::npos) _isFlat = true;
+      if(_weightingMethodName.find("Flat")!=std::string::npos) _isFlat = true;
    }
    // Option 4: assign cross section for FastSim
    else if (_weightingMethodName == "FastSim") {

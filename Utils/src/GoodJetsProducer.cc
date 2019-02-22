@@ -20,8 +20,6 @@
 
 // system include files
 #include <memory>
-#include <algorithm>
-#include <set>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -55,14 +53,18 @@ public:
 private:
 	bool filter(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
+	enum VarOptions {neutralEmEnergyFraction,neutralHadronEnergyFraction,neutralMultiplicity,chargedEmEnergyFraction,
+					 chargedHadronEnergyFraction,chargedMultiplicity,nconstituents,muonEnergyFraction}; 
+
 	// ----------member data ---------------------------
 	edm::InputTag JetTag_;
 	std::vector<edm::InputTag> SkipTag_;
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	std::vector<edm::EDGetTokenT<edm::View<reco::Candidate>>> SkipTok_;
 	double maxEta_;
-	vector<string> varnames_;
-	vector<double> etamin_, etamax_, cutvalmin_, cutvalmax_;
+	std::vector<std::string> varnames_;
+	std::vector<VarOptions> vartypes_;
+	std::vector<double> etamin_, etamax_, cutvalmin_, cutvalmax_;
 	double jetPtFilter_;
 	bool saveAllId_, saveAllPt_, ExcludeLeptonIsoTrackPhotons_, TagMode_, invertJetPtFilter_;
 	double JetConeSize_;
@@ -76,11 +78,11 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig) {
 	TagMode_ = iConfig.getParameter<bool> ("TagMode");
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 	maxEta_ = iConfig.getParameter <double> ("maxJetEta");
-	varnames_ = iConfig.getParameter <vector<string>> ("varnames");
-	etamin_ = iConfig.getParameter <vector<double>> ("etamin"); 
-	etamax_ = iConfig.getParameter <vector<double>> ("etamax");
-	cutvalmin_ = iConfig.getParameter <vector<double>> ("cutvalmin");
-	cutvalmax_ = iConfig.getParameter <vector<double>> ("cutvalmax");  
+	varnames_ = iConfig.getParameter <std::vector<std::string>> ("varnames");
+	etamin_ = iConfig.getParameter <std::vector<double>> ("etamin");
+	etamax_ = iConfig.getParameter <std::vector<double>> ("etamax");
+	cutvalmin_ = iConfig.getParameter <std::vector<double>> ("cutvalmin");
+	cutvalmax_ = iConfig.getParameter <std::vector<double>> ("cutvalmax");
 	jetPtFilter_ = iConfig.getParameter <double> ("jetPtFilter");
 	invertJetPtFilter_ = iConfig.getParameter <bool> ("invertJetPtFilter");
 	saveAllId_ = iConfig.getParameter <bool> ("SaveAllJetsId");
@@ -94,12 +96,26 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig) {
 	for(auto& tag: SkipTag_) SkipTok_.push_back(consumes<edm::View<reco::Candidate>>(tag));
 
 	// check the contents of the varnames_ vector to make sure it contains only allowed values
-	std::set<std::string> varoptions = {"neutralEmEnergyFraction","neutralHadronEnergyFraction","neutralMultiplicity",
-										"chargedEmEnergyFraction","chargedHadronEnergyFraction","chargedMultiplicity",
-										"nconstituents","muonEnergyFraction","nef","nhf","nm","cef","chf","cm","nc","mf"};
+	vartypes_.reserve(varnames_.size());
 	for(auto v : varnames_) {
-		if (varoptions.find(v) == varoptions.end()) {
-			edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: variable name " << v << " unknown";
+		if(v=="neutralEmEnergyFraction")			vartypes_.push_back(neutralEmEnergyFraction);
+		else if(v=="neutralHadronEnergyFraction")	vartypes_.push_back(neutralHadronEnergyFraction);
+		else if(v=="neutralMultiplicity")			vartypes_.push_back(neutralMultiplicity);
+		else if(v=="chargedEmEnergyFraction")		vartypes_.push_back(chargedEmEnergyFraction);
+		else if(v=="chargedHadronEnergyFraction")	vartypes_.push_back(chargedHadronEnergyFraction);
+		else if(v=="chargedMultiplicity")			vartypes_.push_back(chargedMultiplicity);
+		else if(v=="nconstituents")					vartypes_.push_back(nconstituents);
+		else if(v=="muonEnergyFraction")			vartypes_.push_back(muonEnergyFraction);
+		else if(v=="nef")							vartypes_.push_back(neutralEmEnergyFraction);
+		else if(v=="nhf")							vartypes_.push_back(neutralHadronEnergyFraction);
+		else if(v=="nm")							vartypes_.push_back(neutralMultiplicity);
+		else if(v=="cef")							vartypes_.push_back(chargedEmEnergyFraction);
+		else if(v=="chf")							vartypes_.push_back(chargedHadronEnergyFraction);
+		else if(v=="cm")							vartypes_.push_back(chargedMultiplicity);
+		else if(v=="nc")							vartypes_.push_back(nconstituents);
+		else if(v=="mf")							vartypes_.push_back(muonEnergyFraction);
+		else {
+			edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: variable name " << v << " unknown";	
 		}
 	}
 
@@ -183,16 +199,20 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 			//calculate the PFJetID decision
 			bool good = true;
 			double varval = 0.0;
-			for(unsigned v=0; v<varnames_.size(); ++v) {
-				if(varnames_[v]=="neutralHadronEnergyFraction" || varnames_[v]=="nhf")      varval = iJet.neutralHadronEnergyFraction();//gives raw energy in the denominator
-				else if(varnames_[v]=="neutralEmEnergyFraction" || varnames_[v]=="nef")     varval = iJet.neutralEmEnergyFraction();//gives raw energy in the denominator
-				else if(varnames_[v]=="neutralMultiplicity" || varnames_[v]=="nm")          varval = iJet.neutralMultiplicity();
-				else if(varnames_[v]=="chargedHadronEnergyFraction" || varnames_[v]=="chf") varval = iJet.chargedHadronEnergyFraction();
-				else if(varnames_[v]=="chargedEmEnergyFraction" || varnames_[v]=="cef")     varval = iJet.chargedEmEnergyFraction();
-				else if(varnames_[v]=="chargedMultiplicity" || varnames_[v]=="cm")          varval = iJet.chargedMultiplicity();
-				else if(varnames_[v]=="nconstituents" || varnames_[v]=="nc")                varval = iJet.neutralMultiplicity(); + iJet.chargedMultiplicity();
-				else if(varnames_[v]=="muonEnergyFraction" || varnames_[v]=="mf")           varval = iJet.muonEnergyFraction();
-				if(abs(iJet.eta())>etamin[v] && abs(iJet.eta())<=etamax[v] && (varval<cutvalmin[v] || varval>cutvalmax[v])) {
+			for(unsigned v=0; v<vartypes_.size(); ++v) {
+				if(vartypes_[v]==neutralHadronEnergyFraction)		varval = iJet.neutralHadronEnergyFraction(); //gives raw energy in the denominator
+				else if(vartypes_[v]==neutralEmEnergyFraction)		varval = iJet.neutralEmEnergyFraction(); //gives raw energy in the denominator
+				else if(vartypes_[v]==neutralMultiplicity)			varval = iJet.neutralMultiplicity();
+				else if(vartypes_[v]==chargedHadronEnergyFraction)	varval = iJet.chargedHadronEnergyFraction();
+				else if(vartypes_[v]==chargedEmEnergyFraction)		varval = iJet.chargedEmEnergyFraction();
+				else if(vartypes_[v]==chargedMultiplicity)			varval = iJet.chargedMultiplicity();
+				else if(vartypes_[v]==nconstituents)				varval = iJet.neutralMultiplicity() + iJet.chargedMultiplicity();
+				else if(vartypes_[v]==muonEnergyFraction)			varval = iJet.muonEnergyFraction();
+				else {
+					edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: unkown variable name " << v << ". Unable to select the correct value for the jet pproperty.";
+					varval = 0.0;
+				}
+				if(abs(iJet.eta())>etamin_[v] && abs(iJet.eta())<=etamax_[v] && (varval<cutvalmin_[v] || varval>cutvalmax_[v])) {
 					good = false;
 					break;
 				}
