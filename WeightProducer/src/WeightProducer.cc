@@ -195,7 +195,13 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       if(!fileNamePUMC.empty() and _remakePU){
         fileNamePUMC = edm::FileInPath(fileNamePUMC).fullPath();
         TFile* mfile = TFile::Open(fileNamePUMC.c_str(), "READ");
+        if(!mfile || !mfile->IsOpen()) {
+          edm::LogWarning("TreeMaker") << "ERROR in WeightProducer: Unable to open the file containing the TrueNumInteractions from MC (" << fileNamePUMC << ")";
+        }
         TH1* pu_mc_in = getHisto(mfile,"NeffFinder/TrueNumInteractions_"+_sampleName);
+        if(!pu_mc_in) {
+          edm::LogWarning("TreeMaker") << "ERROR in WeightProducer: TrueNumInteractions histogram for " << _sampleName << " missing from file " << fileNamePUMC;
+        }
 
         pu_central = getHisto(dfile,"data_pu_central",true);
         pu_up = getHisto(dfile,"data_pu_up",true);
