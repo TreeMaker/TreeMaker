@@ -163,8 +163,8 @@ def main(args):
     parser.add_option("--cert", dest="cert", default="", help="w/ --key, use certificate access for McM database (otherwise kerberos) (default = %default)")
     parser.add_option("--key", dest="key", default="", help="w/ --cert, use certificate access for McM database (otherwise kerberos) (default = %default)")
     parser.add_option("--verbose", dest="verbose", default=False, action="store_true", help="print some extra messages (not quite as verbose as debug (default = %default)")
-    (options, args) = parser.parse_args()
-    
+    (options, args) = parser.parse_args(args)
+
     # check options
     if len(options.dict)==0:
     	parser.error("Must specify a dict of samples")
