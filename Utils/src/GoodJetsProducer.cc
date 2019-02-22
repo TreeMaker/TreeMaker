@@ -21,6 +21,7 @@
 // system include files
 #include <memory>
 #include <algorithm>
+#include <set>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -60,8 +61,6 @@ private:
 	edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 	std::vector<edm::EDGetTokenT<edm::View<reco::Candidate>>> SkipTok_;
 	double maxEta_;
-	//double maxNeutralFraction_, maxNeutralFractionHE_, minNeutralFractionHF_, maxPhotonFraction_, minPhotonFractionHE_, maxPhotonFractionHE_, maxPhotonFractionHF_, minChargedFraction_, maxChargedEMFraction_;
-	//int minNconstituents_, minNneutralsHE_, minNneutralsHF_, minNcharged_;
 	vector<string> varnames_;
 	vector<double> etamin_, etamax_, cutvalmin_, cutvalmax_;
 	double jetPtFilter_;
@@ -77,19 +76,6 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig) {
 	TagMode_ = iConfig.getParameter<bool> ("TagMode");
 	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
 	maxEta_ = iConfig.getParameter <double> ("maxJetEta");
-	//minNconstituents_ = iConfig.getParameter <int> ("minNconstituents");
-	//minNneutralsHE_ = iConfig.getParameter <int> ("minNneutralsHE");
-	//minNneutralsHF_ = iConfig.getParameter <int> ("minNneutralsHF");
-	//minNcharged_ = iConfig.getParameter <int> ("minNcharged");
-	//maxNeutralFraction_ = iConfig.getParameter <double> ("maxNeutralFraction");
-	//maxNeutralFractionHE_ = iConfig.getParameter <double> ("maxNeutralFractionHE");
-	//minNeutralFractionHF_ = iConfig.getParameter <double> ("minNeutralFractionHF");
-	//maxPhotonFraction_ = iConfig.getParameter <double> ("maxPhotonFraction");
-	//minPhotonFractionHE_ = iConfig.getParameter <double> ("minPhotonFractionHE");
-	//maxPhotonFractionHE_ = iConfig.getParameter <double> ("maxPhotonFractionHE");
-	//maxPhotonFractionHF_ = iConfig.getParameter <double> ("maxPhotonFractionHF");
-	//minChargedFraction_ = iConfig.getParameter <double> ("minChargedFraction");
-	//maxChargedEMFraction_ = iConfig.getParameter <double> ("maxChargedEMFraction");
 	varnames_ = iConfig.getParameter <vector<string>> ("varnames");
 	etamin_ = iConfig.getParameter <vector<double>> ("etamin"); 
 	etamax_ = iConfig.getParameter <vector<double>> ("etamax");
@@ -108,12 +94,12 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig) {
 	for(auto& tag: SkipTag_) SkipTok_.push_back(consumes<edm::View<reco::Candidate>>(tag));
 
 	// check the contents of the varnames_ vector to make sure it contains only allowed values
-	vector<string> varoptions = {"neutralEmEnergyFraction","neutralHadronEnergyFraction","neutralMultiplicity",
-								 "chargedEmEnergyFraction","chargedHadronEnergyFraction","chargedMultiplicity",
-								 "nconstituents","muonEnergyFraction","nef","nhf","nm","cef","chf","cm","nc","mf"};
+	std::set<std::string> varoptions = {"neutralEmEnergyFraction","neutralHadronEnergyFraction","neutralMultiplicity",
+										"chargedEmEnergyFraction","chargedHadronEnergyFraction","chargedMultiplicity",
+										"nconstituents","muonEnergyFraction","nef","nhf","nm","cef","chf","cm","nc","mf"};
 	for(auto v : varnames_) {
-		if (std::find(varoptions.begin(), varoptions.end(), v) == varoptions.end()) {
-			std::cout << "Input error: variable name " << v << " unknown" << endl;
+		if (varoptions.find(v) == varoptions.end()) {
+			edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: variable name " << v << " unknown";
 		}
 	}
 
