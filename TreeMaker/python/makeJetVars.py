@@ -53,14 +53,19 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         # keep all eta jets to preserve ordering
         maxJetEta                 = cms.double(-1),
     )
-    (TMeras.TM2017 | TMeras.TM2018).toModify(GoodJets,
-        maxNeutralFraction        = cms.double(0.90),
-        maxNeutralFractionHE      = cms.double(1.00), #Turned off as not needed for the tight WP
-        minNeutralFractionHF      = cms.double(0.02),
-        maxPhotonFraction         = cms.double(0.90),
-        minPhotonFractionHE       = cms.double(0.02),
-        maxPhotonFractionHE       = cms.double(0.99),
-        maxChargedEMFraction      = cms.double(1.00), #Turned off as not needed for the tight WP
+    (TMeras.TM2017).toModify(GoodJets,
+        varnames  = cms.vstring('nhf','nef','nc','chf','cm','nef','nm','nef','nhf','nm'),
+        etamin    = cms.vdouble(  0.0,  0.0, 0.0,  0.0, 0.0,  2.7, 2.7,  3.0,  3.0, 3.0),
+        etamax    = cms.vdouble(  2.7,  2.7, 2.7,  2.4, 2.4,  3.0, 3.0,  5.0,  5.0, 5.0),
+        cutvalmin = cms.vdouble( -1.0, -1.0, 1.0,  0.0, 0.0, 0.02, 2.0, -1.0, 0.02,10.0),
+        cutvalmax = cms.vdouble( 0.90, 0.90,9999, 9999,9999, 0.99,9999, 0.90, 9999,9999),
+    )
+    (TMeras.TM2018).toModify(GoodJets,
+        varnames  = cms.vstring('nhf','nef','nc','chf','cm','nhf','nef','cm','nef','nm','nef','nhf','nm'),
+        etamin    = cms.vdouble(  0.0,  0.0, 0.0,  0.0, 0.0,  2.6,  2.6, 2.6,  2.7, 2.7,  3.0,  3.0, 3.0),
+        etamax    = cms.vdouble(  2.6,  2.6, 2.6,  2.6, 2.6,  2.7,  2.7, 2.7,  3.0, 3.0,  5.0,  5.0, 5.0),
+        cutvalmin = cms.vdouble( -1.0, -1.0, 1.0,  0.0, 0.0, -1.0, -1.0, 0.0, 0.02, 2.0, -1.0, 0.02,10.0),
+        cutvalmax = cms.vdouble( 0.90, 0.90,9999, 9999,9999, 0.90, 0.99,9999, 0.99,9999, 0.90, 9999,9999),
     )
     setattr(process,"GoodJets"+suff,GoodJets)
     GoodJetsTag = cms.InputTag("GoodJets"+suff)
@@ -130,9 +135,10 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     BTagsDeepCSV = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
-        BTagCutValue = cms.double(0.6324)
+        BTagCutValue = cms.double(0.6321)
     )
-    (TMeras.TM2017 | TMeras.TM2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
+    (TMeras.TM2017).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
+    (TMeras.TM2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4184))
     setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
     self.VarsInt.extend(['BTagsDeepCSV'+suff])
     
