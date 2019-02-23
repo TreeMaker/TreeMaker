@@ -38,6 +38,7 @@
 #include "PhysicsTools/PatAlgos/plugins/PATJetProducer.h"
 #include <DataFormats/PatCandidates/interface/Photon.h>
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "TreeMaker/Utils/interface/all_equal.h"
 #include <TVector2.h>
 //
 // class declaration
@@ -117,6 +118,11 @@ GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig) {
 		else {
 			edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: variable name " << v << " unknown";	
 		}
+	}
+
+	// check that the etamin_, etamax_, cutvalmin_, and cutvalmax_ vectors all have the same size ass the varnames_ vector
+	if (!utils::all_equal(varnames_.size(),etamin_.size(),etamax_.size(),cutvalmin_.size(),cutvalmax_.size())) {
+		edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: the eta and cutval vectors (min & max) must have the same size as the varnames vector";
 	}
 
 	produces<std::vector<Jet> >();
@@ -212,7 +218,11 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 					edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: unkown variable name " << v << ". Unable to select the correct value for the jet pproperty.";
 					varval = 0.0;
 				}
-				if(abs(iJet.eta())>etamin_[v] && abs(iJet.eta())<=etamax_[v] && (varval<cutvalmin_[v] || varval>cutvalmax_[v])) {
+				// 1. Check for a specified eta region. Because abs(eta)>=0 we use -1.0 to turn of the checking of a boundary.
+				// 2. Check to see if the variable is outside the acceptable bounds.
+				// Note: There is a natural way to turn off the lower bound because all fractions and multiplicities are positive definite (i.e. make the lower bound -1.0).
+				//       Must explicitly turn off the upper bound with -1.0 to all for all values up to infinity
+				if( ((etamin_[v]==-1.0 || abs(iJet.eta())>etamin_[v]) && (etamax_[v]==-1.0 || abs(iJet.eta())<=etamax_[v])) && (varval<=cutvalmin_[v] || (cutvalmax_[v]!=-1.0 && varval>=cutvalmax_[v])) ) {
 					good = false;
 					break;
 				}
