@@ -83,6 +83,7 @@ private:
   TH1 *pu_central, *pu_up, *pu_down;
   double _weightFactor;
   bool _remakePU, _applyPUWeights;
+  bool _isFlat;
   std::string _sampleName;
   weight_method _weightingMethod;
   std::unordered_map<double,double> _FastSimXsec;
@@ -102,6 +103,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _SusyMotherTag(iConfig.getParameter<edm::InputTag> ("modelIdentifier")),
    pu_central(nullptr), pu_up(nullptr), pu_down(nullptr),
    _remakePU(iConfig.getParameter<bool>("RemakePU")),
+   _isFlat(false),
    _sampleName(iConfig.getParameter<std::string>("SampleName")),
    _weightingMethod(other)
 {
@@ -117,7 +119,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       _weightTok = consumes<double>(_weightName);
    }
    // Option 3: compute new weight
-   else if (_weightingMethodName == "Constant") {
+   else if (_weightingMethodName == "Constant" || _weightingMethodName == "ConstantFlat") {
       _weightingMethod = Constant;
       _weightFactor = _lumi * _xs / _NumberEvents;
       edm::LogInfo("TreeMaker")
@@ -126,6 +128,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
         << "        Cross section (pb) : " << _xs << "\n"
         << "          Number of events : " << _NumberEvents;
       _genEvtTok = consumes<GenEventInfoProduct>(_genEvtTag);
+      if(_weightingMethodName.find("Flat")!=std::string::npos) _isFlat = true;
    }
    // Option 4: assign cross section for FastSim
    else if (_weightingMethodName == "FastSim") {
@@ -192,7 +195,13 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       if(!fileNamePUMC.empty() and _remakePU){
         fileNamePUMC = edm::FileInPath(fileNamePUMC).fullPath();
         TFile* mfile = TFile::Open(fileNamePUMC.c_str(), "READ");
+        if(!mfile || !mfile->IsOpen()) {
+          edm::LogWarning("TreeMaker") << "ERROR in WeightProducer: Unable to open the file containing the TrueNumInteractions from MC (" << fileNamePUMC << ")";
+        }
         TH1* pu_mc_in = getHisto(mfile,"NeffFinder/TrueNumInteractions_"+_sampleName);
+        if(!pu_mc_in) {
+          edm::LogWarning("TreeMaker") << "ERROR in WeightProducer: TrueNumInteractions histogram for " << _sampleName << " missing from file " << fileNamePUMC;
+        }
 
         pu_central = getHisto(dfile,"data_pu_central",true);
         pu_up = getHisto(dfile,"data_pu_up",true);
@@ -269,7 +278,8 @@ void WeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       iEvent.getByToken(_genEvtTok, genEvtInfoHandle);
       if (genEvtInfoHandle.isValid()) {
         double genweight_ = genEvtInfoHandle->weight();
-        if(genweight_ < 0) resultWeight *= -1;
+        if(genweight_ < 0 && !_isFlat) resultWeight *= -1;
+        if(_isFlat) resultWeight *= genweight_;
       }
    }
    

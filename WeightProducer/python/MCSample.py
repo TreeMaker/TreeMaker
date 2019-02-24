@@ -60,6 +60,7 @@ class MCSampleHelper():
         "QCD_Pt-800to1000_MuEnrichedPt5"                                 : XSValues(-1.0, -1.0, 4.723,        -1.0), #2016 TuneCUETP8M1 XSDB value
         "QCD_Pt-1000toInf_MuEnrichedPt5"                                 : XSValues(-1.0, -1.0, 1.613,        -1.0), #2016 TuneCUETP8M1 XSDB value
         # QCD pT-hat binned: cross sections from AN2017_013_v17
+        "QCD_Pt-15to7000"                                                : XSValues(-1.0, -1.0, 1372000000,   -1.0), #2018 TuneCP5 GenXsecAnalyzer value
         "QCD_Pt_50to80"                                                  : XSValues(-1.0, -1.0, 19204300,     -1.0),
         "QCD_Pt_80to120"                                                 : XSValues(-1.0, -1.0, 2762530,      -1.0),
         "QCD_Pt_80_120"                                                  : XSValues(-1.0, -1.0, 2762530,      -1.0),

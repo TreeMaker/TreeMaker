@@ -49,6 +49,7 @@ datasets = OrderedDict([
 ("QCD_Pt-600to800_MuEnrichedPt5_Tune",[0]),
 ("QCD_Pt-800to1000_MuEnrichedPt5_Tune",[0]),
 ("QCD_Pt-1000toInf_MuEnrichedPt5_Tune",[0]),
+("QCD_Pt-15to7000_Tune*_Flat2018_13TeV_pythia8",[0,1]),
 ("QCD_HT200to300_Tune",[0,1]),
 ("QCD_HT300to500_Tune",[0,1]),
 ("QCD_HT500to700_Tune",[0,1]),

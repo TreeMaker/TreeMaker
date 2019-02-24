@@ -163,8 +163,8 @@ def main(args):
     parser.add_option("--cert", dest="cert", default="", help="w/ --key, use certificate access for McM database (otherwise kerberos) (default = %default)")
     parser.add_option("--key", dest="key", default="", help="w/ --cert, use certificate access for McM database (otherwise kerberos) (default = %default)")
     parser.add_option("--verbose", dest="verbose", default=False, action="store_true", help="print some extra messages (not quite as verbose as debug (default = %default)")
-    (options, args) = parser.parse_args()
-    
+    (options, args) = parser.parse_args(args)
+
     # check options
     if len(options.dict)==0:
     	parser.error("Must specify a dict of samples")
@@ -252,11 +252,11 @@ def main(args):
                 for ireq in req_mini:
                     dname = ireq['dataset_name']
                     output_dataset = ireq['output_dataset']
-                    if not any(any(pattern in ds for ds in output_dataset) for pattern in options.grep):
-                        if options.verbose: print "\tSkipping",dname,"because of grep"
+                    if len(options.grep)>0 and not any(any(pattern in ds for ds in output_dataset) for pattern in options.grep):
+                        if options.verbose: print "\tSkipping",output_dataset,"because of grep"
                         continue
-                    if any(any(pattern in ds for ds in output_dataset) for pattern in options.vgrep):
-                        if options.verbose: print "\tSkipping",dname,"because of vgrep"
+                    if len(options.vgrep)>0 and any(any(pattern in ds for ds in output_dataset) for pattern in options.vgrep):
+                        if options.verbose: print "\tSkipping",output_dataset,"because of vgrep"
                         continue
                     if dname in found_list: continue
                     found_list.add(dname)
