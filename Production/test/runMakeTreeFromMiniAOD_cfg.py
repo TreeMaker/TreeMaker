@@ -15,6 +15,7 @@ threads=parameters.value("threads",1)
 streams=parameters.value("streams",0)
 tmi=parameters.value("tmi",False)
 trace=parameters.value("trace",False)
+debugjets=parameters.value("debugjets",False)
 
 # print out settings
 print "***** SETUP ************************************"
@@ -81,6 +82,12 @@ if trace:
 
 # setup makeTree modules
 process = theMaker.makeTreeFromMiniAOD(process)
+
+# to check user floats and discriminators
+if debugjets:
+    from HLTrigger.Configuration.common import producers_by_type
+    for prod in producers_by_type(process,"JetProperties"):
+        prod.debug = True
     
 # if requested, dump and exit
 if dump:
