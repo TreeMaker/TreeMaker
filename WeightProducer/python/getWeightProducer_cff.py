@@ -328,11 +328,11 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 17744779, False),
         MCSample('QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 24243589, True),
         # QCD: extensions included
-        MCSample('QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 58689666, True, 58623306),
-        MCSample('QCD_HT300to500_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 60316577, True, 60205669),
+        MCSample('QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 59026308, False, 58959570), # without missing files = 59427619
+        MCSample('QCD_HT300to500_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 21127542, False, 21088604),
         MCSample('QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 56207744, False, 56041018),
-        MCSample('QCD_HT700to1000_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 47724800, True, 47518924),
-        MCSample('QCD_HT1000to1500_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 16595628, True, 16485296),
+        MCSample('QCD_HT700to1000_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 20029078, False, 19942498), # without missing files = 20006396
+        MCSample('QCD_HT1000to1500_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 16882838, False, 16770762),
         MCSample('QCD_HT1500to2000_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 11634434, False, 11508604),
         MCSample('QCD_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 5941306, False, 5825566),
         # DY/Z: k-factor of 1.23 applied, available extensions included
