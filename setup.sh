@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-CMSSWVER=CMSSW_9_4_11
+CMSSWVER=CMSSW_10_2_11_patch1
 FORK=TreeMaker
 BRANCH=Run2_2017
 ACCESS=ssh
@@ -59,9 +59,7 @@ else
 fi
 
 # get CMSSW release
-if [[ "$CMSSWVER" == "CMSSW_9_4_"* ]]; then
-	GCC_VERSION=gcc630
-elif [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
+if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
 	GCC_VERSION=gcc700
 else
 	echo "Unsupported CMSSW version: $CMSSWVER"
@@ -98,14 +96,7 @@ git cms-init
 git config gc.auto 0
 
 # CMSSW patches
-if [[ "$CMSSWVER" == "CMSSW_9_4_"* ]]; then
-	git cms-merge-topic TreeMaker:fixFormulaEvaluator_949 # this one has dependencies, might be in a future 9_4_X release
-	git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_9_4_2
-	git cms-merge-topic -u TreeMaker:storeJERFactorIndex942
-	git cms-merge-topic -u TreeMaker:AddJetAxis1_942
-	git cms-merge-topic -u TreeMaker:NjettinessAxis_948
-	git cms-merge-topic -u TreeMaker:METFixEE2017_949_v2
-elif [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
+if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
 	git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_10_2_7
 	git cms-merge-topic -u TreeMaker:storeJERFactorIndex1027
 	git cms-merge-topic -u TreeMaker:AddJetAxis1_1027
