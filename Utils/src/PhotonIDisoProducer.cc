@@ -136,7 +136,7 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   produces< std::vector< double > >("pfChargedIsoRhoCorr"); 
   produces< std::vector< double > >("pfNeutralIsoRhoCorr"); 
   produces< std::vector< double > >("pfGammaIsoRhoCorr"); 
-  produces< std::vector< double > >("hasPixelSeed"); 
+  produces< std::vector< bool > >("hasPixelSeed"); 
   produces< std::vector< double > >("passElectronVeto"); 
   produces< std::vector< bool > >("hadronization");
   produces< std::vector< bool > >("nonPrompt");
@@ -195,7 +195,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   auto photon_pfGammaIsoRhoCorr = std::make_unique<std::vector<double>>();
   auto photon_pfChargedIsoRhoCorr = std::make_unique<std::vector<double>>();
   auto photon_pfNeutralIsoRhoCorr = std::make_unique<std::vector<double>>();
-  auto photon_hasPixelSeed = std::make_unique<std::vector<double>>();
+  auto photon_hasPixelSeed = std::make_unique<std::vector<bool>>();
   auto photon_passElectronVeto = std::make_unique<std::vector<double>>();
   auto   photon_hadronization = std::make_unique<std::vector<bool>>();
   auto   photon_nonPrompt  = std::make_unique<std::vector<bool>>();
