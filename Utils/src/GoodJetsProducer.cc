@@ -39,6 +39,7 @@
 #include <DataFormats/PatCandidates/interface/Photon.h>
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "TreeMaker/Utils/interface/all_equal.h"
+#include "TreeMaker/Utils/interface/EnergyFractionCalculator.h"
 #include <TVector2.h>
 //
 // class declaration
@@ -205,15 +206,16 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 			//calculate the PFJetID decision
 			bool good = true;
 			double varval = 0.0;
+			EnergyFractionCalculator efc(iJet);
 			for(unsigned v=0; v<vartypes_.size(); ++v) {
-				if(vartypes_[v]==neutralHadronEnergyFraction)		varval = iJet.neutralHadronEnergyFraction(); //gives raw energy in the denominator
-				else if(vartypes_[v]==neutralEmEnergyFraction)		varval = iJet.neutralEmEnergyFraction(); //gives raw energy in the denominator
+				if(vartypes_[v]==neutralHadronEnergyFraction)		varval = efc.neutralHadronEnergyFraction(); //gives raw energy in the denominator
+				else if(vartypes_[v]==neutralEmEnergyFraction)		varval = efc.neutralEmEnergyFraction(); //gives raw energy in the denominator
 				else if(vartypes_[v]==neutralMultiplicity)			varval = iJet.neutralMultiplicity();
-				else if(vartypes_[v]==chargedHadronEnergyFraction)	varval = iJet.chargedHadronEnergyFraction();
-				else if(vartypes_[v]==chargedEmEnergyFraction)		varval = iJet.chargedEmEnergyFraction();
+				else if(vartypes_[v]==chargedHadronEnergyFraction)	varval = efc.chargedHadronEnergyFraction();
+				else if(vartypes_[v]==chargedEmEnergyFraction)		varval = efc.chargedEmEnergyFraction();
 				else if(vartypes_[v]==chargedMultiplicity)			varval = iJet.chargedMultiplicity();
 				else if(vartypes_[v]==nconstituents)				varval = iJet.neutralMultiplicity() + iJet.chargedMultiplicity();
-				else if(vartypes_[v]==muonEnergyFraction)			varval = iJet.muonEnergyFraction();
+				else if(vartypes_[v]==muonEnergyFraction)			varval = efc.muonEnergyFraction();
 				else {
 					edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: unkown variable name " << v << ". Unable to select the correct value for the jet pproperty.";
 					varval = 0.0;

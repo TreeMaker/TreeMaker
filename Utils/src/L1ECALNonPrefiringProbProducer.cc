@@ -14,6 +14,8 @@
 #include "TFile.h"
 #include "TH2.h"
 
+#include "TreeMaker/Utils/interface/EnergyFractionCalculator.h"
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -121,8 +123,9 @@ L1ECALNonPrefiringProbProducer::produce(edm::StreamID, edm::Event& iEvent, const
          const auto& nonprefiringprob_gam = getNonPrefiringRate(photon.eta(), photon.pt(), h_prefmap_photon);
          dot(NonPrefiringProbOverlap,nonprefiringprob_gam);
       }
-      
-      double ptem = pt*(jet.neutralEmEnergyFraction() + jet.chargedEmEnergyFraction());
+
+      EnergyFractionCalculator efc(jet);
+      double ptem = pt*(efc.neutralEmEnergyFraction() + efc.chargedEmEnergyFraction());
       const auto& nonprefiringprob_jet = getNonPrefiringRate(eta, useEMpt_ ? ptem : pt, h_prefmap_jet);
       
       //If there are no overlapping photons, just multiply by the jet non prefiring rate

@@ -26,6 +26,8 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 
+#include "TreeMaker/Utils/interface/EnergyFractionCalculator.h"
+
 #include "TLorentzVector.h"
 
 typedef math::XYZTLorentzVector LorentzVector;
@@ -34,8 +36,8 @@ typedef math::XYZTLorentzVector LorentzVector;
 class NamedPtrBase {
 	public:
 		//constructor
-		NamedPtrBase() : name("") {}
-		NamedPtrBase(std::string name_, edm::stream::EDProducer<>* edprod, const edm::ParameterSet& iConfig) : name(name_) {
+		NamedPtrBase() : name(""), fraction(false) {}
+		NamedPtrBase(std::string name_, edm::stream::EDProducer<>* edprod, const edm::ParameterSet& iConfig) : name(name_), fraction(name.find("Fraction")!=std::string::npos) {
 			if(iConfig.exists(name)) extraInfo = iConfig.getParameter<std::vector<std::string>>(name);
 		}
 		//destructor
@@ -44,9 +46,11 @@ class NamedPtrBase {
 		virtual void put(edm::Event& iEvent) { }
 		virtual void reset() { }
 		virtual void get_property(const pat::Jet& Jet) { }
+		virtual void get_property(const EnergyFractionCalculator& Jet) { }
 	
 		//member variables
 		std::string name;
+		bool fraction;
 		std::vector<std::string> extraInfo;		
 };
 
@@ -128,63 +132,63 @@ DEFINE_NAMED_PTR(jetArea);
 class NamedPtr_chargedHadronEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.chargedHadronEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.chargedHadronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(chargedHadronEnergyFraction);
 
 class NamedPtr_neutralHadronEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.neutralHadronEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.neutralHadronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(neutralHadronEnergyFraction);
 
 class NamedPtr_chargedEmEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.chargedEmEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.chargedEmEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(chargedEmEnergyFraction);
 
 class NamedPtr_neutralEmEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.neutralEmEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.neutralEmEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(neutralEmEnergyFraction);
 
 class NamedPtr_electronEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.electronEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.electronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(electronEnergyFraction);
 
 class NamedPtr_photonEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.photonEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.photonEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(photonEnergyFraction);
 
 class NamedPtr_muonEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.muonEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.muonEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(muonEnergyFraction);
 
 class NamedPtr_hfEMEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.HFEMEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.HFEMEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(hfEMEnergyFraction);
 
 class NamedPtr_hfHadronEnergyFraction : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
-		void get_property(const pat::Jet& Jet) override { push_back(Jet.HFHadronEnergyFraction()); }
+		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.HFHadronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(hfHadronEnergyFraction);
 
@@ -506,8 +510,10 @@ JetProperties::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 	iEvent.getByToken(JetTok_,Jets);
 	if( Jets.isValid() ) {
 		for(const auto& Jet : *Jets){
+			EnergyFractionCalculator efc(Jet);
 			for(auto & Ptr : Ptrs_){
-				Ptr->get_property(Jet);
+				if(Ptr->fraction) Ptr->get_property(efc);
+				else Ptr->get_property(Jet);
 			}
 			//for debugging: print out available subjet collections, btag discriminators, userfloats/ints
 			//will recurse through subjet collections if any
