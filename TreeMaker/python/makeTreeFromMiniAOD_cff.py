@@ -900,6 +900,25 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorRecoCand.extend (['ak8GenJetProperties(GenJetsAK8)'])
 
     ## ----------------------------------------------------------------------------------------------
+    ## Prefiring weights
+    ## ----------------------------------------------------------------------------------------------
+    from TreeMaker.Utils.L1ECALNonPrefiringProbProducer_cfi import L1ECALNonPrefiringProbProducer
+    prefiringDataEra = cms.PSet(value = cms.string(""))
+    TMeras.TM2016.toModify(prefiringDataEra, value = "2016BtoH")
+    TMeras.TM2017.toModify(prefiringDataEra, value = "2017BtoF")
+    if len(prefiringDataEra.value.value())>0:
+        process.L1ECALNonPrefiringProbProducer = L1ECALNonPrefiringProbProducer.clone(
+            TheJets = JetTag,
+            DataEra = prefiringDataEra.value,
+            L1Maps = cms.string('data/L1PrefiringMaps_new.root'),
+        )
+        self.VarsDouble.extend([
+            'L1ECALNonPrefiringProbProducer:NonPrefiringProb',
+            'L1ECALNonPrefiringProbProducer:NonPrefiringProbUp',
+            'L1ECALNonPrefiringProbProducer:NonPrefiringProbDown',
+        ])
+
+    ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
     ## ----------------------------------------------------------------------------------------------
     # sequence for baseline filters
