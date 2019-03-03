@@ -3,7 +3,7 @@ from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
 def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff, MaxEta=5.0, METfix=False):
     if METfix:
-        MHTJetsMETFix = process.PFCandidateJetsWithEEnoise.clone(
+        MHTJetsMETFix = process.pfCandidateJetsWithEEnoise.clone(
             jetsrc = JetTag,
         )
         setattr(process,"MHTJetsMETFix"+suff+MHTsuff,MHTJetsMETFix)
