@@ -3,8 +3,10 @@ __init__.py
 *~
 *.so
 
-# data files linked from DeepAK8
+# data files for egamma
 /Utils/python/EgammaPostRecoTools.py
+/Production/test/data/Run2018_Step2Closure_CoarseEtaR9Gain_scales.dat
+/Production/test/data/Run2018_Step2Closure_CoarseEtaR9Gain_smearings.dat
 
 # condor & log files
 *.stdout
@@ -13,3 +15,4 @@ __init__.py
 jobExecCondor_*.jdl
 jobExecCondorNeff_*.jdl
 *.tar.gz
+*.log
