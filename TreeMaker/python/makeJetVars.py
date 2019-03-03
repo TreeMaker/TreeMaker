@@ -3,7 +3,7 @@ from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
 def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff, MaxEta=5.0, METfix=False):
     if METfix:
-        MHTJetsMETFix = process.PFCandidateJetsWithEEnoise.clone(
+        MHTJetsMETFix = process.pfCandidateJetsWithEEnoise.clone(
             jetsrc = JetTag,
         )
         setattr(process,"MHTJetsMETFix"+suff+MHTsuff,MHTJetsMETFix)
@@ -135,7 +135,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     BTagsDeepCSV = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
-        BTagCutValue = cms.double(0.6324)
+        BTagCutValue = cms.double(0.6321)
     )
     (TMeras.TM2017).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
     (TMeras.TM2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4184))

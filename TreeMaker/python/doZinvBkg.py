@@ -280,7 +280,7 @@ def doZinvBkg(self,process):
     self.VectorDouble.append("goodPhotons:isEB(Photons_isEB)")
     self.VectorDouble.append("goodPhotons:genMatched(Photons_genMatched)")
     self.VectorDouble.append("goodPhotons:hadTowOverEM(Photons_hadTowOverEM)")
-    self.VectorDouble.append("goodPhotons:hasPixelSeed(Photons_hasPixelSeed)")
+    self.VectorBool.append("goodPhotons:hasPixelSeed(Photons_hasPixelSeed)")
     self.VectorDouble.append("goodPhotons:passElectronVeto(Photons_passElectronVeto)")
     self.VectorDouble.append("goodPhotons:pfChargedIso(Photons_pfChargedIso)")
     self.VectorDouble.append("goodPhotons:pfChargedIsoRhoCorr(Photons_pfChargedIsoRhoCorr)")
