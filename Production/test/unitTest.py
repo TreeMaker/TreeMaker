@@ -66,7 +66,7 @@ mytests.append(makeTest("Autumn18","RunIIAutumn18MiniAOD.GJets_HT-600ToInf_TuneC
 mytests.append(makeTest("2018B26Sep",name,numevents,command,inputFilesConfig="Run2018B-26Sep2018-v1.JetHT",nstart=0,nfiles=10))
 mytests.append(makeTest("2018B26SepHEM",name,numevents,command,inputFilesConfig="Run2018B-26Sep2018_HEM-v1.JetHT",nstart=0,nfiles=10))
 mytests.append(makeTest("2018B26SepHEM",name,numevents,command,inputFilesConfig="Run2018B-26Sep2018_HEMmitigation-v1.JetHT",nstart=0,nfiles=10))
-mytests.append(makeTest("2018PromptReco",name,numevents,command,inputFilesConfig="Run2018D-PromptReco-v1.JetHT",nstart=0,nfiles=10))
+mytests.append(makeTest("2018PromptReco",name,numevents,command,inputFilesConfig="Run2018D-PromptReco-v2.JetHT",nstart=244,nfiles=10))
 mytests.append(makeTest("2018ReReco17Sep",name,numevents,command,inputFilesConfig="Run2018B-17Sep2018-v1.JetHT",nstart=0,nfiles=10))
 
 
