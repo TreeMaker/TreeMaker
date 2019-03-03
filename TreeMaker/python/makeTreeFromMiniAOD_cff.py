@@ -407,6 +407,7 @@ def makeTreeFromMiniAOD(self,process):
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq
     elePostRecoEra = cms.PSet(value = cms.string(""))
+    TMeras.TM2018.toModify(elePostRecoEra, value = "2018-Prompt")
     TMeras.TM2017.toModify(elePostRecoEra, value = "2017-Nov17ReReco")
     TMeras.TM80X.toModify(elePostRecoEra, value = "2016-Legacy")
     if len(elePostRecoEra.value.value())>0:
