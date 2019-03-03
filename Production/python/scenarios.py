@@ -37,7 +37,7 @@ class Scenario:
                 geninfo=True,
                 jecfile="data/jec/Summer16_07Aug2017_V10_MC",
                 jerfile="data/jer/Summer16_25nsV1_MC",
-                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0121_69p2mb_pm4p6.root",
                 era="Run2_2016",
                 localera="TM2016_80X",
             )
@@ -50,7 +50,7 @@ class Scenario:
                 signal=True,
                 jecfile="data/jec/Summer16_07Aug2017_V10_MC",
                 jerfile="data/jer/Summer16_25nsV1_MC",
-                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0121_69p2mb_pm4p6.root",
                 era="Run2_2016",
                 localera="TM2016_80X",
             )
@@ -62,7 +62,7 @@ class Scenario:
                 geninfo=True,
                 jecfile="data/jec/Summer16_07Aug2017_V10_MC",
                 jerfile="data/jer/Summer16_25nsV1_MC",
-                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0121_69p2mb_pm4p6.root",
                 era="Run2_2016",
                 localera="TM2016",
             )
@@ -75,7 +75,7 @@ class Scenario:
                 signal=True,
                 jecfile="data/jec/Summer16_07Aug2017_V10_MC",
                 jerfile="data/jer/Summer16_25nsV1_MC",
-                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0121_69p2mb_pm4p6.root",
                 era="Run2_2016",
                 localera="TM2016",
             )
@@ -89,7 +89,7 @@ class Scenario:
                 signal=False,
                 jecfile="data/jec/Summer16_07Aug2017_V10_MC",
                 jerfile="data/jer/Summer16_25nsV1_MC",
-                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0121_69p2mb_pm4p6.root",
                 era="Run2_2016",
                 localera="TM2016",
             )
@@ -103,7 +103,7 @@ class Scenario:
                 signal=True,
                 jecfile="data/jec/Summer16_07Aug2017_V10_MC",
                 jerfile="data/jer/Summer16_25nsV1_MC",
-                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
+                pufile="TreeMaker/Production/test/data/PileupHistograms_0121_69p2mb_pm4p6.root",
                 era="Run2_2016",
                 localera="TM2016",
             )
