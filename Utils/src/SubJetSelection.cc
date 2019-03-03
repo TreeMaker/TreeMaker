@@ -20,6 +20,7 @@
 
 // system include files
 #include <memory>
+#include <cmath>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -44,17 +45,19 @@ template <class T>
 class SubJetSelectionT : public edm::global::EDProducer<> {
 public:
    explicit SubJetSelectionT(const edm::ParameterSet&);
-   ~SubJetSelectionT() override;
    
    static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
    
 private:
    void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
-   
+   double getRawPt(const T& Jet) const { return Jet.pt(); }
+
    // ----------member data ---------------------------
    edm::InputTag JetTag_;
    edm::EDGetTokenT<edm::View<T>> JetTok_;
    double MinPt_, MaxEta_;
+   double VetoMaxPt_, VetoMinEta_, VetoMaxEta_;
+   bool VetoRawPt_, veto_;
 };
 
 //
@@ -63,34 +66,21 @@ private:
 using namespace pat;
 
 template <class T>
-SubJetSelectionT<T>::SubJetSelectionT(const edm::ParameterSet& iConfig)
+SubJetSelectionT<T>::SubJetSelectionT(const edm::ParameterSet& iConfig) :
+   JetTag_(iConfig.getParameter<edm::InputTag>("JetTag")),
+   JetTok_(consumes<edm::View<T>>(JetTag_)),
+   MinPt_(iConfig.getParameter<double>("MinPt")),
+   MaxEta_(iConfig.getParameter<double>("MaxEta")),
+   VetoMaxPt_(iConfig.getParameter<double>("VetoMaxPt")),
+   VetoMinEta_(iConfig.getParameter<double>("VetoMinEta")),
+   VetoMaxEta_(iConfig.getParameter<double>("VetoMaxEta")),
+   VetoRawPt_(iConfig.getParameter<bool>("VetoRawPt")),
+   veto_(iConfig.getParameter<bool>("veto"))
 {
-   
-   JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
-   MinPt_ = iConfig.getParameter <double> ("MinPt");
-   MaxEta_ = iConfig.getParameter <double> ("MaxEta");
-   
-   JetTok_ = consumes<edm::View<T>>(JetTag_);
-
    //register your products
    produces<std::vector<T> >();
    produces<std::vector<bool> >("SubJetMask");
-   
 }
-
-template <class T>
-SubJetSelectionT<T>::~SubJetSelectionT()
-{
-   
-   // do anything here that needs to be done at desctruction time
-   // (e.g. close files, deallocate resources etc.)
-   
-}
-
-
-//
-// member functions
-//
 
 // ------------ method called to produce the data  ------------
 template <class T>
@@ -105,8 +95,16 @@ void SubJetSelectionT<T>::produce(edm::StreamID, edm::Event& iEvent, const edm::
    if(Jets.isValid()) {
       mask->resize(Jets->size(),false);
       for(unsigned int i=0; i<Jets->size();i++) {
-         if(Jets->at(i).pt()>MinPt_ && std::abs(Jets->at(i).eta() ) < MaxEta_) {
-            prodJets->push_back(T(Jets->at(i)) );
+         const auto& Jet = Jets->at(i);
+         double pt = Jet.pt();
+         double eta = std::abs(Jet.eta());
+         bool pass = (pt>MinPt_ and eta<MaxEta_);
+         if(veto_){
+            if(VetoRawPt_) pt = getRawPt(Jet);
+            pass &= (pt>VetoMaxPt_ or eta<VetoMinEta_ or eta>VetoMaxEta_);
+         }
+         if(pass) {
+            prodJets->push_back(T(Jet));
             mask->at(i) = true;
          }
       }
@@ -114,7 +112,14 @@ void SubJetSelectionT<T>::produce(edm::StreamID, edm::Event& iEvent, const edm::
    // put in the event
    iEvent.put(std::move(prodJets));
    iEvent.put(std::move(mask),"SubJetMask");
-   
+}
+
+template <>
+double SubJetSelectionT<pat::Jet>::getRawPt(const pat::Jet& Jet) const {
+   double pt = Jet.pt();
+   if(Jet.jecSetsAvailable()) pt *= Jet.jecFactor(0);
+   if(Jet.hasUserFloat("jerFactor")) pt /= Jet.userFloat("jerFactor");
+   return pt;
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
