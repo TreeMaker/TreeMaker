@@ -28,3 +28,19 @@ GoodJetsProducer = cms.EDFilter('GoodJetsProducer',
     JetConeSize = cms.double(0.04),
     SkipTag = cms.VInputTag()
 )
+
+from TreeMaker.TreeMaker.TMEras import TMeras
+TMeras.TM2017.toModify(GoodJetsProducer,
+    varnames  = cms.vstring('nhf','nef','nc','chf','cm','nef','nm','nef','nhf','nm'),
+    etamin    = cms.vdouble( -1.0, -1.0,-1.0, -1.0,-1.0,  2.7, 2.7,  3.0,  3.0, 3.0),
+    etamax    = cms.vdouble(  2.7,  2.7, 2.7,  2.4, 2.4,  3.0, 3.0, -1.0, -1.0,-1.0),
+    cutvalmin = cms.vdouble( -1.0, -1.0, 1.0,  0.0, 0.0, 0.02, 2.0, -1.0, 0.02,10.0),
+    cutvalmax = cms.vdouble( 0.90, 0.90,-1.0, -1.0,-1.0, 0.99,-1.0, 0.90, -1.0,-1.0),
+)
+TMeras.TM2018.toModify(GoodJetsProducer,
+    varnames  = cms.vstring('nhf','nef','nc','chf','cm','nhf','nef','cm','nef','nm','nef','nhf','nm'),
+    etamin    = cms.vdouble( -1.0, -1.0,-1.0, -1.0,-1.0,  2.6,  2.6, 2.6,  2.7, 2.7,  3.0,  3.0, 3.0),
+    etamax    = cms.vdouble(  2.6,  2.6, 2.6,  2.6, 2.6,  2.7,  2.7, 2.7,  3.0, 3.0, -1.0, -1.0,-1.0),
+    cutvalmin = cms.vdouble( -1.0, -1.0, 1.0,  0.0, 0.0, -1.0, -1.0, 0.0, 0.02, 2.0, -1.0, 0.02,10.0),
+    cutvalmax = cms.vdouble( 0.90, 0.90,-1.0, -1.0,-1.0, 0.90, 0.99,-1.0, 0.99,-1.0, 0.90, -1.0,-1.0),
+)
