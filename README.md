@@ -39,10 +39,10 @@ Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
 global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
-1.  `Summer16MiniAODv3`: for Summer16 miniAODv3 MC  
-2.  `Summer16MiniAODv3sig`: for Summer16 miniAODv3 MC (signal)  
-3.  `Summer16MiniAODv3Fast`: for Summer16 miniAODv3 FastSim MC (background)  
-4.  `Summer16MiniAODv3Fastsig`: for Summer16 miniAODv3 FastSim MC (signal)  
+1.  `Summer16v3`: for Summer16 miniAODv3 MC  
+2.  `Summer16v3sig`: for Summer16 miniAODv3 MC (signal)  
+3.  `Summer16v3Fast`: for Summer16 miniAODv3 FastSim MC (background)  
+4.  `Summer16v3Fastsig`: for Summer16 miniAODv3 FastSim MC (signal)  
 5.  `2016MiniAODv3`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
 6.  `Fall17`: for Fall17 miniAOD MC
 7.  `Fall17sig`: for Fall17 miniAOD MC (signal)

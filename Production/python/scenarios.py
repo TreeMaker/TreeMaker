@@ -54,7 +54,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016_80X",
             )
-        elif sname == "Summer16MiniAODv3":
+        elif sname == "Summer16v3":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
@@ -66,7 +66,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
-        elif sname == "Summer16MiniAODv3sig":
+        elif sname == "Summer16v3sig":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
@@ -79,7 +79,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
-        elif sname == "Summer16MiniAODv3Fast":
+        elif sname == "Summer16v3Fast":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
@@ -93,7 +93,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
-        elif sname == "Summer16MiniAODv3Fastsig":
+        elif sname == "Summer16v3Fastsig":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
