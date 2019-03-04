@@ -37,7 +37,6 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
     return process, MHTJetsTag
 
 def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4):
-    from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
     GoodJets = GoodJetsProducer.clone(
         TagMode                   = cms.bool(True),
@@ -51,20 +50,6 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         SaveAllJetsPt             = cms.bool(True),
         # keep all eta jets to preserve ordering
         maxJetEta                 = cms.double(-1),
-    )
-    (TMeras.TM2017).toModify(GoodJets,
-        varnames  = cms.vstring('nhf','nef','nc','chf','cm','nef','nm','nef','nhf','nm'),
-        etamin    = cms.vdouble( -1.0, -1.0,-1.0, -1.0,-1.0,  2.7, 2.7,  3.0,  3.0, 3.0),
-        etamax    = cms.vdouble(  2.7,  2.7, 2.7,  2.4, 2.4,  3.0, 3.0, -1.0, -1.0,-1.0),
-        cutvalmin = cms.vdouble( -1.0, -1.0, 1.0,  0.0, 0.0, 0.02, 2.0, -1.0, 0.02,10.0),
-        cutvalmax = cms.vdouble( 0.90, 0.90,-1.0, -1.0,-1.0, 0.99,-1.0, 0.90, -1.0,-1.0),
-    )
-    (TMeras.TM2018).toModify(GoodJets,
-        varnames  = cms.vstring('nhf','nef','nc','chf','cm','nhf','nef','cm','nef','nm','nef','nhf','nm'),
-        etamin    = cms.vdouble( -1.0, -1.0,-1.0, -1.0,-1.0,  2.6,  2.6, 2.6,  2.7, 2.7,  3.0,  3.0, 3.0),
-        etamax    = cms.vdouble(  2.6,  2.6, 2.6,  2.6, 2.6,  2.7,  2.7, 2.7,  3.0, 3.0, -1.0, -1.0,-1.0),
-        cutvalmin = cms.vdouble( -1.0, -1.0, 1.0,  0.0, 0.0, -1.0, -1.0, 0.0, 0.02, 2.0, -1.0, 0.02,10.0),
-        cutvalmax = cms.vdouble( 0.90, 0.90,-1.0, -1.0,-1.0, 0.90, 0.99,-1.0, 0.99,-1.0, 0.90, -1.0,-1.0),
     )
     setattr(process,"GoodJets"+suff,GoodJets)
     GoodJetsTag = cms.InputTag("GoodJets"+suff)
