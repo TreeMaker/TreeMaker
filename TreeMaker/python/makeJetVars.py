@@ -36,9 +36,9 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
     
     return process, MHTJetsTag
 
-def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4):
-    from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
-    GoodJets = GoodJetsProducer.clone(
+def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4, puppiSpecific=""):
+    from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer,GoodJetsPuppiProducer
+    GoodJets = (GoodJetsPuppiProducer if jetConeSize==0.8 else GoodJetsProducer).clone(
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
         jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30),
@@ -51,6 +51,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         # keep all eta jets to preserve ordering
         maxJetEta                 = cms.double(-1),
     )
+    if len(puppiSpecific)>0: GoodJets.puppiPrefix = puppiSpecific
     setattr(process,"GoodJets"+suff,GoodJets)
     GoodJetsTag = cms.InputTag("GoodJets"+suff)
     self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
@@ -272,9 +273,9 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
 # 2 = 1 + subjet properties + extra substructure
 # 3 = 2 + constituents (large)
 # SkipTag is not used, but just there to make interfaces consistent
-def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates")):
+def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates"),puppiSpecific=""):
     # select good jets before anything else - eliminates bad AK8 jets (low pT, no constituents stored, etc.)
-    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8)
+    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8,puppiSpecific=puppiSpecific)
 
     # anything to be computed for AK8 jets
     ak8floats = []
