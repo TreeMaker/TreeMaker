@@ -130,6 +130,8 @@ def makeTreeFromMiniAOD(self,process):
         VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
     )
     self.VarsInt.extend(['nAllVertices'])
+    # also store rho for PU comparisons
+    self.VarsDouble.extend(['fixedGridRhoFastjetAll'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenParticles
