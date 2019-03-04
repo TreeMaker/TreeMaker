@@ -107,6 +107,9 @@ DEFAULT_NAMED_PTR(D,ecfN2b1);
 DEFAULT_NAMED_PTR(D,ecfN2b2);
 DEFAULT_NAMED_PTR(D,ecfN3b1);
 DEFAULT_NAMED_PTR(D,ecfN3b2);
+DEFAULT_NAMED_PTR(D,neutralPuppiMultiplicity);
+DEFAULT_NAMED_PTR(D,neutralHadronPuppiMultiplicity);
+DEFAULT_NAMED_PTR(D,photonPuppiMultiplicity);
 
 class NamedPtr_I : public NamedPtr<int> {
 	public:
