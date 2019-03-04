@@ -1,5 +1,5 @@
 flist = {
-    "scenario": "Summer16MiniAODv3",
+    "scenario": "Summer16v3",
     "samples": [
         ['Summer16v3.ZJetsToNuNu_HT-100To200_13TeV-madgraph'],
         ['Summer16v3.ZJetsToNuNu_HT-100To200_13TeV-madgraph_ext1'],

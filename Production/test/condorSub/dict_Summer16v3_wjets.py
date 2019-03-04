@@ -1,5 +1,5 @@
 flist = {
-    "scenario": "Summer16MiniAODv3",
+    "scenario": "Summer16v3",
     "samples": [
         ['Summer16v3.WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3.WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8_ext2'],

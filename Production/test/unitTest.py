@@ -43,11 +43,11 @@ if test==-1: name = ""
 # list of tests
 mytests = []
 # activate these when the requisite MC exists
-mytests.append(makeTest("Summer16MiniAODv3","Summer16v3.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-mytests.append(makeTest("Summer16MiniAODv3","Summer16v3.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-mytests.append(makeTest("Summer16MiniAODv3sig","Summer16v3.SMS-T1tttt_mGluino-2000_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.SMS-T1tttt_mGluino-2000_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-mytests.append(makeTest("Summer16MiniAODv3Fast","Summer16v3Fast.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3Fast.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-mytests.append(makeTest("Summer16MiniAODv3Fastsig","Summer16v3Fast.SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3Fast.SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+mytests.append(makeTest("Summer16v3","Summer16v3.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+mytests.append(makeTest("Summer16v3","Summer16v3.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+mytests.append(makeTest("Summer16v3sig","Summer16v3.SMS-T1tttt_mGluino-2000_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.SMS-T1tttt_mGluino-2000_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+mytests.append(makeTest("Summer16v3Fast","Summer16v3Fast.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3Fast.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+mytests.append(makeTest("Summer16v3Fastsig","Summer16v3Fast.SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3Fast.SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
 mytests.append(makeTest("2016MiniAODv3",name,numevents,command,inputFilesConfig="Run2016G-17Jul2018-v1.MET",nstart=0,nfiles=10))
 mytests.append(makeTest("Fall17","Fall17.GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Fall17.GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
 mytests.append(makeTest("Fall17","Fall17.TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Fall17.TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
