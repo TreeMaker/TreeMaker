@@ -458,15 +458,15 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                     JetPropertiesAK8.properties.extend(["origIndex"])
                     JetPropertiesAK8.origIndex = cms.vstring("jerOrigIndex")
                     self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
-            # fractions and multiplicities
+            # fractions and multiplicities (use puppi versions for neutral mults)
             JetPropertiesAK8.properties.extend([
                 'chargedHadronMultiplicity',
-                'neutralHadronMultiplicity',
+                'neutralHadronPuppiMultiplicity',
                 'electronMultiplicity',
-                'photonMultiplicity',
+                'photonPuppiMultiplicity',
                 'muonMultiplicity',
                 'chargedMultiplicity',
-                'neutralMultiplicity',
+                'neutralPuppiMultiplicity',
                 'chargedHadronEnergyFraction',
                 'neutralHadronEnergyFraction',
                 'chargedEmEnergyFraction',
@@ -477,6 +477,9 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 'hfEMEnergyFraction',
                 'hfHadronEnergyFraction',
             ])
+            JetPropertiesAK8.neutralHadronPuppiMultiplicity = cms.vstring("puppiSpecificAK8:neutralHadronPuppiMultiplicity")
+            JetPropertiesAK8.neutralPuppiMultiplicity = cms.vstring("puppiSpecificAK8:neutralPuppiMultiplicity")
+            JetPropertiesAK8.photonPuppiMultiplicity = cms.vstring("puppiSpecificAK8:photonPuppiMultiplicity")
             self.VectorDouble.extend([
                 'JetProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
                 'JetProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
@@ -487,15 +490,15 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 'JetProperties'+suff+':electronEnergyFraction(Jets'+suff+'_electronEnergyFraction)',
                 'JetProperties'+suff+':hfEMEnergyFraction(Jets'+suff+'_hfEMEnergyFraction)',
                 'JetProperties'+suff+':hfHadronEnergyFraction(Jets'+suff+'_hfHadronEnergyFraction)',
+                'JetProperties'+suff+':neutralHadronPuppiMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
+                'JetProperties'+suff+':photonPuppiMultiplicity(Jets'+suff+'_photonMultiplicity)',
+                'JetProperties'+suff+':neutralPuppiMultiplicity(Jets'+suff+'_neutralMultiplicity)',
             ])
             self.VectorInt.extend([
                 'JetProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
                 'JetProperties'+suff+':electronMultiplicity(Jets'+suff+'_electronMultiplicity)',
                 'JetProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
-                'JetProperties'+suff+':neutralHadronMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
-                'JetProperties'+suff+':photonMultiplicity(Jets'+suff+'_photonMultiplicity)',
                 'JetProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
-                'JetProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
             ])
 
             # extra stuff for subjets
