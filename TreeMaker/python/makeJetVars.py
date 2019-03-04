@@ -2,19 +2,18 @@ import FWCore.ParameterSet.Config as cms
 from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
 def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff, MaxEta=5.0, METfix=False):
-    if METfix:
-        MHTJetsMETFix = process.pfCandidateJetsWithEEnoise.clone(
-            jetsrc = JetTag,
-        )
-        setattr(process,"MHTJetsMETFix"+suff+MHTsuff,MHTJetsMETFix)
-        JetTag = cms.InputTag("MHTJetsMETFix"+suff+MHTsuff,"good",process.name_())
-
     from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
     MHTJets = SubJetSelection.clone(
         JetTag = JetTag,
         MinPt  = cms.double(30),
         MaxEta = cms.double(MaxEta),
     )
+    if METfix:
+        MHTJets.veto = True
+        MHTJets.VetoMaxPt = process.pfCandidateJetsWithEEnoise.ptThreshold
+        MHTJets.VetoMinEta = process.pfCandidateJetsWithEEnoise.minEtaThreshold
+        MHTJets.VetoMaxEta = process.pfCandidateJetsWithEEnoise.maxEtaThreshold
+        MHTJets.VetoRawPt = process.pfCandidateJetsWithEEnoise.userawPt
     setattr(process,"MHTJets"+suff+MHTsuff,MHTJets)
     if storeProperties>0: self.VectorBool.extend(['MHTJets'+suff+MHTsuff+':SubJetMask(Jets'+suff+'_MHT'+MHTsuff+'Mask)'])
     MHTJetsTag = cms.InputTag("MHTJets"+suff+MHTsuff)
