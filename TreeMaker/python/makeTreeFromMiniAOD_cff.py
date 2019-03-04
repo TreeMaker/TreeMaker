@@ -824,6 +824,16 @@ def makeTreeFromMiniAOD(self,process):
     TMeras.TM80X.toModify(getattr(process, JetAK8TagSJU.value()), OldName = "SoftDrop")
     JetAK8Tag = JetAK8TagSJU
     
+    # get puppi-specific multiplicities
+    from PhysicsTools.PatAlgos.patPuppiJetSpecificProducer_cfi import patPuppiJetSpecificProducer
+    process.puppiSpecificAK8 = patPuppiJetSpecificProducer.clone(
+        src = JetAK8Tag
+    )
+    # update userfloats (used for jet ID)
+    process, JetAK8Tag = addJetInfo(process, JetAK8Tag,
+        ['puppiSpecificAK8:puppiMultiplicity','puppiSpecificAK8:neutralPuppiMultiplicity','puppiSpecificAK8:neutralHadronPuppiMultiplicity',
+         'puppiSpecificAK8:photonPuppiMultiplicity','puppiSpecificAK8:HFHadronPuppiMultiplicity','puppiSpecificAK8:HFEMPuppiMultiplicity'])
+
     # apply jet ID and get properties
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8Tag,
