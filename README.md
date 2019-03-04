@@ -43,7 +43,7 @@ The available scenarios are:
 2.  `Summer16v3sig`: for Summer16 miniAODv3 MC (signal)  
 3.  `Summer16v3Fast`: for Summer16 miniAODv3 FastSim MC (background)  
 4.  `Summer16v3Fastsig`: for Summer16 miniAODv3 FastSim MC (signal)  
-5.  `2016MiniAODv3`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
+5.  `2016ReReco17Jul`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
 6.  `Fall17`: for Fall17 miniAOD MC
 7.  `Fall17sig`: for Fall17 miniAOD MC (signal)
 8.  `Fall17Fast`: for Fall17 miniAOD FastSim MC (background)

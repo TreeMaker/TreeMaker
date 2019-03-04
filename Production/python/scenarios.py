@@ -107,7 +107,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
-        elif sname == "2016MiniAODv3":
+        elif sname == "2016ReReco17Jul":
             self.set_vars(
                 globaltag="94X_dataRun2_v10",
                 tagname="DQM",
