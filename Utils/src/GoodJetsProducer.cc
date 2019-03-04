@@ -20,6 +20,8 @@
 
 // system include files
 #include <memory>
+#include <string>
+#include <vector>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -40,7 +42,7 @@
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "TreeMaker/Utils/interface/all_equal.h"
 #include "TreeMaker/Utils/interface/EnergyFractionCalculator.h"
-#include <TVector2.h>
+
 //
 // class declaration
 //
@@ -70,31 +72,34 @@ private:
 	double jetPtFilter_;
 	bool saveAllId_, saveAllPt_, ExcludeLeptonIsoTrackPhotons_, TagMode_, invertJetPtFilter_;
 	double JetConeSize_;
+	bool puppi_;
+	std::string puppiPrefix_;
 };
 
 //
 // constructors and destructor
 //
 using namespace pat;
-GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig) {
-	TagMode_ = iConfig.getParameter<bool> ("TagMode");
-	JetTag_ = iConfig.getParameter<edm::InputTag>("JetTag");
-	maxEta_ = iConfig.getParameter <double> ("maxJetEta");
-	varnames_ = iConfig.getParameter <std::vector<std::string>> ("varnames");
-	etamin_ = iConfig.getParameter <std::vector<double>> ("etamin");
-	etamax_ = iConfig.getParameter <std::vector<double>> ("etamax");
-	cutvalmin_ = iConfig.getParameter <std::vector<double>> ("cutvalmin");
-	cutvalmax_ = iConfig.getParameter <std::vector<double>> ("cutvalmax");
-	jetPtFilter_ = iConfig.getParameter <double> ("jetPtFilter");
-	invertJetPtFilter_ = iConfig.getParameter <bool> ("invertJetPtFilter");
-	saveAllId_ = iConfig.getParameter <bool> ("SaveAllJetsId");
-	saveAllPt_ = iConfig.getParameter <bool> ("SaveAllJetsPt");
-
-	ExcludeLeptonIsoTrackPhotons_ = iConfig.getParameter <bool> ("ExcludeLepIsoTrackPhotons");
-	SkipTag_  = iConfig.getParameter<std::vector<edm::InputTag>>("SkipTag");
-	JetConeSize_ = iConfig.getParameter <double> ("JetConeSize");
-
-	JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
+GoodJetsProducer::GoodJetsProducer(const edm::ParameterSet& iConfig) :
+	JetTag_(iConfig.getParameter<edm::InputTag>("JetTag")),
+	SkipTag_(iConfig.getParameter<std::vector<edm::InputTag>>("SkipTag")),
+	JetTok_(consumes<edm::View<pat::Jet>>(JetTag_)),
+	maxEta_(iConfig.getParameter<double>("maxJetEta")),
+	varnames_(iConfig.getParameter<std::vector<std::string>>("varnames")),
+	etamin_(iConfig.getParameter<std::vector<double>>("etamin")),
+	etamax_(iConfig.getParameter<std::vector<double>>("etamax")),
+	cutvalmin_(iConfig.getParameter<std::vector<double>>("cutvalmin")),
+	cutvalmax_(iConfig.getParameter<std::vector<double>>("cutvalmax")),
+	jetPtFilter_(iConfig.getParameter<double>("jetPtFilter")),
+	saveAllId_(iConfig.getParameter<bool>("SaveAllJetsId")),
+	saveAllPt_(iConfig.getParameter<bool>("SaveAllJetsPt")),
+	ExcludeLeptonIsoTrackPhotons_(iConfig.getParameter<bool>("ExcludeLepIsoTrackPhotons")),
+	TagMode_(iConfig.getParameter<bool>("TagMode")),
+	invertJetPtFilter_(iConfig.getParameter<bool>("invertJetPtFilter")),
+	JetConeSize_(iConfig.getParameter<double>("JetConeSize")),
+	puppi_(iConfig.getParameter<bool>("puppi")),
+	puppiPrefix_(iConfig.getParameter<std::string>("puppiPrefix"))
+{
 	for(auto& tag: SkipTag_) SkipTok_.push_back(consumes<edm::View<reco::Candidate>>(tag));
 
 	// check the contents of the varnames_ vector to make sure it contains only allowed values
@@ -210,11 +215,11 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 			for(unsigned v=0; v<vartypes_.size(); ++v) {
 				if(vartypes_[v]==neutralHadronEnergyFraction)		varval = efc.neutralHadronEnergyFraction(); //gives raw energy in the denominator
 				else if(vartypes_[v]==neutralEmEnergyFraction)		varval = efc.neutralEmEnergyFraction(); //gives raw energy in the denominator
-				else if(vartypes_[v]==neutralMultiplicity)			varval = iJet.neutralMultiplicity();
+				else if(vartypes_[v]==neutralMultiplicity)			varval = puppi_ ? iJet.userFloat(puppiPrefix_+":neutralPuppiMultiplicity") : iJet.neutralMultiplicity();
 				else if(vartypes_[v]==chargedHadronEnergyFraction)	varval = efc.chargedHadronEnergyFraction();
 				else if(vartypes_[v]==chargedEmEnergyFraction)		varval = efc.chargedEmEnergyFraction();
 				else if(vartypes_[v]==chargedMultiplicity)			varval = iJet.chargedMultiplicity();
-				else if(vartypes_[v]==nconstituents)				varval = iJet.neutralMultiplicity() + iJet.chargedMultiplicity();
+				else if(vartypes_[v]==nconstituents)				varval = (puppi_ ? iJet.userFloat(puppiPrefix_+":neutralPuppiMultiplicity") : iJet.neutralMultiplicity()) + iJet.chargedMultiplicity();
 				else if(vartypes_[v]==muonEnergyFraction)			varval = efc.muonEnergyFraction();
 				else {
 					edm::LogError("TreeMaker") << "ERROR: GoodJetsProducer: unkown variable name " << v << ". Unable to select the correct value for the jet pproperty.";

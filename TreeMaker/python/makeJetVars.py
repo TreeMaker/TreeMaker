@@ -36,10 +36,9 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
     
     return process, MHTJetsTag
 
-def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4):
-    from TreeMaker.TreeMaker.TMEras import TMeras
-    from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer
-    GoodJets = GoodJetsProducer.clone(
+def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), jetConeSize=0.4, puppiSpecific=""):
+    from TreeMaker.Utils.goodjetsproducer_cfi import GoodJetsProducer,GoodJetsPuppiProducer
+    GoodJets = (GoodJetsPuppiProducer if jetConeSize==0.8 else GoodJetsProducer).clone(
         TagMode                   = cms.bool(True),
         JetTag                    = JetTag,
         jetPtFilter               = cms.double(170 if jetConeSize==0.8 else 30),
@@ -52,20 +51,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
         # keep all eta jets to preserve ordering
         maxJetEta                 = cms.double(-1),
     )
-    (TMeras.TM2017).toModify(GoodJets,
-        varnames  = cms.vstring('nhf','nef','nc','chf','cm','nef','nm','nef','nhf','nm'),
-        etamin    = cms.vdouble( -1.0, -1.0,-1.0, -1.0,-1.0,  2.7, 2.7,  3.0,  3.0, 3.0),
-        etamax    = cms.vdouble(  2.7,  2.7, 2.7,  2.4, 2.4,  3.0, 3.0, -1.0, -1.0,-1.0),
-        cutvalmin = cms.vdouble( -1.0, -1.0, 1.0,  0.0, 0.0, 0.02, 2.0, -1.0, 0.02,10.0),
-        cutvalmax = cms.vdouble( 0.90, 0.90,-1.0, -1.0,-1.0, 0.99,-1.0, 0.90, -1.0,-1.0),
-    )
-    (TMeras.TM2018).toModify(GoodJets,
-        varnames  = cms.vstring('nhf','nef','nc','chf','cm','nhf','nef','cm','nef','nm','nef','nhf','nm'),
-        etamin    = cms.vdouble( -1.0, -1.0,-1.0, -1.0,-1.0,  2.6,  2.6, 2.6,  2.7, 2.7,  3.0,  3.0, 3.0),
-        etamax    = cms.vdouble(  2.6,  2.6, 2.6,  2.6, 2.6,  2.7,  2.7, 2.7,  3.0, 3.0, -1.0, -1.0,-1.0),
-        cutvalmin = cms.vdouble( -1.0, -1.0, 1.0,  0.0, 0.0, -1.0, -1.0, 0.0, 0.02, 2.0, -1.0, 0.02,10.0),
-        cutvalmax = cms.vdouble( 0.90, 0.90,-1.0, -1.0,-1.0, 0.90, 0.99,-1.0, 0.99,-1.0, 0.90, -1.0,-1.0),
-    )
+    if len(puppiSpecific)>0: GoodJets.puppiPrefix = puppiSpecific
     setattr(process,"GoodJets"+suff,GoodJets)
     GoodJetsTag = cms.InputTag("GoodJets"+suff)
     self.VarsBool.extend(['GoodJets'+suff+':JetID(JetID'+suff+')'])
@@ -287,9 +273,9 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
 # 2 = 1 + subjet properties + extra substructure
 # 3 = 2 + constituents (large)
 # SkipTag is not used, but just there to make interfaces consistent
-def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates")):
+def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates"),puppiSpecific=""):
     # select good jets before anything else - eliminates bad AK8 jets (low pT, no constituents stored, etc.)
-    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8)
+    process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8,puppiSpecific=puppiSpecific)
 
     # anything to be computed for AK8 jets
     ak8floats = []
@@ -473,15 +459,15 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                     JetPropertiesAK8.properties.extend(["origIndex"])
                     JetPropertiesAK8.origIndex = cms.vstring("jerOrigIndex")
                     self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
-            # fractions and multiplicities
+            # fractions and multiplicities (use puppi versions for neutral mults)
             JetPropertiesAK8.properties.extend([
                 'chargedHadronMultiplicity',
-                'neutralHadronMultiplicity',
+                'neutralHadronPuppiMultiplicity',
                 'electronMultiplicity',
-                'photonMultiplicity',
+                'photonPuppiMultiplicity',
                 'muonMultiplicity',
                 'chargedMultiplicity',
-                'neutralMultiplicity',
+                'neutralPuppiMultiplicity',
                 'chargedHadronEnergyFraction',
                 'neutralHadronEnergyFraction',
                 'chargedEmEnergyFraction',
@@ -492,6 +478,9 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 'hfEMEnergyFraction',
                 'hfHadronEnergyFraction',
             ])
+            JetPropertiesAK8.neutralHadronPuppiMultiplicity = cms.vstring("puppiSpecificAK8:neutralHadronPuppiMultiplicity")
+            JetPropertiesAK8.neutralPuppiMultiplicity = cms.vstring("puppiSpecificAK8:neutralPuppiMultiplicity")
+            JetPropertiesAK8.photonPuppiMultiplicity = cms.vstring("puppiSpecificAK8:photonPuppiMultiplicity")
             self.VectorDouble.extend([
                 'JetProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
                 'JetProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
@@ -502,15 +491,15 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 'JetProperties'+suff+':electronEnergyFraction(Jets'+suff+'_electronEnergyFraction)',
                 'JetProperties'+suff+':hfEMEnergyFraction(Jets'+suff+'_hfEMEnergyFraction)',
                 'JetProperties'+suff+':hfHadronEnergyFraction(Jets'+suff+'_hfHadronEnergyFraction)',
+                'JetProperties'+suff+':neutralHadronPuppiMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
+                'JetProperties'+suff+':photonPuppiMultiplicity(Jets'+suff+'_photonMultiplicity)',
+                'JetProperties'+suff+':neutralPuppiMultiplicity(Jets'+suff+'_neutralMultiplicity)',
             ])
             self.VectorInt.extend([
                 'JetProperties'+suff+':chargedHadronMultiplicity(Jets'+suff+'_chargedHadronMultiplicity)',
                 'JetProperties'+suff+':electronMultiplicity(Jets'+suff+'_electronMultiplicity)',
                 'JetProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
-                'JetProperties'+suff+':neutralHadronMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
-                'JetProperties'+suff+':photonMultiplicity(Jets'+suff+'_photonMultiplicity)',
                 'JetProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
-                'JetProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
             ])
 
             # extra stuff for subjets

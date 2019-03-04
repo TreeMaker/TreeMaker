@@ -130,6 +130,8 @@ def makeTreeFromMiniAOD(self,process):
         VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
     )
     self.VarsInt.extend(['nAllVertices'])
+    # also store rho for PU comparisons
+    self.VarsDouble.extend(['fixedGridRhoFastjetAll'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenParticles
@@ -718,6 +720,16 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=0,
             storeJer=2, # get central jet smearing factor
         )
+
+    # get puppi-specific multiplicities
+    from PhysicsTools.PatAlgos.patPuppiJetSpecificProducer_cfi import patPuppiJetSpecificProducer
+    process.puppiSpecificAK8 = patPuppiJetSpecificProducer.clone(
+        src = JetAK8Tag
+    )
+    # update userfloats (used for jet ID, including ID for JEC/JER variations)
+    process, JetAK8Tag = addJetInfo(process, JetAK8Tag,
+        ['puppiSpecificAK8:puppiMultiplicity','puppiSpecificAK8:neutralPuppiMultiplicity','puppiSpecificAK8:neutralHadronPuppiMultiplicity',
+         'puppiSpecificAK8:photonPuppiMultiplicity','puppiSpecificAK8:HFHadronPuppiMultiplicity','puppiSpecificAK8:HFEMPuppiMultiplicity'])
 
     # AK8 jet uncertainties
     if self.geninfo and self.systematics:
