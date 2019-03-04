@@ -127,7 +127,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
                 jerfile="data/jer/Fall17_V3_94X_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                wrongpufile="TreeMaker/Production/test/data/RunIIFall17MiniAODv2PU.root",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -141,7 +141,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
                 jerfile="data/jer/Fall17_V3_94X_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                wrongpufile="TreeMaker/Production/test/data/RunIIFall17MiniAODv2PU.root",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -156,7 +156,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
                 jerfile="data/jer/Fall17_V3_94X_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                wrongpufile="TreeMaker/Production/test/data/RunIIFall17MiniAODv2PU.root",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -171,7 +171,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
                 jerfile="data/jer/Fall17_V3_94X_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                wrongpufile="TreeMaker/Production/test/data/RunIIFall17MiniAODv2PU.root",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
