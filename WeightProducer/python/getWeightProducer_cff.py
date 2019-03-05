@@ -736,6 +736,8 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v3', 'RunIIAutumn18MiniAOD', 'Constant', 492418, False),
         MCSample('QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 16618977, False),
         MCSample('QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 10719790, False),
+        MCSample('QCD_Pt-15to7000_TuneCP5_Flat2018_13TeV_pythia8', '102X_upgrade2018_realistic_v15_ext1-v1', 'RunIIAutumn18MiniAOD', 'Constant', 19996995, False),
+        MCSample('QCD_Pt-15to7000_TuneCP5_Flat2018_13TeV_pythia8', 'HEM_102X_upgrade2018_realistic_v15_ext1-v1', 'RunIIAutumn18MiniAOD', 'Constant', 18688995, False),
         MCSample('QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 54289442, False, 54251666),
         MCSample('QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 54661579, False, 54600685),
         MCSample('QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 55152960, False, 55056202),
