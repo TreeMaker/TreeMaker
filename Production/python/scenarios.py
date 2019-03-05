@@ -1,35 +1,6 @@
 class Scenario:
     def __init__(self,sname):
-        if sname == "Spring16Fastsig":
-            self.set_vars(
-                globaltag="94X_mcRun2_asymptotic_v3",
-                tagname="PAT",
-                hlttagname="HLT",
-                geninfo=True,
-                fastsim=True,
-                signal=True,
-                jecfile="data/jec/Summer16_07Aug2017_V10_MC",
-                jerfile="data/jer/Summer16_25nsV1_MC",
-                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
-                era="Run2_2016",
-                localera="TM2016_80X",
-            )
-        elif sname == "Spring16Pmssm":
-            self.set_vars(
-                globaltag="94X_mcRun2_asymptotic_v3",
-                tagname="PAT",
-                hlttagname="HLT",
-                geninfo=True,
-                fastsim=True,
-                signal=True,
-                pmssm=True,
-                jecfile="data/jec/Summer16_07Aug2017_V10_MC",
-                jerfile="data/jer/Summer16_25nsV1_MC",
-                pufile="TreeMaker/Production/test/data/PileupHistograms_0721_63mb_pm5.root",
-                era="Run2_2016",
-                localera="TM2016_80X",
-            )
-        elif sname == "Summer16":
+        if sname == "Summer16":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
@@ -54,7 +25,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016_80X",
             )
-        elif sname == "Summer16MiniAODv3":
+        elif sname == "Summer16v3":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
@@ -66,7 +37,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
-        elif sname == "Summer16MiniAODv3sig":
+        elif sname == "Summer16v3sig":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
@@ -79,7 +50,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
-        elif sname == "Summer16MiniAODv3Fast":
+        elif sname == "Summer16v3Fast":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
@@ -93,7 +64,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
-        elif sname == "Summer16MiniAODv3Fastsig":
+        elif sname == "Summer16v3Fastsig":
             self.set_vars(
                 globaltag="94X_mcRun2_asymptotic_v3",
                 tagname="PAT",
@@ -107,7 +78,7 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
-        elif sname == "2016MiniAODv3":
+        elif sname == "2016ReReco17Jul":
             self.set_vars(
                 globaltag="94X_dataRun2_v10",
                 tagname="DQM",
@@ -127,7 +98,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
                 jerfile="data/jer/Fall17_V3_94X_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                wrongpufile="TreeMaker/Production/test/data/RunIIFall17MiniAODv2PU.root",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -141,7 +112,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
                 jerfile="data/jer/Fall17_V3_94X_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                wrongpufile="TreeMaker/Production/test/data/RunIIFall17MiniAODv2PU.root",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -156,7 +127,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
                 jerfile="data/jer/Fall17_V3_94X_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                wrongpufile="TreeMaker/Production/test/data/RunIIFall17MiniAODv2PU.root",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )
@@ -171,7 +142,7 @@ class Scenario:
                 jecfile="data/jec/Fall17_17Nov2017_V32_94X_MC",
                 jerfile="data/jer/Fall17_V3_94X_MC",
                 pufile="TreeMaker/Production/test/data/PileupHistograms_0328_63mb_pm5.root",
-                wrongpufile="TreeMaker/Production/test/data/RunIIFall17MiniAODv2PU.root",
+                wrongpufile="TreeMaker/Production/test/data/Fall17PU.root",
                 era="Run2_2017",
                 localera="TM2017",
             )

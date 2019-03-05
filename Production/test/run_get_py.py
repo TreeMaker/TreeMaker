@@ -9,7 +9,7 @@ parser.add_argument("-o",   "--output-folders", nargs='+',                defaul
 parser.epilog = "Examples of how to run:\n" \
                 "=======================\n" \
                 "1) python run_get_py.py -d dict_Run2017B-31Mar2018-v1.py dict_Run2017C-31Mar2018-v1.py dict_Run2017D-31Mar2018-v1.py dict_Run2017E-31Mar2018-v1.py dict_Run2017F-31Mar2018-v1.py -o ../python/Run2017B-31Mar2018-v1/ ../python/Run2017C-31Mar2018-v1/ ../python/Run2017D-31Mar2018-v1/ ../python/Run2017E-31Mar2018-v1/ ../python/Run2017F-31Mar2018-v1/ -p -s\n\n" \
-                "2) python run_get_py.py -d dict_RunIIFall17MiniAODv2_12Apr2018_Neff.py -o ./ -w\n"
+                "2) python run_get_py.py -d dict_Fall17_Neff.py -o ./ -w\n"
 args, unknown = parser.parse_known_args()
 
 dicts   = args.dicts
