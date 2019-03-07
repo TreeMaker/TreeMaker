@@ -59,9 +59,9 @@ CMSEXIT=$?
 rm runMakeTreeFromMiniAOD_cfg.py
 
 if [[ $CMSEXIT -ne 0 ]]; then
-  rm *.root
-  echo "exit code $CMSEXIT, skipping xrdcp"
-  exit $CMSEXIT
+	rm *.root
+	echo "exit code $CMSEXIT, skipping xrdcp"
+	exit $CMSEXIT
 fi
 
 # check for incorrect pilot cert
@@ -76,16 +76,15 @@ fi
 
 # copy output to eos
 echo "xrdcp output for condor"
-for FILE in *.root
-do
-  echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
-  xrdcp -f ${FILE} ${OUTDIR}/${FILE} 2>&1
-  XRDEXIT=$?
-  if [[ $XRDEXIT -ne 0 ]]; then
-    rm *.root
-    echo "exit code $XRDEXIT, failure in xrdcp"
-    exit $XRDEXIT
-  fi
-  rm ${FILE}
+for FILE in *.root; do
+	echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
+	stageOut -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
+	XRDEXIT=$?
+	if [[ $XRDEXIT -ne 0 ]]; then
+		rm *.root
+		echo "exit code $XRDEXIT, failure in xrdcp"
+		exit $XRDEXIT
+	fi
+	rm ${FILE}
 done
 
