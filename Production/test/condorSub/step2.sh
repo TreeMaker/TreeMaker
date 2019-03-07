@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# check for incorrect pilot cert
-vomsident = $(voms-proxy-info -identity)
-echo $vomsident
-if [[ $vomsident = *"cmsgli"* ]]; then
-	# this is the exit code for "User is not authorized to write to destination site."
-	exit 60322
-fi
-
 export JOBNAME=""
 export PROCESS=""
 export OUTDIR=""
@@ -62,16 +54,6 @@ if [[ $CMSEXIT -ne 0 ]]; then
 	rm *.root
 	echo "exit code $CMSEXIT, skipping xrdcp"
 	exit $CMSEXIT
-fi
-
-# check for incorrect pilot cert
-vomsident = $(voms-proxy-info -identity)
-echo $vomsident
-if [[ $vomsident = *"cmsgli"* ]]; then
-	# this is the exit code for "User is not authorized to write to destination site."
-	rm *.root
-	echo "exit code 60322, skipping xrdcp"	
-	exit 60322
 fi
 
 # copy output to eos
