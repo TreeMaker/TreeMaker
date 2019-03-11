@@ -4,11 +4,11 @@ class MCSample():
 
 	'''
 	Example use:
-	from TreeMaker.WeightProducer.MCSample import MCSample
-	m = MCSample("WJetsToLNu_HT-70To100_13TeV","PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 10139950, 0)
-	n = MCSample("TTJets_TuneCUETP8M1_13TeV-madgraphMLM","PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 10139950, 0)
-	print m
-	print n
+from TreeMaker.WeightProducer.MCSample import MCSample
+m = MCSample("WJetsToLNu_HT-70To100_13TeV","PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 10139950, 0)
+n = MCSample("TTJets_TuneCUETP8M1_13TeV-madgraphMLM","PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1", "RunIISummer16MiniAODv2", "Constant", 10139950, 0)
+print m
+print n
 	'''
 
 	from TreeMaker.WeightProducer.SVJxsecs import SVJxsecs
@@ -17,13 +17,14 @@ class MCSample():
 
 	def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, WrongPU = False, NumberEvtsDiff = None):
 		self.name = name
-		self.process = self.get_process(self.name)
+		self.process = self.__helper.get_minimal_name(self.name)
 		self.production = production
 		self.mcVersion = mcVersion
-		self.year = self.get_year(self.mcVersion)
+		self.year = self.__helper.get_year(self.mcVersion)
+		self.energy = self.__helper.get_cm_energy_by_year(self.year)
 		self.Method = Method
-		self.XS = self.get_xs(self.process,self.year)
-		self.kFactor = self.get_kfactor(self.process,self.year)
+		self.XS = self.__val_helper.get_xs(self.process,self.year,self.energy)
+		self.kFactor = self.__val_helper.get_kfactor(self.process,self.year)
 		self.NumberEvtsTotal = NumberEvtsTotal
 		self.WrongPU = WrongPU
 		self.NumberEvtsDiff = NumberEvtsTotal if NumberEvtsDiff==None else NumberEvtsDiff
@@ -38,18 +39,6 @@ class MCSample():
 		'''
 		NumberEvtsNeg = (self.NumberEvtsTotal - self.NumberEvtsDiff)/2.0
 		return (self.NumberEvtsTotal/self.XS)*((1.0-(2.0*(NumberEvtsNeg/self.NumberEvtsTotal))) ** 2)
-
-	def get_kfactor(self, process, year):
-		return self.__val_helper.get_kfactor(process, year)
-
-	def get_process(self, name):
-		return self.__helper.get_minimal_name(name)
-
-	def get_xs(self, process, year):
-		return self.__val_helper.get_xs(process,year)
-
-	def get_year(self, mcVersion):
-		return self.__helper.get_year(mcVersion)
 
 	def __repr__(self):
 		rep = ""
@@ -76,5 +65,5 @@ class MCSample():
 				rep_format += (key_format+": {:<"+str(len(str(self.NumberEvtsDiff)))+"}")
 				rep_format += ")"
 		return rep_format.format('name',self.name,' ','process',self.process,' ', 'production',self.production,' ','mcVersion',self.mcVersion,' ', \
-								 'year',self.year,' ','Method',self.Method,' ','XS',self.XS,' ','kFactor',self.kFactor,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ', \
-								 'WrongPU',self.WrongPU,' ','NumberEvtsDiff',self.NumberEvtsDiff)
+								 'year',self.year,' ','energy',self.energy,' ','Method',self.Method,' ','XS',self.XS,' ','kFactor',self.kFactor,' ', \
+								 'NumberEvtsTotal',self.NumberEvtsTotal,' ','WrongPU',self.WrongPU,' ','NumberEvtsDiff',self.NumberEvtsDiff)
