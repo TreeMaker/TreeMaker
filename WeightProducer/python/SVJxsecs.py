@@ -1,54 +1,146 @@
 import FWCore.ParameterSet.Config as cms
 
-from TreeMaker.WeightProducer.MCSample import MCSampleHelper
-XSValues = MCSampleHelper.XSValues
+from TreeMaker.WeightProducer.MCSampleValues import MCSampleValuesHelper
+XSValues = MCSampleValuesHelper.XSValues
 
 SVJxsecs = {
-    "mZprime-500"  : XSValues(-1.0, -1.0, 71.37,     -1.0),
-    "mZprime-600"  : XSValues(-1.0, -1.0, 33.22,     -1.0),
-    "mZprime-700"  : XSValues(-1.0, -1.0, 18.17,     -1.0),
-    "mZprime-800"  : XSValues(-1.0, -1.0, 10.75,     -1.0),
-    "mZprime-900"  : XSValues(-1.0, -1.0, 7.04,      -1.0),
-    "mZprime-1000" : XSValues(-1.0, -1.0, 4.612,     -1.0),
-    "mZprime-1100" : XSValues(-1.0, -1.0, 3.021,     -1.0),
-    "mZprime-1200" : XSValues(-1.0, -1.0, 2.039,     -1.0),
-    "mZprime-1300" : XSValues(-1.0, -1.0, 1.459,     -1.0),
-    "mZprime-1400" : XSValues(-1.0, -1.0, 1.057,     -1.0),
-    "mZprime-1500" : XSValues(-1.0, -1.0, 0.77,      -1.0),
-    "mZprime-1600" : XSValues(-1.0, -1.0, 0.5667,    -1.0),
-    "mZprime-1700" : XSValues(-1.0, -1.0, 0.4327,    -1.0),
-    "mZprime-1800" : XSValues(-1.0, -1.0, 0.3304,    -1.0),
-    "mZprime-1900" : XSValues(-1.0, -1.0, 0.2479,    -1.0),
-    "mZprime-2000" : XSValues(-1.0, -1.0, 0.1849,    -1.0),
-    "mZprime-2100" : XSValues(-1.0, -1.0, 0.1384,    -1.0),
-    "mZprime-2200" : XSValues(-1.0, -1.0, 0.1044,    -1.0),
-    "mZprime-2300" : XSValues(-1.0, -1.0, 0.08124,   -1.0),
-    "mZprime-2400" : XSValues(-1.0, -1.0, 0.06361,   -1.0),
-    "mZprime-2500" : XSValues(-1.0, -1.0, 0.04977,   -1.0),
-    "mZprime-2600" : XSValues(-1.0, -1.0, 0.03891,   -1.0),
-    "mZprime-2700" : XSValues(-1.0, -1.0, 0.03042,   -1.0),
-    "mZprime-2800" : XSValues(-1.0, -1.0, 0.02447,   -1.0),
-    "mZprime-2900" : XSValues(-1.0, -1.0, 0.01969,   -1.0),
-    "mZprime-3000" : XSValues(-1.0, -1.0, 0.0155,    -1.0),
-    "mZprime-3100" : XSValues(-1.0, -1.0, 0.01209,   -1.0),
-    "mZprime-3200" : XSValues(-1.0, -1.0, 0.009518,  -1.0),
-    "mZprime-3300" : XSValues(-1.0, -1.0, 0.007494,  -1.0),
-    "mZprime-3400" : XSValues(-1.0, -1.0, 0.006148,  -1.0),
-    "mZprime-3500" : XSValues(-1.0, -1.0, 0.005036,  -1.0),
-    "mZprime-3600" : XSValues(-1.0, -1.0, 0.004047,  -1.0),
-    "mZprime-3700" : XSValues(-1.0, -1.0, 0.003252,  -1.0),
-    "mZprime-3800" : XSValues(-1.0, -1.0, 0.002613,  -1.0),
-    "mZprime-3900" : XSValues(-1.0, -1.0, 0.0021,    -1.0),
-    "mZprime-4000" : XSValues(-1.0, -1.0, 0.001688,  -1.0),
-    "mZprime-4100" : XSValues(-1.0, -1.0, 0.001356,  -1.0),
-    "mZprime-4200" : XSValues(-1.0, -1.0, 0.00109,   -1.0),
-    "mZprime-4300" : XSValues(-1.0, -1.0, 0.0008757, -1.0),
-    "mZprime-4400" : XSValues(-1.0, -1.0, 0.0007037, -1.0),
-    "mZprime-4500" : XSValues(-1.0, -1.0, 0.0005655, -1.0),
-    "mZprime-4600" : XSValues(-1.0, -1.0, 0.0004544, -1.0),
-    "mZprime-4700" : XSValues(-1.0, -1.0, 0.0003652, -1.0),
-    "mZprime-4800" : XSValues(-1.0, -1.0, 0.0002934, -1.0),
-    "mZprime-4900" : XSValues(-1.0, -1.0, 0.0002358, -1.0),
-    "mZprime-5000" : XSValues(-1.0, -1.0, 0.0001895, -1.0),
+    "mZprime-500"  : {
+        "CrossSection" : XSValues(XS_13TeV=71.37),
+    },
+    "mZprime-600"  : {
+        "CrossSection" : XSValues(XS_13TeV=33.22),
+    },
+    "mZprime-700"  : {
+        "CrossSection" : XSValues(XS_13TeV=18.17),
+    },
+    "mZprime-800"  : {
+        "CrossSection" : XSValues(XS_13TeV=10.75),
+    },
+    "mZprime-900"  : {
+        "CrossSection" : XSValues(XS_13TeV=7.04),
+    },
+    "mZprime-1000" : {
+        "CrossSection" : XSValues(XS_13TeV=4.612),
+    },
+    "mZprime-1100" : {
+        "CrossSection" : XSValues(XS_13TeV=3.021),
+    },
+    "mZprime-1200" : {
+        "CrossSection" : XSValues(XS_13TeV=2.039),
+    },
+    "mZprime-1300" : {
+        "CrossSection" : XSValues(XS_13TeV=1.459),
+    },
+    "mZprime-1400" : {
+        "CrossSection" : XSValues(XS_13TeV=1.057),
+    },
+    "mZprime-1500" : {
+        "CrossSection" : XSValues(XS_13TeV=0.77),
+    },
+    "mZprime-1600" : {
+        "CrossSection" : XSValues(XS_13TeV=0.5667),
+    },
+    "mZprime-1700" : {
+        "CrossSection" : XSValues(XS_13TeV=0.4327),
+    },
+    "mZprime-1800" : {
+        "CrossSection" : XSValues(XS_13TeV=0.3304),
+    },
+    "mZprime-1900" : {
+        "CrossSection" : XSValues(XS_13TeV=0.2479),
+    },
+    "mZprime-2000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.1849),
+    },
+    "mZprime-2100" : {
+        "CrossSection" : XSValues(XS_13TeV=0.1384),
+    },
+    "mZprime-2200" : {
+        "CrossSection" : XSValues(XS_13TeV=0.1044),
+    },
+    "mZprime-2300" : {
+        "CrossSection" : XSValues(XS_13TeV=0.08124),
+    },
+    "mZprime-2400" : {
+        "CrossSection" : XSValues(XS_13TeV=0.06361),
+    },
+    "mZprime-2500" : {
+        "CrossSection" : XSValues(XS_13TeV=0.04977),
+    },
+    "mZprime-2600" : {
+        "CrossSection" : XSValues(XS_13TeV=0.03891),
+    },
+    "mZprime-2700" : {
+        "CrossSection" : XSValues(XS_13TeV=0.03042),
+    },
+    "mZprime-2800" : {
+        "CrossSection" : XSValues(XS_13TeV=0.02447),
+    },
+    "mZprime-2900" : {
+        "CrossSection" : XSValues(XS_13TeV=0.01969),
+    },
+    "mZprime-3000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0155),
+    },
+    "mZprime-3100" : {
+        "CrossSection" : XSValues(XS_13TeV=0.01209),
+    },
+    "mZprime-3200" : {
+        "CrossSection" : XSValues(XS_13TeV=0.009518),
+    },
+    "mZprime-3300" : {
+        "CrossSection" : XSValues(XS_13TeV=0.007494),
+    },
+    "mZprime-3400" : {
+        "CrossSection" : XSValues(XS_13TeV=0.006148),
+    },
+    "mZprime-3500" : {
+        "CrossSection" : XSValues(XS_13TeV=0.005036),
+    },
+    "mZprime-3600" : {
+        "CrossSection" : XSValues(XS_13TeV=0.004047),
+    },
+    "mZprime-3700" : {
+        "CrossSection" : XSValues(XS_13TeV=0.003252),
+    },
+    "mZprime-3800" : {
+        "CrossSection" : XSValues(XS_13TeV=0.002613),
+    },
+    "mZprime-3900" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0021),
+    },
+    "mZprime-4000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.001688),
+    },
+    "mZprime-4100" : {
+        "CrossSection" : XSValues(XS_13TeV=0.001356),
+    },
+    "mZprime-4200" : {
+        "CrossSection" : XSValues(XS_13TeV=0.00109),
+    },
+    "mZprime-4300" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0008757),
+    },
+    "mZprime-4400" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0007037),
+    },
+    "mZprime-4500" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0005655),
+    },
+    "mZprime-4600" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0004544),
+    },
+    "mZprime-4700" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0003652),
+    },
+    "mZprime-4800" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0002934),
+    },
+    "mZprime-4900" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0002358),
+    },
+    "mZprime-5000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0001895),
+    },
 }
 
