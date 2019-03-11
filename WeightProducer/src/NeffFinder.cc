@@ -34,7 +34,7 @@ class NeffFinder: public edm::one::EDAnalyzer<edm::one::SharedResources> {
 	
 		//member variables
 		edm::Service<TFileService> fs;
-		TH1F* hTrueNumInt;
+		TH1F *hNeffInfo, *hTrueNumInt;
 		std::string name;
 		unsigned nbins;
 		unsigned long pos, neg;
@@ -44,6 +44,7 @@ class NeffFinder: public edm::one::EDAnalyzer<edm::one::SharedResources> {
 };
 
 NeffFinder::NeffFinder(const edm::ParameterSet& iConfig) :
+	hNeffInfo(nullptr),
 	hTrueNumInt(nullptr),
 	name(iConfig.getParameter<std::string>("name")),
 	nbins(iConfig.getParameter<unsigned>("nbins")),
@@ -88,12 +89,19 @@ NeffFinder::beginJob() {
 	if( !fs ) {
 		throw edm::Exception(edm::errors::Configuration, "TFile Service is not registered in cfg file");
 	}
+	hNeffInfo = fs->make<TH1F>(("NeffInfo_"+name).c_str(),("NeffInfo_"+name).c_str(),4,0,4);
 	hTrueNumInt = fs->make<TH1F>(("TrueNumInteractions_"+name).c_str(),("TrueNumInteractions_"+name).c_str(),nbins,0,nbins);
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
 void 
 NeffFinder::endJob() {
+	//put neff info into histo
+	hNeffInfo->SetBinContent(1,pos-neg);
+	hNeffInfo->SetBinContent(2,pos);
+	hNeffInfo->SetBinContent(3,neg);
+	hNeffInfo->SetBinContent(4,pos+neg);
+	//also print it, just in case
 	edm::LogInfo("TreeMaker") << "NeffFinder: " << name << " : " << pos-neg << "" << " (pos = " << pos << ", neg = " << neg << ", tot = " << pos+neg << ")";
 }
 

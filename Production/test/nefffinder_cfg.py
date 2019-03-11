@@ -43,7 +43,7 @@ for f,val in enumerate(process.source.fileNames):
 
 # output file
 process.TFileService = cms.Service("TFileService",
-    fileName = cms.string("TrueNumInteractions_"+name+("_part"+str(part) if part>=0 else "")+".root"),
+    fileName = cms.string("NeffInfo_"+name+("_part"+str(part) if part>=0 else "")+".root"),
     closeFileFast = cms.untracked.bool(True),
 )
 
