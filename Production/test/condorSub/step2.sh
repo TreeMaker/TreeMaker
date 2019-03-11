@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# check for incorrect pilot cert
-vomsident = $(voms-proxy-info -identity)
-echo $vomsident
-if [[ $vomsident = *"cmsgli"* ]]; then
-	# this is the exit code for "User is not authorized to write to destination site."
-	exit 60322
-fi
-
 export JOBNAME=""
 export PROCESS=""
 export OUTDIR=""
@@ -59,33 +51,22 @@ CMSEXIT=$?
 rm runMakeTreeFromMiniAOD_cfg.py
 
 if [[ $CMSEXIT -ne 0 ]]; then
-  rm *.root
-  echo "exit code $CMSEXIT, skipping xrdcp"
-  exit $CMSEXIT
-fi
-
-# check for incorrect pilot cert
-vomsident = $(voms-proxy-info -identity)
-echo $vomsident
-if [[ $vomsident = *"cmsgli"* ]]; then
-	# this is the exit code for "User is not authorized to write to destination site."
 	rm *.root
-	echo "exit code 60322, skipping xrdcp"	
-	exit 60322
+	echo "exit code $CMSEXIT, skipping xrdcp"
+	exit $CMSEXIT
 fi
 
 # copy output to eos
 echo "xrdcp output for condor"
-for FILE in *.root
-do
-  echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
-  xrdcp -f ${FILE} ${OUTDIR}/${FILE} 2>&1
-  XRDEXIT=$?
-  if [[ $XRDEXIT -ne 0 ]]; then
-    rm *.root
-    echo "exit code $XRDEXIT, failure in xrdcp"
-    exit $XRDEXIT
-  fi
-  rm ${FILE}
+for FILE in *.root; do
+	echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
+	stageOut -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
+	XRDEXIT=$?
+	if [[ $XRDEXIT -ne 0 ]]; then
+		rm *.root
+		echo "exit code $XRDEXIT, failure in xrdcp"
+		exit $XRDEXIT
+	fi
+	rm ${FILE}
 done
 
