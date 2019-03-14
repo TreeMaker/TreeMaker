@@ -220,7 +220,7 @@ class Scenario:
                 globaltag="102X_dataRun2_Sep2018Rereco_v1",
                 tagname="RECO",
                 hlttagname="HLT",
-                jsonfile="data/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt",
+                jsonfile="data/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt",
                 jecfile="data/jec/Autumn18_RunABCD_V8_DATA",
                 residual=True,
                 era="Run2_2018",
