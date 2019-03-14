@@ -217,11 +217,6 @@ def makeTreeFromMiniAOD(self,process):
                 ),
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK4PF"),
-                    label  = cms.untracked.string("AK4PF")
-                ),
-                cms.PSet(
-                    record = cms.string("JetCorrectionsRecord"),
                     tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK8PFPuppi"),
                     label  = cms.untracked.string("AK8PFPuppi")
                 ),
