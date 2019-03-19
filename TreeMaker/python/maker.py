@@ -53,6 +53,7 @@ class maker:
         # other options off by default
         self.getParamDefault("debugtracks", False)
         self.getParamDefault("applybaseline", False)
+        self.getParamDefault("saveMinimalGenParticles", False)
         
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
@@ -128,6 +129,7 @@ class maker:
         print " "
         print " storing track debugging variables: "+str(self.debugtracks)
         print " Applying baseline selection filter: "+str(self.applybaseline)
+        print " Storing a minimal set of GenParticles: "+str(self.saveMinimalGenParticles)
         print " "
         print " scenario: "+self.scenarioName
         print " global tag: "+self.globaltag
