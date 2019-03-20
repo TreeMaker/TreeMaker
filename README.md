@@ -55,7 +55,7 @@ The available scenarios are:
 14. `Autumn18sig`: for Autumn18 miniAOD MC (102X) (signal)
 15. `2018B26Sep`: for 2018 prompt data, partial period B
 16. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
-17. `2018PromptReco`: for 2018 prompt data, run period D
+17. `2018PromptReco`: for 2018 prompt data (or 22Jan2019, produced w/ prompt conditions), run period D
 18. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
 
 ## Unit Tests (Interactive Runs)
