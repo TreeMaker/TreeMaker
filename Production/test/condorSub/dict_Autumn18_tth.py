@@ -6,5 +6,6 @@ flist = {
         ['Autumn18.TTWJetsToQQ_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8'],
         ['Autumn18.TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8'],
         ['Autumn18.TTWW_TuneCP5_13TeV-madgraph-pythia8_ext1'],
+        ['Autumn18.TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8'],
     ]
 }
