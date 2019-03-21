@@ -138,7 +138,7 @@ def pu_dataset_validity(req,digireco,condition='',debug=False):
         all_prepids.append(chain['prepid'])
     prepids = [x for x in all_prepids if any(substr in x for substr in ["DRPremix","DRStdmix"])]
     if len(prepids)!=1:
-        print "ERROR Something went wrong in checking the pileup dataset validity."
+        print "ERROR Something went wrong in checking the pileup dataset validity for " + req['dataset_name'] + "."
         print " There can only be 1 prepid with \"DRPremix\" in the name (" + str(len(prepids)) + ")."
         print " " + str(all_prepids)
         return False
