@@ -21,4 +21,7 @@ flist = [
 'Summer16v3.ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8',
 'Summer16v3.ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8',
 'Summer16v3.ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1',
+'Summer16v3.ST_s-channel_4f_InclusiveDecays_13TeV-amcatnlo-pythia8',
+'Summer16v3.ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8',
+'Summer16v3.TTGamma_SingleLeptFromT_TuneCUETP8M2T4_13TeV-amcatnlo-pythia8',
 ]
