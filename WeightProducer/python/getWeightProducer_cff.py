@@ -306,7 +306,8 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('QCD_Pt_170to300_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2', 'RunIIFall17MiniAODv2', 'Constant', 56298920, True), # subtotal = 26469000
         MCSample('QCD_Pt_300to470_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 111229780, True), # subtotal = 53798780
         MCSample('QCD_Pt_300to470_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v3', 'RunIIFall17MiniAODv2', 'Constant', 111229780, True), # subtotal = 57431000
-        MCSample('QCD_Pt_470to600_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 27881028, False),
+        MCSample('QCD_Pt_470to600_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 55503028, False), # subtotal = 27881028
+        MCSample('QCD_Pt_470to600_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v3', 'RunIIFall17MiniAODv2', 'Constant', 55503028, False), # subtotal = 27622000
         MCSample('QCD_Pt_600to800_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 128548964, True), # subtotal = 66134964
         MCSample('QCD_Pt_600to800_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2', 'RunIIFall17MiniAODv2', 'Constant', 128548964, True), # subtotal = 62414000
         MCSample('QCD_Pt_800to1000_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 78116008, False), # subtotal = 39529008
@@ -317,7 +318,8 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
         MCSample('QCD_Pt_1400to1800_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v3', 'RunIIFall17MiniAODv2', 'Constant', 11353270, True), # subtotal = 5668000
         MCSample('QCD_Pt_1800to2400_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 2923941, True),
         MCSample('QCD_Pt_2400to3200_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 1910526, True),
-        MCSample('QCD_Pt_3200toInf_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 757837, True),
+        MCSample('QCD_Pt_3200toInf_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 956837, False), # subtotal = 757837
+        MCSample('QCD_Pt_3200toInf_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v1', 'RunIIFall17MiniAODv2', 'Constant', 956837, False), # subtotal = 199000
         MCSample('QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5859904, True),
         MCSample('QCD_Pt-20to30_MuEnrichedPt5_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 28213684, True),
         MCSample('QCD_Pt-30to50_MuEnrichedPt5_TuneCP5_13TeV_pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 29030324, True),
