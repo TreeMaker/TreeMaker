@@ -1,6 +1,7 @@
 flist = {
     "scenario": "Autumn18",
     "samples": [
+        ['Autumn18.QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
         ['Autumn18.QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
         ['Autumn18.QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
         ['Autumn18.QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
