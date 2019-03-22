@@ -55,7 +55,7 @@ The available scenarios are:
 14. `Autumn18sig`: for Autumn18 miniAOD MC (102X) (signal)
 15. `2018B26Sep`: for 2018 prompt data, partial period B
 16. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
-17. `2018PromptReco`: for 2018 prompt data, run period D
+17. `2018PromptReco`: for 2018 prompt data (or 22Jan2019, produced w/ prompt conditions), run period D
 18. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
 
 ## Unit Tests (Interactive Runs)
@@ -184,12 +184,14 @@ python get_py.py dict=dictNLO.py wp=False
 Step 2: Run NeffFinder, a simple analyzer which calculates the effective number of events for a sample.
 The output is a histogram with four bins, containing: 1. neff (pos-neg), 2. pos, 3. neg, 4. tot (pos+neg).
 The analyzer should be submitted as a Condor batch job for each sample (assuming samples are listed in [dict_neff.py](./Production/test/condorSub/dict_neff.py)), because the xrootd I/O bottleneck is prohibitive when running interactively.
+The last step, using the `-g` mode, gets and prints the Neff results for each sample from the output histogram.
 ```
 ./lnbatch.sh myNeff
 cd myNeff
 python submitJobsNeff.py -p -d neff -N 50 -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myNeff
 (after jobs are finished)
 ./haddEOS.sh -d /store/user/YOURUSERNAME/myNeff -g _part -r
+python submitJobsNeff.py -g -d neff -N 50 -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myNeff
 ```
 
 Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines. Combine all pileup distributions into a single file.

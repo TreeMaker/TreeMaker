@@ -6,6 +6,7 @@ flist = {
         ['Summer16v3Fast.SMS-T1bbbb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T1qqqq_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T2bb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16v3Fast.SMS-T2bb_mSbot-1275to2225_dM-25to150_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T2bb_mSbot-1650to2600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T2qq_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T2qq_mSq-1850to2600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
