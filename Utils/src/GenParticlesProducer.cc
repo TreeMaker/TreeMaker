@@ -34,11 +34,6 @@ public:
 
 private:
     void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
-    //bool isAncestor(const reco::Candidate* ancestor, const reco::Candidate * particle) const;
-    //void saveChain(int depth, int maxDepth, const reco::GenParticle&, std::unique_ptr<std::vector<TLorentzVector>>&,
-    //               std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-    //               std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-    //               std::unordered_set<const reco::Candidate *>&) const;
     const reco::GenParticle* findLast(const reco::GenParticle& particle) const;
     void saveChain(int depth, int parentId, int parent_idx, const reco::GenParticle& particle, std::unique_ptr<std::vector<TLorentzVector>>& genParticle_vec,
                    std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec,
@@ -337,7 +332,6 @@ void GenParticlesProducer::storeStandard(const edm::Handle< edm::View<reco::GenP
         }
     }
 }
-
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void GenParticlesProducer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
