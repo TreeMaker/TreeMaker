@@ -130,89 +130,6 @@ void GenParticlesProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     iEvent.put(std::move(TTFlag_vec     ), "TTFlag");
 }
 
-/*
-bool GenParticlesProducer::isAncestor(const reco::Candidate* ancestor, const reco::Candidate * particle) const {
-    //particle is already the ancestor
-    if(ancestor == particle ) return true;
-
-    //otherwise loop on mothers, if any and return true if the ancestor is found
-    for(size_t i=0; i<particle->numberOfMothers(); i++) {
-        if(isAncestor(ancestor,particle->mother(i))) return true;
-    }
-        
-    //if we did not return yet, then particle and ancestor are not relatives
-    return false;
-}
-
-
-void GenParticlesProducer::saveChain(int depth, int maxDepth, const reco::GenParticle& particle, std::unique_ptr<std::vector<TLorentzVector>>& genParticle_vec,
-                                     std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec,
-                                     std::unique_ptr<std::vector<int>>& Parent_vec, std::unique_ptr<std::vector<int>>& ParentId_vec,
-                                     std::unordered_set<const reco::Candidate *>& stored_particles_ref) const {
-    if(depth==maxDepth) return;
-    if(depth>0 && typicalChildIds.find(abs(particle.pdgId()))==typicalChildIds.end()) return;
-    if(stored_particles_ref.find(&particle)!=stored_particles_ref.end()) return;
-    if(particle.isLastCopy() && (particle.isHardProcess() || particle.fromHardProcessBeforeFSR())) {
-        TLorentzVector temp;
-        temp.SetPxPyPzE(particle.px(), particle.py(), particle.pz(), particle.energy());
-        genParticle_vec->push_back(temp);
-        PdgId_vec->push_back(particle.pdgId());
-        Status_vec->push_back(abs(particle.status()));
-        stored_particles_ref.insert(&particle);
-        int current_parent_id = PdgId_vec->back();
-        int current_parent_idx = genParticle_vec->size()-1;
-        for(unsigned int iDau=0; iDau<particle.numberOfDaughters(); iDau++) {
-            ParentId_vec->push_back(current_parent_id);
-            Parent_vec->push_back(current_parent_idx);
-            const reco::GenParticle *daughter = static_cast<const reco::GenParticle *>(particle.daughter(iDau));
-            saveChain(depth++, maxDepth, *daughter, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
-        }
-    }
-    else {
-        for(unsigned int iDau=0; iDau<particle.numberOfDaughters(); iDau++) {
-            const reco::GenParticle *daughter = static_cast<const reco::GenParticle *>(particle.daughter(iDau));
-            saveChain(depth, maxDepth, *daughter, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
-        }
-    }
-    return;
-
-}
-
-void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands, std::unique_ptr<std::vector<TLorentzVector>>& genParticle_vec, 
-                                        std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
-                                        std::unique_ptr<std::vector<int>>& ParentId_vec) const {
-    std::unordered_set<const reco::Candidate *> stored_particles_ref;
-    for(const auto& iPart : *genPartCands) {
-        // Store the particles contained in the typicalParentIds, being used here to store all particles which should start a chain to be saved
-        if(stored_particles_ref.find(&iPart)!=stored_particles_ref.end()) continue;
-        if(typicalParentIds.find(abs(iPart.pdgId()))!=typicalParentIds.end()) {
-            //if(abs(iPart.pdgId())==6) {
-            //    edm::LogInfo("TreeMaker") << "Found a top(6) isLastCopy(" << iPart.isLastCopy() << ")  isHardProcess(" << iPart.isHardProcess()
-            //                              << ") fromHardProcessFinalState(" << iPart.fromHardProcessFinalState() << ") fromHardProcessDecayed("
-            //                              << iPart.fromHardProcessDecayed() << ") fromHardProcessBeforeFSR(" << iPart.fromHardProcessBeforeFSR() << ")";
-            //}
-
-            if(iPart.isLastCopy() && (iPart.isHardProcess() || iPart.fromHardProcessBeforeFSR())) {
-                //if(abs(iPart.pdgId())==6) {
-                //    edm::LogInfo("TreeMaker") << "A top(6) passed!";
-                //}
-                ParentId_vec->push_back(0);
-                Parent_vec->push_back(-1);
-                saveChain(0,(abs(iPart.pdgId())) ? 2 : 1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
-            }
-        }
-    }
-}
-*/
-
-/*
-tops start with status 22 and end with 62
-    any time there is one daughter it is simply radiating. when there are two daughters that should be the final top
-b start with status 23 and end with 71 (ignore any gluon radiation)
-W start with status 22, can immediately decay or go to status 52
-    immediately decays to status 23 which then decay to status 1/2 (leptonic) or 71 (hadronic)
-*/
-
 // Based on http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
 enum particle_type
 {
@@ -245,26 +162,35 @@ const reco::GenParticle* GenParticlesProducer::findLast(const reco::GenParticle&
     bool resetLast = false;
     const reco::GenParticle *daughter;
     if(debug) edm::LogInfo("TreeMaker") << "   Found a " << last->pdgId() << " (status=" << last->status() << ", ndaughters=" << last->numberOfDaughters() << "):";
+
     while (true) {
         resetLast=false;
         for(unsigned int iDau=0; iDau<last->numberOfDaughters(); iDau++) {
             daughter = static_cast<const reco::GenParticle *>(last->daughter(iDau));
-            //edm::LogInfo("TreeMaker") << "last->pdgId()=" << last->pdgId();
-            //edm::LogInfo("TreeMaker") << "daughte=r" << daughter;
-            //edm::LogInfo("TreeMaker") << "daughter->pdgId()=" << daughter->pdgId();
             if(daughter->pdgId()==last->pdgId()) {
                 last = daughter;
                 resetLast = true;
-                if(debug) edm::LogInfo("TreeMaker") << "   reset to " << last->pdgId() << "(status=" << last->status() << ")";
+                if(debug) edm::LogInfo("TreeMaker") << "      reset to " << last->pdgId() << "(status=" << last->status() << ")";
             }
         }
         if(!resetLast) break;
     }
-    if((last->pdgId() == bottom && last->status()!=71) ||
+
+    /*
+    Empirical rules for particle status codes:
+    ==========================================
+    From a semi-leptonic TTJets sample:
+    -----------------------------------
+    1. tops start with status 22 and end with 62
+        any time there is one daughter it is simply radiating. when there are two daughters that should be the final top
+    2. b start with status 23 and end with 71/72 (ignore any gluon radiation)
+    3. W start with status 22, can immediately decay or go to status 51/52
+        immediately decays to status 23 which then decay to status 1/2 (leptonic) or 71 (hadronic)
+    */
+    if(((last->pdgId() >= down && last->pdgId() <= bottom) && (last->status()!=51 && last->status()!=52 && last->status()!=71 && last->status()!=72)) ||
        (last->pdgId() == top && last->status()!=62) ||
-       (last->pdgId() == W && (last->status()!=22 && last->status()!=52)) ||
-       ((last->pdgId() >= electron && last->pdgId() <= tau_neutrino) && (last->status() != 1 && last->status() != 2)) ||
-       ((last->pdgId() >= down && last->pdgId() <= charm) && last->status() != 71)) {
+       (last->pdgId() == W && (last->status()!=22 && last->status()!=51 && last->status()!=52)) ||
+       ((last->pdgId() >= electron && last->pdgId() <= tau_neutrino) && (last->status() != 1 && last->status() != 2))) {
         edm::LogInfo("TreeMaker") << "WARNING The last particle in the chain (" << last->pdgId() << ") does not have a status that corresponds to its type (status=" << last->status() << ")";
     }
 
@@ -275,10 +201,14 @@ void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, co
                                      std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec,
                                      std::unique_ptr<std::vector<int>>& Parent_vec, std::unique_ptr<std::vector<int>>& ParentId_vec,
                                      std::unordered_set<const reco::Candidate *>& stored_particles_ref) const {
+    // Set a minimal depth of particles to save
     if(depth==0) return;
     auto lastParticle = findLast(particle);
+    // Skip particles which are already in the list of stored particles
     if(stored_particles_ref.find(lastParticle)!=stored_particles_ref.end()) return;
-    if(debug) edm::LogInfo("TreeMaker") << "Saving chain for a " << particle.pdgId() << "(status=" << particle.status() << ")\n   Current depth is " << depth;
+    if(debug) edm::LogInfo("TreeMaker") << "   Saving chain for a " << particle.pdgId() << " (status=" << particle.status() << ")\n      Current depth is " << depth;
+
+    // Save the gen particle information
     TLorentzVector temp;
     temp.SetPxPyPzE(lastParticle->px(), lastParticle->py(), lastParticle->pz(), lastParticle->energy());
     genParticle_vec->push_back(temp);
@@ -290,11 +220,12 @@ void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, co
     int current_parent_idx = PdgId_vec->size()-1;
     int current_parent_id = PdgId_vec->back();
 
-    if(debug) edm::LogInfo("TreeMaker") << "   lastParticle number of daughters (" << lastParticle->numberOfDaughters() << ")";
+    // Save the daughters
     if(lastParticle->numberOfDaughters()==2) {
+        int nextDepth = --depth;
         for(unsigned int iDau=0; iDau<lastParticle->numberOfDaughters(); iDau++) {
+            if(abs(lastParticle->pdgId())<=bottom) continue;
             const reco::GenParticle *daughter = static_cast<const reco::GenParticle *>(lastParticle->daughter(iDau));
-            int nextDepth = depth--;
             saveChain(nextDepth, current_parent_id, current_parent_idx, *daughter, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
         }
     }
@@ -308,14 +239,22 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
     std::unordered_set<const reco::Candidate *> stored_particles_ref;
     for(const auto& iPart : *genPartCands) {
         // Skip particles which are already in the list of stored particles
+        // This is to protect against parts of a chain which may be saved, but here we are looking at the first copy
         if(stored_particles_ref.find(&iPart)!=stored_particles_ref.end()) continue;
         // Skip starting particles which are not from the hard process
         if(!iPart.isHardProcess() && !iPart.fromHardProcessBeforeFSR()) continue;
         // Only store particles in the list of acceptable parent pdgids
         if(typicalParentIds.find(abs(iPart.pdgId()))!=typicalParentIds.end()) {
-            if (abs(iPart.pdgId())==top) saveChain(3, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
-            else if(abs(iPart.pdgId())>=photon && abs(iPart.pdgId())<=Higgs) saveChain(2, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
+            if (abs(iPart.pdgId())==top) {
+                if(debug) edm::LogInfo("TreeMaker") << "Saving a top chain ... ";
+                saveChain(3, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
+            }
+            else if(abs(iPart.pdgId())>=photon && abs(iPart.pdgId())<=Higgs) {
+                if(debug) edm::LogInfo("TreeMaker") << "Saving a boson chain ... ";
+                saveChain(2, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
+            }
             else {
+                if(debug) edm::LogInfo("TreeMaker") << "Saving an individual particle ... ";
                 TLorentzVector temp;
                 temp.SetPxPyPzE(iPart.px(), iPart.py(), iPart.pz(), iPart.energy());
                 genParticle_vec->push_back(temp);
