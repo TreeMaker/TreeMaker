@@ -53,7 +53,7 @@ class maker:
         # other options off by default
         self.getParamDefault("debugtracks", False)
         self.getParamDefault("applybaseline", False)
-        self.getParamDefault("saveMinimalGenParticles", False)
+        self.getParamDefault("saveMinimalGenParticles", True)
         
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
