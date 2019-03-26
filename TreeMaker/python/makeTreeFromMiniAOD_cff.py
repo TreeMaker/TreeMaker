@@ -181,7 +181,8 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorInt.append("genParticles:Status(GenParticles_Status)")
         self.VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
         self.VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
-        self.VectorBool.append("genParticles:TTFlag(GenParticles_TTFlag)")
+        if not self.saveMinimalGenParticles:
+            self.VectorBool.append("genParticles:TTFlag(GenParticles_TTFlag)")
         
         # for ttbar pT reweighting
         # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy

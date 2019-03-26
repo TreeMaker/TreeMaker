@@ -88,7 +88,8 @@ debug(iConfig.getParameter<bool>("debug"))
     produces< std::vector< int > >("Status");
     produces< std::vector< int > >("Parent");
     produces< std::vector< int > >("ParentId");
-    produces< std::vector< bool > >("TTFlag");
+    if(!keepMinimal)
+        produces< std::vector< bool > >("TTFlag");
 }
 
 GenParticlesProducer::~GenParticlesProducer() {
@@ -129,7 +130,7 @@ void GenParticlesProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     iEvent.put(std::move(Status_vec     ), "Status");
     iEvent.put(std::move(ParentId_vec   ), "ParentId");
     iEvent.put(std::move(Parent_vec     ), "Parent");
-    iEvent.put(std::move(TTFlag_vec     ), "TTFlag");
+    if(!keepMinimal) iEvent.put(std::move(TTFlag_vec     ), "TTFlag");
 }
 
 // Based on http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
