@@ -182,7 +182,7 @@ const reco::GenParticle* GenParticlesProducer::findLast(const reco::GenParticle&
     3. W start with status 22, can immediately decay or go to status 51/52
         immediately decays to status 23 which then decay to status 1/2 (leptonic) or 71 (hadronic)
     */
-    if(((last->pdgId() >= down && last->pdgId() <= bottom) && (last->status()!=51 && last->status()!=52 && last->status()!=71 && last->status()!=72)) ||
+    if(((last->pdgId() >= down && last->pdgId() <= bottom) && (last->status()!=23 && last->status()!=51 && last->status()!=52 && last->status()!=71 && last->status()!=72 && last->status()!=73)) ||
        (last->pdgId() == top && last->status()!=62) ||
        (last->pdgId() == W && (last->status()!=22 && last->status()!=51 && last->status()!=52)) ||
        ((last->pdgId() >= electron && last->pdgId() <= tau_neutrino) && (last->status() != 1 && last->status() != 2))) {
