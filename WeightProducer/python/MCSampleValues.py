@@ -860,14 +860,7 @@ class MCSampleValuesHelper():
             print self.__values_dict[name]["CrossSection"]
             raise KeyError("ERROR MCSampleValuesHelper::The CrossSectionValues tuple for process \"" + name + "\" does contain the key(s) \"" + fields + "\"")
 
-<<<<<<< HEAD
-		if self.__values_dict[name]["CrossSection"].__getattribute__(fields[0]) >= 0:
-			return self.__values_dict[name]["CrossSection"].__getattribute__(fields[0])
-		else:
-			return self.__values_dict[name]["CrossSection"].__getattribute__(fields[1])
-=======
         if self.__values_dict[name]["CrossSection"].__getattribute__(fields[0]) >= 0:
             return self.__values_dict[name]["CrossSection"].__getattribute__(fields[0])
         else:
             return self.__values_dict[name]["CrossSection"].__getattribute__(fields[1])
->>>>>>> 926a870... Convert the tabs to spaces.

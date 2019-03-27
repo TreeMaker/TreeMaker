@@ -5,8 +5,7 @@ __init__.py
 
 # data files for egamma
 /Utils/python/EgammaPostRecoTools.py
-/Production/test/data/Run2018_Step2Closure_CoarseEtaR9Gain_scales.dat
-/Production/test/data/Run2018_Step2Closure_CoarseEtaR9Gain_smearings.dat
+/Production/test/data/ScalesSmearings
 
 # condor & log files
 *.stdout

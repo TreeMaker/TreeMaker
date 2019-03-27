@@ -109,8 +109,8 @@ git clone ${ACCESS_GITHUB}kpedro88/CondorProduction.git Condor/Production
 git clone ${ACCESS_GITHUB}${FORK}/TreeMaker.git -b ${BRANCH}
 # get egamma config and data files without recompiling whole package
 wget https://github.com/TreeMaker/cmssw/raw/EgammaPostRecoTools_dev/RecoEgamma/EgammaTools/python/EgammaPostRecoTools.py -P TreeMaker/Utils/python/
-wget https://github.com/TreeMaker/EgammaAnalysis-ElectronTools/raw/ScalesSmearing2018_Dev/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain_scales.dat -P TreeMaker/Production/test/data
-wget https://github.com/TreeMaker/EgammaAnalysis-ElectronTools/raw/ScalesSmearing2018_Dev/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain_smearings.dat -P TreeMaker/Production/test/data
+wget https://github.com/TreeMaker/EgammaAnalysis-ElectronTools/raw/ScalesSmearing2018_Dev/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain_scales.dat -P TreeMaker/Production/test/data/ScalesSmearings
+wget https://github.com/TreeMaker/EgammaAnalysis-ElectronTools/raw/ScalesSmearing2018_Dev/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain_smearings.dat -P TreeMaker/Production/test/data/ScalesSmearings
 
 # compile
 scram b -j ${CORES}
