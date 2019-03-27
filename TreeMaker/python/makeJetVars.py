@@ -253,9 +253,6 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
         if storeProperties>1:
             JetProperties.properties.extend(["jecFactor"])
             self.VectorDouble.extend([
-                'JetProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
-                'JetProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
-                'JetProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
                 'JetProperties'+suff+':photonEnergyFraction(Jets'+suff+'_photonEnergyFraction)',
                 'JetProperties'+suff+':electronEnergyFraction(Jets'+suff+'_electronEnergyFraction)',
                 'JetProperties'+suff+':hfEMEnergyFraction(Jets'+suff+'_hfEMEnergyFraction)',
@@ -284,8 +281,6 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
                 'JetProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
                 'JetProperties'+suff+':neutralHadronMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
                 'JetProperties'+suff+':photonMultiplicity(Jets'+suff+'_photonMultiplicity)',
-                'JetProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
-                'JetProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
                 'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
             ])
                                              
