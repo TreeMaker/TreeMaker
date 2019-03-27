@@ -17,27 +17,20 @@
 
 The following installation instructions assume the user wants to process 2016, 2017, or 2018 miniAOD.
 
-For 2016 and 2017:
 ```
 wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017/setup.sh
 chmod +x setup.sh
 ./setup.sh
-cd CMSSW_9_4_11/src/
+cd CMSSW_10_2_11_patch1/src/
 cmsenv
 cd TreeMaker/Production/test
-```
-
-For 2018, replace the middle lines:
-```
-./setup.sh -c CMSSW_10_2_7
-cd CMSSW_10_2_7/src/
 ```
 
 The script [setup.sh](./setup.sh) has options to allow installing a different fork or branch of TreeMaker
 (though some branches may have different setup scripts, so check carefully which one you download):
 * `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
 * `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017)
-* `-c [version]`: which CMSSW version to use (default = CMSSW_9_4_11)"
+* `-c [version]`: which CMSSW version to use (default = CMSSW_10_2_11_patch1)
 * `-a [protocol]`: which protocol to use for `git clone` (default = ssh, alternative = https)
 * `-j [cores]`: run CMSSW compilation on # cores (default = 8)
 * `-h`: display help message and exit
@@ -46,26 +39,24 @@ Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
 global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
-1.  `Summer16MiniAODv3`: for Summer16 miniAODv3 MC  
-2.  `Summer16MiniAODv3sig`: for Summer16 miniAODv3 MC (signal)  
-3.  `Summer16MiniAODv3Fast`: for Summer16 miniAODv3 FastSim MC (background)  
-4.  `Summer16MiniAODv3Fastsig`: for Summer16 miniAODv3 FastSim MC (signal)  
-5.  `2016MiniAODv3`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
-6.  `Fall17`: for Fall17 miniAOD MC
-7.  `Fall17sig`: for Fall17 miniAOD MC (signal)
-8.  `Fall17Fast`: for Fall17 miniAOD FastSim MC (background)
-9.  `Fall17Fastsig`: for Fall17 miniAOD FastSim MC (signal)
-10.  `2017ReReco31Mar`: for 2017 ReReco data (31Mar), periods B-F
-11.  `Spring16Fastsig`: for Spring16 miniAOD FastSim MC (80X) (signal scans)
-12. `Spring16Pmssm`: for Spring16 miniAOD 25ns PMSSM MC scan (80X) (signal)
-13. `Summer16`: for Summer16 miniAOD 25ns MC (80X)
-14. `Summer16sig`: for Summer16 miniAOD 25ns MC (80X) (signal)
-15. `Autumn18`: for Autumn18 miniAOD 25ns MC (102X)
-16. `Autumn18sig`: for Autumn18 miniAOD 25ns MC (102X) (signal)
-17. `2018B26Sep`: for 2018 prompt data, partial period B
-18. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
-19. `2018PromptReco`: for 2018 prompt data, run period D
-20. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
+1.  `Summer16`: for Summer16 miniAOD MC (80X)
+2.  `Summer16sig`: for Summer16 miniAOD MC (80X) (signal)
+3.  `Summer16v3`: for Summer16 miniAODv3 MC  
+4.  `Summer16v3sig`: for Summer16 miniAODv3 MC (signal)  
+5.  `Summer16v3Fast`: for Summer16 miniAODv3 FastSim MC (background)  
+6.  `Summer16v3Fastsig`: for Summer16 miniAODv3 FastSim MC (signal)  
+7.  `2016ReReco17Jul`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
+8.  `Fall17`: for Fall17 miniAOD MC
+9.  `Fall17sig`: for Fall17 miniAOD MC (signal)
+10. `Fall17Fast`: for Fall17 miniAOD FastSim MC (background)
+11. `Fall17Fastsig`: for Fall17 miniAOD FastSim MC (signal)
+12. `2017ReReco31Mar`: for 2017 ReReco data (31Mar), periods B-F
+13. `Autumn18`: for Autumn18 miniAOD MC (102X)
+14. `Autumn18sig`: for Autumn18 miniAOD MC (102X) (signal)
+15. `2018B26Sep`: for 2018 prompt data, partial period B
+16. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
+17. `2018PromptReco`: for 2018 prompt data (or 22Jan2019, produced w/ prompt conditions), run period D
+18. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
 
 ## Unit Tests (Interactive Runs)
 
@@ -191,15 +182,16 @@ python get_py.py dict=dictNLO.py wp=False
 ```
 
 Step 2: Run NeffFinder, a simple analyzer which calculates the effective number of events for a sample.
+The output is a histogram with four bins, containing: 1. neff (pos-neg), 2. pos, 3. neg, 4. tot (pos+neg).
 The analyzer should be submitted as a Condor batch job for each sample (assuming samples are listed in [dict_neff.py](./Production/test/condorSub/dict_neff.py)), because the xrootd I/O bottleneck is prohibitive when running interactively.
-Be sure to sanity-check the results, as xrootd failures can cause jobs to terminate early.
+The last step, using the `-g` mode, gets and prints the Neff results for each sample from the output histogram.
 ```
 ./lnbatch.sh myNeff
 cd myNeff
 python submitJobsNeff.py -p -d neff -N 50 -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myNeff
 (after jobs are finished)
-python getResults.py
 ./haddEOS.sh -d /store/user/YOURUSERNAME/myNeff -g _part -r
+python submitJobsNeff.py -g -d neff -N 50 -o root://cmseos.fnal.gov//store/user/YOURUSERNAME/myNeff
 ```
 
 Step 3: Update `dictNLO.py` with the newly-obtained Neff values and generate WeightProducer lines. Combine all pileup distributions into a single file.
@@ -234,6 +226,7 @@ Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
 * `applybaseline`: switch to apply the baseline HT selection (default=False)
+* `saveMinimalGenParticles`: save only the hard scatter gen particles coming from top decays, boson decays, semi-visible jets, or SUSY particles (default=True)
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))

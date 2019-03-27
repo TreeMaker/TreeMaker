@@ -1,12 +1,17 @@
 from jobSubmitterTM import *
 
-# todo: integrate getResults functionality into missing mode (and add new "results" mode?)
-
 class jobSubmitterNeff(jobSubmitterTM):
     def __init__(self):
         super(jobSubmitterNeff,self).__init__()
         
         self.scripts = ["step1.sh","step2Neff.sh"]
+
+    def addDefaultOptions(self,parser):
+        super(jobSubmitterNeff,self).addDefaultOptions(parser)
+        parser.add_option("-g", "--getresults", dest="getresults", default=False, action="store_true", help="get neff results (default = %default)")
+        self.modes.update({
+            "getresults": 1,
+        })
 
     def addExtraOptions(self,parser):
         super(jobSubmitterNeff,self).addExtraOptions(parser)
@@ -18,14 +23,19 @@ class jobSubmitterNeff(jobSubmitterTM):
         
     def checkExtraOptions(self,options,parser):
         jobSubmitter.checkExtraOptions(self,options,parser)
-    
+
         if options.dict is None or len(options.dict)==0:
             parser.error("Required option: --dict [dict]")
-            
+
+    def runPerJob(self,job):
+        super(jobSubmitterNeff,self).runPerJob(job)
+        if self.getresults:
+            self.doResults(job)
+
     def generateExtra(self,job):
         super(jobSubmitterNeff,self).generateExtra(job)
         job.patterns["EXTRAINPUTS"] = "input/argsNeff_"+job.name+"_$(Process).txt"
-        
+
     def generateSubmission(self):
         # get entries
         process = self.dict.replace(".py","")
@@ -100,7 +110,7 @@ class jobSubmitterNeff(jobSubmitterTM):
             self.protoJobs.append(job)
 
     def finishedToJobName(self,val):
-        tmp = val.split("/")[-1].replace("TrueNumInteractions_","").replace(".root","")
+        tmp = val.split("/")[-1].replace("NeffInfo_","").replace(".root","")
         # handle case where there is no part number because only one job
         if "_part" in tmp: tmp = tmp.replace("_part","_")
         else: tmp = tmp+"_0"
@@ -108,3 +118,9 @@ class jobSubmitterNeff(jobSubmitterTM):
 
     def generateJdl(self,job):
         job.jdl = self.jdl.replace(".jdl","Neff_"+job.name+".jdl")
+
+    def doResults(self,job):
+        from ROOT import TFile, TH1
+        jfile = TFile.Open(self.output+"/NeffInfo_"+job.name+".root")
+        jhist = jfile.Get("NeffFinder/NeffInfo_"+job.name)
+        print("NeffFinder: "+job.name+" : "+str(int(jhist.GetBinContent(1)))+" (pos = "+str(int(jhist.GetBinContent(2)))+", neg = "+str(int(jhist.GetBinContent(3)))+", tot = "+str(int(jhist.GetBinContent(4)))+")")

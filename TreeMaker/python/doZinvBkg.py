@@ -54,6 +54,17 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
             storeJer=2,
         )
     
+    # get puppi-specific multiplicities
+    from PhysicsTools.PatAlgos.patPuppiJetSpecificProducer_cfi import patPuppiJetSpecificProducer
+    process.puppiSpecificAK8Clean = patPuppiJetSpecificProducer.clone(
+        src = JetAK8CleanTag
+    )
+    # update userfloats (used for jet ID, including ID for JEC/JER variations)
+    from TreeMaker.TreeMaker.addJetInfo import addJetInfo
+    process, JetAK8CleanTag = addJetInfo(process, JetAK8CleanTag,
+        ['puppiSpecificAK8Clean:puppiMultiplicity','puppiSpecificAK8Clean:neutralPuppiMultiplicity','puppiSpecificAK8Clean:neutralHadronPuppiMultiplicity',
+         'puppiSpecificAK8Clean:photonPuppiMultiplicity','puppiSpecificAK8Clean:HFHadronPuppiMultiplicity','puppiSpecificAK8Clean:HFEMPuppiMultiplicity'])
+
     process = self.makeJetVarsAK8(process,
         JetTag=JetAK8CleanTag,
         suff='AK8Clean',
@@ -61,6 +72,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         doECFs=False, # currently disabled
         doDeepAK8=False, # currently disabled
         doDeepDoubleB=False, # currently disabled
+        puppiSpecific="puppiSpecificAK8Clean",
     )
 
     # update some userfloat names
@@ -71,6 +83,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     process.JetPropertiesAK8Clean.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiClean:tau3')
     process.JetPropertiesAK8Clean.subjets = cms.vstring('SoftDrop')
     process.JetPropertiesAK8Clean.SJbDiscriminatorCSV = cms.vstring('SoftDrop','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+    process.JetPropertiesAK8Clean.neutralHadronPuppiMultiplicity = cms.vstring("puppiSpecificAK8Clean:neutralHadronPuppiMultiplicity")
+    process.JetPropertiesAK8Clean.neutralPuppiMultiplicity = cms.vstring("puppiSpecificAK8Clean:neutralPuppiMultiplicity")
+    process.JetPropertiesAK8Clean.photonPuppiMultiplicity = cms.vstring("puppiSpecificAK8Clean:photonPuppiMultiplicity")
 #    process.JetPropertiesAK8Clean.ecfN2b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN2')
 #    process.JetPropertiesAK8Clean.ecfN3b1 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb1AK8PuppiCleanSoftDropN3')
 #    process.JetPropertiesAK8Clean.ecfN2b2 = cms.vstring('ak8PFJetsPuppiCleanSoftDropValueMap:nb2AK8PuppiCleanSoftDropN2')
@@ -280,7 +295,7 @@ def doZinvBkg(self,process):
     self.VectorDouble.append("goodPhotons:isEB(Photons_isEB)")
     self.VectorDouble.append("goodPhotons:genMatched(Photons_genMatched)")
     self.VectorDouble.append("goodPhotons:hadTowOverEM(Photons_hadTowOverEM)")
-    self.VectorDouble.append("goodPhotons:hasPixelSeed(Photons_hasPixelSeed)")
+    self.VectorBool.append("goodPhotons:hasPixelSeed(Photons_hasPixelSeed)")
     self.VectorDouble.append("goodPhotons:passElectronVeto(Photons_passElectronVeto)")
     self.VectorDouble.append("goodPhotons:pfChargedIso(Photons_pfChargedIso)")
     self.VectorDouble.append("goodPhotons:pfChargedIsoRhoCorr(Photons_pfChargedIsoRhoCorr)")

@@ -130,34 +130,59 @@ def makeTreeFromMiniAOD(self,process):
         VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
     )
     self.VarsInt.extend(['nAllVertices'])
+    # also store rho for PU comparisons
+    self.VarsDouble.extend(['fixedGridRhoFastjetAll'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenParticles
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo:
-        process.genParticles = cms.EDProducer("GenParticlesProducer",
-            genCollection = cms.InputTag("prunedGenParticles"),
-            debug = cms.bool(False),
-            childIds = cms.vint32(1,2,3,4,5,11,12,13,14,15,16,22),
-            parentIds = cms.vint32(
-                1,2,6,23,24,25,
-                1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
-                1000001,1000002,1000003,1000004,1000005,1000006,
-                2000001,2000002,2000003,2000004,2000005,2000006,
-                4900021,4900023,4900101,4900102,4900111,4900113,4900211,4900213,51,52,53,
-                5000001,5000002,
-            ),
-            keepIds = cms.vint32(6,23,24,25),
-            keepFirst = cms.bool(True),
-        )
-        # store gluons for signals with Higgs
-        if "T5qqqqZH" in process.source.fileNames[0]: process.genParticles.childIds.append(21)
+        if self.saveMinimalGenParticles:
+            process.genParticles = cms.EDProducer("GenParticlesProducer",
+                genCollection = cms.InputTag("prunedGenParticles"),
+                debug = cms.bool(False),
+                # Particles we want to save from the decay chain of the tops
+                childIds = cms.vint32(1,2,3,4,5,11,12,13,14,15,16,24),
+                # Particles we want to save the last copy from the hard scatter
+                parentIds = cms.vint32(
+                    6,22,23,24,25,
+                    1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
+                    1000001,1000002,1000003,1000004,1000005,1000006,
+                    2000001,2000002,2000003,2000004,2000005,2000006,
+                    4900021,4900023,4900101,4900102,4900111,4900113,4900211,4900213,51,52,53,
+                    5000001,5000002,
+                ),
+                # Other settings
+                keepIds = cms.vint32(),
+                keepFirst = cms.bool(False),
+                keepMinimal = cms.bool(True),
+            )
+        else:
+            process.genParticles = cms.EDProducer("GenParticlesProducer",
+                genCollection = cms.InputTag("prunedGenParticles"),
+                debug = cms.bool(False),
+                childIds = cms.vint32(1,2,3,4,5,11,12,13,14,15,16,22),
+                parentIds = cms.vint32(
+                    1,2,6,23,24,25,
+                    1000021,1000022,1000023,1000024,1000025,1000035,1000037,1000039,
+                    1000001,1000002,1000003,1000004,1000005,1000006,
+                    2000001,2000002,2000003,2000004,2000005,2000006,
+                    4900021,4900023,4900101,4900102,4900111,4900113,4900211,4900213,51,52,53,
+                    5000001,5000002,
+                ),
+                keepIds = cms.vint32(6,23,24,25),
+                keepFirst = cms.bool(True),
+                keepMinimal = cms.bool(False),
+            )
+            # store gluons for signals with Higgs
+            if "T5qqqqZH" in process.source.fileNames[0]: process.genParticles.childIds.append(21)
         self.VectorTLorentzVector.append("genParticles(GenParticles)")
         self.VectorInt.append("genParticles:PdgId(GenParticles_PdgId)")
         self.VectorInt.append("genParticles:Status(GenParticles_Status)")
         self.VectorInt.append("genParticles:Parent(GenParticles_ParentIdx)")
         self.VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
-        self.VectorBool.append("genParticles:TTFlag(GenParticles_TTFlag)")
+        if not self.saveMinimalGenParticles:
+            self.VectorBool.append("genParticles:TTFlag(GenParticles_TTFlag)")
         
         # for ttbar pT reweighting
         # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
@@ -212,11 +237,6 @@ def makeTreeFromMiniAOD(self,process):
                     record = cms.string("JetCorrectionsRecord"),
                     tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK4PFchs"),
                     label  = cms.untracked.string("AK4PFchs")
-                ),
-                cms.PSet(
-                    record = cms.string("JetCorrectionsRecord"),
-                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK4PF"),
-                    label  = cms.untracked.string("AK4PF")
                 ),
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
@@ -407,6 +427,7 @@ def makeTreeFromMiniAOD(self,process):
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq
     elePostRecoEra = cms.PSet(value = cms.string(""))
+    TMeras.TM2018.toModify(elePostRecoEra, value = "2018-Prompt")
     TMeras.TM2017.toModify(elePostRecoEra, value = "2017-Nov17ReReco")
     TMeras.TM80X.toModify(elePostRecoEra, value = "2016-Legacy")
     if len(elePostRecoEra.value.value())>0:
@@ -545,6 +566,42 @@ def makeTreeFromMiniAOD(self,process):
         self.VarsInt.extend(['ecalBadCalibFilter'])
 
         # some filters need to be rerun
+        from RecoMET.METFilters.ecalBadCalibFilter_cfi import ecalBadCalibFilter
+        process.ecalBadCalibReducedFilter = ecalBadCalibFilter.clone(
+            EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
+            ecalMinEt = cms.double(50.),
+            baddetEcal = cms.vuint32([
+                872439604,872422825,872420274,872423218,
+                872423215,872416066,872435036,872439336,
+                872420273,872436907,872420147,872439731,
+                872436657,872420397,872439732,872439339,
+                872439603,872422436,872439861,872437051,
+                872437052,872420649,872422436,872421950,
+                872437185,872422564,872421566,872421695,
+                872421955,872421567,872437184,872421951,
+                872421694,872437056,872437057,872437313
+            ]),
+            taggingMode = cms.bool(True),
+        )
+        process.ecalBadCalibReducedExtraFilter = process.ecalBadCalibReducedFilter.clone(
+            baddetEcal = cms.vuint32([
+                872439604,872422825,872420274,872423218,
+                872423215,872416066,872435036,872439336,
+                872420273,872436907,872420147,872439731,
+                872436657,872420397,872439732,872439339,
+                872439603,872422436,872439861,872437051,
+                872437052,872420649,872421950,872437185,
+                872422564,872421566,872421695,872421955,
+                872421567,872437184,872421951,872421694,
+                872437056,872437057,872437313,872438182,
+                872438951,872439990,872439864,872439609,
+                872437181,872437182,872437053,872436794,
+                872436667,872436536,872421541,872421413,
+                872421414,872421031,872423083,872421439
+            ])
+        )
+        self.VarsBool.extend(['ecalBadCalibReducedFilter','ecalBadCalibReducedExtraFilter'])
+
         process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
         process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
         process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
@@ -681,6 +738,16 @@ def makeTreeFromMiniAOD(self,process):
             jerUncDir=0,
             storeJer=2, # get central jet smearing factor
         )
+
+    # get puppi-specific multiplicities
+    from PhysicsTools.PatAlgos.patPuppiJetSpecificProducer_cfi import patPuppiJetSpecificProducer
+    process.puppiSpecificAK8 = patPuppiJetSpecificProducer.clone(
+        src = JetAK8Tag
+    )
+    # update userfloats (used for jet ID, including ID for JEC/JER variations)
+    process, JetAK8Tag = addJetInfo(process, JetAK8Tag,
+        ['puppiSpecificAK8:puppiMultiplicity','puppiSpecificAK8:neutralPuppiMultiplicity','puppiSpecificAK8:neutralHadronPuppiMultiplicity',
+         'puppiSpecificAK8:photonPuppiMultiplicity','puppiSpecificAK8:HFHadronPuppiMultiplicity','puppiSpecificAK8:HFEMPuppiMultiplicity'])
 
     # AK8 jet uncertainties
     if self.geninfo and self.systematics:
@@ -898,6 +965,25 @@ def makeTreeFromMiniAOD(self,process):
         ])
         # store AK8 genjets above pt cut
         self.VectorRecoCand.extend (['ak8GenJetProperties(GenJetsAK8)'])
+
+    ## ----------------------------------------------------------------------------------------------
+    ## Prefiring weights
+    ## ----------------------------------------------------------------------------------------------
+    from TreeMaker.Utils.L1ECALNonPrefiringProbProducer_cfi import L1ECALNonPrefiringProbProducer
+    prefiringDataEra = cms.PSet(value = cms.string(""))
+    TMeras.TM2016.toModify(prefiringDataEra, value = "2016BtoH")
+    TMeras.TM2017.toModify(prefiringDataEra, value = "2017BtoF")
+    if len(prefiringDataEra.value.value())>0:
+        process.L1ECALNonPrefiringProbProducer = L1ECALNonPrefiringProbProducer.clone(
+            TheJets = JetTag,
+            DataEra = prefiringDataEra.value,
+            L1Maps = cms.string('data/L1PrefiringMaps_new.root'),
+        )
+        self.VarsDouble.extend([
+            'L1ECALNonPrefiringProbProducer:NonPrefiringProb',
+            'L1ECALNonPrefiringProbProducer:NonPrefiringProbUp',
+            'L1ECALNonPrefiringProbProducer:NonPrefiringProbDown',
+        ])
 
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
