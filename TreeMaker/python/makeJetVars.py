@@ -194,12 +194,31 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
         )
         # provide extra info where necessary
         if storeProperties==1: 
-            JetProperties.properties = cms.vstring("bDiscriminatorCSV","bJetTagDeepCSVprobb","bJetTagDeepCSVprobc",
-                                                   "bJetTagDeepCSVprobudsg","bJetTagDeepCSVprobbb","bDiscriminatorDeepCSVBvsAll",
-                                                   "bDiscriminatorDeepCSVCvsB","bDiscriminatorDeepCSVCvsL","bJetTagDeepFlavourprobb",
-                                                   "bJetTagDeepFlavourprobc","bJetTagDeepFlavourprobg","bJetTagDeepFlavourproblepb",
-                                                   "bJetTagDeepFlavourprobbb","bJetTagDeepFlavourprobuds","muonEnergyFraction",
-                                                   "chargedHadronEnergyFraction","partonFlavor","hadronFlavor")
+            JetProperties.properties = cms.vstring(
+                "bDiscriminatorCSV",
+                "bJetTagDeepCSVprobb",
+                "bJetTagDeepCSVprobc",
+                "bJetTagDeepCSVprobudsg",
+                "bJetTagDeepCSVprobbb",
+                "bDiscriminatorDeepCSVBvsAll",
+                "bDiscriminatorDeepCSVCvsB",
+                "bDiscriminatorDeepCSVCvsL",
+                "bJetTagDeepFlavourprobb",
+                "bJetTagDeepFlavourprobc",
+                "bJetTagDeepFlavourprobg",
+                "bJetTagDeepFlavourproblepb",
+                "bJetTagDeepFlavourprobbb",
+                "bJetTagDeepFlavourprobuds",
+                "muonEnergyFraction",
+                "chargedHadronEnergyFraction",
+                "neutralEmEnergyFraction",
+                "neutralHadronEnergyFraction",
+                "chargedEmEnergyFraction",
+                "chargedMultiplicity",
+                "neutralMultiplicity",
+                "partonFlavor",
+                "hadronFlavor",
+            )
         setattr(process,"JetProperties"+suff,JetProperties)
         self.VectorDouble.extend([
             'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
@@ -218,10 +237,15 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
             'JetProperties'+suff+':bJetTagDeepFlavourprobuds(Jets'+suff+'_bJetTagDeepFlavourprobuds)',
             'JetProperties'+suff+':muonEnergyFraction(Jets'+suff+'_muonEnergyFraction)',
             'JetProperties'+suff+':chargedHadronEnergyFraction(Jets'+suff+'_chargedHadronEnergyFraction)',
+            'JetProperties'+suff+':chargedEmEnergyFraction(Jets'+suff+'_chargedEmEnergyFraction)',
+            'JetProperties'+suff+':neutralEmEnergyFraction(Jets'+suff+'_neutralEmEnergyFraction)',
+            'JetProperties'+suff+':neutralHadronEnergyFraction(Jets'+suff+'_neutralHadronEnergyFraction)',
         ])
         self.VectorInt.extend([
             'JetProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
             'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)',
+            'JetProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
+            'JetProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
         ])
         if TMeras.TM80X.isChosen():
             JetProperties.properties = cms.vstring([x for x in JetProperties.properties.value() if not "DeepFlavour" in x])
