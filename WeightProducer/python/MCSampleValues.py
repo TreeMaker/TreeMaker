@@ -86,287 +86,287 @@ class MCSampleValuesHelper():
         },
         # MET binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
         "TTJets_SingleLeptFromT_genMET-150" : {
-            "CrossSection" : XSValues(XS_2016=9.683904),
-            "kFactor" : kFactorValues(kFactor_2016=1.627),
+            "CrossSection" : XSValues(XS_13TeV=9.683904),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
         },
         "TTJets_SingleLeptFromTbar_genMET-150" : {
-            "CrossSection" : XSValues(XS_2016=9.657872),
-            "kFactor" : kFactorValues(kFactor_2016=1.627),
+            "CrossSection" : XSValues(XS_13TeV=9.657872),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
         },
         "TTJets_DiLept_genMET-150" : {
-            "CrossSection" : XSValues(XS_2016=5.919026),
-            "kFactor" : kFactorValues(kFactor_2016=1.627),
+            "CrossSection" : XSValues(XS_13TeV=5.919026),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
         },
         # HT binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
         "TTJets_HT-600to800" : {
-            "CrossSection" : XSValues(XS_2016=2.68455),
-            "kFactor" : kFactorValues(kFactor_2016=1.627),
+            "CrossSection" : XSValues(XS_13TeV=2.68455),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
         },
         "TTJets_HT-800to1200" : {
-            "CrossSection" : XSValues(XS_2016=1.0959472),
-            "kFactor" : kFactorValues(kFactor_2016=1.627),
+            "CrossSection" : XSValues(XS_13TeV=1.0959472),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
         },
         "TTJets_HT-1200to2500" : {
-            "CrossSection" : XSValues(XS_2016=0.1942638),
-            "kFactor" : kFactorValues(kFactor_2016=1.627),
+            "CrossSection" : XSValues(XS_13TeV=0.1942638),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
         },
         "TTJets_HT-2500toInf" : {
-            "CrossSection" : XSValues(XS_2016=0.002351015),
-            "kFactor" : kFactorValues(kFactor_2016=1.627),
+            "CrossSection" : XSValues(XS_13TeV=0.002351015),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
         },
         "TTTo2L2Nu" : {
-            "CrossSection" : XSValues(XS_2016=88.29),
+            "CrossSection" : XSValues(XS_13TeV=88.29),
         },
         "TTToHadronic" : {
-            "CrossSection" : XSValues(XS_2016=377.96),
+            "CrossSection" : XSValues(XS_13TeV=377.96),
         },
         "TTToSemiLeptonic" : {
-            "CrossSection" : XSValues(XS_2016=365.34),
+            "CrossSection" : XSValues(XS_13TeV=365.34),
         },
         "TTGamma_SingleLeptFromT" : {
-            "CrossSection" : XSValues(XS_2016=0.704),
+            "CrossSection" : XSValues(XS_13TeV=0.704),
         },
         "TTGamma_SingleLeptFromTbar" : {
-            "CrossSection" : XSValues(XS_2016=0.704),
+            "CrossSection" : XSValues(XS_13TeV=0.704),
         },
         "TTGamma_Dilept" : {
-            "CrossSection" : XSValues(XS_2016=0.5804),
+            "CrossSection" : XSValues(XS_13TeV=0.5804),
         },
         # WJets: k-factor of 1.21 applied
         "WJetsToLNu_HT-70To100" : {
-            "CrossSection" : XSValues(XS_2016=1637.13), #From XSDB and not summary page
-            "kFactor" : kFactorValues(kFactor_2016=1.21),
+            "CrossSection" : XSValues(XS_13TeV=1637.13), #From XSDB and not summary page
+            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
         },
         "WJetsToLNu_HT-100To200" : {
-            "CrossSection" : XSValues(XS_2016=1627.45),
-            "kFactor" : kFactorValues(kFactor_2016=1.21),
+            "CrossSection" : XSValues(XS_13TeV=1627.45),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
         },
         "WJetsToLNu_HT-200To400" : {
-            "CrossSection" : XSValues(XS_2016=435.24),
-            "kFactor" : kFactorValues(kFactor_2016=1.21),
+            "CrossSection" : XSValues(XS_13TeV=435.24),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
         },
         "WJetsToLNu_HT-400To600" : {
-            "CrossSection" : XSValues(XS_2016=59.18),
-            "kFactor" : kFactorValues(kFactor_2016=1.21),
+            "CrossSection" : XSValues(XS_13TeV=59.18),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
         },
         "WJetsToLNu_HT-600To800" : {
-            "CrossSection" : XSValues(XS_2016=14.58),
-            "kFactor" : kFactorValues(kFactor_2016=1.21),
+            "CrossSection" : XSValues(XS_13TeV=14.58),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
         },
         "WJetsToLNu_HT-800To1200" : {
-            "CrossSection" : XSValues(XS_2016=6.66),
-            "kFactor" : kFactorValues(kFactor_2016=1.21),
+            "CrossSection" : XSValues(XS_13TeV=6.66),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
         },
         "WJetsToLNu_HT-1200To2500" : {
-            "CrossSection" : XSValues(XS_2016=1.608),
-            "kFactor" : kFactorValues(kFactor_2016=1.21),
+            "CrossSection" : XSValues(XS_13TeV=1.608),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
         },
         "WJetsToLNu_HT-2500ToInf" : {
-            "CrossSection" : XSValues(XS_2016=0.03891),
-            "kFactor" : kFactorValues(kFactor_2016=1.21),
+            "CrossSection" : XSValues(XS_13TeV=0.03891),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
         },
         "WJetsToLNu" : {
-            "CrossSection" : XSValues(XS_2016=61334.9),
+            "CrossSection" : XSValues(XS_13TeV=61334.9),
         },
         "QCD_FlatPt_15_3000HS" : {
-            "CrossSection" : XSValues(XS_2016=1356000000.0),
+            "CrossSection" : XSValues(XS_13TeV=1356000000.0),
         },
         "QCD_HT200to300" : {
-            "CrossSection" : XSValues(XS_2016=1717000),
+            "CrossSection" : XSValues(XS_13TeV=1717000),
         },
         "QCD_HT300to500" : {
-            "CrossSection" : XSValues(XS_2016=351300),
+            "CrossSection" : XSValues(XS_13TeV=351300),
         },
         "QCD_HT500to700" : {
-            "CrossSection" : XSValues(XS_2016=31630),
+            "CrossSection" : XSValues(XS_13TeV=31630),
         },
         "QCD_HT700to1000" : {
-            "CrossSection" : XSValues(XS_2016=6802),
+            "CrossSection" : XSValues(XS_13TeV=6802),
         },
         "QCD_HT1000to1500" : {
-            "CrossSection" : XSValues(XS_2016=1206),
+            "CrossSection" : XSValues(XS_13TeV=1206),
         },
         "QCD_HT1500to2000" : {
-            "CrossSection" : XSValues(XS_2016=120.4),
+            "CrossSection" : XSValues(XS_13TeV=120.4),
         },
         "QCD_HT2000toInf" : {
-            "CrossSection" : XSValues(XS_2016=25.24),
+            "CrossSection" : XSValues(XS_13TeV=25.24),
         },
         # QCD pT-hat binned MuEnrichedPt5: No k-factor applied (2017 TuneCP5 XSDB values)
         "QCD_Pt-15to20_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=2799000.0),
+            "CrossSection" : XSValues(XS_13TeV=2799000.0),
         },
         "QCD_Pt-20to30_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=2526000.0),
+            "CrossSection" : XSValues(XS_13TeV=2526000.0),
         },
         "QCD_Pt-30to50_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=1362000.0),
+            "CrossSection" : XSValues(XS_13TeV=1362000.0),
         },
         "QCD_Pt-50to80_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=376600.0),
+            "CrossSection" : XSValues(XS_13TeV=376600.0),
         },
         "QCD_Pt-80to120_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=88930.0),
+            "CrossSection" : XSValues(XS_13TeV=88930.0),
         },
         "QCD_Pt-120to170_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=21230.0),
+            "CrossSection" : XSValues(XS_13TeV=21230.0),
         },
         "QCD_Pt-170to300_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=7055.0),
+            "CrossSection" : XSValues(XS_13TeV=7055.0),
         },
         "QCD_Pt-300to470_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=797.35),
+            "CrossSection" : XSValues(XS_13TeV=797.35),
         },
         "QCD_Pt-470to600_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=59.24),
+            "CrossSection" : XSValues(XS_13TeV=59.24),
         },
         "QCD_Pt-600to800_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=25.25), #2016 TuneCUETP8M1 XSDB value
+            "CrossSection" : XSValues(XS_13TeV=25.25), #2016 TuneCUETP8M1 XSDB value
         },
         "QCD_Pt-800to1000_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=4.723), #2016 TuneCUETP8M1 XSDB value
+            "CrossSection" : XSValues(XS_13TeV=4.723), #2016 TuneCUETP8M1 XSDB value
         },
         "QCD_Pt-1000toInf_MuEnrichedPt5" : {
-            "CrossSection" : XSValues(XS_2016=1.613), #2016 TuneCUETP8M1 XSDB value
+            "CrossSection" : XSValues(XS_13TeV=1.613), #2016 TuneCUETP8M1 XSDB value
         },
         # QCD pT-hat binned: cross sections from AN2017_013_v17
         "QCD_Pt-15to7000" : {
-            "CrossSection" : XSValues(XS_2016=1372000000.0), #2018 TuneCP5 GenXsecAnalyzer value
+            "CrossSection" : XSValues(XS_13TeV=1372000000.0), #2018 TuneCP5 GenXsecAnalyzer value
         },
         "QCD_Pt_50to80" : {
-            "CrossSection" : XSValues(XS_2016=19204300.0),
+            "CrossSection" : XSValues(XS_13TeV=19204300.0),
         },
         "QCD_Pt_80to120" : {
-            "CrossSection" : XSValues(XS_2016=2762530.0),
+            "CrossSection" : XSValues(XS_13TeV=2762530.0),
         },
         "QCD_Pt_80_120" : {
-            "CrossSection" : XSValues(XS_2016=2762530.0),
+            "CrossSection" : XSValues(XS_13TeV=2762530.0),
         },
         "QCD_Pt_120to170" : {
-            "CrossSection" : XSValues(XS_2016=471100.0),
+            "CrossSection" : XSValues(XS_13TeV=471100.0),
         },
         "QCD_Pt_170to300" : {
-            "CrossSection" : XSValues(XS_2016=117276.0),
+            "CrossSection" : XSValues(XS_13TeV=117276.0),
         },
         "QCD_Pt_300to470" : {
-            "CrossSection" : XSValues(XS_2016=7823.0),
+            "CrossSection" : XSValues(XS_13TeV=7823.0),
         },
         "QCD_Pt_470to600" : {
-            "CrossSection" : XSValues(XS_2016=648.2),
+            "CrossSection" : XSValues(XS_13TeV=648.2),
         },
         "QCD_Pt_600to800" : {
-            "CrossSection" : XSValues(XS_2016=186.9),
+            "CrossSection" : XSValues(XS_13TeV=186.9),
         },
         "QCD_Pt_600_800" : {
-            "CrossSection" : XSValues(XS_2016=186.9),
+            "CrossSection" : XSValues(XS_13TeV=186.9),
         },
         "QCD_Pt_800to1000" : {
-            "CrossSection" : XSValues(XS_2016=32.293),
+            "CrossSection" : XSValues(XS_13TeV=32.293),
         },
         "QCD_Pt_1000to1400" : {
-            "CrossSection" : XSValues(XS_2016=9.4183),
+            "CrossSection" : XSValues(XS_13TeV=9.4183),
         },
         "QCD_Pt_1400to1800" : {
-            "CrossSection" : XSValues(XS_2016=0.84265),
+            "CrossSection" : XSValues(XS_13TeV=0.84265),
         },
         "QCD_Pt_1800to2400" : {
-            "CrossSection" : XSValues(XS_2016=0.114943),
+            "CrossSection" : XSValues(XS_13TeV=0.114943),
         },
         "QCD_Pt_2400to3200" : {
-            "CrossSection" : XSValues(XS_2016=0.00682981),
+            "CrossSection" : XSValues(XS_13TeV=0.00682981),
         },
         "QCD_Pt_3200toInf" : {
-            "CrossSection" : XSValues(XS_2016=0.000165445),
+            "CrossSection" : XSValues(XS_13TeV=0.000165445),
         },
         # DY/Z: k-factor of 1.23 applied
         "DYJetsToLL_M-50_HT-100to200" : {
-            "CrossSection" : XSValues(XS_2016=181.302),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=181.302),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "DYJetsToLL_M-50_HT-200to400" : {
-            "CrossSection" : XSValues(XS_2016=50.4177),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=50.4177),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "DYJetsToLL_M-50_HT-400to600" : {
-            "CrossSection" : XSValues(XS_2016=6.98394),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=6.98394),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "DYJetsToLL_M-50_HT-600to800" : {
-            "CrossSection" : XSValues(XS_2016=1.68141),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=1.68141),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "DYJetsToLL_M-50_HT-800to1200" : {
-            "CrossSection" : XSValues(XS_2016=0.775392),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=0.775392),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "DYJetsToLL_M-50_HT-1200to2500" : {
-            "CrossSection" : XSValues(XS_2016=0.186222),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=0.186222),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "DYJetsToLL_M-50_HT-2500toInf" : {
-            "CrossSection" : XSValues(XS_2016=0.00438495),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=0.00438495),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "DYJetsToLL_M-50" : {
-            "CrossSection" : XSValues(XS_2016=6025.2),
+            "CrossSection" : XSValues(XS_13TeV=6025.2),
         },
         "ZJetsToNuNu_HT-100To200" : {
-            "CrossSection" : XSValues(XS_2016=344.8305),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=344.8305),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "ZJetsToNuNu_HT-200To400" : {
-            "CrossSection" : XSValues(XS_2016=95.5341),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=95.5341),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "ZJetsToNuNu_HT-400To600" : {
-            "CrossSection" : XSValues(XS_2016=13.1979),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=13.1979),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "ZJetsToNuNu_HT-600To800" : {
-            "CrossSection" : XSValues(XS_2016=3.14757),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=3.14757),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "ZJetsToNuNu_HT-800To1200" : {
-            "CrossSection" : XSValues(XS_2016=1.450908),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=1.450908),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "ZJetsToNuNu_HT-1200To2500" : {
-            "CrossSection" : XSValues(XS_2016=0.3546459),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=0.3546459),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "ZJetsToNuNu_HT-2500ToInf" : {
-            "CrossSection" : XSValues(XS_2016=0.00854235),
-            "kFactor" : kFactorValues(kFactor_2016=1.23),
+            "CrossSection" : XSValues(XS_13TeV=0.00854235),
+            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
         },
         "GJets_HT-100To200" : {
-            "CrossSection" : XSValues(XS_2016=9226.0),
+            "CrossSection" : XSValues(XS_13TeV=9226.0),
         },
         "GJets_HT-200To400" : {
-            "CrossSection" : XSValues(XS_2016=2300.0),
+            "CrossSection" : XSValues(XS_13TeV=2300.0),
         },
         "GJets_HT-400To600" : {
-            "CrossSection" : XSValues(XS_2016=277.4),
+            "CrossSection" : XSValues(XS_13TeV=277.4),
         },
         "GJets_HT-600ToInf" : {
-            "CrossSection" : XSValues(XS_2016=93.38),
+            "CrossSection" : XSValues(XS_13TeV=93.38),
         },
         "GJets_DR-0p4_HT-100To200" : {
-            "CrossSection" : XSValues(XS_2016=5000.0),
+            "CrossSection" : XSValues(XS_13TeV=5000.0),
         },
         "GJets_DR-0p4_HT-200To400" : {
-            "CrossSection" : XSValues(XS_2016=1079.0),
+            "CrossSection" : XSValues(XS_13TeV=1079.0),
         },
         "GJets_DR-0p4_HT-400To600" : {
-            "CrossSection" : XSValues(XS_2016=125.9),
+            "CrossSection" : XSValues(XS_13TeV=125.9),
         },
         "GJets_DR-0p4_HT-600ToInf" : {
-            "CrossSection" : XSValues(XS_2016=43.36),
+            "CrossSection" : XSValues(XS_13TeV=43.36),
         },
         "ZJetsToNuNu_Zpt-100to200" : {
-            "CrossSection" : XSValues(XS_2016=43.5543),
+            "CrossSection" : XSValues(XS_13TeV=43.5543),
         },
         "ZJetsToNuNu_Zpt-200toInf" : {
-            "CrossSection" : XSValues(XS_2016=5.28654),
+            "CrossSection" : XSValues(XS_13TeV=5.28654),
         },
         # single top: NoFullyHadronicDecays xsec scaled by BF for non-fully-hadronic (1-(1-3*0.108)^2)
         "ST_s-channel_4f_leptonDecays" : {
@@ -394,112 +394,112 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(XS_13TeV=35.6),
         },
         "tZq_W_lept_Z_hadron_4f_ckm" : {
-            "CrossSection" : XSValues(XS_2016=0.0758),
+            "CrossSection" : XSValues(XS_13TeV=0.0758),
         },
         "WW" : {
-            "CrossSection" : XSValues(XS_2016=51.723),
+            "CrossSection" : XSValues(XS_13TeV=51.723),
         },
         "WZ" : {
-            "CrossSection" : XSValues(XS_2016=47.13),
+            "CrossSection" : XSValues(XS_13TeV=47.13),
         },
         "ZZ" : {
-            "CrossSection" : XSValues(XS_2016=16.523),
+            "CrossSection" : XSValues(XS_13TeV=16.523),
         },
         "WWTo2L2Nu" : {
-            "CrossSection" : XSValues(XS_2016=12.178),
+            "CrossSection" : XSValues(XS_13TeV=12.178),
         },
         "WGJets_MonoPhoton_PtG-40to130" : {
-            "CrossSection" : XSValues(XS_2016=12.7),
+            "CrossSection" : XSValues(XS_13TeV=12.7),
         },
         "WGJets_MonoPhoton_PtG-130" : {
-            "CrossSection" : XSValues(XS_2016=0.834),
+            "CrossSection" : XSValues(XS_13TeV=0.834),
         },
         "WWTo1L1Nu2Q" : {
-            "CrossSection" : XSValues(XS_2016=49.997),
+            "CrossSection" : XSValues(XS_13TeV=49.997),
         },
         "WZTo1L1Nu2Q" : {
-            "CrossSection" : XSValues(XS_2016=10.71),
+            "CrossSection" : XSValues(XS_13TeV=10.71),
         },
         "WZTo1L3Nu" : {
-            "CrossSection" : XSValues(XS_2016=3.058),
+            "CrossSection" : XSValues(XS_13TeV=3.058),
         },
         "ZGTo2NuG" : {
-            "CrossSection" : XSValues(XS_2016=32.3),
+            "CrossSection" : XSValues(XS_13TeV=32.3),
         },
         "ZZTo2L2Q" : {
-            "CrossSection" : XSValues(XS_2016=3.22),
+            "CrossSection" : XSValues(XS_13TeV=3.22),
         },
         "ZZTo2Q2Nu" : {
-            "CrossSection" : XSValues(XS_2016=4.04),
+            "CrossSection" : XSValues(XS_13TeV=4.04),
         },
         "TTZToLLNuNu_M-10" : {
-            "CrossSection" : XSValues(XS_2016=0.2529),
+            "CrossSection" : XSValues(XS_13TeV=0.2529),
         },
         "TTZToQQ" : {
-            "CrossSection" : XSValues(XS_2016=0.5297),
+            "CrossSection" : XSValues(XS_13TeV=0.5297),
         },
         "TTWJetsToLNu" : {
-            "CrossSection" : XSValues(XS_2016=0.2043),
+            "CrossSection" : XSValues(XS_13TeV=0.2043),
         },
         "TTWJetsToLNu" : {
-            "CrossSection" : XSValues(XS_2016=0.2043),
+            "CrossSection" : XSValues(XS_13TeV=0.2043),
         },
         "TTWJetsToQQ" : {
-            "CrossSection" : XSValues(XS_2016=0.4026),
+            "CrossSection" : XSValues(XS_13TeV=0.4026),
         },
         "TTGJets" : {
-            "CrossSection" : XSValues(XS_2016=3.697),
+            "CrossSection" : XSValues(XS_13TeV=3.697),
         },
         "TTGJets" : {
-            "CrossSection" : XSValues(XS_2016=3.697),
+            "CrossSection" : XSValues(XS_13TeV=3.697),
         },
         "ttHJetToNonbb_M125" : {
-            "CrossSection" : XSValues(XS_2016=0.2118),
+            "CrossSection" : XSValues(XS_13TeV=0.2118),
         },
         "ttHJetTobb_M125" : {
-            "CrossSection" : XSValues(XS_2016=0.2953),
+            "CrossSection" : XSValues(XS_13TeV=0.2953),
         },
         "TTTT" : {
-            "CrossSection" : XSValues(XS_2016=0.009103),
+            "CrossSection" : XSValues(XS_13TeV=0.009103),
         },
         "TTHH" : {
-            "CrossSection" : XSValues(XS_2016=0.000741),
+            "CrossSection" : XSValues(XS_13TeV=0.000741),
         },
         "TTTW" : {
-            "CrossSection" : XSValues(XS_2016=0.000861),
+            "CrossSection" : XSValues(XS_13TeV=0.000861),
         },
         "TTWH" : {
-            "CrossSection" : XSValues(XS_2016=0.00136),
+            "CrossSection" : XSValues(XS_13TeV=0.00136),
         },
         "TTWW" : {
-            "CrossSection" : XSValues(XS_2016=0.006979),
+            "CrossSection" : XSValues(XS_13TeV=0.006979),
         },
         "TTWZ" : {
-            "CrossSection" : XSValues(XS_2016=0.00297),
+            "CrossSection" : XSValues(XS_13TeV=0.00297),
         },
         "TTZH" : {
-            "CrossSection" : XSValues(XS_2016=0.00125),
+            "CrossSection" : XSValues(XS_13TeV=0.00125),
         },
         "TTZZ" : {
-            "CrossSection" : XSValues(XS_2016=0.00157),
+            "CrossSection" : XSValues(XS_13TeV=0.00157),
         },
         "TTTJ" : {
-            "CrossSection" : XSValues(XS_2016=0.0004812),
+            "CrossSection" : XSValues(XS_13TeV=0.0004812),
         },
         "WWW_4F" : {
-            "CrossSection" : XSValues(XS_2016=0.2086),
+            "CrossSection" : XSValues(XS_13TeV=0.2086),
         },
         "WWZ_4F" : {
-            "CrossSection" : XSValues(XS_2016=0.1651),
+            "CrossSection" : XSValues(XS_13TeV=0.1651),
         },
         "WWZ" : {
-            "CrossSection" : XSValues(XS_2016=0.1651),
+            "CrossSection" : XSValues(XS_13TeV=0.1651),
         },
         "WZZ" : {
-            "CrossSection" : XSValues(XS_2016=0.05565),
+            "CrossSection" : XSValues(XS_13TeV=0.05565),
         },
         "ZZZ" : {
-            "CrossSection" : XSValues(XS_2016=0.01398),
+            "CrossSection" : XSValues(XS_13TeV=0.01398),
         },
         "SMS-T1bbbb_mGluino-1000_mLSP-900" : {
             "CrossSection" : XSValues(XS_13TeV=0.385E+00),
