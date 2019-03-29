@@ -248,7 +248,7 @@ class MCSampleValuesHelper():
         "QCD_HT2000toInf" : {
             "CrossSection" : XSValues(XS_2016=25.25, XSSource_2016="XSDB",
                                       XS_2017=20.23, XSSource_2017="XSDB",
-                                      XS_2018=20.23, XSSource_2018="Same as 2017"X),
+                                      XS_2018=20.23, XSSource_2018="Same as 2017"),
         },
         # QCD pT-hat binned MuEnrichedPt5
         "QCD_Pt-15to20_MuEnrichedPt5" : {
@@ -595,17 +595,17 @@ class MCSampleValuesHelper():
         "WWTo1L1Nu2Q" : {
             "CrossSection" : XSValues(XS_2016=45.68, XSSource_2016="XSDB",
                                       XS_2017=80.74, XSSource_2017="XSDB",
-                                      XS_2018=80.74, XSSource_2017="Same as 2017"),
+                                      XS_2018=80.74, XSSource_2018="Same as 2017"),
         },
         "WZTo1L1Nu2Q" : {
             "CrossSection" : XSValues(XS_2016=10.73, XSSource_2016="XSDB",
                                       XS_2017=11.66, XSSource_2017="XSDB",
-                                      XS_2018=11.66, XSSource_2017="Same as 2017"),
+                                      XS_2018=11.66, XSSource_2018="Same as 2017"),
         },
         "WZTo1L3Nu" : {
             "CrossSection" : XSValues(XS_2016=3.054, XSSource_2016="XSDB",
                                       XS_2017=3.294, XSSource_2017="GenXSecAnalyzer",
-                                      XS_2018=3.294, XSSource_2017="Same as 2017"),
+                                      XS_2018=3.294, XSSource_2018="Same as 2017"),
         },
         "ZGTo2NuG" : {
             "CrossSection" : XSValues(XS_2016=28.04, XSSource_2016="XSDB"),
@@ -613,7 +613,7 @@ class MCSampleValuesHelper():
         "ZZTo2L2Q" : {
             "CrossSection" : XSValues(XS_2016=3.222, XSSource_2016="XSDB",
                                       XS_2017=3.688, XSSource_2017="XSDB",
-                                      XS_2018=3.688, XSSource_2017="Same as 2017"),
+                                      XS_2018=3.688, XSSource_2018="Same as 2017"),
         },
         "ZZTo2Q2Nu" : {
             "CrossSection" : XSValues(XS_2016=4.033, XSSource_2016="XSDB"),
@@ -621,12 +621,12 @@ class MCSampleValuesHelper():
         "TTZToLLNuNu_M-10" : {
             "CrossSection" : XSValues(XS_2016=0.2529, XSSource_2016="XSDB",
                                       XS_2017=0.2432, XSSource_2017="XSDB",
-                                      XS_2018=0.2432, XSSource_2017="Same as 2017"),
+                                      XS_2018=0.2432, XSSource_2018="Same as 2017"),
         },
         "TTZToQQ" : {
             "CrossSection" : XSValues(XS_2016=0.5297, XSSource_2016="XSDB",
                                       XS_2017=0.5104, XSSource_2017="XSDB",
-                                      XS_2018=0.5104, XSSource_2017="Same as 2017"),
+                                      XS_2018=0.5104, XSSource_2018="Same as 2017"),
         },
         "TTWJetsToLNu" : {
             "CrossSection" : XSValues(XS_13TeV=0.2043, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#TT_X, NLO"),
