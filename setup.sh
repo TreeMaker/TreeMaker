@@ -51,9 +51,11 @@ done
 if [ "$ACCESS" = "ssh" ]; then
 	ACCESS_GITHUB=git@github.com:
 	ACCESS_GITLAB=ssh://git@gitlab.cern.ch:7999/
+	ACCESS_CMSSW=--ssh
 elif [ "$ACCESS" = "https" ]; then
 	ACCESS_GITHUB=https://github.com/
 	ACCESS_GITLAB=https://gitlab.cern.ch/
+	ACCESS_CMSSW=--https
 else
 	usage 1
 fi
@@ -92,15 +94,15 @@ cd ${DIR}/${NAME}/src
 
 # cmsenv
 eval `scramv1 runtime -sh`
-git cms-init
+git cms-init $ACCESS_CMSSW
 git config gc.auto 0
 
 # CMSSW patches
 if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
-	git cms-merge-topic -u TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_10_2_7
-	git cms-merge-topic -u TreeMaker:storeJERFactorIndex1027
-	git cms-merge-topic -u TreeMaker:AddJetAxis1_1027
-	git cms-merge-topic -u TreeMaker:NjettinessAxis_1027
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_10_2_7
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:storeJERFactorIndex1027
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:AddJetAxis1_1027
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:NjettinessAxis_1027
 fi
 
 # outside repositories
