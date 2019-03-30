@@ -87,32 +87,32 @@ class MCSampleValuesHelper():
         # MET binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
         "TTJets_SingleLeptFromT_genMET-150" : {
             "CrossSection" : XSValues(XS_13TeV=9.683904),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
         },
         "TTJets_SingleLeptFromTbar_genMET-150" : {
             "CrossSection" : XSValues(XS_13TeV=9.657872),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
         },
         "TTJets_DiLept_genMET-150" : {
             "CrossSection" : XSValues(XS_13TeV=5.919026),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
         },
         # HT binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
         "TTJets_HT-600to800" : {
             "CrossSection" : XSValues(XS_13TeV=2.68455),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
         },
         "TTJets_HT-800to1200" : {
             "CrossSection" : XSValues(XS_13TeV=1.0959472),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
         },
         "TTJets_HT-1200to2500" : {
             "CrossSection" : XSValues(XS_13TeV=0.1942638),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
         },
         "TTJets_HT-2500toInf" : {
             "CrossSection" : XSValues(XS_13TeV=0.002351015),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.627),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
         },
         "TTTo2L2Nu" : {
             "CrossSection" : XSValues(XS_13TeV=88.29),
@@ -135,35 +135,35 @@ class MCSampleValuesHelper():
         # WJets: k-factor of 1.21 applied
         "WJetsToLNu_HT-70To100" : {
             "CrossSection" : XSValues(XS_13TeV=1637.13), #From XSDB and not summary page
-            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
         },
         "WJetsToLNu_HT-100To200" : {
             "CrossSection" : XSValues(XS_13TeV=1627.45),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
         },
         "WJetsToLNu_HT-200To400" : {
             "CrossSection" : XSValues(XS_13TeV=435.24),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
         },
         "WJetsToLNu_HT-400To600" : {
             "CrossSection" : XSValues(XS_13TeV=59.18),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
         },
         "WJetsToLNu_HT-600To800" : {
             "CrossSection" : XSValues(XS_13TeV=14.58),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
         },
         "WJetsToLNu_HT-800To1200" : {
             "CrossSection" : XSValues(XS_13TeV=6.66),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
         },
         "WJetsToLNu_HT-1200To2500" : {
             "CrossSection" : XSValues(XS_13TeV=1.608),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
         },
         "WJetsToLNu_HT-2500ToInf" : {
             "CrossSection" : XSValues(XS_13TeV=0.03891),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.21),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
         },
         "WJetsToLNu" : {
             "CrossSection" : XSValues(XS_13TeV=61334.9),
@@ -281,62 +281,62 @@ class MCSampleValuesHelper():
         # DY/Z: k-factor of 1.23 applied
         "DYJetsToLL_M-50_HT-100to200" : {
             "CrossSection" : XSValues(XS_13TeV=181.302),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "DYJetsToLL_M-50_HT-200to400" : {
             "CrossSection" : XSValues(XS_13TeV=50.4177),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "DYJetsToLL_M-50_HT-400to600" : {
             "CrossSection" : XSValues(XS_13TeV=6.98394),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "DYJetsToLL_M-50_HT-600to800" : {
             "CrossSection" : XSValues(XS_13TeV=1.68141),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "DYJetsToLL_M-50_HT-800to1200" : {
             "CrossSection" : XSValues(XS_13TeV=0.775392),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "DYJetsToLL_M-50_HT-1200to2500" : {
             "CrossSection" : XSValues(XS_13TeV=0.186222),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "DYJetsToLL_M-50_HT-2500toInf" : {
             "CrossSection" : XSValues(XS_13TeV=0.00438495),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "DYJetsToLL_M-50" : {
             "CrossSection" : XSValues(XS_13TeV=6025.2),
         },
         "ZJetsToNuNu_HT-100To200" : {
             "CrossSection" : XSValues(XS_13TeV=344.8305),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "ZJetsToNuNu_HT-200To400" : {
             "CrossSection" : XSValues(XS_13TeV=95.5341),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "ZJetsToNuNu_HT-400To600" : {
             "CrossSection" : XSValues(XS_13TeV=13.1979),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "ZJetsToNuNu_HT-600To800" : {
             "CrossSection" : XSValues(XS_13TeV=3.14757),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "ZJetsToNuNu_HT-800To1200" : {
             "CrossSection" : XSValues(XS_13TeV=1.450908),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "ZJetsToNuNu_HT-1200To2500" : {
             "CrossSection" : XSValues(XS_13TeV=0.3546459),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "ZJetsToNuNu_HT-2500ToInf" : {
             "CrossSection" : XSValues(XS_13TeV=0.00854235),
-            "kFactor" : kFactorValues(kFactor_13Tev=1.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.23),
         },
         "GJets_HT-100To200" : {
             "CrossSection" : XSValues(XS_13TeV=9226.0),
