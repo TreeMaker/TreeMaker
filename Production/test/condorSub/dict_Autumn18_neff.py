@@ -92,4 +92,6 @@ flist = [
 'Autumn18.WZTo1L3Nu_13TeV_amcatnloFXFX_madspin_pythia8',
 'Autumn18.ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8',
 'Autumn18.TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8',
+'Autumn18.DYJetsToLL_M-50_HT-1200to2500_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8',
+'Autumn18.ZJetsToNuNu_HT-400To600_13TeV-madgraph',
 ]
