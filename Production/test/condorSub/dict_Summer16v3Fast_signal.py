@@ -1,6 +1,7 @@
 flist = {
     "scenario": "Summer16v3Fastsig",
     "samples": [
+        ['Summer16v3Fast.SMS-T1ttbb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8']
         ['Summer16v3Fast.SMS-T1tttt_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T2tt_mStop-150to250_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T1bbbb_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
