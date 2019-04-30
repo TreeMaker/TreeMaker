@@ -4,7 +4,7 @@ flist = {
         ['Fall17Fast.SMS-T1tttt_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Fall17Fast.SMS-T1bbbb_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Fall17Fast.SMS-T1qqqq_TuneCP2_13TeV-madgraphMLM-pythia8'],
-        ['Fall17Fast.SMS-T1ttbb_TuneCP2_13TeV-madgraphMLM-pythia8']
+        #['Fall17Fast.SMS-T1ttbb_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Fall17Fast.SMS-T1tttt_TuneCP2_13TeV-madgraphMLM-pythia8_ext1'],
         ['Fall17Fast.SMS-T2bb_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Fall17Fast.SMS-T2bb_TuneCP2_13TeV-madgraphMLM-pythia8_ext1'],
