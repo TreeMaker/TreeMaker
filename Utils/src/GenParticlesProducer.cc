@@ -55,15 +55,19 @@ private:
     std::unordered_set<int> typicalChildIds, typicalParentIds, keepAllTheseIds;
     bool        keepFirstDecayProducts;
     bool        keepMinimal;
-    std::vector<int> quark_status_codes, lepton_status_codes, top_status_codes, boson_status_codes;
-
+    const std::vector<int> quark_status_codes, lepton_status_codes, top_status_codes, boson_status_codes;
 };
 
 
 GenParticlesProducer::GenParticlesProducer(const edm::ParameterSet& iConfig):
 genCollection(iConfig.getParameter<edm::InputTag>("genCollection")),
 genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
-debug(iConfig.getParameter<bool>("debug"))
+debug(iConfig.getParameter<bool>("debug")),
+// Final copy status codes
+quark_status_codes{23,51,52,71,72,73,91},
+lepton_status_codes{1,2},
+top_status_codes{22,62,52},
+boson_status_codes{22,51,52}
 {
     const auto& cids = iConfig.getParameter<std::vector<int>>("childIds");
     typicalChildIds.insert(cids.begin(),cids.end());
@@ -77,12 +81,6 @@ debug(iConfig.getParameter<bool>("debug"))
     keepFirstDecayProducts = iConfig.getParameter<bool>("keepFirst");
 
     keepMinimal = iConfig.getParameter<bool>("keepMinimal");
-
-    // Final copy status codes
-    quark_status_codes = {23,51,52,71,72,73,91};
-    lepton_status_codes = {1,2};
-    top_status_codes = {22,62,52};
-    boson_status_codes = {22,51,52};
 
     produces< std::vector< TLorentzVector > >(""); 
     produces< std::vector< int > >("PdgId");
