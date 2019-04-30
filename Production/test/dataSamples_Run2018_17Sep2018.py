@@ -15,8 +15,8 @@ dataSamples = [
     ["MET_2018C", "Run2018C-17Sep2018-v1.MET_*"],
     ["SingleMuon_2018C", "Run2018C-17Sep2018-v1.SingleMuon_*"],
     # 2018D datasets: PromptReco
-    ["EGamma_2018D", "Run2018D-PromptReco-v2.EGamma_*"],
+    ["EGamma_2018D", "Run2018D-22Jan2019-v2.EGamma_*"],
     ["JetHT_2018D", "Run2018D-PromptReco-v2.JetHT_*"],
     ["MET_2018D", "Run2018D-PromptReco-v2.MET_*"],
-    ["SingleMuon_2018D", "Run2018D-PromptReco-v2.SingleMuon_*"],
+    ["SingleMuon_2018D", "Run2018D-22Jan2019-v2.SingleMuon_*"],
 ]

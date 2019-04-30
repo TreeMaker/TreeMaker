@@ -80,7 +80,7 @@ debug(iConfig.getParameter<bool>("debug"))
     // Final copy status codes
     quark_status_codes = {23,51,52,71,72,73};
     lepton_status_codes = {1,2};
-    top_status_codes = {62};
+    top_status_codes = {22,62};
     boson_status_codes = {22,51,52};
 
     produces< std::vector< TLorentzVector > >(""); 
