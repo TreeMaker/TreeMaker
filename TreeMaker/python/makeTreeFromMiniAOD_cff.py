@@ -100,6 +100,7 @@ def makeTreeFromMiniAOD(self,process):
         from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
         process.PDFWeights = PDFWeightProducer.clone(
             recalculatePDFs = cms.bool(self.signal),
+            normalize = (not "SVJ" in self.sample), # skip normalization only for SVJ signals
             pdfSetName = cms.string("NNPDF31_lo_as_0130"),
         )
         self.VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
