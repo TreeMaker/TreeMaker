@@ -185,7 +185,7 @@ enum particle_type
     //DM particles
     dm1=51,
     dm2=52,
-    dm3=52,
+    dm3=53,
 };
 
 // Referenced:
