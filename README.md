@@ -53,10 +53,12 @@ The available scenarios are:
 12. `2017ReReco31Mar`: for 2017 ReReco data (31Mar), periods B-F
 13. `Autumn18`: for Autumn18 miniAOD MC (102X)
 14. `Autumn18sig`: for Autumn18 miniAOD MC (102X) (signal)
-15. `2018B26Sep`: for 2018 prompt data, partial period B
-16. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
-17. `2018PromptReco`: for 2018 prompt data (or 22Jan2019, produced w/ prompt conditions), run period D
-18. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
+15. `Autumn18Fast`: for Autumn18 miniAOD FastSim MC (background)
+16. `Autumn18Fastsig`: for Autumn18 miniAOD FastSim MC (signal)
+17. `2018B26Sep`: for 2018 prompt data, partial period B
+18. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
+19. `2018PromptReco`: for 2018 prompt data (or 22Jan2019, produced w/ prompt conditions), run period D
+20. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
 
 ## Unit Tests (Interactive Runs)
 
