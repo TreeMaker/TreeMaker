@@ -58,33 +58,28 @@ def makeTreeFromMiniAOD(self,process):
     ## SUSY scan info
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo:
-        # mother and LSP masses for SUSY signal scans
-        # branches always added, but only have values for fastsim samples
+        # parameters from signal scans (e.g. mother and LSP masses for SUSY SMS)
+        # branches always added, but only have values for scan samples
         # needed for WeightProducer
-        from TreeMaker.Utils.susyscan_cfi import SusyScanProducer
-        process.SusyScan = SusyScanProducer.clone(
-            shouldScan = cms.bool(self.fastsim and self.signal and (not self.pmssm)),
+        from TreeMaker.Utils.signalscan_cfi import SignalScanProducer
+        process.SignalScan = SignalScanProducer.clone(
             debug = cms.bool(False),
             isLHE = cms.bool(False)
         )
-        self.VarsDouble.extend(['SusyScan:SusyMotherMass','SusyScan:SusyLSPMass'])
+        self.VarsDouble.extend(['SignalScan:SusyMotherMass','SignalScan:SusyLSPMass'])
+        self.VectorDouble.extend(['SignalScan:SignalParameters'])
+        # set scan type ("None" by default, producer does nothing)
+        if self.signal:
+            if self.pmssm: process.SignalScan.signalType = "pMSSM"
+            elif self.fastsim: process.SignalScan.signalType = "SUSY"
+            elif "SVJ" in self.sample and "Scan" in self.sample: process.SignalScan.signalType = "SVJ"
         
-        # pMSSM ID for identifying the pMSSM model point
-        from TreeMaker.Utils.pmssm_cfi import PmssmProducer
-        process.Pmssm = PmssmProducer.clone(
-            shouldScan = cms.bool(self.pmssm),
-            debug = cms.bool(False),
-            xsecFilename = cms.string('data/pmssm-xsecs-scan1.txt'),
-        )
-        self.VarsDouble.extend(['Pmssm:PmssmId'])
-
-
     ## ----------------------------------------------------------------------------------------------
     ## WeightProducer
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo:
         from TreeMaker.WeightProducer.getWeightProducer_cff import getWeightProducer
-        process.WeightProducer = getWeightProducer(process.source.fileNames[0],self.fastsim and self.signal, self.pmssm)
+        process.WeightProducer = getWeightProducer(process.source.fileNames[0],process.SignalScan.signalType!="None")
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string(self.pufile)
         process.WeightProducer.FileNamePUMCDistribution = cms.string(self.wrongpufile)
@@ -100,6 +95,7 @@ def makeTreeFromMiniAOD(self,process):
         from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
         process.PDFWeights = PDFWeightProducer.clone(
             recalculatePDFs = cms.bool(self.signal),
+            normalize = (not "SVJ" in self.sample), # skip normalization only for SVJ signals
             pdfSetName = cms.string("NNPDF31_lo_as_0130"),
         )
         self.VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])

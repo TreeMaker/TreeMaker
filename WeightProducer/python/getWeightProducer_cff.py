@@ -7,7 +7,7 @@
 import FWCore.ParameterSet.Config as cms
 from TreeMaker.WeightProducer.MCSample import MCSample
 
-def getWeightProducer(fileName,fastsim=False, pmssm=False):
+def getWeightProducer(fileName, scan=False):
 
     applyWeight = False
     
@@ -24,19 +24,18 @@ def getWeightProducer(fileName,fastsim=False, pmssm=False):
     weightProducer.FileNamePUMCDistribution = cms.string("")
     weightProducer.RemakePU = cms.bool(False)
 
-    # assign cross sections for fastsim
-    # assume privately-produced samples do not have mixed mass points
-    if fastsim and "SusyRA2Analysis2015" not in fileName:
+    # assign cross sections for signal scans
+    if scan:
         weightProducer.weight = cms.double(-1.)
-        weightProducer.Method = cms.string("FastSim")
+        weightProducer.Method = cms.string("SignalScan")
         weightProducer.NumberEvts = cms.double(1.0)
-        if pmssm: weightProducer.modelIdentifier = cms.InputTag("Pmssm:PmssmId")
-        else: weightProducer.modelIdentifier = cms.InputTag("SusyScan:SusyMotherMass")
+        weightProducer.modelIdentifier = cms.InputTag("SignalScan:SignalParameters")
         if "SMS-T1" in fileName or "SMS-T5" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T1_NNLO.txt")
         elif "SMS-T2tt" in fileName or "SMS-T2bb" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2_NNLO.txt")
         elif "SMS-T2qq" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2qq_NNLO.txt")
         elif "SMS-TChiHH" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_TChiHH.txt")
         elif "pMSSM_MCMC1" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/pmssm-xsecs-scan1.txt")
+        elif "SVJ" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_Zprime.txt")
         print "Setup WeightProducer for '"+fileName+"'"
         return weightProducer
     

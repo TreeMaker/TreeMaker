@@ -38,7 +38,8 @@ private:
     void saveChain(int depth, int parentId, int parent_idx, const reco::GenParticle& particle, std::unique_ptr<std::vector<TLorentzVector>>& genParticle_vec,
                    std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec,
                    std::unique_ptr<std::vector<int>>& Parent_vec, std::unique_ptr<std::vector<int>>& ParentId_vec,
-                   std::unordered_set<const reco::Candidate *>& stored_particles_ref) const;
+                   std::unordered_set<const reco::Candidate *>& stored_particles_ref,
+                   std::vector<const reco::Candidate *>& stored_particles_list, std::vector<const reco::Candidate *>& parents_list) const;
     void storeMinimal(const edm::Handle< edm::View<reco::GenParticle> >&, std::unique_ptr<std::vector<TLorentzVector>>&,
                       std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
                       std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&) const;
@@ -54,15 +55,19 @@ private:
     std::unordered_set<int> typicalChildIds, typicalParentIds, keepAllTheseIds;
     bool        keepFirstDecayProducts;
     bool        keepMinimal;
-    std::vector<int> quark_status_codes, lepton_status_codes, top_status_codes, boson_status_codes;
-
+    const std::vector<int> quark_status_codes, lepton_status_codes, top_status_codes, boson_status_codes;
 };
 
 
 GenParticlesProducer::GenParticlesProducer(const edm::ParameterSet& iConfig):
 genCollection(iConfig.getParameter<edm::InputTag>("genCollection")),
 genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
-debug(iConfig.getParameter<bool>("debug"))
+debug(iConfig.getParameter<bool>("debug")),
+// Final copy status codes
+quark_status_codes{23,51,52,71,72,73,91},
+lepton_status_codes{1,2},
+top_status_codes{22,62,52},
+boson_status_codes{22,51,52}
 {
     const auto& cids = iConfig.getParameter<std::vector<int>>("childIds");
     typicalChildIds.insert(cids.begin(),cids.end());
@@ -76,12 +81,6 @@ debug(iConfig.getParameter<bool>("debug"))
     keepFirstDecayProducts = iConfig.getParameter<bool>("keepFirst");
 
     keepMinimal = iConfig.getParameter<bool>("keepMinimal");
-
-    // Final copy status codes
-    quark_status_codes = {23,51,52,71,72,73};
-    lepton_status_codes = {1,2};
-    top_status_codes = {22,62};
-    boson_status_codes = {22,51,52};
 
     produces< std::vector< TLorentzVector > >(""); 
     produces< std::vector< int > >("PdgId");
@@ -136,6 +135,7 @@ void GenParticlesProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 // Based on http://pdg.lbl.gov/2007/reviews/montecarlorpp.pdf
 enum particle_type
 {
+    //SM particles
     down=1,
     up=2,
     strange=3,
@@ -151,7 +151,41 @@ enum particle_type
     photon=22,
     Z=23,
     W=24,
-    Higgs=25
+    Higgs=25,
+    //SUSY particles
+    sdownL=1000001,
+    supL=1000002,
+    sstrangeL=1000003,
+    scharmL=1000004,
+    sbottom1=1000005,
+    stop1=1000006,
+    gluino=1000021,
+    neutralino1=1000022,
+    neutralino2=1000023,
+    chargino1=1000024,
+    neutralino3=1000025,
+    neutralino4=1000035,
+    chargino2=1000037,
+    gravitino=1000039,
+    sdownR=2000001,
+    supR=2000002,
+    sstrangeR=2000003,
+    scharmR=2000004,
+    sbottom2=2000005,
+    stop2=2000006,
+    //HV particles
+    hvgluon=4900021,
+    zprime=4900023,
+    hvquark1=4900101,
+    hvquark2=4900102,
+    hvpion1=4900111,
+    hvrho1=4900113,
+    hvpion2=4900211,
+    hvrho2=4900213,
+    //DM particles
+    dm1=51,
+    dm2=52,
+    dm3=53,
 };
 
 // Referenced:
@@ -205,10 +239,13 @@ const reco::GenParticle* GenParticlesProducer::findLast(const reco::GenParticle&
 void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, const reco::GenParticle& particle, std::unique_ptr<std::vector<TLorentzVector>>& genParticle_vec,
                                      std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec,
                                      std::unique_ptr<std::vector<int>>& Parent_vec, std::unique_ptr<std::vector<int>>& ParentId_vec,
-                                     std::unordered_set<const reco::Candidate *>& stored_particles_ref) const {
+                                     std::unordered_set<const reco::Candidate *>& stored_particles_ref,
+                                     std::vector<const reco::Candidate *>& stored_particles_list, std::vector<const reco::Candidate *>& parents_list) const {
     // Set a minimal depth of particles to save
     if(depth==0) return;
     auto lastParticle = findLast(particle);
+    //special hack to keep first copy of HV Zprime daughters
+    if(parentId==zprime) lastParticle = &particle;
     // Skip particles which are already in the list of stored particles
     if(stored_particles_ref.find(lastParticle)!=stored_particles_ref.end()) return;
     if(debug) edm::LogInfo("TreeMaker") << "   Saving chain for a " << particle.pdgId() << " (status=" << particle.status() << ")\n      Current depth is " << depth;
@@ -220,18 +257,21 @@ void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, co
     PdgId_vec->push_back(lastParticle->pdgId());
     Status_vec->push_back(abs(lastParticle->status()));
     stored_particles_ref.insert(lastParticle);
+    stored_particles_list.push_back(lastParticle);
+    parents_list.push_back(lastParticle->mother());
     ParentId_vec->push_back(parentId);
     Parent_vec->push_back(parent_idx);
     int current_parent_idx = PdgId_vec->size()-1;
     int current_parent_id = PdgId_vec->back();
 
     // Save the daughters
-    if(lastParticle->numberOfDaughters()==2) {
+    // negative depth indicates signal
+    if(lastParticle->numberOfDaughters()==2 || depth<0) {
         int nextDepth = --depth;
         for(unsigned int iDau=0; iDau<lastParticle->numberOfDaughters(); iDau++) {
             if(abs(lastParticle->pdgId())<=bottom) continue;
             const reco::GenParticle *daughter = static_cast<const reco::GenParticle *>(lastParticle->daughter(iDau));
-            saveChain(nextDepth, current_parent_id, current_parent_idx, *daughter, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
+            saveChain(nextDepth, current_parent_id, current_parent_idx, *daughter, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
         }
     }
 
@@ -242,6 +282,7 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
                                         std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
                                         std::unique_ptr<std::vector<int>>& ParentId_vec) const {
     std::unordered_set<const reco::Candidate *> stored_particles_ref;
+    std::vector<const reco::Candidate *> stored_particles_list, parents_list;
     for(const auto& iPart : *genPartCands) {
         // Skip particles which are already in the list of stored particles
         // This is to protect against parts of a chain which may be saved, but here we are looking at the first copy
@@ -249,26 +290,47 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
         // Skip starting particles which are not from the hard process
         if(!iPart.isHardProcess() && !iPart.fromHardProcessBeforeFSR()) continue;
         // Only store particles in the list of acceptable parent pdgids
-        if(typicalParentIds.find(abs(iPart.pdgId()))!=typicalParentIds.end()) {
-            if (abs(iPart.pdgId())==top) {
+        auto absPdgId = abs(iPart.pdgId());
+        if(typicalParentIds.find(absPdgId)!=typicalParentIds.end()) {
+            if (absPdgId==top) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a top chain ... ";
-                saveChain(3, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
+                saveChain(3, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
-            else if(abs(iPart.pdgId())>=photon && abs(iPart.pdgId())<=Higgs) {
+            else if(absPdgId>=photon && absPdgId<=Higgs) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a boson chain ... ";
-                saveChain(2, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref);
+                saveChain(2, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+            }
+            else if(absPdgId>=sdownL && absPdgId<=stop2) {
+                if(debug) edm::LogInfo("TreeMaker") << "Saving a SUSY chain ... ";
+                saveChain(-1, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+            }
+            else if(absPdgId>=hvgluon && absPdgId<=hvrho2) {
+                if(debug) edm::LogInfo("TreeMaker") << "Saving a Hidden Valley chain ... ";
+                saveChain(-1, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else {
-                if(debug) edm::LogInfo("TreeMaker") << "Saving an individual particle ... ";
+                if(debug) edm::LogInfo("TreeMaker") << "Saving an individual particle " << iPart.pdgId() << " ... ";
                 TLorentzVector temp;
                 temp.SetPxPyPzE(iPart.px(), iPart.py(), iPart.pz(), iPart.energy());
                 genParticle_vec->push_back(temp);
                 PdgId_vec->push_back(iPart.pdgId());
                 Status_vec->push_back(abs(iPart.status()));
                 stored_particles_ref.insert(&iPart);
+                stored_particles_list.push_back(&iPart);
+                parents_list.push_back(iPart.mother());
                 ParentId_vec->push_back(iPart.mother()->pdgId());
                 Parent_vec->push_back(-1);
             }
+        }
+    }
+
+    //fill in the parents
+    for(unsigned g = 0; g < stored_particles_list.size(); ++g){
+        //some already have parent indices
+        if(Parent_vec->at(g)!=-1) continue;
+        auto it = std::find(stored_particles_list.begin(),stored_particles_list.end(),parents_list[g]);
+        if(it!=stored_particles_list.end()){
+            Parent_vec->at(g) = std::distance(stored_particles_list.begin(),it);
         }
     }
 }

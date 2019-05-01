@@ -23,11 +23,11 @@ enum class wtype { scale = 0, pdf = 1, ps = 2 };
 template <class P>
 class PDFWeightHelper {
   public:
-    PDFWeightHelper(const P* prod) : product_(prod) {}
+    PDFWeightHelper(const P* prod, bool use_norm) : product_(prod), use_norm_(use_norm) {}
     bool fillWeights(std::vector<double>* output, unsigned offset, unsigned nWeights, wtype wt) {
       unsigned max = this->getMax();
       if(max==0 or offset > max) return false;
-      double norm = 1./this->getNorm(offset,wt);
+      double norm = use_norm_ ? 1./this->getNorm(offset,wt) : 1.;
       max = std::min(nWeights+offset,max);
       output->reserve(max-offset);
       for (unsigned int i = offset; i < max; i++) {
@@ -41,11 +41,12 @@ class PDFWeightHelper {
 
     //members
     const P* product_;
+	bool use_norm_;
 };
 
 //for template class inference
 template <class P>
-PDFWeightHelper<P> makeHelper(const P* prod) { return PDFWeightHelper<P>(prod); }
+PDFWeightHelper<P> makeHelper(const P* prod, bool use_norm) { return PDFWeightHelper<P>(prod, use_norm); }
 
 template <> double PDFWeightHelper<LHEEventProduct>::getWeight(unsigned index){
   return product_->weights()[index].wgt;
@@ -81,7 +82,7 @@ private:
   
   // ----------member data ---------------------------
   unsigned nScales_, nPDFs_, nPSs_;
-  bool recalculatePDFs_;
+  bool norm_, recalculatePDFs_;
   std::string pdfSetName_;
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
@@ -94,6 +95,7 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   nScales_(iConfig.getParameter<unsigned>("nScales")),
   nPDFs_(iConfig.getParameter<unsigned>("nPDFs")),
   nPSs_(iConfig.getParameter<unsigned>("nPSs")),
+  norm_(iConfig.getParameter<bool>("normalize")),
   recalculatePDFs_(iConfig.getParameter<bool>("recalculatePDFs")),
   getterOfProducts_(edm::ProcessMatch("*"), this), 
   genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
@@ -136,7 +138,7 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   
   if(!handles.empty()){
     edm::Handle<LHEEventProduct> LheInfo = handles[0];
-    auto helper = makeHelper(LheInfo.product());
+    auto helper = makeHelper(LheInfo.product(),norm_);
     //renormalization/factorization scale weights
     found_scales = helper.fillWeights(scaleweights.get(),0,nScales_,wtype::scale);
     //pdf weights
@@ -148,7 +150,7 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   edm::Handle<GenEventInfoProduct> genHandle;
   iEvent.getByToken(genProductToken_, genHandle);
   if(genHandle.isValid()){
-    auto helper = makeHelper(genHandle.product());
+    auto helper = makeHelper(genHandle.product(),norm_);
     if(!found_scales or !found_pdfs){
       unsigned offset = 1;
       //renormalization/factorization scale weights
@@ -193,7 +195,7 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
           double newpdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
           double newpdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
           pdfweights->push_back(newpdf1*newpdf2);
-          if(i==0) norm = 1/pdfweights->back();
+          if(i==0 and norm_) norm = 1/pdfweights->back();
           pdfweights->back() *= norm;
         }
       }

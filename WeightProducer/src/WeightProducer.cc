@@ -69,15 +69,16 @@ public:
 private:
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
-  enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, FastSim = 3, other = 4 };
+  enum weight_method { StartWeight = 0, FromEvent = 1, Constant = 2, SignalScan = 3, other = 4 };
   
   const std::string _weightingMethodName;
   const double _startWeight;
   double _xs;
   const double _NumberEvents;
   const double _lumi;
-  edm::InputTag _weightName, _genEvtTag, _puInfoTag, _SusyMotherTag;
-  edm::EDGetTokenT<double> _weightTok, _SusyMotherTok;
+  edm::InputTag _weightName, _genEvtTag, _puInfoTag, _SignalParametersTag;
+  edm::EDGetTokenT<double> _weightTok;
+  edm::EDGetTokenT<std::vector<double>> _SignalParametersTok;
   edm::EDGetTokenT<GenEventInfoProduct> _genEvtTok;
   edm::EDGetTokenT<std::vector<PileupSummaryInfo>> _puInfoTok;
   TH1 *pu_central, *pu_up, *pu_down;
@@ -86,7 +87,7 @@ private:
   bool _isFlat;
   std::string _sampleName;
   weight_method _weightingMethod;
-  std::unordered_map<double,double> _FastSimXsec;
+  std::unordered_map<double,double> _SignalScanXsec;
   
   double getPUWeight(double trueint, TH1* pu) const;
 };
@@ -100,7 +101,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
    _weightName(iConfig.getParameter<edm::InputTag> ("weightName")),
    _genEvtTag(edm::InputTag("generator")),
    _puInfoTag(edm::InputTag("slimmedAddPileupInfo")),
-   _SusyMotherTag(iConfig.getParameter<edm::InputTag> ("modelIdentifier")),
+   _SignalParametersTag(iConfig.getParameter<edm::InputTag> ("modelIdentifier")),
    pu_central(nullptr), pu_up(nullptr), pu_down(nullptr),
    _remakePU(iConfig.getParameter<bool>("RemakePU")),
    _isFlat(false),
@@ -130,14 +131,14 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       _genEvtTok = consumes<GenEventInfoProduct>(_genEvtTag);
       if(_weightingMethodName.find("Flat")!=std::string::npos) _isFlat = true;
    }
-   // Option 4: assign cross section for FastSim
-   else if (_weightingMethodName == "FastSim") {
-      _weightingMethod = FastSim;
+   // Option 4: assign cross section for signal scans
+   else if (_weightingMethodName == "SignalScan") {
+      _weightingMethod = SignalScan;
       edm::LogInfo("TreeMaker")
-        << "WeightProducer: Finding cross sections for FastSim" << "\n"
+        << "WeightProducer: Finding cross sections for signal scan" << "\n"
         << "  Target luminosity (1/pb) : " << _lumi << "\n"
         << "          Number of events : " << _NumberEvents;
-      _SusyMotherTok = consumes<double>(_SusyMotherTag);
+      _SignalParametersTok = consumes<std::vector<double>>(_SignalParametersTag);
       //setup xsec map
       std::string inputXsecName = iConfig.getParameter<std::string> ("XsecFile");
 	  bool foundXsec = true;
@@ -158,7 +159,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
                   std::stringstream s1(items[1]);
                   s1 >> xsec_tmp;
                   //insert into map
-                  _FastSimXsec.emplace(mass_tmp,xsec_tmp);
+                  _SignalScanXsec.emplace(mass_tmp,xsec_tmp);
                }
             }
          }
@@ -166,7 +167,7 @@ WeightProducer::WeightProducer(const edm::ParameterSet& iConfig) :
       }
       else foundXsec = false;
       if(!foundXsec) {
-         edm::LogWarning("TreeMaker") << "WARNING: WeightProducer: Could not open FastSim xsec file: " << inputXsecName;
+         edm::LogWarning("TreeMaker") << "WARNING: WeightProducer: Could not open signal scan xsec file: " << inputXsecName;
          _weightingMethod = other;
       }
    }
@@ -284,13 +285,13 @@ void WeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
    }
    
    //Option 4: get cross section from input file
-   else if (_weightingMethod == FastSim) {
+   else if (_weightingMethod == SignalScan) {
       xsEvt = 0;
-      edm::Handle<double> SusyMotherHandle;
-      iEvent.getByToken(_SusyMotherTok, SusyMotherHandle);
-      if (SusyMotherHandle.isValid()){
-         auto itr = _FastSimXsec.find(*SusyMotherHandle);
-         if(itr!=_FastSimXsec.end()) xsEvt = itr->second;
+      edm::Handle<std::vector<double>> SignalParametersHandle;
+      iEvent.getByToken(_SignalParametersTok, SignalParametersHandle);
+      if (SignalParametersHandle.isValid()){
+         auto itr = SignalParametersHandle->empty() ? _SignalScanXsec.end() : _SignalScanXsec.find(SignalParametersHandle->at(0));
+         if(itr!=_SignalScanXsec.end()) xsEvt = itr->second;
       }
       resultWeight = xsEvt * _NumberEvents * _lumi;
    }
