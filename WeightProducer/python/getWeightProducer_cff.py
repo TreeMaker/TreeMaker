@@ -42,7 +42,7 @@ def getWeightProducer(fileName, scan=False):
     # list of samples
     samples = []
     from MCSamples_Summer16 import Summer16samples
-    from MCSamples_Fall1716 import Fall17samples
+    from MCSamples_Fall17 import Fall17samples
     from MCSamples_Summer16v3 import Summer16v3samples
     from MCSamples_Autumn18 import Autumn18samples
     from SVJsamples import SVJsamples
