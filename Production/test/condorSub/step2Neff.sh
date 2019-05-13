@@ -52,21 +52,24 @@ if [[ $CMSEXIT -ne 0 ]]; then
 fi
 
 # copy output to eos
-echo "xrdcp/gfal-copy output for condor"
+CMDSTR="xrdcp"
+if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
+    CMDSTR="gfal-copy"
+    export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
+    export OUTDIR=${GSIFTP_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
+fi
+echo "$CMDSTR output for condor"
 for FILE in *.root; do
-	if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
-		export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
-		export OUTDIR_GFAL=${GSIFTP_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
-		echo "gfal-copy -f ${FILE} ${OUTDIR_GFAL}/${FILE}"
-		stageOut -g -x "-f" -i ${FILE} -o ${OUTDIR_GFAL}/${FILE}
+	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE}"
+	if [[ $CMDSTR == "gfal-copy" ]]; then
+		stageOut -g -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
 	else
-		echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
 		stageOut -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
 	fi
 	XRDEXIT=$?
 	if [[ $XRDEXIT -ne 0 ]]; then
 		rm *.root
-		echo "exit code $XRDEXIT, failure in xrdcp/gfal-copy"
+		echo "exit code $XRDEXIT, failure in $CMDSTR"
 		exit $XRDEXIT
 	fi
 	rm ${FILE}
