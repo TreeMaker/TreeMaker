@@ -57,14 +57,22 @@ if [[ $CMSEXIT -ne 0 ]]; then
 fi
 
 # copy output to eos
-echo "xrdcp output for condor"
+export CMDSTR="xrdcp"
+export GFLAG=""
+if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
+	export CMDSTR="gfal-copy"
+	export GFLAG="-g"
+    export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
+	export OUTDIR=${GSIFTP_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
+fi
+echo "$CMDSTR output for condor"
 for FILE in *.root; do
-	echo "xrdcp -f ${FILE} ${OUTDIR}/${FILE}"
-	stageOut -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
+	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE}"
+	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
 	XRDEXIT=$?
 	if [[ $XRDEXIT -ne 0 ]]; then
 		rm *.root
-		echo "exit code $XRDEXIT, failure in xrdcp"
+		echo "exit code $XRDEXIT, failure in $CMDSTR"
 		exit $XRDEXIT
 	fi
 	rm ${FILE}
