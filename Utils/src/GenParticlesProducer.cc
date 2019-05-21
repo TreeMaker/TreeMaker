@@ -66,7 +66,7 @@ debug(iConfig.getParameter<bool>("debug")),
 // Final copy status codes
 quark_status_codes{23,51,52,71,72,73,91},
 lepton_status_codes{1,2},
-top_status_codes{22,62,52},
+top_status_codes{22,51,52,62},
 boson_status_codes{22,51,52}
 {
     const auto& cids = iConfig.getParameter<std::vector<int>>("childIds");
