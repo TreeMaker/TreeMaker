@@ -186,7 +186,7 @@ class Scenario:
             self.set_vars(
                 globaltag="102X_upgrade2018_realistic_v16",
                 tagname="PAT",
-                hlttagname="HLT",
+                hlttagname="PAT",
                 geninfo=True,
                 fastsim=True,
                 signal=False,
@@ -200,7 +200,7 @@ class Scenario:
             self.set_vars(
                 globaltag="102X_upgrade2018_realistic_v16",
                 tagname="PAT",
-                hlttagname="HLT",
+                hlttagname="PAT",
                 geninfo=True,
                 fastsim=True,
                 signal=True,
