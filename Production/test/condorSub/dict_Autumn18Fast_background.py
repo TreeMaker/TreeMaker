@@ -4,5 +4,6 @@ flist = {
         ['Autumn18Fast.TTJets_SingleLeptFromT_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Autumn18Fast.TTJets_SingleLeptFromTbar_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Autumn18Fast.TTJets_DiLept_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18Fast.DYJetsToLL_M-50_TuneCP2_13TeV-madgraphMLM-pythia8'],
     ]
 }
