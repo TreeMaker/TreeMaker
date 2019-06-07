@@ -1,14 +1,21 @@
 from jobSubmitterTM import *
+from TreeMaker.Production.tm_common import printGetPyDictHeader
+import difflib, pprint
 
 class jobSubmitterNeff(jobSubmitterTM):
     def __init__(self):
         super(jobSubmitterNeff,self).__init__()
         
         self.scripts = ["step1.sh","step2Neff.sh"]
+        self.outf = None
+        self.flist = []
+        self.flist_indices = {}
 
     def addDefaultOptions(self,parser):
         super(jobSubmitterNeff,self).addDefaultOptions(parser)
         parser.add_option("-g", "--getresults", dest="getresults", default=False, action="store_true", help="get neff results (default = %default)")
+        parser.add_option("-U", "--updatedict", dest="updatedict", default="", help="name of the get_py dict to update with the neff results (default = %default)")
+        parser.add_option("-S", "--suffix", dest = "suffix", default="_neff", help="the suffix to append to the modified get_py dictionary if updatedict is set (default = %default)")
         self.modes.update({
             "getresults": 1,
         })
@@ -27,10 +34,38 @@ class jobSubmitterNeff(jobSubmitterTM):
         if options.dict is None or len(options.dict)==0:
             parser.error("Required option: --dict [dict]")
 
+    def initRun(self):
+        super(jobSubmitterNeff,self).initRun()
+
+        # generate a new dictionary if updatedict is set
+        if self.getresults and self.updatedict!="":
+            idict = self.updatedict
+            odict = idict[:idict.find(".py")]+self.suffix+idict[idict.find(".py"):]
+            self.outf = open(odict,'w')
+            printGetPyDictHeader(self.outf)
+            sys.path.insert(0,os.path.abspath(os.path.dirname(idict)))
+            dictname = os.path.basename(idict.replace(".py",""))
+            self.flist = __import__(dictname).flist
+            # prefill the dictionary with zeros for the neff values and update them sample-by-sample
+            for ifitem, fitem in enumerate(self.flist):
+                nsamples = len(fitem[1])
+                fitem[2] = [0 for i in range(nsamples)]
+                for idataset, dataset in enumerate(fitem[1]):
+                    dataset_split = dataset.split('/')
+                    dname = dataset_split[1] + "" if "_ext" not in dataset_split[2] else dataset_split[2][dataset_split[2].find("_ext"):].split('-')[0]
+                    self.flist_indices[dname] = [ifitem,idataset]
+
     def runPerJob(self,job):
         super(jobSubmitterNeff,self).runPerJob(job)
         if self.getresults:
             self.doResults(job)
+
+    def finishRun(self):
+        super(jobSubmitterNeff,self).finishRun()
+
+        if self.getresults and self.updatedict!="":
+            self.outf.write(" "+pprint.pformat(self.flist,indent=4,depth=3,width=max([len(str(f)) for f in self.flist])+6)[1:-1]+",\n]\n")
+            self.outf.close()
 
     def generateExtra(self,job):
         super(jobSubmitterNeff,self).generateExtra(job)
@@ -124,3 +159,15 @@ class jobSubmitterNeff(jobSubmitterTM):
         jfile = TFile.Open(self.output+"/NeffInfo_"+job.name+".root")
         jhist = jfile.Get("NeffFinder/NeffInfo_"+job.name)
         print("NeffFinder: "+job.name+" : "+str(int(jhist.GetBinContent(1)))+" (pos = "+str(int(jhist.GetBinContent(2)))+", neg = "+str(int(jhist.GetBinContent(3)))+", tot = "+str(int(jhist.GetBinContent(4)))+")")
+
+        
+        # update the neff value for the current sample
+        if self.updatedict!="":
+            samplename = job.name.split('.')[1]
+            if samplename not in self.flist_indices:
+                print "WARNING: Unable to update the neff value for",job.name,"as no match was found in the input dictionary"
+                return
+            else:
+                flist_index = self.flist_indices[samplename][0]
+                dataset_index = self.flist_indices[samplename][1]
+                self.flist[flist_index][2][dataset_index] = int(jhist.GetBinContent(1))
