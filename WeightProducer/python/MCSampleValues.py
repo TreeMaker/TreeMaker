@@ -84,6 +84,19 @@ class MCSampleValuesHelper():
         "TTJets_DiLept" : {
             "CrossSection" : XSValues(XS_13TeV=88.34),
         },
+        # MET binned: GenXSecAnalyzer
+        "TTJets_SingleLeptFromT_genMET-80" : {
+            "CrossSection" : XSValues(XS_13TeV=32.23),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
+        },
+        "TTJets_SingleLeptFromTbar_genMET-80" : {
+            "CrossSection" : XSValues(XS_13TeV=31.78),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
+        },
+        "TTJets_DiLept_genMET-80" : {
+            "CrossSection" : XSValues(XS_13TeV=22.46),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.627),
+        },
         # MET binned: GenXSecAnalyzer scaled by ttbar inclusive k-factor (NNLO vs LO), 831.76/511.3 = 1.627
         "TTJets_SingleLeptFromT_genMET-150" : {
             "CrossSection" : XSValues(XS_13TeV=9.683904),
