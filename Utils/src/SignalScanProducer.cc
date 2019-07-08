@@ -230,6 +230,7 @@ void SignalScanProducer::getSVJComment(const GenLumiInfoHeader& gen){
 		{"low",-3.},
 	};
 	std::string model = gen.configDescription();
+	if(debug_) edm::LogInfo("TreeMaker") << model;
 	std::vector<std::string> fields;
 	parse::process(model,'_',fields);
 
@@ -237,11 +238,11 @@ void SignalScanProducer::getSVJComment(const GenLumiInfoHeader& gen){
 	for(const auto& f : fields){
 		std::vector<std::string> subfields;
 		parse::process(f,'-',subfields);
-		if(subfields.size()!=3) continue;
+		if(subfields.size()!=2) continue;
 		double val = 0.;
-		if(subfields[0]=="alpha") val = alpha_vals.at(subfields[2]);
+		if(subfields[0]=="alpha") val = alpha_vals.at(subfields[1]);
 		else {
-			std::stringstream sval(subfields[2]);
+			std::stringstream sval(subfields[1]);
 			sval >> val;
 		}
 		signalParameters_.push_back(val);
