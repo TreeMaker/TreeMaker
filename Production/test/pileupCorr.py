@@ -42,16 +42,16 @@ if __name__ == "__main__":
         minbias = float(options.minbias)
         uncertainty = float(options.uncertainty)
         print "Calculating central value"
-        os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias)+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2CentralPileupHistogram.root")
+        os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias)+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" DataCentral_"+options.outname)
         print "Calculating upward variation"
-        os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias*(1+uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2UpPileupHistogram.root")
+        os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias*(1+uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" DataUp_"+options.outname)
         print "Calculating downward variation"
-        os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias*(1-uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" RA2DownPileupHistogram.root")
+        os.system("pileupCalc.py -i "+options.json+" --inputLumiJSON "+options.latest+" --calcMode true --minBiasXsec "+str(minbias*(1-uncertainty))+" --maxPileupBin "+str(options.nbins)+" --numPileupBins "+str(options.nbins)+" DataDown_"+options.outname)
     
         # open files
-        fc = TFile.Open("RA2CentralPileupHistogram.root","read")
-        fup = TFile.Open("RA2UpPileupHistogram.root","read")
-        fdown = TFile.Open("RA2DownPileupHistogram.root","read")
+        fc = TFile.Open("DataCentral_"+options.outname,"read")
+        fup = TFile.Open("DataUp_"+options.outname,"read")
+        fdown = TFile.Open("DataDown_"+options.outname,"read")
         fout = TFile.Open(options.outname,"RECREATE")
     
         # get histos
@@ -110,4 +110,4 @@ if __name__ == "__main__":
     hPUWeightsUp.Write()
     hPUWeightsDown.Write()
     
-    fout.Close()
+fout.Close()
