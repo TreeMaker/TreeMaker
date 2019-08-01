@@ -31,5 +31,8 @@ flist = {
         ['Fall17.QCD_Pt-170to300_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
         ['Fall17.QCD_Pt-300to470_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
         ['Fall17.QCD_Pt-470to600_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
+        ['Fall17.QCD_Pt-600to800_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
+        ['Fall17.QCD_Pt-800to1000_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
+        ['Fall17.QCD_Pt-1000toInf_MuEnrichedPt5_TuneCP5_13TeV_pythia8'],
     ]
 }

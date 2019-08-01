@@ -19,5 +19,7 @@ flist = {
         ['Autumn18.TTWZ_TuneCP5_13TeV-madgraph-pythia8_ext1'],
         ['Autumn18.TTZH_TuneCP5_13TeV-madgraph-pythia8_ext1'],
         ['Autumn18.TTZZ_TuneCP5_13TeV-madgraph-pythia8_ext1'],
+        ['Autumn18.ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8'],
+        ['Autumn18.ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8'],
     ]
 }
