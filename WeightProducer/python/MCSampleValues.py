@@ -391,7 +391,13 @@ class MCSampleValuesHelper():
         "ST_t-channel_top_4f_inclusiveDecays" : {
             "CrossSection" : XSValues(XS_13TeV=136.02),
         },
+        "ST_t-channel_top_4f_InclusiveDecays" : {
+            "CrossSection" : XSValues(XS_13TeV=136.02),
+        },
         "ST_t-channel_antitop_4f_inclusiveDecays" : {
+            "CrossSection" : XSValues(XS_13TeV=80.95),
+        },
+        "ST_t-channel_antitop_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(XS_13TeV=80.95),
         },
         "ST_tW_antitop_5f_NoFullyHadronicDecays" : {
@@ -469,7 +475,13 @@ class MCSampleValuesHelper():
         "ttHJetToNonbb_M125" : {
             "CrossSection" : XSValues(XS_13TeV=0.2118),
         },
+        "ttHToNonbb_M125" : {
+            "CrossSection" : XSValues(XS_13TeV=0.2118),
+        },
         "ttHJetTobb_M125" : {
+            "CrossSection" : XSValues(XS_13TeV=0.2953),
+        },
+        "ttHTobb_M125" : {
             "CrossSection" : XSValues(XS_13TeV=0.2953),
         },
         "TTTT" : {
