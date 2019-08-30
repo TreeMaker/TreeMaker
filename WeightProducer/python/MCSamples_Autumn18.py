@@ -116,4 +116,8 @@ Autumn18samples = [
         MCSample('ZZZ_TuneCP5_13TeV-amcatnlo-pythia8', '102X_upgrade2018_realistic_v15_ext1-v2', 'RunIIAutumn18MiniAOD', 'Constant', 250000, False, 214282),
         MCSample('ttHToNonbb_M125_TuneCP5_13TeV-powheg-pythia8', '102X_upgrade2018_realistic_v15-v2', 'RunIIAutumn18MiniAOD', 'Constant', 7525991, False, 7368333),
         MCSample('ttHTobb_M125_TuneCP5_13TeV-powheg-pythia8', '102X_upgrade2018_realistic_v15-v3', 'RunIIAutumn18MiniAOD', 'Constant', 11835999, False, 11590377),
+        MCSample('SMS-T2tt_3J_xqcut-20_mStop-175_mLSP-1_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 1460344, False, 1459016),
+        MCSample('SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-50_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 1464311, False, 1461991),
+        MCSample('SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 1434483, False, 1432383),
+        MCSample('SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-100_TuneCP5_13TeV-madgraphMLM-pythia8', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 1350168, False, 1348088),
 ]

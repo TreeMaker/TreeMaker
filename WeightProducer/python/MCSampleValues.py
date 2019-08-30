@@ -592,6 +592,18 @@ class MCSampleValuesHelper():
         "SMS-T2tt_mStop-1200_mLSP-100" : {
             "CrossSection" : XSValues(XS_13TeV=0.170E-02),
         },
+        "SMS-T2tt_3J_xqcut-20_mStop-175_mLSP-1" : {
+            "CrossSection" : XSValues(XS_13TeV=0.146E+03),
+        },
+        "SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-50" : {
+            "CrossSection" : XSValues(XS_13TeV=0.248E+02),
+        },
+        "SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75" : {
+            "CrossSection" : XSValues(XS_13TeV=0.248E+02),
+        },
+        "SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.248E+02),
+        },
         "SMS-T5qqqqWW_mGluino-1900_mLSP-100" : {
             "CrossSection" : XSValues(XS_13TeV=0.171E-02),
         },
