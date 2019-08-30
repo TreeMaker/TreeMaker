@@ -222,8 +222,11 @@ DEFAULT_NAMED_PTR(bDiscriminator,hDiscriminatorDeep);
 DEFAULT_NAMED_PTR(bDiscriminator,tDiscriminatorDeepDecorrel);
 DEFAULT_NAMED_PTR(bDiscriminator,wDiscriminatorDeepDecorrel);
 DEFAULT_NAMED_PTR(bDiscriminator,zhDiscriminatorDeepDecorrel);
-DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorH);
-DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorQ);
+//DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorH);
+//DEFAULT_NAMED_PTR(bDiscriminator,deepDoubleBDiscriminatorQ);
+DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleBvLJetTagsProbHbb);
+DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleCvLJetTagsProbHcc);
+DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleCvBJetTagsProbHcc);
 
 class NamedPtr_jecFactor : public NamedPtr<double> {
 	public:
