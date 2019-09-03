@@ -10,5 +10,11 @@ flist = {
         ['Autumn18.WZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1'],
         ['Autumn18.ZZTo2Q2Nu_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8'],
         ['Autumn18.ZZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1'],
+        ['Autumn18.WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8'],
+        ['Autumn18.ZZTo2Q2Nu_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8'],
+        ['Autumn18.WW_TuneCP5_13TeV-pythia8'],
+        ['Autumn18.ZZ_TuneCP5_13TeV-pythia8'],
+        ['Autumn18.WZ_TuneCP5_13TeV-pythia8'],
+        ['Autumn18.ZZTo2Q2Nu_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8']
     ]
 }
