@@ -10,6 +10,8 @@ flist = {
         ['Summer16v3.WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8'],
         ['Summer16v3.ZZTo2Q2Nu_13TeV_amcatnloFXFX_madspin_pythia8'],
         ['Summer16v3.ZZTo2L2Q_13TeV_amcatnloFXFX_madspin_pythia8'],
+        ['Summer16v3.ZZTo2L2Nu_13TeV_powheg_pythia8'],
+        ['Summer16v3.ZZTo2L2Nu_13TeV_powheg_pythia8_ext1'],
         ['Summer16v3.ZZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8'],
         ['Summer16v3.WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8']
     ]

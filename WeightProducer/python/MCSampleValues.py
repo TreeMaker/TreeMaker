@@ -415,6 +415,9 @@ class MCSampleValuesHelper():
         "tZq_W_lept_Z_hadron_4f_ckm" : {
             "CrossSection" : XSValues(XS_13TeV=0.0758),
         },
+        "tZq_Zhad_Wlept_4f_ckm" : {
+            "CrossSection" : XSValues(XS_13TeV=0.1518),
+        },
         "WW" : {
             "CrossSection" : XSValues(XS_13TeV=51.723),
         },
@@ -444,7 +447,13 @@ class MCSampleValuesHelper():
         },
         "ZGTo2NuG" : {
             "CrossSection" : XSValues(XS_13TeV=32.3),
-        },
+        },        
+        "ZZTo2L2Nu" : {
+            "CrossSection" : XSValues(XS_13TeV=0.5644),
+        },        
+        "ZZTo2L2Nu_ext1" : {
+            "CrossSection" : XSValues(XS_13TeV=0.5644),
+        },        
         "ZZTo2L2Q" : {
             "CrossSection" : XSValues(XS_13TeV=3.22),
         },

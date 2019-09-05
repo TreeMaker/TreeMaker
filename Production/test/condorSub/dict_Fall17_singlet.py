@@ -8,5 +8,6 @@ flist = {
         ['Fall17.ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_PSweights_13TeV-powheg-pythia8'],
         ['Fall17.ST_tW_antitop_5f_inclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythia8'],
         ['Fall17.ST_tW_top_5f_inclusiveDecays_TuneCP5_PSweights_13TeV-powheg-pythia8'],
+        ['Fall17.tZq_W_lept_Z_hadron_4f_ckm_NLO_13TeV_amcatnlo_pythia8'],
     ]
 }
