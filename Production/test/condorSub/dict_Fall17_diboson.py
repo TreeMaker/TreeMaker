@@ -12,5 +12,8 @@ flist = {
         ['Fall17.ZZZ_TuneCP5_13TeV-amcatnlo-pythia8'],
         ['Fall17.WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8'],
         ['Fall17.WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8'],
+        ['Fall17.WZ_TuneCP5_13TeV-pythia8'],
+        ['Fall17.WW_TuneCP5_13TeV-pythia8'],
+        ['Fall17.ZZ_TuneCP5_13TeV-pythia8']
     ]
 }
