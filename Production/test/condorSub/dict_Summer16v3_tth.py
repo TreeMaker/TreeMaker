@@ -21,13 +21,12 @@ flist = {
         ['Summer16v3.TTTJ_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],
         ['Summer16v3.TTTW_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],
         ['Summer16v3.TTWH_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],
+        ['Summer16v3.TTZH_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],
         ['Summer16v3.TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],
-        ['Summer16v3.TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],
+        ['Summer16v3.TTZZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],        
         ['Summer16v3.TTWW_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],
         ['Summer16v3.TTWZ_TuneCUETP8M2T4_13TeV-madgraph-pythia8_ext1'],
         ['Summer16v3.ttHJetToNonbb_M125_13TeV_amcatnloFXFX_madspin_pythia8_mWCutfix_ext1'],
         ['Summer16v3.ttHJetTobb_M125_13TeV_amcatnloFXFX_madspin_pythia8_ext3']
-
-
     ]
 }
