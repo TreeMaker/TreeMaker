@@ -684,216 +684,336 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(XS_13TeV=0.6204),
         },
         "stealth_stop_350_singlino_SYY" : {
-            "CrossSection" : XSValues(XS_13TeV=3.78661),
+            "CrossSection" : XSValues(XS_13TeV=4.43),
         },
         "stealth_stop_450_singlino_SYY" : {
-            "CrossSection" : XSValues(XS_13TeV=0.948333),
+            "CrossSection" : XSValues(XS_13TeV=1.11),
         },
         "stealth_stop_550_singlino_SYY" : {
-            "CrossSection" : XSValues(XS_13TeV=0.296128),
+            "CrossSection" : XSValues(XS_13TeV=0.347),
         },
         "stealth_stop_650_singlino_SYY" : {
-            "CrossSection" : XSValues(XS_13TeV=0.107045),
+            "CrossSection" : XSValues(XS_13TeV=0.125),
         },
         "stealth_stop_750_singlino_SYY" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0431418),
+            "CrossSection" : XSValues(XS_13TeV=0.0500),
         },
         "stealth_stop_850_singlino_SYY" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0189612),
+            "CrossSection" : XSValues(XS_13TeV=0.0216),
         },
         "stealth_stop_350_singlino_SHuHd" : {
-            "CrossSection" : XSValues(XS_13TeV=3.78661),
+            "CrossSection" : XSValues(XS_13TeV=4.43),
         },
         "stealth_stop_450_singlino_SHuHd" : {
-            "CrossSection" : XSValues(XS_13TeV=0.948333),
+            "CrossSection" : XSValues(XS_13TeV=1.11),
         },
         "stealth_stop_550_singlino_SHuHd" : {
-            "CrossSection" : XSValues(XS_13TeV=0.296128),
+            "CrossSection" : XSValues(XS_13TeV=0.347),
         },
         "stealth_stop_650_singlino_SHuHd" : {
-            "CrossSection" : XSValues(XS_13TeV=0.107045),
+            "CrossSection" : XSValues(XS_13TeV=0.125),
         },
         "stealth_stop_750_singlino_SHuHd" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0431418),
+            "CrossSection" : XSValues(XS_13TeV=0.0500),
         },
         "stealth_stop_850_singlino_SHuHd" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0189612),
+            "CrossSection" : XSValues(XS_13TeV=0.0216),
         },
         # Stealth taken From https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13TeVstopsbottom
         "StealthSYY_2t6j_mStop-300_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=8.51615),
+            "CrossSection" : XSValues(XS_13TeV=10.0),
         },
         "StealthSYY_2t6j_mStop-300_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=8.51615),
+            "CrossSection" : XSValues(XS_13TeV=10.0),
         },
         "StealthSYY_2t6j_mStop-350_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=3.78661),
+            "CrossSection" : XSValues(XS_13TeV=4.43),
         },
         "StealthSYY_2t6j_mStop-350_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=3.78661),
+            "CrossSection" : XSValues(XS_13TeV=4.43),
         },
         "StealthSYY_2t6j_mStop-400_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=1.83537),
+            "CrossSection" : XSValues(XS_13TeV=2.15),
         },
         "StealthSYY_2t6j_mStop-400_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=1.83537),
+            "CrossSection" : XSValues(XS_13TeV=2.15),
         },
         "StealthSYY_2t6j_mStop-450_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.948333),
+            "CrossSection" : XSValues(XS_13TeV=1.11),
         },
         "StealthSYY_2t6j_mStop-450_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.948333),
+            "CrossSection" : XSValues(XS_13TeV=1.11),
         },
         "StealthSYY_2t6j_mStop-500_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.51848),
+            "CrossSection" : XSValues(XS_13TeV=0.609),
         },
         "StealthSYY_2t6j_mStop-500_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.51848),
+            "CrossSection" : XSValues(XS_13TeV=0.609),
         },
         "StealthSYY_2t6j_mStop-550_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.296128),
+            "CrossSection" : XSValues(XS_13TeV=0.347),
         },
         "StealthSYY_2t6j_mStop-550_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.296128),
+            "CrossSection" : XSValues(XS_13TeV=0.347),
         },
         "StealthSYY_2t6j_mStop-600_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.174599),
+            "CrossSection" : XSValues(XS_13TeV=0.205),
         },
         "StealthSYY_2t6j_mStop-600_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.174599),
+            "CrossSection" : XSValues(XS_13TeV=0.205),
         },
         "StealthSYY_2t6j_mStop-650_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.107045),
+            "CrossSection" : XSValues(XS_13TeV=0.125),
         },
         "StealthSYY_2t6j_mStop-650_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.107045),
+            "CrossSection" : XSValues(XS_13TeV=0.125),
         },
         "StealthSYY_2t6j_mStop-700_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0670476),
+            "CrossSection" : XSValues(XS_13TeV=0.0783),
         },
         "StealthSYY_2t6j_mStop-700_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0670476),
+            "CrossSection" : XSValues(XS_13TeV=0.0783),
         },
         "StealthSYY_2t6j_mStop-750_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0431418),
+            "CrossSection" : XSValues(XS_13TeV=0.0500),
         },
         "StealthSYY_2t6j_mStop-750_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0431418),
+            "CrossSection" : XSValues(XS_13TeV=0.0500),
         },
         "StealthSYY_2t6j_mStop-800_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0283338),
+            "CrossSection" : XSValues(XS_13TeV=0.0326),
         },
         "StealthSYY_2t6j_mStop-800_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0283338),
+            "CrossSection" : XSValues(XS_13TeV=0.0326),
         },
         "StealthSYY_2t6j_mStop-850_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0189612),
+            "CrossSection" : XSValues(XS_13TeV=0.0216),
         },
         "StealthSYY_2t6j_mStop-850_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0189612),
+            "CrossSection" : XSValues(XS_13TeV=0.0216),
         },
         "StealthSYY_2t6j_mStop-900_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0128895),
+            "CrossSection" : XSValues(XS_13TeV=0.0145),
         },
         "StealthSYY_2t6j_mStop-900_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0128895),
+            "CrossSection" : XSValues(XS_13TeV=0.0145),
+        },
+        "StealthSYY_2t6j_mStop-950_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00991),
+        },
+        "StealthSYY_2t6j_mStop-950_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00991),
+        },
+        "StealthSYY_2t6j_mStop-1000_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00683),
+        },
+        "StealthSYY_2t6j_mStop-1000_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00683),
+        },
+        "StealthSYY_2t6j_mStop-1050_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00476),
+        },
+        "StealthSYY_2t6j_mStop-1050_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00476),
+        },
+        "StealthSYY_2t6j_mStop-1100_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00335),
+        },
+        "StealthSYY_2t6j_mStop-1100_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00335),
+        },
+        "StealthSYY_2t6j_mStop-1150_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00238),
+        },
+        "StealthSYY_2t6j_mStop-1150_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00238),
+        },
+        "StealthSYY_2t6j_mStop-1200_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00170),
+        },
+        "StealthSYY_2t6j_mStop-1200_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00170),
+        },
+        "StealthSYY_2t6j_mStop-1250_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00122),
+        },
+        "StealthSYY_2t6j_mStop-1250_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00122),
+        },
+        "StealthSYY_2t6j_mStop-1300_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000887),
+        },
+        "StealthSYY_2t6j_mStop-1300_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000887),
+        },
+        "StealthSYY_2t6j_mStop-1350_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000646),
+        },
+        "StealthSYY_2t6j_mStop-1350_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000646),
+        },
+        "StealthSYY_2t6j_mStop-1400_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000473),
+        },
+        "StealthSYY_2t6j_mStop-1400_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000473),
         },
         "StealthSHH_2t4b_mStop-300_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=8.51615),
+            "CrossSection" : XSValues(XS_13TeV=10.0),
         },
         "StealthSHH_2t4b_mStop-350_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=3.78661),
+            "CrossSection" : XSValues(XS_13TeV=4.43),
         },
         "StealthSHH_2t4b_mStop-400_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=1.83537),
+            "CrossSection" : XSValues(XS_13TeV=2.15),
         },
         "StealthSHH_2t4b_mStop-450_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.948333),
+            "CrossSection" : XSValues(XS_13TeV=1.11),
         },
         "StealthSHH_2t4b_mStop-500_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.51848),
+            "CrossSection" : XSValues(XS_13TeV=0.609),
         },
         "StealthSHH_2t4b_mStop-550_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.296128),
+            "CrossSection" : XSValues(XS_13TeV=0.347),
         },
         "StealthSHH_2t4b_mStop-600_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.174599),
+            "CrossSection" : XSValues(XS_13TeV=0.205),
         },
         "StealthSHH_2t4b_mStop-650_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.107045),
+            "CrossSection" : XSValues(XS_13TeV=0.125),
         },
         "StealthSHH_2t4b_mStop-700_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0670476),
+            "CrossSection" : XSValues(XS_13TeV=0.0783),
         },
         "StealthSHH_2t4b_mStop-750_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0431418),
+            "CrossSection" : XSValues(XS_13TeV=0.0500),
         },
         "StealthSHH_2t4b_mStop-800_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0283338),
+            "CrossSection" : XSValues(XS_13TeV=0.0326),
         },
         "StealthSHH_2t4b_mStop-850_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0189612),
+            "CrossSection" : XSValues(XS_13TeV=0.0216),
         },
         "StealthSHH_2t4b_mStop-900_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0128895),
+            "CrossSection" : XSValues(XS_13TeV=0.0145),
+        },
+        "StealthSHH_2t4b_mStop-950_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00991),
+        },
+        "StealthSHH_2t4b_mStop-1000_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00683),
+        },
+        "StealthSHH_2t4b_mStop-1050_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00476),
+        },
+        "StealthSHH_2t4b_mStop-1100_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00335),
+        },
+        "StealthSHH_2t4b_mStop-1150_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00238),
+        },
+        "StealthSHH_2t4b_mStop-1200_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00170),
+        },
+        "StealthSHH_2t4b_mStop-1250_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00122),
+        },
+        "StealthSHH_2t4b_mStop-1300_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000887),
+        },
+        "StealthSHH_2t4b_mStop-1350_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000646),
+        },
+        "StealthSHH_2t4b_mStop-1400_mSo-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000473),
         },
         "rpv_stop_350_t3j_uds" : {
-            "CrossSection" : XSValues(XS_13TeV=3.78661),
+            "CrossSection" : XSValues(XS_13TeV=4.43),
         },
         "rpv_stop_450_t3j_uds" : {
-            "CrossSection" : XSValues(XS_13TeV=0.948333),
+            "CrossSection" : XSValues(XS_13TeV=1.11),
         },
         "rpv_stop_550_t3j_uds" : {
-            "CrossSection" : XSValues(XS_13TeV=0.296128),
+            "CrossSection" : XSValues(XS_13TeV=0.347),
         },
         "rpv_stop_650_t3j_uds" : {
-            "CrossSection" : XSValues(XS_13TeV=0.107045),
+            "CrossSection" : XSValues(XS_13TeV=0.125),
         },
         "rpv_stop_750_t3j_uds" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0431418),
+            "CrossSection" : XSValues(XS_13TeV=0.0500),
         },
         "rpv_stop_850_t3j_uds" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0189612),
+            "CrossSection" : XSValues(XS_13TeV=0.0216),
         },
         # RPV taken from https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SUSYCrossSections13TeVstopsbottom
         "RPV_2t6j_mStop-300_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=8.51615),
+            "CrossSection" : XSValues(XS_13TeV=10.0),
         },
         "RPV_2t6j_mStop-350_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=3.78661),
+            "CrossSection" : XSValues(XS_13TeV=4.43),
         },
         "RPV_2t6j_mStop-400_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=1.83537),
+            "CrossSection" : XSValues(XS_13TeV=2.15),
         },
         "RPV_2t6j_mStop-450_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.948333),
+            "CrossSection" : XSValues(XS_13TeV=1.11),
         },
         "RPV_2t6j_mStop-500_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.51848),
+            "CrossSection" : XSValues(XS_13TeV=0.609),
         },
         "RPV_2t6j_mStop-550_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.296128),
+            "CrossSection" : XSValues(XS_13TeV=0.347),
         },
         "RPV_2t6j_mStop-600_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.174599),
+            "CrossSection" : XSValues(XS_13TeV=0.205),
         },
         "RPV_2t6j_mStop-650_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.107045),
+            "CrossSection" : XSValues(XS_13TeV=0.125),
         },
         "RPV_2t6j_mStop-700_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0670476),
+            "CrossSection" : XSValues(XS_13TeV=0.0783),
         },
         "RPV_2t6j_mStop-750_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0431418),
+            "CrossSection" : XSValues(XS_13TeV=0.0500),
         },
         "RPV_2t6j_mStop-800_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0283338),
+            "CrossSection" : XSValues(XS_13TeV=0.0326),
         },
         "RPV_2t6j_mStop-850_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0189612),
+            "CrossSection" : XSValues(XS_13TeV=0.0216),
         },
         "RPV_2t6j_mStop-900_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=0.0128895),
+            "CrossSection" : XSValues(XS_13TeV=0.0145),
+        },
+        "RPV_2t6j_mStop-950_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00991),
+        },
+        "RPV_2t6j_mStop-1000_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00683),
+        },
+        "RPV_2t6j_mStop-1050_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00476),
+        },
+        "RPV_2t6j_mStop-1100_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00335),
+        },
+        "RPV_2t6j_mStop-1150_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00238),
+        },
+        "RPV_2t6j_mStop-1200_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00170),
+        },
+        "RPV_2t6j_mStop-1250_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.00122),
+        },
+        "RPV_2t6j_mStop-1300_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000887),
+        },
+        "RPV_2t6j_mStop-1350_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000646),
+        },
+        "RPV_2t6j_mStop-1400_mN1-100" : {
+            "CrossSection" : XSValues(XS_13TeV=0.000473),
         },
     }
 
