@@ -46,6 +46,7 @@ Summer16v3samples = [
 	MCSample('WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 6872441, False), # subtotal = 6627909
 	MCSample('WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 2637821, False), # subtotal = 253561
 	MCSample('WJetsToLNu_HT-2500ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 2637821, False), # subtotal = 2384260
+        MCSample('WJetsToQQ_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 1026587, False),
 	MCSample('QCD_Pt_80to120_TuneCUETP8M1_13TeV_pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 6696872, False),
 	MCSample('QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 12616158, False), # subtotal = 6867422
 	MCSample('QCD_Pt_120to170_TuneCUETP8M1_13TeV_pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 12616158, False), # subtotal = 5748736

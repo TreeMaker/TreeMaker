@@ -181,6 +181,19 @@ class MCSampleValuesHelper():
         "WJetsToLNu" : {
             "CrossSection" : XSValues(XS_13TeV=61334.9),
         },
+        "WJetsToQQ_HT400to600_qc19_3j" : {
+            "CrossSection" : XSValues(XS_13TeV=316.4),
+        },
+        "WJetsToQQ_HT600to800_qc19_3j" : {
+            "CrossSection" : XSValues(XS_13TeV=68.54),
+        },
+        "WJetsToQQ_HT-800toInf_qc19_3j" : {
+            "CrossSection" : XSValues(XS_13TeV=34.68),
+        },
+        "WJetsToQQ_HT-600ToInf" : {
+            "CrossSection" : XSValues(XS_13TeV=95.14),
+            "kFactor" : kFactorValues(kFactor_13TeV=1.21),
+        },
         "QCD_FlatPt_15_3000HS" : {
             "CrossSection" : XSValues(XS_13TeV=1356000000.0),
         },
@@ -380,6 +393,9 @@ class MCSampleValuesHelper():
         },
         "ZJetsToNuNu_Zpt-200toInf" : {
             "CrossSection" : XSValues(XS_13TeV=5.28654),
+        },
+        "ST_s-channel_4f_hadronicDecays" : {
+            "CrossSection" : XSValues(XS_13TeV=6.96),
         },
         # single top: NoFullyHadronicDecays xsec scaled by BF for non-fully-hadronic (1-(1-3*0.108)^2)
         "ST_s-channel_4f_leptonDecays" : {
