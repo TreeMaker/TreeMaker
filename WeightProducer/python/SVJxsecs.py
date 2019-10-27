@@ -142,5 +142,8 @@ SVJxsecs = {
     "mZprime-5000" : {
         "CrossSection" : XSValues(XS_13TeV=0.0001895),
     },
+    "mZprime-5100" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0001523),
+    },
 }
 

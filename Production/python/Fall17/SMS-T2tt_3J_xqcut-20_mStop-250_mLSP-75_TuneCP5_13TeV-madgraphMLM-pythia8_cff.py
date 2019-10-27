@@ -1,0 +1,48 @@
+import FWCore.ParameterSet.Config as cms
+
+maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+readFiles = cms.untracked.vstring()
+secFiles = cms.untracked.vstring()
+source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
+readFiles.extend( [
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/025DDF52-9598-E911-AF04-509A4C84547F.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/0855491F-E09B-E911-8C24-FA163E0E3839.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/08748BF9-DF9C-E911-B3D9-C0BFC0E5686E.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/10B98552-8F98-E911-BF10-0CC47A57CD88.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/1228F684-B59A-E911-A51E-0242AC1C0501.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/201FD109-648C-E911-B397-002590DE6E3E.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/22923739-E299-E911-8ADC-7845C4FC378E.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/2429BA8F-419B-E911-980E-009C02AABEB8.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/2458E57D-E08B-E911-969B-0CC47AF97126.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/3AF22F62-9A98-E911-8F29-1866DAEA7F94.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/4A2AA8EA-CC8B-E911-9B2D-24BE05C4D851.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/52D6BAA3-2A9F-E911-BD55-001E677924D8.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/58517935-4D8D-E911-AFBE-A0369F30FFD2.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/5E3ACF46-A69C-E911-938E-1866DA8907CB.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/62499229-8D98-E911-83CA-AC1F6B567680.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/64BF1255-9B98-E911-8BDA-A0369F7FC714.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/68BB27FC-3998-E911-AB98-98039B3B01BE.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/6CB8FDDA-9F9A-E911-892F-008CFAC94078.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/72372E6B-5D8D-E911-9546-509A4C85400A.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/748C969B-918C-E911-A4EE-AC1F6BAB6860.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/828B8F3E-7898-E911-A27F-0CC47AFF247A.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/82ED01C3-998C-E911-8C50-001E67DFF519.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/8CC5F46E-DA98-E911-BAB9-F4E9D4AF7940.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/9238BA19-E18A-E911-953D-0CC47AB6503E.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/9C1114EF-C09D-E911-B747-001E675A690A.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/9C171279-D68B-E911-8C9D-002590DD7C9E.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/A685DD0A-109B-E911-8CE1-0CC47AFC3C64.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/AA3B898D-A08B-E911-A398-0025904B333C.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/AA7B07CE-4C9A-E911-AF3D-001E67504685.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/AC34CEFB-9998-E911-A741-0026B9FA0310.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/B43A5897-B49A-E911-A7DA-0CC47AD98BC2.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/C4D5C28F-2198-E911-9552-0CC47A5450F8.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/CAAD7B7E-CB8B-E911-8565-0CC47A5450DA.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/CAE74417-938C-E911-8B3F-AC162DA6E2F8.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/D6BE3B1E-8D98-E911-92E4-44A842CF05E6.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/D6CA2AF0-CD8A-E911-AEA7-AC1F6B23C80C.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/E0CE5B65-C38B-E911-8C8C-AC1F6B23C738.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/EEA3482B-8C8C-E911-9649-EC0D9A822666.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/F2FD5332-679B-E911-B570-0CC47A5FBE25.root',
+       '/store/mc/RunIIFall17MiniAODv2/SMS-T2tt_3J_xqcut-20_mStop-250_mLSP-75_TuneCP5_13TeV-madgraphMLM-pythia8/MINIAODSIM/PU2017_12Apr2018_94X_mc2017_realistic_v14-v1/120000/FA03D625-468E-E911-9B7E-AC1F6BAC805C.root',
+] )
