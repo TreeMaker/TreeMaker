@@ -12,5 +12,8 @@ flist = {
         ['Autumn18.TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8'],
         ['Autumn18.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8'],
         ['Autumn18.TTToHadronic_TuneCP5_13TeV-powheg-pythia8'],
+        ['Autumn18.TTJets_SingleLeptFromTbar_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18.TTJets_SingleLeptFromT_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18.TTJets_DiLept_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
     ]
 }
