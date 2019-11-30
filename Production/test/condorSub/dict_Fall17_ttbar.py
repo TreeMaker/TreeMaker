@@ -14,6 +14,7 @@ flist = {
         ['Fall17.TTJets_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8'],
         ['Fall17.TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8'],
         ['Fall17.TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8'],
+        ['Fall17.TTToSemiLeptonic_TuneCP2_PSweights_13TeV-powheg-pythia8'],
         ['Fall17.TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8'],
     ]
 }

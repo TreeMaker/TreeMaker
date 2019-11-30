@@ -24,6 +24,7 @@ Fall17samples = [
 	MCSample('TTTo2L2Nu_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 66979742, True, 66437660),
 	MCSample('TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 130725364, True, 129670780),
 	MCSample('TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 111325048, True, 110424244),
+        MCSample('TTToSemiLeptonic_TuneCP2_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 104362000, False, 103519416),
 	# WJets Inclusive
 	MCSample('WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 77700506, False, 77631180), # subtotal = 33043732, straight subtotal = 33073306
 	MCSample('WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2', 'RunIIFall17MiniAODv2', 'Constant', 77700506, False, 77631180), # subtotal = 44587448, straight subtotal = 44627200
