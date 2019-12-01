@@ -25,6 +25,21 @@ Fall17samples = [
 	MCSample('TTToHadronic_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 130725364, True, 129670780),
 	MCSample('TTToSemiLeptonic_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 111325048, True, 110424244),
         MCSample('TTToSemiLeptonic_TuneCP2_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 104362000, False, 103519416),
+        MCSample('TTTo2L2Nu_TuneCP5_erdON_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5092000, False, 5050286),
+        MCSample('TTToHadronic_TuneCP5_erdON_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v3', 'RunIIFall17MiniAODv2', 'Constant', 26893000, False, 26675524),
+        MCSample('TTToSemiLeptonic_TuneCP5_erdON_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 9117000, False, 9043828),
+        MCSample('TTTo2L2Nu_hdampUP_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 3288128, False, 3273354),
+        MCSample('TTToHadronic_hdampUP_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 27260880, False, 27137584),
+        MCSample('TTToSemiLeptonic_hdampUP_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 23977012, False, 23868910),
+        MCSample('TTTo2L2Nu_hdampDOWN_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5476459, False, 5385951),
+        MCSample('TTToHadronic_hdampDOWN_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 27117982, False, 26671068),
+        MCSample('TTToSemiLeptonic_hdampDOWN_TuneCP5_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 26849863, False, 26406444),
+        MCSample('TTTo2L2Nu_TuneCP5up_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5500000, False, 5455706),
+        MCSample('TTToHadronic_TuneCP5up_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 27108792, False, 26889896),
+        MCSample('TTToSemiLeptonic_TuneCP5up_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 20122010, False, 19959204),
+        MCSample('TTTo2L2Nu_TuneCP5down_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v1', 'RunIIFall17MiniAODv2', 'Constant', 5500000, False, 5455842),
+        MCSample('TTToHadronic_TuneCP5down_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 27252808, False, 27032802),
+        MCSample('TTToSemiLeptonic_TuneCP5down_PSweights_13TeV-powheg-pythia8', 'PU2017_12Apr2018_new_pmx_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 22911672, False, 22726990),
 	# WJets Inclusive
 	MCSample('WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14-v2', 'RunIIFall17MiniAODv2', 'Constant', 77700506, False, 77631180), # subtotal = 33043732, straight subtotal = 33073306
 	MCSample('WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8', 'PU2017_12Apr2018_94X_mc2017_realistic_v14_ext1-v2', 'RunIIFall17MiniAODv2', 'Constant', 77700506, False, 77631180), # subtotal = 44587448, straight subtotal = 44627200

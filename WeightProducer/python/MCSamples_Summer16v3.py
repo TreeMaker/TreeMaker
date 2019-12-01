@@ -28,6 +28,16 @@ Summer16v3samples = [
 	MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrdown-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1', 'RunIISummer16MiniAODv3', 'Constant', 58420151, False), # subtotal = 29915551
 	MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-isrup-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 58977100, False),        
 	MCSample('TT_TuneCUETP8M2T4_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 76915549, False),
+        MCSample('TT_TuneCUETP8M2T4_erdON_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 59309072, False), # subtotal = 29350720
+        MCSample('TT_TuneCUETP8M2T4_erdON_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 59309072, False), # subtotal = 29958352
+        MCSample('TT_hdampUP_TuneCUETP8M2T4_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 58689096, False), # subtotal = 29833668
+        MCSample('TT_hdampUP_TuneCUETP8M2T4_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 58689096, False), # subtotal = 28855428
+        MCSample('TT_hdampDOWN_TuneCUETP8M2T4_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 58353717, False), # subtotal = 29124629
+        MCSample('TT_hdampDOWN_TuneCUETP8M2T4_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1', 'RunIISummer16MiniAODv3', 'Constant', 58353717, False), # subtotal = 29229088
+        MCSample('TT_TuneCUETP8M2T4up_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v1', 'RunIISummer16MiniAODv3', 'Constant', 58672604, False), # subtotal = 29173700
+        MCSample('TT_TuneCUETP8M2T4up_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2', 'RunIISummer16MiniAODv3', 'Constant', 58672604, False), # subtotal = 29498904
+        MCSample('TT_TuneCUETP8M2T4down_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 58220060, False), # subtotal = 28222088
+        MCSample('TT_TuneCUETP8M2T4down_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v1', 'RunIISummer16MiniAODv3', 'Constant', 58220060, False), # subtotal = 29997972
 	MCSample('TTTo2L2Nu_TuneCUETP8M2_ttHtranche3_13TeV-powheg-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 79140880, False),
 	MCSample('WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3-v2', 'RunIISummer16MiniAODv3', 'Constant', 86916455, False), # subtotal = 29514020
 	MCSample('WJetsToLNu_TuneCUETP8M1_13TeV-madgraphMLM-pythia8', 'PUMoriond17_94X_mcRun2_asymptotic_v3_ext2-v2', 'RunIISummer16MiniAODv3', 'Constant', 86916455, False), # subtotal = 57402435
