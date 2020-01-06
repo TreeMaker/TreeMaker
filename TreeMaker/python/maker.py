@@ -63,6 +63,7 @@ class maker:
         self.getParamDefault("pmssm",self.scenario.pmssm)
         self.getParamDefault("fastsim",self.scenario.fastsim)
         self.getParamDefault("signal",self.scenario.signal)
+        self.getParamDefault("scan",self.scenario.scan)
         self.getParamDefault("jsonfile",self.scenario.jsonfile)
         self.getParamDefault("jecfile",self.scenario.jecfile)
         self.getParamDefault("residual",self.scenario.residual)
@@ -138,6 +139,7 @@ class maker:
         print " Including gen-level information: "+str(self.geninfo)
         print " Including pMSSM-related information: "+str(self.pmssm)
         print " Using fastsim settings: "+str(self.fastsim)
+        print " Using scan settings: "+str(self.scan)
         print " Running signal uncertainties: "+str(self.signal)
         if len(self.jsonfile)>0: print " JSON file applied: "+self.jsonfile
         if len(self.jecfile)>0: print " JECs applied: "+self.jecfile+(" (residuals)" if self.residual else "")

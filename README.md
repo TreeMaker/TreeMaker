@@ -41,24 +41,27 @@ global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC
 The available scenarios are:  
 1.  `Summer16`: for Summer16 miniAOD MC (80X)
 2.  `Summer16sig`: for Summer16 miniAOD MC (80X) (signal)
-3.  `Summer16v3`: for Summer16 miniAODv3 MC  
-4.  `Summer16v3sig`: for Summer16 miniAODv3 MC (signal)  
-5.  `Summer16v3Fast`: for Summer16 miniAODv3 FastSim MC (background)  
-6.  `Summer16v3Fastsig`: for Summer16 miniAODv3 FastSim MC (signal)  
-7.  `2016ReReco17Jul`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
-8.  `Fall17`: for Fall17 miniAOD MC
-9.  `Fall17sig`: for Fall17 miniAOD MC (signal)
-10. `Fall17Fast`: for Fall17 miniAOD FastSim MC (background)
-11. `Fall17Fastsig`: for Fall17 miniAOD FastSim MC (signal)
-12. `2017ReReco31Mar`: for 2017 ReReco data (31Mar), periods B-F
-13. `Autumn18`: for Autumn18 miniAOD MC (102X)
-14. `Autumn18sig`: for Autumn18 miniAOD MC (102X) (signal)
-15. `Autumn18Fast`: for Autumn18 miniAOD FastSim MC (background)
-16. `Autumn18Fastsig`: for Autumn18 miniAOD FastSim MC (signal)
-17. `2018B26Sep`: for 2018 prompt data, partial period B
-18. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
-19. `2018PromptReco`: for 2018 prompt data (or 22Jan2019, produced w/ prompt conditions), run period D
-20. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
+3.  `Summer16v3`: for Summer16 miniAODv3 MC
+4.  `Summer16v3sig`: for Summer16 miniAODv3 MC (signal)
+5.  `Summer16v3sigscan`: for Summer16 miniAODv3 MC with multiple mass points(signal)
+6.  `Summer16v3Fast`: for Summer16 miniAODv3 FastSim MC (background)  
+7.  `Summer16v3Fastsig`: for Summer16 miniAODv3 FastSim MC (signal)  
+8.  `2016ReReco17Jul`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
+9.  `Fall17`: for Fall17 miniAOD MC
+10. `Fall17sig`: for Fall17 miniAOD MC (signal)
+11. `Fall17sigscan`: for Fall17 miniAOD MC with multiple mass points (signal)
+12. `Fall17Fast`: for Fall17 miniAOD FastSim MC (background)
+13. `Fall17Fastsig`: for Fall17 miniAOD FastSim MC (signal)
+14. `2017ReReco31Mar`: for 2017 ReReco data (31Mar), periods B-F
+15. `Autumn18`: for Autumn18 miniAOD MC (102X)
+16. `Autumn18sig`: for Autumn18 miniAOD MC (102X) (signal)
+17. `Autumn18sigscan`: for Autumn18 miniAOD MC with multiple mass points (102X) (signal)
+18. `Autumn18Fast`: for Autumn18 miniAOD FastSim MC (background)
+19. `Autumn18Fastsig`: for Autumn18 miniAOD FastSim MC (signal)
+20. `2018B26Sep`: for 2018 prompt data, partial period B
+21. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
+22. `2018PromptReco`: for 2018 prompt data (or 22Jan2019, produced w/ prompt conditions), run period D
+23. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
 
 ## Unit Tests (Interactive Runs)
 
