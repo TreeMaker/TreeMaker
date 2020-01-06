@@ -73,6 +73,7 @@ def makeTreeFromMiniAOD(self,process):
             if self.pmssm: process.SignalScan.signalType = "pMSSM"
             elif self.fastsim: process.SignalScan.signalType = "SUSY"
             elif "SVJ" in self.sample and "Scan" in self.sample: process.SignalScan.signalType = "SVJ"
+            elif self.scan: process.SignalScan.signalType = "SUSY"
         
     ## ----------------------------------------------------------------------------------------------
     ## WeightProducer
