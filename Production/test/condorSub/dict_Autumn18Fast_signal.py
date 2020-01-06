@@ -14,5 +14,6 @@ flist = {
         ['Autumn18Fast.SMS-T2qq_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Autumn18Fast.SMS-T2qq_mSq-1850to2600_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Autumn18Fast.SMS-T5qqqqVV_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18Fast.SMS-TChiHH_HToBB_HToBB_TuneCP2_13TeV-madgraphMLM-pythia8'],
     ]
 }
