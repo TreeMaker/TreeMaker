@@ -455,17 +455,11 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 "pfMassIndependentDeepDoubleBvLJetTagsProbHbb",
                 "pfMassIndependentDeepDoubleCvLJetTagsProbHcc",
                 "pfMassIndependentDeepDoubleCvBJetTagsProbHcc",
-                "deepDoubleBDiscriminatorH",
-                "deepDoubleBDiscriminatorQ",
             ])
-            JetPropertiesAK8.deepDoubleBDiscriminatorH = cms.vstring('pfDeepDoubleBJetTags:probH')
-            JetPropertiesAK8.deepDoubleBDiscriminatorQ = cms.vstring('pfDeepDoubleBJetTags:probQ')
             JetPropertiesAK8.pfMassIndependentDeepDoubleBvLJetTagsProbHbb = cms.vstring('pfMassIndependentDeepDoubleBvLJetTags:probHbb')
             JetPropertiesAK8.pfMassIndependentDeepDoubleCvLJetTagsProbHcc = cms.vstring('pfMassIndependentDeepDoubleCvLJetTags:probHcc')
             JetPropertiesAK8.pfMassIndependentDeepDoubleCvBJetTagsProbHcc = cms.vstring('pfMassIndependentDeepDoubleCvBJetTags:probHcc')
             self.VectorDouble.extend([
-                'JetProperties'+suff+':deepDoubleBDiscriminatorH(Jets'+suff+'_deepDoubleBDiscriminatorH)',
-                'JetProperties'+suff+':deepDoubleBDiscriminatorQ(Jets'+suff+'_deepDoubleBDiscriminatorQ)',
                 'JetProperties'+suff+':pfMassIndependentDeepDoubleBvLJetTagsProbHbb(Jets'+suff+'_pfMassIndependentDeepDoubleBvLJetTagsProbHbb)',
                 'JetProperties'+suff+':pfMassIndependentDeepDoubleCvLJetTagsProbHcc(Jets'+suff+'_pfMassIndependentDeepDoubleCvLJetTagsProbHcc)',
                 'JetProperties'+suff+':pfMassIndependentDeepDoubleCvBJetTagsProbHcc(Jets'+suff+'_pfMassIndependentDeepDoubleCvBJetTagsProbHcc)',
