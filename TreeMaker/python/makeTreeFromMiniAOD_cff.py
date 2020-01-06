@@ -329,7 +329,23 @@ def makeTreeFromMiniAOD(self,process):
             process.pfDeepBoostedJetTagInfosAK8UpdatedJEC.min_jet_pt = cms.double(0)
 
         JetAK8Tag = cms.InputTag('updatedPatJetsTransientCorrectedAK8UpdatedJEC')
-        
+ 
+        # update the corrections for the subjets from the AK8 jets
+        # the references from the AK8 jets to the subjects will be fixed later on
+        updateJetCollection(
+            process,
+            jetSource = SubjetTag,
+            labelName = 'AK4',
+            postfix = 'UpdatedJEC',
+            jetCorrections = ('AK4PFPuppi', levels, 'None'),
+            pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+            svSource = cms.InputTag('slimmedSecondaryVertices'),
+            rParam = 0.4,
+            btagDiscriminators = ['None'],
+            printWarning = bool(self.verbose),
+        )
+        SubjetTag = cms.InputTag(SubjetTag.value()+'UpdatedJEC')
+       
         # update the MET to account for the new JECs
         from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
         runMetCorAndUncFromMiniAOD(

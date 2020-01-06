@@ -255,7 +255,7 @@ class NamedPtr_softDropMass : public NamedPtr<double> {
 			LorentzVector fatJet;
 			auto const & subjets = Jet.subjets(extraInfo.at(0));
 			for ( auto const & it : subjets ) {
-				fatJet += it->correctedP4(0);
+				fatJet += it->p4();
 			}
 			push_back(fatJet.M());
 		}
