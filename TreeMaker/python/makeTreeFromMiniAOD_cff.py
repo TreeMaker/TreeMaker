@@ -278,7 +278,7 @@ def makeTreeFromMiniAOD(self,process):
             ak8updates.extend(["pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:"+x for x in ["TvsQCD","WvsQCD","ZHbbvsQCD"]])
 
         if self.deepDoubleB:
-            ak8updates.extend(['pfDeepDoubleBJetTags:'+x for x in ['probQ','probH']])
+            ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb','pfMassIndependentDeepDoubleCvLJetTags:probHcc','pfMassIndependentDeepDoubleCvBJetTags:probHcc'])
 
         if TMeras.TM80X.isChosen():
             # use jet toolbox to rerun puppi, recluster AK8 jets, and compute substructure variables
