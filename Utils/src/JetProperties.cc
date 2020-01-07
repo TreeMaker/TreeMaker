@@ -387,7 +387,7 @@ class NamedPtr_subjets : public NamedPtr<std::vector<TLorentzVector>> {
 			const auto& subjets = Jet.subjets(extraInfo.at(0));
 			subvecs.reserve(subjets.size());
 			for (const auto& subjet : subjets) {
-				const auto& p4 = subjet->correctedP4(0);
+				const auto& p4 = subjet->p4();
 				subvecs.emplace_back(p4.px(),p4.py(),p4.pz(),p4.energy());
 			}
 			ptr->push_back(subvecs);
@@ -397,6 +397,21 @@ DEFINE_NAMED_PTR(subjets);
 
 //----------------------------------------------------------------------------------------------------------------------------------------
 //subjet floats
+
+class NamedPtr_SJjec : public NamedPtr<std::vector<double>> {
+	public:
+		using NamedPtr<std::vector<double>>::NamedPtr;
+		void get_property(const pat::Jet& Jet) override {
+			std::vector<double> vec;
+			auto const & subjets = Jet.subjets(extraInfo.at(0));
+			vec.reserve(subjets.size());
+			for ( auto const & it : subjets ) {
+				vec.push_back(it->jecFactor(it->availableJECLevels().back())/it->jecFactor("Uncorrected"));
+			}
+			ptr->push_back(vec);
+		}
+};
+DEFAULT_NAMED_PTR(SJjec,jecFactorSubjets);
 
 class NamedPtr_SJD : public NamedPtr<std::vector<double>> {
 	public:

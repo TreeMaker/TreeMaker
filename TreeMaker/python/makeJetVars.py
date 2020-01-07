@@ -525,12 +525,14 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             ])
 
             # extra stuff for subjets
-            JetPropertiesAK8.properties.extend(["SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
+            JetPropertiesAK8.properties.extend(["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
+            JetPropertiesAK8.jecFactorSubjets = cms.vstring('SoftDropPuppiUpdated')
             JetPropertiesAK8.SJptD = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:ptD')
             JetPropertiesAK8.SJaxismajor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis1')
             JetPropertiesAK8.SJaxisminor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis2')
             JetPropertiesAK8.SJmultiplicity = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:mult')
             self.VectorVectorDouble.extend([
+                'JetProperties'+suff+':jecFactorSubjets(Jets'+suff+'_subjets_jecFactor)',
                 'JetProperties'+suff+':SJptD(Jets'+suff+'_subjets_ptD)',
                 'JetProperties'+suff+':SJaxismajor(Jets'+suff+'_subjets_axismajor)',
                 'JetProperties'+suff+':SJaxisminor(Jets'+suff+'_subjets_axisminor)',
