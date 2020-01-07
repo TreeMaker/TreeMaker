@@ -583,6 +583,15 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 self.VectorVectorTLorentzVector.extend([
                     'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
                 ])
+
+        if self.debugsubjets and storeProperties>1:
+            JetPropertiesAK8.GenSubjetTag = cms.InputTag('slimmedGenJetsAK8SoftDropSubJets')
+            JetPropertiesAK8.properties.extend(["SJresponse"])
+            JetPropertiesAK8.SJresponse = cms.vstring('SoftDropPuppiUpdated')
+            self.VectorVectorDouble.extend([
+                'JetProperties'+suff+':SJresponse(Jets'+suff+'_subjets_response)',
+            ])
+
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
     return process        

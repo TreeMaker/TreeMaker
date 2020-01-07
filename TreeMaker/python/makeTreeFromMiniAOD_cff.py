@@ -237,6 +237,11 @@ def makeTreeFromMiniAOD(self,process):
                 ),
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK4PFPuppi"),
+                    label  = cms.untracked.string("AK4PFPuppi")
+                ),
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
                     tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK8PFPuppi"),
                     label  = cms.untracked.string("AK8PFPuppi")
                 ),
@@ -345,7 +350,7 @@ def makeTreeFromMiniAOD(self,process):
             printWarning = bool(self.verbose),
         )
 
-        SubjetTag = cms.InputTag('updatedPatJetsSlimmedJetsAK8PFPuppiSoftDropPackedSubJetsUpdatedJEC')
+        SubjetTag = cms.InputTag('updatedPatJetsTransientCorrectedSlimmedJetsAK8PFPuppiSoftDropPackedSubJetsUpdatedJEC')
        
         # update the MET to account for the new JECs
         from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
