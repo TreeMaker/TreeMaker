@@ -230,6 +230,7 @@ Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
+* `debugsubjets`: store some additional information for the AK8 subjets (default=False)
 * `applybaseline`: switch to apply the baseline HT selection (default=False)
 * `saveMinimalGenParticles`: save only the hard scatter gen particles coming from top decays, boson decays, semi-visible jets, or SUSY particles (default=True)
 
@@ -239,6 +240,7 @@ The following parameters take their default values from the specified scenario:
 * `geninfo`: switch to enable use of generator information, should only be used for MC
 * `fastsim`: switch to enable special settings for SUSY signal scans produced with FastSim
 * `pmssm`: switch to enable special settings for pMSSM signal scans
+* `scan`: switch to enable special settings for scans produced with FullSim
 * `signal`: switch to enable assessment of signal systematics (currently unused)
 * `jsonfile`: name of JSON file to apply to data
 * `jecfile`: name of a database file from which to get JECs

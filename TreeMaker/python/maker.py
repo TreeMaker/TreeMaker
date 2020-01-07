@@ -52,6 +52,7 @@ class maker:
         
         # other options off by default
         self.getParamDefault("debugtracks", False)
+        self.getParamDefault("debugsubjets", False)
         self.getParamDefault("applybaseline", False)
         self.getParamDefault("saveMinimalGenParticles", True)
         
@@ -129,6 +130,7 @@ class maker:
         print " storing PDF weights: "+str(self.doPDFs)
         print " "
         print " storing track debugging variables: "+str(self.debugtracks)
+        print " storing subjet debugging variables: "+str(self.debugsubjets)
         print " Applying baseline selection filter: "+str(self.applybaseline)
         print " Storing a minimal set of GenParticles: "+str(self.saveMinimalGenParticles)
         print " "

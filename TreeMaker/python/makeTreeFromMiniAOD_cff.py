@@ -237,6 +237,11 @@ def makeTreeFromMiniAOD(self,process):
                 ),
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
+                    tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK4PFPuppi"),
+                    label  = cms.untracked.string("AK4PFPuppi")
+                ),
+                cms.PSet(
+                    record = cms.string("JetCorrectionsRecord"),
                     tag    = cms.string("JetCorrectorParametersCollection_"+JECera+"_AK8PFPuppi"),
                     label  = cms.untracked.string("AK8PFPuppi")
                 ),
@@ -329,7 +334,24 @@ def makeTreeFromMiniAOD(self,process):
             process.pfDeepBoostedJetTagInfosAK8UpdatedJEC.min_jet_pt = cms.double(0)
 
         JetAK8Tag = cms.InputTag('updatedPatJetsTransientCorrectedAK8UpdatedJEC')
-        
+ 
+        # update the corrections for the subjets from the AK8 jets
+        # the references from the AK8 jets to the subjects will be fixed later on
+        updateJetCollection(
+            process,
+            jetSource = SubjetTag,
+            labelName = 'slimmedJetsAK8PFPuppiSoftDropPackedSubJets',
+            postfix = 'UpdatedJEC',
+            jetCorrections = ('AK4PFPuppi', levels, 'None'),
+            pvSource = cms.InputTag('offlineSlimmedPrimaryVertices'),
+            svSource = cms.InputTag('slimmedSecondaryVertices'),
+            rParam = 0.4,
+            btagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
+            printWarning = bool(self.verbose),
+        )
+
+        SubjetTag = cms.InputTag('updatedPatJetsTransientCorrectedSlimmedJetsAK8PFPuppiSoftDropPackedSubJetsUpdatedJEC')
+       
         # update the MET to account for the new JECs
         from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD
         runMetCorAndUncFromMiniAOD(

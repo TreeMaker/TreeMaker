@@ -379,13 +379,13 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
         )
         # specify userfloats
         JetPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsCHSValueMap:ak8PFJetsCHSPrunedMass')
-        JetPropertiesAK8.softDropMass = cms.vstring('SoftDropPuppi') # computed from subjets
+        JetPropertiesAK8.softDropMass = cms.vstring('SoftDropPuppiUpdated') # computed from subjets
         JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
         JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
         JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
         JetPropertiesAK8.bDiscriminatorCSV = cms.vstring('pfBoostedDoubleSecondaryVertexAK8BJetTags')
-        JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppi')
-        JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDropPuppi','pfCombinedInclusiveSecondaryVertexV2BJetTags')
+        JetPropertiesAK8.subjets = cms.vstring('SoftDropPuppiUpdated')
+        JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDropPuppiUpdated','pfCombinedInclusiveSecondaryVertexV2BJetTags')
         self.VectorDouble.extend([
             'JetProperties'+suff+':prunedMass(Jets'+suff+'_prunedMass)',
             'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
@@ -525,12 +525,14 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             ])
 
             # extra stuff for subjets
-            JetPropertiesAK8.properties.extend(["SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
+            JetPropertiesAK8.properties.extend(["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
+            JetPropertiesAK8.jecFactorSubjets = cms.vstring('SoftDropPuppiUpdated')
             JetPropertiesAK8.SJptD = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:ptD')
             JetPropertiesAK8.SJaxismajor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis1')
             JetPropertiesAK8.SJaxisminor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis2')
             JetPropertiesAK8.SJmultiplicity = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:mult')
             self.VectorVectorDouble.extend([
+                'JetProperties'+suff+':jecFactorSubjets(Jets'+suff+'_subjets_jecFactor)',
                 'JetProperties'+suff+':SJptD(Jets'+suff+'_subjets_ptD)',
                 'JetProperties'+suff+':SJaxismajor(Jets'+suff+'_subjets_axismajor)',
                 'JetProperties'+suff+':SJaxisminor(Jets'+suff+'_subjets_axisminor)',
@@ -581,6 +583,15 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 self.VectorVectorTLorentzVector.extend([
                     'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
                 ])
+
+        if self.debugsubjets and storeProperties>1:
+            JetPropertiesAK8.GenSubjetTag = cms.InputTag('slimmedGenJetsAK8SoftDropSubJets')
+            JetPropertiesAK8.properties.extend(["SJresponse"])
+            JetPropertiesAK8.SJresponse = cms.vstring('SoftDropPuppiUpdated')
+            self.VectorVectorDouble.extend([
+                'JetProperties'+suff+':SJresponse(Jets'+suff+'_subjets_response)',
+            ])
+
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
 
     return process        
