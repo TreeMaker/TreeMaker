@@ -46,6 +46,7 @@ def makeTreeFromMiniAOD(self,process):
         VectorVectorDouble         = self.VectorVectorDouble,
         VectorVectorString         = self.VectorVectorString,
         VectorVectorTLorentzVector = self.VectorVectorTLorentzVector,
+        TitleMap                   = self.TitleMap,
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -660,7 +661,21 @@ def makeTreeFromMiniAOD(self,process):
         triggerNameList = _triggerNameList
     )
     self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales','TriggerProducer:TriggerVersion'])
-    self.VectorString.extend(['TriggerProducer:TriggerNames'])
+    #self.VectorString.extend(['TriggerProducer:TriggerNames'])
+
+
+
+
+#################FIX ME
+    _joinedTriggerNameList = ','.join(_triggerNameList)
+    self.TitleMap.extend([
+        'TriggerProducer:TriggerPass',_joinedTriggerNameList,
+        'TriggerProducer:TriggerPrescales',_joinedTriggerNameList,
+        'TriggerProducer:TriggerVersion',_joinedTriggerNameList
+    ])
+
+
+
     if "SingleElectron" in process.source.fileNames[0] or "EGamma" in process.source.fileNames[0]:
         process.TriggerProducer.saveHLTObj = cms.bool(True)
         process.TriggerProducer.saveHLTObjPath = cms.string("HLT_Ele27_WPTight_Gsf_v")

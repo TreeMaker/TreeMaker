@@ -194,35 +194,35 @@ class TreeObject : public TreeObjectBase {
 //specialize!
 
 template<>
-void TreeObject<bool>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/O").c_str()); }
+void TreeObject<bool>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/O").c_str()); }
 template<>
-void TreeObject<int>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/I").c_str()); }
+void TreeObject<int>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/I").c_str()); }
 template<>
-void TreeObject<double>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/D").c_str()); }
+void TreeObject<double>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/D").c_str()); }
 template<>
-void TreeObject<string>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+void TreeObject<string>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
-void TreeObject<TLorentzVector>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+void TreeObject<TLorentzVector>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
-void TreeObject<vector<bool> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<bool>",&value,32000,0); }
+void TreeObject<vector<bool> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<bool>",&value,32000,0); }
 template<>
-void TreeObject<vector<int> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,0); }
+void TreeObject<vector<int> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,0); }
 template<>
-void TreeObject<vector<double> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<double>",&value,32000,0); }
+void TreeObject<vector<double> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<double>",&value,32000,0); }
 template<>
-void TreeObject<vector<string> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,0); }
+void TreeObject<vector<string> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,0); }
 template<>
-void TreeObject<vector<TLorentzVector> >::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0); }
+void TreeObject<vector<TLorentzVector> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0); }
 template<>
-void TreeObject<vector<vector<bool>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<bool>>",&value,32000,0); }
+void TreeObject<vector<vector<bool>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<bool>>",&value,32000,0); }
 template<>
-void TreeObject<vector<vector<int>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<int>>",&value,32000,0); }
+void TreeObject<vector<vector<int>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<int>>",&value,32000,0); }
 template<>
-void TreeObject<vector<vector<double>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<double>>",&value,32000,0); }
+void TreeObject<vector<vector<double>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<double>>",&value,32000,0); }
 template<>
-void TreeObject<vector<vector<string>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<string>>",&value,32000,0); }
+void TreeObject<vector<vector<string>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<string>>",&value,32000,0); }
 template<>
-void TreeObject<vector<vector<TLorentzVector>>>::AddBranch() { if(tree) tree->Branch(nameInTree.c_str(),"vector<vector<TLorentzVector>>",&value,32000,0); }
+void TreeObject<vector<vector<TLorentzVector>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<TLorentzVector>>",&value,32000,0); }
 
 template<>
 void TreeObject<bool>::SetDefault() { value = false; }

@@ -144,6 +144,7 @@ TreeMaker::beginJob()
 	for(auto & variable : variables){
 		variable->SetTree(tree);
 		variable->AddBranch();
+		variable->AddTitle();
 	}
 }
 
