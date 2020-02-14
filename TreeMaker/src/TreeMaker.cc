@@ -56,7 +56,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 	set<string> titleSet;
 	vector<string> titleVector = iConfig.getParameter< vector<string> >("TitleMap");
 	if(titleVector.size()%2 != 0) {
-		cms::Exception ex("LogicError", "The vector containing the InputTags and titles is odd, indicating that there is not a 1-to-1 pairing");
+		cms::Exception ex("LogicError", "The vector containing the InputTags and titles has an odd number of entries, indicating that there is not a 1-to-1 pairing");
 		ex.addContext("Constructing the TreeMaker class");
 		throw ex;
 	}
