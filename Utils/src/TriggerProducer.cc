@@ -113,7 +113,6 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   edm::InputTag theTrigObjLabel(iConfig.getParameter<edm::InputTag>("trigObj"));
   trigObjCollToken = consumes<pat::TriggerObjectStandAloneCollection>(theTrigObjLabel);
   
-  produces<std::vector<std::string> >("TriggerNames");
   produces<std::vector<int> >("TriggerPass");
   produces<std::vector<int> >("TriggerPrescales");
   produces<std::vector<int> >("TriggerVersion");
@@ -171,7 +170,6 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   auto passTrigVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),-1);
   auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
   auto trigVersionVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),0);
-  auto trigNamesVec = std::make_unique<std::vector<std::string>>(parsedTrigNamesVec);
   auto hltObj = std::make_unique<std::vector<TLorentzVector>>();
 
   //int passesTrigger;
@@ -222,7 +220,6 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   iEvent.put(std::move(passTrigVec),"TriggerPass");
   iEvent.put(std::move(trigPrescaleVec),"TriggerPrescales");
   iEvent.put(std::move(trigVersionVec),"TriggerVersion");
-  iEvent.put(std::move(trigNamesVec),"TriggerNames");
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------

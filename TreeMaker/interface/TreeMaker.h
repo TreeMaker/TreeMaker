@@ -18,6 +18,7 @@
 
 //ROOT headers
 #include "TString.h"
+#include "TBranch.h"
 #include "TTree.h"
 #include <TFile.h>
 #include "TLorentzVector.h"
@@ -71,6 +72,7 @@ class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 		UInt_t lumiBlockNum{};
 		ULong64_t evtNum{};
 		vector<TreeObjectBase*> variables;
+		map<string,string> titleMap;
 };
 
 //base class for tree objects
@@ -78,7 +80,7 @@ class TreeObjectBase {
 	public:
 		//constructor
 		TreeObjectBase() : tempFull(""), branchType("") {}
-		TreeObjectBase(string tempFull_) : tempFull(tempFull_), nameInTree(tempFull_), tagName(tempFull_), tree(nullptr) {}
+		TreeObjectBase(string tempFull_, string title_ = "") : tempFull(tempFull_), nameInTree(tempFull_), tagName(tempFull_), title(title_), tree(nullptr) {}
 		//destructor
 		virtual ~TreeObjectBase() {}
 		//functions
@@ -86,6 +88,7 @@ class TreeObjectBase {
 		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) {}
 		virtual void SetTree(TTree* tree_) { tree = tree_; }
 		virtual void AddBranch() {}
+		virtual void AddTitle() { if(branch) branch->SetTitle(title.c_str()); }
 		virtual void SetDefault() {}
 		virtual void FillTree(const edm::Event& iEvent) {}
 		
@@ -108,9 +111,10 @@ class TreeObjectBase {
 		
 	protected:
 		//member variables
-		string tempFull, nameInTree, tagName, branchType;
+		string tempFull, nameInTree, tagName, branchType, title;
 		TTree* tree{};
 		edm::InputTag tag;
+		TBranch* branch{};
 };
 
 //comparator (case-insensitive sort)
@@ -132,7 +136,7 @@ class TreeObject : public TreeObjectBase {
 	public:
 		//constructor
 		TreeObject() : TreeObjectBase() {}
-		TreeObject(string tempFull_) : TreeObjectBase(tempFull_) {}
+		TreeObject(string tempFull_, string title_) : TreeObjectBase(tempFull_,title_) {}
 		//destructor
 		~TreeObject() override {}
 		//functions
@@ -261,7 +265,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 	public:
 		//constructor
 		TreeRecoCand() : TreeObject<vector<TLorentzVector> >() {}
-		TreeRecoCand(string tempFull_, bool doLorentz_=true) : TreeObject<vector<TLorentzVector> >(tempFull_), doLorentz(doLorentz_) {}
+		TreeRecoCand(string tempFull_, string title_="", bool doLorentz_=true) : TreeObject<vector<TLorentzVector> >(tempFull_,title_), doLorentz(doLorentz_) {}
 		//destructor
 		~TreeRecoCand() override {}
 		
