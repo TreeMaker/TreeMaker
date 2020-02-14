@@ -9,6 +9,8 @@ TreeName = cms.string('RA2Tree'),
 doLorentz = cms.bool(True),
 #branches are sorted alphabetically by default
 sortBranches = cms.bool(True),
+#debug the InputTag to branch mapping by printing the mapping to the log
+debugTitles = cms.bool(False),
 # list of reco candidate objects: for each reco cand collection, the TLorentzVector will be stored in a vector.
 VarsBool = cms.vstring(),
 VarsInt = cms.vstring(),

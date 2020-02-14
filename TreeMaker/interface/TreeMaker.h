@@ -63,7 +63,7 @@ class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 		edm::Service<TFileService> fs;
 		string treeName;
 		TTree* tree;	
-		bool doLorentz, sortBranches;
+		bool doLorentz, sortBranches, debugTitles;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
 		map<string,unsigned> nameCache;
@@ -88,7 +88,7 @@ class TreeObjectBase {
 		virtual void Initialize(map<string,unsigned>& nameCache, edm::ConsumesCollector && iC, stringstream& message) {}
 		virtual void SetTree(TTree* tree_) { tree = tree_; }
 		virtual void AddBranch() {}
-		virtual void AddTitle() { if(branch) branch->SetTitle(title.c_str()); }
+		virtual void AddTitle() { if(branch && !title.empty()) branch->SetTitle(title.c_str()); }
 		virtual void SetDefault() {}
 		virtual void FillTree(const edm::Event& iEvent) {}
 		

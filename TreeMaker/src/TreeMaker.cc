@@ -48,21 +48,28 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 	treeName = iConfig.getParameter<string>("TreeName");
 	doLorentz = iConfig.getParameter<bool>("doLorentz");
 	sortBranches = iConfig.getParameter<bool>("sortBranches");
+	debugTitles = iConfig.getParameter<bool>("debugTitles");
 
 	// parse the TitleMap
 	stringstream skipMessage;
 	stringstream message;
 	set<string> titleSet;
 	vector<string> titleVector = iConfig.getParameter< vector<string> >("TitleMap");
-	message << "TitleMap:\n";
+	if(titleVector.size()%2 != 0) {
+		cms::Exception ex("LogicError", "The vector containing the InputTags and titles is odd, indicating that there is not a 1-to-1 pairing");
+		ex.addContext("Constructing the TreeMaker class");
+		throw ex;
+	}
+
+	if(debugTitles) message << "TitleMap:\n";
 	for(unsigned i = 0; i < titleVector.size(); i+=2){
 		string variable = titleVector.at(i);
 		string title = titleVector.at(i+1);
-		message << "full name:" << variable << " -> title: " << title << "\n";
+		if(debugTitles) message << "full name:" << variable << " -> title: " << title << "\n";
 		//check for an exact repeat of an existing name
 		//otherwise add an entry to the titleMap
 		if (titleSet.find(variable)!=titleSet.end()){
-			if(skipMessage.str().empty()) skipMessage << "Skipping repeated (branch,title) pairs:\n";
+			if(skipMessage.str().empty()) skipMessage << "Skipping repeated branches when determining the (branch,title) mapping:\n";
 			skipMessage << variable << "\n";
 			continue;
 		}
@@ -74,12 +81,17 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 
 	//loop over all var type names to initialize TreeObjects
 	set<string> nameSet;
+	bool firstSkip = true;
 	for(unsigned v = 0; v < VarTypeNames.size(); ++v){
 		vector<string> VarNames = iConfig.getParameter< vector<string> >(VarTypeNames.at(v));
 		message << VarTypeNames.at(v) << ":" << "\n";
 		for(const auto & VarName : VarNames){
 			//check for an exact repeat of an existing name
 			if(nameSet.find(VarName)!=nameSet.end()){
+				if(firstSkip) {
+					skipMessage << "Skipping repeated branches:\n";
+					firstSkip = false;
+				}
 				skipMessage << VarName << "\n";
 				continue;
 			}
@@ -116,7 +128,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 		}
 	}
 	//print info
-	if(!skipMessage.str().empty()) edm::LogInfo("TreeMaker") << "Skipping repeated branches:\n" << skipMessage.str();
+	if(!skipMessage.str().empty()) edm::LogInfo("TreeMaker") << skipMessage.str();
 	edm::LogInfo("TreeMaker") << message.str();
 }
 
