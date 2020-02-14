@@ -44,6 +44,7 @@ class maker:
         # special signal stuff
         self.getParamDefault("systematics",True);
         self.getParamDefault("semivisible",True);
+        self.getParamDefault("emerging",True);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
         
@@ -124,6 +125,7 @@ class maker:
         print " storing hadtau variables: "+str(self.hadtau)+" w/ reclustering "+str(self.hadtaurecluster)
         print " storing Zinv variables: "+str(self.doZinv)
         print " storing semi-visible jet variables: "+str(self.semivisible)
+        print " storing emerging jet variables: "+str(self.semivisible)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
         print " "
