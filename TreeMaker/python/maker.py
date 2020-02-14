@@ -110,6 +110,7 @@ class maker:
         self.VectorVectorDouble         = cms.vstring()
         self.VectorVectorString         = cms.vstring()
         self.VectorVectorTLorentzVector = cms.vstring()
+        self.TitleMap                   = cms.vstring()
 
     def getParamDefault(self,param,default):
         setattr(self,param,self.parameters.value(param,default))
