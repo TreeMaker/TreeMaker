@@ -1116,6 +1116,31 @@ def makeTreeFromMiniAOD(self,process):
             ])
 
     ## ----------------------------------------------------------------------------------------------
+    ## Emerging jets
+    ## ----------------------------------------------------------------------------------------------
+    if self.emerging:
+        from TreeMaker.Utils.candidateTrackMaker_cfi import candidateTrackFilter
+        process.trackFilter = candidateTrackFilter.clone(
+                vertexInputTag    = cms.InputTag("goodVertices"),
+                pfCandidatesTag   = cms.InputTag("packedPFCandidates"),
+        )
+        self.VectorTLorentzVector.extend(['trackFilter:trks(tracks)'])
+        self.VectorDouble.extend([
+            'trackFilter:trksdzpv(tracks_dzpv)',
+            'trackFilter:trksdzerrorpv(tracks_dzerrorpv)',
+            'trackFilter:trksdxypv(tracks_dxypv)',
+            'trackFilter:trksdxyerrorpv(tracks_dxyerrorpv)',
+            'trackFilter:trksnormalizedchi2(tracks_normalizedchi2)',
+        ])
+        self.VectorInt.extend([
+            'trackFilter:trkschg(tracks_charge)',
+            'trackFilter:trksfound(tracks_foundhits)',
+            'trackFilter:trkslost(tracks_losthits)',
+            'trackFilter:pfcandsnumberofhits(pfcands_numberofhits)',
+            'trackFilter:pfcandsnumberofpixelhits(pfcands_numberofpixelhits)',
+        ])
+
+    ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Final steps
     ## ----------------------------------------------------------------------------------------------
