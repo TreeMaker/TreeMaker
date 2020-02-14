@@ -3,6 +3,7 @@
 
 import FWCore.ParameterSet.Config as cms
 import sys,os
+from itertools import chain
 def makeTreeFromMiniAOD(self,process):
 
     ## ----------------------------------------------------------------------------------------------
@@ -46,6 +47,7 @@ def makeTreeFromMiniAOD(self,process):
         VectorVectorDouble         = self.VectorVectorDouble,
         VectorVectorString         = self.VectorVectorString,
         VectorVectorTLorentzVector = self.VectorVectorTLorentzVector,
+        TitleMap                   = self.TitleMap,
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -659,8 +661,11 @@ def makeTreeFromMiniAOD(self,process):
         saveHLTObj = cms.bool(False),
         triggerNameList = _triggerNameList
     )
-    self.VectorInt.extend(['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales','TriggerProducer:TriggerVersion'])
-    self.VectorString.extend(['TriggerProducer:TriggerNames'])
+    _joinedTriggerNameList = ','.join(_triggerNameList)
+    _TriggerBranchesList = ['TriggerProducer:TriggerPass','TriggerProducer:TriggerPrescales','TriggerProducer:TriggerVersion']
+    self.VectorInt.extend(_TriggerBranchesList)
+    self.TitleMap.extend(list(chain.from_iterable([[x,_joinedTriggerNameList] for x in _TriggerBranchesList])))
+
     if "SingleElectron" in process.source.fileNames[0] or "EGamma" in process.source.fileNames[0]:
         process.TriggerProducer.saveHLTObj = cms.bool(True)
         process.TriggerProducer.saveHLTObjPath = cms.string("HLT_Ele27_WPTight_Gsf_v")
