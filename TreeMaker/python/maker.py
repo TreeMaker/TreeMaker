@@ -44,7 +44,7 @@ class maker:
         # special signal stuff
         self.getParamDefault("systematics",True);
         self.getParamDefault("semivisible",True);
-        self.getParamDefault("emerging",True);
+        self.getParamDefault("emerging",False);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
         
@@ -102,6 +102,8 @@ class maker:
         self.VarsInt                    = cms.vstring()
         self.VarsBool                   = cms.vstring()
         self.VectorTLorentzVector       = cms.vstring()
+        self.VectorXYZVector            = cms.vstring()
+        self.VectorXYZPoint             = cms.vstring()
         self.VectorDouble               = cms.vstring()
         self.VectorString               = cms.vstring()
         self.VectorInt                  = cms.vstring()

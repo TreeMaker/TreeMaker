@@ -33,10 +33,17 @@
 #include "DataFormats/Common/interface/View.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
+#include "DataFormats/Math/interface/Vector3D.h"
+#include "DataFormats/Math/interface/Point3D.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/VertexReco/interface/VertexFwd.h"
+
+#include "TrackingTools/IPTools/interface/IPTools.h"
+#include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
+#include "TrackingTools/Records/interface/TransientTrackRecord.h"
+#include "MagneticField/Engine/interface/MagneticField.h"
 
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
@@ -49,8 +56,136 @@
 using namespace std;
 
 //
-// class declaration
+// class declarations
 //
+class TrackInfos {
+public:
+	TrackInfos() {
+		trks                         = std::make_unique<vector<math::XYZVector>>();
+		trks_referencepoint          = std::make_unique<vector<math::XYZPoint>>();
+		trks_chg                     = std::make_unique<vector<int>>();
+		trks_dzpv                    = std::make_unique<vector<double>>();
+		trks_dzerrorpv               = std::make_unique<vector<double>>();
+		trks_dxypv                   = std::make_unique<vector<double>>();
+		trks_dxyerrorpv              = std::make_unique<vector<double>>();
+		trks_normalizedchi2          = std::make_unique<vector<double>>();
+		trks_pterror                 = std::make_unique<vector<double>>();
+		trks_etaerror                = std::make_unique<vector<double>>();
+		trks_phierror                = std::make_unique<vector<double>>();
+		trks_qoverperror             = std::make_unique<vector<double>>();
+		trks_ip2d                    = std::make_unique<vector<double>>();
+		trks_ip2dsig                 = std::make_unique<vector<double>>();
+		trks_ip3d                    = std::make_unique<vector<double>>();
+		trks_ip3dsig                 = std::make_unique<vector<double>>();
+		trks_found                   = std::make_unique<vector<int>>();
+		trks_lost                    = std::make_unique<vector<int>>();
+		trks_quality                 = std::make_unique<vector<int>>();
+		trks_hitpattern              = std::make_unique<vector<vector<int>>>();
+		trks_matchedtopfcand         = std::make_unique<vector<bool>>();
+		pfcands_numberofhits         = std::make_unique<vector<int>>();
+		pfcands_numberofpixelhits    = std::make_unique<vector<int>>();
+		pfcands_firsthit             = std::make_unique<vector<int>>();
+		pfcands_frompv               = std::make_unique<vector<int>>();
+		pfcands_pvassociationquality = std::make_unique<vector<int>>();
+		pfcands_dzassociatedpv       = std::make_unique<vector<double>>();
+	}
+
+	void fill(const reco::Vertex & primaryVertex, const pat::PackedCandidate & pfCand, const reco::Track & track, const reco::TransientTrack & transientTrack, bool trackMatch) {
+		// basic information from the reco::Track
+		trks->push_back(track.momentum());
+		trks_referencepoint->push_back(track.referencePoint());
+		trks_chg->push_back(track.charge());
+		trks_dzpv->push_back(track.dz()); //returns the ip wrt PV[0] 
+		trks_dzerrorpv->push_back(track.dzError());
+		trks_dxypv->push_back(track.dxy());
+		trks_dxyerrorpv->push_back(track.dxyError());
+		trks_normalizedchi2->push_back(track.normalizedChi2());
+		trks_pterror->push_back(track.ptError());
+		trks_etaerror->push_back(track.etaError());
+		trks_phierror->push_back(track.phiError());
+		trks_qoverperror->push_back(track.qoverpError());
+		trks_found->push_back(track.found());
+		trks_lost->push_back(track.lost());
+		// track quality enum options: http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_10_2_11_patch1/doc/html/d8/df2/classreco_1_1TrackBase.html#aeee12ec6a3ea0d65caa2695c84ab25d5
+		//  undefQuality = -1,
+		//  loose = 0,
+		//  tight = 1,
+		//  highPurity = 2,
+		//  confirmed = 3,  // means found by more than one iteration
+		//  goodIterative = 4,  // meaningless
+		//  looseSetWithPV = 5,
+		//  highPuritySetWithPV = 6,
+		//  discarded = 7, // because a better track found. kept in the collection for reference....
+		//  qualitySize = 8
+		trks_quality->push_back(track.qualityMask());
+		// impact parameter variables
+		std::pair<bool,Measurement1D> ip2d = IPTools::absoluteTransverseImpactParameter(transientTrack, primaryVertex);
+		std::pair<bool,Measurement1D> ip3d = IPTools::absoluteImpactParameter3D(transientTrack, primaryVertex);
+		trks_ip2d->push_back(ip2d.second.value());
+		trks_ip2dsig->push_back(ip2d.second.significance());
+		trks_ip3d->push_back(ip3d.second.value());
+		trks_ip3dsig->push_back(ip3d.second.significance());
+		// information on the hit pattern format: http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_10_2_11_patch1/doc/html/db/d39/HitPattern_8h_source.html
+		// hit pattern of the track
+		const reco::HitPattern &hp = track.hitPattern();
+		// loop over the hits of the track and save them in a vector of ints
+		auto nhits = hp.numberOfAllHits(reco::HitPattern::TRACK_HITS);
+		auto hits = vector<int>(nhits,0);
+		for (auto ih=0; ih<nhits; ih++) {
+			hits[ih] = hp.getHitPattern(reco::HitPattern::TRACK_HITS, ih);
+		}
+		trks_hitpattern->push_back(hits);
+		trks_matchedtopfcand->push_back(trackMatch);
+
+		// information from the pat::PackedCandidate
+		pfcands_numberofhits->push_back(pfCand.numberOfHits());
+		pfcands_numberofpixelhits->push_back(pfCand.numberOfPixelHits());
+		pfcands_firsthit->push_back(pfCand.firstHit());
+		pfcands_frompv->push_back(pfCand.fromPV()); //fromPV() returns a number between 3 and 0 to define how tight the association with the PV is
+		pfcands_pvassociationquality->push_back(pfCand.pvAssociationQuality());
+		pfcands_dzassociatedpv->push_back(pfCand.dzAssociatedPV()); //returns the ip wrt the PV associated to this candidate 
+	}
+
+	void put(edm::Event & iEvent) {
+		iEvent.put(std::move(trks                        ), "trks");
+		iEvent.put(std::move(trks_referencepoint         ), "trksreferencepoint");
+		iEvent.put(std::move(trks_chg                    ), "trkschg");
+		iEvent.put(std::move(trks_dzpv                   ), "trksdzpv");
+		iEvent.put(std::move(trks_dzerrorpv              ), "trksdzerrorpv");
+		iEvent.put(std::move(trks_dxypv                  ), "trksdxypv");
+		iEvent.put(std::move(trks_dxyerrorpv             ), "trksdxyerrorpv");
+		iEvent.put(std::move(trks_normalizedchi2         ), "trksnormalizedchi2");
+		iEvent.put(std::move(trks_pterror                ), "trkspterror");
+		iEvent.put(std::move(trks_etaerror               ), "trksetaerror");
+		iEvent.put(std::move(trks_phierror               ), "trksphierror");
+		iEvent.put(std::move(trks_qoverperror            ), "trksqoverperror");
+		iEvent.put(std::move(trks_ip2d                   ), "trksip2d");
+		iEvent.put(std::move(trks_ip2dsig                ), "trksip2dsig");
+		iEvent.put(std::move(trks_ip3d                   ), "trksip3d");
+		iEvent.put(std::move(trks_ip3dsig                ), "trksip3dsig");
+		iEvent.put(std::move(trks_found                  ), "trksfound");
+		iEvent.put(std::move(trks_lost                   ), "trkslost");
+		iEvent.put(std::move(trks_quality                ), "trksquality");
+		iEvent.put(std::move(trks_hitpattern             ), "trkshitpattern");
+		iEvent.put(std::move(trks_matchedtopfcand        ), "trksmatchedtopfcand");
+		iEvent.put(std::move(pfcands_numberofhits        ), "pfcandsnumberofhits");
+		iEvent.put(std::move(pfcands_numberofpixelhits   ), "pfcandsnumberofpixelhits");
+		iEvent.put(std::move(pfcands_firsthit            ), "pfcandsfirsthit");
+		iEvent.put(std::move(pfcands_frompv              ), "pfcandsfrompv");
+		iEvent.put(std::move(pfcands_pvassociationquality), "pfcandspvassociationquality");
+		iEvent.put(std::move(pfcands_dzassociatedpv      ), "pfcandsdzassociatedpv");
+	}
+
+	// ----------member data ---------------------------
+	std::unique_ptr<vector<math::XYZVector>> trks;
+	std::unique_ptr<vector<math::XYZPoint>> trks_referencepoint;
+	std::unique_ptr<vector<bool>> trks_matchedtopfcand;
+	std::unique_ptr<vector<double>> trks_dzpv,trks_dzerrorpv,trks_dxypv,trks_dxyerrorpv,trks_normalizedchi2,trks_pterror,trks_etaerror,
+									trks_phierror,trks_qoverperror,trks_ip2d,trks_ip2dsig,trks_ip3d,trks_ip3dsig, pfcands_dzassociatedpv;
+	std::unique_ptr<vector<int>> trks_chg, trks_found, trks_lost, trks_quality, pfcands_numberofhits, pfcands_numberofpixelhits, pfcands_firsthit, pfcands_frompv, pfcands_pvassociationquality;
+	std::unique_ptr<vector<vector<int>>> trks_hitpattern;
+};
+
 class CandidateTrackFilter : public edm::global::EDFilter<> {
 public:
 	explicit CandidateTrackFilter (const edm::ParameterSet&);
@@ -58,11 +193,14 @@ public:
 
 private:
 	bool filter(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const override;
+	bool filterOnTrack(const pat::PackedCandidate & pfCand, const reco::Track & track) const;
 
 	// ----------member data ---------------------------
 	edm::InputTag pfCandidatesTag_;
+	edm::InputTag lostTracksTag_;
 	edm::InputTag vertexInputTag_;
 	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> pfCandidatesTok_;
+	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> lostTracksTok_;
 	edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
 
 	double minPt_;
@@ -78,6 +216,7 @@ private:
 //
 CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) : 
 	pfCandidatesTag_(iConfig.getParameter<edm::InputTag>("pfCandidatesTag")),
+	lostTracksTag_  (iConfig.getParameter<edm::InputTag>("lostTracksTag")),
 	vertexInputTag_ (iConfig.getParameter<edm::InputTag>("vertexInputTag")),
 	minPt_          (iConfig.getParameter<double>       ("minPt")),
 	maxEta_         (iConfig.getParameter<double>       ("maxEta")),
@@ -87,39 +226,37 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	debug_          (iConfig.getParameter<bool>         ("debug"))
 {	
 	pfCandidatesTok_ = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
-	vertexInputTok_ = consumes<edm::View<reco::Vertex>>(vertexInputTag_);
+	lostTracksTok_   = consumes<edm::View<pat::PackedCandidate>>(lostTracksTag_);
+	vertexInputTok_  = consumes<edm::View<reco::Vertex>>(vertexInputTag_);
 	
 	produces<std::vector<pat::PackedCandidate> >(""); 
-	produces<vector<TLorentzVector> >("trks");
-	produces<vector<int> >   ("trkschg");
-	produces<vector<double> >("trksdzpv");
-	produces<vector<double> >("trksdzerrorpv");
-	produces<vector<double> >("trksdxypv");
-	produces<vector<double> >("trksdxyerrorpv");
-	produces<vector<int> >   ("trksnormalizedchi2");
-	produces<vector<int> >   ("trksfound");
-	produces<vector<int> >   ("trkslost");
-	//produces<vector<bool> >  ("trksquality");
-	produces<vector<int> >   ("pfcandsnumberofhits");
-	produces<vector<int> >   ("pfcandsnumberofpixelhits");
-
-	/*
-	For charged packed PF candidates with pT > 0.5 GeV, additional information is stored with different precision (high precision for pt > 0.95 GeV, low precision for 0.5 GeV < pt < 0.95 GeV )
-
-    the uncertainty on the impact parameter dzError(), dxyError()
-    the number of hits and pixel hits on the track (numberOfHits(), numberOfPixelHits())
-    the number of layers with hits on the track
-    the sub/det and layer of first hit of the track
-    the reco::Track of the candidate is provided by the pseudoTrack() method, with:
-        the pt,eta and phi of the original track (if those are different from the one of the original PFCandidate)
-        an approximate covariance matrix of the track state at the vertex
-        approximate hitPattern() and trackerExpectedHitsInner() that yield the correct number of hits, pixel hits, layers and the information returned by lostInnerHits()
-        (but nothing more, so e.g. you cannot access expected outer hits, or lost hits within the track)
-        the track normalized chisquare (truncated to an integer)
-        the highPurity quality flag set, if the original track had it. 
-*/
-
-
+	produces<vector<math::XYZVector> >          ("trks");
+	produces<vector<math::XYZPoint> >           ("trksreferencepoint");
+	produces<vector<int> >                      ("trkschg");
+	produces<vector<double> >                   ("trksdzpv");
+	produces<vector<double> >                   ("trksdzerrorpv");
+	produces<vector<double> >                   ("trksdxypv");
+	produces<vector<double> >                   ("trksdxyerrorpv");
+	produces<vector<double> >                   ("trksnormalizedchi2");
+	produces<vector<double> >                   ("trkspterror");
+	produces<vector<double> >                   ("trksetaerror");
+	produces<vector<double> >                   ("trksphierror");
+	produces<vector<double> >                   ("trksqoverperror");
+	produces<vector<double> >                   ("trksip2d");
+	produces<vector<double> >                   ("trksip2dsig");
+	produces<vector<double> >                   ("trksip3d");
+	produces<vector<double> >                   ("trksip3dsig");
+	produces<vector<int> >                      ("trksfound");
+	produces<vector<int> >                      ("trkslost");
+	produces<vector<int> >                      ("trksquality");
+	produces<vector<vector<int>> >              ("trkshitpattern");
+	produces<vector<bool> >                     ("trksmatchedtopfcand");
+	produces<vector<int> >                      ("pfcandsnumberofhits");
+	produces<vector<int> >                      ("pfcandsnumberofpixelhits");
+	produces<vector<int> >                      ("pfcandsfirsthit");
+	produces<vector<int> >                      ("pfcandsfrompv");
+	produces<vector<int> >                      ("pfcandspvassociationquality");
+	produces<vector<double> >                   ("pfcandsdzassociatedpv");
 }
 
 CandidateTrackFilter::~CandidateTrackFilter() {
@@ -128,104 +265,115 @@ CandidateTrackFilter::~CandidateTrackFilter() {
 
 // ------------ method called to produce the data  ------------
 bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
-	auto trks                      = std::make_unique<vector<TLorentzVector>>();
-	auto trks_chg                  = std::make_unique<vector<int>>();
-	auto trks_dzpv                 = std::make_unique<vector<double>>();
-	auto trks_dzerrorpv            = std::make_unique<vector<double>>();
-	auto trks_dxypv                = std::make_unique<vector<double>>();
-	auto trks_dxyerrorpv           = std::make_unique<vector<double>>();
-	auto trks_normalizedchi2       = std::make_unique<vector<int>>();
-	auto trks_found                = std::make_unique<vector<int>>();
-	auto trks_lost                 = std::make_unique<vector<int>>();
-	//auto trks_quality              = std::make_unique<vector<bool>>(); 
-	auto pfcands_numberofhits      = std::make_unique<vector<int>>();
-	auto pfcands_numberofpixelhits = std::make_unique<vector<int>>();
-	
-	//---------------------------------
+	TrackInfos infos;
+
+	//----------------------------------------------
 	// get PFCandidate collection
-	//---------------------------------
-  
+	//----------------------------------------------
 	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
 	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
 
-	//---------------------------------
+	//----------------------------------------------
+	// get lostTrack collection
+	//----------------------------------------------  
+	edm::Handle<edm::View<pat::PackedCandidate> > lostTracks;
+	iEvent.getByToken(lostTracksTok_, lostTracks);
+
+	//----------------------------------------------
 	// get Vertex Collection
-	//---------------------------------
-	
+	//----------------------------------------------
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByToken(vertexInputTok_, vertices);
 	bool hasGoodVtx = false;
 	if (!vertices->empty()) hasGoodVtx = true;
+	auto primaryVertex = vertices->at(0); //IS THIS THE PRIMARY VERTEX?
+
+	//-------------------------------------------------------------------------------------
+	// skip events with no good vertices
+	//-------------------------------------------------------------------------------------
+	if(!hasGoodVtx) return false;
+
+	//----------------------------------------------
+	// get TransientTrackBuilder from the EventSetup
+	//----------------------------------------------
+	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideTransientTracks
+	edm::ESHandle<TransientTrackBuilder> ttBuilder;
+	iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",ttBuilder);
 
 	//-------------------------------------------------------------------------------------------------
 	// loop over PFCandidates
 	//-------------------------------------------------------------------------------------------------
-
-    for (size_t i=0; i<pfCandidates->size();i++) {
+	for (size_t i=0; i<pfCandidates->size();i++) {
 		const pat::PackedCandidate pfCand = (*pfCandidates)[i];
-
-		//-------------------------------------------------------------------------------------
-		// skip events with no good vertices
-		//-------------------------------------------------------------------------------------
-		if(!hasGoodVtx) continue;
-
-		//-------------------------------------------------------------------------------------
-		// only store PFCandidate values if pt > minPt and |eta| < maxEta_
-		//-------------------------------------------------------------------------------------
-		if ( (pfCand.pt() < minPt_) || (fabs(pfCand.eta()) > maxEta_) ) continue;
 
 		//-------------------------------------------------------------------------------------
 		// pull the track details, if available
 		//-------------------------------------------------------------------------------------
 		if (!pfCand.hasTrackDetails()) continue;
-		const reco::Track track = pfCand.pseudoTrack();
+		auto track = pfCand.pseudoTrack();
 
 		//-------------------------------------------------------------------------------------
-		// cut on impact parameter quantities
+		// place some minimal cuts on the tracks
 		//-------------------------------------------------------------------------------------
-		if ( (std::abs(track.dz()) > maxdz_) || (std::abs(track.dxy()) > maxdxy_) ) continue;
+		if (!filterOnTrack(pfCand,track)) continue;
 
 		//-------------------------------------------------------------------------------------
-		// cut on chi2
+		// fill the track values and PFCandidate values we'd like to save
 		//-------------------------------------------------------------------------------------
-		if ( (std::abs(track.normalizedChi2()) > maxnormchi2_) ) continue;
-
-	    //-------------------------------------------------------------------------------------
-		// store values
-		//-------------------------------------------------------------------------------------
-
-		TLorentzVector p4(track.px(),track.py(),track.pz(),pfCand.energy());
-		trks->push_back(p4);
-		trks_chg->push_back(track.charge());
-		trks_dzpv->push_back(track.dz());
-		trks_dzerrorpv->push_back(track.dzError());
-		trks_dxypv->push_back(track.dxy());
-		trks_dxyerrorpv->push_back(track.dxyError());
-		trks_normalizedchi2->push_back(track.normalizedChi2());
-		trks_found->push_back(track.found());
-		trks_lost->push_back(track.lost());
-		//trks_quality->push_back(track.quality());
-		pfcands_numberofhits->push_back(pfCand.numberOfHits());
-		pfcands_numberofpixelhits->push_back(pfCand.numberOfPixelHits());
+		auto transientTrack = ttBuilder->build(track);
+		infos.fill(primaryVertex,pfCand,track,transientTrack,true);
 	}
 
-	bool result = trks->empty();
+	//-------------------------------------------------------------------------------------------------
+	// loop over lostTracks
+	//-------------------------------------------------------------------------------------------------
+	for (size_t i=0; i<lostTracks->size();i++) {
+		const pat::PackedCandidate lostTrack = (*lostTracks)[i];
 
-	// put candidate values back into event
-	iEvent.put(std::move(trks                     ), "trks");
-	iEvent.put(std::move(trks_chg                 ), "trkschg");
-	iEvent.put(std::move(trks_dzpv                ), "trksdzpv");
-	iEvent.put(std::move(trks_dzerrorpv           ), "trksdzerrorpv");
-	iEvent.put(std::move(trks_dxypv               ), "trksdxypv");
-	iEvent.put(std::move(trks_dxyerrorpv          ), "trksdxyerrorpv");
-	iEvent.put(std::move(trks_normalizedchi2      ), "trksnormalizedchi2");
-	iEvent.put(std::move(trks_found               ), "trksfound");
-	iEvent.put(std::move(trks_lost                ), "trkslost");
-	//iEvent.put(std::move(trks_quality             ), "trksquality");
-	iEvent.put(std::move(pfcands_numberofhits     ), "pfcandsnumberofhits");
-	iEvent.put(std::move(pfcands_numberofpixelhits), "pfcandsnumberofpixelhits");
+		//-------------------------------------------------------------------------------------
+		// pull the track details, if available
+		//-------------------------------------------------------------------------------------
+		if (!lostTrack.hasTrackDetails()) continue;
+		auto track = lostTrack.pseudoTrack();
 
+		//-------------------------------------------------------------------------------------
+		// place some minimal cuts on the tracks
+		//-------------------------------------------------------------------------------------
+		if (!filterOnTrack(lostTrack,track)) continue;
+
+		//-------------------------------------------------------------------------------------
+		// fill the track values and PFCandidate values we'd like to save
+		//-------------------------------------------------------------------------------------
+		auto transientTrack = ttBuilder->build(track);
+		infos.fill(primaryVertex,lostTrack,track,transientTrack,false);
+	}
+
+	//-------------------------------------------------------------------------------------
+	// put track/PFCandidate values back into event
+	//-------------------------------------------------------------------------------------
+	bool result = infos.trks->empty();
+	infos.put(iEvent);
 	return result;
+}
+
+// ------------ other methods  ------------
+bool CandidateTrackFilter::filterOnTrack(const pat::PackedCandidate & pfCand, const reco::Track & track) const {
+	//-------------------------------------------------------------------------------------
+	// only store PFCandidate values if pt >= minPt and |eta| <= maxEta_
+	//-------------------------------------------------------------------------------------
+	if ( (track.pt() < minPt_) || (fabs(track.eta()) > maxEta_) ) return false;
+
+	//-------------------------------------------------------------------------------------
+	// cut on impact parameter quantities
+	//-------------------------------------------------------------------------------------
+	if ( (std::abs(track.dz()) > maxdz_) || (std::abs(track.dxy()) > maxdxy_) ) return false;
+
+	//-------------------------------------------------------------------------------------
+	// cut on chi2
+	//-------------------------------------------------------------------------------------
+	if ( (std::abs(track.normalizedChi2()) > maxnormchi2_) ) return false;
+
+	return true;
 }
 
 //define this as a plug-in

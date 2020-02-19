@@ -3,14 +3,19 @@
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Common/interface/PtrVector.h"
+#include "DataFormats/Math/interface/Vector3D.h"
+#include "DataFormats/Math/interface/Point3D.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 
 namespace {
   struct dictionary {
     std::vector<TLorentzVector> vlv;
+    std::vector<math::XYZVector> vxyzv;
+    std::vector<math::XYZPoint> vxyzp;
     std::vector<pat::Jet> vpj;
     std::vector<std::vector<TLorentzVector> > vvlv;
     std::vector<std::vector<pat::Jet> > vvpj;
+    std::vector<std::vector<bool> > vvb;
 	edm::PtrVector<pat::PackedCandidate> rv2pp;
     edm::Wrapper<std::vector<TLorentzVector> > wvlv;
     edm::Wrapper<std::vector<std::vector<TLorentzVector> > > wvvlv;

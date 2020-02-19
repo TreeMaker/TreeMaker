@@ -38,6 +38,8 @@ def makeTreeFromMiniAOD(self,process):
         VarsInt                    = self.VarsInt,
         VarsBool                   = self.VarsBool,
         VectorTLorentzVector       = self.VectorTLorentzVector,
+        VectorXYZVector            = self.VectorXYZVector,
+        VectorXYZPoint             = self.VectorXYZPoint,
         VectorDouble               = self.VectorDouble,
         VectorInt                  = self.VectorInt,
         VectorString               = self.VectorString,
@@ -1119,25 +1121,46 @@ def makeTreeFromMiniAOD(self,process):
     ## Emerging jets
     ## ----------------------------------------------------------------------------------------------
     if self.emerging:
+        process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
+
         from TreeMaker.Utils.candidateTrackMaker_cfi import candidateTrackFilter
         process.trackFilter = candidateTrackFilter.clone(
                 vertexInputTag    = cms.InputTag("goodVertices"),
                 pfCandidatesTag   = cms.InputTag("packedPFCandidates"),
+                lostTracksTag     = cms.InputTag("lostTracks"),
         )
-        self.VectorTLorentzVector.extend(['trackFilter:trks(tracks)'])
+        self.VectorXYZVector.extend(['trackFilter:trks(Tracks)'])
+        self.VectorXYZPoint.extend(['trackFilter:trksreferencepoint(Tracks_referencePoint)'])
+        self.VectorBool.extend(['trackFilter:trksmatchedtopfcand(Tracks_matchedToPFCandidate)',])
         self.VectorDouble.extend([
-            'trackFilter:trksdzpv(tracks_dzpv)',
-            'trackFilter:trksdzerrorpv(tracks_dzerrorpv)',
-            'trackFilter:trksdxypv(tracks_dxypv)',
-            'trackFilter:trksdxyerrorpv(tracks_dxyerrorpv)',
-            'trackFilter:trksnormalizedchi2(tracks_normalizedchi2)',
+            'trackFilter:trksdzpv(Tracks_dzPV0)',
+            'trackFilter:trksdzerrorpv(Tracks_dzErrorPV0)',
+            'trackFilter:trksdxypv(Tracks_dxyPV0)',
+            'trackFilter:trksdxyerrorpv(Tracks_dxyErrorPV0)',
+            'trackFilter:trksnormalizedchi2(Tracks_normalizedChi2)',
+            'trackFilter:trkspterror(Tracks_ptError)',
+            'trackFilter:trksetaerror(Tracks_etaError)',
+            'trackFilter:trksphierror(Tracks_phiError)',
+            'trackFilter:trksqoverperror(Tracks_qoverpError)',
+            'trackFilter:trksip2d(Tracks_IP2DPV0)',
+            'trackFilter:trksip2dsig(Tracks_IP2dSigPV0)',
+            'trackFilter:trksip3d(Tracks_IP3DPV0)',
+            'trackFilter:trksip3dsig(Tracks_IP3DSigPV0)',
+            'trackFilter:pfcandsdzassociatedpv(PFCandidates_dzAssociatedPV)',
         ])
         self.VectorInt.extend([
-            'trackFilter:trkschg(tracks_charge)',
-            'trackFilter:trksfound(tracks_foundhits)',
-            'trackFilter:trkslost(tracks_losthits)',
-            'trackFilter:pfcandsnumberofhits(pfcands_numberofhits)',
-            'trackFilter:pfcandsnumberofpixelhits(pfcands_numberofpixelhits)',
+            'trackFilter:trkschg(Tracks_charge)',
+            'trackFilter:trksfound(Tracks_foundHits)',
+            'trackFilter:trkslost(Tracks_lostHits)',
+            'trackFilter:trksquality(Tracks_quality)',
+            'trackFilter:pfcandsnumberofhits(PFCandidates_numberOfHits)',
+            'trackFilter:pfcandsnumberofpixelhits(PFCandidates_numberOfPixelHits)',
+            'trackFilter:pfcandsfirsthit(PFCandidates_firstHit)',
+            'trackFilter:pfcandsfrompv(PFCandidates_fromPV0)',
+            'trackFilter:pfcandspvassociationquality(PFCandidates_pvAssociationQuality)',
+        ])
+        self.VectorVectorInt.extend([
+            'trackFilter:trkshitpattern(Tracks_hitPattern)',
         ])
 
     ## ----------------------------------------------------------------------------------------------

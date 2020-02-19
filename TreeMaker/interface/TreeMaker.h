@@ -36,9 +36,9 @@ using namespace std;
 
 //enum with known types
 enum TreeTypes { 
-	t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4,
-	t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104,
-	t_vvbool=200, t_vvint=201, t_vvdouble=202, t_vvstring=203, t_vvlorentz=204,
+	t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4, t_xyzv=5, t_xyzp=6,
+	t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104, t_vxyzv=105, t_vxyzp=106,
+	t_vvbool=200, t_vvint=201, t_vvdouble=202, t_vvstring=203, t_vvlorentz=204, t_vvxyzv=205, t_vvxyzp=206,
 	t_recocand=1000
 };
 
@@ -208,6 +208,10 @@ void TreeObject<string>::AddBranch() { if(tree) branch = tree->Branch(nameInTree
 template<>
 void TreeObject<TLorentzVector>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
+void TreeObject<math::XYZVector>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+template<>
+void TreeObject<math::XYZPoint>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+template<>
 void TreeObject<vector<bool> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<bool>",&value,32000,0); }
 template<>
 void TreeObject<vector<int> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,0); }
@@ -218,6 +222,10 @@ void TreeObject<vector<string> >::AddBranch() { if(tree) branch = tree->Branch(n
 template<>
 void TreeObject<vector<TLorentzVector> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0); }
 template<>
+void TreeObject<vector<math::XYZVector> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::XYZVector>",&value,32000,0); }
+template<>
+void TreeObject<vector<math::XYZPoint> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::XYZPoint>",&value,32000,0); }
+template<>
 void TreeObject<vector<vector<bool>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<bool>>",&value,32000,0); }
 template<>
 void TreeObject<vector<vector<int>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<int>>",&value,32000,0); }
@@ -227,6 +235,10 @@ template<>
 void TreeObject<vector<vector<string>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<string>>",&value,32000,0); }
 template<>
 void TreeObject<vector<vector<TLorentzVector>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<TLorentzVector>>",&value,32000,0); }
+template<>
+void TreeObject<vector<vector<math::XYZVector>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::XYZVector>>",&value,32000,0); }
+template<>
+void TreeObject<vector<vector<math::XYZPoint>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::XYZPoint>>",&value,32000,0); }
 
 template<>
 void TreeObject<bool>::SetDefault() { value = false; }
@@ -239,6 +251,10 @@ void TreeObject<string>::SetDefault() { value = ""; }
 template<>
 void TreeObject<TLorentzVector>::SetDefault() { value.SetXYZT(0,0,0,0); }
 template<>
+void TreeObject<math::XYZVector>::SetDefault() { value.SetXYZ(0,0,0); }
+template<>
+void TreeObject<math::XYZPoint>::SetDefault() { value.SetXYZ(0,0,0); }
+template<>
 void TreeObject<vector<bool> >::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<int> >::SetDefault() { value.clear(); }
@@ -249,6 +265,10 @@ void TreeObject<vector<string> >::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<TLorentzVector> >::SetDefault() { value.clear(); }
 template<>
+void TreeObject<vector<math::XYZVector> >::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<math::XYZPoint> >::SetDefault() { value.clear(); }
+template<>
 void TreeObject<vector<vector<bool>>>::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<vector<int>>>::SetDefault() { value.clear(); }
@@ -258,6 +278,10 @@ template<>
 void TreeObject<vector<vector<string>>>::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<vector<TLorentzVector>>>::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<vector<math::XYZVector>>>::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<vector<math::XYZPoint>>>::SetDefault() { value.clear(); }
 
 //derived version of vector<TLorentzVector> for RecoCand
 //with switch for vector<double> pt, eta, phi, energy instead
