@@ -1,20 +1,3 @@
-//-----------------------------------------------------------------------------------------
-//
-// Computation of the trackIsolation, for use with the isolated track veto 
-// used for the stop quark search in the single lepton channel
-// Author: Ben Hooberman
-//
-// For each PFCandidate above threshold minPt_PFCandidate store 4 quantities:
-// pT of PFCandidate
-// charge of PFCandidate
-// dz of PFCandidate w.r.t. the 1st good vertex
-// the trackIsolation value
-//
-// In the analysis, we veto any event containing IN ADDITION TO the selected lepton a charged PFCandidate with:
-// pT > 10 GeV, dz < 0.05 cm, and trackIso/pT < 0.1
-//
-//-----------------------------------------------------------------------------------------
-
 // system include files
 #include <memory>
 
@@ -45,14 +28,10 @@
 #include "TrackingTools/Records/interface/TransientTrackRecord.h"
 #include "MagneticField/Engine/interface/MagneticField.h"
 
-#include "CommonTools/UtilAlgos/interface/TFileService.h"
-
 #include "Math/VectorUtil.h"
 #include "TMath.h"
 #include "TLorentzVector.h"
 
-//using namespace reco;
-//using namespace edm;
 using namespace std;
 
 //
@@ -350,7 +329,7 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------
 	// put track/PFCandidate values back into event
 	//-------------------------------------------------------------------------------------
-	bool result = (doFilter) ? !infos.trks->empty() : true;
+	bool result = (doFilter_) ? !infos.trks->empty() : true;
 	infos.put(iEvent);
 	return result;
 }

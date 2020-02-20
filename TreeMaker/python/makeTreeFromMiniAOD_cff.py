@@ -33,7 +33,9 @@ def makeTreeFromMiniAOD(self,process):
     from TreeMaker.TreeMaker.treeMaker import TreeMaker
     process.TreeMaker2 = TreeMaker.clone(
         TreeName                   = cms.string(self.treename),
-        VectorRecoCand             = self.VectorRecoCand, 
+        VectorRecoCand             = self.VectorRecoCand,
+        VarsXYZVector              = self.VarsXYZVector,
+        VarsXYZPoint               = self.VarsXYZPoint,
         VarsDouble                 = self.VarsDouble,
         VarsInt                    = self.VarsInt,
         VarsBool                   = self.VarsBool,
@@ -49,6 +51,8 @@ def makeTreeFromMiniAOD(self,process):
         VectorVectorDouble         = self.VectorVectorDouble,
         VectorVectorString         = self.VectorVectorString,
         VectorVectorTLorentzVector = self.VectorVectorTLorentzVector,
+        VectorVectorXYZVector      = self.VectorVectorXYZVector,
+        VectorVectorXYZPoint       = self.VectorVectorXYZVector,
         TitleMap                   = self.TitleMap,
     )
 
