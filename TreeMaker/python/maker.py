@@ -98,6 +98,8 @@ class maker:
         
         # branches for treemaker
         self.VectorRecoCand             = cms.vstring()
+        self.VarsXYZVector              = cms.vstring()
+        self.VarsXYZPoint               = cms.vstring()
         self.VarsDouble                 = cms.vstring()
         self.VarsInt                    = cms.vstring()
         self.VarsBool                   = cms.vstring()
@@ -113,6 +115,8 @@ class maker:
         self.VectorVectorDouble         = cms.vstring()
         self.VectorVectorString         = cms.vstring()
         self.VectorVectorTLorentzVector = cms.vstring()
+        self.VectorVectorXYZVector      = cms.vstring()
+        self.VectorVectorXYZPoint       = cms.vstring()
         self.TitleMap                   = cms.vstring()
 
     def getParamDefault(self,param,default):
