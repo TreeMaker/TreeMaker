@@ -1146,18 +1146,18 @@ def makeTreeFromMiniAOD(self,process):
             'trackFilter:trksip2dsig(Tracks_IP2dSigPV0)',
             'trackFilter:trksip3d(Tracks_IP3DPV0)',
             'trackFilter:trksip3dsig(Tracks_IP3DSigPV0)',
-            'trackFilter:pfcandsdzassociatedpv(PFCandidates_dzAssociatedPV)',
+            'trackFilter:pfcandsdzassociatedpv(Tracks_dzAssociatedPV)',
         ])
         self.VectorInt.extend([
             'trackFilter:trkschg(Tracks_charge)',
             'trackFilter:trksfound(Tracks_foundHits)',
             'trackFilter:trkslost(Tracks_lostHits)',
             'trackFilter:trksquality(Tracks_quality)',
-            'trackFilter:pfcandsnumberofhits(PFCandidates_numberOfHits)',
-            'trackFilter:pfcandsnumberofpixelhits(PFCandidates_numberOfPixelHits)',
-            'trackFilter:pfcandsfirsthit(PFCandidates_firstHit)',
-            'trackFilter:pfcandsfrompv(PFCandidates_fromPV0)',
-            'trackFilter:pfcandspvassociationquality(PFCandidates_pvAssociationQuality)',
+            'trackFilter:pfcandsnumberofhits(Tracks_numberOfHits)',
+            'trackFilter:pfcandsnumberofpixelhits(Tracks_numberOfPixelHits)',
+            'trackFilter:pfcandsfirsthit(Tracks_firstHit)',
+            'trackFilter:pfcandsfrompv(Tracks_fromPV0)',
+            'trackFilter:pfcandspvassociationquality(Tracks_pvAssociationQuality)',
         ])
         self.VectorVectorInt.extend([
             'trackFilter:trkshitpattern(Tracks_hitPattern)',
