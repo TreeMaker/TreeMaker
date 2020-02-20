@@ -265,18 +265,6 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	TrackInfos infos;
 
 	//----------------------------------------------
-	// get PFCandidate collection
-	//----------------------------------------------
-	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
-	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
-
-	//----------------------------------------------
-	// get lostTrack collection
-	//----------------------------------------------  
-	edm::Handle<edm::View<pat::PackedCandidate> > lostTracks;
-	iEvent.getByToken(lostTracksTok_, lostTracks);
-
-	//----------------------------------------------
 	// get Vertex Collection
 	//----------------------------------------------
 	edm::Handle<edm::View<reco::Vertex> > vertices;
@@ -296,6 +284,12 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideTransientTracks
 	edm::ESHandle<TransientTrackBuilder> ttBuilder;
 	iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",ttBuilder);
+
+	//----------------------------------------------
+	// get PFCandidate collection
+	//----------------------------------------------
+	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
+	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
 
 	//-------------------------------------------------------------------------------------------------
 	// loop over PFCandidates
@@ -320,6 +314,12 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		auto transientTrack = ttBuilder->build(track);
 		infos.fill(primaryVertex,pfCand,track,transientTrack,true);
 	}
+
+	//----------------------------------------------
+	// get lostTrack collection
+	//----------------------------------------------  
+	edm::Handle<edm::View<pat::PackedCandidate> > lostTracks;
+	iEvent.getByToken(lostTracksTok_, lostTracks);
 
 	//-------------------------------------------------------------------------------------------------
 	// loop over lostTracks
@@ -355,22 +355,9 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 
 // ------------ other methods  ------------
 bool CandidateTrackFilter::filterOnTrack(const pat::PackedCandidate & pfCand, const reco::Track & track) const {
-	//-------------------------------------------------------------------------------------
-	// only store PFCandidate values if pt >= minPt and |eta| <= maxEta_
-	//-------------------------------------------------------------------------------------
-	if ( (track.pt() < minPt_) || (std::abs(track.eta()) > maxEta_) ) return false;
-
-	//-------------------------------------------------------------------------------------
-	// cut on impact parameter quantities
-	//-------------------------------------------------------------------------------------
-	if ( (std::abs(track.dz()) > maxdz_) || (std::abs(track.dxy()) > maxdxy_) ) return false;
-
-	//-------------------------------------------------------------------------------------
-	// cut on chi2
-	//-------------------------------------------------------------------------------------
-	if ( (std::abs(track.normalizedChi2()) > maxnormchi2_) ) return false;
-
-	return true;
+	return (track.pt() >= minPt_) && (std::abs(track.eta()) < maxEta_) && // cut on track pT and eta
+		   (std::abs(track.dz()) <= maxdz_) && (std::abs(track.dxy()) <= maxdxy_) && // cut on impact parameter quantities
+		   (std::abs(track.normalizedChi2()) <= maxnormchi2_); // cut on chi2
 }
 
 //define this as a plug-in
