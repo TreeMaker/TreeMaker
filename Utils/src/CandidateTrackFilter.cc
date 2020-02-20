@@ -106,7 +106,7 @@ public:
 		trks_qoverperror->push_back(track.qoverpError());
 		trks_found->push_back(track.found());
 		trks_lost->push_back(track.lost());
-		// track quality enum options: http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_10_2_11_patch1/doc/html/d8/df2/classreco_1_1TrackBase.html#aeee12ec6a3ea0d65caa2695c84ab25d5
+		// track quality enum options: https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_11_patch1/DataFormats/TrackReco/interface/TrackBase.h#L151-L162
 		//  undefQuality = -1,
 		//  loose = 0,
 		//  tight = 1,
@@ -125,7 +125,7 @@ public:
 		trks_ip2dsig->push_back(ip2d.second.significance());
 		trks_ip3d->push_back(ip3d.second.value());
 		trks_ip3dsig->push_back(ip3d.second.significance());
-		// information on the hit pattern format: http://cmsdoxygen.web.cern.ch/cmsdoxygen/CMSSW_10_2_11_patch1/doc/html/db/d39/HitPattern_8h_source.html
+		// information on the hit pattern format: https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_11_patch1/DataFormats/TrackReco/interface/HitPattern.h
 		// hit pattern of the track
 		const reco::HitPattern &hp = track.hitPattern();
 		// loop over the hits of the track and save them in a vector of ints
@@ -203,12 +203,8 @@ private:
 	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> lostTracksTok_;
 	edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
 
-	double minPt_;
-	double maxEta_;
-	double maxdz_;
-	double maxdxy_;
-	double maxnormchi2_;
-	bool debug_;
+	double minPt_, maxEta_, maxdz_, maxdxy_, maxnormchi2_;
+	bool debug_, doFilter_;
 };
 
 //
@@ -223,7 +219,8 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	maxdz_          (iConfig.getParameter<double>       ("maxdz")),
 	maxdxy_         (iConfig.getParameter<double>       ("maxdxy")),
 	maxnormchi2_    (iConfig.getParameter<double>       ("maxnormchi2")),
-	debug_          (iConfig.getParameter<bool>         ("debug"))
+	debug_          (iConfig.getParameter<bool>         ("debug")),
+	doFilter_       (iConfig.getParameter<bool>         ("doFilter"))
 {	
 	pfCandidatesTok_ = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
 	lostTracksTok_   = consumes<edm::View<pat::PackedCandidate>>(lostTracksTag_);
@@ -351,7 +348,7 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------
 	// put track/PFCandidate values back into event
 	//-------------------------------------------------------------------------------------
-	bool result = infos.trks->empty();
+	bool result = (doFilter) ? !infos.trks->empty() : true;
 	infos.put(iEvent);
 	return result;
 }
@@ -361,7 +358,7 @@ bool CandidateTrackFilter::filterOnTrack(const pat::PackedCandidate & pfCand, co
 	//-------------------------------------------------------------------------------------
 	// only store PFCandidate values if pt >= minPt and |eta| <= maxEta_
 	//-------------------------------------------------------------------------------------
-	if ( (track.pt() < minPt_) || (fabs(track.eta()) > maxEta_) ) return false;
+	if ( (track.pt() < minPt_) || (std::abs(track.eta()) > maxEta_) ) return false;
 
 	//-------------------------------------------------------------------------------------
 	// cut on impact parameter quantities
