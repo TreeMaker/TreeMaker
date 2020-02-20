@@ -424,30 +424,51 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             ])
 
         if self.deepAK8 and doDeepAK8:
-            JetPropertiesAK8.properties.extend([
-                "tDiscriminatorDeep",
-                "wDiscriminatorDeep",
-                "zDiscriminatorDeep",
-                "hDiscriminatorDeep",
-                "tDiscriminatorDeepDecorrel",
-                "wDiscriminatorDeepDecorrel",
-                "zhDiscriminatorDeepDecorrel",
+            JetPropertiesAK8.properties.extend([                  
+                "pfDeepBoostedDiscriminatorsJetTagsTvsQCD",
+                "pfDeepBoostedDiscriminatorsJetTagsWvsQCD",
+                "pfDeepBoostedDiscriminatorsJetTagsZvsQCD",
+                "pfDeepBoostedDiscriminatorsJetTagsHbbvsQCD",
+                "pfDeepBoostedDiscriminatorsJetTagsZHbbvsQCD",
+                "pfDeepBoostedDiscriminatorsJetTagsZbbvsQCD",
+                "pfDeepBoostedDiscriminatorsJetTagsbbvsLight",
+                "pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsTvsQCD",
+                "pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsWvsQCD",
+                "pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZvsQCD",
+                "pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsHbbvsQCD",
+                "pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZHbbvsQCD",
+                "pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZbbvsQCD",
+                "pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsbbvsLight",
             ])
-            JetPropertiesAK8.tDiscriminatorDeep = cms.vstring('pfDeepBoostedDiscriminatorsJetTags:TvsQCD')
-            JetPropertiesAK8.wDiscriminatorDeep = cms.vstring('pfDeepBoostedDiscriminatorsJetTags:WvsQCD')
-            JetPropertiesAK8.zDiscriminatorDeep = cms.vstring('pfDeepBoostedDiscriminatorsJetTags:ZvsQCD')
-            JetPropertiesAK8.hDiscriminatorDeep = cms.vstring('pfDeepBoostedDiscriminatorsJetTags:HbbvsQCD')
-            JetPropertiesAK8.tDiscriminatorDeepDecorrel = cms.vstring('pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:TvsQCD')
-            JetPropertiesAK8.wDiscriminatorDeepDecorrel = cms.vstring('pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:WvsQCD')
-            JetPropertiesAK8.zhDiscriminatorDeepDecorrel = cms.vstring('pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHbbvsQCD')
+            JetPropertiesAK8.pfDeepBoostedDiscriminatorsJetTagsTvsQCD = cms.vstring("pfDeepBoostedDiscriminatorsJetTags:TvsQCD")
+            JetPropertiesAK8.pfDeepBoostedDiscriminatorsJetTagsWvsQCD = cms.vstring("pfDeepBoostedDiscriminatorsJetTags:WvsQCD")
+            JetPropertiesAK8.pfDeepBoostedDiscriminatorsJetTagsZvsQCD = cms.vstring("pfDeepBoostedDiscriminatorsJetTags:ZvsQCD")
+            JetPropertiesAK8.pfDeepBoostedDiscriminatorsJetTagsHbbvsQCD = cms.vstring("pfDeepBoostedDiscriminatorsJetTags:HbbvsQCD")
+            JetPropertiesAK8.pfDeepBoostedDiscriminatorsJetTagsZHbbvsQCD = cms.vstring("pfDeepBoostedDiscriminatorsJetTags:ZHbbvsQCD")
+            JetPropertiesAK8.pfDeepBoostedDiscriminatorsJetTagsZbbvsQCD = cms.vstring("pfDeepBoostedDiscriminatorsJetTags:ZbbvsQCD")
+            JetPropertiesAK8.pfDeepBoostedDiscriminatorsJetTagsbbvsLight = cms.vstring("pfDeepBoostedDiscriminatorsJetTags:bbvsLight")
+            JetPropertiesAK8.pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsTvsQCD = cms.vstring("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:TvsQCD")
+            JetPropertiesAK8.pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsWvsQCD = cms.vstring("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:WvsQCD")
+            JetPropertiesAK8.pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZvsQCD = cms.vstring("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZvsQCD")
+            JetPropertiesAK8.pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsHbbvsQCD = cms.vstring("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:HbbvsQCD")
+            JetPropertiesAK8.pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZHbbvsQCD = cms.vstring("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZHbbvsQCD")
+            JetPropertiesAK8.pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZbbvsQCD = cms.vstring("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:ZbbvsQCD")
+            JetPropertiesAK8.pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsbbvsLight = cms.vstring("pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:bbvsLight")
             self.VectorDouble.extend([
-                'JetProperties'+suff+':tDiscriminatorDeep(Jets'+suff+'_tDiscriminatorDeep)',
-                'JetProperties'+suff+':wDiscriminatorDeep(Jets'+suff+'_wDiscriminatorDeep)',
-                'JetProperties'+suff+':zDiscriminatorDeep(Jets'+suff+'_zDiscriminatorDeep)',
-                'JetProperties'+suff+':hDiscriminatorDeep(Jets'+suff+'_hDiscriminatorDeep)',
-                'JetProperties'+suff+':tDiscriminatorDeepDecorrel(Jets'+suff+'_tDiscriminatorDeepDecorrel)',
-                'JetProperties'+suff+':wDiscriminatorDeepDecorrel(Jets'+suff+'_wDiscriminatorDeepDecorrel)',
-                'JetProperties'+suff+':zhDiscriminatorDeepDecorrel(Jets'+suff+'_zhDiscriminatorDeepDecorrel)',
+                'JetProperties'+suff+':pfDeepBoostedDiscriminatorsJetTagsTvsQCD(Jets'+suff+'_pfDeepBoostedDiscriminatorsJetTagsTvsQCD)',
+                'JetProperties'+suff+':pfDeepBoostedDiscriminatorsJetTagsWvsQCD(Jets'+suff+'_pfDeepBoostedDiscriminatorsJetTagsWvsQCD)',
+                'JetProperties'+suff+':pfDeepBoostedDiscriminatorsJetTagsZvsQCD(Jets'+suff+'_pfDeepBoostedDiscriminatorsJetTagsZvsQCD)',
+                'JetProperties'+suff+':pfDeepBoostedDiscriminatorsJetTagsHbbvsQCD(Jets'+suff+'_pfDeepBoostedDiscriminatorsJetTagsHbbvsQCD)',
+                'JetProperties'+suff+':pfDeepBoostedDiscriminatorsJetTagsZHbbvsQCD(Jets'+suff+'_pfDeepBoostedDiscriminatorsJetTagsZHbbvsQCD)',
+                'JetProperties'+suff+':pfDeepBoostedDiscriminatorsJetTagsZbbvsQCD(Jets'+suff+'_pfDeepBoostedDiscriminatorsJetTagsZbbvsQCD)',
+                'JetProperties'+suff+':pfDeepBoostedDiscriminatorsJetTagsbbvsLight(Jets'+suff+'_pfDeepBoostedDiscriminatorsJetTagsbbvsLight)',
+                'JetProperties'+suff+':pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsTvsQCD(Jets'+suff+'_pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsTvsQCD)',
+                'JetProperties'+suff+':pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsWvsQCD(Jets'+suff+'_pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsWvsQCD)',
+                'JetProperties'+suff+':pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZvsQCD(Jets'+suff+'_pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZvsQCD)',
+                'JetProperties'+suff+':pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsHbbvsQCD(Jets'+suff+'_pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsHbbvsQCD)',
+                'JetProperties'+suff+':pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZHbbvsQCD(Jets'+suff+'_pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZHbbvsQCD)',
+                'JetProperties'+suff+':pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZbbvsQCD(Jets'+suff+'_pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsZbbvsQCD)',
+                'JetProperties'+suff+':pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsbbvsLight(Jets'+suff+'_pfMassDecorrelatedDeepBoostedDiscriminatorsJetTagsbbvsLight)',
             ])
 
         if self.deepDoubleB and doDeepDoubleB:
