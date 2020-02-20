@@ -92,6 +92,7 @@ public:
 
 	void fill(const reco::Vertex & primaryVertex, const pat::PackedCandidate & pfCand, const reco::Track & track, const reco::TransientTrack & transientTrack, bool trackMatch) {
 		// basic information from the reco::Track
+		//   Reference: https://github.com/cms-sw/cmssw/blob/master/DataFormats/TrackReco/interface/Track.h
 		trks->push_back(track.momentum());
 		trks_referencepoint->push_back(track.referencePoint());
 		trks_chg->push_back(track.charge());
@@ -106,17 +107,18 @@ public:
 		trks_qoverperror->push_back(track.qoverpError());
 		trks_found->push_back(track.found());
 		trks_lost->push_back(track.lost());
-		// track quality enum options: https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_11_patch1/DataFormats/TrackReco/interface/TrackBase.h#L151-L162
-		//  undefQuality = -1,
-		//  loose = 0,
-		//  tight = 1,
-		//  highPurity = 2,
-		//  confirmed = 3,  // means found by more than one iteration
-		//  goodIterative = 4,  // meaningless
-		//  looseSetWithPV = 5,
-		//  highPuritySetWithPV = 6,
-		//  discarded = 7, // because a better track found. kept in the collection for reference....
-		//  qualitySize = 8
+		// track quality enum:
+		//    Reference: https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_11_patch1/DataFormats/TrackReco/interface/TrackBase.h#L151-L162
+		//      undefQuality = -1,
+		//      loose = 0,
+		//      tight = 1,
+		//      highPurity = 2,
+		//      confirmed = 3,  // means found by more than one iteration
+		//      goodIterative = 4,  // meaningless
+		//      looseSetWithPV = 5,
+		//      highPuritySetWithPV = 6,
+		//      discarded = 7, // because a better track found. kept in the collection for reference....
+		//      qualitySize = 8
 		trks_quality->push_back(track.qualityMask());
 		// impact parameter variables
 		std::pair<bool,Measurement1D> ip2d = IPTools::absoluteTransverseImpactParameter(transientTrack, primaryVertex);
@@ -125,19 +127,19 @@ public:
 		trks_ip2dsig->push_back(ip2d.second.significance());
 		trks_ip3d->push_back(ip3d.second.value());
 		trks_ip3dsig->push_back(ip3d.second.significance());
-		// information on the hit pattern format: https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_11_patch1/DataFormats/TrackReco/interface/HitPattern.h
-		// hit pattern of the track
+		// hit pattern of the track:
+		//   Reference: https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_11_patch1/DataFormats/TrackReco/interface/HitPattern.h
 		const reco::HitPattern &hp = track.hitPattern();
-		// loop over the hits of the track and save them in a vector of ints
 		auto nhits = hp.numberOfAllHits(reco::HitPattern::TRACK_HITS);
 		auto hits = vector<int>(nhits,0);
 		for (auto ih=0; ih<nhits; ih++) {
 			hits[ih] = hp.getHitPattern(reco::HitPattern::TRACK_HITS, ih);
-		}
+		} // for(track hits)
 		trks_hitpattern->push_back(hits);
 		trks_matchedtopfcand->push_back(trackMatch);
 
 		// information from the pat::PackedCandidate
+		//   Reference: https://github.com/cms-sw/cmssw/blob/master/DataFormats/ParticleFlowCandidate/interface/PFCandidate.h
 		pfcands_numberofhits->push_back(pfCand.numberOfHits());
 		pfcands_numberofpixelhits->push_back(pfCand.numberOfPixelHits());
 		pfcands_firsthit->push_back(pfCand.firstHit());
