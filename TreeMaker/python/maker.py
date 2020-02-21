@@ -44,6 +44,7 @@ class maker:
         # special signal stuff
         self.getParamDefault("systematics",True);
         self.getParamDefault("semivisible",True);
+        self.getParamDefault("emerging",False);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
         
@@ -97,10 +98,14 @@ class maker:
         
         # branches for treemaker
         self.VectorRecoCand             = cms.vstring()
+        self.VarsXYZVector              = cms.vstring()
+        self.VarsXYZPoint               = cms.vstring()
         self.VarsDouble                 = cms.vstring()
         self.VarsInt                    = cms.vstring()
         self.VarsBool                   = cms.vstring()
         self.VectorTLorentzVector       = cms.vstring()
+        self.VectorXYZVector            = cms.vstring()
+        self.VectorXYZPoint             = cms.vstring()
         self.VectorDouble               = cms.vstring()
         self.VectorString               = cms.vstring()
         self.VectorInt                  = cms.vstring()
@@ -110,6 +115,8 @@ class maker:
         self.VectorVectorDouble         = cms.vstring()
         self.VectorVectorString         = cms.vstring()
         self.VectorVectorTLorentzVector = cms.vstring()
+        self.VectorVectorXYZVector      = cms.vstring()
+        self.VectorVectorXYZPoint       = cms.vstring()
         self.TitleMap                   = cms.vstring()
 
     def getParamDefault(self,param,default):
@@ -124,6 +131,7 @@ class maker:
         print " storing hadtau variables: "+str(self.hadtau)+" w/ reclustering "+str(self.hadtaurecluster)
         print " storing Zinv variables: "+str(self.doZinv)
         print " storing semi-visible jet variables: "+str(self.semivisible)
+        print " storing emerging jet variables: "+str(self.emerging)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
         print " "

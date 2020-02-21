@@ -30,15 +30,15 @@ using namespace pat;
 TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 	tree(nullptr),
 	VarTypeNames{
-		"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector",
-		"VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector",
-		"VectorVectorBool","VectorVectorInt","VectorVectorDouble","VectorVectorString","VectorVectorTLorentzVector",
+		"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VarsXYZVector","VarsXYZPoint",
+		"VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorXYZVector","VectorXYZPoint",
+		"VectorVectorBool","VectorVectorInt","VectorVectorDouble","VectorVectorString","VectorVectorTLorentzVector","VectorVectorXYZVector","VectorVectorXYZPoint",
 		"VectorRecoCand"
 	},
 	VarTypes{
-		t_bool,t_int,t_double,t_string,t_lorentz,
-		t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,
-		t_vvbool,t_vvint,t_vvdouble,t_vvstring,t_vvlorentz,
+		t_bool,t_int,t_double,t_string,t_lorentz,t_xyzv,t_xyzp,
+		t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_vxyzv,t_vxyzp,
+		t_vvbool,t_vvint,t_vvdouble,t_vvstring,t_vvlorentz,t_vvxyzv,t_vvxyzp,
 		t_recocand
 	}
 {
@@ -108,16 +108,22 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 				case TreeTypes::t_double   : tmp = new TreeObject<double>(VarName,VarTitle); break;
 				case TreeTypes::t_string   : tmp = new TreeObject<string>(VarName,VarTitle); break;
 				case TreeTypes::t_lorentz  : tmp = new TreeObject<TLorentzVector>(VarName,VarTitle); break;
-				case TreeTypes::t_vbool    : tmp = new TreeObject<vector<bool> >(VarName,VarTitle); break;
-				case TreeTypes::t_vint     : tmp = new TreeObject<vector<int> >(VarName,VarTitle); break;
-				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double> >(VarName,VarTitle); break;
-				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string> >(VarName,VarTitle); break;
-				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector> >(VarName,VarTitle); break;
+				case TreeTypes::t_xyzv     : tmp = new TreeObject<math::XYZVector>(VarName,VarTitle); break;
+				case TreeTypes::t_xyzp     : tmp = new TreeObject<math::XYZPoint>(VarName,VarTitle); break;
+				case TreeTypes::t_vbool    : tmp = new TreeObject<vector<bool>>(VarName,VarTitle); break;
+				case TreeTypes::t_vint     : tmp = new TreeObject<vector<int>>(VarName,VarTitle); break;
+				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double>>(VarName,VarTitle); break;
+				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string>>(VarName,VarTitle); break;
+				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector>>(VarName,VarTitle); break;
+				case TreeTypes::t_vxyzv    : tmp = new TreeObject<vector<math::XYZVector>>(VarName,VarTitle); break;
+				case TreeTypes::t_vxyzp    : tmp = new TreeObject<vector<math::XYZPoint>>(VarName,VarTitle); break;
 				case TreeTypes::t_vvbool   : tmp = new TreeObject<vector<vector<bool>>>(VarName,VarTitle); break;
 				case TreeTypes::t_vvint    : tmp = new TreeObject<vector<vector<int>>>(VarName,VarTitle); break;
 				case TreeTypes::t_vvdouble : tmp = new TreeObject<vector<vector<double>>>(VarName,VarTitle); break;
 				case TreeTypes::t_vvstring : tmp = new TreeObject<vector<vector<string>>>(VarName,VarTitle); break;
 				case TreeTypes::t_vvlorentz: tmp = new TreeObject<vector<vector<TLorentzVector>>>(VarName,VarTitle); break;
+				case TreeTypes::t_vvxyzv   : tmp = new TreeObject<vector<vector<math::XYZVector>>>(VarName,VarTitle); break;
+				case TreeTypes::t_vvxyzp   : tmp = new TreeObject<vector<vector<math::XYZPoint>>>(VarName,VarTitle); break;
 				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarName,VarTitle,doLorentz); break;
 			}
 			//if a known type was found, initialize and store the object
