@@ -129,7 +129,7 @@ def makeTreeFromMiniAOD(self,process):
     process.primaryVertices = primaryvertices.clone(
         VertexCollection     = cms.InputTag('offlineSlimmedPrimaryVertices'),
         GoodVertexCollection = cms.InputTag('goodVertices'),
-        saveVertices         = cms.bool(True if self.emerging else False),
+        saveVertices         = cms.bool(self.emerging),
     )
     self.VarsInt.extend(['primaryVertices:NVtx(NVtx)','primaryVertices:nAllVertices(nAllVertices)'])
     # also store rho for PU comparisons
