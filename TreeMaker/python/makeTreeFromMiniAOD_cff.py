@@ -1122,7 +1122,22 @@ def makeTreeFromMiniAOD(self,process):
     ## Emerging jets
     ## ----------------------------------------------------------------------------------------------
     if self.emerging:
-        self.VarsInt.extend(['primaryVertices:_______(Vertices_)'])
+        self.VectorXYZPoint.extend(['primaryVertices:vtxposition(PrimaryVertices_position)'])
+        self.VectorDouble.extend([
+            'primaryVertices:vtxtime(PrimaryVertices_time)',
+            'primaryVertices:vtxndof(PrimaryVertices_ndof)',
+            'primaryVertices:vtxchi2(PrimaryVertices_chi2)',
+            'primaryVertices:vtxxError(PrimaryVertices_xError)',
+            'primaryVertices:vtxyError(PrimaryVertices_yError)',
+            'primaryVertices:vtxzError(PrimaryVertices_zError)',
+            'primaryVertices:vtxtError(PrimaryVertices_tError)',
+        ])
+        self.VectorBool.extend([
+            'primaryVertices:vtxisValid(PrimaryVertices_isValid)',
+            'primaryVertices:vtxisFake(PrimaryVertices_isFake)',
+            'primaryVertices:vtxisGood(PrimaryVertices_isGood)',
+        ])        
+        self.VectorInt.extend(['primaryVertices:vtxntracks(PrimaryVertices_nTracks)'])
 
         process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
         from TreeMaker.Utils.candidateTrackMaker_cfi import candidateTrackFilter
