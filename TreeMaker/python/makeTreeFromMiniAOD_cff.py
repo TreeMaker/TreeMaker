@@ -126,15 +126,12 @@ def makeTreeFromMiniAOD(self,process):
         filter = cms.bool(False)
     )
     from TreeMaker.Utils.primaryvertices_cfi import primaryvertices
-    process.NVtx = primaryvertices.clone(
-        VertexCollection  = cms.InputTag('goodVertices'),
+    process.primaryVertices = primaryvertices.clone(
+        VertexCollection     = cms.InputTag('offlineSlimmedPrimaryVertices'),
+        GoodVertexCollection = cms.InputTag('goodVertices'),
+        saveVertices         = cms.bool(True if self.emerging else False),
     )
-    self.VarsInt.extend(['NVtx'])
-    # also store total number of vertices without quality checks
-    process.nAllVertices = primaryvertices.clone(
-        VertexCollection  = cms.InputTag('offlineSlimmedPrimaryVertices'),
-    )
-    self.VarsInt.extend(['nAllVertices'])
+    self.VarsInt.extend(['primaryVertices:NVtx(NVtx)','primaryVertices:nAllVertices(nAllVertices)'])
     # also store rho for PU comparisons
     self.VarsDouble.extend(['fixedGridRhoFastjetAll'])
 
@@ -1125,8 +1122,9 @@ def makeTreeFromMiniAOD(self,process):
     ## Emerging jets
     ## ----------------------------------------------------------------------------------------------
     if self.emerging:
-        process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
+        self.VarsInt.extend(['primaryVertices:_______(Vertices_)'])
 
+        process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
         from TreeMaker.Utils.candidateTrackMaker_cfi import candidateTrackFilter
         process.trackFilter = candidateTrackFilter.clone(
                 vertexInputTag    = cms.InputTag("goodVertices"),
