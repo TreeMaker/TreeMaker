@@ -288,8 +288,10 @@ def makeTreeFromMiniAOD(self,process):
         ak8updates.append("pfBoostedDoubleSecondaryVertexAK8BJetTags")
 
         if self.deepAK8:
-            ak8updates.extend(["pfDeepBoostedDiscriminatorsJetTags:"+x for x in ["TvsQCD","WvsQCD","ZvsQCD","HbbvsQCD"]])
-            ak8updates.extend(["pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:"+x for x in ["TvsQCD","WvsQCD","ZHbbvsQCD"]])
+            DeepAK8Tags = ["ZvsQCD","ZbbvsQCD","TvsQCD","WvsQCD","HbbvsQCD"]
+            DeepAK8TagsDecorrel = ["ZvsQCD","ZbbvsQCD","bbvsLight","TvsQCD","WvsQCD","HbbvsQCD","ZHbbvsQCD"]
+            ak8updates.extend(["pfDeepBoostedDiscriminatorsJetTags:"+x for x in DeepAK8Tags])
+            ak8updates.extend(["pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:"+x for x in DeepAK8TagsDecorrel])
 
         if self.deepDoubleB:
             ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb','pfMassIndependentDeepDoubleCvLJetTags:probHcc','pfMassIndependentDeepDoubleCvBJetTags:probHcc'])
