@@ -370,20 +370,6 @@ def makeTreeFromMiniAOD(self,process):
         )
         METTag = cms.InputTag('slimmedMETs','',process.name_())
 
-        # additional run to keep orig values
-        if self.doMETfix:
-            runMetCorAndUncFromMiniAOD(
-                process,
-                isData=not self.geninfo, # controls gen met
-                jetCollUnskimmed=JetTag,
-                reapplyJEC=False,
-                postfix="Orig",
-                computeMETSignificance=False,
-            )
-            METTagOrig = cms.InputTag('slimmedMETsOrig')
-        else:
-            METTagOrig = None
-
     # keep jets before any further modifications for hadtau
     JetTagBeforeSmearing = JetTag
 
@@ -1048,15 +1034,6 @@ def makeTreeFromMiniAOD(self,process):
     if self.geninfo:
         self.VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
         self.VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
-
-    if self.doMETfix:
-        process.METOrig = process.MET.clone(
-            METTag = METTagOrig
-        )
-        self.VarsDouble.extend(['METOrig:Pt(METOrig)','METOrig:Phi(METPhiOrig)'])
-#        self.VarsDouble.extend(['METOrig:RawPt(RawMETOrig)','METOrig:RawPhi(RawMETPhiOrig)'])
-        if self.geninfo:
-            self.VectorDouble.extend(['METOrig:PtUp(METOrigUp)', 'METOrig:PtDown(METOrigDown)', 'METOrig:PhiUp(METPhiOrigUp)', 'MET:PhiDown(METPhiOrigDown)'])
 
     from TreeMaker.Utils.mt2producer_cfi import mt2Producer
     process.Mt2Producer = mt2Producer.clone(

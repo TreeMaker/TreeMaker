@@ -132,20 +132,9 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     ## ----------------------------------------------------------------------------------------------
     process, MHTJetsTag = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "", METfix=METfix)
 
-    # keep orig MHT, dphi values if ext tag was given
-    if METfix:
-        process, MHTJetsTagOrig = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "Orig")
-    else:
-        MHTJetsTagOrig = None
-
-    # extra MHT using only central jets (skip for systematic variations)
-    if storeProperties>0:
-        process, _ = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "2p4", MaxEta=2.4, METfix=METfix)
-        # no need to recompute w/ MET fix, doesn't affect |eta| < 2.4
-
     # extra HT version using MHT collection w/ |eta| < 5, to filter forward beam halo events
     HT5 = htdouble.clone(
-        JetTag = MHTJetsTagOrig if MHTJetsTagOrig is not None else MHTJetsTag,
+        JetTag = MHTJetsTag,
     )
     setattr(process,"HT5"+suff,HT5)
     self.VarsDouble.extend(['HT5'+suff])
