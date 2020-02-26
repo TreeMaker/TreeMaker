@@ -186,19 +186,20 @@ def makeTreeFromMiniAOD(self,process):
         if not self.saveMinimalGenParticles:
             self.VectorBool.append("genParticles:TTFlag(GenParticles_TTFlag)")
         
-        # for ttbar pT reweighting
-        # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
-        process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
-        process.initSubset.src = cms.InputTag("prunedGenParticles")
-        process.decaySubset.src = cms.InputTag("prunedGenParticles")
-        process.decaySubset.runMode = cms.string("Run2")
-        process.genTops = cms.EDProducer("GenTopProducer",
-            genEvent = cms.InputTag("genEvt"),
-            a = cms.double(0.0615),
-            b = cms.double(-0.0005)
-        )
-        self.VectorRecoCand.append("genTops(GenTops)")
-        self.VarsDouble.append("genTops:weight(GenTopWeight)")
+        if self.saveGenTops:
+            # for ttbar pT reweighting
+            # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
+            process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
+            process.initSubset.src = cms.InputTag("prunedGenParticles")
+            process.decaySubset.src = cms.InputTag("prunedGenParticles")
+            process.decaySubset.runMode = cms.string("Run2")
+            process.genTops = cms.EDProducer("GenTopProducer",
+                genEvent = cms.InputTag("genEvt"),
+                a = cms.double(0.0615),
+                b = cms.double(-0.0005)
+            )
+            self.VectorRecoCand.append("genTops(GenTops)")
+            self.VarsDouble.append("genTops:weight(GenTopWeight)")
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
@@ -264,8 +265,8 @@ def makeTreeFromMiniAOD(self,process):
         ak4updates = cms.PSet(discrs = cms.vstring())
         TMeras.TM80X.toModify(ak4updates,
             discrs = cms.vstring(
-                ['pfDeepCSVJetTags:'+x for x in ['probb','probc','probudsg','probbb']] +
-                ['pfDeepCSVDiscriminatorsJetTags:'+x for x in ['BvsAll','CvsB','CvsL']]
+                ['pfDeepCSVJetTags:'+x for x in ['probb','probbb']] +
+                ['pfDeepCSVDiscriminatorsJetTags:'+x for x in ['BvsAll']]
             )
         )
 
@@ -291,7 +292,7 @@ def makeTreeFromMiniAOD(self,process):
             ak8updates.extend(["pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:"+x for x in DeepAK8TagsDecorrel])
 
         if self.deepDoubleB:
-            ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb','pfMassIndependentDeepDoubleCvLJetTags:probHcc','pfMassIndependentDeepDoubleCvBJetTags:probHcc'])
+            ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb'])
 
         if TMeras.TM80X.isChosen():
             # use jet toolbox to rerun puppi, recluster AK8 jets, and compute substructure variables
@@ -882,7 +883,7 @@ def makeTreeFromMiniAOD(self,process):
 #        ecfN2b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN2'),
 #        ecfN3b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN3'),
 #        ecfN3b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN3'),
-        prunedMass = cms.vstring('ak8PFJetsPuppi94XlikePrunedMass'),
+#        prunedMass = cms.vstring('ak8PFJetsPuppi94XlikePrunedMass'),
         softDropMass = cms.vstring('SoftDrop'),
         subjets = cms.vstring('SoftDrop'),
         SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags'),
@@ -908,7 +909,7 @@ def makeTreeFromMiniAOD(self,process):
     if self.geninfo:
         # store all genjets
         self.VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
-    
+        
         from TreeMaker.Utils.subJetSelection_cfi import SubGenJetSelection
         
         process.GenHTJets = SubGenJetSelection.clone(
@@ -916,8 +917,7 @@ def makeTreeFromMiniAOD(self,process):
             MinPt  = cms.double(30),
             MaxEta = cms.double(2.4),
         )
-        self.VectorBool.extend(['GenHTJets:SubJetMask(GenJets_HTMask)'])
-        
+
         # make gen HT
         from TreeMaker.Utils.htdouble_cfi import htdouble
         process.GenHT = htdouble.clone(
@@ -930,8 +930,7 @@ def makeTreeFromMiniAOD(self,process):
             MinPt  = cms.double(30),
             MaxEta = cms.double(5.0),
         )
-        self.VectorBool.extend(['GenMHTJets:SubJetMask(GenJets_MHTMask)'])
-        
+
         # make gen MHT
         from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
         process.GenMHT = mhtdouble.clone(
@@ -972,7 +971,6 @@ def makeTreeFromMiniAOD(self,process):
             jetPtFilter = cms.double(150),
         )
         self.VectorDouble.extend([
-            'ak8GenJetProperties:prunedMass(GenJetsAK8_prunedMass)',
             'ak8GenJetProperties:softDropMass(GenJetsAK8_softDropMass)',
         ])
         self.VectorInt.extend([
@@ -1035,12 +1033,13 @@ def makeTreeFromMiniAOD(self,process):
         self.VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
         self.VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
 
-    from TreeMaker.Utils.mt2producer_cfi import mt2Producer
-    process.Mt2Producer = mt2Producer.clone(
-                JetTag  = cms.InputTag('MHTJets'),
-                METTag = METTag
-        )
-    self.VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
+    if self.doMT2:
+        from TreeMaker.Utils.mt2producer_cfi import mt2Producer
+        process.Mt2Producer = mt2Producer.clone(
+                    JetTag  = cms.InputTag('MHTJets'),
+                    METTag = METTag
+            )
+        self.VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
