@@ -23,8 +23,7 @@ def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff
         JetTag  = MHTJetsTag,
     )
     setattr(process,"MHT"+suff+MHTsuff,MHT)
-    self.VarsDouble.extend(['MHT'+suff+MHTsuff+':Pt(MHT'+suff+MHTsuff+')'])
-    if storeProperties!=1: self.VarsDouble.extend(['MHT'+suff+MHTsuff+':Phi(MHTPhi'+suff+MHTsuff+')'])
+    self.VarsDouble.extend(['MHT'+suff+MHTsuff+':Pt(MHT'+suff+MHTsuff+')','MHT'+suff+MHTsuff+':Phi(MHTPhi'+suff+MHTsuff+')'])
 
     from TreeMaker.Utils.deltaphidouble_cfi import deltaphidouble
     DeltaPhi = deltaphidouble.clone(
@@ -183,22 +182,12 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
 
         # provide extra info where necessary
         if storeProperties==1:
-            btaggers = [
-                "bDiscriminatorCSV",
-                "bJetTagDeepCSVprobb",
-                "bJetTagDeepCSVprobbb",
-                "bDiscriminatorDeepCSVBvsAll",
-            ]
-            flavors = [
-                "partonFlavor",
-                "hadronFlavor",
-            ]
+            btaggers = ["bDiscriminatorCSV","bDiscriminatorDeepCSVBvsAll"]
+            flavors = ["partonFlavor","hadronFlavor"]
             JetProperties.properties = cms.vstring(*(btaggers+flavors))
         setattr(process,"JetProperties"+suff,JetProperties)
         self.VectorDouble.extend([
             'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_bDiscriminatorCSV)',
-            'JetProperties'+suff+':bJetTagDeepCSVprobb(Jets'+suff+'_bJetTagDeepCSVprobb)',
-            'JetProperties'+suff+':bJetTagDeepCSVprobbb(Jets'+suff+'_bJetTagDeepCSVprobbb)',
             'JetProperties'+suff+':bDiscriminatorDeepCSVBvsAll(Jets'+suff+'_bJetTagDeepCSVBvsAll)',
         ])
         self.VectorInt.extend([

@@ -102,17 +102,12 @@ if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_10_2_7
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:storeJERFactorIndex1027
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:AddJetAxis1_1027
-	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:NjettinessAxis_1027
 fi
 
 # outside repositories
 git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
 git clone ${ACCESS_GITHUB}kpedro88/CondorProduction.git Condor/Production
 git clone ${ACCESS_GITHUB}${FORK}/TreeMaker.git -b ${BRANCH}
-# get egamma config and data files without recompiling whole package
-wget https://github.com/TreeMaker/cmssw/raw/EgammaPostRecoTools_dev/RecoEgamma/EgammaTools/python/EgammaPostRecoTools.py -P TreeMaker/Utils/python/
-wget https://github.com/TreeMaker/EgammaAnalysis-ElectronTools/raw/ScalesSmearing2018_Dev/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain_scales.dat -P TreeMaker/Production/test/data/ScalesSmearings
-wget https://github.com/TreeMaker/EgammaAnalysis-ElectronTools/raw/ScalesSmearing2018_Dev/ScalesSmearings/Run2018_Step2Closure_CoarseEtaR9Gain_smearings.dat -P TreeMaker/Production/test/data/ScalesSmearings
 
 # compile
 scram b -j ${CORES}
