@@ -279,10 +279,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
         setattr(process,"QGTagger"+suff,QGTagger)
         ak8floats.extend([
             'BasicSubstructure'+suff+':girth',
-            'NjettinessBeta1'+suff+':tau1etaAxis1',
-            'NjettinessBeta1'+suff+':tau1phiAxis1',
-            'NjettinessBeta2'+suff+':tau1etaAxis1',
-            'NjettinessBeta2'+suff+':tau1phiAxis1',
             'QGTagger'+suff+':ptD',
             'QGTagger'+suff+':axis1',
             'QGTagger'+suff+':axis2',
