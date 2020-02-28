@@ -186,19 +186,20 @@ def makeTreeFromMiniAOD(self,process):
         if not self.saveMinimalGenParticles:
             self.VectorBool.append("genParticles:TTFlag(GenParticles_TTFlag)")
         
-        # for ttbar pT reweighting
-        # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
-        process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
-        process.initSubset.src = cms.InputTag("prunedGenParticles")
-        process.decaySubset.src = cms.InputTag("prunedGenParticles")
-        process.decaySubset.runMode = cms.string("Run2")
-        process.genTops = cms.EDProducer("GenTopProducer",
-            genEvent = cms.InputTag("genEvt"),
-            a = cms.double(0.0615),
-            b = cms.double(-0.0005)
-        )
-        self.VectorRecoCand.append("genTops(GenTops)")
-        self.VarsDouble.append("genTops:weight(GenTopWeight)")
+        if self.saveGenTops:
+            # for ttbar pT reweighting
+            # params from: https://twiki.cern.ch/twiki/bin/viewauth/CMS/TopPtReweighting#Run_2_strategy
+            process.load("TopQuarkAnalysis.TopEventProducers.sequences.ttGenEvent_cff")
+            process.initSubset.src = cms.InputTag("prunedGenParticles")
+            process.decaySubset.src = cms.InputTag("prunedGenParticles")
+            process.decaySubset.runMode = cms.string("Run2")
+            process.genTops = cms.EDProducer("GenTopProducer",
+                genEvent = cms.InputTag("genEvt"),
+                a = cms.double(0.0615),
+                b = cms.double(-0.0005)
+            )
+            self.VectorRecoCand.append("genTops(GenTops)")
+            self.VarsDouble.append("genTops:weight(GenTopWeight)")
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
@@ -264,8 +265,8 @@ def makeTreeFromMiniAOD(self,process):
         ak4updates = cms.PSet(discrs = cms.vstring())
         TMeras.TM80X.toModify(ak4updates,
             discrs = cms.vstring(
-                ['pfDeepCSVJetTags:'+x for x in ['probb','probc','probudsg','probbb']] +
-                ['pfDeepCSVDiscriminatorsJetTags:'+x for x in ['BvsAll','CvsB','CvsL']]
+                ['pfDeepCSVJetTags:'+x for x in ['probb','probbb']] +
+                ['pfDeepCSVDiscriminatorsJetTags:'+x for x in ['BvsAll']]
             )
         )
 
@@ -291,7 +292,7 @@ def makeTreeFromMiniAOD(self,process):
             ak8updates.extend(["pfMassDecorrelatedDeepBoostedDiscriminatorsJetTags:"+x for x in DeepAK8TagsDecorrel])
 
         if self.deepDoubleB:
-            ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb','pfMassIndependentDeepDoubleCvLJetTags:probHcc','pfMassIndependentDeepDoubleCvBJetTags:probHcc'])
+            ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb'])
 
         if TMeras.TM80X.isChosen():
             # use jet toolbox to rerun puppi, recluster AK8 jets, and compute substructure variables
@@ -370,20 +371,6 @@ def makeTreeFromMiniAOD(self,process):
         )
         METTag = cms.InputTag('slimmedMETs','',process.name_())
 
-        # additional run to keep orig values
-        if self.doMETfix:
-            runMetCorAndUncFromMiniAOD(
-                process,
-                isData=not self.geninfo, # controls gen met
-                jetCollUnskimmed=JetTag,
-                reapplyJEC=False,
-                postfix="Orig",
-                computeMETSignificance=False,
-            )
-            METTagOrig = cms.InputTag('slimmedMETsOrig')
-        else:
-            METTagOrig = None
-
     # keep jets before any further modifications for hadtau
     JetTagBeforeSmearing = JetTag
 
@@ -451,13 +438,6 @@ def makeTreeFromMiniAOD(self,process):
     ## Electrons/Muons
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.TreeMaker.TMEras import TMeras
-    from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq
-    elePostRecoEra = cms.PSet(value = cms.string(""))
-    TMeras.TM2018.toModify(elePostRecoEra, value = "2018-Prompt")
-    TMeras.TM2017.toModify(elePostRecoEra, value = "2017-Nov17ReReco")
-    TMeras.TM80X.toModify(elePostRecoEra, value = "2016-Legacy")
-    if len(elePostRecoEra.value.value())>0:
-        process = setupEgammaPostRecoSeq(process, runVID=False, era=elePostRecoEra.value.value())
     from TreeMaker.Utils.leptonproducer_cfi import leptonproducer
     process.LeptonsNew = leptonproducer.clone(
         elecIsoValue       = cms.double(0.1), # only has an effect when used with miniIsolation
@@ -493,10 +473,6 @@ def makeTreeFromMiniAOD(self,process):
         hovere_constant    = cms.bool(False),
         # from: https://github.com/cms-sw/cmssw/blob/1fbada01f097fbd446e7a431140f83bc9f5a0ff0/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
         electronEAValues   = cms.vdouble(0.1440, 0.1562, 0.1032, 0.0859, 0.1116, 0.1321, 0.1654),
-    )
-    TMeras.TM2017.toModify(process.LeptonsNew,
-        # new collection from reco tool (to get user floats)
-        ElectronTag = cms.InputTag('slimmedElectrons','',process.name_()),
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
@@ -896,7 +872,7 @@ def makeTreeFromMiniAOD(self,process):
 #        ecfN2b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN2'),
 #        ecfN3b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN3'),
 #        ecfN3b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN3'),
-        prunedMass = cms.vstring('ak8PFJetsPuppi94XlikePrunedMass'),
+#        prunedMass = cms.vstring('ak8PFJetsPuppi94XlikePrunedMass'),
         softDropMass = cms.vstring('SoftDrop'),
         subjets = cms.vstring('SoftDrop'),
         SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags'),
@@ -922,7 +898,7 @@ def makeTreeFromMiniAOD(self,process):
     if self.geninfo:
         # store all genjets
         self.VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
-    
+        
         from TreeMaker.Utils.subJetSelection_cfi import SubGenJetSelection
         
         process.GenHTJets = SubGenJetSelection.clone(
@@ -930,8 +906,7 @@ def makeTreeFromMiniAOD(self,process):
             MinPt  = cms.double(30),
             MaxEta = cms.double(2.4),
         )
-        self.VectorBool.extend(['GenHTJets:SubJetMask(GenJets_HTMask)'])
-        
+
         # make gen HT
         from TreeMaker.Utils.htdouble_cfi import htdouble
         process.GenHT = htdouble.clone(
@@ -944,8 +919,7 @@ def makeTreeFromMiniAOD(self,process):
             MinPt  = cms.double(30),
             MaxEta = cms.double(5.0),
         )
-        self.VectorBool.extend(['GenMHTJets:SubJetMask(GenJets_MHTMask)'])
-        
+
         # make gen MHT
         from TreeMaker.Utils.mhtdouble_cfi import mhtdouble
         process.GenMHT = mhtdouble.clone(
@@ -986,7 +960,6 @@ def makeTreeFromMiniAOD(self,process):
             jetPtFilter = cms.double(150),
         )
         self.VectorDouble.extend([
-            'ak8GenJetProperties:prunedMass(GenJetsAK8_prunedMass)',
             'ak8GenJetProperties:softDropMass(GenJetsAK8_softDropMass)',
         ])
         self.VectorInt.extend([
@@ -1049,21 +1022,13 @@ def makeTreeFromMiniAOD(self,process):
         self.VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
         self.VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
 
-    if self.doMETfix:
-        process.METOrig = process.MET.clone(
-            METTag = METTagOrig
-        )
-        self.VarsDouble.extend(['METOrig:Pt(METOrig)','METOrig:Phi(METPhiOrig)'])
-#        self.VarsDouble.extend(['METOrig:RawPt(RawMETOrig)','METOrig:RawPhi(RawMETPhiOrig)'])
-        if self.geninfo:
-            self.VectorDouble.extend(['METOrig:PtUp(METOrigUp)', 'METOrig:PtDown(METOrigDown)', 'METOrig:PhiUp(METPhiOrigUp)', 'MET:PhiDown(METPhiOrigDown)'])
-
-    from TreeMaker.Utils.mt2producer_cfi import mt2Producer
-    process.Mt2Producer = mt2Producer.clone(
-                JetTag  = cms.InputTag('MHTJets'),
-                METTag = METTag
-        )
-    self.VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
+    if self.doMT2:
+        from TreeMaker.Utils.mt2producer_cfi import mt2Producer
+        process.Mt2Producer = mt2Producer.clone(
+                    JetTag  = cms.InputTag('MHTJets'),
+                    METTag = METTag
+            )
+        self.VarsDouble.extend(['Mt2Producer:mt2(MT2)'])
     
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------

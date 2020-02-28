@@ -234,6 +234,8 @@ Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py
 * `debugsubjets`: store some additional information for the AK8 subjets (default=False)
 * `applybaseline`: switch to apply the baseline HT selection (default=False)
 * `saveMinimalGenParticles`: save only the hard scatter gen particles coming from top decays, boson decays, semi-visible jets, or SUSY particles (default=True)
+* `saveGenTops`: save the 4-vectors of the generated tops and the TTbar reweighting scale factor (default=False)
+* `doMT2`: switch to enable the storage of the MT2 variable (default=False)
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
