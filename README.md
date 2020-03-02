@@ -159,11 +159,6 @@ For MC samples, it can also automatically generate the appropriate configuration
 The script can also check to see which sites (if any) have 100% dataset presence for the sample (enabled with `-s`).
 (You may also need `export SSL_CERT_DIR='/etc/pki/tls/certs:/etc/grid-security/certificates'` (bash) or `setenv SSL_CERT_DIR '/etc/pki/tls/certs:/etc/grid-security/certificates'` (tcsh) to avoid the error `SSL: CERTIFICATE_VERIFY_FAILED` from `urllib2`.)
 
-Before running the script for the first time, some environment settings are necessary:
-```
-source /cvmfs/cms.cern.ch/crab3/crab.csh
-```
-
 To run the script:
 ```
 python get_py.py -d dict.py [options]
