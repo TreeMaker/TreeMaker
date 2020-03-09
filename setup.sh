@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-CMSSWVER=CMSSW_10_2_11_patch1
+CMSSWVER=CMSSW_10_2_20
 FORK=TreeMaker
 BRANCH=Run2_2017
 ACCESS=ssh
@@ -100,7 +100,7 @@ git config gc.auto 0
 # CMSSW patches
 if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_10_2_7
-	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:storeJERFactorIndex1027
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:storeJERFactorIndex10220
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:AddJetAxis1_1027
 fi
 
