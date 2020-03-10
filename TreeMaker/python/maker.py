@@ -96,7 +96,7 @@ class maker:
         if self.dataset!=[] :    
             self.readFiles.extend( [self.dataset] )
 
-        self.readFiles = [(self.redir if val[0:6]=="/store" else "")+val for val in self.readFiles]
+        self.readFiles = [(self.redir if val.startswith("/") else "")+val for val in self.readFiles]
         
         # branches for treemaker
         self.VectorRecoCand             = cms.vstring()
