@@ -7,6 +7,7 @@ ACCESS=ssh
 CORES=8
 NAME=""
 DIR="${PWD}"
+BATCH=""
 
 usage(){
 	EXIT=$1
@@ -15,6 +16,7 @@ usage(){
 	echo ""
 	echo "-f [fork]           clone from specified fork (default = ${FORK})"
 	echo "-b [branch]         clone specified branch (default = ${BRANCH})"
+    echo "-B [batch]          configure some settings for checkout within batch setups (default = ${BATCH})"
 	echo "-c [version]        use specified CMSSW version (default = ${CMSSWVER})"
 	echo "-a [protocol]       use protocol to clone (default = ${ACCESS}, alternative = https)"
 	echo "-j [cores]          run CMSSW compilation on # cores (default = ${CORES})"
@@ -26,11 +28,13 @@ usage(){
 }
 
 # process options
-while getopts "f:b:a:j:n:d:c:h" opt; do
+while getopts "f:b:Ba:j:n:d:c:h" opt; do
 	case "$opt" in
 	f) FORK=$OPTARG
 	;;
 	b) BRANCH=$OPTARG
+	;;
+    B) BATCH=--upstream-only
 	;;
 	c) CMSSWVER=$OPTARG
 	;;
@@ -60,6 +64,22 @@ else
 	usage 1
 fi
 
+# make sure that scram is available
+# examples:
+#   in a non-interactive Docker container this will evaluate to "hB"
+#   in an login session this will evaluate to "himBCHP"
+if [[ $- != *i* ]]; then
+	echo "WARNING: Non-interactive shell found!"
+    if [[ -f "${HOME}/.bashrc" ]]; then
+        echo "Sourcing the .bashrc file"
+        source ${HOME}/.bashrc
+    fi
+	if [[ -f "/cvmfs/cms.cern.ch/cmsset_default.sh" ]]; then
+		echo -e "cms.cern.ch is accessible\n\t==> source /cvmfs/cms.cern.ch/cmsset_default.sh\n"
+		source /cvmfs/cms.cern.ch/cmsset_default.sh
+	fi
+fi
+
 # get CMSSW release
 if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
 	GCC_VERSION=gcc700
@@ -72,6 +92,15 @@ if [[ `uname -r` == *"el6"* ]]; then
 	SLC_VERSION="slc6"
 elif [[ `uname -r` == *"el7"* ]]; then
 	SLC_VERSION="slc7"
+elif [[ -f "/etc/redhat-release" ]]; then
+	VERSION_TMP=`awk -F'[ .]' '{print $4}' "/etc/redhat-release"`
+	POSSIBLE_VERSIONS=( 6 7 )
+	if [[ "${POSSIBLE_VERSIONS[@]} " =~ " ${VERSION_TMP}" ]]; then
+		SLC_VERSION="slc${VERSION_TMP}"
+	else
+		echo "WARNING::Unknown SLC version. Defaulting to SLC6."
+		SLC_VERSION="slc6"
+	fi
 else
 	echo "WARNING::Unknown SLC version. Defaulting to SLC6."
 	SLC_VERSION="slc6"
@@ -94,8 +123,15 @@ cd ${DIR}/${NAME}/src
 
 # cmsenv
 eval `scramv1 runtime -sh`
-git cms-init $ACCESS_CMSSW
+git cms-init $ACCESS_CMSSW $BATCH
 git config gc.auto 0
+
+# batch git config
+if [[ ! -z "$BATCH" ]]; then
+	git config --global --add user.name "TreeMaker GitHub"
+	git config --global --add user.email "treemaker@github.com"
+	git config --global --add user.github "TreeMaker"
+fi
 
 # CMSSW patches
 if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then

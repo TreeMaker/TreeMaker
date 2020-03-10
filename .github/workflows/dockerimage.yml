@@ -1,0 +1,27 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ Run2_2017_Docker ]
+  pull_request:
+    branches: [ Run2_2017_Docker ]
+
+env:
+  current_branch: $(echo ${{ github.ref }} | sed -E 's|refs/[a-zA-Z]+/||')
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Look at key environment variables
+      run: echo -e "GITHUB_REF=${{ github.ref }}\nGITHUB_ACTOR=${{ github.actor }}\nGITHUB_REPOSITORY=${{ github.repository }}\nGITHUB_SHA=${{ github.sha }}\nBANCH=${{ env.current_branch }}"
+    - name: Take a look around
+      run: pwd && ls -alh
+    - name: Run a CVMFS Docker image and run the setup script
+      run: docker run -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker --entrypoint "/bin/bash" aperloff/cms-cvmfs-docker:light -c "/run.sh -c \"wget https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/setup.sh && chmod +x setup.sh && ./setup.sh -a https -f ${{ github.actor }} -b ${{ env.current_branch }} -B\" && cvmfs_config wipecache"
+    - name: Commit the changes
+      run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:latest
+    - name: Log into registry
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+    - name: Publish the new docker image
+      run: docker push treemaker/treemaker:latest
