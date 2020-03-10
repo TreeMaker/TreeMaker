@@ -1,5 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 
+# Electron ID Values From: https://indico.cern.ch/event/732971/contributions/3022843/attachments/1658685/2656462/eleIdTuning.pdf
+# Electron EA Values From: https://github.com/cms-sw/cmssw/blob/1fbada01f097fbd446e7a431140f83bc9f5a0ff0/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
 leptonproducer = cms.EDProducer('LeptonProducer',
     MuonTag                                = cms.InputTag('slimmedMuons'),
     ElectronTag                            = cms.InputTag('slimmedElectrons'),
@@ -8,26 +10,30 @@ leptonproducer = cms.EDProducer('LeptonProducer',
     maxElecEta                             = cms.double(2.5),
     elecIsoValue                           = cms.double(0.2), # only has an effect with useMiniIsolation
     # barrel electrons
-    eb_ieta_cut                            = cms.vdouble(0.0115,  0.011,   0.00998, 0.00998),
-    eb_deta_cut                            = cms.vdouble(0.00749, 0.00477, 0.00311, 0.00308),
-    eb_dphi_cut                            = cms.vdouble(0.228,   0.222,   0.103,   0.0816),
-    eb_hovere_cut                          = cms.vdouble(0.356,   0.298,   0.253,   0.0414),
-    eb_ooeminusoop_cut                     = cms.vdouble(0.299,   0.241,   0.134,   0.0129),
+    eb_ieta_cut                            = cms.vdouble(0.0126,  0.0112,  0.0106,  0.0104),
+    eb_deta_cut                            = cms.vdouble(0.00463, 0.00377, 0.0032,  0.00255),
+    eb_dphi_cut                            = cms.vdouble(0.148,   0.0884,  0.0547,  0.022),
+    eb_hovere_cut                          = cms.vdouble(0.05,    0.05,    0.046,   0.026),
+    eb_hovere_cut2                         = cms.vdouble(1.16,    1.16,    1.16,    1.15),
+    eb_hovere_cut3                         = cms.vdouble(0.0324,  0.0324,  0.0324,  0.0324),
+    eb_ooeminusoop_cut                     = cms.vdouble(0.209,   0.193,   0.184,   0.159),
     eb_d0_cut                              = cms.vdouble(0.05,    0.05,    0.05,    0.05),
     eb_dz_cut                              = cms.vdouble(0.10,    0.10,    0.10,    0.10),
     eb_misshits_cut                        = cms.vint32 (2,       1,       1,       1),
     # endcap electrons
-    ee_ieta_cut                            = cms.vdouble(0.037,   0.0314,  0.0298,  0.0292),
-    ee_deta_cut                            = cms.vdouble(0.00895, 0.00868, 0.00609, 0.00605),
-    ee_dphi_cut                            = cms.vdouble(0.213,   0.213,   0.045,   0.0394),
-    ee_hovere_cut                          = cms.vdouble(0.211,   0.101,   0.0878,  0.0641),
-    ee_ooeminusoop_cut                     = cms.vdouble(0.15,    0.14,    0.13,    0.0129),
+    ee_ieta_cut                            = cms.vdouble(0.0457,  0.0425,  0.0387,  0.0353),
+    ee_deta_cut                            = cms.vdouble(0.00814, 0.00674, 0.00632, 0.00501),
+    ee_dphi_cut                            = cms.vdouble(0.19,    0.169,   0.0394,  0.0236),
+    ee_hovere_cut                          = cms.vdouble(0.05,    0.0441,  0.0275,  0.0188),
+    ee_hovere_cut2                         = cms.vdouble(2.54,    2.54,    2.52,    2.06),
+    ee_hovere_cut3                         = cms.vdouble(0.183,   0.183,   0.183,   0.183),
+    ee_ooeminusoop_cut                     = cms.vdouble(0.132,   0.111,   0.0721,  0.0197),
     ee_d0_cut                              = cms.vdouble(0.10,    0.10,    0.10,    0.10),
     ee_dz_cut                              = cms.vdouble(0.20,    0.20,    0.20,    0.20),
     ee_misshits_cut                        = cms.vint32 (3,       1,       1,       1),
     # common electrons
-    hovere_constant                        = cms.bool(True),
-    electronEAValues                       = cms.vdouble(0.1752, 0.1862, 0.1411, 0.1534, 0.1903, 0.2243, 0.2687),
+    hovere_constant                        = cms.bool(False),
+    electronEAValues                       = cms.vdouble(0.1440, 0.1562, 0.1032, 0.0859, 0.1116, 0.1321, 0.1654),
     #muons
     minMuPt                                = cms.double(10),
     maxMuEta                               = cms.double(2.4),
