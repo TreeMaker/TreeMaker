@@ -188,6 +188,7 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 			if (iJet.numberOfDaughters()>0 and std::isinf(iJet.daughterPtr(0)->energy())) continue;
 
 			bool skip=false;
+			bool isLepton=false;
 			if (ExcludeLeptonIsoTrackPhotons_ && !excludeHandles.empty()) {
 				for (const auto & excludeHandle : excludeHandles) {
 					for (const auto & exclude : *excludeHandle) {
@@ -198,15 +199,8 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 						if (skip) break; //no need to keep checking
 					}
 				}
-				if (skip) {
-					prodJets->push_back(Jet(iJet));
-					jetsMask->push_back(true);
-					leptonMask->push_back(true);
-					continue;
-				}
-				else leptonMask->push_back(false);
+				if (skip) isLepton = true;
 			}
-			else leptonMask->push_back(false);
 
 			//calculate the PFJetID decision
 			bool good = true;
@@ -239,10 +233,11 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 			if (good || saveAllId_) {
 				prodJets->push_back(Jet(iJet));
 				jetsMask->push_back(good);
+				leptonMask->push_back(isLepton);
 			}
 
-			//calculate event filter only for jets that pass pT cut
-			if ( (!invertJetPtFilter_ && iJet.pt() > jetPtFilter_) || (invertJetPtFilter_ && iJet.pt() <= jetPtFilter_) ) {
+			//calculate event filter only for jets that pass pT cut and are not leptons
+			if ( !isLepton && ((!invertJetPtFilter_ && iJet.pt() > jetPtFilter_) || (invertJetPtFilter_ && iJet.pt() <= jetPtFilter_)) ) {
 				if(!good && !TagMode_) return false;
 				result &= good;
 			}
