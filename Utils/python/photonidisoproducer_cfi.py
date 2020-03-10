@@ -1,5 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
+# Photon ID Values From: https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedPhotonIdentificationRun2
 PhotonIDisoProducer = cms.EDProducer("PhotonIDisoProducer",
     photonCollection       = cms.untracked.InputTag("slimmedPhotons"),
     electronCollection     = cms.untracked.InputTag("slimmedElectrons"),
