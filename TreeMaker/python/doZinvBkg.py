@@ -274,21 +274,6 @@ def doZinvBkg(self,process):
     process.goodPhotons = PhotonIDisoProducer.clone(
         conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",self.tagname)
     )
-    TMeras.TM2016.toModify(process.goodPhotons,
-        effArChHad             = cms.vdouble(0.0360, 0.0377, 0.0306, 0.0283, 0.0254, 0.0217, 0.0167),#EA for charged hadrons in diiferent |eta| ranges
-        effArNuHad             = cms.vdouble(0.0597, 0.0807, 0.0629, 0.0197, 0.0184, 0.0284, 0.0591),#EA for neutral hadrons in diiferent |eta| ranges
-        effArGamma             = cms.vdouble(0.1210, 0.1107, 0.0699, 0.1056, 0.1457, 0.1719, 0.1988),#EA for photons(gamma) in diiferent |eta| ranges
-        hadTowOverEm_EB_cut    = cms.double(0.0597), #H/E cut in EB
-        hadTowOverEm_EE_cut    = cms.double(0.0481), #H/E cut in EE
-        sieie_EB_cut           = cms.double(0.01031), #Sigma ieta_ieta cut in EB
-        sieie_EE_cut           = cms.double(0.03013), #Sigma ieta_ieta cut in EE
-        pfChIsoRhoCorr_EB_cut  = cms.double(1.295), #Pho corrected PF charged ISO in EB
-        pfChIsoRhoCorr_EE_cut  = cms.double(1.011), #Pho corrected PF charged ISO in EE
-        pfNuIsoRhoCorr_EB_cut  = cms.vdouble(10.910, 0.0148, 0.000017), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
-        pfNuIsoRhoCorr_EE_cut  = cms.vdouble(5.931,  0.0163, 0.000014), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
-        pfGmIsoRhoCorr_EB_cut  = cms.vdouble(3.630, 0.0047), #Rho corrected gamma ISO = [0]+[1]*pt
-        pfGmIsoRhoCorr_EE_cut  = cms.vdouble(6.641, 0.0034), #Rho corrected gamma ISO = [0]+[1]*pt
-    )
     
     ##### add branches for photon studies
     self.VectorRecoCand.append("goodPhotons(Photons)")
