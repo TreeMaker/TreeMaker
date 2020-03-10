@@ -522,6 +522,14 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsInt.extend(['EcalDeadCellTriggerPrimitiveFilter'])
         
+        process.EcalDeadCellBoundaryEnergyFilter = filterDecisionProducer.clone(
+            trigTagArg1 = cms.string('TriggerResults'),
+            trigTagArg2 = cms.string(''),
+            trigTagArg3 = cms.string(self.tagname),
+            filterName  = cms.string("Flag_EcalDeadCellBoundaryEnergyFilter"),
+        )
+        self.VarsInt.extend(['EcalDeadCellBoundaryEnergyFilter'])
+        
         process.eeBadScFilter = filterDecisionProducer.clone(
             trigTagArg1  = cms.string('TriggerResults'),
             trigTagArg2  = cms.string(''),
