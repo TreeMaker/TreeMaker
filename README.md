@@ -21,7 +21,7 @@ The following installation instructions assume the user wants to process 2016, 2
 wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017/setup.sh
 chmod +x setup.sh
 ./setup.sh
-cd CMSSW_10_2_20/src/
+cd CMSSW_10_2_21/src/
 cmsenv
 cd TreeMaker/Production/test
 ```
@@ -30,7 +30,7 @@ The script [setup.sh](./setup.sh) has options to allow installing a different fo
 (though some branches may have different setup scripts, so check carefully which one you download):
 * `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
 * `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017)
-* `-c [version]`: which CMSSW version to use (default = CMSSW_10_2_20)
+* `-c [version]`: which CMSSW version to use (default = CMSSW_10_2_21)
 * `-a [protocol]`: which protocol to use for `git clone` (default = ssh, alternative = https)
 * `-j [cores]`: run CMSSW compilation on # cores (default = 8)
 * `-h`: display help message and exit
