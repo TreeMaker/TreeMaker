@@ -256,19 +256,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
 
     # get more substructure
     if self.semivisible and storeProperties>1:
-        from RecoJets.JetProducers.nJettinessAdder_cfi import Njettiness
-        NjettinessBeta1 = Njettiness.clone(
-            src = GoodJetsTag,
-            cone = cms.double(0.8),
-            storeAxes = cms.bool(True),
-            Njets = cms.vuint32(1),
-            beta = cms.double(1.0)
-        )
-        setattr(process,"NjettinessBeta1"+suff,NjettinessBeta1)
-        NjettinessBeta2 = NjettinessBeta1.clone(
-            beta = cms.double(2.0)
-        )
-        setattr(process,"NjettinessBeta2"+suff,NjettinessBeta2)
         BasicSubstructure = cms.EDProducer("BasicSubstructureProducer",
             JetTag = GoodJetsTag
         )
