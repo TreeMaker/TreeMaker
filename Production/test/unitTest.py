@@ -80,7 +80,6 @@ class Test:
         print "\nDone cleaning files!"
 
 def defineTests(mytests, scenario, name, numevents, command, dataset, inputFilesConfig):
-    # activate these when the requisite MC exists
     mytests.append(Test("Summer16v3","Summer16v3.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
     mytests.append(Test("Summer16v3","Summer16v3.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
     mytests.append(Test("Summer16v3sig","Summer16v3.SMS-T1tttt_mGluino-2000_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.SMS-T1tttt_mGluino-2000_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
@@ -136,7 +135,7 @@ def unitTest():
     # sanity check for defining an on-the-fly test
     if test==len(mytests) and dataset=="" and inputFilesConfig=="":
         print "If defining a unitTest on-the-fly, you must either specify a \'dataset\' or an \'inputFilesConfig\'."
-        return -1
+        exit(-1)
 
     if test<0 or test>len(mytests):
         print "Predefined tests:"

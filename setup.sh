@@ -16,7 +16,7 @@ usage(){
 	echo ""
 	echo "-f [fork]           clone from specified fork (default = ${FORK})"
 	echo "-b [branch]         clone specified branch (default = ${BRANCH})"
-    echo "-B [batch]          configure some settings for checkout within batch setups (default = ${BATCH})"
+	echo "-B                  configure some settings for checkout within batch setups (default = ${BATCH})"
 	echo "-c [version]        use specified CMSSW version (default = ${CMSSWVER})"
 	echo "-a [protocol]       use protocol to clone (default = ${ACCESS}, alternative = https)"
 	echo "-j [cores]          run CMSSW compilation on # cores (default = ${CORES})"
@@ -34,7 +34,7 @@ while getopts "f:b:Ba:j:n:d:c:h" opt; do
 	;;
 	b) BRANCH=$OPTARG
 	;;
-    B) BATCH=--upstream-only
+	B) BATCH=--upstream-only
 	;;
 	c) CMSSWVER=$OPTARG
 	;;
@@ -67,13 +67,13 @@ fi
 # make sure that scram is available
 # examples:
 #   in a non-interactive Docker container this will evaluate to "hB"
-#   in an login session this will evaluate to "himBCHP"
+#   in a login session this will evaluate to "himBCHP"
 if [[ $- != *i* ]]; then
 	echo "WARNING: Non-interactive shell found!"
-    if [[ -f "${HOME}/.bashrc" ]]; then
-        echo "Sourcing the .bashrc file"
-        source ${HOME}/.bashrc
-    fi
+	if [[ -f "${HOME}/.bashrc" ]]; then
+		echo "Sourcing the .bashrc file"
+		source ${HOME}/.bashrc
+	fi
 	if [[ -f "/cvmfs/cms.cern.ch/cmsset_default.sh" ]]; then
 		echo -e "cms.cern.ch is accessible\n\t==> source /cvmfs/cms.cern.ch/cmsset_default.sh\n"
 		source /cvmfs/cms.cern.ch/cmsset_default.sh
@@ -127,7 +127,7 @@ git cms-init $ACCESS_CMSSW $BATCH
 git config gc.auto 0
 
 # batch git config
-if [[ ! -z "$BATCH" ]]; then
+if [[ -n "$BATCH" ]]; then
 	git config --global --add user.name "TreeMaker GitHub"
 	git config --global --add user.email "treemaker@github.com"
 	git config --global --add user.github "TreeMaker"
