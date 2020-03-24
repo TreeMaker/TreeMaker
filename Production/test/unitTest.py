@@ -1,4 +1,4 @@
-import os, subprocess
+import os, subprocess, sys
 
 class Test:
     def __init__(self, scenario, name, numevents, command, dataset="", inputFilesConfig="", nstart=0, nfiles=0, redir=""):
@@ -135,7 +135,7 @@ def unitTest():
     # sanity check for defining an on-the-fly test
     if test==len(mytests) and dataset=="" and inputFilesConfig=="":
         print "If defining a unitTest on-the-fly, you must either specify a \'dataset\' or an \'inputFilesConfig\'."
-        exit(-1)
+        sys.exit(-1)
 
     if test<0 or test>len(mytests):
         print "Predefined tests:"
