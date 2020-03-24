@@ -31,13 +31,13 @@ jobs:
     needs: [build]
     if: "!contains(github.event.head_commit.message, '[skip test]')"
     steps:
-    - name: Run the container and perform an intregration test
+    - name: Run the container and perform an integration test
       env:
         download_url: https://cernbox.cern.ch/index.php/s/5DRVyX4Z9EertGa/download
         file_name: eos.opendata.cms.MonteCarlo2016.RunIISummer16MiniAODv2.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8.MINIAODSIM.PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1.70000.0048131D-3CB3-E611-813A-001E67DFFB31_100evt.root
         era: Summer16
         output_name: Summer16.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8_opendata
-      run: docker run -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker treemaker/treemaker:latest -- -i -c "cd CMSSW_10_2_21/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=25 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True && pgrep cmsRun | xargs -I {} tail --pid={} -f /dev/null && cat *.log && rm *.root && rm *.log"
+      run: docker run -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker treemaker/treemaker:latest -- -i -c "cd CMSSW_10_2_21/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=25 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99"
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:cache
     - name: Log into registry
