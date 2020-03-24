@@ -10,6 +10,8 @@
 - [Info for New Samples](#info-for-new-samples)
     - [Samples with Negative Weight Events](#samples-with-negative-weight-events)
 - [Options](#options)
+- [Notes for Contributors](#notes-for-contributors)
+    - [Docker](#docker)
 
 <!-- /MarkdownTOC -->
 
@@ -30,6 +32,7 @@ The script [setup.sh](./setup.sh) has options to allow installing a different fo
 (though some branches may have different setup scripts, so check carefully which one you download):
 * `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
 * `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017)
+* `-B`: configure some settings for checkout within batch setups
 * `-c [version]`: which CMSSW version to use (default = CMSSW_10_2_21)
 * `-a [protocol]`: which protocol to use for `git clone` (default = ssh, alternative = https)
 * `-j [cores]`: run CMSSW compilation on # cores (default = 8)
@@ -259,3 +262,13 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `tmi`: enable [TimeMemoryInfo](https://github.com/cms-sw/cmssw/blob/master/Validation/Performance/python/TimeMemoryInfo.py) for simple profiling (default=False)
 * `trace`: enable the tracer for debugging (default=False)
 * `debugjets`: print out user floats and discriminators for each jet collection (default=False)
+
+## Notes for Contributors
+
+### Docker
+
+Two Docker images containing the TreeMaker software will be created upon push or pull request to the default TreeMaker branch. For more information about these images see the [TreeMaker wiki](https://github.com/TreeMaker/TreeMaker/wiki/Docker%20Integration%20Test).
+
+In order to cancel or limit these builds one can add the following strings to their commit message:
+* `[skip build]`: neither image will be created
+* `[skip test]`: the no-cache image will be created, but the image containing the CVMFS cache will be skipped
