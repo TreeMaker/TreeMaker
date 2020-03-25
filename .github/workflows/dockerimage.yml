@@ -14,8 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip build]')"
     steps:
+    - name: Reset Branch on Pull Request
+      if: github.event_name == 'pull_request'
+      run: echo ::set-env name=current_branch::${{ github.head_ref }}
     - name: Look at key environment variables
-      run: echo -e "GITHUB_REF=${{ github.ref }}\nGITHUB_ACTOR=${{ github.actor }}\nGITHUB_REPOSITORY=${{ github.repository }}\nGITHUB_SHA=${{ github.sha }}\nBANCH=${{ env.current_branch }}"
+      run: echo -e "GITHUB_REF=${{ github.ref }}\nGITHUB_HEAD_REF=${{ github.head_ref }}\nGITHUB_BASE_REF=${{ github.base_ref }}\nGITHUB_ACTOR=${{ github.actor }}\nGITHUB_REPOSITORY=${{ github.repository }}\nGITHUB_SHA=${{ github.sha }}\nBANCH=${{ env.current_branch }}"
     - name: Take a look around
       run: pwd && ls -alh
     - name: Run a CVMFS Docker image and run the setup script
