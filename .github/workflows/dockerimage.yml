@@ -25,7 +25,10 @@ jobs:
     - name: Take a look around
       run: pwd && ls -alh
     - name: Run a CVMFS Docker image and run the setup script
-      run: docker run -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker --entrypoint "/bin/bash" aperloff/cms-cvmfs-docker:light -c "/run.sh -c \"wget https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/setup.sh && chmod +x setup.sh && ./setup.sh -a https -f ${{ github.actor }} -b ${{ env.current_branch }} -B -j 2\" && cvmfs_config wipecache"
+      env:
+        build_image: aperloff/cms-cvmfs-docker:light
+        docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker --entrypoint "/bin/bash"
+      run: docker run ${{ env.docker_options }} ${{ env.build_image }} -c "/run.sh -c \"wget https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/setup.sh && chmod +x setup.sh && ./setup.sh -a https -f ${{ github.actor }} -b ${{ env.current_branch }} -B -j 2\" && cvmfs_config wipecache"
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:${{ env.current_branch }}-latest
     - name: Log into registry
@@ -46,7 +49,7 @@ jobs:
         era: Summer16
         output_name: Summer16.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8_opendata
         integration_test_image: treemaker/treemaker:${{ env.current_branch }}-latest
-        docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker
+        docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker-integration
       run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "cd CMSSW_10_2_21/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=25 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99"
 
   # The 'integration-test' job opens the previous 'build' image, pulled from the registry, to:
