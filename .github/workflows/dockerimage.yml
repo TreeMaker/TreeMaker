@@ -8,6 +8,7 @@ on:
 
 env:
   current_branch: $(echo ${{ github.ref }} | sed -E 's|refs/[a-zA-Z]+/||')
+  current_user: ${{ github.actor }}
 
 jobs:
 
@@ -17,18 +18,21 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, '[skip build]')"
     steps:
+    - name: Reset User on Push
+      if: github.event_name == 'push'
+      run: echo ::set-env name=current_user::$(echo ${{ github.repository }} | sed -E 's|/.*||')
     - name: Reset Branch on Pull Request
       if: github.event_name == 'pull_request'
       run: echo ::set-env name=current_branch::${{ github.head_ref }}
     - name: Look at key environment variables
-      run: echo -e "GITHUB_REF=${{ github.ref }}\nGITHUB_HEAD_REF=${{ github.head_ref }}\nGITHUB_BASE_REF=${{ github.base_ref }}\nGITHUB_ACTOR=${{ github.actor }}\nGITHUB_REPOSITORY=${{ github.repository }}\nGITHUB_SHA=${{ github.sha }}\nBANCH=${{ env.current_branch }}"
+      run: echo -e "GITHUB_REF=${{ github.ref }}\nGITHUB_HEAD_REF=${{ github.head_ref }}\nGITHUB_BASE_REF=${{ github.base_ref }}\nGITHUB_ACTOR=${{ github.actor }}\nGITHUB_REPOSITORY=${{ github.repository }}\nGITHUB_SHA=${{ github.sha }}\nUSER=${{ env.current_user }}\nBANCH=${{ env.current_branch }}"
     - name: Take a look around
       run: pwd && ls -alh
     - name: Run a CVMFS Docker image and run the setup script
       env:
         build_image: aperloff/cms-cvmfs-docker:light
         docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker --entrypoint "/bin/bash"
-      run: docker run ${{ env.docker_options }} ${{ env.build_image }} -c "/run.sh -c \"wget https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/setup.sh && chmod +x setup.sh && ./setup.sh -a https -f ${{ github.actor }} -b ${{ env.current_branch }} -B -j 2\" && cvmfs_config wipecache"
+      run: docker run ${{ env.docker_options }} ${{ env.build_image }} -c "/run.sh -c \"wget https://raw.githubusercontent.com/${{ github.repository }}/${{ github.sha }}/setup.sh && chmod +x setup.sh && ./setup.sh -a https -f ${{ env.current_user }} -b ${{ env.current_branch }} -B -j 2\" && cvmfs_config wipecache"
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:${{ env.current_branch }}-latest
     - name: Log into registry
@@ -50,7 +54,7 @@ jobs:
         output_name: Summer16.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8_opendata
         integration_test_image: treemaker/treemaker:${{ env.current_branch }}-latest
         docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker-integration
-      run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "cd CMSSW_10_2_21/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=25 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99"
+      run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "cd CMSSW_10_2_21/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=0 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99"
 
   # The 'integration-test' job opens the previous 'build' image, pulled from the registry, to:
   #   1. test that the image was successfully uploaded to the registry
@@ -71,7 +75,7 @@ jobs:
         output_name: Summer16.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8_opendata
         integration_test_image: treemaker/treemaker:${{ env.current_branch }}-latest
         docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker
-      run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "cd CMSSW_10_2_21/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=25 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99"
+      run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "cd CMSSW_10_2_21/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=0 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99"
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:${{ env.current_branch }}-cache
     - name: Log into registry
