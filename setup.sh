@@ -64,11 +64,8 @@ else
 	usage 1
 fi
 
-# make sure that scram is available
-# examples:
-#   in a non-interactive Docker container this will evaluate to "hB"
-#   in a login session this will evaluate to "himBCHP"
-if [[ $- != *i* ]]; then
+# make sure that scram is available in a batch situation when an interactive terminal might not be available
+if [[ -n "$BATCH" ]]; then
 	echo "WARNING: Non-interactive shell found!"
 	if [[ -f "${HOME}/.bashrc" ]]; then
 		echo "Sourcing the .bashrc file"

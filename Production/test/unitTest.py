@@ -80,6 +80,11 @@ class Test:
         print "\nDone cleaning files!"
 
 def defineTests(mytests, scenario, name, numevents, command, dataset, inputFilesConfig):
+    # User defined test
+    # make sure this is the first test defined
+    mytests.append(Test(scenario,name,numevents,command,dataset,inputFilesConfig,nstart=0,nfiles=10,redir=""))
+
+    # pre-defined tests
     mytests.append(Test("Summer16v3","Summer16v3.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.GJets_HT-600ToInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
     mytests.append(Test("Summer16v3","Summer16v3.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.TTJets_SingleLeptFromT_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
     mytests.append(Test("Summer16v3sig","Summer16v3.SMS-T1tttt_mGluino-2000_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer16v3.SMS-T1tttt_mGluino-2000_mLSP-100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
@@ -106,9 +111,6 @@ def defineTests(mytests, scenario, name, numevents, command, dataset, inputFiles
     mytests.append(Test("2018PromptReco",name,numevents,command,inputFilesConfig="Run2018D-PromptReco-v2.JetHT",nstart=244,nfiles=10))
     mytests.append(Test("2018ReReco17Sep",name,numevents,command,inputFilesConfig="Run2018B-17Sep2018-v1.JetHT",nstart=0,nfiles=10))
 
-    # make sure this is the last test defined
-    mytests.append(Test(scenario,name,numevents,command,dataset,inputFilesConfig,nstart=0,nfiles=10,redir=""))
-
 def unitTest():
     # Read parameters
     from TreeMaker.Utils.CommandLineParams import CommandLineParams
@@ -133,11 +135,11 @@ def unitTest():
     defineTests(mytests,scenario,name,numevents,command,dataset,inputFilesConfig)
 
     # sanity check for defining an on-the-fly test
-    if test==len(mytests) and dataset=="" and inputFilesConfig=="":
+    if test==0 and dataset=="" and inputFilesConfig=="":
         print "If defining a unitTest on-the-fly, you must either specify a \'dataset\' or an \'inputFilesConfig\'."
         sys.exit(-1)
 
-    if test<0 or test>len(mytests):
+    if test<0 or test>=len(mytests):
         print "Predefined tests:"
         for itest, mytest in enumerate(mytests):
             mytest.printTest(itest,log)
