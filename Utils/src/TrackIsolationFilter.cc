@@ -122,6 +122,8 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	produces<vector<TLorentzVector> >("pfcands");
 	produces<vector<double> >("pfcandsactivity");
 	produces<vector<double> >("pfcandstrkiso");
+	produces<vector<double> >("pfcandspfreliso03chg");
+	produces<vector<double> >("pfcandspfreliso03all");
 	produces<vector<double> >("pfcandsdzpv"  );
 	produces<vector<double> >("pfcandsdxypv" );
 	produces<vector<double> >("pfcandsmT"    );
