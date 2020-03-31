@@ -86,7 +86,7 @@ public:
         }
       }
       //////////////////  CHARGED from PV  /////////////////////////
-    } else if (pfc.fromPV()>1 || abs(pfc.dz()) < 0.1){
+    } else if (pfc.fromPV()>1 || std::abs(pfc.dz()) < 0.1){
       if (abs(pfc.pdgId())==211) {
         if(!computeMT2Activity && dr < deadcone_ch) return;
         iso_ch += pfc.pt();
@@ -135,9 +135,9 @@ public:
     pf_iso_chg = 0.0;
     const auto& ptcl = pfcands->at(pfcand_idx);
     if (ptcl.p4().Pt()<5.) {
-    pf_iso_all = 99999.;
-    pf_iso_chg = 99999.;
-    return;
+      pf_iso_all = 99999.;
+      pf_iso_chg = 99999.;
+      return;
   }
 
     //nh, ch, ph, pu
