@@ -52,6 +52,7 @@
 // miniAOD
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
+#include "DataFormats/PatCandidates/interface/PFIsolation.h"
 
 using namespace reco;
 using namespace edm;
@@ -63,31 +64,33 @@ using namespace std;
 
 class TrackIsolationFilter : public edm::global::EDFilter<> {
 public:
-     explicit TrackIsolationFilter (const edm::ParameterSet&);
-     ~TrackIsolationFilter() override;
+	explicit TrackIsolationFilter (const edm::ParameterSet&);
+	~TrackIsolationFilter() override;
 
 private:
-  bool filter(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const override;
+	bool filter(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const override;
 
-  // ----------member data ---------------------------
-  double dR_;
-  double dzcut_;
-  double minPt_;
-  double maxEta_;
-  double isoCut_;
-  double mTCut_;
-  bool doTrkIsoVeto_;
-  int pdgId_;
-  bool debug_;
+	// ----------member data ---------------------------
+	double dR_;
+	double dzcut_;
+	double minPt_;
+	double maxEta_;
+	double isoCut_;
+	double mTCut_;
+	bool doTrkIsoVeto_;
+	int pdgId_;
+	bool debug_;
 
-  edm::InputTag pfCandidatesTag_;
-  edm::InputTag vertexInputTag_;
-  edm::InputTag MetInputTag_;
-  edm::EDGetTokenT<edm::View<pat::PackedCandidate>> pfCandidatesTok_;
-  edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
-  edm::EDGetTokenT<edm::View<pat::MET>> MetInputTok_;
+	edm::InputTag pfCandidatesTag_;
+	edm::InputTag vertexInputTag_;
+	edm::InputTag MetInputTag_;
+	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> pfCandidatesTok_;
+	edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
+	edm::EDGetTokenT<edm::View<pat::MET>> MetInputTok_;
 
-  void GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+	void GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+	void AddToIso(const int id, const bool fromPV, const float pt, float &chiso, float &puiso, float &nhiso, float &phiso) const;
+	void GetIsolation(edm::Handle<edm::View<pat::PackedCandidate> > pc, const unsigned pc_idx, pat::PFIsolation& iso, pat::PFIsolation& miniiso) const;
 
 };
 
@@ -119,6 +122,7 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	produces<vector<double> >("pfcandsactivity");
 	produces<vector<double> >("pfcandstrkiso");
 	produces<vector<double> >("pfcandsdzpv"  );
+	produces<vector<double> >("pfcandsdxypv" );
 	produces<vector<double> >("pfcandsmT"    );
 	produces<vector<int>   >("pfcandschg"    );
 	produces<vector<int>   >("pfcandsid"     );
@@ -134,12 +138,15 @@ TrackIsolationFilter::~TrackIsolationFilter() {
 bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 
 	auto pfcands = std::make_unique<vector<TLorentzVector>>();
-	auto  pfcands_activity = std::make_unique<vector<double>>();
-	auto  pfcands_trkiso = std::make_unique<vector<double>>();
-	auto  pfcands_dzpv   = std::make_unique<vector<double>>();
-	auto  pfcands_mT     = std::make_unique<vector<double>>();
-	auto  pfcands_chg     = std::make_unique<vector<int>>();
-	auto  pfcands_id      = std::make_unique<vector<int>>();
+	auto  pfcands_activity       = std::make_unique<vector<double>>();
+	auto  pfcands_trkiso         = std::make_unique<vector<double>>();
+	auto  pfcands_pfRelIso03_chg = std::make_unique<vector<double>>();
+	auto  pfcands_pfRelIso03_all = std::make_unique<vector<double>>();
+	auto  pfcands_dzpv           = std::make_unique<vector<double>>();
+	auto  pfcands_dxypv          = std::make_unique<vector<double>>();
+	auto  pfcands_mT             = std::make_unique<vector<double>>();
+	auto  pfcands_chg            = std::make_unique<vector<int>>();
+	auto  pfcands_id             = std::make_unique<vector<int>>();
 	
 	edm::Handle< edm::View<pat::MET> > MET;
 	iEvent.getByToken(MetInputTok_,MET);
@@ -151,7 +158,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//---------------------------------
 	// get PFCandidate collection
 	//---------------------------------
-  
+
 	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
 	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
 
@@ -170,10 +177,10 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------------------
 	
 	auto prodminiAOD = std::make_unique<std::vector<pat::PackedCandidate>>();
-   
-    // miniAOD
-    for(size_t i=0; i<pfCandidates->size();i++)
-    {
+
+	// miniAOD
+	for(size_t i=0; i<pfCandidates->size();i++)
+	{
 		const pat::PackedCandidate pfCand = (*pfCandidates)[i];
 
 		//to keep track of cuts in debug case (when continues are not used)
@@ -238,6 +245,10 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 			if(debug_) goodCand &= false;
 			else continue;
 		}
+
+		pat::PFIsolation isolationDR03;
+		pat::PFIsolation miniIso;
+		GetIsolation(pfCandidates, i, isolationDR03, miniIso);
 		
 		//store candidate values
 		//(all values stored in debug case, otherwise just good candidates are stored)
@@ -248,7 +259,12 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		pfcands_mT->push_back(mT);	
 		pfcands_trkiso->push_back(trkiso);
 		pfcands_activity->push_back(activity);
+		pfcands_pfRelIso03_chg->push_back(isolationDR03().chargedHadronIso() / p4.Pt());
+		pfcands_pfRelIso03_all->push_back((isolationDR03().chargedHadronIso() +
+		                                   max(isolationDR03().neutralHadronIso() + isolationDR03().photonIso() -
+		                                       isolationDR03().puChargedHadronIso() / 2,0.0))/p4.Pt());
 		pfcands_dzpv->push_back(dz_it);
+		pfcands_dxypv->push_back(pfCand.dxy());
 
 		if( debug_ && !goodCand) continue;
 		prodminiAOD->push_back( pfCand );
@@ -261,43 +277,90 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	iEvent.put(std::move(htp),"isoTracks" );
 	
 	// put candidate values back into event
-	iEvent.put(std::move(pfcands       ),"pfcands"      );
-	iEvent.put(std::move(pfcands_trkiso),"pfcandstrkiso");
-	iEvent.put(std::move(pfcands_activity),"pfcandsactivity");
-	iEvent.put(std::move(pfcands_dzpv  ),"pfcandsdzpv"  );
-	iEvent.put(std::move(pfcands_mT    ),"pfcandsmT"    );
-	iEvent.put(std::move(pfcands_chg   ),"pfcandschg"   );
-	iEvent.put(std::move(pfcands_id    ),"pfcandsid"    );
+	iEvent.put(std::move(pfcands               ),"pfcands"      );
+	iEvent.put(std::move(pfcands_trkiso        ),"pfcandstrkiso");
+	iEvent.put(std::move(pfcands_activity      ),"pfcandsactivity");
+	iEvent.put(std::move(pfcands_pfRelIso03_chg),"pfcandspfreliso03chg");
+	iEvent.put(std::move(pfcands_pfRelIso03_all),"pfcandspfreliso03all");
+	iEvent.put(std::move(pfcands_dzpv          ),"pfcandsdzpv"  );
+	iEvent.put(std::move(pfcands_dxypv         ),"pfcandsdxypv" );
+	iEvent.put(std::move(pfcands_mT            ),"pfcandsmT"    );
+	iEvent.put(std::move(pfcands_chg           ),"pfcandschg"   );
+	iEvent.put(std::move(pfcands_id            ),"pfcandsid"    );
 	
 	iEvent.put(std::move(prodminiAOD)); 
 	return result;
 }
 
 void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
-  if (tkInd>pfcands->size()) {
-	  trkiso = -999.;
-	  activity = -999.;
-	  return;
-  }
-  trkiso = 0.;
-  activity = 0.;
-  double r_iso = 0.3;
-  const auto& pfTkInd = pfcands->at(tkInd);
-  for (unsigned int iPF(0); iPF<pfcands->size(); iPF++) {
-    if (iPF==tkInd) continue; // don't count track in its own sum
-    const pat::PackedCandidate &pfc = pfcands->at(iPF);
-    if (pfc.charge()==0) continue;
-    if( fabs(pfc.dz()) > 0.1 ) continue;
-    double dr = deltaR(pfc, pfTkInd);
-    // activity annulus
-    if (dr >= r_iso && dr <= 0.4) activity += pfc.pt();
-    // mini iso cone
-    if (dr <= r_iso) trkiso += pfc.pt();
-  }
-  double invpt = 1.0/pfTkInd.pt();
-  trkiso = trkiso*invpt;
-  activity = activity*invpt;
+	if (tkInd>pfcands->size()) {
+		trkiso = -999.;
+		activity = -999.;
+		return;
+	}
+	trkiso = 0.;
+	activity = 0.;
+	double r_iso = 0.3;
+	const auto& pfTkInd = pfcands->at(tkInd);
+	for (unsigned int iPF(0); iPF<pfcands->size(); iPF++) {
+		if (iPF==tkInd) continue; // don't count track in its own sum
+		const pat::PackedCandidate &pfc = pfcands->at(iPF);
+		if (pfc.charge()==0) continue;
+		if( fabs(pfc.dz()) > 0.1 ) continue;
+		double dr = deltaR(pfc, pfTkInd);
+		// activity annulus
+		if (dr >= r_iso && dr <= 0.4) activity += pfc.pt();
+		// mini iso cone
+		if (dr <= r_iso) trkiso += pfc.pt();
+	}
+	double invpt = 1.0/pfTkInd.pt();
+	trkiso = trkiso*invpt;
+	activity = activity*invpt;
 }
+
+void TrackIsolationFilter::AddToIso(const int id, const bool fromPV, const float pt, float &chiso, float &puiso, float &nhiso, float &phiso) const {
+	// charged cands from PV get added to trackIso
+	if (id == 211 && fromPV)
+		chiso += pt;
+	// charged cands not from PV get added to pileup iso
+	else if (id == 211)
+		puiso += pt;
+	// neutral hadron iso
+	if (id == 130)
+		nhiso += pt;
+	// photon iso
+	if (id == 22)
+		phiso += pt;
+}
+
+void TrackIsolationFilter::GetIsolation(edm::Handle<edm::View<pat::PackedCandidate> > pc, const unsigned pc_idx, pat::PFIsolation& iso, pat::PFIsolation& miniiso) const {
+	float chiso = 0, nhiso = 0, phiso = 0, puiso = 0;      // standard isolation
+	float chmiso = 0, nhmiso = 0, phmiso = 0, pumiso = 0;  // mini isolation
+	const auto& p4 = pc->at(pc_idx)->p4();
+	float miniDR = std::max(miniIsoParams_[0], std::min(miniIsoParams_[1], miniIsoParams_[2] / p4.pt()));
+	for (pat::PackedCandidateCollection::const_iterator pf_it = pc->begin(); pf_it != pc->end(); pf_it++) {
+		if (int(pf_it - pc->begin()) == pc_idx)  //don't count itself
+			continue;
+		int id = std::abs(pf_it->pdgId());
+		bool fromPV = (pf_it->fromPV() > 1 || fabs(pf_it->dz()) < pfIsolation_DZ_);
+		float pt = pf_it->p4().pt();
+		float dr = deltaR(p4, pf_it->p4());
+
+		// pf isolation
+		if (dr < pfIsolation_DR_) {
+			AddToIso(id,fromPV,pt,chiso,puiso,nhiso,phiso);
+		}
+		// same for mini isolation
+		if (dr < miniDR) {
+			AddToIso(id,fromPV,pt,chmiso,pumiso,nhmiso,phmiso);
+		}
+	}
+
+	iso = pat::PFIsolation(chiso, nhiso, phiso, puiso);
+	miniiso = pat::PFIsolation(chmiso, nhmiso, phmiso, pumiso);
+}
+    const float pfIsolation_DR_;  // isolation radius
+    const float pfIsolation_DZ_;  // used in determining if pfcand is from PV or PU
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(TrackIsolationFilter);
