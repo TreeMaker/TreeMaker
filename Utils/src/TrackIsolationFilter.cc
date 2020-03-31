@@ -247,8 +247,8 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 			else continue;
 		}
 
-		float pfreliso03_chg = 0.;
-		float pfreliso03_all = 0.;
+		double pfreliso03_chg = 0.;
+		double pfreliso03_all = 0.;
 		SUSYIsolationHelper.GetPFIsolation(pfCandidates, i, pfreliso03_all, pfreliso03_chg);
 		
 		//store candidate values

@@ -127,13 +127,14 @@ public:
     return iso;  
   }
 
-  void GetPFIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned pfcand_idx,
-                          double& rel_iso_all, double& rel_iso_chg, //return values
-                          double r_pfiso=0.3) const
+  void GetPFIsolation(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned pfcand_idx,
+                      double& pf_iso_all, double& pf_iso_chg, //return values
+                      double r_pfiso=0.3, double ptThresh=0.0) const
   {
     pf_iso_all = 0.0;
     pf_iso_chg = 0.0;
-    if (ptcl->pt()<5.) {
+    const auto& ptcl = pfcands->at(pfcand_idx);
+    if (ptcl.p4().Pt()<5.) {
     pf_iso_all = 99999.;
     pf_iso_chg = 99999.;
     return;
@@ -142,28 +143,24 @@ public:
     //nh, ch, ph, pu
     std::vector<double> iso_pf(4, 0.);
     std::vector<double> deadcones(4,0.);
-    double ptThresh(0.5);
-    if(type==electron) ptThresh = 0;
-
-    for (const pat::PackedCandidate &pfc : *pfcands) {
-    for (pat::PackedCandidateCollection::const_iterator pfc = pfcands->begin(); pfc != pfcands->end(); pfc++) {
-      if (abs(pfc->pdgId())<7) continue;
-      if (int(pfc - pfcands->begin()) == pfcand_idx)  //don't count itself
-        continue;
-      double dr = deltaR(*pfc, *ptcl);
+    for (unsigned int iPF(0); iPF<pfcands->size(); iPF++) {
+      const pat::PackedCandidate &pfc = pfcands->at(iPF);
+      if (abs(pfc.pdgId())<7) continue;
+      if (iPF==pfcand_idx) continue; // don't count track in its own sum
+      double dr = deltaR(pfc, ptcl);
       // rel-iso cone
-      if (dr < r_pfiso) GetCandIso(false,*pfc,dr,ptThresh,iso_pf,deadcones);
+      if (dr < r_pfiso) GetCandIso(false,pfc,dr,ptThresh,iso_pf,deadcones);
     }
 
-    pf_iso_all = GetFinalIso(pfcands->at(pc_idx), iso_types::other, 0.0, 0.0, iso_pf, false, false);
-    pf_iso_chg = GetFinalIso(pfcands->at(pc_idx), iso_types::other, 0.0, 0.0, iso_pf, false, true);
-  };
+    pf_iso_all = GetFinalIso(&ptcl, iso_types::other, 0.0, 0.0, iso_pf, false, false);
+    pf_iso_chg = GetFinalIso(&ptcl, iso_types::other, 0.0, 0.0, iso_pf, false, true);
+  }
 
   void GetMiniIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
-                          const reco::Candidate* ptcl, iso_types type, double rho,
-                          double& mini_iso, double& mt2_activity, //return values
-                          double r_iso_min=0.05, double r_iso_max=0.2, double kt_scale=10.,
-                          bool useEAcorr=true, bool charged_only=false) const
+                        const reco::Candidate* ptcl, iso_types type, double rho,
+                        double& mini_iso, double& mt2_activity, //return values
+                        double r_iso_min=0.05, double r_iso_max=0.2, double kt_scale=10.,
+                        bool useEAcorr=true, bool charged_only=false) const
   {
     mini_iso = 0.0;
     mt2_activity = 0.0;
@@ -189,7 +186,7 @@ public:
     double ptThresh(0.5);
     if(type==electron) ptThresh = 0;
     double r_iso = std::max(r_iso_min, std::min(r_iso_max, kt_scale/ptcl->pt()));
-    
+
     for (const pat::PackedCandidate &pfc : *pfcands) {
       if (abs(pfc.pdgId())<7) continue;
 
