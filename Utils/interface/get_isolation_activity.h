@@ -86,7 +86,7 @@ public:
         }
       }
       //////////////////  CHARGED from PV  /////////////////////////
-    } else if (pfc.fromPV()>1){
+    } else if (pfc.fromPV()>1 || abs(pfc.dz()) < 0.1){
       if (abs(pfc.pdgId())==211) {
         if(!computeMT2Activity && dr < deadcone_ch) return;
         iso_ch += pfc.pt();
@@ -126,7 +126,39 @@ public:
 
     return iso;  
   }
-  
+
+  void GetPFIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned pfcand_idx,
+                          double& rel_iso_all, double& rel_iso_chg, //return values
+                          double r_pfiso=0.3) const
+  {
+    pf_iso_all = 0.0;
+    pf_iso_chg = 0.0;
+    if (ptcl->pt()<5.) {
+    pf_iso_all = 99999.;
+    pf_iso_chg = 99999.;
+    return;
+  }
+
+    //nh, ch, ph, pu
+    std::vector<double> iso_pf(4, 0.);
+    std::vector<double> deadcones(4,0.);
+    double ptThresh(0.5);
+    if(type==electron) ptThresh = 0;
+
+    for (const pat::PackedCandidate &pfc : *pfcands) {
+    for (pat::PackedCandidateCollection::const_iterator pfc = pfcands->begin(); pfc != pfcands->end(); pfc++) {
+      if (abs(pfc->pdgId())<7) continue;
+      if (int(pfc - pfcands->begin()) == pfcand_idx)  //don't count itself
+        continue;
+      double dr = deltaR(*pfc, *ptcl);
+      // rel-iso cone
+      if (dr < r_pfiso) GetCandIso(false,*pfc,dr,ptThresh,iso_pf,deadcones);
+    }
+
+    pf_iso_all = GetFinalIso(pfcands->at(pc_idx), iso_types::other, 0.0, 0.0, iso_pf, false, false);
+    pf_iso_chg = GetFinalIso(pfcands->at(pc_idx), iso_types::other, 0.0, 0.0, iso_pf, false, true);
+  };
+
   void GetMiniIsolation(edm::Handle<pat::PackedCandidateCollection> pfcands,
                           const reco::Candidate* ptcl, iso_types type, double rho,
                           double& mini_iso, double& mt2_activity, //return values

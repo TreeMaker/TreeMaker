@@ -54,6 +54,9 @@
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/PatCandidates/interface/PFIsolation.h"
 
+// TreeMaker
+#include "TreeMaker/Utils/interface/get_isolation_activity.h"
+
 using namespace reco;
 using namespace edm;
 using namespace std;
@@ -80,6 +83,7 @@ private:
 	bool doTrkIsoVeto_;
 	int pdgId_;
 	bool debug_;
+	SUSYIsolation SUSYIsolationHelper;
 
 	edm::InputTag pfCandidatesTag_;
 	edm::InputTag vertexInputTag_;
@@ -89,9 +93,6 @@ private:
 	edm::EDGetTokenT<edm::View<pat::MET>> MetInputTok_;
 
 	void GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
-	void AddToIso(const int id, const bool fromPV, const float pt, float &chiso, float &puiso, float &nhiso, float &phiso) const;
-	void GetIsolation(edm::Handle<edm::View<pat::PackedCandidate> > pc, const unsigned pc_idx, pat::PFIsolation& iso, pat::PFIsolation& miniiso) const;
-
 };
 
 //
@@ -246,9 +247,9 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 			else continue;
 		}
 
-		pat::PFIsolation isolationDR03;
-		pat::PFIsolation miniIso;
-		GetIsolation(pfCandidates, i, isolationDR03, miniIso);
+		float pfreliso03_chg = 0.;
+		float pfreliso03_all = 0.;
+		SUSYIsolationHelper.GetPFIsolation(pfCandidates, i, pfreliso03_all, pfreliso03_chg);
 		
 		//store candidate values
 		//(all values stored in debug case, otherwise just good candidates are stored)
@@ -259,10 +260,8 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		pfcands_mT->push_back(mT);	
 		pfcands_trkiso->push_back(trkiso);
 		pfcands_activity->push_back(activity);
-		pfcands_pfRelIso03_chg->push_back(isolationDR03().chargedHadronIso() / p4.Pt());
-		pfcands_pfRelIso03_all->push_back((isolationDR03().chargedHadronIso() +
-		                                   max(isolationDR03().neutralHadronIso() + isolationDR03().photonIso() -
-		                                       isolationDR03().puChargedHadronIso() / 2,0.0))/p4.Pt());
+		pfcands_pfRelIso03_chg->push_back(pfreliso03_chg);
+		pfcands_pfRelIso03_all->push_back(pfreliso03_all);
 		pfcands_dzpv->push_back(dz_it);
 		pfcands_dxypv->push_back(pfCand.dxy());
 
@@ -317,50 +316,6 @@ void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate>
 	trkiso = trkiso*invpt;
 	activity = activity*invpt;
 }
-
-void TrackIsolationFilter::AddToIso(const int id, const bool fromPV, const float pt, float &chiso, float &puiso, float &nhiso, float &phiso) const {
-	// charged cands from PV get added to trackIso
-	if (id == 211 && fromPV)
-		chiso += pt;
-	// charged cands not from PV get added to pileup iso
-	else if (id == 211)
-		puiso += pt;
-	// neutral hadron iso
-	if (id == 130)
-		nhiso += pt;
-	// photon iso
-	if (id == 22)
-		phiso += pt;
-}
-
-void TrackIsolationFilter::GetIsolation(edm::Handle<edm::View<pat::PackedCandidate> > pc, const unsigned pc_idx, pat::PFIsolation& iso, pat::PFIsolation& miniiso) const {
-	float chiso = 0, nhiso = 0, phiso = 0, puiso = 0;      // standard isolation
-	float chmiso = 0, nhmiso = 0, phmiso = 0, pumiso = 0;  // mini isolation
-	const auto& p4 = pc->at(pc_idx)->p4();
-	float miniDR = std::max(miniIsoParams_[0], std::min(miniIsoParams_[1], miniIsoParams_[2] / p4.pt()));
-	for (pat::PackedCandidateCollection::const_iterator pf_it = pc->begin(); pf_it != pc->end(); pf_it++) {
-		if (int(pf_it - pc->begin()) == pc_idx)  //don't count itself
-			continue;
-		int id = std::abs(pf_it->pdgId());
-		bool fromPV = (pf_it->fromPV() > 1 || fabs(pf_it->dz()) < pfIsolation_DZ_);
-		float pt = pf_it->p4().pt();
-		float dr = deltaR(p4, pf_it->p4());
-
-		// pf isolation
-		if (dr < pfIsolation_DR_) {
-			AddToIso(id,fromPV,pt,chiso,puiso,nhiso,phiso);
-		}
-		// same for mini isolation
-		if (dr < miniDR) {
-			AddToIso(id,fromPV,pt,chmiso,pumiso,nhmiso,phmiso);
-		}
-	}
-
-	iso = pat::PFIsolation(chiso, nhiso, phiso, puiso);
-	miniiso = pat::PFIsolation(chmiso, nhmiso, phmiso, pumiso);
-}
-    const float pfIsolation_DR_;  // isolation radius
-    const float pfIsolation_DZ_;  // used in determining if pfcand is from PV or PU
 
 //define this as a plug-in
 DEFINE_FWK_MODULE(TrackIsolationFilter);
