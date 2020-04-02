@@ -47,12 +47,12 @@ export PYTHONUNBUFFERED=1\n \
 export X509_USER_PROXY=/etc/grid-security/x509up\n" >> ${HOME}/.bashrc
 
 # Initialize the CMSSW environment
-echo -e "Running \'cmsenv\' ... "
+echo -e "Running 'cmsenv' ... "
 cd ${DIR}/${CMSSWVER}/src
 eval `scramv1 runtime -sh`
 
 # Install missing python packages
-echo -e "Installing python packages via \'pip\' ... "
+echo -e "Installing python packages via 'pip' ... "
 python -m pip install --user --no-cache-dir -r ${CMSSW_BASE}/src/TreeMaker/.github/ServiceX/data/requirements.txt
 
 # Download CMS Open Data test file
