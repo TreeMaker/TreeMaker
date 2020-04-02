@@ -39,13 +39,12 @@ while getopts "c:d:f:p:u:h" opt; do
         esac
 done
 
-# Turn this on so that stdout isn't buffered - otherwise logs in kubectl don't
-# show up until much later!
-export PYTHONUNBUFFERED=1
-export X509_USER_PROXY=/etc/grid-security/x509up
-
-# Setup the folders needed for the grid proxy
-mkdir -p /etc/grid-security/
+# Add these lines to the .bashrc file
+echo -e "\n \
+# Turn this on so that stdout isn't buffered - otherwise logs in kubectl don't\n \
+#   show up until much later!\n \
+export PYTHONUNBUFFERED=1\n \
+export X509_USER_PROXY=/etc/grid-security/x509up\n" >> ${HOME}/.bashrc
 
 # Initialize the CMSSW environment
 cd ${DIR}/${CMSSWVER}/src
@@ -58,3 +57,6 @@ python -m pip install --user --no-cache-dir -r ${CMSSW_BASE}/src/.github/Service
 if [[ -n "$URL" ]]; then
 	wget ${URL} -O \ ${CMSSW_BASE}/src/${OPATH}/${OFILE}
 fi
+
+# Return to the ${HOME} directory
+cd ${HOME}
