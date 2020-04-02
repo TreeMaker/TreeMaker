@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ Run2_2017 ]
+    branches: [ Run2_2017 , Run2_2017_Docker]
   pull_request:
     branches: [ Run2_2017 ]
 
@@ -37,10 +37,10 @@ jobs:
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:${{ env.current_branch }}-latest
     - name: Log into registry
-      if: github.event_name != 'pull_request'
+      if: "github.event_name != 'pull_request' && !contains(github.event.head_commit.message, '[skip publish]')"
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
     - name: Publish the new docker image
-      if: github.event_name != 'pull_request'
+      if: "github.event_name != 'pull_request' && !contains(github.event.head_commit.message, '[skip publish]')"
       run: docker push treemaker/treemaker:${{ env.current_branch }}-latest
 
     # Run the integration test within the 'build' job only if this is a pull_request initiated build
@@ -80,8 +80,10 @@ jobs:
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:${{ env.current_branch }}-cache
     - name: Log into registry
+      if: "!contains(github.event.head_commit.message, '[skip publish]')"
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
     - name: Publish the new docker image
+      if: "!contains(github.event.head_commit.message, '[skip publish]')"
       run: docker push treemaker/treemaker:${{ env.current_branch }}-cache
 
   # The 'service-x-build' job opens the previous 'build' image, pulled from the registry, in order to 
@@ -104,6 +106,8 @@ jobs:
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:${{ env.current_branch }}-servicex
     - name: Log into registry
+      if: "github.event_name != 'pull_request' && !contains(github.event.head_commit.message, '[skip publish]')"
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
     - name: Publish the new docker image
+      if: "github.event_name != 'pull_request' && !contains(github.event.head_commit.message, '[skip publish]')"
       run: docker push treemaker/treemaker:${{ env.current_branch }}-servicex
