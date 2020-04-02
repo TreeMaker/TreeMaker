@@ -55,7 +55,7 @@ python -m pip install --user --no-cache-dir -r ${CMSSW_BASE}/src/.github/Service
 
 # Download CMS Open Data test file
 if [[ -n "$URL" ]]; then
-	wget ${URL} -O \ ${CMSSW_BASE}/src/${OPATH}/${OFILE}
+	wget ${URL} -O ${CMSSW_BASE}/src/${OPATH}/${OFILE}
 fi
 
 # Return to the ${HOME} directory
