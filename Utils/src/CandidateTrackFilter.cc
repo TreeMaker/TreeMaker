@@ -175,38 +175,54 @@ public:
 private:
 	bool filter(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const override;
 	bool filterOnTrack(const pat::PackedCandidate & pfCand, const reco::Track & track) const;
+	void loopOverCollection(TrackInfos & infos, const edm::Handle<edm::View<pat::PackedCandidate> > & collection,
+							const edm::ESHandle<TransientTrackBuilder> & ttBuilder,
+							const reco::Vertex & primaryVertex, bool trackMatch) const;
 
 	// ----------member data ---------------------------
 	edm::InputTag pfCandidatesTag_;
 	edm::InputTag lostTracksTag_;
+	edm::InputTag lostEleTracksTag_;
+	edm::InputTag displacedStandAloneMuonsTag_;
 	edm::InputTag vertexInputTag_;
 	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> pfCandidatesTok_;
 	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> lostTracksTok_;
+	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> lostEleTracksTok_;
+	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> displacedStandAloneMuonsTok_;
 	edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
 
 	double minPt_, maxEta_, maxdz_, maxdxy_, maxnormchi2_;
-	bool debug_, doFilter_;
+	bool debug_, doFilter_, doDisplacedMuons_;
 };
 
 //
 // constructors and destructor
 //
 CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) : 
-	pfCandidatesTag_(iConfig.getParameter<edm::InputTag>("pfCandidatesTag")),
-	lostTracksTag_  (iConfig.getParameter<edm::InputTag>("lostTracksTag")),
-	vertexInputTag_ (iConfig.getParameter<edm::InputTag>("vertexInputTag")),
-	minPt_          (iConfig.getParameter<double>       ("minPt")),
-	maxEta_         (iConfig.getParameter<double>       ("maxEta")),
-	maxdz_          (iConfig.getParameter<double>       ("maxdz")),
-	maxdxy_         (iConfig.getParameter<double>       ("maxdxy")),
-	maxnormchi2_    (iConfig.getParameter<double>       ("maxnormchi2")),
-	debug_          (iConfig.getParameter<bool>         ("debug")),
-	doFilter_       (iConfig.getParameter<bool>         ("doFilter"))
+	pfCandidatesTag_            (iConfig.getParameter<edm::InputTag>("pfCandidatesTag")),
+	lostTracksTag_              (iConfig.getParameter<edm::InputTag>("lostTracksTag")),
+	lostEleTracksTag_           (iConfig.getParameter<edm::InputTag>("lostEleTracksTag")),
+	vertexInputTag_             (iConfig.getParameter<edm::InputTag>("vertexInputTag")),
+	minPt_                      (iConfig.getParameter<double>       ("minPt")),
+	maxEta_                     (iConfig.getParameter<double>       ("maxEta")),
+	maxdz_                      (iConfig.getParameter<double>       ("maxdz")),
+	maxdxy_                     (iConfig.getParameter<double>       ("maxdxy")),
+	maxnormchi2_                (iConfig.getParameter<double>       ("maxnormchi2")),
+	debug_                      (iConfig.getParameter<bool>         ("debug")),
+	doFilter_                   (iConfig.getParameter<bool>         ("doFilter")),
+	doDisplacedMuons_           (false)
 {	
-	pfCandidatesTok_ = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
-	lostTracksTok_   = consumes<edm::View<pat::PackedCandidate>>(lostTracksTag_);
-	vertexInputTok_  = consumes<edm::View<reco::Vertex>>(vertexInputTag_);
-	
+	pfCandidatesTok_             = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
+	lostTracksTok_               = consumes<edm::View<pat::PackedCandidate>>(lostTracksTag_);
+	lostEleTracksTok_            = consumes<edm::View<pat::PackedCandidate>>(lostEleTracksTag_);
+	vertexInputTok_              = consumes<edm::View<reco::Vertex>>(vertexInputTag_);
+
+	if (iConfig.exists("displacedStandAloneMuonsTag")) {
+		displacedStandAloneMuonsTag_ = iConfig.getParameter<edm::InputTag>("displacedStandAloneMuonsTag"),
+		displacedStandAloneMuonsTok_ = consumes<edm::View<pat::PackedCandidate>>(displacedStandAloneMuonsTag_);
+		doDisplacedMuons_ = true;
+	}
+
 	produces<std::vector<pat::PackedCandidate> >(""); 
 	produces<vector<math::XYZVector> >          ("trks");
 	produces<vector<math::XYZPoint> >           ("trksreferencepoint");
@@ -245,90 +261,60 @@ CandidateTrackFilter::~CandidateTrackFilter() {
 bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 	TrackInfos infos;
 
-	//----------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	// get Vertex Collection
-	//----------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByToken(vertexInputTok_, vertices);
 	bool hasGoodVtx = false;
 	if (!vertices->empty()) hasGoodVtx = true;
 	auto primaryVertex = vertices->at(0); //IS THIS THE PRIMARY VERTEX?
 
-	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	// skip events with no good vertices
-	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	if(!hasGoodVtx) return false;
 
-	//----------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	// get TransientTrackBuilder from the EventSetup
-	//----------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	// https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideTransientTracks
 	edm::ESHandle<TransientTrackBuilder> ttBuilder;
 	iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",ttBuilder);
 
-	//----------------------------------------------
-	// get PFCandidate collection
-	//----------------------------------------------
+	//-------------------------------------------------------------------------------------------------
+	// get the various track containing collections
+	//-------------------------------------------------------------------------------------------------
 	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
-	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
-
-	//-------------------------------------------------------------------------------------------------
-	// loop over PFCandidates
-	//-------------------------------------------------------------------------------------------------
-	for (size_t i=0; i<pfCandidates->size();i++) {
-		const pat::PackedCandidate pfCand = (*pfCandidates)[i];
-
-		//-------------------------------------------------------------------------------------
-		// pull the track details, if available
-		//-------------------------------------------------------------------------------------
-		if (!pfCand.hasTrackDetails()) continue;
-		auto track = pfCand.pseudoTrack();
-
-		//-------------------------------------------------------------------------------------
-		// place some minimal cuts on the tracks
-		//-------------------------------------------------------------------------------------
-		if (!filterOnTrack(pfCand,track)) continue;
-
-		//-------------------------------------------------------------------------------------
-		// fill the track values and PFCandidate values we'd like to save
-		//-------------------------------------------------------------------------------------
-		auto transientTrack = ttBuilder->build(track);
-		infos.fill(primaryVertex,pfCand,track,transientTrack,true);
-	}
-
-	//----------------------------------------------
-	// get lostTrack collection
-	//----------------------------------------------  
 	edm::Handle<edm::View<pat::PackedCandidate> > lostTracks;
+	edm::Handle<edm::View<pat::PackedCandidate> > lostEleTracks;
+	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
 	iEvent.getByToken(lostTracksTok_, lostTracks);
+	iEvent.getByToken(lostEleTracksTok_, lostEleTracks);
 
 	//-------------------------------------------------------------------------------------------------
-	// loop over lostTracks
+	// loop over the various track containing collections
 	//-------------------------------------------------------------------------------------------------
-	for (size_t i=0; i<lostTracks->size();i++) {
-		const pat::PackedCandidate lostTrack = (*lostTracks)[i];
+	loopOverCollection(infos,pfCandidates,ttBuilder,primaryVertex,true);
+	loopOverCollection(infos,lostTracks,ttBuilder,primaryVertex,false);
+	loopOverCollection(infos,lostEleTracks,ttBuilder,primaryVertex,false);
 
-		//-------------------------------------------------------------------------------------
-		// pull the track details, if available
-		//-------------------------------------------------------------------------------------
-		if (!lostTrack.hasTrackDetails()) continue;
-		auto track = lostTrack.pseudoTrack();
+	if (doDisplacedMuons_) {
+		//-------------------------------------------------------------------------------------------------
+		// get displacedStandAloneMuons collection
+		//-------------------------------------------------------------------------------------------------  
+		edm::Handle<edm::View<pat::PackedCandidate> > displacedStandAloneMuons;
+		iEvent.getByToken(displacedStandAloneMuonsTok_, displacedStandAloneMuons);
 
-		//-------------------------------------------------------------------------------------
-		// place some minimal cuts on the tracks
-		//-------------------------------------------------------------------------------------
-		if (!filterOnTrack(lostTrack,track)) continue;
-
-		//-------------------------------------------------------------------------------------
-		// fill the track values and PFCandidate values we'd like to save
-		//-------------------------------------------------------------------------------------
-		auto transientTrack = ttBuilder->build(track);
-		infos.fill(primaryVertex,lostTrack,track,transientTrack,false);
+		//-------------------------------------------------------------------------------------------------
+		// loop over displacedStandAloneMuons
+		//-------------------------------------------------------------------------------------------------
+		loopOverCollection(infos,displacedStandAloneMuons,ttBuilder,primaryVertex,false); //Do these overlap with the packedPFCandidate collection? Are they matched?
 	}
 
-	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	// put track/PFCandidate values back into event
-	//-------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------
 	bool result = (doFilter_) ? !infos.trks->empty() : true;
 	infos.put(iEvent);
 	return result;
@@ -339,6 +325,34 @@ bool CandidateTrackFilter::filterOnTrack(const pat::PackedCandidate & pfCand, co
 	return (track.pt() >= minPt_) && (std::abs(track.eta()) < maxEta_) && // cut on track pT and eta
 		   (std::abs(track.dz()) <= maxdz_) && (std::abs(track.dxy()) <= maxdxy_) && // cut on impact parameter quantities
 		   (std::abs(track.normalizedChi2()) <= maxnormchi2_); // cut on chi2
+}
+
+void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Handle<edm::View<pat::PackedCandidate> > & collection,
+											  const edm::ESHandle<TransientTrackBuilder> & ttBuilder,
+											  const reco::Vertex & primaryVertex, bool trackMatch) const {
+	//-------------------------------------------------------------------------------------------------
+	// loop over PFCandidates
+	//-------------------------------------------------------------------------------------------------
+	for (size_t i=0; i<collection->size();i++) {
+		const pat::PackedCandidate pfCand = (*collection)[i];
+
+		//-------------------------------------------------------------------------------------------------
+		// pull the track details, if available
+		//-------------------------------------------------------------------------------------------------
+		if (!pfCand.hasTrackDetails()) continue;
+		auto track = pfCand.pseudoTrack();
+
+		//-------------------------------------------------------------------------------------------------
+		// place some minimal cuts on the tracks
+		//-------------------------------------------------------------------------------------------------
+		if (!filterOnTrack(pfCand,track)) continue;
+
+		//-------------------------------------------------------------------------------------------------
+		// fill the track values and PFCandidate values we'd like to save
+		//-------------------------------------------------------------------------------------------------
+		auto transientTrack = ttBuilder->build(track);
+		infos.fill(primaryVertex,pfCand,track,transientTrack,trackMatch);
+	}
 }
 
 //define this as a plug-in

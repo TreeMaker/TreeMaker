@@ -1094,7 +1094,10 @@ def makeTreeFromMiniAOD(self,process):
                 vertexInputTag    = cms.InputTag("goodVertices"),
                 pfCandidatesTag   = cms.InputTag("packedPFCandidates"),
                 lostTracksTag     = cms.InputTag("lostTracks"),
+                lostEleTracksTag  = cms.InputTag("lostTracks","eleTracks"),
         )
+        if TMeras.TMUL2016.isChosen() or TMeras.TMUL2017.isChosen() or TMeras.TMUL2018.isChosen():
+            process.trackFilter.displacedStandAloneMuonsTag = cms.InputTag("displacedStandAloneMuons")
         self.VectorXYZVector.extend(['trackFilter:trks(Tracks)'])
         self.VectorXYZPoint.extend(['trackFilter:trksreferencepoint(Tracks_referencePoint)'])
         self.VectorBool.extend(['trackFilter:trksmatchedtopfcand(Tracks_matchedToPFCandidate)',])
