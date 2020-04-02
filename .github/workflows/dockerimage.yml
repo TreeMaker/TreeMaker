@@ -96,11 +96,12 @@ jobs:
     steps:
     - name: Build a Service-X compatible Docker image
       env:
+        script_dir: /home/cmsuser/${{ env.CMSSW_VER }}/src/.github/ServiceX/scripts/
         download_url: https://cernbox.cern.ch/index.php/s/5DRVyX4Z9EertGa/download
         file_name: eos.opendata.cms.MonteCarlo2016.RunIISummer16MiniAODv2.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8.MINIAODSIM.PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1.70000.0048131D-3CB3-E611-813A-001E67DFFB31_100evt.root
         base_image: treemaker/treemaker:${{ env.current_branch }}-latest
         docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker --entrypoint "/bin/bash
-      run: docker run ${{ env.docker_options }} ${{ env.base_image }} -c "./${{ env.CMSSW_VER }}/src/.github/ServiceX/scripts/setup-root.sh && /run.sh -c \"./${{ env.CMSSW_VER }}/src/.github/ServiceX/scripts/setup.sh -c ${{ env.cmssw_ver }} -f ${{ env.file_name }} -u ${{ env.download_url }}\"
+      run: docker run ${{ env.docker_options }} ${{ env.base_image }} -c "${{ env.script_dir }}/setup-root.sh && /run.sh -c \"${{ env.script_dir }}/setup.sh -c ${{ env.cmssw_ver }} -f ${{ env.file_name }} -u ${{ env.download_url }}\""
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:${{ env.current_branch }}-servicex
     - name: Log into registry
