@@ -54,6 +54,7 @@ def makeTreeFromMiniAOD(self,process):
         VectorVectorXYZVector      = self.VectorVectorXYZVector,
         VectorVectorXYZPoint       = self.VectorVectorXYZVector,
         TitleMap                   = self.TitleMap,
+        nestedVectors              = self.nestedVectors,
     )
 
     ## ----------------------------------------------------------------------------------------------

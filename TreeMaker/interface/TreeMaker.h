@@ -31,6 +31,8 @@
 #include <map>
 #include <sstream>
 #include <algorithm>
+#include <utility>
+#include <iterator>
 
 using namespace std;
 
@@ -63,7 +65,7 @@ class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 		edm::Service<TFileService> fs;
 		string treeName;
 		TTree* tree;	
-		bool doLorentz, sortBranches, debugTitles;
+		bool doLorentz, sortBranches, debugTitles, nestedVectors;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
 		map<string,unsigned> nameCache;
@@ -355,4 +357,84 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 		edm::EDGetTokenT<edm::View<reco::Candidate>> candTok;
 		bool doLorentz{};
 		vector<double> pt, eta, phi, energy;
+};
+
+//derived version of vector<vector<T>>
+//with switch for vector<T> values and vector<int> offsets instead
+template <template<typename...> class R=std::vector, typename Top = R<R<double>>, typename Sub = typename Top::value_type>
+class TreeNestedVector : public TreeObject<Top> {
+	public:
+		//constructor
+		TreeNestedVector() : TreeObject<Top>() {}
+		TreeNestedVector(string type_, string tempFull_, string title_="", bool nestedVectors_=true) : TreeObject<Top>(tempFull_,title_), type(type_), nestedVectors(nestedVectors_) {}
+		//destructor
+		~TreeNestedVector() override {}
+		
+		//functions
+		//From: https://stackoverflow.com/questions/17294629/merging-flattening-sub-vectors-into-a-single-vector-c-converting-2d-to-1d
+		void flatten(Top const& all, R<typename Sub::value_type> &accum, R<int> &offsets) {
+			// Don't store any offsets if there are no sub-vectors
+			if (all.size() > 0)	offsets.insert(std::end(offsets),0);
+			else 				return;
+			for(auto& sub : all) {
+				accum.insert(std::end(accum), std::begin(sub), std::end(sub));
+				offsets.insert(std::end(offsets), accum.size());
+			}
+			// This protects against the case where there were >=1 empty sub-vectors, and only empty vectors
+			// Thus, nothing will be in the output (accum) vector, but the offsets would be all '0'
+			if (accum.size() == 0) offsets.clear();
+		}
+		void SetConsumes(edm::ConsumesCollector && iC) override{
+			tok = iC.consumes<Top>(this->tag);
+		}
+		void FillTree(const edm::Event& iEvent) override{
+			SetDefault();
+			edm::Handle<Top> var;
+			iEvent.getByToken(tok,var);
+			if( var.isValid() ) {
+				if(nestedVectors){
+					this->value = *var;
+				}
+				else{
+					size_t totalLength = 0;
+					for(auto iOuter = var->begin(); iOuter != var->end(); ++iOuter) {
+						totalLength += iOuter->size();
+					}
+					values.reserve(totalLength);
+					offsets.reserve(var->size());
+					flatten(*var,values,offsets);
+				}
+			}
+			else {
+				edm::LogWarning("TreeMaker") << "WARNING ... " << this->tagName << " is NOT valid?!";
+			}
+		}
+		void AddBranch() override {
+			if(this->tree){
+				if(nestedVectors){
+					this->tree->Branch(this->nameInTree.c_str(),("vector<vector<"+type+">>").c_str(),&this->value,32000,0);
+				}
+				else {
+					this->tree->Branch((this->nameInTree).c_str(),("vector<"+type+">").c_str(),&values,32000,0);
+					this->tree->Branch((this->nameInTree+"Offsets").c_str(),"vector<int>",&offsets,32000,0);
+				}
+			}
+		}
+		void SetDefault() override {
+			if(nestedVectors){
+				this->value.clear();
+			}
+			else{
+				values.clear();
+				offsets.clear();
+			}
+		}
+
+	protected:
+		//member variables
+		edm::EDGetTokenT<Top> tok;
+		string type{};
+		bool nestedVectors{};
+		vector<typename Sub::value_type> values;
+		vector<int> offsets;
 };

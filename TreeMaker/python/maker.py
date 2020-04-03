@@ -58,6 +58,7 @@ class maker:
         self.getParamDefault("saveMinimalGenParticles", True)
         self.getParamDefault("saveGenTops", False)
         self.getParamDefault("doMT2",False)
+        self.getParamDefault("nestedVectors", True)
         
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
@@ -146,6 +147,7 @@ class maker:
         print " Storing a minimal set of GenParticles: "+str(self.saveMinimalGenParticles)
         print " Storing the GenTops: "+str(self.saveGenTops)
         print " Saving the MT2 variable: "+str(self.doMT2)
+        print " Saving nested vectors as vector<vector<T>>: "+str(self.nestedVectors)
         print " "
         print " scenario: "+self.scenarioName
         print " global tag: "+self.globaltag
