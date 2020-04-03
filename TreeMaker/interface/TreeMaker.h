@@ -359,20 +359,19 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 		vector<double> pt, eta, phi, energy;
 };
 
-//derived version of vector<vector<T>>
-//with switch for vector<T> values and vector<int> offsets instead
-template <template<typename...> class R=std::vector, typename Top = R<R<double>>, typename Sub = typename Top::value_type>
+// Derived version of vector<vector<T>> with switch for vector<T> values and vector<int> offsets instead
+template <typename Base = double, typename Sub = std::vector<Base>, typename Top = std::vector<Sub>> 
 class TreeNestedVector : public TreeObject<Top> {
 	public:
-		//constructor
+		// Constructor
 		TreeNestedVector() : TreeObject<Top>() {}
-		TreeNestedVector(string type_, string tempFull_, string title_="", bool nestedVectors_=true) : TreeObject<Top>(tempFull_,title_), type(type_), nestedVectors(nestedVectors_) {}
-		//destructor
+		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true) : TreeObject<Top>(tempFull_,title_), nestedVectors(nestedVectors_) {}
+		// Destructor
 		~TreeNestedVector() override {}
 		
-		//functions
-		//From: https://stackoverflow.com/questions/17294629/merging-flattening-sub-vectors-into-a-single-vector-c-converting-2d-to-1d
-		void flatten(Top const& all, R<typename Sub::value_type> &accum, R<int> &offsets) {
+		// Functions
+		// From: https://stackoverflow.com/questions/17294629/merging-flattening-sub-vectors-into-a-single-vector-c-converting-2d-to-1d
+		void flatten(Top const& all, Sub &accum, vector<int> &offsets) {
 			// Don't store any offsets if there are no sub-vectors
 			if (all.size() > 0)	offsets.insert(std::end(offsets),0);
 			else 				return;
@@ -412,10 +411,10 @@ class TreeNestedVector : public TreeObject<Top> {
 		void AddBranch() override {
 			if(this->tree){
 				if(nestedVectors){
-					this->tree->Branch(this->nameInTree.c_str(),("vector<vector<"+type+">>").c_str(),&this->value,32000,0);
+					this->tree->Branch(this->nameInTree.c_str(),GetTopType().c_str(),&this->value,32000,0);
 				}
 				else {
-					this->tree->Branch((this->nameInTree).c_str(),("vector<"+type+">").c_str(),&values,32000,0);
+					this->tree->Branch((this->nameInTree).c_str(),GetSubType().c_str(),&values,32000,0);
 					this->tree->Branch((this->nameInTree+"Offsets").c_str(),"vector<int>",&offsets,32000,0);
 				}
 			}
@@ -429,12 +428,40 @@ class TreeNestedVector : public TreeObject<Top> {
 				offsets.clear();
 			}
 		}
+		const string GetTopType() {
+			return "vector<" + GetSubType() + ">";
+		}
+		const string GetSubType() {
+			return "vector<" + GetBaseType() + ">";
+		}
+		// Default implementation
+		const string GetBaseType() {
+			return typeid(Base).name();
+		}
 
 	protected:
-		//member variables
+		// Member variables
 		edm::EDGetTokenT<Top> tok;
-		string type;
 		bool nestedVectors{};
-		vector<typename Sub::value_type> values;
+		Sub values;
 		vector<int> offsets;
 };
+
+// A specialization for each type where you don't like the string returned by typeid
+template <>
+const string TreeNestedVector<bool>::GetBaseType() { return "bool"; }
+template <>
+const string TreeNestedVector<int>::GetBaseType() { return "int"; }
+template <>
+const string TreeNestedVector<double>::GetBaseType() { return "double"; }
+template <>
+const string TreeNestedVector<string>::GetBaseType() { return "string"; }
+template <>
+const string TreeNestedVector<TLorentzVector>::GetBaseType() { return "TLorentzVector"; }
+template <>
+const string TreeNestedVector<math::XYZVector>::GetBaseType() { return "math::XYZVector"; }
+template <>
+const string TreeNestedVector<math::XYZPoint>::GetBaseType() { return "math::XYZPoint"; }
+
+
+

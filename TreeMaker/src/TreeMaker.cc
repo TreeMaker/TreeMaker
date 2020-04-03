@@ -118,13 +118,13 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector>>(VarName,VarTitle); break;
 				case TreeTypes::t_vxyzv    : tmp = new TreeObject<vector<math::XYZVector>>(VarName,VarTitle); break;
 				case TreeTypes::t_vxyzp    : tmp = new TreeObject<vector<math::XYZPoint>>(VarName,VarTitle); break;
-				case TreeTypes::t_vvbool   : tmp = new TreeNestedVector<vector, vector<vector<bool>>>("bool",VarName,VarTitle,nestedVectors); break;
-				case TreeTypes::t_vvint    : tmp = new TreeNestedVector<vector, vector<vector<int>>>("int",VarName,VarTitle,nestedVectors); break;
-				case TreeTypes::t_vvdouble : tmp = new TreeNestedVector<vector, vector<vector<double>>>("double",VarName,VarTitle,nestedVectors); break;
-				case TreeTypes::t_vvstring : tmp = new TreeNestedVector<vector, vector<vector<string>>>("string",VarName,VarTitle,nestedVectors); break;
-				case TreeTypes::t_vvlorentz: tmp = new TreeNestedVector<vector, vector<vector<TLorentzVector>>>("TLorentzVector",VarName,VarTitle,nestedVectors); break;
-				case TreeTypes::t_vvxyzv   : tmp = new TreeNestedVector<vector, vector<vector<math::XYZVector>>>("math::XYZVector",VarName,VarTitle,nestedVectors); break;
-				case TreeTypes::t_vvxyzp   : tmp = new TreeNestedVector<vector, vector<vector<math::XYZPoint>>>("math::XYZPoint",VarName,VarTitle,nestedVectors); break;
+				case TreeTypes::t_vvbool   : tmp = new TreeNestedVector<bool>(VarName,VarTitle,nestedVectors); break;
+				case TreeTypes::t_vvint    : tmp = new TreeNestedVector<int>(VarName,VarTitle,nestedVectors); break;
+				case TreeTypes::t_vvdouble : tmp = new TreeNestedVector<double>(VarName,VarTitle,nestedVectors); break;
+				case TreeTypes::t_vvstring : tmp = new TreeNestedVector<string>(VarName,VarTitle,nestedVectors); break;
+				case TreeTypes::t_vvlorentz: tmp = new TreeNestedVector<TLorentzVector>(VarName,VarTitle,nestedVectors); break;
+				case TreeTypes::t_vvxyzv   : tmp = new TreeNestedVector<math::XYZVector>(VarName,VarTitle,nestedVectors); break;
+				case TreeTypes::t_vvxyzp   : tmp = new TreeNestedVector<math::XYZPoint>(VarName,VarTitle,nestedVectors); break;
 				case TreeTypes::t_recocand : tmp = new TreeRecoCand(VarName,VarTitle,doLorentz); break;
 			}
 			//if a known type was found, initialize and store the object
