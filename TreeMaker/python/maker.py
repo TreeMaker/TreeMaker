@@ -147,7 +147,8 @@ class maker:
         print " Storing a minimal set of GenParticles: "+str(self.saveMinimalGenParticles)
         print " Storing the GenTops: "+str(self.saveGenTops)
         print " Saving the MT2 variable: "+str(self.doMT2)
-        print " Saving nested vectors as vector<vector<T>>: "+str(self.nestedVectors)
+        if self.nestedVectors: print " Saving nested vectors as vector<vector<T>>"
+        else: print " Saving nested vectors as vector<T> + vector<int>"
         print " "
         print " scenario: "+self.scenarioName
         print " global tag: "+self.globaltag

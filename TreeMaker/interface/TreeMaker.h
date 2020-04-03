@@ -433,7 +433,7 @@ class TreeNestedVector : public TreeObject<Top> {
 	protected:
 		//member variables
 		edm::EDGetTokenT<Top> tok;
-		string type{};
+		string type;
 		bool nestedVectors{};
 		vector<typename Sub::value_type> values;
 		vector<int> offsets;
