@@ -42,6 +42,7 @@ def makeTreeFromMiniAOD(self,process):
         VectorTLorentzVector       = self.VectorTLorentzVector,
         VectorXYZVector            = self.VectorXYZVector,
         VectorXYZPoint             = self.VectorXYZPoint,
+        VectorFloat                = self.VectorFloat,
         VectorDouble               = self.VectorDouble,
         VectorInt                  = self.VectorInt,
         VectorString               = self.VectorString,
@@ -107,7 +108,7 @@ def makeTreeFromMiniAOD(self,process):
             normalize = (not "SVJ" in self.sample), # skip normalization only for SVJ signals
             pdfSetName = cms.string("NNPDF31_lo_as_0130"),
         )
-        self.VectorDouble.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
+        self.VectorFloat.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples

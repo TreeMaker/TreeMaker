@@ -24,7 +24,7 @@ template <class P>
 class PDFWeightHelper {
   public:
     PDFWeightHelper(const P* prod, bool use_norm) : product_(prod), use_norm_(use_norm) {}
-    bool fillWeights(std::vector<double>* output, unsigned offset, unsigned nWeights, wtype wt) {
+    bool fillWeights(std::vector<float>* output, unsigned offset, unsigned nWeights, wtype wt) {
       unsigned max = this->getMax();
       if(max==0 or offset > max) return false;
       double norm = use_norm_ ? 1./this->getNorm(offset,wt) : 1.;
@@ -107,9 +107,9 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   }
 
   callWhenNewProductsRegistered(getterOfProducts_);
-  produces<std::vector<double> >("ScaleWeights");
-  produces<std::vector<double> >("PDFweights");
-  produces<std::vector<double> >("PSweights");
+  produces<std::vector<float> >("ScaleWeights");
+  produces<std::vector<float> >("PDFweights");
+  produces<std::vector<float> >("PSweights");
 }
 
 PDFWeightProducer::~PDFWeightProducer()
@@ -128,9 +128,9 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   std::vector<edm::Handle<LHEEventProduct> > handles;
   getterOfProducts_.fillHandles(iEvent, handles);
   
-  auto scaleweights = std::make_unique<std::vector<double>>();
-  auto pdfweights = std::make_unique<std::vector<double>>();
-  auto psweights = std::make_unique<std::vector<double>>();
+  auto scaleweights = std::make_unique<std::vector<float>>();
+  auto pdfweights = std::make_unique<std::vector<float>>();
+  auto psweights = std::make_unique<std::vector<float>>();
   
   bool found_scales = false;
   bool found_pdfs = false;

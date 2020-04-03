@@ -31,13 +31,13 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 	tree(nullptr),
 	VarTypeNames{
 		"VarsBool","VarsInt","VarsDouble","VarsString","VarsTLorentzVector","VarsXYZVector","VarsXYZPoint",
-		"VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorXYZVector","VectorXYZPoint",
+		"VectorBool","VectorInt","VectorDouble","VectorString","VectorTLorentzVector","VectorXYZVector","VectorXYZPoint","VectorFloat",
 		"VectorVectorBool","VectorVectorInt","VectorVectorDouble","VectorVectorString","VectorVectorTLorentzVector","VectorVectorXYZVector","VectorVectorXYZPoint",
 		"VectorRecoCand"
 	},
 	VarTypes{
 		t_bool,t_int,t_double,t_string,t_lorentz,t_xyzv,t_xyzp,
-		t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_vxyzv,t_vxyzp,
+		t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_vxyzv,t_vxyzp,t_vfloat,
 		t_vvbool,t_vvint,t_vvdouble,t_vvstring,t_vvlorentz,t_vvxyzv,t_vvxyzp,
 		t_recocand
 	}
@@ -112,6 +112,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 				case TreeTypes::t_xyzp     : tmp = new TreeObject<math::XYZPoint>(VarName,VarTitle); break;
 				case TreeTypes::t_vbool    : tmp = new TreeObject<vector<bool>>(VarName,VarTitle); break;
 				case TreeTypes::t_vint     : tmp = new TreeObject<vector<int>>(VarName,VarTitle); break;
+				case TreeTypes::t_vfloat   : tmp = new TreeObject<vector<float>>(VarName,VarTitle); break;
 				case TreeTypes::t_vdouble  : tmp = new TreeObject<vector<double>>(VarName,VarTitle); break;
 				case TreeTypes::t_vstring  : tmp = new TreeObject<vector<string>>(VarName,VarTitle); break;
 				case TreeTypes::t_vlorentz : tmp = new TreeObject<vector<TLorentzVector>>(VarName,VarTitle); break;
