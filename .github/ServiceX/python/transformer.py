@@ -64,7 +64,7 @@ def callback(channel, method, properties, body):
 
     servicex.post_status_update(file_id=_file_id,
                                 status_code="start",
-                                info="xAOD Transformer")
+                                info="MiniAOD Transformer")
 
     tick = time.time()
     file_done = False
@@ -73,7 +73,7 @@ def callback(channel, method, properties, body):
         try:
             # Do the transform
             root_file = _file_path.replace('/', ':')
-            output_path = '/home/atlas/' + root_file
+            output_path = '/home/cmsuser/' + root_file
             transform_single_file(_file_path, output_path, servicex)
 
             tock = time.time()
@@ -123,8 +123,6 @@ def callback(channel, method, properties, body):
 
 def transform_single_file(file_path, output_path, servicex=None):
     print("Transforming a single path: " + str(file_path) + " into " + output_path)
-    # os.system("voms-proxy-info --all")
-    #r = os.system('bash /generated/runner.sh -r -d ' + file_path + ' -o ' + output_path +  '| tee log.txt')
     r = os.system('python ' + os.environ['CMSSW_BASE'] + '/TreeMaker/Production/test/unitTest.py test=0 scenario=Summer16v3 dataset=file:' + str(file_path) + ' name=' + str(output_path) + ' run=True fork=False log=True')
     reason_bad = None
     if r != 0:
@@ -166,7 +164,7 @@ def compile_code():
 
 
 if __name__ == "__main__":
-    parser = TransformerArgumentParser(description="xAOD CPP Transformer")
+    parser = TransformerArgumentParser(description="MiniAOD CPP Transformer")
     args = parser.parse_args()
 
     kafka_brokers = TransformerArgumentParser.extract_kafka_brokers(args.brokerlist)
