@@ -360,9 +360,13 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 };
 
 // Derived version of vector<vector<T>> with switch for vector<T> values and vector<int> offsets instead
-template <typename Base = double, typename Sub = std::vector<Base>, typename Top = std::vector<Sub>> 
-class TreeNestedVector : public TreeObject<Top> {
+template <typename Base = double> 
+class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 	public:
+		// Typedefs
+		typedef std::vector<Base> Sub;
+		typedef std::vector<Sub> Top;
+
 		// Constructor
 		TreeNestedVector() : TreeObject<Top>() {}
 		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true) : TreeObject<Top>(tempFull_,title_), nestedVectors(nestedVectors_) {}
