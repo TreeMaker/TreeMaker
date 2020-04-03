@@ -1091,9 +1091,13 @@ def makeTreeFromMiniAOD(self,process):
         process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
         from TreeMaker.Utils.candidateTrackMaker_cfi import candidateTrackFilter
         process.trackFilter = candidateTrackFilter.clone(
-                vertexInputTag    = cms.InputTag("goodVertices"),
-                pfCandidatesTag   = cms.InputTag("packedPFCandidates"),
-                lostTracksTag     = cms.InputTag("lostTracks"),
+            vertexInputTag    = cms.InputTag("goodVertices"),
+            pfCandidatesTag   = cms.InputTag("packedPFCandidates"),
+            lostTracksTag     = cms.InputTag("lostTracks"),
+            lostEleTracksTag  = cms.InputTag("lostTracks","eleTracks"),
+        )
+        (TMeras.TMUL2016 | TMeras.TMUL2017 | TMeras.TMUL2018).toModify(process.trackFilter,
+            displacedStandAloneMuonsTag = cms.InputTag("displacedStandAloneMuons")
         )
         self.VectorXYZVector.extend(['trackFilter:trks(Tracks)'])
         self.VectorXYZPoint.extend(['trackFilter:trksreferencepoint(Tracks_referencePoint)'])

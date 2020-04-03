@@ -1,4 +1,4 @@
-import os, subprocess, sys
+import os, subprocess, re, sys
 
 class Test:
     def __init__(self, scenario, name, numevents, command, dataset="", inputFilesConfig="", nstart=0, nfiles=0, redir=""):
@@ -27,7 +27,15 @@ class Test:
             mytest.append("nfiles="+str(self.nfiles))
         # different shell commands
         mytest += ["outfile="+self.outfile, "numevents="+str(self.numevents)]
-        if len(self.command)>0: mytest.append(self.command)
+        if len(self.command)>0: 
+            # check is you can do some additional formatting to protect against later problems
+            pattern = re.compile("((?:\S+)[=]+(?:\S+))")
+            commands = pattern.findall(self.command)
+            splits = self.command.split(" ")
+            if len(commands)>0 and len(commands)==len(splits):
+                mytest.extend(commands)
+            else:
+                mytest.append(self.command)
         if len(self.redir)>0: mytest.append("redir="+self.redir)
         mytest.append(self.getLogName())
         return mytest
