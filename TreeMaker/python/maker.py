@@ -108,6 +108,7 @@ class maker:
         self.VectorTLorentzVector       = cms.vstring()
         self.VectorXYZVector            = cms.vstring()
         self.VectorXYZPoint             = cms.vstring()
+        self.VectorFloat                = cms.vstring()
         self.VectorDouble               = cms.vstring()
         self.VectorString               = cms.vstring()
         self.VectorInt                  = cms.vstring()

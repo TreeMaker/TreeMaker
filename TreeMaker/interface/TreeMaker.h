@@ -37,7 +37,7 @@ using namespace std;
 //enum with known types
 enum TreeTypes { 
 	t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4, t_xyzv=5, t_xyzp=6,
-	t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104, t_vxyzv=105, t_vxyzp=106,
+	t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104, t_vxyzv=105, t_vxyzp=106, t_vfloat=107,
 	t_vvbool=200, t_vvint=201, t_vvdouble=202, t_vvstring=203, t_vvlorentz=204, t_vvxyzv=205, t_vvxyzp=206,
 	t_recocand=1000
 };
@@ -216,6 +216,8 @@ void TreeObject<vector<bool> >::AddBranch() { if(tree) branch = tree->Branch(nam
 template<>
 void TreeObject<vector<int> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,0); }
 template<>
+void TreeObject<vector<float> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<float>",&value,32000,0); }
+template<>
 void TreeObject<vector<double> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<double>",&value,32000,0); }
 template<>
 void TreeObject<vector<string> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,0); }
@@ -258,6 +260,8 @@ template<>
 void TreeObject<vector<bool> >::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<int> >::SetDefault() { value.clear(); }
+template<>
+void TreeObject<vector<float> >::SetDefault() { value.clear(); }
 template<>
 void TreeObject<vector<double> >::SetDefault() { value.clear(); }
 template<>
