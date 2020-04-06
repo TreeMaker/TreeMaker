@@ -11,6 +11,9 @@ doLorentz = cms.bool(True),
 sortBranches = cms.bool(True),
 #debug the InputTag to branch mapping by printing the mapping to the log
 debugTitles = cms.bool(False),
+#default: output vector<vector<T>>
+#switches to vector<T> values, vector<int> skips
+nestedVectors = cms.bool(True),
 # list of reco candidate objects: for each reco cand collection, the TLorentzVector will be stored in a vector.
 VarsBool = cms.vstring(),
 VarsInt = cms.vstring(),
