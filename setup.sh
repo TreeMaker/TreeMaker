@@ -8,6 +8,7 @@ CORES=8
 NAME=""
 DIR="${PWD}"
 BATCH=""
+DEBUG="false"
 
 usage(){
 	EXIT=$1
@@ -22,13 +23,14 @@ usage(){
 	echo "-j [cores]          run CMSSW compilation on # cores (default = ${CORES})"
 	echo "-n [name]           name of the CMSSW directory (default = ${CMSSWVER})"
 	echo "-d [dir]            project installation area for the CMSSW directory (default = ${DIR})"
+	echo "-D                  print additional debug statements (default = ${DEBUG})"
 	echo "-h                  display this message and exit"
 
 	exit $EXIT
 }
 
 # process options
-while getopts "f:b:Ba:j:n:d:c:h" opt; do
+while getopts "f:b:Ba:j:n:d:c:Dh" opt; do
 	case "$opt" in
 	f) FORK=$OPTARG
 	;;
@@ -45,6 +47,8 @@ while getopts "f:b:Ba:j:n:d:c:h" opt; do
 	n) NAME=$OPTARG
 	;;
 	d) DIR=$OPTARG
+	;;
+	D) DEBUG="true"
 	;;
 	h) usage 0
 	;;
@@ -67,13 +71,20 @@ fi
 # make sure that scram is available in a batch situation when an interactive terminal might not be available
 if [[ -n "$BATCH" ]]; then
 	echo "WARNING: Non-interactive shell found!"
-	if [[ -f "${HOME}/.bashrc" ]]; then
-		echo "Sourcing the .bashrc file"
+	if [[ -n "${HOME}" ]] && [[ -f "${HOME}/.bashrc" ]]; then
+		echo "Sourcing the ${HOME}/.bashrc file"
 		source ${HOME}/.bashrc
+	elif [[ -f "~/.bashrc" ]]; then
+		echo "Sourcing the ~/.bashrc file"
+		source ~/.bashrc
 	fi
+
 	if [[ -f "/cvmfs/cms.cern.ch/cmsset_default.sh" ]]; then
 		echo -e "cms.cern.ch is accessible\n\t==> source /cvmfs/cms.cern.ch/cmsset_default.sh\n"
 		source /cvmfs/cms.cern.ch/cmsset_default.sh
+	elif [[ -f "/opt/cms/cmsset_default.sh" ]]; then
+		echo -e "cmsset_default.sh is locally accessible\n\t==> source /opt/cms/cmsset_default.sh\n"
+		source /opt/cms/cmsset_default.sh
 	fi
 fi
 
@@ -115,6 +126,9 @@ else
 	NAME=${CMSSWVER}
 fi
 SCRAM_PROJECT_OPTIONS="$SCRAM_PROJECT_OPTIONS ${CMSSWVER}"
+if [[ "${DEBUG}" == "true" ]]; then
+	set -x
+fi
 scram project ${SCRAM_PROJECT_OPTIONS}
 cd ${DIR}/${NAME}/src
 
@@ -125,9 +139,17 @@ git config gc.auto 0
 
 # batch git config
 if [[ -n "$BATCH" ]]; then
+	if [[ "${DEBUG}" == "true" ]]; then
+		echo "Dumping the git configuration before adding to it"
+		git config --global -l
+	fi
 	git config --global --add user.name "TreeMaker GitHub"
 	git config --global --add user.email "treemaker@github.com"
 	git config --global --add user.github "TreeMaker"
+fi
+if [[ "${DEBUG}" == "true" ]]; then
+	echo "Dumping the git configuration"
+	git config --global -l
 fi
 
 # CMSSW patches
@@ -149,3 +171,5 @@ scram b -j ${CORES}
 # extra setup
 cd TreeMaker/Production/test/condorSub/
 python $CMSSW_BASE/src/Condor/Production/python/linkScripts.py
+
+set +x
