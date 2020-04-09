@@ -65,12 +65,13 @@ export GFLAG=""
 if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
 	export CMDSTR="gfal-copy"
 	export GFLAG="-g"
-    export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
+	export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
 	export OUTDIR=${GSIFTP_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
 fi
 echo "$CMDSTR output for condor"
 for FILE in *.root; do
 	if [[ "${USE_FOLDERS}" == "true" ]]; then
+		echo "Changing to folder structure consisting of <era>/<sample>/<filename>.root"
 		FILE=`structuredOutput ${FILE}`
 	fi
 	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE}"
