@@ -5,10 +5,13 @@ export PROCESS=""
 export OUTDIR=""
 export REDIR=""
 export OPTIND=1
+export USE_FOLDERS="false"
 while [[ $OPTIND -lt $# ]]; do
 	# getopts in silent mode, don't exit on errors
-	getopts ":j:p:o:x:" opt || status=$?
+	getopts ":fj:p:o:x:" opt || status=$?
 	case "$opt" in
+		f) export USE_FOLDERS="true"
+		;;
 		j) export JOBNAME=$OPTARG
 		;;
 		p) export PROCESS=$OPTARG
@@ -67,6 +70,9 @@ if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"ro
 fi
 echo "$CMDSTR output for condor"
 for FILE in *.root; do
+	if [[ "${USE_FOLDERS}" == "true" ]]; then
+		FILE=`structuredOutput ${FILE}`
+	fi
 	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE}"
 	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
 	XRDEXIT=$?
