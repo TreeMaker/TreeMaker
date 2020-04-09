@@ -6,7 +6,7 @@ export OUTDIR=""
 export REDIR=""
 export OPTIND=1
 export USE_FOLDERS="false"
-while [[ $OPTIND -lt $# ]]; do
+while [[ $OPTIND -le $# ]]; do
 	# getopts in silent mode, don't exit on errors
 	getopts ":fj:p:o:x:" opt || status=$?
 	case "$opt" in
@@ -27,10 +27,11 @@ while [[ $OPTIND -lt $# ]]; do
 done
 
 echo "parameter set:"
-echo "OUTDIR:     $OUTDIR"
-echo "JOBNAME:    $JOBNAME"
-echo "PROCESS:    $PROCESS"
-echo "REDIR:      $REDIR"
+echo "OUTDIR:      $OUTDIR"
+echo "JOBNAME:     $JOBNAME"
+echo "PROCESS:     $PROCESS"
+echo "REDIR:       $REDIR"
+echo "USE_FOLDERS: $USE_FOLDERS"
 echo ""
 
 # link files from CMSSW dir
