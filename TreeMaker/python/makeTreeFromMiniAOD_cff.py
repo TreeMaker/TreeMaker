@@ -434,7 +434,7 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandspfreliso03chg(PFCands_pfRelIso03chg)'])
         self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandspfreliso03all(PFCands_pfRelIso03all)'])
         self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(PFCands_dzpv)'])
-        self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdzpv(PFCands_dxypv)'])
+        self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsdxypv(PFCands_dxypv)'])
         self.VectorDouble.extend(['IsolatedPionTracksVeto:pfcandsmT(PFCands_mT)'])
         self.VectorInt.extend(['IsolatedPionTracksVeto:pfcandschg(PFCands_charge)'])
         self.VectorInt.extend(['IsolatedPionTracksVeto:pfcandsid(PFCands_id)'])

@@ -118,6 +118,14 @@ def doLostLeptonBkg(self,process,METTag):
     self.VectorTLorentzVector.extend(['TAPPionTracks:pfcands(TAPPionTracks)'])
     self.VectorDouble.extend(['TAPPionTracks:pfcandstrkiso(TAPPionTracks_trkiso)'])
     self.VectorDouble.extend(['TAPPionTracks:pfcandsmT(TAPPionTracks_mT)'])
+    if self.debugtap:
+        for type in ['Electron','Muon','Pion']:
+            self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandspfreliso03chg(TAP'+type+'Tracks_pfRelIso03chg)'])
+            self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandspfreliso03all(TAP'+type+'Tracks_pfRelIso03all)'])
+            self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsdzpv(TAP'+type+'Tracks_dzpv)'])
+            self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsdxypv(TAP'+type+'Tracks_dxypv)'])
+            self.VectorInt.extend(['TAP'+type+'Tracks:pfcandschg(TAP'+type+'Tracks_charge)'])
+            self.VectorInt.extend(['TAP'+type+'Tracks:pfcandsid(TAP'+type+'Tracks_id)'])
     if self.geninfo: # gen information on leptons
         self.VectorRecoCand.extend(['GenLeptons:Muon(GenMuons)','GenLeptons:Electron(GenElectrons)','GenLeptons:Tau(GenTaus)'])
         self.VectorBool.extend(['GenLeptons:TauHadronic(GenTaus_had)'])
