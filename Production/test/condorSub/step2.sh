@@ -71,12 +71,15 @@ if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"ro
 fi
 echo "$CMDSTR output for condor"
 for FILE in *.root; do
+	FILE_DST=${FILE}
 	if [[ "${USE_FOLDERS}" == "true" ]]; then
 		echo "Changing to folder structure consisting of <era>/<sample>/<filename>.root"
-		FILE=`structuredOutput ${FILE}`
+		echo -e "\tPrior to change: ${FILE_DST}"
+		FILE_DST=`structuredOutput ${FILE_DST}`
+		echo -e "\t   After change: ${FILE_DST}"
 	fi
-	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE}"
-	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
+	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE_DST}"
+	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE_DST}
 	XRDEXIT=$?
 	if [[ $XRDEXIT -ne 0 ]]; then
 		rm *.root
