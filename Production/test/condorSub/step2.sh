@@ -1,5 +1,27 @@
 #!/bin/bash
 
+# helper function to structure the ouput into folders
+structuredOutput() {
+	RES=""
+	TMP=${1/.//}
+	IFS='_' read -r -a array <<< "$TMP"
+	cut=$(expr ${#array[@]} - 2)
+	for index in "${!array[@]}"; do
+		if [[ $index -lt $cut ]]; then
+			if [[ $index -eq 0 ]]; then
+				RES=${RES}${array[index]}
+			else
+				RES=${RES}"_"${array[index]}
+			fi
+		elif [[ $index -eq $cut ]]; then
+			RES=${RES}"/"${array[index]}
+		else
+			RES=${RES}"_"${array[index]}
+		fi
+	done
+	echo ${RES}
+}
+
 export JOBNAME=""
 export PROCESS=""
 export OUTDIR=""
