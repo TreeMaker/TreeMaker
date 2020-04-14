@@ -135,6 +135,7 @@ if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_10_2_7
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:storeJERFactorIndex10220
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:AddJetAxis1_1027
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:DeepAK8v2_10221
 fi
 
 # outside repositories
