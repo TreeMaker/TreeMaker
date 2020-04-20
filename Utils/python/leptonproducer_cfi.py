@@ -55,5 +55,6 @@ leptonproducer = cms.EDProducer('LeptonProducer',
     tightMuTrackerLayersWithMeasurementMin = cms.int32(5),
     UseMiniIsolation                       = cms.bool(False),
     METTag                                 = cms.InputTag('slimmedMETs'), 
-    rhoCollection                          = cms.InputTag("fixedGridRhoFastjetAll")
+    rhoCollection                          = cms.InputTag("fixedGridRhoFastjetAll"),
+    debug                                  = cms.bool(False),
 )

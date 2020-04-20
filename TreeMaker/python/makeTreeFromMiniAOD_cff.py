@@ -447,8 +447,8 @@ def makeTreeFromMiniAOD(self,process):
     process.LeptonsNew = leptonproducer.clone(
         elecIsoValue       = cms.double(0.1), # only has an effect when used with miniIsolation
         UseMiniIsolation   = cms.bool(True),
-        METTag             = METTag  ,
-        rhoCollection      = cms.InputTag("fixedGridRhoFastjetCentralNeutral")  
+        METTag             = METTag,
+        rhoCollection      = cms.InputTag("fixedGridRhoFastjetAll")
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
