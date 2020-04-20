@@ -84,6 +84,7 @@ private:
   bool useMiniIsolation_;
   std::vector<double> electronEAValues_, muonEAValues_;
   SUSYIsolation SUSYIsolationHelper;
+  bool debug_;
 };
 
 //
@@ -96,7 +97,7 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   PrimVtxTag_                            (iConfig.getParameter<edm::InputTag>("PrimaryVertex")),
   metTag_                                (iConfig.getParameter<edm::InputTag> ("METTag")),
   PFCandTag_                             (edm::InputTag("packedPFCandidates")),
-  RhoTag_                                (edm::InputTag("fixedGridRhoFastjetCentralNeutral")),
+  RhoTag_                                (iConfig.getParameter<edm::InputTag> ("rhoCollection")),
   MuonTok_                               (consumes<edm::View<pat::Muon>>(MuonTag_)),
   ElecTok_                               (consumes<edm::View<pat::Electron>>(ElecTag_)),
   PrimVtxTok_                            (consumes<reco::VertexCollection>(PrimVtxTag_)),
@@ -142,7 +143,8 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   tightMuTrackerLayersWithMeasurementMin_(iConfig.getParameter<int>("tightMuTrackerLayersWithMeasurementMin")),
   useMiniIsolation_                      (iConfig.getParameter<bool>("UseMiniIsolation")),
   electronEAValues_                      (iConfig.getParameter<std::vector<double>>("electronEAValues")),
-  muonEAValues_                          (iConfig.getParameter<std::vector<double>>("muonEAValues"))
+  muonEAValues_                          (iConfig.getParameter<std::vector<double>>("muonEAValues")),
+  debug_                                 (iConfig.getParameter<bool>("debug"))
 {
 
   if(!hovere_constant_){
@@ -196,6 +198,9 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 {
   using namespace edm;
 
+  if (debug_) edm::LogInfo("TreeMaker") << "LeptonProducer: Doing " << iEvent.eventAuxiliary().run() << ":" << iEvent.eventAuxiliary().luminosityBlock() 
+                                        << ":" << iEvent.eventAuxiliary().event() << " ... ";
+
   auto isoElectrons = std::make_unique<std::vector<pat::Electron>>();
   auto idElectrons = std::make_unique<std::vector<pat::Electron>>();
   auto isoMuons = std::make_unique<std::vector<pat::Muon>>();
@@ -231,7 +236,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 
   edm::Handle< double > rho_;
   iEvent.getByToken(RhoTok_, rho_); // Central rho recommended for SUSY
-  double rho = *rho_;
+  double rho = rho_.isValid() ? (double)(*rho_) : 0;
 
   edm::Handle<reco::VertexCollection> vtx_h;
   iEvent.getByToken(PrimVtxTok_, vtx_h);
@@ -241,7 +246,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     {
       for(const auto & aMu : *muonHandle)
         {
-          if(aMu.pt()<minMuPt_ || fabs(aMu.eta())>maxMuEta_) continue;
+          if(aMu.pt()<minMuPt_ || std::abs(aMu.eta())>maxMuEta_) continue;
 
           if(MuonIDloose(aMu,vtx_h->at(0)))
             {
@@ -276,7 +281,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     {
       for(const auto & aEle : *eleHandle)
         {
-          if(fabs(aEle.superCluster()->eta())>maxElecEta_ || aEle.pt()<minElecPt_) continue;
+          if(std::abs(aEle.superCluster()->eta())>maxElecEta_ || aEle.pt()<minElecPt_) continue;
           const reco::Vertex vtx = vtx_h->at(0);
 
           double miniIso = 0.0;
@@ -363,7 +368,7 @@ bool LeptonProducer::MuonIDmedium(const pat::Muon & muon, const reco::Vertex& vt
   bool isMedium      = muon.isLooseMuon() && 
                        muon.innerTrack()->validFraction() > muValidFractionMin_ && 
                        muon.segmentCompatibility() > (goodGlob ? muSegmentCompatibilityMin_[0] : muSegmentCompatibilityMin_[1]);
-  bool susyIP2DLoose = muon.dB() < mudBMax_ && fabs(muon.muonBestTrack()->dz(vtx.position())) < mudZMax_;
+  bool susyIP2DLoose = muon.dB() < mudBMax_ && std::abs(muon.muonBestTrack()->dz(vtx.position())) < mudZMax_;
   bool isMediumPlus  = isMedium && susyIP2DLoose;
   return isMediumPlus; 
 }
@@ -376,7 +381,7 @@ bool LeptonProducer::MuonIDtight(const pat::Muon & muon, const reco::Vertex& vtx
                  muon.globalTrack()->hitPattern().numberOfValidMuonHits() > tightMuNumberOfValidMuonHitsMin_ &&
                  muon.numberOfMatchedStations() > tightMuNumberOfMatchedStationsMin_ &&
                  muon.dB() < tightMudBMax_ &&
-                 fabs(muon.muonBestTrack()->dz(vtx.position())) < tightMudZMax_ &&
+                 std::abs(muon.muonBestTrack()->dz(vtx.position())) < tightMudZMax_ &&
                  muon.innerTrack()->hitPattern().numberOfValidPixelHits() > tightMuNumberOfValidPixelHitsMin_ &&
                  muon.innerTrack()->hitPattern().trackerLayersWithMeasurement() > tightMuTrackerLayersWithMeasurementMin_;
 
@@ -388,36 +393,69 @@ bool LeptonProducer::ElectronID(const pat::Electron & electron, const reco::Vert
   // https://twiki.cern.ch/twiki/bin/viewauth/CMS/CutBasedElectronIdentificationRun2
   double sieie = electron.full5x5_sigmaIetaIeta();
   bool convVeto = electron.passConversionVeto();
-  int mhits = electron.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);;
-  double dEtaIn  = electron.deltaEtaSuperClusterTrackAtVtx();
+  int mhits = electron.gsfTrack()->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
+  double dEtaIn = (electron.superCluster().isNonnull() && electron.superCluster()->seed().isNonnull())
+                  ? electron.deltaEtaSuperClusterTrackAtVtx() - electron.superCluster()->eta() + electron.superCluster()->seed()->eta()
+                  : std::numeric_limits<double>::max();
   double dPhiIn  = electron.deltaPhiSuperClusterTrackAtVtx();
   double hoe   = electron.hadronicOverEm();
-  double ooemoop = fabs(1.0/electron.ecalEnergy() - electron.eSuperClusterOverP()/electron.ecalEnergy());
+  double ooemoop = std::abs(1.0/electron.ecalEnergy() - electron.eSuperClusterOverP()/electron.ecalEnergy());
   double d0vtx = electron.gsfTrack()->dxy(vtx.position());
   double dzvtx = electron.gsfTrack()->dz(vtx.position());
+  double scEnergy = electron.superCluster()->energy();
   bool hovere_pass = false;
   bool reqConvVeto[4] = {true, true, true, true};
 
   if (electron.isEB()) {
-    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : eb_hovere_cut_[level] + (eb_hovere_cut2_[level]/electron.energy()) + (eb_hovere_cut3_[level]*rho/electron.energy()) > hoe;
-    return eb_deta_cut_[level] > fabs(dEtaIn)
-      && eb_dphi_cut_[level] > fabs(dPhiIn)
+    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : (eb_hovere_cut_[level] + (eb_hovere_cut2_[level]/scEnergy) + (eb_hovere_cut3_[level]*rho/scEnergy)) > hoe;
+
+    if (debug_) {
+      edm::LogInfo("TreeMaker") << "LeptonProducer: (pt,eta,phi): (" << electron.pt() << "," << electron.eta() << "," << electron.phi() << ")\n"
+                                << "\teb_deta_cut_[level] > std::abs(dEtaIn): " << (eb_deta_cut_[level] > std::abs(dEtaIn)) << "\n"
+                                << "\teb_dphi_cut_[level] > std::abs(dPhiIn): " << (eb_dphi_cut_[level] > std::abs(dPhiIn)) << "\n"
+                                << "\teb_ieta_cut_[level] > sieie: " << (eb_ieta_cut_[level] > sieie) << "\n"
+                                << "\thovere_pass: " << hovere_pass << " = (" << hovere_constant_ << ") ? " << eb_hovere_cut_[level] << " > " << hoe << " : " << eb_hovere_cut_[level] << " + ("
+                                << eb_hovere_cut2_[level] << "/" << scEnergy << ") + (" << eb_hovere_cut3_[level] <<"*" << rho << "/" << scEnergy << ") > " << hoe << "\n"
+                                << "\teb_d0_cut_[level] > std::abs(d0vtx): " << (eb_d0_cut_[level] > std::abs(d0vtx)) << "\n"
+                                << "\teb_dz_cut_[level] > std::abs(dzvtx): " << (eb_dz_cut_[level] > std::abs(dzvtx)) << "\n"
+                                << "\teb_ooeminusoop_cut_[level] > std::abs(ooemoop): " << (eb_ooeminusoop_cut_[level] > std::abs(ooemoop)) << "\n"
+                                << "\t(!reqConvVeto[level] || convVeto): " << (!reqConvVeto[level] || convVeto) << "\n"
+                                << "\t(eb_misshits_cut_[level] >= mhits): " << (eb_misshits_cut_[level] >= mhits);
+    }
+
+    return eb_deta_cut_[level] > std::abs(dEtaIn)
+      && eb_dphi_cut_[level] > std::abs(dPhiIn)
       && eb_ieta_cut_[level] > sieie
       && hovere_pass
-      && eb_d0_cut_[level] > fabs(d0vtx)
-      && eb_dz_cut_[level] > fabs(dzvtx)
-      && eb_ooeminusoop_cut_[level] > fabs(ooemoop)
+      && eb_d0_cut_[level] > std::abs(d0vtx)
+      && eb_dz_cut_[level] > std::abs(dzvtx)
+      && eb_ooeminusoop_cut_[level] > std::abs(ooemoop)
       && (!reqConvVeto[level] || convVeto)
       && (eb_misshits_cut_[level] >= mhits);
   } else if (electron.isEE()) {
-    hovere_pass = (hovere_constant_) ? eb_hovere_cut_[level] > hoe : eb_hovere_cut_[level] + (ee_hovere_cut2_[level]/electron.energy()) + (ee_hovere_cut3_[level]*rho/electron.energy()) > hoe;
-    return ee_deta_cut_[level] > fabs(dEtaIn)
-      && ee_dphi_cut_[level] > fabs(dPhiIn)
+    hovere_pass = (hovere_constant_) ? ee_hovere_cut_[level] > hoe : (ee_hovere_cut_[level] + (ee_hovere_cut2_[level]/scEnergy) + (ee_hovere_cut3_[level]*rho/scEnergy)) > hoe;
+
+    if (debug_) {
+      edm::LogInfo("TreeMaker") << "LeptonProducer: (pt,eta,phi): (" << electron.pt() << "," << electron.eta() << "," << electron.phi() << ")\n"
+                                << "\tee_deta_cut_[level] > std::abs(dEtaIn): " << (ee_deta_cut_[level] > std::abs(dEtaIn)) << "\n"
+                                << "\tee_dphi_cut_[level] > std::abs(dPhiIn): " << (ee_dphi_cut_[level] > std::abs(dPhiIn)) << "\n"
+                                << "\tee_ieta_cut_[level] > sieie: " << (ee_ieta_cut_[level] > sieie) << "\n"
+                                << "\thovere_pass: " << hovere_pass << " = (" << hovere_constant_ << ") ? " << ee_hovere_cut_[level] << " > " << hoe << " : " << ee_hovere_cut_[level] << " + ("
+                                << ee_hovere_cut2_[level] << "/" << scEnergy << ") + (" << ee_hovere_cut3_[level] <<"*" << rho << "/" << scEnergy << ") > " << hoe << "\n"
+                                << "\tee_d0_cut_[level] > std::abs(d0vtx): " << (ee_d0_cut_[level] > std::abs(d0vtx)) << "\n"
+                                << "\tee_dz_cut_[level] > std::abs(dzvtx): " << (ee_dz_cut_[level] > std::abs(dzvtx)) << "\n"
+                                << "\tee_ooeminusoop_cut_[level] > std::abs(ooemoop): " << (ee_ooeminusoop_cut_[level] > std::abs(ooemoop)) << "\n"
+                                << "\t(!reqConvVeto[level] || convVeto): " << (!reqConvVeto[level] || convVeto) << "\n"
+                                << "\t(ee_misshits_cut_[level] >= mhits): " << (ee_misshits_cut_[level] >= mhits);
+    }
+
+    return ee_deta_cut_[level] > std::abs(dEtaIn)
+      && ee_dphi_cut_[level] > std::abs(dPhiIn)
       && ee_ieta_cut_[level] > sieie
       && hovere_pass
-      && ee_d0_cut_[level] > fabs(d0vtx)
-      && ee_dz_cut_[level] > fabs(dzvtx)
-      && ee_ooeminusoop_cut_[level] > fabs(ooemoop)
+      && ee_d0_cut_[level] > std::abs(d0vtx)
+      && ee_dz_cut_[level] > std::abs(dzvtx)
+      && ee_ooeminusoop_cut_[level] > std::abs(ooemoop)
       && (!reqConvVeto[level] || convVeto)
       && (ee_misshits_cut_[level] >= mhits);
   } else return false;
