@@ -118,10 +118,8 @@ def doLostLeptonBkg(self,process,METTag):
 
     if self.debugtap:
         for type in ['Electron','Muon','Pion']:
-            self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandspfreliso03chg(TAP'+type+'Tracks_pfRelIso03chg)'])
             self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandspfreliso03all(TAP'+type+'Tracks_pfRelIso03all)'])
             self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsdzpv(TAP'+type+'Tracks_dzpv)'])
-            self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsdxypv(TAP'+type+'Tracks_dxypv)'])
             self.VectorInt.extend(['TAP'+type+'Tracks:pfcandschg(TAP'+type+'Tracks_charge)'])
             self.VectorInt.extend(['TAP'+type+'Tracks:pfcandsid(TAP'+type+'Tracks_id)'])
     if self.geninfo: # gen information on leptons
