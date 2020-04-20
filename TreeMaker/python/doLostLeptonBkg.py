@@ -102,22 +102,20 @@ def doLostLeptonBkg(self,process,METTag):
 #        ElectronTag = cms.InputTag('LeptonsNew:IdElectron')
 #    )
     
-    self.VectorBool.extend(['LeptonsNew:IdMuonMediumID(Muons_mediumID)'])
-    self.VectorBool.extend(['LeptonsNew:IdMuonTightID(Muons_tightID)'])
-    self.VectorBool.extend(['LeptonsNew:IdElectronMediumID(Electrons_mediumID)'])
-    self.VectorBool.extend(['LeptonsNew:IdElectronTightID(Electrons_tightID)'])
-    self.VectorDouble.extend(['LeptonsNew:IdMuonMTW(Muons_MTW)','LeptonsNew:IdElectronMTW(Electrons_MTW)'])
-    self.VectorDouble.extend(['IDMuonMiniIso:MiniIso(Muons_MiniIso)','IDElectronMiniIso:MiniIso(Electrons_MiniIso)'])
+    for type in ['Electron','Muon']:
+        self.VectorBool.extend(['LeptonsNew:Id'+type+'MediumID('+type+'s_mediumID)'])
+        self.VectorBool.extend(['LeptonsNew:Id'+type+'TightID('+type+'s_tightID)'])
+        self.VectorDouble.extend(['LeptonsNew:Id'+type+'MTW('+type+'s_MTW)'])
+        self.VectorDouble.extend(['ID'+type+'MiniIso:MiniIso('+type+'s_MiniIso)'])
 #    self.VectorDouble.extend(['PTWExtrapolation:MuPTW(Muons_PTW)','PTWExtrapolation:ElecPTW(Electrons_PTW)'])
-    self.VectorTLorentzVector.extend(['TAPElectronTracks:pfcands(TAPElectronTracks)'])
-    self.VectorDouble.extend(['TAPElectronTracks:pfcandstrkiso(TAPElectronTracks_trkiso)'])
-    self.VectorDouble.extend(['TAPElectronTracks:pfcandsmT(TAPElectronTracks_mT)'])
-    self.VectorTLorentzVector.extend(['TAPMuonTracks:pfcands(TAPMuonTracks)'])
-    self.VectorDouble.extend(['TAPMuonTracks:pfcandstrkiso(TAPMuonTracks_trkiso)'])
-    self.VectorDouble.extend(['TAPMuonTracks:pfcandsmT(TAPMuonTracks_mT)'])
-    self.VectorTLorentzVector.extend(['TAPPionTracks:pfcands(TAPPionTracks)'])
-    self.VectorDouble.extend(['TAPPionTracks:pfcandstrkiso(TAPPionTracks_trkiso)'])
-    self.VectorDouble.extend(['TAPPionTracks:pfcandsmT(TAPPionTracks_mT)'])
+
+    for type in ['Electron','Muon','Pion']:
+        self.VectorTLorentzVector.extend(['TAP'+type+'Tracks:pfcands(TAP'+type+'Tracks)'])
+        self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandstrkiso(TAP'+type+'Tracks_trkiso)'])
+        self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsmT(TAP'+type+'Tracks_mT)'])
+        self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandspfreliso03chg(TAP'+type+'Tracks_pfRelIso03chg)'])
+        self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsdxypv(TAP'+type+'Tracks_dxypv)'])
+
     if self.debugtap:
         for type in ['Electron','Muon','Pion']:
             self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandspfreliso03chg(TAP'+type+'Tracks_pfRelIso03chg)'])
