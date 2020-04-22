@@ -1,0 +1,104 @@
+# Stages ----------------------------------------------------------------------
+stages:
+    - tar
+    - build
+
+# Before Script ---------------------------------------------------------------
+before_script:
+    - export DATE=$(date +"%Y-%m-%d")
+
+# Job templates ---------------------------------------------------------------
+.job_template_tar:
+    stage: tar
+    variables:
+        CVMFS_MOUNTS: "none"
+    tags:
+        - docker-privileged
+    image: docker:latest
+    services:
+        - docker:dind
+    variables:
+        DOCKER_DRIVER: overlay2
+        NO_CACHE: "true"
+    script:
+        - echo --------- OUTER CONTAINER -------------
+        - pwd
+        - ls -alh ./
+        - ls -alh ../
+        - docker system df -v
+        - docker info
+        - echo --------- INNER CONTAINER -------------
+        - docker run --rm -i -e CVMFS_MOUNTS="none" -v ${PWD}/:/home/cmsuser/workdir/ ${BASE_IMAGE} -- -i -c "cd ${CMSSW_VERSION}/src/ && tar -czf cmssw_src.tar.gz --exclude .git* ./* && mv cmssw_src.tar.gz ../../workdir/  && cd ../../workdir/ && pwd && ls -alh ./ && cd /home/cmsuser/"
+        - echo --------- OUTER CONTAINER -------------
+        - pwd
+        - ls -alh ./
+        - ls -alh ../
+        - docker system df -v
+    artifacts:
+        when: on_success
+        name: "$CI_JOB_NAME-$CI_JOB_STAGE-$CI_COMMIT_REF_NAME"
+        paths:
+            - ./cmssw_src.tar.gz
+        expire_in: 1 day
+
+.job_template_build:
+    stage: build
+    variables:
+        DOCKER_DRIVER: overlay2
+        NO_CACHE: "true"
+        CONTEXT_DIR: "./"
+        DOCKERFILE_DIR: ".github/ServiceX/"
+        IMAGE_NAME: treemaker
+    tags:
+        - docker-privileged-xl
+    image:
+        name: gitlab-registry.cern.ch/ci-tools/docker-image-builder
+        entrypoint: [""]
+    script:
+        # Build and push the image from the Dockerfile at the root of the project.
+        # To push to a specific docker tag, amend the --destination parameter, e.g. --destination $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
+        # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
+        - echo "Building Docker image with TreeMaker and ServiceX dependencies on ${DATE}"
+        - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+        - echo ${CI_PROJECT_DIR}/${CONTEXT_DIR}/
+        - ls -alh ${CI_PROJECT_DIR}/${CONTEXT_DIR}/
+        - /kaniko/executor --context ${CI_PROJECT_DIR}/${CONTEXT_DIR} --dockerfile ${CI_PROJECT_DIR}/${DOCKERFILE_DIR}/Dockerfile --destination "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${BRANCH_NAME}-${SUFFIX}" --build-arg=BUILD_DATE="${DATE}" --build-arg=VERSION="${DATE}" --build-arg=VCS_URL="${CI_REPOSITORY_URL}" --build-arg=VCS_REF="${CI_COMMIT_SHORT_SHA}" --build-arg=BASEIMAGE="${BASE_IMAGE}" --build-arg=CURRENT_USER="${CURRENT_USER}" --build-arg=CURRENT_BRANCH="${CURRENT_BRANCH}" --build-arg=DOWNLOAD_URL="${DOWNLOAD_URL}" --build-arg=FILE_NAME="${FILE_NAME}" --build-arg=CMSSW_VERSION="${CMSSW_VERSION}"
+
+# Jobs/Includes ---------------------------------------------------------------
+tar_treemaker_Run2_2017-servicex:
+    extends: .job_template_tar
+    variables:
+        BASE_IMAGE: index.docker.io/treemaker/treemaker:Run2_2017-latest
+        CMSSW_VERSION: CMSSW_10_2_21
+
+build_treemaker_Run2_2017-servicex:
+    extends: .job_template_build
+    dependencies:
+        - tar_treemaker_Run2_2017-servicex
+    variables:
+        BRANCH_NAME: Run2_2017
+        SUFFIX: servicex
+        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-22-2c2fe7c3
+        CURRENT_USER: treemaker
+        CURRENT_BRANCH: Run2_2017
+        DOWNLOAD_URL: https://cernbox.cern.ch/index.php/s/5DRVyX4Z9EertGa/download
+        FILE_NAME: eos.opendata.cms.MonteCarlo2016.RunIISummer16MiniAODv2.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8.MINIAODSIM.PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1.70000.0048131D-3CB3-E611-813A-001E67DFFB31_100evt.root
+        CMSSW_VERSION: CMSSW_10_2_21
+
+build_treemaker_Run2_2017-servicex-dockerhub:
+    extends: .job_template_build
+    dependencies:
+        - tar_treemaker_Run2_2017-servicex
+    variables:
+        CI_REGISTRY: https://index.docker.io/v1/
+        CI_REGISTRY_USER: ${DOCKER_USERNAME}
+        CI_REGISTRY_PASSWORD: ${DOCKER_PASSWORD}
+        CI_REGISTRY_IMAGE:  index.docker.io/treemaker
+        BRANCH_NAME: Run2_2017
+        SUFFIX: servicex
+        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-22-2c2fe7c3
+        CURRENT_USER: treemaker
+        CURRENT_BRANCH: Run2_2017
+        DOWNLOAD_URL: https://cernbox.cern.ch/index.php/s/5DRVyX4Z9EertGa/download
+        FILE_NAME: eos.opendata.cms.MonteCarlo2016.RunIISummer16MiniAODv2.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8.MINIAODSIM.PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1.70000.0048131D-3CB3-E611-813A-001E67DFFB31_100evt.root
+        CMSSW_VERSION: CMSSW_10_2_21
