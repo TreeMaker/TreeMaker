@@ -78,7 +78,7 @@ build_treemaker_Run2_2017-servicex:
     variables:
         BRANCH_NAME: Run2_2017
         SUFFIX: servicex
-        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-07-fc019a29
+        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-22-2c2fe7c3
         CURRENT_USER: treemaker
         CURRENT_BRANCH: Run2_2017
         DOWNLOAD_URL: https://cernbox.cern.ch/index.php/s/5DRVyX4Z9EertGa/download
@@ -96,7 +96,7 @@ build_treemaker_Run2_2017-servicex-dockerhub:
         CI_REGISTRY_IMAGE:  index.docker.io/treemaker
         BRANCH_NAME: Run2_2017
         SUFFIX: servicex
-        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-07-fc019a29
+        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-22-2c2fe7c3
         CURRENT_USER: treemaker
         CURRENT_BRANCH: Run2_2017
         DOWNLOAD_URL: https://cernbox.cern.ch/index.php/s/5DRVyX4Z9EertGa/download

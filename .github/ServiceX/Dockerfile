@@ -1,5 +1,5 @@
 # Make the base image configurable:
-ARG BASEIMAGE=gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-07-fc019a29
+ARG BASEIMAGE=gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-22-2c2fe7c3
 
 # Set up the CMSSW base:
 FROM ${BASEIMAGE}
