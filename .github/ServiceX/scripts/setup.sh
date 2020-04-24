@@ -54,25 +54,33 @@ export X509_USER_PROXY=/etc/grid-security/x509up\n"
 echo -e ${lines} >> ${HOME}/.bashrc
 echo -e ${lines} >> ${HOME}/.zshrc
 
-# Checkout and initialize the CMSSW environment
-/opt/cms/entrypoint.sh
+# Checkout a CMSSW release and source the cmsset if in a standalone CMSSW image
+if [[ -f /opt/cms/entrypoint.sh ]]; then
+	/opt/cms/entrypoint.sh
+fi
+if [[ -f /opt/cms/cmsset_default.sh ]]; then
+	echo "Sourcing the cmsset ... "
+	source /opt/cms/cmsset_default.sh
+fi
 
-# Untar and build the software
-echo "Sourcing the cmsset ... "
-source /opt/cms/cmsset_default.sh
+# Move to the CMSSW directory and initialize the CMSSW environment
 pwd
 ls -alh ./
-cd ${CMSSWVER}/src/
-pwd
-ls -alh ./
-echo "Unpacking ${TARBALL} into ${PWD} ..."
-tar -xzf ${TARBALL}
+cd ${DIR}/${CMSSWVER}/src/
 pwd
 ls -alh ./
 echo "Setting the CMSSW environment ..."
 eval `scramv1 runtime -sh`
-echo "Compiling the CMSSW software ..."
-scramv1 b -j 8
+
+# Untar and build the software, if provided
+if [[ -n "$TARBALL" ]]; then
+	echo "Unpacking ${TARBALL} into ${PWD} ..."
+	tar -xzf ${TARBALL}
+	pwd
+	ls -alh ./
+	echo "Compiling the software ..."
+	scramv1 b -j 8
+fi
 
 # Install missing python packages
 echo -e "Installing python packages via 'pip' ... "
