@@ -81,17 +81,17 @@ class MCSampleValuesHelper():
         },
         "TTJets_SingleLeptFromT" : {
             "CrossSection" : XSValues(
-                XS_13TeV=182.72, XSSource_13TeV="PDG xsec scales by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                XS_13TeV=182.72, XSSource_13TeV="PDG xsec scaled by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
             ),
         },
         "TTJets_SingleLeptFromTbar" : {
             "CrossSection" : XSValues(
-                XS_13TeV=182.72, XSSource_13TeV="PDG xsec scales by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                XS_13TeV=182.72, XSSource_13TeV="PDG xsec scaled by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
             ),
         },
         "TTJets_DiLept" : {
             "CrossSection" : XSValues(
-                XS_13TeV=88.34, XSSource_13TeV="PDG xsec scales by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                XS_13TeV=88.34, XSSource_13TeV="PDG xsec scaled by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
             ),
         },
         "TTJets_SingleLeptFromT_genMET-80" : {
@@ -514,8 +514,8 @@ class MCSampleValuesHelper():
         "QCD_Pt_120to170" : {
             "CrossSection" : XSValues(
                 XS_2016=471100.0, XSSource_2016="AN2017_013_v17, XSDB 467500",
-                XS_2017=407300, XSSource_2017="XSDB",
-                XS_2018=406800, XSSource_2018="XSDB",
+                XS_2017=407300.0, XSSource_2017="XSDB",
+                XS_2018=406800.0, XSSource_2018="XSDB",
             ),
         },
         "QCD_Pt_170to300" : {
@@ -761,6 +761,26 @@ class MCSampleValuesHelper():
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
             ),
         },
+        "ZJetsToNuNu_Zpt-100to200" : {
+            "CrossSection" : XSValues(
+                XS_2016=35.99, XSSource_2016="XSDB (LO)",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
+                kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
+                kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
+            ),
+        },
+        "ZJetsToNuNu_Zpt-200toInf" : {
+            "CrossSection" : XSValues(
+                XS_2016=4.201, XSSource_2016="XSDB (LO)",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
+                kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
+                kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
+            ),
+        },
         "GJets_HT-100To200" : {
             "CrossSection" : XSValues(
                 XS_2016=9249.0, XSSource_2016="XSDB (LO)",
@@ -817,17 +837,12 @@ class MCSampleValuesHelper():
                 XS_2018=40.46, XSSource_2018="GenXSecAnalyzer",
             ),
         },
-        "ZJetsToNuNu_Zpt-100to200" : {
-            "CrossSection" : XSValues(
-                XS_2016=35.99, XSSource_2016="XSDB (LO)",
-            ),
-        },
-        "ZJetsToNuNu_Zpt-200toInf" : {
-            "CrossSection" : XSValues(
-                XS_2016=4.201, XSSource_2016="XSDB (LO)",
-            ),
-        },
         # single top: NoFullyHadronicDecays xsec scaled by BF for non-fully-hadronic (1-(1-3*0.108)^2)
+        "ST_s-channel_4f_hadronicDecays" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=6.96, XSSource_13TeV="XSDB"
+            ),
+        },
         "ST_s-channel_4f_leptonDecays" : {
             "CrossSection" : XSValues(
                 XS_13TeV=3.36, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25n (NLO)",
@@ -896,6 +911,11 @@ class MCSampleValuesHelper():
         "tZq_W_lept_Z_hadron_4f_ckm" : {
             "CrossSection" : XSValues(
                 XS_2016=0.1573, XSSource_13TeV="XSDB (unknown)",
+            ),
+        },
+        "tZq_Zhad_Wlept_4f_ckm" : {
+            "CrossSection" : XSValues(
+                XS_2017=0.1518, XSSource_2017="XSDB (unknown)",
             ),
         },
         "WW" : {
