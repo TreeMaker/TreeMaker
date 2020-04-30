@@ -729,7 +729,7 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(
                 XS_2016=0.3934, XSSource_2016="XSDB (LO)",
                 XS_2017=1.49,   XSSource_2017="XSDB (LO)",
-                XS_2018=1.49,   XSSource_2018="Same as 2017",
+                XS_2018=1.497,  XSSource_2018="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
@@ -741,7 +741,7 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(
                 XS_2016=0.09543, XSSource_2016="XSDB (LO)",
                 XS_2017=0.3419,  XSSource_2017="XSDB (LO)",
-                XS_2018=0.3419,  XSSource_2018="Same as 2017",
+                XS_2018=0.3425,  XSSource_2018="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
@@ -753,7 +753,7 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(
                 XS_2016=0.002304, XSSource_2016="XSDB (LO)",
                 XS_2017=0.005146, XSSource_2017="XSDB (LO)",
-                XS_2018=0.005146, XSSource_2018="Same as 2017",
+                XS_2018=0.005263, XSSource_2018="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
