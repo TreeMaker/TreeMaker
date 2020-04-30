@@ -840,7 +840,8 @@ class MCSampleValuesHelper():
         # single top: NoFullyHadronicDecays xsec scaled by BF for non-fully-hadronic (1-(1-3*0.108)^2)
         "ST_s-channel_4f_hadronicDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=6.96, XSSource_13TeV="XSDB"
+                XS_2017=11.24, XSSource_2017="GenXSecAnalyzer",
+                XS_2018=11.24, XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "ST_s-channel_4f_leptonDecays" : {
