@@ -921,14 +921,14 @@ class MCSampleValuesHelper():
         "WGJets_MonoPhoton_PtG-40to130" : {
             "CrossSection" : XSValues(
                 XS_2016=12.68,  XSSource_2016="XSDB (LO)",
-                XS_2017=0.7114, XSSource_2017="XSDB (LO)", <== FIX ME
+                XS_2017=12.93, XSSource_2017="XSDB (LO)",
                 XS_2018=12.95, XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "WGJets_MonoPhoton_PtG-130" : {
             "CrossSection" : XSValues(
                 XS_2016=0.6578, XSSource_2016="XSDB (LO)",
-                XS_2017=, XSSource_2017="GenXSecAnalyzer", <== FIX ME
+                XS_2017=0.7158, XSSource_2017="GenXSecAnalyzer",
                 XS_2018=0.7153, XSSource_2018="GenXSecAnalyzer",
             ),
         },
