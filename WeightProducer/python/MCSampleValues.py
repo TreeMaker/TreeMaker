@@ -679,7 +679,7 @@ class MCSampleValuesHelper():
         },
         "ZJetsToNuNu_HT-100To200" : {
             "CrossSection" : XSValues(
-                XS_2016=93.35, XSSource_2016="XSDB (LO)",
+                XS_2016=280.35, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z",
                 XS_2017=302.8, XSSource_2017="XSDB (LO)",
                 XS_2018=304.0, XSSource_2018="GenXSecAnalyzer",
             ),
@@ -691,7 +691,7 @@ class MCSampleValuesHelper():
         },
         "ZJetsToNuNu_HT-200To400" : {
             "CrossSection" : XSValues(
-                XS_2016=25.85, XSSource_2016="XSDB (LO)",
+                XS_2016=77.67, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z",
                 XS_2017=92.59, XSSource_2017="XSDB (LO)",
                 XS_2018=91.68, XSSource_2018="GenXSecAnalyzer",
             ),
@@ -703,7 +703,7 @@ class MCSampleValuesHelper():
         },
         "ZJetsToNuNu_HT-400To600" : {
             "CrossSection" : XSValues(
-                XS_2016=3.584, XSSource_2016="XSDB (LO)",
+                XS_2016=10.73, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z",
                 XS_2017=13.18, XSSource_2017="XSDB (LO)",
                 XS_2018=13.11, XSSource_2018="GenXSecAnalyzer",
             ),
@@ -715,7 +715,7 @@ class MCSampleValuesHelper():
         },
         "ZJetsToNuNu_HT-600To800" : {
             "CrossSection" : XSValues(
-                XS_2016=0.853, XSSource_2016="XSDB (LO)",
+                XS_2016=2.559, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z",
                 XS_2017=3.257, XSSource_2017="XSDB (LO)",
                 XS_2018=3.245, XSSource_2018="GenXSecAnalyzer",
             ),
@@ -727,7 +727,7 @@ class MCSampleValuesHelper():
         },
         "ZJetsToNuNu_HT-800To1200" : {
             "CrossSection" : XSValues(
-                XS_2016=0.3934, XSSource_2016="XSDB (LO)",
+                XS_2016=1.1796, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z",
                 XS_2017=1.49,   XSSource_2017="XSDB (LO)",
                 XS_2018=1.497,  XSSource_2018="GenXSecAnalyzer",
             ),
@@ -739,7 +739,7 @@ class MCSampleValuesHelper():
         },
         "ZJetsToNuNu_HT-1200To2500" : {
             "CrossSection" : XSValues(
-                XS_2016=0.09543, XSSource_2016="XSDB (LO)",
+                XS_2016=0.28833, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z",
                 XS_2017=0.3419,  XSSource_2017="XSDB (LO)",
                 XS_2018=0.3425,  XSSource_2018="GenXSecAnalyzer",
             ),
@@ -751,7 +751,7 @@ class MCSampleValuesHelper():
         },
         "ZJetsToNuNu_HT-2500ToInf" : {
             "CrossSection" : XSValues(
-                XS_2016=0.002304, XSSource_2016="XSDB (LO)",
+                XS_2016=0.006945, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z",
                 XS_2017=0.005146, XSSource_2017="XSDB (LO)",
                 XS_2018=0.005263, XSSource_2018="GenXSecAnalyzer",
             ),
