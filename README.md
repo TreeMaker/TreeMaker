@@ -176,7 +176,7 @@ To check for new samples, use the above script [get_mcm.py](./Production/test/ge
 dasgoclient -query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM"
 ```
 
-A convenient config to compute cross sections using the official GenXsecAnalyzer tool is provided, and can be used as follows:
+A convenient config to compute cross sections using the official GenXSecAnalyzer tool is provided, and can be used as follows:
 ```
 cmsRun xsecfinder_cfg.py name=Autumn18.TTGamma_Dilept_TuneCP5_13TeV_madgraph_pythia8_ext1 numevents=1e7
 ```
@@ -185,6 +185,10 @@ For samples generated with MadGraph, the LHE header can be dumped, including the
 ```
 cmsRun pdffinder_cfg.py name=Autumn18.TTGamma_Dilept_TuneCP5_13TeV_madgraph_pythia8_ext1
 ```
+
+In both configs, an alternate xrootd redirector can be specified with the `redir` argument (default value: `root://cmsxrootd.fnal.gov/`).
+A site name (such as T1_US_FNAL) can also be provided, in which case the config will attempt to read the files
+from only the specified site using the [SAM access test](https://twiki.cern.ch/twiki/bin/view/Main/XrootdMonitoring#Access_test) method.
 
 ### Samples with Negative Weight Events
 
