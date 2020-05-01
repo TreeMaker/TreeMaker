@@ -176,6 +176,16 @@ To check for new samples, use the above script [get_mcm.py](./Production/test/ge
 dasgoclient -query="dataset=/*/RunIISpring16MiniAOD*/MINIAODSIM"
 ```
 
+A convenient config to compute cross sections using the official GenXsecAnalyzer tool is provided, and can be used as follows:
+```
+cmsRun xsecfinder_cfg.py name=Autumn18.TTGamma_Dilept_TuneCP5_13TeV_madgraph_pythia8_ext1 numevents=1e7
+```
+
+For samples generated with MadGraph, the LHE header can be dumped, including the PDF weight definitions:
+```
+cmsRun pdffinder_cfg.py name=Autumn18.TTGamma_Dilept_TuneCP5_13TeV_madgraph_pythia8_ext1
+```
+
 ### Samples with Negative Weight Events
 
 Samples produced at NLO by amcatnlo have events with negative weights, which must be handled correctly. To get the effective number of events used to weight the sample, there is a multi-step process. This process also produces a histogram of `TrueNumInteractions` for pileup reweighting.
