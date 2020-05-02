@@ -2,6 +2,24 @@ from TreeMaker.WeightProducer.namedtuple_with_defaults import namedtuple_with_de
 import re
 
 class MCSampleHelper():
+    """Helps to parse MC sample names and return specific pieces of information.
+
+    Th various functions are meant to make it easier to parse the many sample names without the duplication of effort.
+    The pieces of information that can be returned are:
+        1. The center of mass energy simulated within a given sample
+        2. The center of mass energy associated to a given year
+        3. The sample name when it's stripped of extraneous information
+        4.The year associated to a given MiniAOD production
+
+    Args:
+        extra_dicts_energy (:obj:`dict` of :obj:`str`): Extra year-center of mass pairings not specified in the internal dictionary
+        extra_dicts_strip (:obj:`dict` of :obj:`list` of :obj:`str`): Extra regular expressions used to strip non-physics process information from the MC sample name
+
+    Example:
+        from MCSampleValues import MCSampleHelper
+        helper = MCSampleHelper()
+        helper.get_cm_energy_by_year("2018")
+    """
 
     __energy_dict = {
         "2010" : "7TeV",
@@ -50,31 +68,35 @@ class MCSampleHelper():
         return year
 
 class MCSampleValuesHelper():
-    
+    """Stores the cross sections and k-factors associated to a given physics process.
+
+    The lists of years and energies used to identify a given cross section are also stored within this class.
+    Given a process name, year, and energy the appropriate cross section will be returned.
+    If a cross section is not specified for an energy (i.e. multiple years), then the cross section for a given year will be returned.
+
+    Args:
+        extra_dicts (:obj:`dict` of :obj:`dict` of :obj:`namedtuple_with_defaults`): Extra cross sections and k-factors to add to the __values_dict.
+
+    Example:
+        from MCSampleValues import MCSampleValuesHelper
+        helper = MCSampleValuesHelper()
+        helper.get_xs("TTJets","","13TeV")
+    """
+
     __years = ['2010','2011','2012','2015','2016','2017','2018']
     __energies = ["7TeV","8TeV","13TeV"]
     __xs_field_names = []
     __kfactor_field_names = []
-    for year in __years+__energies:
-        __xs_field_names.append('XS_'+year)
-        __xs_field_names.append('XSSource_'+year)
-        __kfactor_field_names.append('kFactor_'+year)
-        __kfactor_field_names.append('kFactorSource_'+year)
+    for __year in __years+__energies:
+        __xs_field_names.append('XS_'+__year)
+        __xs_field_names.append('XSSource_'+__year)
+        __kfactor_field_names.append('kFactor_'+__year)
+        __kfactor_field_names.append('kFactorSource_'+__year)
     XSValues = namedtuple_with_defaults('XSValues', __xs_field_names, [-1.0,""]*len(__years+__energies))
     kFactorValues = namedtuple_with_defaults('kFactorValues', __kfactor_field_names, [1.0,""]*len(__years+__energies))
 
     __values_dict = {
-        "TT" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=831.76, XSSource_13TeV="XSDB (NNLO)",
-            ), 
-        },
         "TTJets" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=831.76, XSSource_13TeV="XSDB (NNLO)",
-            ),
-        },
-        "TTbar" : {
             "CrossSection" : XSValues(
                 XS_13TeV=831.76, XSSource_13TeV="XSDB (NNLO)",
             ),
@@ -228,8 +250,8 @@ class MCSampleValuesHelper():
         "TTGamma_Dilept" : {
             "CrossSection" : XSValues(
                 XS_2016=0.6343, XSSource_2016="XSDB (NLO)",
-                XS_2017=0.5804, XSSource_2017="XSDB (LO)",
-                XS_2018=1.495,  XSSource_2018="GenXSecAnalyzer",
+                XS_2017=0.5795, XSSource_2017="GenXSecAnalyzer",
+                XS_2018=0.5799, XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "WJetsToLNu_HT-70To100" : {
@@ -857,35 +879,16 @@ class MCSampleValuesHelper():
                 XS_13TeV=10.12, XSSource_13TeV="XSDB (unknown)",
             ),
         },
-        "ST_t-channel_top_4f_inclusiveDecays" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=136.02, XSSource_13TeV="Unknown",
-                XS_2017=113.3,   XSSource_2017="XSDB (NLO)",
-            ),
-        },
         "ST_t-channel_top_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
                 XS_13TeV=136.02, XSSource_13TeV="Unknown",
                 XS_2017=113.3,   XSSource_2017="XSDB (NLO)",
             ),
         },
-        "ST_t-channel_antitop_4f_inclusiveDecays" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=80.95, XSSource_13TeV="Unknown",
-                XS_2017=67.91,  XSSource_2017="XSDB (NLO)",
-            ),
-        },
         "ST_t-channel_antitop_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
                 XS_13TeV=80.95, XSSource_13TeV="Unknown",
                 XS_2017=67.91,  XSSource_2017="XSDB (NLO)",
-            ),
-        },
-        "ST_tW_antitop_5f_NoFullyHadronicDecays" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=19.4674, XSSource_13TeV="Unknown",
-                XS_2016=38.06,    XSSource_2016="XSDB (NLO)",
-                XS_2017=34.97,    XSSource_2017="XSDB (NLO)",
             ),
         },
         "ST_tW_top_5f_NoFullyHadronicDecays" : {
@@ -895,11 +898,11 @@ class MCSampleValuesHelper():
                 XS_2017=34.91,    XSSource_2017="XSDB (NLO)",
             ),
         },
-        "ST_tW_antitop_5f_inclusiveDecays" : {
+        "ST_tW_antitop_5f_NoFullyHadronicDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=35.6, XSSource_13TeV="Unknown",
-                XS_2016=38.06, XSSource_2016="XSDB (NLO)",
-                XS_2017=34.97, XSSource_2017="XSDB (NLO)",
+                XS_13TeV=19.4674, XSSource_13TeV="Unknown",
+                XS_2016=38.06,    XSSource_2016="XSDB (NLO)",
+                XS_2017=34.97,    XSSource_2017="XSDB (NLO)",
             ),
         },
         "ST_tW_top_5f_inclusiveDecays" : {
@@ -907,6 +910,13 @@ class MCSampleValuesHelper():
                 XS_13TeV=35.6, XSSource_13TeV="Unknown",
                 XS_2016=38.09,    XSSource_2016="XSDB (NLO)",
                 XS_2017=34.91,    XSSource_2017="XSDB (NLO)",
+            ),
+        },
+        "ST_tW_antitop_5f_inclusiveDecays" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=35.6, XSSource_13TeV="Unknown",
+                XS_2016=38.06, XSSource_2016="XSDB (NLO)",
+                XS_2017=34.97, XSSource_2017="XSDB (NLO)",
             ),
         },
         "tZq_W_lept_Z_hadron_4f_ckm" : {
@@ -1587,7 +1597,21 @@ class MCSampleValuesHelper():
         },
     }
 
+    __alternate_names_dict = {
+        "TTJets" : ["TT","TTbar"],
+        "ST_t-channel_top_4f_InclusiveDecays" : ["ST_t-channel_top_4f_inclusiveDecays"],
+        "ST_t-channel_antitop_4f_InclusiveDecays" : ["ST_t-channel_antitop_4f_inclusiveDecays"],
+    }
+
     def __init__(self, extra_dicts=None):
+        if self.__alternate_names_dict is not None and len(self.__alternate_names_dict)!=0:
+            for key,alt_key_list in self.__alternate_names_dict.items():
+                if key in self.__values_dict:
+                    for newkey in alt_key_list:
+                        self.__values_dict[newkey] = self.__values_dict[key]
+                else:
+                    raise KeyError('The __values_dict does not contain the key \'' + key + '\'')
+
         if extra_dicts is not None:
             self.__values_dict.update(extra_dicts)
 
@@ -1610,7 +1634,7 @@ class MCSampleValuesHelper():
             raise KeyError("ERROR MCSampleValuesHelper::The process \"" + name + "\" does not contain a cross section tuple")
         if not any(f in self.__values_dict[name]["CrossSection"]._fields for f in fields):
             print self.__values_dict[name]["CrossSection"]
-            raise KeyError("ERROR MCSampleValuesHelper::The CrossSectionValues tuple for process \"" + name + "\" does contain the key(s) \"" + fields + "\"")
+            raise KeyError("ERROR MCSampleValuesHelper::The CrossSectionValues tuple for process \"" + name + "\" does contain the key(s) \"" + str(fields) + "\"")
 
         if self.__values_dict[name]["CrossSection"].__getattribute__(fields[0]) >= 0:
             return self.__values_dict[name]["CrossSection"].__getattribute__(fields[0])
