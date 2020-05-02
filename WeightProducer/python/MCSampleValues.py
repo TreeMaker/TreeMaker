@@ -35,7 +35,7 @@ class MCSampleHelper():
         "generators"    : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"         : ["(.Tune)([^_]*)"],
         "added_info"    : ["(.PSweights)([^_]*)"],
-        "other"         : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","_Flat2018","SVJ_", "_erdON", "_hdamp(UP|DOWN)"],
+        "other"         : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","SVJ_", "_erdON", "_hdamp(UP|DOWN)"],
     }
 
     def __init__(self, extra_dicts_energy=None, extra_dicts_strip=None):
@@ -358,17 +358,6 @@ class MCSampleValuesHelper():
                 XS_2018=52850.0, XSSource_2018="XSDB (LO)",
             ),
         },
-        "QCD_FlatPt_15_3000" : {
-            "CrossSection" : XSValues(
-                XS_2017=1985000000.0, XSSource_2017="XSDB (LO)",
-                XS_2018=1370000000.0, XSSource_2018="XSDB (LO)",
-            ),
-        },
-        "QCD_FlatPt_15_3000HS" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=1356000000.0, XSSource_13TeV="Unknown",
-            ),
-        },
         "QCD_HT200to300" : {
             "CrossSection" : XSValues(
                 XS_2016=1710000.0, XSSource_2016="XSDB (LO)",
@@ -506,7 +495,7 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(
                 XS_2016=1976000000.0, XSSource_2016="XSDB",
                 XS_2017=1370000000.0, XSSource_2017="XSDB",
-                XS_2018=1372000000.0, XSSource_2018="GenXSecAnalyzer",
+                XS_2018=1371000000.0, XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "QCD_Pt-15to7000_FlatP6" : {
@@ -517,6 +506,11 @@ class MCSampleValuesHelper():
         "QCD_Pt-15to7000_Flat2017" : {
             "CrossSection" : XSValues(
                 XS_2017=1361000000.0, XSSource_2017="XSDB",
+            ),
+        },
+        "QCD_Pt-15to7000_Flat2018" : {
+            "CrossSection" : XSValues(
+                XS_2018=1372000000.0, XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "QCD_Pt_50to80" : {
@@ -908,8 +902,8 @@ class MCSampleValuesHelper():
         "ST_tW_top_5f_inclusiveDecays" : {
             "CrossSection" : XSValues(
                 XS_13TeV=35.6, XSSource_13TeV="Unknown",
-                XS_2016=38.09,    XSSource_2016="XSDB (NLO)",
-                XS_2017=34.91,    XSSource_2017="XSDB (NLO)",
+                XS_2016=38.09, XSSource_2016="XSDB (NLO)",
+                XS_2017=34.91, XSSource_2017="XSDB (NLO)",
             ),
         },
         "ST_tW_antitop_5f_inclusiveDecays" : {
