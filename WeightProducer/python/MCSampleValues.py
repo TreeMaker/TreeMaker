@@ -862,7 +862,6 @@ class MCSampleValuesHelper():
         },
         "ST_s-channel_4f_leptonDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=3.36, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25n (NLO)",
                 XS_2016=3.365, XSSource_2016="XSDB (unknown)",
                 XS_2017=3.74,  XSSource_2017="XSDB (unknown)",
                 XS_2018=3.740, XSSource_2018="GenXSecAnalyzer",
@@ -875,14 +874,18 @@ class MCSampleValuesHelper():
         },
         "ST_t-channel_top_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=136.02, XSSource_13TeV="Unknown",
+                XS_13TeV=136.02, XSSource_13TeV="Unknown", <===Delete me
+                XS_2016=, XSSource_2016="GenXSecAnalyzer", <===Run me
                 XS_2017=113.3,   XSSource_2017="XSDB (NLO)",
+                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
             ),
         },
         "ST_t-channel_antitop_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
                 XS_13TeV=80.95, XSSource_13TeV="Unknown",
+                XS_2016=, XSSource_2016="GenXSecAnalyzer", <===Run me
                 XS_2017=67.91,  XSSource_2017="XSDB (NLO)",
+                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
             ),
         },
         "ST_tW_top_5f_NoFullyHadronicDecays" : {
@@ -890,6 +893,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=19.4674, XSSource_13TeV="Unknown",
                 XS_2016=38.09,    XSSource_2016="XSDB (NLO)",
                 XS_2017=34.91,    XSSource_2017="XSDB (NLO)",
+                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
             ),
         },
         "ST_tW_antitop_5f_NoFullyHadronicDecays" : {
@@ -897,6 +901,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=19.4674, XSSource_13TeV="Unknown",
                 XS_2016=38.06,    XSSource_2016="XSDB (NLO)",
                 XS_2017=34.97,    XSSource_2017="XSDB (NLO)",
+                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
             ),
         },
         "ST_tW_top_5f_inclusiveDecays" : {
@@ -904,6 +909,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=35.6, XSSource_13TeV="Unknown",
                 XS_2016=38.09, XSSource_2016="XSDB (NLO)",
                 XS_2017=34.91, XSSource_2017="XSDB (NLO)",
+                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
             ),
         },
         "ST_tW_antitop_5f_inclusiveDecays" : {
@@ -911,6 +917,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=35.6, XSSource_13TeV="Unknown",
                 XS_2016=38.06, XSSource_2016="XSDB (NLO)",
                 XS_2017=34.97, XSSource_2017="XSDB (NLO)",
+                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
             ),
         },
         "tZq_W_lept_Z_hadron_4f_ckm" : {
