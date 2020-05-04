@@ -56,7 +56,7 @@ def getWeightProducer(fileName, scan=False):
     for sample in samples:
         if sample.name in fileName and sample.production in fileName:
             weightProducer.Method     = cms.string(sample.Method)
-            weightProducer.XS         = cms.double(sample.XS*sample.kFactor)
+            weightProducer.XS         = cms.double(sample.XS*sample.BR*sample.kFactor*sample.corr)
             weightProducer.NumberEvts = cms.double(sample.NumberEvtsDiff)
             weightProducer.RemakePU   = cms.bool(sample.WrongPU)
             print sample.name+", "+sample.production+" : '"+fileName+"'"

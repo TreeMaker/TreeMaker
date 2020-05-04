@@ -4,7 +4,7 @@ import re
 class MCSampleHelper():
     """Helps to parse MC sample names and return specific pieces of information.
 
-    Th various functions are meant to make it easier to parse the many sample names without the duplication of effort.
+    The various functions are meant to make it easier to parse the many sample names without the duplication of effort.
     The pieces of information that can be returned are:
         1. The center of mass energy simulated within a given sample
         2. The center of mass energy associated to a given year
@@ -78,22 +78,44 @@ class MCSampleValuesHelper():
         extra_dicts (:obj:`dict` of :obj:`dict` of :obj:`namedtuple_with_defaults`): Extra cross sections and k-factors to add to the __values_dict.
 
     Example:
-        from MCSampleValues import MCSampleValuesHelper
+        from TreeMaker.WeightProducer.MCSampleValues import MCSampleValuesHelper
         helper = MCSampleValuesHelper()
-        helper.get_xs("TTJets","","13TeV")
+        helper.get_value("TTJets_SingleLeptFromT","13TeV","2016","CrossSection")
+        helper.get_value("TTJets_SingleLeptFromT","13TeV","2016","kFactor")
+        helper.get_value("TTJets_SingleLeptFromT","13TeV","2016","BranchingRatio")
+        helper.get_value("TTJets_SingleLeptFromT_genMET-150","13TeV","2016","CrossSection")
+        helper.get_value("TTJets_SingleLeptFromT_genMET-150","13TeV","2016","kFactor")
+        helper.get_value("TTJets_SingleLeptFromT_genMET-150","13TeV","2016","BranchingRatio")
+        helper.get_value("TTJets_SingleLeptFromT_genMET-150","13TeV","2017","CrossSection")
+        helper.get_value("TTJets_SingleLeptFromT_genMET-150","13TeV","2017","kFactor")
+        helper.get_value("TTJets_SingleLeptFromT_genMET-150","13TeV","2017","BranchingRatio")
     """
 
     __years = ['2010','2011','2012','2015','2016','2017','2018']
     __energies = ["7TeV","8TeV","13TeV"]
     __xs_field_names = []
+    __br_field_names = []
     __kfactor_field_names = []
-    for __year in __years+__energies:
-        __xs_field_names.append('XS_'+__year)
-        __xs_field_names.append('XSSource_'+__year)
-        __kfactor_field_names.append('kFactor_'+__year)
-        __kfactor_field_names.append('kFactorSource_'+__year)
-    XSValues = namedtuple_with_defaults('XSValues', __xs_field_names, [-1.0,""]*len(__years+__energies))
-    kFactorValues = namedtuple_with_defaults('kFactorValues', __kfactor_field_names, [1.0,""]*len(__years+__energies))
+    __corr_field_names = []
+    __key_field_map = {
+        "CrossSection"   : ("XS",-1.0),
+        "BranchingRatio" : ("BR",1.0),
+        "kFactor"        : ("kFactor",1.0),
+        "Correction"     : ("Corr",1.0),
+    }
+    for __val in __years+__energies:
+        __xs_field_names.append('XS_'+__val)
+        __xs_field_names.append('XSSource_'+__val)
+        __br_field_names.append('BR_'+__val)
+        __br_field_names.append('BRSource_'+__val)
+        __kfactor_field_names.append('kFactor_'+__val)
+        __kfactor_field_names.append('kFactorSource_'+__val)
+        __corr_field_names.append('Corr_'+__val)
+        __corr_field_names.append('CorrSource_'+__val)
+    XSValues = namedtuple_with_defaults('XSValues', __xs_field_names, [__key_field_map["CrossSection"][1],""]*len(__years+__energies))
+    BRValues = namedtuple_with_defaults('BRValues', __br_field_names, [__key_field_map["BranchingRatio"][1],""]*len(__years+__energies))
+    kFactorValues = namedtuple_with_defaults('kFactorValues', __kfactor_field_names, [__key_field_map["kFactor"][1],""]*len(__years+__energies))
+    CorrValues = namedtuple_with_defaults('CorrValues', __corr_field_names, [__key_field_map["Correction"][1],""]*len(__years+__energies))
 
     __values_dict = {
         "TTJets" : {
@@ -103,17 +125,26 @@ class MCSampleValuesHelper():
         },
         "TTJets_SingleLeptFromT" : {
             "CrossSection" : XSValues(
-                XS_13TeV=182.72, XSSource_13TeV="PDG xsec scaled by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                XS_13TeV=831.8, XSSource_13TeV="PDG XS - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.219, BRSource_13TeV="PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf"
             ),
         },
         "TTJets_SingleLeptFromTbar" : {
             "CrossSection" : XSValues(
-                XS_13TeV=182.72, XSSource_13TeV="PDG xsec scaled by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                XS_13TeV=831.8, XSSource_13TeV="PDG XS - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.219, BRSource_13TeV="PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf"
             ),
         },
         "TTJets_DiLept" : {
             "CrossSection" : XSValues(
-                XS_13TeV=88.34, XSSource_13TeV="PDG xsec scaled by PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                XS_13TeV=831.8, XSSource_13TeV="PDG XS - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.105, BRSource_13TeV="PDG BR (t=tbar) - http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf"
             ),
         },
         "TTJets_SingleLeptFromT_genMET-80" : {
@@ -277,6 +308,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
                 kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=0.993, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.993, CorrSource_2018="Same as 2017",
+            ),
         },
         "WJetsToLNu_HT-200To400" : {
             "CrossSection" : XSValues(
@@ -288,6 +323,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
                 kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
                 kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=1.002, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=1.002, CorrSource_2018="Same as 2017",
             ),
         },
         "WJetsToLNu_HT-400To600" : {
@@ -301,6 +340,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
                 kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=1.009, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=1.009, CorrSource_2018="Same as 2017",
+            ),
         },
         "WJetsToLNu_HT-600To800" : {
             "CrossSection" : XSValues(
@@ -312,6 +355,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
                 kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
                 kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=1.120, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=1.120, CorrSource_2018="Same as 2017",
             ),
         },
         "WJetsToLNu_HT-800To1200" : {
@@ -325,6 +372,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
                 kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=1.202, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=1.202, CorrSource_2018="Same as 2017",
+            ),
         },
         "WJetsToLNu_HT-1200To2500" : {
             "CrossSection" : XSValues(
@@ -337,6 +388,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
                 kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=1.332, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=1.332, CorrSource_2018="Same as 2017",
+            ),
         },
         "WJetsToLNu_HT-2500ToInf" : {
             "CrossSection" : XSValues(
@@ -348,6 +403,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
                 kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
                 kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=4.200, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=4.200, CorrSource_2018="Same as 2017",
             ),
         },
         "WJetsToLNu" : {
@@ -615,6 +674,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=1.000, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=1.000, CorrSource_2018="Same as 2017",
+            ),
         },
         "DYJetsToLL_M-50_HT-200to400" : {
             "CrossSection" : XSValues(
@@ -626,6 +689,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=0.999, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.999, CorrSource_2018="Same as 2017",
             ),
         },
         "DYJetsToLL_M-50_HT-400to600" : {
@@ -639,6 +706,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=0.990, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.990, CorrSource_2018="Same as 2017",
+            ),
         },
         "DYJetsToLL_M-50_HT-600to800" : {
             "CrossSection" : XSValues(
@@ -650,6 +721,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=0.975, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.975, CorrSource_2018="Same as 2017",
             ),
         },
         "DYJetsToLL_M-50_HT-800to1200" : {
@@ -663,6 +738,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=0.907, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.907, CorrSource_2018="Same as 2017",
+            ),
         },
         "DYJetsToLL_M-50_HT-1200to2500" : {
             "CrossSection" : XSValues(
@@ -675,6 +754,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=0.833, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.833, CorrSource_2018="Same as 2017",
+            ),
         },
         "DYJetsToLL_M-50_HT-2500toInf" : {
             "CrossSection" : XSValues(
@@ -686,6 +769,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=1.015, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=1.015, CorrSource_2018="Same as 2017",
             ),
         },
         "DYJetsToLL_M-50" : {
@@ -704,6 +791,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=0.994, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.994, CorrSource_2018="Same as 2017",
+            ),
         },
         "ZJetsToNuNu_HT-200To400" : {
             "CrossSection" : XSValues(
@@ -715,6 +806,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=0.981, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.981, CorrSource_2018="Same as 2017",
             ),
         },
         "ZJetsToNuNu_HT-400To600" : {
@@ -728,6 +823,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=0.977, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.977, CorrSource_2018="Same as 2017",
+            ),
         },
         "ZJetsToNuNu_HT-600To800" : {
             "CrossSection" : XSValues(
@@ -739,6 +838,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=0.975, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.975, CorrSource_2018="Same as 2017",
             ),
         },
         "ZJetsToNuNu_HT-800To1200" : {
@@ -752,6 +855,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=0.916, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.916, CorrSource_2018="Same as 2017",
+            ),
         },
         "ZJetsToNuNu_HT-1200To2500" : {
             "CrossSection" : XSValues(
@@ -764,6 +871,10 @@ class MCSampleValuesHelper():
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
             ),
+            "Correction" : CorrValues(
+                Corr_2017=0.880, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=0.880, CorrSource_2018="Same as 2017",
+            ),
         },
         "ZJetsToNuNu_HT-2500ToInf" : {
             "CrossSection" : XSValues(
@@ -775,6 +886,10 @@ class MCSampleValuesHelper():
                 kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
                 kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
                 kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
+            ),
+            "Correction" : CorrValues(
+                Corr_2017=1.276, CorrSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/MCKnownIssues#WJetsToLNu_HT_and_DYJets_HT_LO_M",
+                Corr_2018=1.276, CorrSource_2018="Same as 2017",
             ),
         },
         "ZJetsToNuNu_Zpt-100to200" : {
@@ -853,7 +968,6 @@ class MCSampleValuesHelper():
                 XS_2018=40.46, XSSource_2018="GenXSecAnalyzer",
             ),
         },
-        # single top: NoFullyHadronicDecays xsec scaled by BF for non-fully-hadronic (1-(1-3*0.108)^2)
         "ST_s-channel_4f_hadronicDecays" : {
             "CrossSection" : XSValues(
                 XS_2017=11.24, XSSource_2017="GenXSecAnalyzer",
@@ -874,50 +988,54 @@ class MCSampleValuesHelper():
         },
         "ST_t-channel_top_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=136.02, XSSource_13TeV="Unknown", <===Delete me
-                XS_2016=, XSSource_2016="GenXSecAnalyzer", <===Run me
-                XS_2017=113.3,   XSSource_2017="XSDB (NLO)",
-                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
+                XS_2016=136.02, XSSource_2016="Unknown (GenXSecAnalyzer/XSDB return 0.0)",
+                XS_2017=113.3,  XSSource_2017="XSDB (NLO)",
+                XS_2018=115.3,  XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "ST_t-channel_antitop_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=80.95, XSSource_13TeV="Unknown",
-                XS_2016=, XSSource_2016="GenXSecAnalyzer", <===Run me
-                XS_2017=67.91,  XSSource_2017="XSDB (NLO)",
-                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
+                XS_2016=80.95, XSSource_2016="Unknown (GenXSecAnalyzer/XSDB return 0.0)",
+                XS_2017=67.91, XSSource_2017="XSDB (NLO)",
+                XS_2018=69.09, XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "ST_tW_top_5f_NoFullyHadronicDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=19.4674, XSSource_13TeV="Unknown",
-                XS_2016=38.09,    XSSource_2016="XSDB (NLO)",
-                XS_2017=34.91,    XSSource_2017="XSDB (NLO)",
-                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
+                XS_2016=38.09, XSSource_2016="XSDB (NLO)",
+                XS_2017=34.91, XSSource_2017="XSDB (NLO)",
+                XS_2018=34.91, XSSource_2018="GenXSecAnalyzer",
             ),
+            "BranchingRatio" : BRValues(
+                BR_2016=(1-(1-3*0.105)**2), BRSource_2016="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                BR_2017=(1-(1-3*0.105)**2), BRSource_2017="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                BR_2018=(1-(1-3*0.105)**2), BRSource_2018="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+            )
         },
         "ST_tW_antitop_5f_NoFullyHadronicDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=19.4674, XSSource_13TeV="Unknown",
-                XS_2016=38.06,    XSSource_2016="XSDB (NLO)",
-                XS_2017=34.97,    XSSource_2017="XSDB (NLO)",
-                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
+                XS_2016=38.06, XSSource_2016="XSDB (NLO)",
+                XS_2017=34.97, XSSource_2017="XSDB (NLO)",
+                XS_2018=34.97, XSSource_2018="GenXSecAnalyzer",
             ),
+            "BranchingRatio" : BRValues(
+                BR_2016=(1-(1-3*0.105)**2), BRSource_2016="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                BR_2017=(1-(1-3*0.105)**2), BRSource_2017="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+                BR_2018=(1-(1-3*0.105)**2), BRSource_2018="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+            )
         },
         "ST_tW_top_5f_inclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=35.6, XSSource_13TeV="Unknown",
                 XS_2016=38.09, XSSource_2016="XSDB (NLO)",
                 XS_2017=34.91, XSSource_2017="XSDB (NLO)",
-                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
+                XS_2018=34.91, XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "ST_tW_antitop_5f_inclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=35.6, XSSource_13TeV="Unknown",
                 XS_2016=38.06, XSSource_2016="XSDB (NLO)",
                 XS_2017=34.97, XSSource_2017="XSDB (NLO)",
-                XS_2018=, XSSource_2018="GenXSecAnalyzer", <===Run me
+                XS_2018=34.97, XSSource_2018="GenXSecAnalyzer",
             ),
         },
         "tZq_W_lept_Z_hadron_4f_ckm" : {
@@ -1616,28 +1734,50 @@ class MCSampleValuesHelper():
         if extra_dicts is not None:
             self.__values_dict.update(extra_dicts)
 
-    def get_kfactor(self, name, year):
-        # Default is to return 1.0 if the process does not contain a kFactorValues tuple or if that tuple doesn't contain a field for a given year
+    def get_value(self, name, energy, year, key, strict=False):
+        """Return the value for a given MC sample, energy or year, and information type
 
-        field = "kFactor_"+year
+        If information is stored for both an energy and a year, the value for the given energy will be preferentially returned. 
+        If strict checking is turned on the function will raise an error if a given dictionary or piece of information isn't found.
+          Otherwise the default value will be returned with no error (i.e. will return 1.0 for kFactors)
+
+        Args:
+            name (`str`): The process name for a given MC sample
+            energy (`str`): The simulated energy used during production of the MC sample
+            year (`str`): The production year of the MC sample
+            key (`str`): The type of information being requested. The Options can be found in the __key_field_map.
+            strict (`bool`): Whether or not to perform strict checking of the dictionary
+
+        """
+        fields = [self.__key_field_map[key][0]+"_"+energy,self.__key_field_map[key][0]+"_"+year]
         if not name in self.__values_dict:
-            raise KeyError("ERROR MCSampleValuesHelper::Unknown process \"" + name + "\"")
-        if not "kFactor" in self.__values_dict[name] or not field in self.__values_dict[name]["kFactor"]._fields:
-            return 1.0
-        return self.__values_dict[name]["kFactor"].__getattribute__(field)
+            raise KeyError("ERROR MCSampleValuesHelper::Unknown process \"" + str(name) + "\"")
+        if not key in self.__values_dict[name]:
+            if strict:
+                print self.__values_dict[name]
+                raise KeyError("ERROR MCSampleValuesHelper::The process \"" + str(name) + "\" does not contain a " + str(key) + " tuple")
+            else:
+                return self.__key_field_map[key][1]
+        if not any(f in self.__values_dict[name][key]._fields for f in fields):
+            if strict:
+                print self.__values_dict[name][key]
+                raise KeyError("ERROR MCSampleValuesHelper::The " + str(key) + " tuple for process \"" + str(name) + "\" does contain the key(s) \"" + str(fields) + "\"")
+            else:
+                self.__key_field_map[key][1]
 
-    def get_xs(self, name, year, energy):
-        fields = ["XS_"+energy, "XS_"+year]
-        if not name in self.__values_dict:
-            raise KeyError("ERROR MCSampleValuesHelper::Unknown process \"" + name + "\"")
-        if not "CrossSection" in self.__values_dict[name]:
-            print self.__values_dict[name]
-            raise KeyError("ERROR MCSampleValuesHelper::The process \"" + name + "\" does not contain a cross section tuple")
-        if not any(f in self.__values_dict[name]["CrossSection"]._fields for f in fields):
-            print self.__values_dict[name]["CrossSection"]
-            raise KeyError("ERROR MCSampleValuesHelper::The CrossSectionValues tuple for process \"" + name + "\" does contain the key(s) \"" + str(fields) + "\"")
-
-        if self.__values_dict[name]["CrossSection"].__getattribute__(fields[0]) >= 0:
-            return self.__values_dict[name]["CrossSection"].__getattribute__(fields[0])
+        if self.__values_dict[name][key].__getattribute__(fields[0]) != self.__key_field_map[key][1]:
+            return self.__values_dict[name][key].__getattribute__(fields[0])
         else:
-            return self.__values_dict[name]["CrossSection"].__getattribute__(fields[1])
+            return self.__values_dict[name][key].__getattribute__(fields[1])
+
+    def get_xs(self, name, energy, year):
+        return self.get_value(name, energy, year, "CrossSection", True)
+
+    def get_br(self, name, energy, year):
+        return self.get_value(name, energy, year, "BranchingRatio", False)
+
+    def get_kfactor(self, name, energy, year):
+        return self.get_value(name, energy, year, "kFactor", False)
+
+    def get_corr(self, name, energy, year):
+        return self.get_value(name, energy, year, "Correction", False)
