@@ -1030,10 +1030,8 @@ class MCSampleValuesHelper():
                 XS_2018=34.91, XSSource_2018="GenXSecAnalyzer",
             ),
             "BranchingRatio" : BRValues(
-                BR_2016=(1-(1-3*0.105)**2), BRSource_2016="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
-                BR_2017=(1-(1-3*0.105)**2), BRSource_2017="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
-                BR_2018=(1-(1-3*0.105)**2), BRSource_2018="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
-            )
+                BR_13TeV=(1-(1-3*0.105)**2), BRSource_13TeV="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+            ),
         },
         "ST_tW_antitop_5f_NoFullyHadronicDecays" : {
             "CrossSection" : XSValues(
@@ -1042,10 +1040,8 @@ class MCSampleValuesHelper():
                 XS_2018=34.97, XSSource_2018="GenXSecAnalyzer",
             ),
             "BranchingRatio" : BRValues(
-                BR_2016=(1-(1-3*0.105)**2), BRSource_2016="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
-                BR_2017=(1-(1-3*0.105)**2), BRSource_2017="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
-                BR_2018=(1-(1-3*0.105)**2), BRSource_2018="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
-            )
+                BR_13TeV=(1-(1-3*0.105)**2), BRSource_13TeV="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
+            ),
         },
         "ST_tW_top_5f_inclusiveDecays" : {
             "CrossSection" : XSValues(
