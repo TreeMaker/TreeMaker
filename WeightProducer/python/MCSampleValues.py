@@ -35,7 +35,7 @@ class MCSampleHelper():
         "generators"    : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"         : ["(.Tune)([^_]*)"],
         "added_info"    : ["(.PSweights)([^_]*)"],
-        "other"         : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","SVJ_", "_erdON", "_hdamp(UP|DOWN)"],
+        "other"         : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","SVJ_","_erdON","_ext([0-9])","_hdamp(UP|DOWN)"],
     }
 
     def __init__(self, extra_dicts_energy=None, extra_dicts_strip=None):
@@ -1131,6 +1131,13 @@ class MCSampleValuesHelper():
                 XS_2016=28.04, XSSource_2016="XSDB (unknown)",
             ),
         },
+        "ZZTo2L2Nu" : {
+            "CrossSection" : XSValues(
+                XS_2016=0.5644, XSSource_2016="GenXSecAnalyzer",
+                XS_2017=0.6008, XSSource_2017="GenXSecAnalyzer",
+                XS_2018=0.6008, XSSource_2018="GenXSecAnalyzer",
+            ),
+        },
         "ZZTo2L2Q" : {
             "CrossSection" : XSValues(
                 XS_2016=3.222, XSSource_2016="XSDB (unknown)",
@@ -1174,12 +1181,38 @@ class MCSampleValuesHelper():
         },
         "ttHJetToNonbb_M125" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.2118, XSSource_13TeV="Unknown",
+                XS_2016=0.4870, XSSource_2016="GenXSecAnalyzer",
+                XS_2017=0.5086, XSSource_2017="GenXSecAnalyzer",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_2016=(1-0.577), BRSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
+                BR_2017=(1-0.577), BRSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
             ),
         },
         "ttHJetTobb_M125" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.2953, XSSource_13TeV="Unknown",
+                XS_2016=0.4884, XSSource_2016="GenXSecAnalyzer",
+                XS_2017=0.5080, XSSource_2017="GenXSecAnalyzer",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_2016=0.577, BRSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
+                BR_2017=0.577, BRSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
+            ),
+        },
+        "ttHToNonbb_M125" : {
+            "CrossSection" : XSValues(
+                XS_2018=0.5269, XSSource_2018="GenXSecAnalyzer",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_2018=(1-0.577), BRSource_2018="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
+            ),
+        },
+        "ttHTobb_M125" : {
+            "CrossSection" : XSValues(
+                XS_2018=0.5269, XSSource_2018="GenXSecAnalyzer",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_2018=0.577, BRSource_2018="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
             ),
         },
         "TTTT" : {
