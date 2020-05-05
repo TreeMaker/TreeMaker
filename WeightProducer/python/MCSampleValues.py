@@ -417,6 +417,29 @@ class MCSampleValuesHelper():
                 XS_2018=52850.0, XSSource_2018="XSDB (LO)",
             ),
         },
+        "WJetsToQQ_HT400to600_qc19_3j" : {
+            "CrossSection" : XSValues(
+                XS_2017=315.2, XSSource_2017="GenXSecAnalyzer",
+                XS_2018=314.6, XSSource_2018="GenXSecAnalyzer",
+            ),
+        },
+        "WJetsToQQ_HT600to800_qc19_3j" : {
+            "CrossSection" : XSValues(
+                XS_2017=68.61, XSSource_2017="GenXSecAnalyzer",
+                XS_2018=68.58, XSSource_2018="GenXSecAnalyzer",
+            ),
+        },
+        "WJetsToQQ_HT-800toInf_qc19_3j" : {
+            "CrossSection" : XSValues(
+                XS_2017=34.71, XSSource_2017="GenXSecAnalyzer",
+                XS_2018=34.74, XSSource_2018="GenXSecAnalyzer",
+            ),
+        },
+        "WJetsToQQ_HT-600ToInf" : {
+            "CrossSection" : XSValues(
+                XS_2016=99.65, XSSource_2016="XSDB (LO)"
+            ),
+        },
         "QCD_HT200to300" : {
             "CrossSection" : XSValues(
                 XS_2016=1710000.0, XSSource_2016="XSDB (LO)",
