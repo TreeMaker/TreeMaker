@@ -1181,8 +1181,7 @@ class MCSampleValuesHelper():
                 XS_2017=0.5086, XSSource_2017="GenXSecAnalyzer",
             ),
             "BranchingRatio" : BRValues(
-                BR_2016=(1-0.577), BRSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
-                BR_2017=(1-0.577), BRSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
+                BR_13TeV=(1-0.577), BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
             ),
         },
         "ttHJetTobb_M125" : {
@@ -1191,8 +1190,7 @@ class MCSampleValuesHelper():
                 XS_2017=0.5080, XSSource_2017="GenXSecAnalyzer",
             ),
             "BranchingRatio" : BRValues(
-                BR_2016=0.577, BRSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
-                BR_2017=0.577, BRSource_2017="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
+                BR_13TeV=0.577, BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
             ),
         },
         "ttHToNonbb_M125" : {
@@ -1200,7 +1198,7 @@ class MCSampleValuesHelper():
                 XS_2018=0.5269, XSSource_2018="GenXSecAnalyzer",
             ),
             "BranchingRatio" : BRValues(
-                BR_2018=(1-0.577), BRSource_2018="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
+                BR_13TeV=(1-0.577), BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
             ),
         },
         "ttHTobb_M125" : {
@@ -1208,7 +1206,7 @@ class MCSampleValuesHelper():
                 XS_2018=0.5269, XSSource_2018="GenXSecAnalyzer",
             ),
             "BranchingRatio" : BRValues(
-                BR_2018=0.577, BRSource_2018="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
+                BR_13TeV=0.577, BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
             ),
         },
         "TTTT" : {
