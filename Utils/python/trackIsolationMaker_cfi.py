@@ -3,6 +3,8 @@ import FWCore.ParameterSet.Config as cms
 trackIsolationFilter = cms.EDFilter("TrackIsolationFilter",
                                     pfCandidatesTag     = cms.InputTag("particleFlow"),
                                     vertexInputTag      = cms.InputTag("goodVertices"),
+                                    ElectronTag         = cms.InputTag("slimmedElectrons"),
+                                    MuonTag             = cms.InputTag("slimmedMuons"),
                                     METTag              = cms.InputTag("slimmedMETs"), 
                                     dR_ConeSize         = cms.double(0.3),
                                     dz_CutValue         = cms.double(0.05),

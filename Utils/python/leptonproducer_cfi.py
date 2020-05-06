@@ -33,6 +33,7 @@ leptonproducer = cms.EDProducer('LeptonProducer',
     ee_misshits_cut                        = cms.vint32 (3,       1,       1,       1),
     # common electrons
     hovere_constant                        = cms.bool(False),
+      # https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
     electronEAValues                       = cms.vdouble(0.1440, 0.1562, 0.1032, 0.0859, 0.1116, 0.1321, 0.1654),
     #muons
     minMuPt                                = cms.double(10),

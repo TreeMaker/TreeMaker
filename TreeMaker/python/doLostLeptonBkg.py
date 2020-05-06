@@ -14,6 +14,8 @@ def doLostLeptonBkg(self,process,METTag):
             doTrkIsoVeto        = False,
             vertexInputTag      = cms.InputTag("goodVertices"),
             pfCandidatesTag     = cms.InputTag("packedPFCandidates"),
+            ElectronTag         = cms.InputTag("LeptonsNew:IdElectron"),
+            MuonTag             = cms.InputTag("LeptonsNew:IdMuon"),
             dR_ConeSize         = cms.double(0.3),
             dz_CutValue         = cms.double(0.1),
             minPt_PFCandidate   = cms.double(5.0),
@@ -27,6 +29,8 @@ def doLostLeptonBkg(self,process,METTag):
             doTrkIsoVeto        = False,
             vertexInputTag      = cms.InputTag("goodVertices"),
             pfCandidatesTag     = cms.InputTag("packedPFCandidates"),
+            ElectronTag         = cms.InputTag("LeptonsNew:IdElectron"),
+            MuonTag             = cms.InputTag("LeptonsNew:IdMuon"),
             dR_ConeSize         = cms.double(0.3),
             dz_CutValue         = cms.double(0.1),
             minPt_PFCandidate   = cms.double(5.0),
@@ -40,6 +44,8 @@ def doLostLeptonBkg(self,process,METTag):
             doTrkIsoVeto        = False,
             vertexInputTag      = cms.InputTag("goodVertices"),
             pfCandidatesTag     = cms.InputTag("packedPFCandidates"),
+            ElectronTag         = cms.InputTag("LeptonsNew:IdElectron"),
+            MuonTag             = cms.InputTag("LeptonsNew:IdMuon"),
             dR_ConeSize         = cms.double(0.3),
             dz_CutValue         = cms.double(0.1),
             minPt_PFCandidate   = cms.double(10.0),
@@ -61,6 +67,7 @@ def doLostLeptonBkg(self,process,METTag):
         self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsmT(TAP'+type+'Tracks_mT)'])
         self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandspfreliso03chg(TAP'+type+'Tracks_pfRelIso03chg)'])
         self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsdxypv(TAP'+type+'Tracks_dxypv)'])
+        self.VectorBool.extend(['TAP'+type+'Tracks:pfcandsleptonmatch(TAP'+type+'Tracks_leptonMatch)'])
 
     if self.debugtap:
         for type in ['Electron','Muon','Pion']:

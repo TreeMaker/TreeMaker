@@ -451,7 +451,8 @@ def makeTreeFromMiniAOD(self,process):
         rhoCollection      = cms.InputTag("fixedGridRhoFastjetAll")
     )
     (TMeras.TM80X | TMeras.TM2016).toModify(process.LeptonsNew,
-        electronEAValues = cms.vdouble(0.1752, 0.1862, 0.1411, 0.1534, 0.1903, 0.2243, 0.2687),
+        #https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt
+        electronEAValues = cms.vdouble(0.1703, 0.1715, 0.1213, 0.1230, 0.1635, 0.1937, 0.2393),
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
