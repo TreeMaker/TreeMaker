@@ -67,13 +67,13 @@ private:
   edm::EDGetTokenT<edm::View<pat::MET>> metTok_;
   edm::EDGetTokenT<pat::PackedCandidateCollection> PFCandTok_;
   edm::EDGetTokenT<double> RhoTok_;
-  double minElecPt_, maxElecEta_, elecIsoValue_;
+  double minElecIsoTrkVetoPt_, minElecPt_, maxElecEta_, elecIsoValue_;
   std::vector<double> eb_ieta_cut_, eb_deta_cut_, eb_dphi_cut_, eb_hovere_cut_, eb_hovere_cut2_, eb_hovere_cut3_, eb_ooeminusoop_cut_, eb_d0_cut_, eb_dz_cut_;
   std::vector<int> eb_misshits_cut_;
   std::vector<double> ee_ieta_cut_, ee_deta_cut_, ee_dphi_cut_, ee_hovere_cut_, ee_hovere_cut2_, ee_hovere_cut3_, ee_ooeminusoop_cut_, ee_d0_cut_, ee_dz_cut_;
   std::vector<int> ee_misshits_cut_;
   bool hovere_constant_;
-  double minMuPt_, maxMuEta_, muIsoValue_;
+  double minMuIsoTrkVetoPt_, minMuPt_, maxMuEta_, muIsoValue_;
   double muNormalizedChi2Max_, muChi2LocalPositionMax_, muTrkKink_, muValidFractionMin_;
   std::vector<double> muSegmentCompatibilityMin_;
   double mudBMax_, mudZMax_;
@@ -104,6 +104,7 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   metTok_                                (consumes<edm::View<pat::MET>>(metTag_)),
   PFCandTok_                             (consumes<pat::PackedCandidateCollection>(PFCandTag_)),
   RhoTok_                                (consumes<double>(RhoTag_)),
+  minElecIsoTrkVetoPt_                   (iConfig.getParameter<double>("minElecIsoTrkVetoPt")),
   minElecPt_                             (iConfig.getParameter<double>("minElecPt")),
   maxElecEta_                            (iConfig.getParameter<double>("maxElecEta")),
   elecIsoValue_                          (iConfig.getParameter<double>("elecIsoValue")),
@@ -124,6 +125,7 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   ee_dz_cut_                             (iConfig.getParameter<std::vector<double>>("ee_dz_cut")),
   ee_misshits_cut_                       (iConfig.getParameter<std::vector<int>>("ee_misshits_cut")),
   hovere_constant_                       (iConfig.getParameter<bool>("hovere_constant")),
+  minMuIsoTrkVetoPt_                     (iConfig.getParameter<double>("minMuIsoTrkVetoPt")),
   minMuPt_                               (iConfig.getParameter<double>("minMuPt")),
   maxMuEta_                              (iConfig.getParameter<double>("maxMuEta")),
   muIsoValue_                            (iConfig.getParameter<double>("muIsoValue")),
@@ -156,6 +158,7 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
 
   SUSYIsolationHelper.SetEAVectors(electronEAValues_, muonEAValues_);
 
+  produces<std::vector<pat::Muon>>("IsoTrkVetoMuon");
   produces<std::vector<pat::Muon>>("IdMuon");
   produces<std::vector<bool>>("IdMuonMediumID");
   produces<std::vector<bool>>("IdMuonTightID");
@@ -166,6 +169,7 @@ LeptonProducer::LeptonProducer(const edm::ParameterSet& iConfig):
   produces<std::vector<pat::Muon>>("IdIsoMuon");
   produces<int>("IdIsoMuonNum");
 
+  produces<std::vector<pat::Electron>>("IsoTrkVetoElectron");
   produces<std::vector<pat::Electron>>("IdElectron");
   produces<std::vector<bool>>("IdElectronMediumID");
   produces<std::vector<bool>>("IdElectronTightID");
@@ -205,8 +209,10 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 
   auto isoElectrons = std::make_unique<std::vector<pat::Electron>>();
   auto idElectrons = std::make_unique<std::vector<pat::Electron>>();
+  auto vetoElectrons = std::make_unique<std::vector<pat::Electron>>();
   auto isoMuons = std::make_unique<std::vector<pat::Muon>>();
   auto idMuons = std::make_unique<std::vector<pat::Muon>>();
+  auto vetoMuons = std::make_unique<std::vector<pat::Muon>>();
   
   auto MuonCharge = std::make_unique<std::vector<int>>();
   auto ElectronCharge = std::make_unique<std::vector<int>>();
@@ -250,6 +256,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     {
       for(const auto & aMu : *muonHandle)
         {
+          if(aMu.pt()>minMuIsoTrkVetoPt_ && aMu.track().isNonnull() && aMu.isLooseMuon()) vetoMuons->push_back(aMu);
+
           if(aMu.pt()<minMuPt_ || std::abs(aMu.eta())>maxMuEta_) continue;
 
           if(MuonIDloose(aMu,vtx_h->at(0)))
@@ -286,6 +294,8 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     {
       for(const auto & aEle : *eleHandle)
         {
+          if(aEle.pt()>minElecIsoTrkVetoPt_) vetoElectrons->push_back(aEle);
+
           if(std::abs(aEle.superCluster()->eta())>maxElecEta_ || aEle.pt()<minElecPt_) continue;
           const reco::Vertex vtx = vtx_h->at(0);
 
@@ -324,9 +334,11 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   iEvent.put(std::move(htp3),"IdIsoElectronNum");
   iEvent.put(std::move(idMuons),"IdMuon");
   iEvent.put(std::move(isoMuons),"IdIsoMuon");
+  iEvent.put(std::move(vetoMuons),"IsoTrkVetoMuon");
 
   iEvent.put(std::move(idElectrons),"IdElectron");
   iEvent.put(std::move(isoElectrons),"IdIsoElectron");
+  iEvent.put(std::move(vetoElectrons),"IsoTrkVetoElectron");
 
   iEvent.put(std::move(ElectronCharge),"IdElectronCharge");
   iEvent.put(std::move(MuonCharge),"IdMuonCharge");
