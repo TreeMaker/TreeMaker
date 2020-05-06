@@ -256,6 +256,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     {
       for(const auto & aMu : *muonHandle)
         {
+          // veto muon selection from: https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/muons_cff.py#L57-L60
           if(aMu.pt()>minMuIsoTrkVetoPt_ && aMu.track().isNonnull() && aMu.isLooseMuon()) vetoMuons->push_back(aMu);
 
           if(aMu.pt()<minMuPt_ || std::abs(aMu.eta())>maxMuEta_) continue;
@@ -294,6 +295,7 @@ void LeptonProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     {
       for(const auto & aEle : *eleHandle)
         {
+          // veto electron selection from: https://github.com/cms-sw/cmssw/blob/master/PhysicsTools/NanoAOD/python/electrons_cff.py#L318-L321
           if(aEle.pt()>minElecIsoTrkVetoPt_) vetoElectrons->push_back(aEle);
 
           if(std::abs(aEle.superCluster()->eta())>maxElecEta_ || aEle.pt()<minElecPt_) continue;
