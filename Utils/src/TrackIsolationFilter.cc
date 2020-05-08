@@ -362,10 +362,7 @@ void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate>
 
 bool TrackIsolationFilter::hasLeptonMatch(const std::vector<reco::CandidatePtr>& leptonPfCands, const reco::CandidatePtr&  candPtr) const {
 	// Inspired by: https://github.com/cms-sw/cmssw/blob/424ad43856c2c739d702c240187401b7b08566ea/PhysicsTools/PatAlgos/plugins/IsolatedTrackCleaner.cc#L48-L49
-	if (std::binary_search(leptonPfCands.begin(), leptonPfCands.end(), candPtr)) {
-		return true;
-	}
-	return false;
+	return std::binary_search(leptonPfCands.begin(), leptonPfCands.end(), candPtr);
 }
 
 //define this as a plug-in
