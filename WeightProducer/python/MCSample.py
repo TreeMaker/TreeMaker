@@ -23,8 +23,10 @@ print n
         self.year = self.__helper.get_year(self.mcVersion)
         self.energy = self.__helper.get_cm_energy_by_year(self.year)
         self.Method = Method
-        self.XS = self.__val_helper.get_xs(self.process,self.year,self.energy)
-        self.kFactor = self.__val_helper.get_kfactor(self.process,self.year)
+        self.XS = self.__val_helper.get_xs(self.process,self.energy,self.year)
+        self.BR = self.__val_helper.get_br(self.process,self.energy,self.year)
+        self.kFactor = self.__val_helper.get_kfactor(self.process,self.energy,self.year)
+        self.corr = self.__val_helper.get_corr(self.process,self.energy,self.year)
         self.NumberEvtsTotal = NumberEvtsTotal
         self.WrongPU = WrongPU
         self.NumberEvtsDiff = NumberEvtsTotal if NumberEvtsDiff==None else NumberEvtsDiff
@@ -65,5 +67,5 @@ print n
                 rep_format += (key_format+": {:<"+str(len(str(self.NumberEvtsDiff)))+"}")
                 rep_format += ")"
         return rep_format.format('name',self.name,' ','process',self.process,' ', 'production',self.production,' ','mcVersion',self.mcVersion,' ', \
-                                 'year',self.year,' ','energy',self.energy,' ','Method',self.Method,' ','XS',self.XS,' ','kFactor',self.kFactor,' ', \
-                                 'NumberEvtsTotal',self.NumberEvtsTotal,' ','WrongPU',self.WrongPU,' ','NumberEvtsDiff',self.NumberEvtsDiff)
+                                 'year',self.year,' ','energy',self.energy,' ','Method',self.Method,' ','XS',self.XS,' ','BR',self.BR,' ','kFactor',self.kFactor,' ', \
+                                 'correction',self.corr,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ','WrongPU',self.WrongPU,' ','NumberEvtsDiff',self.NumberEvtsDiff)
