@@ -225,7 +225,7 @@ python get_py.py dict=dictNLO.py py=False
 
 ## Options
 
-Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py)
+Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `scenario`: the scenario name, in case of special requirements (default="")
 * `inputFilesConfig`: name of the python file with a list of ROOT files for a sample, used for Condor production (automatically appended with "_cff") (default="")
 * `nstart`: first file to use in above file list (default=0)
