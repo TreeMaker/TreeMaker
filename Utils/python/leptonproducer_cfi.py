@@ -6,6 +6,7 @@ leptonproducer = cms.EDProducer('LeptonProducer',
     MuonTag                                = cms.InputTag('slimmedMuons'),
     ElectronTag                            = cms.InputTag('slimmedElectrons'),
     PrimaryVertex                          = cms.InputTag('offlineSlimmedPrimaryVertices'),
+    minElecIsoTrkVetoPt                    = cms.double(5),
     minElecPt                              = cms.double(10),
     maxElecEta                             = cms.double(2.5),
     elecIsoValue                           = cms.double(0.2), # only has an effect with useMiniIsolation
@@ -33,8 +34,10 @@ leptonproducer = cms.EDProducer('LeptonProducer',
     ee_misshits_cut                        = cms.vint32 (3,       1,       1,       1),
     # common electrons
     hovere_constant                        = cms.bool(False),
+      # https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/RecoEgamma/ElectronIdentification/data/Fall17/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_94X.txt
     electronEAValues                       = cms.vdouble(0.1440, 0.1562, 0.1032, 0.0859, 0.1116, 0.1321, 0.1654),
     #muons
+    minMuIsoTrkVetoPt                      = cms.double(3),
     minMuPt                                = cms.double(10),
     maxMuEta                               = cms.double(2.4),
     muIsoValue                             = cms.double(0.2), #loose (<0.40), medium (<0.20), tight (<0.10), very tight (<0.05)

@@ -87,12 +87,19 @@ private:
 
 	edm::InputTag pfCandidatesTag_;
 	edm::InputTag vertexInputTag_;
+	edm::InputTag ElectronInputTag_;
+	edm::InputTag MuonInputTag_;
 	edm::InputTag MetInputTag_;
 	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> pfCandidatesTok_;
+	edm::EDGetTokenT<edm::View<reco::Candidate>> candTok_;
 	edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
+	edm::EDGetTokenT<edm::View<reco::Candidate>> ElectronTok_;
+	edm::EDGetTokenT<edm::View<reco::Candidate>> MuonTok_;
 	edm::EDGetTokenT<edm::View<pat::MET>> MetInputTok_;
+	std::vector<edm::EDGetTokenT<reco::CandidateView>> LeptonTok_;
 
 	void GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+	bool hasLeptonMatch(const std::vector<reco::CandidatePtr>& leptonPfCands, const reco::CandidatePtr&  candPtr) const;
 };
 
 //
@@ -103,6 +110,8 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 
 	pfCandidatesTag_		= iConfig.getParameter<InputTag>("pfCandidatesTag");
 	vertexInputTag_               = iConfig.getParameter<InputTag>("vertexInputTag");
+	ElectronInputTag_ = iConfig.getParameter<InputTag>("ElectronTag");
+	MuonInputTag_     = iConfig.getParameter<InputTag>("MuonTag");
 	MetInputTag_      = iConfig.getParameter<InputTag>("METTag");
 	dR_               = iConfig.getParameter<double>          ("dR_ConeSize");       // dR value used to define the isolation cone                (default 0.3 )
 	dzcut_            = iConfig.getParameter<double>          ("dz_CutValue");       // cut value for dz(trk,vtx) for track to include in iso sum (default 0.05)
@@ -115,9 +124,13 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	debug_= iConfig.getParameter<bool>("debug");
 	
 	pfCandidatesTok_ = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
+	candTok_ = consumes<edm::View<reco::Candidate> >(pfCandidatesTag_);
 	vertexInputTok_ = consumes<edm::View<reco::Vertex>>(vertexInputTag_);
+	ElectronTok_ = consumes<edm::View<reco::Candidate>>(ElectronInputTag_);
+	MuonTok_ = consumes<edm::View<reco::Candidate>>(MuonInputTag_);
 	MetInputTok_ = consumes<edm::View<pat::MET>>(MetInputTag_);
-	
+	LeptonTok_ = {ElectronTok_,MuonTok_};
+
 	produces<std::vector<pat::PackedCandidate> >(""); 
 	produces<vector<TLorentzVector> >("pfcands");
 	produces<vector<double> >("pfcandsactivity");
@@ -129,6 +142,7 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	produces<vector<double> >("pfcandsmT"    );
 	produces<vector<int>   >("pfcandschg"    );
 	produces<vector<int>   >("pfcandsid"     );
+	produces<vector<bool> >("pfcandsleptonmatch");
 	produces<int>("isoTracks");
 
 }
@@ -141,15 +155,16 @@ TrackIsolationFilter::~TrackIsolationFilter() {
 bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 
 	auto pfcands = std::make_unique<vector<TLorentzVector>>();
-	auto  pfcands_activity       = std::make_unique<vector<double>>();
-	auto  pfcands_trkiso         = std::make_unique<vector<double>>();
-	auto  pfcands_pfRelIso03_chg = std::make_unique<vector<double>>();
-	auto  pfcands_pfRelIso03_all = std::make_unique<vector<double>>();
-	auto  pfcands_dzpv           = std::make_unique<vector<double>>();
-	auto  pfcands_dxypv          = std::make_unique<vector<double>>();
-	auto  pfcands_mT             = std::make_unique<vector<double>>();
-	auto  pfcands_chg            = std::make_unique<vector<int>>();
-	auto  pfcands_id             = std::make_unique<vector<int>>();
+	auto pfcands_activity       = std::make_unique<vector<double>>();
+	auto pfcands_trkiso         = std::make_unique<vector<double>>();
+	auto pfcands_pfRelIso03_chg = std::make_unique<vector<double>>();
+	auto pfcands_pfRelIso03_all = std::make_unique<vector<double>>();
+	auto pfcands_dzpv           = std::make_unique<vector<double>>();
+	auto pfcands_dxypv          = std::make_unique<vector<double>>();
+	auto pfcands_mT             = std::make_unique<vector<double>>();
+	auto pfcands_chg            = std::make_unique<vector<int>>();
+	auto pfcands_id             = std::make_unique<vector<int>>();
+	auto pfcands_leptonmatch    = std::make_unique<vector<bool>>();
 	
 	edm::Handle< edm::View<pat::MET> > MET;
 	iEvent.getByToken(MetInputTok_,MET);
@@ -166,14 +181,38 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
 
 	//---------------------------------
-	// get Vertex Collection
+	// get Candidate collection
+	//---------------------------------
+
+	edm::Handle<edm::View<reco::Candidate> > cands;
+	iEvent.getByToken(candTok_, cands);
+
+	//---------------------------------
+	// get Vertex collection
 	//---------------------------------
 	
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByToken(vertexInputTok_, vertices);
 	bool hasGoodVtx = false;
 	if(!vertices->empty()) hasGoodVtx = true;
-	
+
+	//---------------------------------
+	// get Lepton candidates
+	//---------------------------------
+	// Taken from: https://github.com/cms-sw/cmssw/blob/424ad43856c2c739d702c240187401b7b08566ea/PhysicsTools/PatAlgos/plugins/IsolatedTrackCleaner.cc#L28-L40
+	std::vector<reco::CandidatePtr> leptonPfCands;
+	edm::Handle<reco::CandidateView> leptons;
+	for (const auto& token : LeptonTok_) {
+		iEvent.getByToken(token, leptons);
+		for (const auto& lep : *leptons) {
+			for (unsigned int i = 0, n = lep.numberOfSourceCandidatePtrs(); i < n; ++i) {
+				auto ptr = lep.sourceCandidatePtr(i);
+				if (ptr.isNonnull()) leptonPfCands.push_back(ptr);
+			}
+		}
+	}
+	std::sort(leptonPfCands.begin(), leptonPfCands.end());
+
 	//-------------------------------------------------------------------------------------------------
 	// loop over PFCandidates and calculate the trackIsolation and dz w.r.t. 1st good PV for each one
 	// for neutral PFCandidates, store trkiso = 999 and dzpv = 999
@@ -266,6 +305,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		pfcands_pfRelIso03_all->push_back(pfreliso03_all);
 		pfcands_dzpv->push_back(dz_it);
 		pfcands_dxypv->push_back(pfCand.dxy());
+		pfcands_leptonmatch->push_back(hasLeptonMatch(leptonPfCands,cands->ptrAt(i)));
 
 		if( debug_ && !goodCand) continue;
 		prodminiAOD->push_back( pfCand );
@@ -288,6 +328,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	iEvent.put(std::move(pfcands_mT            ),"pfcandsmT"    );
 	iEvent.put(std::move(pfcands_chg           ),"pfcandschg"   );
 	iEvent.put(std::move(pfcands_id            ),"pfcandsid"    );
+	iEvent.put(std::move(pfcands_leptonmatch   ),"pfcandsleptonmatch");
 	
 	iEvent.put(std::move(prodminiAOD)); 
 	return result;
@@ -317,6 +358,11 @@ void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate>
 	double invpt = 1.0/pfTkInd.pt();
 	trkiso = trkiso*invpt;
 	activity = activity*invpt;
+}
+
+bool TrackIsolationFilter::hasLeptonMatch(const std::vector<reco::CandidatePtr>& leptonPfCands, const reco::CandidatePtr&  candPtr) const {
+	// Inspired by: https://github.com/cms-sw/cmssw/blob/424ad43856c2c739d702c240187401b7b08566ea/PhysicsTools/PatAlgos/plugins/IsolatedTrackCleaner.cc#L48-L49
+	return std::binary_search(leptonPfCands.begin(), leptonPfCands.end(), candPtr);
 }
 
 //define this as a plug-in
