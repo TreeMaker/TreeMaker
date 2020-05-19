@@ -73,7 +73,7 @@ def callback(channel, method, properties, body):
         try:
             # Do the transform
             root_file = _file_path.replace('/', ':')
-            output_path = '/home/cmsuser/' + root_file
+            output_path = os.environ['HOME'] + '/' + root_file.replace('file:','')
             transform_single_file(_file_path, output_path, servicex)
 
             tock = time.time()
@@ -123,7 +123,7 @@ def callback(channel, method, properties, body):
 
 def transform_single_file(file_path, output_path, servicex=None):
     print("Transforming a single path: " + str(file_path) + " into " + output_path)
-    r = os.system('python ' + os.environ['CMSSW_BASE'] + '/TreeMaker/Production/test/unitTest.py test=0 scenario=Summer16v3 dataset=file:' + str(file_path) + ' name=' + str(output_path) + ' run=True fork=False log=True')
+    r = os.system('cd CMSSW_10_2_21/src/ && source /opt/cms/cmsset_default.sh && eval `scramv1 runtime -sh` && python ${CMSSW_BASE}/src/TreeMaker/Production/test/unitTest.py test=0 scenario=Summer16v3 dataset=file:' + str(file_path) + ' name=' + str(output_path) + ' run=True fork=False log=True')
     reason_bad = None
     if r != 0:
         reason_bad = "Error return from transformer: " + str(r)
@@ -156,11 +156,12 @@ def compile_code():
     # Have to use bash as the file runner.sh does not execute properly, despite its 'x'
     # bit set. This seems to be some vagary of a ConfigMap from k8, which is how we usually get
     # this file.
-    r = os.system('bash /generated/runner.sh -c | tee log.txt')
-    if r != 0:
-        with open('log.txt', 'r') as f:
-            errors = f.read()
-            raise RuntimeError("Unable to compile the code - error return: " + str(r)+ 'errors: \n' + errors)
+    # r = os.system('bash /generated/runner.sh -c | tee log.txt')
+    #if r != 0:
+    #    with open('log.txt', 'r') as f:
+    #        errors = f.read()
+    #        raise RuntimeError("Unable to compile the code - error return: " + str(r)+ 'errors: \n' + errors)
+    pass
 
 
 if __name__ == "__main__":

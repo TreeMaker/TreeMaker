@@ -12,7 +12,7 @@ class Test:
         self.command = command
         self.redir = redir
         self.cmd = "cmsRun"
-        self.config = "runMakeTreeFromMiniAOD_cfg.py"
+        self.config = os.environ['CMSSW_BASE']+"/src/TreeMaker/Production/test/runMakeTreeFromMiniAOD_cfg.py"
         self.array = self.getArray()
 
     def getArray(self):

@@ -771,7 +771,7 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
 
     # get updated QG training
-    QGPatch = cms.string('sqlite_file:data/QGL_cmssw8020_v2.db')
+    QGPatch = cms.string('sqlite_file:'+os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/QGL_cmssw8020_v2.db')
 
     process.qgdb = cms.ESSource("PoolDBESSource",CondDBSetup,
         connect = QGPatch,
@@ -967,7 +967,7 @@ def makeTreeFromMiniAOD(self,process):
         process.L1ECALNonPrefiringProbProducer = L1ECALNonPrefiringProbProducer.clone(
             TheJets = JetTag,
             DataEra = prefiringDataEra.value,
-            L1Maps = cms.string('data/L1PrefiringMaps_new.root'),
+            L1Maps = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1PrefiringMaps_new.root'),
         )
         self.VarsDouble.extend([
             'L1ECALNonPrefiringProbProducer:NonPrefiringProb',
