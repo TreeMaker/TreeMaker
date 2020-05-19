@@ -28,8 +28,11 @@ ARG DOWNLOAD_URL
 ARG FILE_NAME
 
 COPY .github/ServiceX/scripts/setup.sh ./setup_servicex.sh
+COPY .github/ServiceX/data/requirements.txt ./requirements.txt
 COPY cmssw_src.tar.gz ./cmssw_src.tar.gz
 
+RUN python2 -m pip install --user --upgrade pip && \
+    python2 -m pip install --user -r requirements.txt
 RUN sudo chown cmsusr setup_servicex.sh && \
     sudo chmod +x setup_servicex.sh && \
     ./setup_servicex.sh -c $CMSSW_VERSION -f $FILE_NAME -t ${HOME}/cmssw_src.tar.gz -u $DOWNLOAD_URL && \

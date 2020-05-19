@@ -73,7 +73,7 @@ def callback(channel, method, properties, body):
         try:
             # Do the transform
             root_file = _file_path.replace('/', ':')
-            output_path = os.environ['HOME'] + root_file.replace('file:','')
+            output_path = os.environ['HOME'] + '/' + root_file.replace('file:','')
             transform_single_file(_file_path, output_path, servicex)
 
             tock = time.time()
