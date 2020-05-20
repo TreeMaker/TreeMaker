@@ -27,7 +27,7 @@ before_script:
         - ls -alh ../
         - docker system df -v
         - docker info
-        - sleep 120
+        - sleep 300
         - echo --------- INNER CONTAINER -------------
         - docker run --rm -i -e CVMFS_MOUNTS="none" -v ${PWD}/:/home/cmsuser/workdir/ ${BASE_IMAGE} -- -i -c "cd ${CMSSW_VERSION}/src/ && tar -czf cmssw_src.tar.gz --exclude .git* ./* && mv cmssw_src.tar.gz ../../workdir/  && cd ../../workdir/ && pwd && ls -alh ./ && cd /home/cmsuser/"
         - echo --------- OUTER CONTAINER -------------
