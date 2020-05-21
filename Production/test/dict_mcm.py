@@ -130,6 +130,7 @@ datasets = OrderedDict([
 ("SMS-T5qqqqWW-mGluino*",[0]),
 ("SMS_TChiWH_WToLNu_HToBB_mChargino850_mLSP1",[0]),
 ("SMS-TChiWZ_ZToLL_mZMin-0p1",[0]),
+("SMS-TChiHH_HToBB_HToBB",[0]),
 ("RPV_2t6j_mStop-*_mN1-100",[0]),
 ("StealthSYY_2t6j_mStop-*_mSo-100",[0]),
 ("StealthSYY_2t6j_mStop-*_mN1-100",[0]), #Needed for Summer16MiniAODv3 because of a name mixup
