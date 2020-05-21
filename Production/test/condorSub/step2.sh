@@ -83,9 +83,10 @@ if [[ $CMSEXIT -ne 0 ]]; then
 fi
 
 # copy output to eos
+CMSSITE=$(getFromClassAd MATCH_EXP_JOB_GLIDEIN_CMSSite)
 export CMDSTR="xrdcp"
 export GFLAG=""
-if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
+if [[ ( "$CMSSITE" == *"T1_US_FNAL"* && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
 	export CMDSTR="gfal-copy"
 	export GFLAG="-g"
 	export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
