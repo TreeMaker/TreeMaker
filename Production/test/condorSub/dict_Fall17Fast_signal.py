@@ -29,5 +29,6 @@ flist = {
 #        ['Fall17Fast.SMS-T2tt_mStop-350to400_TuneCP2_13TeV-madgraphMLM-pythia8_ext1'],
         ['Fall17Fast.SMS-T5qqqqVV_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Fall17Fast.SMS-TChiHH_HToBB_HToBB_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Fall17Fast.SMS-TChiHH_HToBB_HToBB_2D_TuneCP2_13TeV-madgraphMLM-pythia8'],
     ]
 }
