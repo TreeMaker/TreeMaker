@@ -63,7 +63,7 @@ class jobSubmitterTM(jobSubmitter):
             if data and self.json=="":
                 # get from scenario
                 # data directory is next to condor directory
-                self.json = "../"+scenario.jsonfile
+                self.json = scenario.jsonfile
             if data and self.json=="":
                 raise Exception, "data was specified, but no json file was found"
 
