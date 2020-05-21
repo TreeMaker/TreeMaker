@@ -3,7 +3,6 @@ import re,sys,getopt,urllib2,json,os
 slc = os.environ['SCRAM_ARCH'].split('_')[0]
 extra_paths = [
     "/cvmfs/cms.cern.ch/share/cms/crab-prod/3.3.2005-bcolbf/lib/",
-    "/cvmfs/cms.cern.ch/crab3/"+slc+"_amd64_gcc493/cms/dbs3-pycurl-client/3.5.1/lib/python2.7/site-packages/",
 ]
 sys.path = extra_paths + sys.path
 from dbs.apis.dbsClient import DbsApi
