@@ -37,7 +37,8 @@ RUN sudo chown cmsusr setup_servicex.sh && \
     sudo chmod +x setup_servicex.sh && \
     ./setup_servicex.sh -c $CMSSW_VERSION -f $FILE_NAME -t ${HOME}/cmssw_src.tar.gz -u $DOWNLOAD_URL && \
     rm ${HOME}/setup_servicex.sh && \
-    rm ${HOME}/cmssw_src.tar.gz
+    rm ${HOME}/cmssw_src.tar.gz && \
+    rm ${HOME}/requirements.txt
 
 # This part can eventually be removed when the atlas references are removed from ServiceX
 RUN sudo mkdir /home/atlas/ && \
