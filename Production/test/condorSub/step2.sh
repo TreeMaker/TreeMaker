@@ -83,7 +83,12 @@ if [[ $CMSEXIT -ne 0 ]]; then
 fi
 
 # copy output to eos
-CMSSITE=$(getFromClassAd MATCH_EXP_JOB_GLIDEIN_CMSSite)
+echo "CMSSITE currently set to: ${CMSSITE}"
+if [[ -z "$CMSSITE" ]] || [[ "$CMSSITE" == "" ]]; then
+	echo -e "\tGetting CMSSITE from the job ClassAd"
+	CMSSITE=$(getFromClassAd JOB_GLIDEIN_CMSSite)
+	echo -e "\tCMSSITE is now set to: ${CMSSITE}"
+fi
 export CMDSTR="xrdcp"
 export GFLAG=""
 if [[ ( "$CMSSITE" == *"T1_US_FNAL"* && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
