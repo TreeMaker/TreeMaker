@@ -76,7 +76,7 @@ Autumn18samples = [
     MCSample('ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 359639, False, 350333),
     MCSample('ZJetsToNuNu_HT-100To200_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 23702894, False, 23678782),
     MCSample('ZJetsToNuNu_HT-200To400_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 23276346, False, 23236674),
-    MCSample('ZJetsToNuNu_HT-400To600_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 2707156, False, 2699566),
+    MCSample('ZJetsToNuNu_HT-400To600_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v2', 'RunIIAutumn18MiniAOD', 'Constant', 9511100, False, 9485400),
     MCSample('ZJetsToNuNu_HT-600To800_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 5748975, False, 5728007),
     MCSample('ZJetsToNuNu_HT-800To1200_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 2066798, False, 2056362),
     MCSample('ZJetsToNuNu_HT-1200To2500_13TeV-madgraph', '102X_upgrade2018_realistic_v15-v1', 'RunIIAutumn18MiniAOD', 'Constant', 343198, False, 340302),
