@@ -26,7 +26,7 @@ fi
 mkdir -p $TODIR
 lndir -silent -ignorelinks $FROMDIR $TODIR	
 
-if [[ "${TODIR}/CACHEDIR.TAG" ]]; then
+if [[ -L "${TODIR}/CACHEDIR.TAG" ]]; then
 	unlink ${TODIR}/CACHEDIR.TAG
 	cp ${TODIR}/$FROMDIR/CACHEDIR.TAG $TODIR
 fi
