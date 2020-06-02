@@ -86,7 +86,7 @@ fi
 echo "CMSSITE currently set to: ${CMSSITE}"
 if [[ -z "$CMSSITE" ]] || [[ "$CMSSITE" == "" ]]; then
 	echo -e "\tGetting CMSSITE from the job ClassAd"
-	CMSSITE=$(getFromClassAd JOB_GLIDEIN_CMSSite)
+	CMSSITE=$(getFromClassAd MachineAttrGLIDEIN_CMSSite0)
 	echo -e "\tCMSSITE is now set to: ${CMSSITE}"
 fi
 export CMDSTR="xrdcp"
