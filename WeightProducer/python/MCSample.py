@@ -12,8 +12,11 @@ print n
     '''
 
     from TreeMaker.WeightProducer.SVJxsecs import SVJxsecs
+    from TreeMaker.WeightProducer.EMJxsecs import EMJxsecs
     __helper = MCSampleHelper()
-    __val_helper = MCSampleValuesHelper(SVJxsecs)
+    __val_helper = MCSampleValuesHelper()
+    __val_helper.add_dict(EMJxsecs)
+    __val_helper.add_dict(SVJxsecs)
 
     def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, WrongPU = False, NumberEvtsDiff = None):
         self.name = name

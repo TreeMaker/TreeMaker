@@ -1784,10 +1784,13 @@ class MCSampleValuesHelper():
         if extra_dicts is not None:
             self.__values_dict.update(extra_dicts)
 
+    def add_dict(self,extra_dicts):
+        self.__values_dict.update(extra_dicts)
+
     def get_value(self, name, energy, year, key, strict=False):
         """Return the value for a given MC sample, energy or year, and information type
 
-        If information is stored for both an energy and a year, the value for the given energy will be preferentially returned. 
+        If information is stored for both an energy and a year, the value for the given energy will be preferentially returned.
         If strict checking is turned on the function will raise an error if a given dictionary or piece of information isn't found.
           Otherwise the default value will be returned with no error (i.e. will return 1.0 for kFactors)
 
