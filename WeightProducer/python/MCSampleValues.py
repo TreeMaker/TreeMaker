@@ -1782,10 +1782,11 @@ class MCSampleValuesHelper():
                     raise KeyError('The __values_dict does not contain the key \'' + key + '\'')
 
         if extra_dicts is not None:
-            self.__values_dict.update(extra_dicts)
-
-    def add_dict(self,extra_dicts):
-        self.__values_dict.update(extra_dicts)
+            if type(extra_dicts) == dict:
+                self.__values_dict.update(extra_dicts)
+            elif type(extra_dicts) == list:
+                for ed in extra_dicts:
+                    self.__values_dict.update(ed)
 
     def get_value(self, name, energy, year, key, strict=False):
         """Return the value for a given MC sample, energy or year, and information type
