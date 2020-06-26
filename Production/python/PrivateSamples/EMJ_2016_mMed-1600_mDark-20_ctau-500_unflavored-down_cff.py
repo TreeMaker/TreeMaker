@@ -7,7 +7,6 @@ source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = se
 readFiles.extend( [
        'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2016/step4_MINIAOD_mMed-1600_mDark-20_ctau-500_unflavored-down_n-500_part-1.root',
        'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2016/step4_MINIAOD_mMed-1600_mDark-20_ctau-500_unflavored-down_n-500_part-2.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2016/step4_MINIAOD_mMed-1600_mDark-20_ctau-500_unflavored-down_n-500_part-3.root',
        'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2016/step4_MINIAOD_mMed-1600_mDark-20_ctau-500_unflavored-down_n-500_part-4.root',
        'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2016/step4_MINIAOD_mMed-1600_mDark-20_ctau-500_unflavored-down_n-500_part-5.root',
        'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2016/step4_MINIAOD_mMed-1600_mDark-20_ctau-500_unflavored-down_n-500_part-6.root',
