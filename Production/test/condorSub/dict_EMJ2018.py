@@ -1,7 +1,7 @@
 flist = {
     "scenario":  "Autumn18sig",
     "samples": [
-        ["PrivateSamples.EMJ_2018_mMed-1000_mDark-10_ctau-0p1_unflavored-down-"],
+        ["PrivateSamples.EMJ_2018_mMed-1000_mDark-10_ctau-0p1_unflavored-down"],
         ["PrivateSamples.EMJ_2018_mMed-1000_mDark-10_ctau-1000_unflavored-down"],
         ["PrivateSamples.EMJ_2018_mMed-1000_mDark-10_ctau-100_unflavored-down"],
         ["PrivateSamples.EMJ_2018_mMed-1000_mDark-10_ctau-150_unflavored-down"],
