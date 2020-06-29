@@ -297,12 +297,14 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------------------
 	loopOverCollection(infos,pfCandidates,ttBuilder,primaryVertex,true);
 	loopOverCollection(infos,lostTracks,ttBuilder,primaryVertex,false);
-	loopOverCollection(infos,lostEleTracks,ttBuilder,primaryVertex,false);
+	if( lostEleTracks.isValid() ){
+		loopOverCollection(infos,lostEleTracks,ttBuilder,primaryVertex,false);
+	}
 
 	if (doDisplacedMuons_) {
 		//-------------------------------------------------------------------------------------------------
 		// get displacedStandAloneMuons collection
-		//-------------------------------------------------------------------------------------------------  
+		//-------------------------------------------------------------------------------------------------
 		edm::Handle<edm::View<pat::PackedCandidate> > displacedStandAloneMuons;
 		iEvent.getByToken(displacedStandAloneMuonsTok_, displacedStandAloneMuons);
 
