@@ -295,10 +295,28 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------------------
 	// loop over the various track containing collections
 	//-------------------------------------------------------------------------------------------------
-	loopOverCollection(infos,pfCandidates,ttBuilder,primaryVertex,true);
-	loopOverCollection(infos,lostTracks,ttBuilder,primaryVertex,false);
+	static bool printErrorpfCandidates_  = false;
+	static bool printErrorLostTracks_    = false;
+	static bool printErrorLostEleTracks_ = false;
+	if( pfCandidates.isValid() ){
+		loopOverCollection(infos,pfCandidates,ttBuilder,primaryVertex,true);
+	} else if( !printErrorpfCandidates_ ){
+		edm::LogWarning("TreeMaker")<<"CandidateTrackFilter: Collection "<<pfCandidatesTag_<<" not found!";
+		printErrorpfCandidates_ = true;
+	}
+
+	if( lostTracks.isValid() ){
+		loopOverCollection(infos,lostTracks,ttBuilder,primaryVertex,false);
+	} else if( !printErrorLostTracks_ ){
+		edm::LogWarning("TreeMaker")<<"CandidateTrackFilter: Collection "<<lostTracksTag_<<" not found!";
+		printErrorLostTracks_ = true;
+	}
+
 	if( lostEleTracks.isValid() ){
 		loopOverCollection(infos,lostEleTracks,ttBuilder,primaryVertex,false);
+	} else if( !printErrorLostEleTracks_ ){
+		edm::LogWarning("TreeMaker")<<"CandidateTrackFilter: Collection "<<lostEleTracksTag_<<" not found!";
+		printErrorLostEleTracks_ = true;
 	}
 
 	if (doDisplacedMuons_) {
