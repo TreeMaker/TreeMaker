@@ -295,14 +295,28 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------------------
 	// loop over the various track containing collections
 	//-------------------------------------------------------------------------------------------------
-	loopOverCollection(infos,pfCandidates,ttBuilder,primaryVertex,true);
-	loopOverCollection(infos,lostTracks,ttBuilder,primaryVertex,false);
-	loopOverCollection(infos,lostEleTracks,ttBuilder,primaryVertex,false);
+	if( pfCandidates.isValid() ){
+		loopOverCollection(infos,pfCandidates,ttBuilder,primaryVertex,true);
+	} else {
+		edm::LogWarning("TreeMaker")<<"CandidateTrackFilter: Collection "<<pfCandidatesTag_<<" not found!";
+	}
+
+	if( lostTracks.isValid() ){
+		loopOverCollection(infos,lostTracks,ttBuilder,primaryVertex,false);
+	} else {
+		edm::LogWarning("TreeMaker")<<"CandidateTrackFilter: Collection "<<lostTracksTag_<<" not found!";
+	}
+
+	if( lostEleTracks.isValid() ){
+		loopOverCollection(infos,lostEleTracks,ttBuilder,primaryVertex,false);
+	} else {
+		edm::LogWarning("TreeMaker")<<"CandidateTrackFilter: Collection "<<lostEleTracksTag_<<" not found!";
+	}
 
 	if (doDisplacedMuons_) {
 		//-------------------------------------------------------------------------------------------------
 		// get displacedStandAloneMuons collection
-		//-------------------------------------------------------------------------------------------------  
+		//-------------------------------------------------------------------------------------------------
 		edm::Handle<edm::View<pat::PackedCandidate> > displacedStandAloneMuons;
 		iEvent.getByToken(displacedStandAloneMuonsTok_, displacedStandAloneMuons);
 
