@@ -5,6 +5,7 @@ from itertools import izip
 import array
 from multiprocessing import Pool
 from optparse import OptionParser
+from XRootD import client
 
 # ------------------------------------------------------------
 # ------------------------------------------------------------
@@ -23,16 +24,16 @@ class sampleInfo :
         self.outName = outName
         self.fileList = []
         for f in fileNames:
-            self.addToList(baseDir+"/"+f)
+            self.addToList(baseDir,f)
 
-    def addToList( self, fileName ):
+    def addToList( self, baseDir, fileName ):
         redirector = "root://cmseos.fnal.gov//"
-        proc = subprocess.Popen( [ "ls /eos/uscms/{0}".format( fileName ) ] , stdout = subprocess.PIPE , shell = True )
-        ( files , errors ) = proc.communicate()
-        for f in files.split("\n") : 
-            if len(f)>0 and f.find("No such file or directory") == -1 : 
-                f = redirector+f[11:]
-            self.fileList.append(f)
+        xrdfs = client.FileSystem(redirector)
+        status, listing = xrdfs.dirlist(baseDir)
+        if status.status != 0:
+            raise Exception("XRootD failed to stat %s%s" % (str(xrdfs.url),baseDir))
+        files = [redirector+baseDir+entry.name for entry in listing if fileName.strip('*') in entry.name]
+        self.fileList.extend(files)
 
     def __repr__(self):
         return "%s(%r, %r)" % (self.__class__.__name__, self.outName,self.fileNames)
@@ -131,7 +132,7 @@ if __name__ == "__main__":
     parser = OptionParser()
     parser.add_option("-o", "--outdir", dest="outdir", default="json", help="output directory for JSON files (default = %default)")
     parser.add_option("-b", "--basedir", dest="basedir", default="/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV4", help="location of data ntuples (default = %default)")
-    parser.add_option("-d", "--dict", dest="dictfile", default="dataSamples.py", help="list of data sample names and files (default = %default)")
+    parser.add_option("-d", "--dict", dest="dictfile", default="dataSamples.py", help="file containing a list of data sample names and files (default = %default)")
     parser.add_option("-n", "--npool", dest="npool", default=4, help="number of processes to run (default = %default)")
     parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="print extra error messages (default = %default)")
     (options, args) = parser.parse_args()
