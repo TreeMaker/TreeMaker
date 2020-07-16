@@ -60,6 +60,7 @@ class maker:
         self.getParamDefault("saveGenTops", False)
         self.getParamDefault("doMT2",False)
         self.getParamDefault("nestedVectors", True)
+        self.getParamDefault("splitLevel", 0)
         
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
@@ -152,6 +153,7 @@ class maker:
         print " Saving the MT2 variable: "+str(self.doMT2)
         if self.nestedVectors: print " Saving nested vectors as vector<vector<T>>"
         else: print " Saving nested vectors as vector<T> + vector<int>"
+        print " TTree split level: "+str(self.splitLevel)
         print " "
         print " scenario: "+self.scenarioName
         print " global tag: "+self.globaltag

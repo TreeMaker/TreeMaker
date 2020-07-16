@@ -66,6 +66,7 @@ class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 		string treeName;
 		TTree* tree;	
 		bool doLorentz, sortBranches, debugTitles, nestedVectors;
+		int splitLevel;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
 		map<string,unsigned> nameCache;
@@ -138,7 +139,7 @@ class TreeObject : public TreeObjectBase {
 	public:
 		//constructor
 		TreeObject() : TreeObjectBase() {}
-		TreeObject(string tempFull_, string title_) : TreeObjectBase(tempFull_,title_) {}
+		TreeObject(string tempFull_, string title_, int splitLevel_=0) : TreeObjectBase(tempFull_,title_), splitLevel(splitLevel_) {}
 		//destructor
 		~TreeObject() override {}
 		//functions
@@ -195,6 +196,7 @@ class TreeObject : public TreeObjectBase {
 		//member variables
 		T value;
 		edm::EDGetTokenT<T> tok;
+		int splitLevel{};
 };
 
 //specialize!
@@ -208,41 +210,41 @@ void TreeObject<double>::AddBranch() { if(tree) branch = tree->Branch(nameInTree
 template<>
 void TreeObject<string>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
-void TreeObject<TLorentzVector>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+void TreeObject<TLorentzVector>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value,32000,splitLevel); }
 template<>
-void TreeObject<math::XYZVector>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+void TreeObject<math::XYZVector>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value,32000,splitLevel); }
 template<>
-void TreeObject<math::XYZPoint>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+void TreeObject<math::XYZPoint>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<bool> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<bool>",&value,32000,0); }
+void TreeObject<vector<bool> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<bool>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<int> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,0); }
+void TreeObject<vector<int> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<float> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<float>",&value,32000,0); }
+void TreeObject<vector<float> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<float>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<double> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<double>",&value,32000,0); }
+void TreeObject<vector<double> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<double>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<string> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,0); }
+void TreeObject<vector<string> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<TLorentzVector> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0); }
+void TreeObject<vector<TLorentzVector> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<math::XYZVector> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::XYZVector>",&value,32000,0); }
+void TreeObject<vector<math::XYZVector> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::XYZVector>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<math::XYZPoint> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::XYZPoint>",&value,32000,0); }
+void TreeObject<vector<math::XYZPoint> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::XYZPoint>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<vector<bool>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<bool>>",&value,32000,0); }
+void TreeObject<vector<vector<bool>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<bool>>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<vector<int>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<int>>",&value,32000,0); }
+void TreeObject<vector<vector<int>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<int>>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<vector<double>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<double>>",&value,32000,0); }
+void TreeObject<vector<vector<double>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<double>>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<vector<string>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<string>>",&value,32000,0); }
+void TreeObject<vector<vector<string>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<string>>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<vector<TLorentzVector>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<TLorentzVector>>",&value,32000,0); }
+void TreeObject<vector<vector<TLorentzVector>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<TLorentzVector>>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<vector<math::XYZVector>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::XYZVector>>",&value,32000,0); }
+void TreeObject<vector<vector<math::XYZVector>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::XYZVector>>",&value,32000,splitLevel); }
 template<>
-void TreeObject<vector<vector<math::XYZPoint>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::XYZPoint>>",&value,32000,0); }
+void TreeObject<vector<vector<math::XYZPoint>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::XYZPoint>>",&value,32000,splitLevel); }
 
 template<>
 void TreeObject<bool>::SetDefault() { value = false; }
@@ -295,7 +297,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 	public:
 		//constructor
 		TreeRecoCand() : TreeObject<vector<TLorentzVector> >() {}
-		TreeRecoCand(string tempFull_, string title_="", bool doLorentz_=true) : TreeObject<vector<TLorentzVector> >(tempFull_,title_), doLorentz(doLorentz_) {}
+		TreeRecoCand(string tempFull_, string title_="", bool doLorentz_=true, bool splitLevel_=0) : TreeObject<vector<TLorentzVector> >(tempFull_,title_,splitLevel_), doLorentz(doLorentz_) {}
 		//destructor
 		~TreeRecoCand() override {}
 		
@@ -334,13 +336,13 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 		void AddBranch() override {
 			if(tree){
 				if(doLorentz){
-					tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,0);
+					tree->Branch(nameInTree.c_str(),"vector<TLorentzVector>",&value,32000,splitLevel);
 				}
 				else {
-					tree->Branch((nameInTree+"Pt").c_str(),"vector<double>",&pt,32000,0);
-					tree->Branch((nameInTree+"Eta").c_str(),"vector<double>",&eta,32000,0);
-					tree->Branch((nameInTree+"Phi").c_str(),"vector<double>",&phi,32000,0);
-					tree->Branch((nameInTree+"E").c_str(),"vector<double>",&energy,32000,0);
+					tree->Branch((nameInTree+"Pt").c_str(),"vector<double>",&pt,32000,splitLevel);
+					tree->Branch((nameInTree+"Eta").c_str(),"vector<double>",&eta,32000,splitLevel);
+					tree->Branch((nameInTree+"Phi").c_str(),"vector<double>",&phi,32000,splitLevel);
+					tree->Branch((nameInTree+"E").c_str(),"vector<double>",&energy,32000,splitLevel);
 				}
 			}
 		}
@@ -360,6 +362,7 @@ class TreeRecoCand : public TreeObject<vector<TLorentzVector> > {
 		//member variables
 		edm::EDGetTokenT<edm::View<reco::Candidate>> candTok;
 		bool doLorentz{};
+		int splitLevel{};
 		vector<double> pt, eta, phi, energy;
 };
 
@@ -373,7 +376,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 
 		// Constructor
 		TreeNestedVector() : TreeObject<Top>() {}
-		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true) : TreeObject<Top>(tempFull_,title_), nestedVectors(nestedVectors_) {}
+		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true, bool splitLevel_=0) : TreeObject<Top>(tempFull_,title_,splitLevel_), nestedVectors(nestedVectors_) {}
 		// Destructor
 		~TreeNestedVector() override {}
 		
@@ -419,11 +422,11 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 		void AddBranch() override {
 			if(this->tree){
 				if(nestedVectors){
-					this->tree->Branch(this->nameInTree.c_str(),GetTopType().c_str(),&this->value,32000,0);
+					this->tree->Branch(this->nameInTree.c_str(),GetTopType().c_str(),&this->value,32000,this->splitLevel);
 				}
 				else {
-					this->tree->Branch((this->nameInTree).c_str(),GetSubType().c_str(),&values,32000,0);
-					this->tree->Branch((this->nameInTree+"Offsets").c_str(),"vector<int>",&offsets,32000,0);
+					this->tree->Branch((this->nameInTree).c_str(),GetSubType().c_str(),&values,32000,this->splitLevel);
+					this->tree->Branch((this->nameInTree+"Offsets").c_str(),"vector<int>",&offsets,32000,this->splitLevel);
 				}
 			}
 		}

@@ -14,6 +14,8 @@ debugTitles = cms.bool(False),
 #default: output vector<vector<T>>
 #switches to vector<T> values, vector<int> skips
 nestedVectors = cms.bool(True),
+#split level for the TBranches
+splitLevel = cms.int32(0),
 # list of reco candidate objects: for each reco cand collection, the TLorentzVector will be stored in a vector.
 VarsBool = cms.vstring(),
 VarsInt = cms.vstring(),
