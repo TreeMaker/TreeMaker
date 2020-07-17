@@ -24,18 +24,14 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/global/EDProducer.h"
-
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
-
 #include "DataFormats/Math/interface/deltaR.h"
-
-#include <TLorentzVector.h>
+#include "DataFormats/Math/interface/LorentzVector.h"
 #include <TVector3.h>
 
 //
@@ -106,7 +102,7 @@ GenLeptonRecoCand::GenLeptonRecoCand(const edm::ParameterSet& iConfig)
   produces<std::vector<reco::GenParticle>>("TauDecayCands");
   produces<std::vector<int>>("TauDecayCandspdgID");
   produces<std::vector<int>>("TauDecayCandsmomInd");
-  produces<std::vector<TLorentzVector>>("TauLeadTrk");
+  produces<std::vector<math::PtEtaPhiELorentzVector>>("TauLeadTrk");
   produces<std::vector<double>>("TauLeadTrkGenRecoD3");
   produces<std::vector<double>>("TauLeadTrkIso");
   produces<std::vector<double>>("TauLeadTrkAct");
@@ -163,7 +159,7 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
   auto selectedTauDecayCands = std::make_unique<std::vector<reco::GenParticle>>();
   auto selectedTauDecayCandspdgID = std::make_unique<std::vector<int>>();
   auto selectedTauDecayCandsmomInd = std::make_unique<std::vector<int>>();
-  auto selectedTauLeadTrk = std::make_unique<std::vector<TLorentzVector>>();
+  auto selectedTauLeadTrk = std::make_unique<std::vector<math::PtEtaPhiELorentzVector>>();
   auto selectedTauLeadTrkd3 = std::make_unique<std::vector<double>>();
   auto selectedTauLeadTrkIso = std::make_unique<std::vector<double>>();
   auto selectedTauLeadTrkAct = std::make_unique<std::vector<double>>();
@@ -323,7 +319,7 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
   	  leadTrk=tau_trk;
   	}
       }
-      TLorentzVector p4(selectedTauDecayCands->at(leadTrk).px(),selectedTauDecayCands->at(leadTrk).py(),selectedTauDecayCands->at(leadTrk).pz(),selectedTauDecayCands->at(leadTrk).energy());
+      math::PtEtaPhiELorentzVector p4(selectedTauDecayCands->at(leadTrk).px(),selectedTauDecayCands->at(leadTrk).py(),selectedTauDecayCands->at(leadTrk).pz(),selectedTauDecayCands->at(leadTrk).energy());
       selectedTauLeadTrk->push_back(p4);
       // now get iso and act from matched PF track
       int matched_track = MatchToPFCand(pfcands, &selectedTauDecayCands->at(leadTrk));
@@ -344,7 +340,7 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
       //      printf("No hadronic tracks!\n");
       selectedTauLeadTrkIso->push_back(-999.);
       selectedTauLeadTrkAct->push_back(-999.);
-      selectedTauLeadTrk->push_back(TLorentzVector(0,0,0,0));
+      selectedTauLeadTrk->emplace_back(0,0,0,0);
       selectedTauLeadTrkd3->push_back(-999.);
     }
   }

@@ -4,7 +4,7 @@ TreeMaker = cms.EDAnalyzer(
 'TreeMaker',
 # Name of the output tree
 TreeName = cms.string('RA2Tree'),
-#default: output RecoCands as vector<TLorentzVector>
+#default: output RecoCands as vector<math::PtEtaPhiELorentzVector>
 #switches to vector<double> pt, eta, phi, energy if false
 doLorentz = cms.bool(True),
 #branches are sorted alphabetically by default
@@ -16,26 +16,26 @@ debugTitles = cms.bool(False),
 nestedVectors = cms.bool(True),
 #split level for the TBranches
 splitLevel = cms.int32(0),
-# list of reco candidate objects: for each reco cand collection, the TLorentzVector will be stored in a vector.
+# list of reco candidate objects: for each reco cand collection, the math::LorentzVector will be stored in a vector.
 VarsBool = cms.vstring(),
 VarsInt = cms.vstring(),
 VarsFloat = cms.vstring(),
 VarsString = cms.vstring(),
-VarsTLorentzVector = cms.vstring(),
+VarsLorentzVector = cms.vstring(),
 VarsXYZVector = cms.vstring(),
 VarsXYZPoint = cms.vstring(),
 VectorBool = cms.vstring(),
 VectorInt = cms.vstring(),
 VectorFloat = cms.vstring(),
 VectorString = cms.vstring(),
-VectorTLorentzVector = cms.vstring(),
+VectorLorentzVector = cms.vstring(),
 VectorXYZVector = cms.vstring(),
 VectorXYZPoint = cms.vstring(),
 VectorVectorBool = cms.vstring(),
 VectorVectorInt = cms.vstring(),
 VectorVectorDouble = cms.vstring(),
 VectorVectorString = cms.vstring(),
-VectorVectorTLorentzVector = cms.vstring(),
+VectorVectorLorentzVector = cms.vstring(),
 VectorVectorXYZVector = cms.vstring(),
 VectorVectorXYZPoint = cms.vstring(),
 VectorRecoCand = cms.vstring(),

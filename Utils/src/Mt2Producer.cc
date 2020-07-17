@@ -25,7 +25,7 @@
 #include "DataFormats/PatCandidates/interface/MET.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Candidate/interface/CandidateFwd.h"
-#include "TLorentzVector.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
 #include "PhysicsTools/Heppy/interface/Davismt2.h"
 #include "PhysicsTools/Heppy/interface/Hemisphere.h"
 #include "PhysicsTools/Heppy/interface/ReclusterJets.h"
@@ -49,9 +49,8 @@ private:
   edm::EDGetTokenT<reco::CandidateView> JetTok_;
   edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
 
-  vector<TLorentzVector> getHemispheres(vector<TLorentzVector> jets) const;
-  double getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVec) const;
-  double computeMT2(TLorentzVector visaVec, TLorentzVector visbVec, TLorentzVector metVec) const;
+  double getMT2Hemi(const vector<math::PtEtaPhiELorentzVector> &jets, const math::PtEtaPhiELorentzVector &metVec) const;
+  double computeMT2(const math::PtEtaPhiELorentzVector &visaVec, const math::PtEtaPhiELorentzVector &visbVec, const math::PtEtaPhiELorentzVector &metVec) const;
 };
 
 //
@@ -79,7 +78,7 @@ Mt2Producer::~Mt2Producer()
 //
 
 
-double Mt2Producer::computeMT2(TLorentzVector visaVec, TLorentzVector visbVec, TLorentzVector metVec) const
+double Mt2Producer::computeMT2(const math::PtEtaPhiELorentzVector &visaVec, const math::PtEtaPhiELorentzVector &visbVec, const math::PtEtaPhiELorentzVector &metVec) const
 {  
   double metVector[3]={0,metVec.Px(),metVec.Py()};
   double visaVector[3]={0,visaVec.Px(),visaVec.Py()};
@@ -91,7 +90,7 @@ double Mt2Producer::computeMT2(TLorentzVector visaVec, TLorentzVector visbVec, T
   return davismt2_.get_mt2();
 }
 
-double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVec) const {
+double Mt2Producer::getMT2Hemi(const vector<math::PtEtaPhiELorentzVector> &jets, const math::PtEtaPhiELorentzVector &metVec) const {
   if(!(jets.size()>=2))
     {
       return -1;
@@ -144,8 +143,8 @@ double Mt2Producer::getMT2Hemi(vector<TLorentzVector> jets, TLorentzVector metVe
     }
   float pseudoJet1pt2 = pseudoJet1px*pseudoJet1px + pseudoJet1py*pseudoJet1py;
   float pseudoJet2pt2 = pseudoJet2px*pseudoJet2px + pseudoJet2py*pseudoJet2py;
-  TLorentzVector tlv1; tlv1.SetPxPyPzE(pseudoJet1px,pseudoJet1py,pseudoJet1pz,pseudoJet1energy);
-  TLorentzVector tlv2; tlv2.SetPxPyPzE(pseudoJet2px,pseudoJet2py,pseudoJet2pz,pseudoJet2energy);
+  math::PtEtaPhiELorentzVector tlv1; tlv1.SetPxPyPzE(pseudoJet1px,pseudoJet1py,pseudoJet1pz,pseudoJet1energy);
+  math::PtEtaPhiELorentzVector tlv2; tlv2.SetPxPyPzE(pseudoJet2px,pseudoJet2py,pseudoJet2pz,pseudoJet2energy);
   float mt2 = -1;
   if (pseudoJet1pt2 >= pseudoJet2pt2)
     mt2=computeMT2(tlv1,tlv2,metVec);
@@ -164,15 +163,15 @@ Mt2Producer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& i
 
   edm::Handle< edm::View<pat::MET> > Met;
   iEvent.getByToken(MetTok_,Met);
-  TLorentzVector metvec;
-  metvec.SetPtEtaPhiE(Met->at(0).p4().Pt(),Met->at(0).p4().Eta(),Met->at(0).p4().Phi(),Met->at(0).p4().E());
+  math::PtEtaPhiELorentzVector metvec;
+  metvec.SetCoordinates(Met->at(0).p4().Pt(),Met->at(0).p4().Eta(),Met->at(0).p4().Phi(),Met->at(0).p4().E());
 
-  std::vector<TLorentzVector > jets; 
+  std::vector<math::PtEtaPhiELorentzVector > jets; 
   if( Jets.isValid() ) {
     for(const auto & iJet : *Jets)
       {
-	TLorentzVector jet;
-	jet.SetPtEtaPhiE(iJet.p4().Pt(),iJet.p4().Eta(),iJet.p4().Phi(),iJet.p4().E());
+	math::PtEtaPhiELorentzVector jet;
+	jet.SetCoordinates(iJet.p4().Pt(),iJet.p4().Eta(),iJet.p4().Phi(),iJet.p4().E());
 	jets.push_back(jet);
       }
   }

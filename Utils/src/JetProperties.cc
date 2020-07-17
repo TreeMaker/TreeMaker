@@ -29,8 +29,6 @@
 
 #include "TreeMaker/Utils/interface/EnergyFractionCalculator.h"
 
-#include "TLorentzVector.h"
-
 typedef math::XYZTLorentzVector LorentzVector;
 
 // base class
@@ -374,33 +372,33 @@ class NamedPtr_NumChadrons : public NamedPtr<int> {
 DEFINE_NAMED_PTR(NumChadrons);
 
 //----------------------------------------------------------------------------------------------------------------------------------------
-//TLorentzVectors
+//math::PtEtaPhiELorentzVectors
 
-class NamedPtr_constituents : public NamedPtr<std::vector<TLorentzVector>> {
+class NamedPtr_constituents : public NamedPtr<std::vector<math::PtEtaPhiELorentzVector>> {
 	public:
-		using NamedPtr<std::vector<TLorentzVector>>::NamedPtr;
+		using NamedPtr<std::vector<math::PtEtaPhiELorentzVector>>::NamedPtr;
 		void get_property(const pat::Jet& Jet) override {
-			std::vector<TLorentzVector> partvecs;
+			std::vector<math::PtEtaPhiELorentzVector> partvecs;
 			for(unsigned k = 0; k < Jet.numberOfDaughters(); ++k){
 				const reco::Candidate* subpart = Jet.daughter(k);
-				partvecs.emplace_back(subpart->px(),subpart->py(),subpart->pz(),subpart->energy());			
+				partvecs.emplace_back(subpart->pt(),subpart->eta(),subpart->phi(),subpart->energy());			
 			}
-			std::sort(partvecs.begin(), partvecs.end(), [] (const TLorentzVector& a, const TLorentzVector& b){return a.Pt() > b.Pt();} );
+			std::sort(partvecs.begin(), partvecs.end(), [] (const math::PtEtaPhiELorentzVector& a, const math::PtEtaPhiELorentzVector& b){return a.Pt() > b.Pt();} );
 			ptr->push_back(partvecs);
 		}
 };
 DEFINE_NAMED_PTR(constituents);
 
-class NamedPtr_subjets : public NamedPtr<std::vector<TLorentzVector>> {
+class NamedPtr_subjets : public NamedPtr<std::vector<math::PtEtaPhiELorentzVector>> {
 	public:
-		using NamedPtr<std::vector<TLorentzVector>>::NamedPtr;
+		using NamedPtr<std::vector<math::PtEtaPhiELorentzVector>>::NamedPtr;
 		void get_property(const pat::Jet& Jet) override {
-			std::vector<TLorentzVector> subvecs;
+			std::vector<math::PtEtaPhiELorentzVector> subvecs;
 			const auto& subjets = Jet.subjets(extraInfo.at(0));
 			subvecs.reserve(subjets.size());
 			for (const auto& subjet : subjets) {
 				const auto& p4 = subjet->p4();
-				subvecs.emplace_back(p4.px(),p4.py(),p4.pz(),p4.energy());
+				subvecs.emplace_back(p4.pt(),p4.eta(),p4.phi(),p4.energy());
 			}
 			ptr->push_back(subvecs);
 		}

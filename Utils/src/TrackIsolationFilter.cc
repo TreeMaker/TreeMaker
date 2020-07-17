@@ -42,12 +42,12 @@
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidate.h"
 #include "DataFormats/ParticleFlowCandidate/interface/PFCandidateFwd.h"
 
 #include "Math/VectorUtil.h"
 #include "TMath.h"
-#include "TLorentzVector.h"
 #include "TTree.h"
 // miniAOD
 #include "DataFormats/PatCandidates/interface/MET.h"
@@ -132,7 +132,7 @@ TrackIsolationFilter::TrackIsolationFilter(const edm::ParameterSet& iConfig) {
 	LeptonTok_ = {ElectronTok_,MuonTok_};
 
 	produces<std::vector<pat::PackedCandidate> >(""); 
-	produces<vector<TLorentzVector> >("pfcands");
+	produces<vector<math::PtEtaPhiELorentzVector> >("pfcands");
 	produces<vector<double> >("pfcandsactivity");
 	produces<vector<double> >("pfcandstrkiso");
 	produces<vector<double> >("pfcandspfreliso03chg");
@@ -154,7 +154,7 @@ TrackIsolationFilter::~TrackIsolationFilter() {
 // ------------ method called to produce the data  ------------
 bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 
-	auto pfcands = std::make_unique<vector<TLorentzVector>>();
+	auto pfcands = std::make_unique<vector<math::PtEtaPhiELorentzVector>>();
 	auto pfcands_activity       = std::make_unique<vector<double>>();
 	auto pfcands_trkiso         = std::make_unique<vector<double>>();
 	auto pfcands_pfRelIso03_chg = std::make_unique<vector<double>>();
@@ -294,7 +294,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		
 		//store candidate values
 		//(all values stored in debug case, otherwise just good candidates are stored)
-		TLorentzVector p4(pfCand.px(),pfCand.py(),pfCand.pz(),pfCand.energy());
+		math::PtEtaPhiELorentzVector p4(pfCand.pt(),pfCand.eta(),pfCand.phi(),pfCand.energy());
 		pfcands->push_back(p4);
 		pfcands_chg->push_back(pfCand.charge());
 		pfcands_id->push_back(pfCand.pdgId());

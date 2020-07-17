@@ -62,7 +62,7 @@ def doLostLeptonBkg(self,process,METTag):
         self.VectorDouble.extend(['LeptonsNew:Id'+type+'Iso('+type+'s_iso)'])
 
     for type in ['Electron','Muon','Pion']:
-        self.VectorTLorentzVector.extend(['TAP'+type+'Tracks:pfcands(TAP'+type+'Tracks)'])
+        self.VectorLorentzVector.extend(['TAP'+type+'Tracks:pfcands(TAP'+type+'Tracks)'])
         self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandstrkiso(TAP'+type+'Tracks_trkiso)'])
         self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsmT(TAP'+type+'Tracks_mT)'])
         self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandspfreliso03chg(TAP'+type+'Tracks_pfRelIso03chg)'])
