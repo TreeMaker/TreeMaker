@@ -18,7 +18,6 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
-#include "TLorentzVector.h"
 
 typedef math::XYZTLorentzVector LorentzVector;
 

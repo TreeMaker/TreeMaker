@@ -314,7 +314,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             'JetProperties'+suff+':softDropMass(Jets'+suff+'_softDropMass)',
             'JetProperties'+suff+':bDiscriminatorCSV(Jets'+suff+'_doubleBDiscriminator)',
         ])
-        self.VectorVectorTLorentzVector.extend([
+        self.VectorVectorLorentzVector.extend([
             'JetProperties'+suff+':subjets(Jets'+suff+'_subjets)',
         ])
 
@@ -507,7 +507,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
 
             if storeProperties>2:
                 JetPropertiesAK8.properties.extend(['constituents'])
-                self.VectorVectorTLorentzVector.extend([
+                self.VectorVectorLorentzVector.extend([
                     'JetProperties'+suff+':constituents(Jets'+suff+'_constituents)',
                 ])
 

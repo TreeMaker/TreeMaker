@@ -60,6 +60,7 @@ class maker:
         self.getParamDefault("saveGenTops", False)
         self.getParamDefault("doMT2",False)
         self.getParamDefault("nestedVectors", True)
+        self.getParamDefault("splitLevel", 0)
         
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
@@ -101,28 +102,28 @@ class maker:
         self.readFiles = [(self.redir if val.startswith("/") else "")+val for val in self.readFiles]
         
         # branches for treemaker
-        self.VectorRecoCand             = cms.vstring()
-        self.VarsXYZVector              = cms.vstring()
-        self.VarsXYZPoint               = cms.vstring()
-        self.VarsDouble                 = cms.vstring()
-        self.VarsInt                    = cms.vstring()
-        self.VarsBool                   = cms.vstring()
-        self.VectorTLorentzVector       = cms.vstring()
-        self.VectorXYZVector            = cms.vstring()
-        self.VectorXYZPoint             = cms.vstring()
-        self.VectorFloat                = cms.vstring()
-        self.VectorDouble               = cms.vstring()
-        self.VectorString               = cms.vstring()
-        self.VectorInt                  = cms.vstring()
-        self.VectorBool                 = cms.vstring()
-        self.VectorVectorBool           = cms.vstring()
-        self.VectorVectorInt            = cms.vstring()
-        self.VectorVectorDouble         = cms.vstring()
-        self.VectorVectorString         = cms.vstring()
-        self.VectorVectorTLorentzVector = cms.vstring()
-        self.VectorVectorXYZVector      = cms.vstring()
-        self.VectorVectorXYZPoint       = cms.vstring()
-        self.TitleMap                   = cms.vstring()
+        self.VectorRecoCand            = cms.vstring()
+        self.VarsXYZVector             = cms.vstring()
+        self.VarsXYZPoint              = cms.vstring()
+        self.VarsDouble                = cms.vstring()
+        self.VarsInt                   = cms.vstring()
+        self.VarsBool                  = cms.vstring()
+        self.VectorLorentzVector       = cms.vstring()
+        self.VectorXYZVector           = cms.vstring()
+        self.VectorXYZPoint            = cms.vstring()
+        self.VectorFloat               = cms.vstring()
+        self.VectorDouble              = cms.vstring()
+        self.VectorString              = cms.vstring()
+        self.VectorInt                 = cms.vstring()
+        self.VectorBool                = cms.vstring()
+        self.VectorVectorBool          = cms.vstring()
+        self.VectorVectorInt           = cms.vstring()
+        self.VectorVectorDouble        = cms.vstring()
+        self.VectorVectorString        = cms.vstring()
+        self.VectorVectorLorentzVector = cms.vstring()
+        self.VectorVectorXYZVector     = cms.vstring()
+        self.VectorVectorXYZPoint      = cms.vstring()
+        self.TitleMap                  = cms.vstring()
 
     def getParamDefault(self,param,default):
         setattr(self,param,self.parameters.value(param,default))
@@ -152,6 +153,7 @@ class maker:
         print " Saving the MT2 variable: "+str(self.doMT2)
         if self.nestedVectors: print " Saving nested vectors as vector<vector<T>>"
         else: print " Saving nested vectors as vector<T> + vector<int>"
+        print " TTree split level: "+str(self.splitLevel)
         print " "
         print " scenario: "+self.scenarioName
         print " global tag: "+self.globaltag

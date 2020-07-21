@@ -25,15 +25,15 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/JetReco/interface/Jet.h"
 #include "DataFormats/PatCandidates/interface/MET.h"
-#include <DataFormats/Math/interface/deltaR.h>
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/PatCandidates/interface/PackedTriggerPrescales.h"
-
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
-#include "TLorentzVector.h"
+#include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/LorentzVector.h"
+
 //
 // class declaration
 //
@@ -121,7 +121,7 @@ TriggerProducer::TriggerProducer(const edm::ParameterSet& iConfig)
   if(saveHLTObj) {
     saveHLTObjPath = iConfig.getParameter<std::string>("saveHLTObjPath");
     saveHLTObjName = iConfig.getParameter<std::string>("saveHLTObjName");
-    produces<std::vector<TLorentzVector> >(saveHLTObjName);
+    produces<std::vector<math::PtEtaPhiELorentzVector> >(saveHLTObjName);
   }
 }
 
@@ -170,7 +170,7 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
   auto passTrigVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),-1);
   auto trigPrescaleVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),1);
   auto trigVersionVec = std::make_unique<std::vector<int>>(parsedTrigNamesVec.size(),0);
-  auto hltObj = std::make_unique<std::vector<TLorentzVector>>();
+  auto hltObj = std::make_unique<std::vector<math::PtEtaPhiELorentzVector>>();
 
   //int passesTrigger;
   edm::Handle<edm::TriggerResults> trigResults; //our trigger result object
@@ -209,7 +209,7 @@ TriggerProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
       for (const auto& pathName : pathNamesAll){
         bool isBoth = obj.hasPathName( pathName, true, true );//object is associated with l3 filter and associated to the last filter of a successful path. this object caused the trigger to fire.
         if(isBoth && pathName.find(saveHLTObjPath)!= std::string::npos){
-          hltObj->emplace_back(obj.px(),obj.py(),obj.pz(),obj.energy());
+          hltObj->emplace_back(obj.pt(),obj.eta(),obj.phi(),obj.energy());
           break;
         }
       }

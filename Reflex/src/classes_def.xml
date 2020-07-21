@@ -1,6 +1,6 @@
 <lcgdict>
-  <class name="std::vector<TLorentzVector>"/>
-  <class name="std::vector<std::vector<TLorentzVector> >"/>
+  <class name="std::vector<math::PtEtaPhiELorentzVector>"/>
+  <class name="std::vector<std::vector<math::PtEtaPhiELorentzVector> >"/>
   <class name="std::vector<math::XYZVector>"/>
   <class name="std::vector<std::vector<math::XYZVector> >"/>
   <class name="std::vector<math::XYZPoint>"/>
@@ -9,8 +9,7 @@
   <class name="std::vector<std::vector<pat::Jet> >"/>
   <class name="std::vector<std::vector<bool> >"/>
   <class name="edm::PtrVector<pat::PackedCandidate>"/>
-  <class name="edm::Wrapper<std::vector<TLorentzVector> >"/>
-  <class name="edm::Wrapper<std::vector<std::vector<TLorentzVector> > >"/>
+  <class name="edm::Wrapper<std::vector<std::vector<math::PtEtaPhiELorentzVector> > >"/>
   <class name="edm::Wrapper<std::vector<std::vector<math::XYZVector> > >"/>
   <class name="edm::Wrapper<std::vector<std::vector<math::XYZPoint> > >"/>
   <class name="edm::Wrapper<std::vector<std::vector<double> > >"/>
