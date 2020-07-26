@@ -41,6 +41,7 @@ import os
 import sys
 import traceback
 import pyarrow as pa
+from enum import Enum
 
 
 # How many bytes does an average awkward array cell take up. This is just
@@ -50,6 +51,53 @@ MAX_RETRIES = 3
 
 messaging = None
 object_store = None
+
+class InputProtocol(Enum):
+    LOCAL  = 1
+    LFN    = 2
+    XROOTD = 3
+    GSIFTP = 4
+
+
+def get_input_protocol(input_path):
+    if   input_path.startswith('file:'):     return InputProtocol.LOCAL
+    elif input_path.startswith('root://'):   return InputProtocol.XROOTD
+    elif input_path.startswith('gsiftp://'): return InputProtocol.GSIFTP
+    else :                                   return InputProtocol.LFN
+
+
+def format_output_path(input_path, local_prefix = True):
+    protocol = get_input_protocol(input_path)
+    output_file_name = ""
+
+    if protocol == InputProtocol.LOCAL:
+        output_file_name = input_path.replace('file:','')
+    elif protocol == InputProtocol.XROOTD:
+        output_file_name = input_path[input_path.find('/',7)+1:]
+    elif protocol == InputProtocol.GSIFTP:
+        output_file_name = input_path[input_path.find('/',9):]
+    elif protocol == InputProtocol.LFN:
+        output_file_name = input_path
+    else:
+        raise ValueError("Unknown input file protocol")
+
+    if output_file_name[0] == '/': output_file_name = output_file_name[1:]
+    output_file_name = output_file_name.replace('/','.').replace(".root","_RA2AnalysisTree.root")
+    if local_prefix: output_file_name = os.environ['HOME'] + '/' + output_file_name
+    
+    return output_file_name
+
+
+def compile_code():
+    # Have to use bash as the file runner.sh does not execute properly, despite its 'x'
+    # bit set. This seems to be some vagary of a ConfigMap from k8, which is how we usually get
+    # this file.
+    # r = os.system('bash /generated/runner.sh -c | tee log.txt')
+    #if r != 0:
+    #    with open('log.txt', 'r') as f:
+    #        errors = f.read()
+    #        raise RuntimeError("Unable to compile the code - error return: " + str(r)+ 'errors: \n' + errors)
+    pass
 
 
 # noinspection PyUnusedLocal
@@ -72,8 +120,8 @@ def callback(channel, method, properties, body):
     while not file_done:
         try:
             # Do the transform
-            root_file = _file_path.replace('/', ':')
-            output_path = os.environ['HOME'] + '/' + root_file.replace('file:','').replace(".root","_RA2AnalysisTree.root")
+            root_file = format_output_path(_file_path,False)
+            output_path = format_output_path(_file_path,True)
             transform_single_file(_file_path, output_path, servicex)
 
             tock = time.time()
@@ -123,7 +171,7 @@ def callback(channel, method, properties, body):
 
 def transform_single_file(file_path, output_path, servicex=None):
     print("Transforming a single path: " + str(file_path) + " into " + output_path)
-    r = os.system('cd CMSSW_10_2_21/src/TreeMaker/Production/test/ && source /opt/cms/cmsset_default.sh && eval `scramv1 runtime -sh` && python ${CMSSW_BASE}/src/TreeMaker/Production/test/unitTest.py test=0 scenario=Summer16 dataset=' + str(file_path) + ' name=' + str(output_path).replace("_RA2AnalysisTree.root","") + ' run=True fork=False log=True 2> log.txt && pwd && ls -alh ./ && ls -alh /home/cmsusr/ && ls -alh /home/atlas/')
+    r = os.system('cd CMSSW_10_2_21/src/TreeMaker/Production/test/ && source /opt/cms/cmsset_default.sh && eval `scramv1 runtime -sh` && python ${CMSSW_BASE}/src/TreeMaker/Production/test/unitTest.py test=0 scenario=Summer16 numevents=-1 dataset=' + str(file_path) + ' name=' + str(output_path).replace("_RA2AnalysisTree.root","") + ' run=True fork=False log=True 2> log.txt && pwd && ls -alh ./ && ls -alh /home/cmsusr/ && ls -alh /servicex/')
     reason_bad = None
     if r != 0:
         reason_bad = "Error return from transformer: " + str(r)
@@ -150,18 +198,6 @@ def transform_single_file(file_path, output_path, servicex=None):
         arrow_writer.write_branches_to_arrow(transformer=transformer, topic_name=args.request_id,
                                              file_id=None, request_id=args.request_id)
         print("Kafka Timings: "+str(arrow_writer.messaging_timings))
-
-
-def compile_code():
-    # Have to use bash as the file runner.sh does not execute properly, despite its 'x'
-    # bit set. This seems to be some vagary of a ConfigMap from k8, which is how we usually get
-    # this file.
-    # r = os.system('bash /generated/runner.sh -c | tee log.txt')
-    #if r != 0:
-    #    with open('log.txt', 'r') as f:
-    #        errors = f.read()
-    #        raise RuntimeError("Unable to compile the code - error return: " + str(r)+ 'errors: \n' + errors)
-    pass
 
 
 if __name__ == "__main__":

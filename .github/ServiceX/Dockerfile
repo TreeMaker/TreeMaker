@@ -40,14 +40,13 @@ RUN sudo chown cmsusr setup_servicex.sh && \
     rm ${HOME}/cmssw_src.tar.gz && \
     rm ${HOME}/requirements.txt
 
-# This part can eventually be removed when the atlas references are removed from ServiceX
-RUN sudo mkdir /home/atlas/ && \
-    sudo cp /home/cmsusr/.bashrc /home/atlas/.bashrc && \
-    sudo cp /home/cmsusr/.zshrc /home/atlas/.zshrc
-COPY .github/ServiceX/scripts/proxy-exporter.sh /home/atlas/
-COPY .github/ServiceX/python/validate_requests.py /home/atlas/
-COPY .github/ServiceX/python/transformer.py /home/atlas/
-RUN sudo chown -R cmsusr:cmsusr /home/atlas && \
-    sudo chmod +x /home/atlas/proxy-exporter.sh
+RUN sudo mkdir /servicex/ && \
+    sudo cp /home/cmsusr/.bashrc /servicex/.bashrc && \
+    sudo cp /home/cmsusr/.zshrc /servicex/.zshrc
+COPY .github/ServiceX/scripts/proxy-exporter.sh /servicex/
+COPY .github/ServiceX/python/validate_requests.py /servicex/
+COPY .github/ServiceX/python/transformer.py /servicex/
+RUN sudo chown -R cmsusr:cmsusr /servicex && \
+    sudo chmod +x /servicex/proxy-exporter.sh
 
 ENTRYPOINT ["/bin/zsh"]
