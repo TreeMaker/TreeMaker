@@ -171,7 +171,7 @@ def callback(channel, method, properties, body):
 
 def transform_single_file(file_path, output_path, servicex=None):
     print("Transforming a single path: " + str(file_path) + " into " + output_path)
-    r = os.system('cd CMSSW_10_2_21/src/TreeMaker/Production/test/ && source /opt/cms/cmsset_default.sh && eval `scramv1 runtime -sh` && python ${CMSSW_BASE}/src/TreeMaker/Production/test/unitTest.py test=0 scenario=Summer16 dataset=' + str(file_path) + ' name=' + str(output_path).replace("_RA2AnalysisTree.root","") + ' run=True fork=False log=True 2> log.txt && pwd && ls -alh ./ && ls -alh /home/cmsusr/ && ls -alh /home/atlas/')
+    r = os.system('cd CMSSW_10_2_21/src/TreeMaker/Production/test/ && source /opt/cms/cmsset_default.sh && eval `scramv1 runtime -sh` && python ${CMSSW_BASE}/src/TreeMaker/Production/test/unitTest.py test=0 scenario=Summer16 numevents=-1 dataset=' + str(file_path) + ' name=' + str(output_path).replace("_RA2AnalysisTree.root","") + ' run=True fork=False log=True 2> log.txt && pwd && ls -alh ./ && ls -alh /home/cmsusr/ && ls -alh /servicex/')
     reason_bad = None
     if r != 0:
         reason_bad = "Error return from transformer: " + str(r)
