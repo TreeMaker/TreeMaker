@@ -18,7 +18,7 @@
 The following installation instructions assume the user wants to process 2016, 2017, or 2018 miniAOD.
 
 ```
-wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017/setup.sh
+wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017_V17/setup.sh
 chmod +x setup.sh
 ./setup.sh
 cd CMSSW_10_2_11_patch1/src/
