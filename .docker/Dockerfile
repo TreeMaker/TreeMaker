@@ -9,13 +9,13 @@ ARG VCS_REF
 ARG VCS_URL
 ARG VERSION
 LABEL   org.label-schema.build-date=$BUILD_DATE \
-		org.label-schema.name="TreeMaker Docker image" \
+        org.label-schema.name="TreeMaker Docker image" \
         org.label-schema.description="Provide completely offline-runnable CMSSW images with TreeMaker pre-installed." \
         org.label-schema.url="https://github.com/TreeMaker/TreeMaker" \
         org.label-schema.vcs-ref=$VCS_REF \
         org.label-schema.vcs-url=$VCS_URL \
-		org.label-schema.vendor="FNAL" \
-		org.label-schema.version=$VERSION \
+        org.label-schema.vendor="FNAL" \
+        org.label-schema.version=$VERSION \
         org.label-schema.schema-version="1.0"
 
 USER    cmsusr
