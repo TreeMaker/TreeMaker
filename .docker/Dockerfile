@@ -22,13 +22,11 @@ USER    cmsusr
 WORKDIR /home/cmsusr
 
 ARG CMSSW_VERSION=CMSSW_10_2_21
-ARG CURRENT_USER
-ARG CURRENT_BRANCH
 
 COPY .docker/setupStandalone.sh ./setupStandalone.sh
-COPY cmssw_src.tar.gz ./cmssw_src.tar.gz
+COPY ${CMSSW_VERSION}.tar.gz ./${CMSSW_VERSION}.tar.gz
 
-RUN ./setupStandalone.sh -c $CMSSW_VERSION -t ${HOME}/cmssw_src.tar.gz && \
+RUN ./setupStandalone.sh -c $CMSSW_VERSION -t ${HOME}/${CMSSW_VERSION}.tar.gz && \
     rm ${HOME}/setupStandalone.sh && \
     rm ${HOME}/cmssw_src.tar.gz
 

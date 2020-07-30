@@ -48,24 +48,33 @@ if [[ -f /opt/cms/cmsset_default.sh ]]; then
 	source /opt/cms/cmsset_default.sh
 fi
 
-# Move to the CMSSW directory and initialize the CMSSW environment
+# Move to the project installation area
 pwd
 ls -alh ./
-cd ${DIR}/${CMSSWVER}/src/
+cd ${DIR}
 pwd
 ls -alh ./
-echo "Setting the CMSSW environment ..."
-eval `scramv1 runtime -sh`
 
-# Untar and build the software, if provided
+# Untar the the CMSSW release, if provided, and change directories to the release area
 if [[ -n "$TARBALL" ]]; then
 	echo "Unpacking ${TARBALL} into ${PWD} ..."
 	tar -xzf ${TARBALL}
 	pwd
 	ls -alh ./
-	echo "Compiling the software ..."
-	scramv1 b -j 8
+	cd ${CMSSWVER/src/}
+	scram b ProjectRename
+	pwd
+	ls -alh ./
+else
+	cd ${CMSSWVER}/src/
+	pwd
+	ls -alh ./
 fi
+
+# Initialize the CMSSW environment
+echo "Setting the CMSSW environment ..."
+eval `scramv1 runtime -sh`
+echo "The CMSSW_BASE is ${CMSSW_BASE}"
 
 # Return to the ${HOME} directory
 echo -e "Returning to ${HOME} ... "
