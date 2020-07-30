@@ -58,7 +58,7 @@ before_script:
         # Build and push the image from the Dockerfile at the root of the project.
         # To push to a specific docker tag, amend the --destination parameter, e.g. --destination $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
         # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
-        - echo "Building Docker image with TreeMaker and ServiceX dependencies on ${DATE}"
+        - echo "Building the TreeMaker Docker image on ${DATE}"
         - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
         - echo ${CI_PROJECT_DIR}/${CONTEXT_DIR}/
         - ls -alh ${CI_PROJECT_DIR}/${CONTEXT_DIR}/

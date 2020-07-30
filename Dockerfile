@@ -29,7 +29,7 @@ COPY setupStandalone.sh ./setupStandalone.sh
 COPY cmssw_src.tar.gz ./cmssw_src.tar.gz
 
 RUN ./setupStandalone.sh -c $CMSSW_VERSION -t ${HOME}/cmssw_src.tar.gz && \
-    rm ${HOME}/setup_servicex.sh && \
+    rm ${HOME}/setupStandalone.sh && \
     rm ${HOME}/cmssw_src.tar.gz
 
 ENTRYPOINT ["/bin/zsh"]
