@@ -78,9 +78,9 @@ tm_docker_run() {
 			registry="${registry: : -1}"
 		fi
 		if [[ "${registry}" == *"docker.io"* ]]; then
-			image=${registry}/treemaker/treemaker:Run2_2017-servicex
+			image=${registry}/treemaker/treemaker:Run2_2017-standalone
 		elif [[ "${registry}" == *"gitlab-registry.cern.ch"* ]]; then
-			image=${registry}/treemaker/treemaker/treemaker:Run2_2017-servicex
+			image=${registry}/treemaker/treemaker/treemaker:Run2_2017-standalone
 		fi
 	fi
 
