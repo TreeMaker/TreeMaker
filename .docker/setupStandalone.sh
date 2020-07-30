@@ -39,13 +39,15 @@ export XrdSecGSISRVNAMES=\"cmseos.fnal.gov\"\n"
 echo -e ${lines} >> ${HOME}/.bashrc
 echo -e ${lines} >> ${HOME}/.zshrc
 
-# Checkout a CMSSW release and source the cmsset if in a standalone CMSSW image
-if [[ -f /opt/cms/entrypoint.sh ]]; then
-	/opt/cms/entrypoint.sh
-fi
+# Source the cmsset if in a standalone CMSSW image
 if [[ -f /opt/cms/cmsset_default.sh ]]; then
 	echo "Sourcing the cmsset ... "
 	source /opt/cms/cmsset_default.sh
+fi
+
+# Setup a symlink if in a standalone CMSSW image
+if [[ -f /opt/cms/cmsset_default.sh ]]; then
+	sudo ln -s /opt/cms /cvmfs/cms.cern.ch
 fi
 
 # Move to the project installation area
