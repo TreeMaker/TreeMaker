@@ -25,7 +25,7 @@ ARG CMSSW_VERSION=CMSSW_10_2_21
 ARG CURRENT_USER
 ARG CURRENT_BRANCH
 
-COPY setupStandalone.sh ./setupStandalone.sh
+COPY .docker/setupStandalone.sh ./setupStandalone.sh
 COPY cmssw_src.tar.gz ./cmssw_src.tar.gz
 
 RUN ./setupStandalone.sh -c $CMSSW_VERSION -t ${HOME}/cmssw_src.tar.gz && \
