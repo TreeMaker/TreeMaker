@@ -74,7 +74,7 @@ jobs:
       run: echo ::set-env name=current_user::$(echo ${{ github.repository }} | sed -E 's|/.*||')
     - name: Run the container and perform an integration test
       env:
-        download_url: https://cernbox.cern.ch/index.php/s/5DRVyX4Z9EertGa/download
+        download_url: https://cernbox.cern.ch/index.php/s/DsfTPyDEgCjTmBQ/download
         file_name: eos.opendata.cms.MonteCarlo2016.RunIISummer16MiniAODv2.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8.MINIAODSIM.PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1.70000.0048131D-3CB3-E611-813A-001E67DFFB31_100evt.root
         era: Summer16
         output_name: Summer16.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8_opendata
