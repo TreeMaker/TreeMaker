@@ -35,17 +35,24 @@ public:
 private:
     void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
     const reco::GenParticle* findLast(const reco::GenParticle& particle) const;
-    void saveChain(int depth, int parentId, int parent_idx, const reco::GenParticle& particle, std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
-                   std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec,
-                   std::unique_ptr<std::vector<int>>& Parent_vec, std::unique_ptr<std::vector<int>>& ParentId_vec,
+    void saveChain(int depth, int parentId, int parent_idx, const reco::GenParticle& particle,
+                   std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
+                   std::unique_ptr<std::vector<int>>& Charge_vec, std::unique_ptr<std::vector<int>>& PdgId_vec,
+                   std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
+                   std::unique_ptr<std::vector<int>>& ParentId_vec,
                    std::unordered_set<const reco::Candidate *>& stored_particles_ref,
-                   std::vector<const reco::Candidate *>& stored_particles_list, std::vector<const reco::Candidate *>& parents_list) const;
-    void storeMinimal(const edm::Handle< edm::View<reco::GenParticle> >&, std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>&,
-                      std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-                      std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&) const;
-    void storeStandard(const edm::Handle< edm::View<reco::GenParticle> >&, std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>&,
-                      std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-                      std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<bool>>&) const;
+                   std::vector<const reco::Candidate *>& stored_particles_list,
+                   std::vector<const reco::Candidate *>& parents_list) const;
+    void storeMinimal(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands,
+                      std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
+                      std::unique_ptr<std::vector<int>>& Charge_vec, std::unique_ptr<std::vector<int>>& PdgId_vec,
+                      std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
+                      std::unique_ptr<std::vector<int>>& ParentId_vec) const;
+    void storeStandard(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands,
+                       std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
+                       std::unique_ptr<std::vector<int>>& Charge_vec, std::unique_ptr<std::vector<int>>& PdgId_vec,
+                       std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
+                       std::unique_ptr<std::vector<int>>& ParentId_vec, std::unique_ptr<std::vector<bool>>& TTFlag_vec) const;
 
     // ----------member data ---------------------------
 
@@ -82,7 +89,8 @@ boson_status_codes{22,51,52,62}
 
     keepMinimal = iConfig.getParameter<bool>("keepMinimal");
 
-    produces< std::vector< math::PtEtaPhiELorentzVector > >(""); 
+    produces< std::vector< math::PtEtaPhiELorentzVector > >("");
+    produces< std::vector< int > >("Charge");
     produces< std::vector< int > >("PdgId");
     produces< std::vector< int > >("Status");
     produces< std::vector< int > >("Parent");
@@ -106,6 +114,7 @@ void GenParticlesProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     using namespace edm;
 
     auto genParticle_vec = std::make_unique<std::vector<math::PtEtaPhiELorentzVector>>();
+    auto Charge_vec = std::make_unique<std::vector<int>>();
     auto PdgId_vec = std::make_unique<std::vector<int>>();
     auto Status_vec = std::make_unique<std::vector<int>>();
     auto Parent_vec = std::make_unique<std::vector<int>>();
@@ -121,10 +130,11 @@ void GenParticlesProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
         <<"idx\t"<<"pdgId\t"<<"status\t"<<"parId\t"<<"parIdx\t";
     }
 
-    if (keepMinimal) storeMinimal(genPartCands, genParticle_vec,PdgId_vec,Status_vec,Parent_vec,ParentId_vec);
-    else             storeStandard(genPartCands,genParticle_vec,PdgId_vec,Status_vec,Parent_vec,ParentId_vec,TTFlag_vec);
+    if (keepMinimal) storeMinimal(genPartCands, genParticle_vec,Charge_vec,PdgId_vec,Status_vec,Parent_vec,ParentId_vec);
+    else             storeStandard(genPartCands,genParticle_vec,Charge_vec,PdgId_vec,Status_vec,Parent_vec,ParentId_vec,TTFlag_vec);
 
-    iEvent.put(std::move(genParticle_vec)); 
+    iEvent.put(std::move(genParticle_vec));
+    iEvent.put(std::move(Charge_vec     ), "Charge");
     iEvent.put(std::move(PdgId_vec      ), "PdgId");
     iEvent.put(std::move(Status_vec     ), "Status");
     iEvent.put(std::move(ParentId_vec   ), "ParentId");
@@ -236,11 +246,16 @@ const reco::GenParticle* GenParticlesProducer::findLast(const reco::GenParticle&
     return last;
 }
 
-void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, const reco::GenParticle& particle, std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
-                                     std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec,
-                                     std::unique_ptr<std::vector<int>>& Parent_vec, std::unique_ptr<std::vector<int>>& ParentId_vec,
+void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, const reco::GenParticle& particle,
+                                     std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
+                                     std::unique_ptr<std::vector<int>>& Charge_vec,
+                                     std::unique_ptr<std::vector<int>>& PdgId_vec,
+                                     std::unique_ptr<std::vector<int>>& Status_vec,
+                                     std::unique_ptr<std::vector<int>>& Parent_vec,
+                                     std::unique_ptr<std::vector<int>>& ParentId_vec,
                                      std::unordered_set<const reco::Candidate *>& stored_particles_ref,
-                                     std::vector<const reco::Candidate *>& stored_particles_list, std::vector<const reco::Candidate *>& parents_list) const {
+                                     std::vector<const reco::Candidate *>& stored_particles_list,
+                                     std::vector<const reco::Candidate *>& parents_list) const {
     // Set a minimal depth of particles to save
     if(depth==0) return;
     auto lastParticle = findLast(particle);
@@ -253,6 +268,7 @@ void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, co
     // Save the gen particle information
     math::PtEtaPhiELorentzVector temp(lastParticle->pt(), lastParticle->eta(), lastParticle->phi(), lastParticle->energy());
     genParticle_vec->push_back(temp);
+    Charge_vec->push_back(lastParticle->charge());
     PdgId_vec->push_back(lastParticle->pdgId());
     Status_vec->push_back(abs(lastParticle->status()));
     stored_particles_ref.insert(lastParticle);
@@ -270,15 +286,19 @@ void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, co
         for(unsigned int iDau=0; iDau<lastParticle->numberOfDaughters(); iDau++) {
             if(abs(lastParticle->pdgId())<=bottom) continue;
             const reco::GenParticle *daughter = static_cast<const reco::GenParticle *>(lastParticle->daughter(iDau));
-            saveChain(nextDepth, current_parent_id, current_parent_idx, *daughter, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+            saveChain(nextDepth, current_parent_id, current_parent_idx, *daughter, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
         }
     }
 
     return;
 }
 
-void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands, std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec, 
-                                        std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
+void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands,
+                                        std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec, 
+                                        std::unique_ptr<std::vector<int>>& Charge_vec,
+                                        std::unique_ptr<std::vector<int>>& PdgId_vec,
+                                        std::unique_ptr<std::vector<int>>& Status_vec,
+                                        std::unique_ptr<std::vector<int>>& Parent_vec,
                                         std::unique_ptr<std::vector<int>>& ParentId_vec) const {
     std::unordered_set<const reco::Candidate *> stored_particles_ref;
     std::vector<const reco::Candidate *> stored_particles_list, parents_list;
@@ -293,24 +313,25 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
         if(typicalParentIds.find(absPdgId)!=typicalParentIds.end()) {
             if (absPdgId==top) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a top chain ... ";
-                saveChain(3, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+                saveChain(3, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else if(absPdgId>=photon && absPdgId<=Higgs) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a boson chain ... ";
-                saveChain(2, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+                saveChain(2, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else if(absPdgId>=sdownL && absPdgId<=stop2) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a SUSY chain ... ";
-                saveChain(-1, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+                saveChain(-1, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else if(absPdgId>=hvgluon && absPdgId<=hvrho2) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a Hidden Valley chain ... ";
-                saveChain(-1, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+                saveChain(-1, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving an individual particle " << iPart.pdgId() << " ... ";
                 math::PtEtaPhiELorentzVector temp(iPart.pt(), iPart.eta(), iPart.phi(), iPart.energy());
                 genParticle_vec->push_back(temp);
+                Charge_vec->push_back(iPart.charge());
                 PdgId_vec->push_back(iPart.pdgId());
                 Status_vec->push_back(abs(iPart.status()));
                 stored_particles_ref.insert(&iPart);
@@ -333,9 +354,14 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
     }
 }
 
-void GenParticlesProducer::storeStandard(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands, std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
-                                         std::unique_ptr<std::vector<int>>& PdgId_vec, std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
-                                         std::unique_ptr<std::vector<int>>& ParentId_vec, std::unique_ptr<std::vector<bool>>& TTFlag_vec) const {
+void GenParticlesProducer::storeStandard(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands,
+                                         std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
+                                         std::unique_ptr<std::vector<int>>& Charge_vec,
+                                         std::unique_ptr<std::vector<int>>& PdgId_vec,
+                                         std::unique_ptr<std::vector<int>>& Status_vec,
+                                         std::unique_ptr<std::vector<int>>& Parent_vec,
+                                         std::unique_ptr<std::vector<int>>& ParentId_vec,
+                                         std::unique_ptr<std::vector<bool>>& TTFlag_vec) const {
 
     auto parents = std::make_unique<std::vector<math::PtEtaPhiELorentzVector>>();
 
@@ -357,6 +383,7 @@ void GenParticlesProducer::storeStandard(const edm::Handle< edm::View<reco::GenP
 
         math::PtEtaPhiELorentzVector temp(iPart.pt(), iPart.eta(), iPart.phi(), iPart.energy());
         genParticle_vec->push_back(temp);
+        Charge_vec->push_back(iPart.charge());
         PdgId_vec->push_back(iPart.pdgId());
         Status_vec->push_back(status);
         TTFlag_vec->push_back(!(acceptableChild || acceptableParent) && (keepAllThese || firstDecayProducts));
