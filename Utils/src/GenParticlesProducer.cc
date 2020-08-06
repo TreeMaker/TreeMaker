@@ -35,20 +35,24 @@ public:
 private:
     void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
     const reco::GenParticle* findLast(const reco::GenParticle& particle) const;
-    void saveChain(int, int, int, const reco::GenParticle&,
+    void saveChain(int depth, int parentId, int parent_idx, const reco::GenParticle& particle,
                    std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
-                   std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-                   std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-                   std::unique_ptr<std::vector<int>>&, std::unordered_set<const reco::Candidate *>&,
-                   std::vector<const reco::Candidate *>&, std::vector<const reco::Candidate *>&) const;
-    void storeMinimal(const edm::Handle< edm::View<reco::GenParticle> >&, std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>&,
-                      std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-                      std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-                      std::unique_ptr<std::vector<int>>&) const;
-    void storeStandard(const edm::Handle< edm::View<reco::GenParticle> >&, std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>&,
-                      std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-                       std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<int>>&,
-                      std::unique_ptr<std::vector<int>>&, std::unique_ptr<std::vector<bool>>&) const;
+                   std::unique_ptr<std::vector<int>>& Charge_vec, std::unique_ptr<std::vector<int>>& PdgId_vec,
+                   std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
+                   std::unique_ptr<std::vector<int>>& ParentId_vec,
+                   std::unordered_set<const reco::Candidate *>& stored_particles_ref,
+                   std::vector<const reco::Candidate *>& stored_particles_list,
+                   std::vector<const reco::Candidate *>& parents_list) const;
+    void storeMinimal(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands,
+                      std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
+                      std::unique_ptr<std::vector<int>>& Charge_vec, std::unique_ptr<std::vector<int>>& PdgId_vec,
+                      std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
+                      std::unique_ptr<std::vector<int>>& ParentId_vec) const;
+    void storeStandard(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands,
+                       std::unique_ptr<std::vector<math::PtEtaPhiELorentzVector>>& genParticle_vec,
+                       std::unique_ptr<std::vector<int>>& Charge_vec, std::unique_ptr<std::vector<int>>& PdgId_vec,
+                       std::unique_ptr<std::vector<int>>& Status_vec, std::unique_ptr<std::vector<int>>& Parent_vec,
+                       std::unique_ptr<std::vector<int>>& ParentId_vec, std::unique_ptr<std::vector<bool>>& TTFlag_vec) const;
 
     // ----------member data ---------------------------
 
