@@ -62,7 +62,7 @@ private:
     std::unordered_set<int> typicalChildIds, typicalParentIds, keepAllTheseIds;
     bool        keepFirstDecayProducts;
     bool        keepMinimal;
-    const std::vector<int> proton_status_codes, quark_status_codes, lepton_status_codes, top_status_codes, boson_status_codes;
+    const std::vector<int> proton_status_codes, initial_parton_status_codes, quark_status_codes, lepton_status_codes, top_status_codes, boson_status_codes;
 };
 
 
@@ -72,6 +72,7 @@ genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
 debug(iConfig.getParameter<bool>("debug")),
 // Final copy status codes
 proton_status_codes{4},
+initial_parton_status_codes{21},
 quark_status_codes{23,51,52,71,72,73,91},
 lepton_status_codes{1,2},
 top_status_codes{22,51,52,62},
@@ -304,6 +305,7 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
                                         std::unique_ptr<std::vector<int>>& ParentId_vec) const {
     std::unordered_set<const reco::Candidate *> stored_particles_ref;
     std::vector<const reco::Candidate *> stored_particles_list, parents_list;
+    std::array<const reco::Candidate*, 2> possible_mothers{ {&(*genPartCands->begin()), &(*(genPartCands->begin()+1))} };
     for(const auto& particle : *genPartCands) {
         // Skip particles which are already in the list of stored particles
         // This is to protect against parts of a chain which may be saved, but here we are looking at the first copy
@@ -314,9 +316,9 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
         if(nmothers == 1) {
            auto mother = particle.mother(0);
            if(mother->pdgId() == proton &&
-              std::binary_search(proton_status_codes.begin(), proton_status_codes.end(), mother->status()) &&
-              (mother == &(*genPartCands->begin()) || mother == &(*(genPartCands->begin()+1))) &&
-              particle.status()==21) {
+              mother->status() == proton_status_codes[0] &&
+              (mother == possible_mothers[0] || mother == possible_mothers[1]) &&
+              particle.status()==initial_parton_status_codes[0]) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving an initial parton " << particle.pdgId() << " ... ";
                 math::PtEtaPhiELorentzVector tmp(particle.pt(), particle.eta(), particle.phi(), particle.energy());
                 genParticle_vec->push_back(tmp);
