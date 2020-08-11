@@ -62,7 +62,7 @@ private:
     std::unordered_set<int> typicalChildIds, typicalParentIds, keepAllTheseIds;
     bool        keepFirstDecayProducts;
     bool        keepMinimal;
-    const std::vector<int> quark_status_codes, lepton_status_codes, top_status_codes, boson_status_codes;
+    const std::vector<int> proton_status_codes, initial_parton_status_codes, quark_status_codes, lepton_status_codes, top_status_codes, boson_status_codes;
 };
 
 
@@ -71,6 +71,8 @@ genCollection(iConfig.getParameter<edm::InputTag>("genCollection")),
 genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
 debug(iConfig.getParameter<bool>("debug")),
 // Final copy status codes
+proton_status_codes{4},
+initial_parton_status_codes{21},
 quark_status_codes{23,51,52,71,72,73,91},
 lepton_status_codes{1,2},
 top_status_codes{22,51,52,62},
@@ -162,6 +164,7 @@ enum particle_type
     Z=23,
     W=24,
     Higgs=25,
+    proton=2212,
     //SUSY particles
     sdownL=1000001,
     supL=1000002,
@@ -259,7 +262,7 @@ void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, co
     // Set a minimal depth of particles to save
     if(depth==0) return;
     auto lastParticle = findLast(particle);
-    //special hack to keep first copy of HV Zprime daughters
+    // Special hack to keep first copy of HV Zprime daughters
     if(parentId==zprime) lastParticle = &particle;
     // Skip particles which are already in the list of stored particles
     if(stored_particles_ref.find(lastParticle)!=stored_particles_ref.end()) return;
@@ -302,42 +305,67 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
                                         std::unique_ptr<std::vector<int>>& ParentId_vec) const {
     std::unordered_set<const reco::Candidate *> stored_particles_ref;
     std::vector<const reco::Candidate *> stored_particles_list, parents_list;
-    for(const auto& iPart : *genPartCands) {
+    std::array<const reco::Candidate*, 2> possible_mothers{ {&(*genPartCands->begin()), &(*(genPartCands->begin()+1))} };
+    for(const auto& particle : *genPartCands) {
         // Skip particles which are already in the list of stored particles
         // This is to protect against parts of a chain which may be saved, but here we are looking at the first copy
-        if(stored_particles_ref.find(&iPart)!=stored_particles_ref.end()) continue;
+        if(stored_particles_ref.find(&particle)!=stored_particles_ref.end()) continue;
+
+        // Store the initial partons
+        auto nmothers = particle.numberOfMothers();
+        if(nmothers == 1) {
+           auto mother = particle.mother(0);
+           if(mother->pdgId() == proton &&
+              mother->status() == proton_status_codes[0] &&
+              (mother == possible_mothers[0] || mother == possible_mothers[1]) &&
+              particle.status()==initial_parton_status_codes[0]) {
+                if(debug) edm::LogInfo("TreeMaker") << "Saving an initial parton " << particle.pdgId() << " ... ";
+                math::PtEtaPhiELorentzVector tmp(particle.pt(), particle.eta(), particle.phi(), particle.energy());
+                genParticle_vec->push_back(tmp);
+                Charge_vec->push_back(particle.charge());
+                PdgId_vec->push_back(particle.pdgId());
+                Status_vec->push_back(abs(particle.status()));
+                stored_particles_ref.insert(&particle);
+                stored_particles_list.push_back(&particle);
+                parents_list.push_back(mother);
+                ParentId_vec->push_back(mother->pdgId());
+                Parent_vec->push_back(-1);
+           }
+        }
+
         // Skip starting particles which are not from the hard process
-        if(!iPart.isHardProcess() && !iPart.fromHardProcessBeforeFSR()) continue;
+        if(!particle.isHardProcess() && !particle.fromHardProcessBeforeFSR()) continue;
+
         // Only store particles in the list of acceptable parent pdgids
-        auto absPdgId = abs(iPart.pdgId());
+        auto absPdgId = abs(particle.pdgId());
         if(typicalParentIds.find(absPdgId)!=typicalParentIds.end()) {
             if (absPdgId==top) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a top chain ... ";
-                saveChain(3, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+                saveChain(3, particle.mother()->pdgId(), -1, particle, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else if(absPdgId>=photon && absPdgId<=Higgs) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a boson chain ... ";
-                saveChain(2, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+                saveChain(2, particle.mother()->pdgId(), -1, particle, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else if(absPdgId>=sdownL && absPdgId<=stop2) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a SUSY chain ... ";
-                saveChain(-1, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+                saveChain(-1, particle.mother()->pdgId(), -1, particle, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else if(absPdgId>=hvgluon && absPdgId<=hvrho2) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a Hidden Valley chain ... ";
-                saveChain(-1, iPart.mother()->pdgId(), -1, iPart, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
+                saveChain(-1, particle.mother()->pdgId(), -1, particle, genParticle_vec, Charge_vec, PdgId_vec, Status_vec, Parent_vec, ParentId_vec, stored_particles_ref, stored_particles_list, parents_list);
             }
             else {
-                if(debug) edm::LogInfo("TreeMaker") << "Saving an individual particle " << iPart.pdgId() << " ... ";
-                math::PtEtaPhiELorentzVector temp(iPart.pt(), iPart.eta(), iPart.phi(), iPart.energy());
-                genParticle_vec->push_back(temp);
-                Charge_vec->push_back(iPart.charge());
-                PdgId_vec->push_back(iPart.pdgId());
-                Status_vec->push_back(abs(iPart.status()));
-                stored_particles_ref.insert(&iPart);
-                stored_particles_list.push_back(&iPart);
-                parents_list.push_back(iPart.mother());
-                ParentId_vec->push_back(iPart.mother()->pdgId());
+                if(debug) edm::LogInfo("TreeMaker") << "Saving an individual particle " << particle.pdgId() << " ... ";
+                math::PtEtaPhiELorentzVector tmp(particle.pt(), particle.eta(), particle.phi(), particle.energy());
+                genParticle_vec->push_back(tmp);
+                Charge_vec->push_back(particle.charge());
+                PdgId_vec->push_back(particle.pdgId());
+                Status_vec->push_back(abs(particle.status()));
+                stored_particles_ref.insert(&particle);
+                stored_particles_list.push_back(&particle);
+                parents_list.push_back(particle.mother());
+                ParentId_vec->push_back(particle.mother()->pdgId());
                 Parent_vec->push_back(-1);
             }
         }
