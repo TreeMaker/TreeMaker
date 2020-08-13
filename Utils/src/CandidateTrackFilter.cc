@@ -67,6 +67,21 @@ public:
 		pfcands_pvassociationquality = std::make_unique<vector<int>>();
 		pfcands_dzassociatedpv       = std::make_unique<vector<double>>();
 		pfcands_vtxidx               = std::make_unique<vector<int>>();
+		vtx_sumtrackpt2              = std::make_unique<vector<double>>();
+	}
+
+	void calculateVertexQuantities(const int & nvtx) {
+		for (auto ivtx=0; ivtx<nvtx; ivtx++) {
+			auto it = pfcands_vtxidx->begin();
+			int index = -1;
+			double sumpt2 = 0;
+			while ((it = std::find(it, pfcands_vtxidx->end(), ivtx)) != pfcands_vtxidx->end()) {
+				index = std::distance(pfcands_vtxidx->begin(), it);
+				sumpt2 += trks->at(index).Perp2();
+				it++;
+			}
+			vtx_sumtrackpt2->push_back(sumpt2);
+		}
 	}
 
 	void fill(const reco::Vertex & primaryVertex, const pat::PackedCandidate & pfCand,
@@ -159,6 +174,7 @@ public:
 		iEvent.put(std::move(pfcands_pvassociationquality), "pfcandspvassociationquality");
 		iEvent.put(std::move(pfcands_dzassociatedpv      ), "pfcandsdzassociatedpv");
 		iEvent.put(std::move(pfcands_vtxidx              ), "pfcandsvtxidx");
+		iEvent.put(std::move(vtx_sumtrackpt2             ), "vtxsumtrackpt2");
 	}
 
 	// ----------member data ---------------------------
@@ -166,7 +182,8 @@ public:
 	std::unique_ptr<vector<math::XYZPoint>> trks_referencepoint;
 	std::unique_ptr<vector<bool>> trks_matchedtopfcand;
 	std::unique_ptr<vector<double>> trks_dzpv,trks_dzerrorpv,trks_dxypv,trks_dxyerrorpv,trks_normalizedchi2,trks_pterror,trks_etaerror,
-									trks_phierror,trks_qoverperror,trks_ip2d,trks_ip2dsig,trks_ip3d,trks_ip3dsig, pfcands_dzassociatedpv;
+									trks_phierror,trks_qoverperror,trks_ip2d,trks_ip2dsig,trks_ip3d,trks_ip3dsig, pfcands_dzassociatedpv,
+									vtx_sumtrackpt2;
 	std::unique_ptr<vector<int>> trks_chg, trks_found, trks_lost, trks_quality, pfcands_numberofhits, pfcands_numberofpixelhits,
 								 pfcands_firsthit, pfcands_frompv, pfcands_pvassociationquality, pfcands_vtxidx;
 	std::unique_ptr<vector<vector<int>>> trks_hitpattern;
@@ -263,6 +280,7 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	produces<vector<int> >                      ("pfcandspvassociationquality");
 	produces<vector<double> >                   ("pfcandsdzassociatedpv");
 	produces<vector<int> >                      ("pfcandsvtxidx");
+	produces<vector<double> >                   ("vtxsumtrackpt2");
 }
 
 CandidateTrackFilter::~CandidateTrackFilter() {
@@ -345,6 +363,11 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	}
 
 	//-------------------------------------------------------------------------------------------------
+	// calculate the vertex quantities based on the track vertex matching
+	//-------------------------------------------------------------------------------------------------	
+	infos.calculateVertexQuantities(storedVertices->size());
+
+	//-------------------------------------------------------------------------------------------------
 	// put track/PFCandidate values back into event
 	//-------------------------------------------------------------------------------------------------
 	bool result = (doFilter_) ? !infos.trks->empty() : true;
@@ -374,7 +397,7 @@ void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Han
 	//-------------------------------------------------------------------------------------------------
 	// loop over PFCandidates
 	//-------------------------------------------------------------------------------------------------
-	for (size_t i=0; i<collection->size();i++) {
+	for (size_t i=0; i<collection->size(); i++) {
 		const pat::PackedCandidate pfCand = (*collection)[i];
 
 		//-------------------------------------------------------------------------------------------------
