@@ -1100,6 +1100,7 @@ def makeTreeFromMiniAOD(self,process):
         from TreeMaker.Utils.candidateTrackMaker_cfi import candidateTrackFilter
         process.trackFilter = candidateTrackFilter.clone(
             vertexInputTag    = cms.InputTag("goodVertices"),
+            storedVerticesTag = cms.InputTag("primaryVertices","vtxref"),
             pfCandidatesTag   = cms.InputTag("packedPFCandidates"),
             lostTracksTag     = cms.InputTag("lostTracks"),
             lostEleTracksTag  = cms.InputTag("lostTracks","eleTracks"),
@@ -1136,6 +1137,7 @@ def makeTreeFromMiniAOD(self,process):
             'trackFilter:pfcandsfirsthit(Tracks_firstHit)',
             'trackFilter:pfcandsfrompv(Tracks_fromPV0)',
             'trackFilter:pfcandspvassociationquality(Tracks_pvAssociationQuality)',
+            'trackFilter:pfcandsvtxidx(Tracks_vertexIdx)',
         ])
         self.VectorVectorInt.extend([
             'trackFilter:trkshitpattern(Tracks_hitPattern)',
