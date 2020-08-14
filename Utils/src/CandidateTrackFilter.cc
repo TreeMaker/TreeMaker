@@ -73,17 +73,12 @@ public:
 		vtx_sumtrackpt2              = std::make_unique<vector<double>>();
 	}
 
-	void calculateVertexQuantities(const int & nvtx) {
-		for (auto ivtx=0; ivtx<nvtx; ivtx++) {
-			auto it = pfcands_vtxidx->begin();
-			int index = -1;
-			double sumpt2 = 0;
-			while ((it = std::find(it, pfcands_vtxidx->end(), ivtx)) != pfcands_vtxidx->end()) {
-				index = std::distance(pfcands_vtxidx->begin(), it);
-				sumpt2 += trks->at(index).Perp2();
-				it++;
-			}
-			vtx_sumtrackpt2->push_back(sumpt2);
+	void calculateVertexQuantities(int nvtx) {
+		vtx_sumtrackpt2->resize(nvtx,0);
+		int current_vtx_idx = -1;
+		for (unsigned int itrk=0; itrk<trks->size(); itrk++) {
+			current_vtx_idx = pfcands_vtxidx->at(itrk);
+			vtx_sumtrackpt2->at(current_vtx_idx) += trks->at(itrk).Perp2();
 		}
 	}
 
