@@ -1126,6 +1126,7 @@ def makeTreeFromMiniAOD(self,process):
             'trackFilter:trksip3d(Tracks_IP3DPV0)',
             'trackFilter:trksip3dsig(Tracks_IP3DSigPV0)',
             'trackFilter:pfcandsdzassociatedpv(Tracks_dzAssociatedPV)',
+            'trackFilter:vtxsumtrackpt2(PrimaryVertices_sumTrackPt2)'
         ])
         self.VectorInt.extend([
             'trackFilter:trkschg(Tracks_charge)',

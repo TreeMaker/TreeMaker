@@ -46,7 +46,6 @@ public:
 		vtx_zError->push_back(vertex.zError());
 		vtx_tError->push_back(vertex.tError());
 		vtx_ntracks->push_back(vertex.nTracks());
-
 	}
 
 	void fillRef(const edm::Handle<reco::VertexCollection> & vertices, const size_t & i) {
