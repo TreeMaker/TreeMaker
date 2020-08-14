@@ -1,5 +1,8 @@
 // system include files
+#include <algorithm>
 #include <memory>
+#include <numeric>
+
 
 // CMSSW include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -177,6 +180,71 @@ public:
 		iEvent.put(std::move(vtx_sumtrackpt2             ), "vtxsumtrackpt2");
 	}
 
+	template <typename T, typename Compare>
+	std::vector<std::size_t> sortPermutation(const std::unique_ptr<vector<T>>& vec, const Compare& compare) {
+		std::vector<std::size_t> idx(vec->size());
+		std::iota(idx.begin(), idx.end(), 0);
+		std::stable_sort(idx.begin(), idx.end(), [&](std::size_t i, std::size_t j){ return compare(vec->at(i), vec->at(j)); });
+		return idx;
+	}
+
+	template <typename T>
+	void applyPermutationInPlace(std::unique_ptr<vector<T>>& vec, const vector<size_t>& idx) {
+	    vector<bool> done(vec->size());
+	    for (size_t i = 0; i < vec->size(); ++i) {
+	        if (done[i]) continue;
+	        done[i] = true;
+	        size_t prev_j = i;
+	        size_t j = idx[i];
+	        while (i != j) {
+	            std::swap(vec->at(prev_j), vec->at(j));
+	            done[j] = true;
+	            prev_j = j;
+	            j = idx[j];
+	        }
+	    }
+	}
+
+	// Based on: https://stackoverflow.com/questions/17074324/how-can-i-sort-two-vectors-in-the-same-way-with-criteria-that-uses-only-one-of
+	void sortOnPt() {
+		//-------------------------------------------------------------------------------------------------
+		// initialize original index locations and sort the indices based on the values in the trks vector
+		//-------------------------------------------------------------------------------------------------
+		auto idx = sortPermutation(trks,[](math::XYZVector const& a, math::XYZVector const& b){ return sqrt(a.Perp2()) > sqrt(b.Perp2()); });
+
+		//-------------------------------------------------------------------------------------------------
+		// sort all of the trks/pfcands vectors based on this sorted indexing
+		//-------------------------------------------------------------------------------------------------
+		applyPermutationInPlace(trks,idx);
+		applyPermutationInPlace(trks_referencepoint,idx);
+		applyPermutationInPlace(trks_chg,idx);
+		applyPermutationInPlace(trks_dzpv,idx);
+		applyPermutationInPlace(trks_dzerrorpv,idx);
+		applyPermutationInPlace(trks_dxypv,idx);
+		applyPermutationInPlace(trks_dxyerrorpv,idx);
+		applyPermutationInPlace(trks_normalizedchi2,idx);
+		applyPermutationInPlace(trks_pterror,idx);
+		applyPermutationInPlace(trks_etaerror,idx);
+		applyPermutationInPlace(trks_phierror,idx);
+		applyPermutationInPlace(trks_qoverperror,idx);
+		applyPermutationInPlace(trks_ip2d,idx);
+		applyPermutationInPlace(trks_ip2dsig,idx);
+		applyPermutationInPlace(trks_ip3d,idx);
+		applyPermutationInPlace(trks_ip3dsig,idx);
+		applyPermutationInPlace(trks_found,idx);
+		applyPermutationInPlace(trks_lost,idx);
+		applyPermutationInPlace(trks_quality,idx);
+		applyPermutationInPlace(trks_hitpattern,idx);
+		applyPermutationInPlace(trks_matchedtopfcand,idx);
+		applyPermutationInPlace(pfcands_numberofhits,idx);
+		applyPermutationInPlace(pfcands_numberofpixelhits,idx);
+		applyPermutationInPlace(pfcands_firsthit,idx);
+		applyPermutationInPlace(pfcands_frompv,idx);
+		applyPermutationInPlace(pfcands_pvassociationquality,idx);
+		applyPermutationInPlace(pfcands_dzassociatedpv,idx);
+		applyPermutationInPlace(pfcands_vtxidx,idx);
+	}
+
 	// ----------member data ---------------------------
 	std::unique_ptr<vector<math::XYZVector>> trks;
 	std::unique_ptr<vector<math::XYZPoint>> trks_referencepoint;
@@ -251,36 +319,36 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 		doDisplacedMuons_ = true;
 	}
 
-	produces<std::vector<pat::PackedCandidate> >(""); 
-	produces<vector<math::XYZVector> >          ("trks");
-	produces<vector<math::XYZPoint> >           ("trksreferencepoint");
-	produces<vector<int> >                      ("trkschg");
-	produces<vector<double> >                   ("trksdzpv");
-	produces<vector<double> >                   ("trksdzerrorpv");
-	produces<vector<double> >                   ("trksdxypv");
-	produces<vector<double> >                   ("trksdxyerrorpv");
-	produces<vector<double> >                   ("trksnormalizedchi2");
-	produces<vector<double> >                   ("trkspterror");
-	produces<vector<double> >                   ("trksetaerror");
-	produces<vector<double> >                   ("trksphierror");
-	produces<vector<double> >                   ("trksqoverperror");
-	produces<vector<double> >                   ("trksip2d");
-	produces<vector<double> >                   ("trksip2dsig");
-	produces<vector<double> >                   ("trksip3d");
-	produces<vector<double> >                   ("trksip3dsig");
-	produces<vector<int> >                      ("trksfound");
-	produces<vector<int> >                      ("trkslost");
-	produces<vector<int> >                      ("trksquality");
-	produces<vector<vector<int>> >              ("trkshitpattern");
-	produces<vector<bool> >                     ("trksmatchedtopfcand");
-	produces<vector<int> >                      ("pfcandsnumberofhits");
-	produces<vector<int> >                      ("pfcandsnumberofpixelhits");
-	produces<vector<int> >                      ("pfcandsfirsthit");
-	produces<vector<int> >                      ("pfcandsfrompv");
-	produces<vector<int> >                      ("pfcandspvassociationquality");
-	produces<vector<double> >                   ("pfcandsdzassociatedpv");
-	produces<vector<int> >                      ("pfcandsvtxidx");
-	produces<vector<double> >                   ("vtxsumtrackpt2");
+	produces<vector<pat::PackedCandidate> > (""); 
+	produces<vector<math::XYZVector> >      ("trks");
+	produces<vector<math::XYZPoint> >       ("trksreferencepoint");
+	produces<vector<int> >                  ("trkschg");
+	produces<vector<double> >               ("trksdzpv");
+	produces<vector<double> >               ("trksdzerrorpv");
+	produces<vector<double> >               ("trksdxypv");
+	produces<vector<double> >               ("trksdxyerrorpv");
+	produces<vector<double> >               ("trksnormalizedchi2");
+	produces<vector<double> >               ("trkspterror");
+	produces<vector<double> >               ("trksetaerror");
+	produces<vector<double> >               ("trksphierror");
+	produces<vector<double> >               ("trksqoverperror");
+	produces<vector<double> >               ("trksip2d");
+	produces<vector<double> >               ("trksip2dsig");
+	produces<vector<double> >               ("trksip3d");
+	produces<vector<double> >               ("trksip3dsig");
+	produces<vector<int> >                  ("trksfound");
+	produces<vector<int> >                  ("trkslost");
+	produces<vector<int> >                  ("trksquality");
+	produces<vector<vector<int>> >          ("trkshitpattern");
+	produces<vector<bool> >                 ("trksmatchedtopfcand");
+	produces<vector<int> >                  ("pfcandsnumberofhits");
+	produces<vector<int> >                  ("pfcandsnumberofpixelhits");
+	produces<vector<int> >                  ("pfcandsfirsthit");
+	produces<vector<int> >                  ("pfcandsfrompv");
+	produces<vector<int> >                  ("pfcandspvassociationquality");
+	produces<vector<double> >               ("pfcandsdzassociatedpv");
+	produces<vector<int> >                  ("pfcandsvtxidx");
+	produces<vector<double> >               ("vtxsumtrackpt2");
 }
 
 CandidateTrackFilter::~CandidateTrackFilter() {
@@ -366,6 +434,11 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	// calculate the vertex quantities based on the track vertex matching
 	//-------------------------------------------------------------------------------------------------	
 	infos.calculateVertexQuantities(storedVertices->size());
+
+	//-------------------------------------------------------------------------------------------------
+	// sort the track quantities based on pT
+	//-------------------------------------------------------------------------------------------------	
+	infos.sortOnPt();
 
 	//-------------------------------------------------------------------------------------------------
 	// put track/PFCandidate values back into event
