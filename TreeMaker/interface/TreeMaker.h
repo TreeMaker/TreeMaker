@@ -66,7 +66,7 @@ class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 		edm::Service<TFileService> fs;
 		string treeName;
 		TTree* tree;	
-		bool doLorentz, sortBranches, debugTitles, nestedVectors;
+		bool doLorentz, sortBranches, debugTitles, nestedVectors, nestedCounts;
 		int splitLevel;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
@@ -376,8 +376,8 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 
 		// Constructor
 		TreeNestedVector() : TreeObject<Top>() {}
-		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true, bool associated_=false, int splitLevel_=0) :
-			TreeObject<Top>(tempFull_,title_,splitLevel_), nestedVectors(nestedVectors_), associated(associated_) {}
+		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true, bool nestedCounts_=true, bool associated_=false, int splitLevel_=0) :
+			TreeObject<Top>(tempFull_,title_,splitLevel_), nestedVectors(nestedVectors_), nestedCounts(nestedCounts_), associated(associated_) {}
 		// Destructor
 		~TreeNestedVector() override {}
 		
@@ -389,11 +389,11 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 			else 				return;
 			for(auto& sub : all) {
 				accum.insert(std::end(accum), std::begin(sub), std::end(sub));
-				if (!associated) offsets.insert(std::end(offsets), accum.size());
+				if (!associated) offsets.insert(std::end(offsets), nestedCounts ? sub.size() : accum.size());
 			}
 			// This protects against the case where there were >=1 empty sub-vectors, and only empty vectors
 			// Thus, nothing will be in the output (accum) vector, but the offsets would be all '0'
-			if (!associated && accum.size() == 0) offsets.clear();
+			if (!nestedCounts && !associated && accum.size() == 0) offsets.clear();
 		}
 		void SetConsumes(edm::ConsumesCollector && iC) override{
 			tok = iC.consumes<Top>(this->tag);
@@ -427,7 +427,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 				}
 				else {
 					this->tree->Branch((this->nameInTree).c_str(),GetSubType().c_str(),&values,32000,this->splitLevel);
-					if (!associated) this->tree->Branch((this->nameInTree+"Offsets").c_str(),"vector<int>",&offsets,32000,this->splitLevel);
+					if (!associated) this->tree->Branch((this->nameInTree+(nestedCounts ? "Counts" : "Offsets")).c_str(),"vector<int>",&offsets,32000,this->splitLevel);
 				}
 			}
 		}
@@ -454,7 +454,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 	protected:
 		// Member variables
 		edm::EDGetTokenT<Top> tok;
-		bool nestedVectors{}, associated{};
+		bool nestedVectors{}, nestedCounts{}, associated{};
 		Sub values;
 		vector<int> offsets;
 };
