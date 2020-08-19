@@ -162,7 +162,7 @@ class maker:
         if self.nestedVectors:
             print " Saving nested vectors as vector<vector<T>>"
             if self.nestedCounts:
-                print " Saving counts(not offsets) for nested vectors"
+                print " Saving counts (not offsets) for nested vectors"
         else: print " Saving nested vectors as vector<T> + vector<int>"
         print " TTree split level: "+str(self.splitLevel)
         print " "
