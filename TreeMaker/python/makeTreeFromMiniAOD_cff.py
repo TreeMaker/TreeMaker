@@ -161,6 +161,7 @@ def makeTreeFromMiniAOD(self,process):
                 keepIds = cms.vint32(),
                 keepFirst = cms.bool(False),
                 keepMinimal = cms.bool(True),
+                saveVtx = cms.bool(self.emerging),
             )
         else:
             process.genParticles = cms.EDProducer("GenParticlesProducer",
@@ -178,6 +179,7 @@ def makeTreeFromMiniAOD(self,process):
                 keepIds = cms.vint32(6,23,24,25),
                 keepFirst = cms.bool(True),
                 keepMinimal = cms.bool(False),
+                saveVtx = cms.bool(self.emerging),
             )
             # store gluons for signals with Higgs
             if "T5qqqqZH" in process.source.fileNames[0]: process.genParticles.childIds.append(21)
@@ -189,6 +191,9 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorInt.append("genParticles:ParentId(GenParticles_ParentId)")
         if not self.saveMinimalGenParticles:
             self.VectorBool.append("genParticles:TTFlag(GenParticles_TTFlag)")
+        if self.emerging:
+            self.VectorInt.append("genParticles:VtxIdx(GenParticles_vertexIdx)")
+            self.VectorXYZPoint.append("genParticles:GenVtx(GenVertices)")
         
         if self.saveGenTops:
             # for ttbar pT reweighting
