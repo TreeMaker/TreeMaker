@@ -41,6 +41,7 @@ enum TreeTypes {
 	t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4, t_xyzv=5, t_xyzp=6,
 	t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104, t_vxyzv=105, t_vxyzp=106, t_vfloat=107,
 	t_vvbool=200, t_vvint=201, t_vvdouble=202, t_vvstring=203, t_vvlorentz=204, t_vvxyzv=205, t_vvxyzp=206,
+	t_avvbool=300, t_avvint=301, t_avvdouble=302, t_avvstring=303, t_avvlorentz=304, t_avvxyzv=305, t_avvxyzp=306,
 	t_recocand=1000
 };
 
@@ -375,7 +376,8 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 
 		// Constructor
 		TreeNestedVector() : TreeObject<Top>() {}
-		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true, int splitLevel_=0) : TreeObject<Top>(tempFull_,title_,splitLevel_), nestedVectors(nestedVectors_) {}
+		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true, bool associated_=false, int splitLevel_=0) :
+			TreeObject<Top>(tempFull_,title_,splitLevel_), nestedVectors(nestedVectors_), associated(associated_) {}
 		// Destructor
 		~TreeNestedVector() override {}
 		
@@ -383,15 +385,15 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 		// From: https://stackoverflow.com/questions/17294629/merging-flattening-sub-vectors-into-a-single-vector-c-converting-2d-to-1d
 		void flatten(Top const& all, Sub &accum, vector<int> &offsets) {
 			// Don't store any offsets if there are no sub-vectors
-			if (all.size() > 0)	offsets.insert(std::end(offsets),0);
+			if (!associated && all.size() > 0)	offsets.insert(std::end(offsets),0);
 			else 				return;
 			for(auto& sub : all) {
 				accum.insert(std::end(accum), std::begin(sub), std::end(sub));
-				offsets.insert(std::end(offsets), accum.size());
+				if (!associated) offsets.insert(std::end(offsets), accum.size());
 			}
 			// This protects against the case where there were >=1 empty sub-vectors, and only empty vectors
 			// Thus, nothing will be in the output (accum) vector, but the offsets would be all '0'
-			if (accum.size() == 0) offsets.clear();
+			if (!associated && accum.size() == 0) offsets.clear();
 		}
 		void SetConsumes(edm::ConsumesCollector && iC) override{
 			tok = iC.consumes<Top>(this->tag);
@@ -410,7 +412,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 						totalLength += iOuter->size();
 					}
 					values.reserve(totalLength);
-					offsets.reserve(var->size());
+					if (!associated) offsets.reserve(var->size());
 					flatten(*var,values,offsets);
 				}
 			}
@@ -425,7 +427,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 				}
 				else {
 					this->tree->Branch((this->nameInTree).c_str(),GetSubType().c_str(),&values,32000,this->splitLevel);
-					this->tree->Branch((this->nameInTree+"Offsets").c_str(),"vector<int>",&offsets,32000,this->splitLevel);
+					if (!associated) this->tree->Branch((this->nameInTree+"Offsets").c_str(),"vector<int>",&offsets,32000,this->splitLevel);
 				}
 			}
 		}
@@ -435,7 +437,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 			}
 			else{
 				values.clear();
-				offsets.clear();
+				if (!associated) offsets.clear();
 			}
 		}
 		const string GetTopType() {
@@ -452,7 +454,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 	protected:
 		// Member variables
 		edm::EDGetTokenT<Top> tok;
-		bool nestedVectors{};
+		bool nestedVectors{}, associated{};
 		Sub values;
 		vector<int> offsets;
 };

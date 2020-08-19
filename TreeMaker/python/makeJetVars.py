@@ -471,14 +471,14 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             JetPropertiesAK8.SJaxisminor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis2')
             JetPropertiesAK8.SJmultiplicity = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:mult')
             JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDropPuppiUpdated','pfCombinedInclusiveSecondaryVertexV2BJetTags')
-            self.VectorVectorDouble.extend([
+            self.AssocVectorVectorDouble.extend([
                 'JetProperties'+suff+':jecFactorSubjets(Jets'+suff+'_subjets_jecFactor)',
                 'JetProperties'+suff+':SJptD(Jets'+suff+'_subjets_ptD)',
                 'JetProperties'+suff+':SJaxismajor(Jets'+suff+'_subjets_axismajor)',
                 'JetProperties'+suff+':SJaxisminor(Jets'+suff+'_subjets_axisminor)',
                 'JetProperties'+suff+':SJbDiscriminatorCSV(Jets'+suff+'_subjets_bDiscriminatorCSV)',
             ])
-            self.VectorVectorInt.extend([
+            self.AssocVectorVectorInt.extend([
                 'JetProperties'+suff+':SJmultiplicity(Jets'+suff+'_subjets_multiplicity)',
             ])
 
@@ -515,7 +515,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             JetPropertiesAK8.GenSubjetTag = cms.InputTag('slimmedGenJetsAK8SoftDropSubJets')
             JetPropertiesAK8.properties.extend(["SJresponse"])
             JetPropertiesAK8.SJresponse = cms.vstring('SoftDropPuppiUpdated')
-            self.VectorVectorDouble.extend([
+            self.AssocVectorVectorDouble.extend([
                 'JetProperties'+suff+':SJresponse(Jets'+suff+'_subjets_response)',
             ])
 
