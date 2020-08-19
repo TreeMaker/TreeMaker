@@ -15,7 +15,7 @@ debugTitles = cms.bool(False),
 #switches to vector<T> values, vector<int> skips
 nestedVectors = cms.bool(True),
 #if storing nested vectors, stores counts rather than offsets
-nestedCounts = cms.bool(True),
+storeOffsets = cms.bool(False),
 #split level for the TBranches
 splitLevel = cms.int32(0),
 # list of reco candidate objects: for each reco cand collection, the math::LorentzVector will be stored in a vector.

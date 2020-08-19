@@ -63,7 +63,7 @@ def makeTreeFromMiniAOD(self,process):
         AssocVectorVectorXYZPoint      = self.AssocVectorVectorXYZVector,
         TitleMap                       = self.TitleMap,
         nestedVectors                  = self.nestedVectors,
-        nestedCounts                   = self.nestedCounts,
+        storeOffsets                   = self.storeOffsets,
         splitLevel                     = self.splitLevel,
     )
 
