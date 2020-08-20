@@ -20,7 +20,7 @@
 The following installation instructions assume the user wants to process 2016, 2017, or 2018 miniAOD.
 
 ```
-wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017/setup.sh
+wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_2017_V18/setup.sh
 chmod +x setup.sh
 ./setup.sh
 cd CMSSW_10_2_21/src/
@@ -31,7 +31,7 @@ cd TreeMaker/Production/test
 The script [setup.sh](./setup.sh) has options to allow installing a different fork or branch of TreeMaker
 (though some branches may have different setup scripts, so check carefully which one you download):
 * `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
-* `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017)
+* `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017_V18)
 * `-B`: configure some settings for checkout within batch setups
 * `-c [version]`: which CMSSW version to use (default = CMSSW_10_2_21)
 * `-a [protocol]`: which protocol to use for `git clone` (default = ssh, alternative = https)
