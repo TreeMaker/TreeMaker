@@ -29,7 +29,7 @@ cd TreeMaker/Production/test
 The script [setup.sh](./setup.sh) has options to allow installing a different fork or branch of TreeMaker
 (though some branches may have different setup scripts, so check carefully which one you download):
 * `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
-* `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017)
+* `-b [branch]`: which branch to download (`-b branch`, default = Run2_2017_V17)
 * `-c [version]`: which CMSSW version to use (default = CMSSW_10_2_11_patch1)
 * `-a [protocol]`: which protocol to use for `git clone` (default = ssh, alternative = https)
 * `-j [cores]`: run CMSSW compilation on # cores (default = 8)
