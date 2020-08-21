@@ -60,6 +60,7 @@ class maker:
         self.getParamDefault("saveGenTops", False)
         self.getParamDefault("doMT2",False)
         self.getParamDefault("nestedVectors", True)
+        self.getParamDefault("storeOffsets", False)
         self.getParamDefault("splitLevel", 0)
         
         # take command line input (w/ defaults from scenario if specified)
@@ -158,7 +159,10 @@ class maker:
         print " Storing a minimal set of GenParticles: "+str(self.saveMinimalGenParticles)
         print " Storing the GenTops: "+str(self.saveGenTops)
         print " Saving the MT2 variable: "+str(self.doMT2)
-        if self.nestedVectors: print " Saving nested vectors as vector<vector<T>>"
+        if self.nestedVectors:
+            print " Saving nested vectors as vector<vector<T>>"
+            if self.storeOffsets:
+                print " Saving counts (not offsets) for nested vectors"
         else: print " Saving nested vectors as vector<T> + vector<int>"
         print " TTree split level: "+str(self.splitLevel)
         print " "

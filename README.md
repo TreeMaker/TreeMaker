@@ -253,7 +253,8 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `saveMinimalGenParticles`: save only the hard scatter gen particles coming from top decays, boson decays, semi-visible jets, or SUSY particles (default=True)
 * `saveGenTops`: save the 4-vectors of the generated tops and the TTbar reweighting scale factor (default=False)
 * `doMT2`: switch to enable the storage of the MT2 variable (default=False)
-* `nestedVectors`: switch to change from saving vector<\vector<T>> to saving vector<T> values and vector<\int> offsets (default=True)
+* `nestedVectors`: switch to change from saving vector<\vector<T>> to saving vector<T> values and vector<\int> counts (default=True)
+* `storeOffsets`: if set to True, stores offsets rather than counts when using `nestedVectors=False` (default=False)
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
