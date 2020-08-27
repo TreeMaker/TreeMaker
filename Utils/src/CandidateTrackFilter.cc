@@ -366,7 +366,8 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------------------
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByToken(vertexInputTok_, vertices);
-	const reco::Vertex* primaryVertex = vertices->empty() ? nullptr : &vertices->at(0);
+	bool hasGoodVtx = !vertices->empty();
+	const reco::Vertex* primaryVertex = hasGoodVtx ? &vertices->at(0) : nullptr ;
 
 	//-------------------------------------------------------------------------------------------------
 	// get the Good Vertices Collection
@@ -438,7 +439,7 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------------------
 	// put track/PFCandidate values back into event
 	//-------------------------------------------------------------------------------------------------
-	bool result = (doFilter_) ? !infos.trks->empty() : true;
+	bool result = (doFilter_) ? (!infos.trks->empty() && hasGoodVtx) : true;
 	infos.put(iEvent);
 	return result;
 }
