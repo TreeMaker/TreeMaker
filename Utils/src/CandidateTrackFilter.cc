@@ -359,14 +359,8 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------------------
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByToken(vertexInputTok_, vertices);
-	bool hasGoodVtx = false;
-	if (!vertices->empty()) hasGoodVtx = true;
+	if(vertices->empty()) {return false;} // Early exit if not primary vertex available
 	auto primaryVertex = vertices->at(0); //IS THIS THE PRIMARY VERTEX?
-
-	//-------------------------------------------------------------------------------------------------
-	// skip events with no good vertices
-	//-------------------------------------------------------------------------------------------------
-	if(!hasGoodVtx) return false;
 
 	//-------------------------------------------------------------------------------------------------
 	// get the Good Vertices Collection
