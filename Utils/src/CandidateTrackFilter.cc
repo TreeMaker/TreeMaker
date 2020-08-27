@@ -82,7 +82,7 @@ public:
 		}
 	}
 
-	void fill(const reco::Vertex & primaryVertex, const pat::PackedCandidate & pfCand,
+	void fill(const reco::Vertex * primaryVertex, const pat::PackedCandidate & pfCand,
 	          const reco::Track & track, const reco::TransientTrack & transientTrack,
 	          bool trackMatch, int vtxIdx) {
 		// basic information from the reco::Track
@@ -90,7 +90,7 @@ public:
 		trks->push_back(track.momentum());
 		trks_referencepoint->push_back(track.referencePoint());
 		trks_chg->push_back(track.charge());
-		trks_dzpv->push_back(track.dz()); //returns the ip wrt PV[0] 
+		trks_dzpv->push_back(track.dz()); //returns the ip wrt PV[0]
 		trks_dzerrorpv->push_back(track.dzError());
 		trks_dxypv->push_back(track.dxy());
 		trks_dxyerrorpv->push_back(track.dxyError());
@@ -115,12 +115,19 @@ public:
 		//      qualitySize = 8
 		trks_quality->push_back(track.qualityMask());
 		// impact parameter variables
-		std::pair<bool,Measurement1D> ip2d = IPTools::absoluteTransverseImpactParameter(transientTrack, primaryVertex);
-		std::pair<bool,Measurement1D> ip3d = IPTools::absoluteImpactParameter3D(transientTrack, primaryVertex);
-		trks_ip2d->push_back(ip2d.second.value());
-		trks_ip2dsig->push_back(ip2d.second.significance());
-		trks_ip3d->push_back(ip3d.second.value());
-		trks_ip3dsig->push_back(ip3d.second.significance());
+		if( primaryVertex ){
+			std::pair<bool,Measurement1D> ip2d = IPTools::absoluteTransverseImpactParameter(transientTrack, *primaryVertex);
+			std::pair<bool,Measurement1D> ip3d = IPTools::absoluteImpactParameter3D(transientTrack, *primaryVertex);
+			trks_ip2d->push_back(ip2d.second.value());
+			trks_ip2dsig->push_back(ip2d.second.significance());
+			trks_ip3d->push_back(ip3d.second.value());
+			trks_ip3dsig->push_back(ip3d.second.significance());
+		} else {
+			trks_ip2d->push_back(-100);
+			trks_ip2dsig->push_back(-100);
+			trks_ip3d->push_back(-100);
+			trks_ip3dsig->push_back(-100);
+		}
 		// hit pattern of the track:
 		//   Reference: https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_11_patch1/DataFormats/TrackReco/interface/HitPattern.h
 		const reco::HitPattern &hp = track.hitPattern();
@@ -263,7 +270,7 @@ private:
 	int  getVertexIndex(const pat::PackedCandidate & pfCand, const edm::Handle<edm::View<reco::VertexRef> > & goodVertices) const;
 	void loopOverCollection(TrackInfos & infos, const edm::Handle<edm::View<pat::PackedCandidate> > & collection,
 							const edm::ESHandle<TransientTrackBuilder> & ttBuilder,
-							const reco::Vertex & primaryVertex, const edm::Handle<edm::View<reco::VertexRef> > & goodVertices,
+							const reco::Vertex * primaryVertex, const edm::Handle<edm::View<reco::VertexRef> > & goodVertices,
 							bool trackMatch) const;
 
 	// ----------member data ---------------------------
@@ -287,7 +294,7 @@ private:
 //
 // constructors and destructor
 //
-CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) : 
+CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	pfCandidatesTag_            (iConfig.getParameter<edm::InputTag>("pfCandidatesTag")),
 	lostTracksTag_              (iConfig.getParameter<edm::InputTag>("lostTracksTag")),
 	lostEleTracksTag_           (iConfig.getParameter<edm::InputTag>("lostEleTracksTag")),
@@ -301,7 +308,7 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	debug_                      (iConfig.getParameter<bool>         ("debug")),
 	doFilter_                   (iConfig.getParameter<bool>         ("doFilter")),
 	doDisplacedMuons_           (false)
-{	
+{
 	pfCandidatesTok_             = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
 	lostTracksTok_               = consumes<edm::View<pat::PackedCandidate>>(lostTracksTag_);
 	lostEleTracksTok_            = consumes<edm::View<pat::PackedCandidate>>(lostEleTracksTag_);
@@ -314,7 +321,7 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 		doDisplacedMuons_ = true;
 	}
 
-	produces<vector<pat::PackedCandidate> > (""); 
+	produces<vector<pat::PackedCandidate> > ("");
 	produces<vector<math::XYZVector> >      ("trks");
 	produces<vector<math::XYZPoint> >       ("trksreferencepoint");
 	produces<vector<int> >                  ("trkschg");
@@ -359,8 +366,7 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	//-------------------------------------------------------------------------------------------------
 	edm::Handle<edm::View<reco::Vertex> > vertices;
 	iEvent.getByToken(vertexInputTok_, vertices);
-	if(vertices->empty()) {return false;} // Early exit if not primary vertex available
-	auto primaryVertex = vertices->at(0); //IS THIS THE PRIMARY VERTEX?
+	const reco::Vertex* primaryVertex = vertices->empty() ? nullptr : &vertices->at(0);
 
 	//-------------------------------------------------------------------------------------------------
 	// get the Good Vertices Collection
@@ -421,12 +427,12 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 
 	//-------------------------------------------------------------------------------------------------
 	// calculate the vertex quantities based on the track vertex matching
-	//-------------------------------------------------------------------------------------------------	
+	//-------------------------------------------------------------------------------------------------
 	infos.calculateVertexQuantities(storedVertices->size());
 
 	//-------------------------------------------------------------------------------------------------
 	// sort the track quantities based on pT
-	//-------------------------------------------------------------------------------------------------	
+	//-------------------------------------------------------------------------------------------------
 	infos.sortOnPt();
 
 	//-------------------------------------------------------------------------------------------------
@@ -454,7 +460,7 @@ int CandidateTrackFilter::getVertexIndex(const pat::PackedCandidate & pfCand, co
 
 void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Handle<edm::View<pat::PackedCandidate> > & collection,
 											  const edm::ESHandle<TransientTrackBuilder> & ttBuilder,
-											  const reco::Vertex & primaryVertex, const edm::Handle<edm::View<reco::VertexRef> > & storedVertices,
+											  const reco::Vertex * primaryVertex, const edm::Handle<edm::View<reco::VertexRef> > & storedVertices,
 											  bool trackMatch) const {
 	//-------------------------------------------------------------------------------------------------
 	// loop over PFCandidates
