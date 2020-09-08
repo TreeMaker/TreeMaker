@@ -85,7 +85,6 @@ def makeTreeFromMiniAOD(self,process):
             debug = cms.bool(False),
             isLHE = cms.bool(False)
         )
-        self.VarsDouble.extend(['SignalScan:SusyMotherMass','SignalScan:SusyLSPMass'])
         self.VectorDouble.extend(['SignalScan:SignalParameters'])
         # set scan type ("None" by default, producer does nothing)
         if self.signal:
