@@ -151,14 +151,14 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   iEvent.getByToken(genProductToken_, genHandle);
   if(genHandle.isValid()){
     auto helper = makeHelper(genHandle.product(),norm_);
-    if(!found_scales or !found_pdfs){
+    if((!found_scales and nScales_>0) or (!found_pdfs and nPDFs_>0)){
       unsigned offset = 1;
       //renormalization/factorization scale weights
       found_scales = helper.fillWeights(scaleweights.get(),offset,nScales_,wtype::scale);
       //pdf weights
       if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,wtype::pdf);
     }
-    else if(!found_pss){
+    else if(!found_pss and nPSs_>0){
       unsigned offset = 0;
       found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,wtype::ps);
     }

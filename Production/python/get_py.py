@@ -1,6 +1,5 @@
 import re,sys,getopt,urllib2,json,os
 # check os
-slc = os.environ['SCRAM_ARCH'].split('_')[0]
 extra_paths = [
     "/cvmfs/cms.cern.ch/share/cms/crab-prod/3.3.2005-bcolbf/lib/",
 ]

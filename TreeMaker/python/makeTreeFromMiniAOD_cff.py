@@ -118,6 +118,9 @@ def makeTreeFromMiniAOD(self,process):
             normalize = (not "SVJ" in self.sample), # skip normalization only for SVJ signals
             pdfSetName = cms.string("NNPDF31_lo_as_0130"),
         )
+        if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
+            process.PDFWeights.nScales = 0
+            process.PDFWeights.nPDFs = 0
         self.VectorFloat.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
 
     ## ----------------------------------------------------------------------------------------------
