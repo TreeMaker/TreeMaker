@@ -255,14 +255,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     self.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')'])
 #    self.VarsDouble.extend(['METclean'+suff+':RawPt(RawMETclean'+suff+')','METclean'+suff+':RawPhi(RawMETPhiclean'+suff+')'])
 
-    if self.doMETfix:
-        METcleanOrig = METclean.clone(
-            METTag = METTagOrig
-        )
-        setattr(process,"METclean"+suff+"Orig",METcleanOrig)
-        self.VarsDouble.extend(['METclean'+suff+'Orig:Pt(METclean'+suff+'Orig)','METclean'+suff+'Orig:Phi(METPhiclean'+suff+'Orig)'])
-#        self.VarsDouble.extend(['METclean'+suff+'Orig:RawPt(RawMETclean'+suff+'Orig)','METclean'+suff+'Orig:RawPhi(RawMETPhiclean'+suff+'Orig)'])
-
     return process
 
 def doZinvBkg(self,process):
