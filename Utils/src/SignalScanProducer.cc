@@ -61,7 +61,6 @@ class SignalScanProducer : public edm::stream::EDProducer<> {
 		bool shouldScan_, debug_, isLHE_;
 		signal_type type_;
 		std::vector<double> signalParameters_;
-		double motherMass_, lspMass_;
 };
 
 SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) : 
@@ -69,9 +68,7 @@ SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) :
 	genLumiHeaderToken_(consumes<GenLumiInfoHeader,edm::InLumi>(edm::InputTag("generator"))),
 	shouldScan_(true),
 	debug_(iConfig.getParameter<bool>("debug")),
-	isLHE_(iConfig.getParameter<bool>("isLHE")),
-	motherMass_(0),
-	lspMass_(0)
+	isLHE_(iConfig.getParameter<bool>("isLHE"))
 {
 	std::string stype(iConfig.getParameter<std::string>("signalType"));
 	if(stype=="None") { type_ = signal_type::None; shouldScan_ = false; }
@@ -82,9 +79,6 @@ SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) :
 
 	callWhenNewProductsRegistered(getterOfProducts_);
 	produces<std::vector<double>>("SignalParameters");
-	//backward compatibility, remove after V17
-	produces<double>("SusyMotherMass");
-	produces<double>("SusyLSPMass");
 }
 
 SignalScanProducer::~SignalScanProducer()
@@ -115,12 +109,6 @@ void SignalScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 
 	auto signalParameters = std::make_unique<std::vector<double>>(signalParameters_);
 	iEvent.put(std::move(signalParameters), "SignalParameters");
-
-	auto motherMass = std::make_unique<double>(motherMass_);
-	iEvent.put(std::move(motherMass), "SusyMotherMass");
-
-	auto lspMass = std::make_unique<double>(lspMass_);
-	iEvent.put(std::move(lspMass), "SusyLSPMass");
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
@@ -151,8 +139,6 @@ SignalScanProducer::fillDescriptions(edm::ConfigurationDescriptions& description
 //reset output vars
 void SignalScanProducer::reset(){
 	signalParameters_.clear();
-	motherMass_ = 0;
-	lspMass_ = 0;
 }
 
 //parse LHE for SUSY
@@ -191,15 +177,17 @@ void SignalScanProducer::getSUSYModelInfo(std::string comment){
 	//model name_xChi_mMother_mLSP (1+3 fields)
 	//model name_name_name_mMother_mLSP (3+2 fields)
 	//just take last two values and convert to doubles
-	
+
+	double motherMass, lspMass;
+
 	std::stringstream sfield1(fields.end()[-1]);
-	sfield1 >> lspMass_;
+	sfield1 >> lspMass;
 	
 	std::stringstream sfield2(fields.end()[-2]);
-	sfield2 >> motherMass_;
+	sfield2 >> motherMass;
 
-	signalParameters_.push_back(motherMass_);
-	signalParameters_.push_back(lspMass_);
+	signalParameters_.push_back(motherMass);
+	signalParameters_.push_back(lspMass);
 }
 
 //parse LHE for pMSSM
