@@ -427,7 +427,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 				}
 				else {
 					this->tree->Branch((this->nameInTree).c_str(),GetSubType().c_str(),&values,32000,this->splitLevel);
-					if (!associated) this->tree->Branch((this->nameInTree+(storeOffsets ? "Counts" : "Offsets")).c_str(),"vector<int>",&offsets,32000,this->splitLevel);
+					if (!associated) this->tree->Branch((this->nameInTree+(storeOffsets ? "Offsets" : "Counts")).c_str(),"vector<int>",&offsets,32000,this->splitLevel);
 				}
 			}
 		}
