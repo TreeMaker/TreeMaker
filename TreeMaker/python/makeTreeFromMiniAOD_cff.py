@@ -1094,7 +1094,7 @@ def makeTreeFromMiniAOD(self,process):
     ## Emerging jets
     ## ----------------------------------------------------------------------------------------------
     if self.emerging:
-        self.VectorXYZPoint.extend(['primaryVertices:vtxposition(PrimaryVertices_position)'])
+        self.VectorXYZPoint.extend(['primaryVertices:vtxposition(PrimaryVertices)'])
         self.VectorDouble.extend([
             'primaryVertices:vtxtime(PrimaryVertices_time)',
             'primaryVertices:vtxndof(PrimaryVertices_ndof)',
