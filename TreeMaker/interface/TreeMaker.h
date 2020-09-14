@@ -385,8 +385,8 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<Base>>> {
 		// From: https://stackoverflow.com/questions/17294629/merging-flattening-sub-vectors-into-a-single-vector-c-converting-2d-to-1d
 		void flatten(Top const& all, Sub &accum, vector<int> &offsets) {
 			// Don't store any offsets if there are no sub-vectors
-			if (!associated && all.size() > 0){ if(storeOffsets) offsets.insert(std::end(offsets),0); }
-			else 				return;
+			if (all.size() == 0) return;
+			if (!associated && storeOffsets) { offsets.insert(std::end(offsets),0); }
 			for(auto& sub : all) {
 				accum.insert(std::end(accum), std::begin(sub), std::end(sub));
 				if (!associated) offsets.insert(std::end(offsets), storeOffsets ? accum.size() : sub.size());
