@@ -22,13 +22,13 @@ jobs:
     steps:
     - name: Reset User on Push
       if: github.event_name == 'push'
-      run: echo ::set-env name=current_user::$(echo ${{ github.repository }} | sed -E 's|/.*||')
+      run: echo "current_user=$(echo ${{ github.repository }} | sed -E 's|/.*||')" >> $GITHUB_ENV
     - name: Reset User on Pull Request
       if: github.event_name == 'pull_request'
-      run: echo ::set-env name=current_user::${{ github.event.pull_request.head.repo.owner.login }}
+      run: echo "current_user=${{ github.event.pull_request.head.repo.owner.login }}" >> $GITHUB_ENV
     - name: Reset Branch on Pull Request
       if: github.event_name == 'pull_request'
-      run: echo ::set-env name=current_branch::${{ github.head_ref }}
+      run: echo "current_branch=${{ github.head_ref }}" >> $GITHUB_ENV
     - name: Look at key environment variables
       run: echo -e "GITHUB_REF=${{ github.ref }}\nGITHUB_HEAD_REF=${{ github.head_ref }}\nGITHUB_BASE_REF=${{ github.base_ref }}\nGITHUB_ACTOR=${{ github.actor }}\nGITHUB_REPOSITORY=${{ github.repository }}\nGITHUB_SHA=${{ github.sha }}\nUSER=${{ env.current_user }}\nBANCH=${{ env.current_branch }}"
     - name: Take a look around
@@ -74,7 +74,7 @@ jobs:
     steps:
     - name: Reset User on Push
       if: github.event_name == 'push'
-      run: echo ::set-env name=current_user::$(echo ${{ github.repository }} | sed -E 's|/.*||')
+      run: echo "current_user=$(echo ${{ github.repository }} | sed -E 's|/.*||')" >> $GITHUB_ENV
     - name: Run the container and perform an integration test
       env:
         download_url: https://cernbox.cern.ch/index.php/s/DsfTPyDEgCjTmBQ/download
@@ -102,10 +102,10 @@ jobs:
     - name: Redefine branch on push
       if: github.event_name == 'push'
       run: |
-        echo ::set-env name=current_branch::$(echo ${{ github.ref }} | sed -E 's|refs/[a-zA-Z]+/||')
+        echo "current_branch=$(echo ${{ github.ref }} | sed -E 's|refs/[a-zA-Z]+/||')" >> $GITHUB_ENV
     - name: Reset user on push
       if: github.event_name == 'push'
-      run: echo ::set-env name=current_user::$(echo ${{ github.repository }} | sed -E 's|/.*||')
+      run: echo "current_user=$(echo ${{ github.repository }} | sed -E 's|/.*||')" >> $GITHUB_ENV
     - name: Look at key environment variables
       run: echo -e "GITHUB_REF=${{ github.ref }}\nGITHUB_HEAD_REF=${{ github.head_ref }}\nGITHUB_BASE_REF=${{ github.base_ref }}\nGITHUB_ACTOR=${{ github.actor }}\nGITHUB_REPOSITORY=${{ github.repository }}\nGITHUB_SHA=${{ github.sha }}\nUSER=${{ env.current_user }}\nBANCH=${{ env.current_branch }}\nTIME=${{ steps.current-time.outputs.formattedTime }}"
     - name: Dump GitHub context
