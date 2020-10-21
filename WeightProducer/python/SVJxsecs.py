@@ -145,5 +145,31 @@ SVJxsecs = {
     "mZprime-5100" : {
         "CrossSection" : XSValues(XS_13TeV=0.0001523),
     },
+    "t-channel_mMed-400" : {
+        "CrossSection" : XSValues(XS_13TeV=54.24), # uncertainty: 0.2163
+    },
+    "t-channel_mMed-500" : {
+        "CrossSection" : XSValues(XS_13TeV=21.7), # uncertainty: 0.08651
+    },
+    "t-channel_mMed-600" : {
+        "CrossSection" : XSValues(XS_13TeV=10.07), # uncertainty: 0.04063
+    },
+    "t-channel_mMed-800" : {
+        "CrossSection" : XSValues(XS_13TeV=3.096), # uncertainty: 0.0124
+    },
+    "t-channel_mMed-1000" : {
+        "CrossSection" : XSValues(XS_13TeV=1.247), # uncertainty: 0.004968
+    },
+    "t-channel_mMed-2000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.08492), # uncertainty: 3.290e-04
+    },
+    "t-channel_mMed-3000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.01891), # uncertainty: 7.277e-05
+    },
+    "t-channel_mMed-4000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.006132), # uncertainty: 2.361e-05
+    },
+    "t-channel_mMed-6000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.001269), # uncertainty: 4.938e-06
+    },
 }
-
