@@ -145,6 +145,9 @@ SVJxsecs = {
     "mZprime-5100" : {
         "CrossSection" : XSValues(XS_13TeV=0.0001523),
     },
+    "t-channel_mMed-200" : {
+        "CrossSection" : XSValues(XS_13TeV=990.8), # uncertainty: 3.617
+    },
     "t-channel_mMed-400" : {
         "CrossSection" : XSValues(XS_13TeV=54.24), # uncertainty: 0.2163
     },
