@@ -59,7 +59,6 @@ triggerNameList = cms.vstring(
     'HLT_HT430_DisplacedDijet60_DisplacedTrack_v',
     'HLT_HT430_DisplacedDijet80_DisplacedTrack_v',
     'HLT_HT500_DisplacedDijet40_DisplacedTrack_v',
-    'HLT_HT550_DisplacedDijet40_Inclusive_v',
     'HLT_HT650_DisplacedDijet60_Inclusive_v',
     'HLT_HT650_DisplacedDijet80_Inclusive_v',
     'HLT_HT750_DisplacedDijet80_Inclusive_v',
