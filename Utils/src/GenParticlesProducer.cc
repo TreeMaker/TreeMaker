@@ -219,6 +219,7 @@ enum particle_type
     sbottom2=2000005,
     stop2=2000006,
     //HV particles
+    hvscalar=4900001,
     hvgluon=4900021,
     zprime=4900023,
     hvquark1=4900101,
@@ -374,7 +375,7 @@ void GenParticlesProducer::storeMinimal(const edm::Handle< edm::View<reco::GenPa
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a SUSY chain ... ";
                 saveChain(-1, particle.mother()->pdgId(), -1, particle, genPartInfos, stored_particles_ref, stored_particles_list, parents_list);
             }
-            else if(absPdgId>=hvgluon && absPdgId<=hvrho2) {
+            else if(absPdgId>=hvscalar && absPdgId<=hvrho2) {
                 if(debug) edm::LogInfo("TreeMaker") << "Saving a Hidden Valley chain ... ";
                 saveChain(-1, particle.mother()->pdgId(), -1, particle, genPartInfos, stored_particles_ref, stored_particles_list, parents_list);
             }
