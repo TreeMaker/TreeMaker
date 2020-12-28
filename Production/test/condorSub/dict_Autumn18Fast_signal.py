@@ -14,6 +14,12 @@ flist = {
         ['Autumn18Fast.SMS-T2qq_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Autumn18Fast.SMS-T2qq_mSq-1850to2600_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Autumn18Fast.SMS-T5qqqqVV_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18Fast.SMS-T5qqqqZH_HToBB-mGluino-1000to1300-mLSP0to1100_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18Fast.SMS-T5qqqqZH_HToBB-mGluino-1350to1600-mLSP0to1400_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18Fast.SMS-T5qqqqZH_HToBB-mGluino-1650to1850-mLSP0to1600_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18Fast.SMS-T5qqqqZH_HToBB-mGluino-1900to2100-mLSP0to1600_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18Fast.SMS-T5qqqqZH_HToBB-mGluino-2150to2350-mLSP0to1600_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18Fast.SMS-T5qqqqZH_HToBB-mGluino-2400to2600-mLSP0to1600_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Autumn18Fast.SMS-TChiHH_HToBB_HToBB_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Autumn18Fast.SMS-TChiHH_HToBB_HToBB_2D_TuneCP2_13TeV-madgraphMLM-pythia8'],
     ]
