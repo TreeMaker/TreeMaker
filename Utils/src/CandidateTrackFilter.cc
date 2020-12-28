@@ -64,6 +64,7 @@ public:
 		trks_hitpattern              = std::make_unique<vector<vector<int>>>();
 		trks_matchedtopfcand         = std::make_unique<vector<bool>>();
 		pfcands_energy               = std::make_unique<vector<double>>();
+		pfcands_pdgid                = std::make_unique<vector<int>>();
 		pfcands_numberofhits         = std::make_unique<vector<int>>();
 		pfcands_numberofpixelhits    = std::make_unique<vector<int>>();
 		pfcands_firsthit             = std::make_unique<vector<int>>();
@@ -143,6 +144,7 @@ public:
 		// information from the pat::PackedCandidate
 		//   Reference: https://github.com/cms-sw/cmssw/blob/master/DataFormats/ParticleFlowCandidate/interface/PFCandidate.h
 		pfcands_energy->push_back(pfCand.energy());
+		pfcands_pdgid->push_back(pfCand.pdgId());
 		pfcands_numberofhits->push_back(pfCand.numberOfHits());
 		pfcands_numberofpixelhits->push_back(pfCand.numberOfPixelHits());
 		pfcands_firsthit->push_back(pfCand.firstHit());
@@ -175,6 +177,7 @@ public:
 		iEvent.put(std::move(trks_hitpattern             ), "trkshitpattern");
 		iEvent.put(std::move(trks_matchedtopfcand        ), "trksmatchedtopfcand");
 		iEvent.put(std::move(pfcands_energy              ), "pfcandsenergy");
+		iEvent.put(std::move(pfcands_pdgid               ), "pfcandspdgid");
 		iEvent.put(std::move(pfcands_numberofhits        ), "pfcandsnumberofhits");
 		iEvent.put(std::move(pfcands_numberofpixelhits   ), "pfcandsnumberofpixelhits");
 		iEvent.put(std::move(pfcands_firsthit            ), "pfcandsfirsthit");
@@ -242,6 +245,7 @@ public:
 		applyPermutationInPlace(trks_hitpattern,idx);
 		applyPermutationInPlace(trks_matchedtopfcand,idx);
 		applyPermutationInPlace(pfcands_energy,idx);
+		applyPermutationInPlace(pfcands_pdgid,idx);
 		applyPermutationInPlace(pfcands_numberofhits,idx);
 		applyPermutationInPlace(pfcands_numberofpixelhits,idx);
 		applyPermutationInPlace(pfcands_firsthit,idx);
@@ -258,7 +262,7 @@ public:
 	std::unique_ptr<vector<double>> trks_dzpv,trks_dzerrorpv,trks_dxypv,trks_dxyerrorpv,trks_normalizedchi2,trks_pterror,trks_etaerror,
 									trks_phierror,trks_qoverperror,trks_ip2d,trks_ip2dsig,trks_ip3d,trks_ip3dsig, pfcands_energy,
 									pfcands_dzassociatedpv, vtx_sumtrackpt2;
-	std::unique_ptr<vector<int>> trks_chg, trks_found, trks_lost, trks_quality, pfcands_numberofhits, pfcands_numberofpixelhits,
+	std::unique_ptr<vector<int>> trks_chg, trks_found, trks_lost, trks_quality, pfcands_pdgid, pfcands_numberofhits, pfcands_numberofpixelhits,
 								 pfcands_firsthit, pfcands_frompv, pfcands_pvassociationquality, pfcands_vtxidx;
 	std::unique_ptr<vector<vector<int>>> trks_hitpattern;
 };
@@ -348,6 +352,7 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	produces<vector<vector<int>> >          ("trkshitpattern");
 	produces<vector<bool> >                 ("trksmatchedtopfcand");
 	produces<vector<double> >               ("pfcandsenergy");
+	produces<vector<int> >                  ("pfcandspdgid");
 	produces<vector<int> >                  ("pfcandsnumberofhits");
 	produces<vector<int> >                  ("pfcandsnumberofpixelhits");
 	produces<vector<int> >                  ("pfcandsfirsthit");
