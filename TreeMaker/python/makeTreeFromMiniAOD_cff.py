@@ -1151,6 +1151,7 @@ def makeTreeFromMiniAOD(self,process):
             'trackFilter:trksfound(Tracks_foundHits)',
             'trackFilter:trkslost(Tracks_lostHits)',
             'trackFilter:trksquality(Tracks_quality)',
+            'trackFilter:pfcandspdgid(Tracks_pdgId)',
             'trackFilter:pfcandsnumberofhits(Tracks_numberOfHits)',
             'trackFilter:pfcandsnumberofpixelhits(Tracks_numberOfPixelHits)',
             'trackFilter:pfcandsfirsthit(Tracks_firstHit)',

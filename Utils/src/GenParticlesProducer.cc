@@ -293,8 +293,11 @@ void GenParticlesProducer::saveChain(int depth, int parentId, int parent_idx, co
     // Special hack to keep first copy of HV Zprime daughters
     if(parentId==zprime) lastParticle = &particle;
     // Skip particles which are already in the list of stored particles
-    if(stored_particles_ref.find(lastParticle)!=stored_particles_ref.end()) return;
-    if(debug) edm::LogInfo("TreeMaker") << "   Saving chain for a " << particle.pdgId() << " (status=" << particle.status() << ")\n      Current depth is " << depth;
+    if(stored_particles_ref.find(lastParticle)!=stored_particles_ref.end()) {
+       if(debug) edm::LogInfo("TreeMaker") << "   Skipping duplicate particle (pdgId=" << lastParticle->pdgId() << " status=" << lastParticle->status() << " pointer=" << lastParticle << ")";
+       return;
+    }
+    if(debug) edm::LogInfo("TreeMaker") << "   Saving chain for a " << particle.pdgId() << " (status=" << particle.status() << " pointer=" << lastParticle << ")\n      Current depth is " << depth;
 
     // Save the gen particle information
     math::PtEtaPhiELorentzVector tmp(lastParticle->pt(), lastParticle->eta(), lastParticle->phi(), lastParticle->energy());
