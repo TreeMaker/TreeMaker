@@ -16,6 +16,12 @@ flist = {
         ['Summer16v3Fast.SMS-T2tt_mStop-350to400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T2tt_mStop-400to1200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-T5qqqqVV_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16v3Fast.SMS-T5qqqqZH_HToBB-mGluino-1000to1300-mLSP0to1100_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16v3Fast.SMS-T5qqqqZH_HToBB-mGluino-1350to1600-mLSP0to1400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16v3Fast.SMS-T5qqqqZH_HToBB-mGluino-1650to1850-mLSP0to1600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16v3Fast.SMS-T5qqqqZH_HToBB-mGluino-1900to2100-mLSP0to1600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16v3Fast.SMS-T5qqqqZH_HToBB-mGluino-2150to2350-mLSP0to1600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
+        ['Summer16v3Fast.SMS-T5qqqqZH_HToBB-mGluino-2400to2600-mLSP0to1600_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-TChiHH_HToBB_HToBB_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
         ['Summer16v3Fast.SMS-TChiHH_HToBB_HToBB_2D_TuneCUETP8M1_13TeV-madgraphMLM-pythia8'],
     ]
