@@ -16,7 +16,8 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="enable verbose output (default = %default)")
         parser.add_option("-x", "--redir", dest="redir", default="", help="input file redirector (default = %default)")
         parser.add_option("-f", "--use-folders", dest="useFolders", default=False, action="store_true", help="store the output in folders based on era and dataset (default = %default)")
-        
+        parser.add_option("--maxJobs", dest="maxJobs", default=-1, type=int, help="Max number of jobs to run")
+
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterTM,self).checkExtraOptions(options,parser)
     
@@ -109,6 +110,11 @@ class jobSubmitterTM(jobSubmitter):
                     nJobs = fileListLen / int( self.nFiles )
                     if ( fileListLen % int( self.nFiles ) != 0 ) :
                         nJobs += 1
+
+                print self.maxJobs
+                if self.maxJobs >= 0:
+                    print "Limiting to max {0} jobs".format(self.maxJobs)
+                    nJobs = min([nJobs, self.maxJobs])
 
                 netJobs = nJobs - int(firstJob)
                 if self.verbose:

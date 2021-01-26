@@ -11,7 +11,7 @@ from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg, reclusterZinv
 class maker:
     def __init__(self,parameters):
         self.parameters = parameters
-    
+
         # auto configuration for different scenarios
         self.scenarioName=self.parameters.value("scenario","")
         from TreeMaker.Production.scenarios import Scenario
@@ -99,6 +99,12 @@ class maker:
 
         if self.dataset!=[] :    
             self.readFiles.extend( [self.dataset] )
+
+        if 'inputFiles' in self.parameters.params:
+            # Allows just giving a direct path to a file to run
+            inputFiles = self.parameters.params['inputFiles']
+            if isinstance(inputFiles, basestring): inputFiles = [inputFiles]
+            self.readFiles.extend(inputFiles)
 
         self.readFiles = [(self.redir if val.startswith("/") else "")+val for val in self.readFiles]
         
