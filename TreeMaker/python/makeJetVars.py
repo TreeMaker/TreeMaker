@@ -464,24 +464,23 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             ])
 
             # extra stuff for subjets
-            if not(isAK15):
-                JetPropertiesAK8.properties.extend(["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
-                JetPropertiesAK8.jecFactorSubjets = cms.vstring(subjetTag)
-                JetPropertiesAK8.SJptD = cms.vstring(subjetTag,'QGTaggerSubjets:ptD')
-                JetPropertiesAK8.SJaxismajor = cms.vstring(subjetTag,'QGTaggerSubjets:axis1')
-                JetPropertiesAK8.SJaxisminor = cms.vstring(subjetTag,'QGTaggerSubjets:axis2')
-                JetPropertiesAK8.SJmultiplicity = cms.vstring(subjetTag,'QGTaggerSubjets:mult')
-                JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring(subjetTag,'pfCombinedInclusiveSecondaryVertexV2BJetTags')
-                self.AssocVectorVectorDouble.extend([
-                    'JetProperties'+suff+':jecFactorSubjets(Jets'+suff+'_subjets_jecFactor)',
-                    'JetProperties'+suff+':SJptD(Jets'+suff+'_subjets_ptD)',
-                    'JetProperties'+suff+':SJaxismajor(Jets'+suff+'_subjets_axismajor)',
-                    'JetProperties'+suff+':SJaxisminor(Jets'+suff+'_subjets_axisminor)',
-                    'JetProperties'+suff+':SJbDiscriminatorCSV(Jets'+suff+'_subjets_bDiscriminatorCSV)',
-                ])
-                self.AssocVectorVectorInt.extend([
-                    'JetProperties'+suff+':SJmultiplicity(Jets'+suff+'_subjets_multiplicity)',
-                ])
+            JetPropertiesAK8.properties.extend(["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
+            JetPropertiesAK8.jecFactorSubjets = cms.vstring(subjetTag)
+            JetPropertiesAK8.SJptD = cms.vstring(subjetTag,'QGTaggerSubjets:ptD')
+            JetPropertiesAK8.SJaxismajor = cms.vstring(subjetTag,'QGTaggerSubjets:axis1')
+            JetPropertiesAK8.SJaxisminor = cms.vstring(subjetTag,'QGTaggerSubjets:axis2')
+            JetPropertiesAK8.SJmultiplicity = cms.vstring(subjetTag,'QGTaggerSubjets:mult')
+            JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring(subjetTag,'pfCombinedInclusiveSecondaryVertexV2BJetTags')
+            self.AssocVectorVectorDouble.extend([
+                'JetProperties'+suff+':jecFactorSubjets(Jets'+suff+'_subjets_jecFactor)',
+                'JetProperties'+suff+':SJptD(Jets'+suff+'_subjets_ptD)',
+                'JetProperties'+suff+':SJaxismajor(Jets'+suff+'_subjets_axismajor)',
+                'JetProperties'+suff+':SJaxisminor(Jets'+suff+'_subjets_axisminor)',
+                'JetProperties'+suff+':SJbDiscriminatorCSV(Jets'+suff+'_subjets_bDiscriminatorCSV)',
+            ])
+            self.AssocVectorVectorInt.extend([
+                'JetProperties'+suff+':SJmultiplicity(Jets'+suff+'_subjets_multiplicity)',
+            ])
 
         if self.semivisible and storeProperties>1:
             JetPropertiesAK8.properties.extend([

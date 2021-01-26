@@ -1238,6 +1238,12 @@ def makeTreeFromMiniAOD(self,process):
             isAK15 = True
         )
 
+        process.JetPropertiesAK15.properties = [
+            x for x in JetPropertiesAK15.properties if x not in [
+                "jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"
+            ]
+        ]
+
         process.JetPropertiesAK15.ecfN2b1 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb1AK15PuppiSoftDropN2')
         process.JetPropertiesAK15.ecfN2b2 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb2AK15PuppiSoftDropN2')
         process.JetPropertiesAK15.ecfN3b1 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb1AK15PuppiSoftDropN3')
