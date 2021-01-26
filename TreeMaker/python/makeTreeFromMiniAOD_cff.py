@@ -1179,7 +1179,7 @@ def makeTreeFromMiniAOD(self,process):
             miniAOD = True,
             runOnMC = self.geninfo,
             Cut = 'pt>20.',
-            addPruning = True,
+            addPruning = False, # different from AK8
             addSoftDrop = True,
             addSoftDropSubjets = True,
             addNsub = True,
@@ -1235,12 +1235,12 @@ def makeTreeFromMiniAOD(self,process):
             puppiSpecific = 'puppiSpecificAK15',
             subjetTag = 'SoftDrop',
             doECFs = True,
-            isAK15 = True
         )
 
         process.JetPropertiesAK15.properties = [
             x for x in JetPropertiesAK15.properties if x not in [
-                "jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"
+                "jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity",
+                "jerFactor", "origIndex"
             ]
         ]
 

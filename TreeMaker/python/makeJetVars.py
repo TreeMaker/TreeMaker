@@ -246,7 +246,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
 # 2 = 1 + subjet properties + extra substructure
 # 3 = 2 + constituents (large)
 # SkipTag is not used, but just there to make interfaces consistent
-def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates"),puppiSpecific="", subjetTag='SoftDropPuppiUpdated', isAK15=False):
+def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates"),puppiSpecific="", subjetTag='SoftDropPuppiUpdated'):
     # select good jets before anything else - eliminates bad AK8 jets (low pT, no constituents stored, etc.)
     process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8,puppiSpecific=puppiSpecific)
 
@@ -388,7 +388,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             self.VectorDouble.extend([
                 'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
             ])
-            if self.geninfo and not(isAK15):
+            if self.geninfo:
                 JetPropertiesAK8.properties.extend(["jerFactor"])
                 JetPropertiesAK8.jerFactor = cms.vstring("jerFactor")
                 self.VectorDouble.extend([
