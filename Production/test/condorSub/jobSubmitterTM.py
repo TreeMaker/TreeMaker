@@ -111,7 +111,6 @@ class jobSubmitterTM(jobSubmitter):
                     if ( fileListLen % int( self.nFiles ) != 0 ) :
                         nJobs += 1
 
-                print self.maxJobs
                 if self.maxJobs >= 0:
                     print "Limiting to max {0} jobs".format(self.maxJobs)
                     nJobs = min([nJobs, self.maxJobs])

@@ -325,16 +325,10 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 "ecfN3b1",
                 "ecfN3b2",
             ])
-	    if isAK15:
-                 JetPropertiesAK8.ecfN2b1 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb1AK15PuppiSoftDropN2')
-                 JetPropertiesAK8.ecfN2b2 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb2AK15PuppiSoftDropN2')
-                 JetPropertiesAK8.ecfN3b1 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb1AK15PuppiSoftDropN3')
-                 JetPropertiesAK8.ecfN3b2 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb2AK15PuppiSoftDropN3')
-            else:
-           	 JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN2')
-           	 JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN2')
-           	 JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN3')
-           	 JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN3')
+            JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN2')
+            JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN2')
+            JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb1AK8PuppiSoftDropN3')
+            JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiSoftDropValueMap:nb2AK8PuppiSoftDropN3')
             self.VectorDouble.extend([
                 'JetProperties'+suff+':ecfN2b1(Jets'+suff+'_ecfN2b1)',
                 'JetProperties'+suff+':ecfN2b2(Jets'+suff+'_ecfN2b2)',
@@ -397,14 +391,9 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             if self.geninfo and not(isAK15):
                 JetPropertiesAK8.properties.extend(["jerFactor"])
                 JetPropertiesAK8.jerFactor = cms.vstring("jerFactor")
-                if isAK15:
-                    self.VectorDouble.extend([
-                        'JetProperties'+suff+':jerFactor(JetsAK15'+suff+'_jerFactor)',
-                    ])
-                else:
-                    self.VectorDouble.extend([
-                        'JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
-                    ])
+                self.VectorDouble.extend([
+                    'JetProperties'+suff+':jerFactor(Jets'+suff+'_jerFactor)',
+                ])
                 if self.systematics:
                     # account for central JER smearing
                     JetPropertiesAK8.properties.extend(["origIndex"])
@@ -418,14 +407,9 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 "NumBhadrons"           ,
                 "NumChadrons"           ,
             ])
-            if isAK15:                
-                JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK15Puppi:tau1')
-                JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK15Puppi:tau2')
-                JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK15Puppi:tau3')
-            else:
-                JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
-                JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
-                JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
+            JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
+            JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
+            JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
             self.VectorDouble.extend([
                 'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
                 'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',

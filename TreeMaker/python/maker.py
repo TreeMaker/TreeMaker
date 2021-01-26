@@ -44,6 +44,7 @@ class maker:
         # special signal stuff
         self.getParamDefault("systematics",True);
         self.getParamDefault("semivisible",True);
+        self.getParamDefault("boostedsemivisible",False);
         self.getParamDefault("emerging",False);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
@@ -100,12 +101,6 @@ class maker:
         if self.dataset!=[] :    
             self.readFiles.extend( [self.dataset] )
 
-        if 'inputFiles' in self.parameters.params:
-            # Allows just giving a direct path to a file to run
-            inputFiles = self.parameters.params['inputFiles']
-            if isinstance(inputFiles, basestring): inputFiles = [inputFiles]
-            self.readFiles.extend(inputFiles)
-
         self.readFiles = [(self.redir if val.startswith("/") else "")+val for val in self.readFiles]
         
         # branches for treemaker
@@ -151,6 +146,7 @@ class maker:
         print " storing hadtau variables: "+str(self.hadtau)+" w/ reclustering "+str(self.hadtaurecluster)
         print " storing Zinv variables: "+str(self.doZinv)
         print " storing semi-visible jet variables: "+str(self.semivisible)
+        print " storing also boostedsemivisible variables: "+str(self.boostedsemivisible)
         print " storing emerging jet variables: "+str(self.emerging)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)

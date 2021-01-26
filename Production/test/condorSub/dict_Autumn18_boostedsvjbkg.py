@@ -10,9 +10,9 @@ flist = {
         ['Autumn18.TTJets_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia8'],
         ['Autumn18.TTJets_HT-800to1200_TuneCP5_13TeV-madgraphMLM-pythia8'],
         ['Autumn18.TTJets_HT-2500toInf_TuneCP5_13TeV-madgraphMLM-pythia8'],
-        # ['Autumn18.TTJets_SingleLeptFromTbar_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
-        # ['Autumn18.TTJets_SingleLeptFromT_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
-        # ['Autumn18.TTJets_DiLept_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18.TTJets_SingleLeptFromTbar_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18.TTJets_SingleLeptFromT_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
+        ['Autumn18.TTJets_DiLept_genMET-80_TuneCP5_13TeV-madgraphMLM-pythia8'],
         
         # QCD Pt
         ['Autumn18.QCD_Pt_80to120_TuneCP5_13TeV_pythia8'],
