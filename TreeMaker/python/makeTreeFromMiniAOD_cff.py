@@ -1238,7 +1238,7 @@ def makeTreeFromMiniAOD(self,process):
         )
 
         process.JetPropertiesAK15.properties = [
-            x for x in JetPropertiesAK15.properties if x not in [
+            x for x in process.JetPropertiesAK15.properties if x not in [
                 "jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity",
                 "jerFactor", "origIndex"
             ]
