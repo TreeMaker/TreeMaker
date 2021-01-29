@@ -120,6 +120,7 @@ def defineTests(mytests, scenario, name, numevents, command, dataset, inputFiles
     mytests.append(Test("2018ReReco17Sep",name,numevents,command,inputFilesConfig="Run2018B-17Sep2018-v1.JetHT",nstart=0,nfiles=10))
     mytests.append(Test("Summer16v3sig","PrivateSamples.EMJ_2016_mMed-1000_mDark-20_kappa-0p12_aligned-down",numevents,"emerging=True deepAK8=False deepDoubleB=False doZinv=False nestedVectors=False splitLevel=99"+command,inputFilesConfig="PrivateSamples.EMJ_2016_mMed-1000_mDark-20_kappa-0p12_aligned-down",nstart=0,nfiles=10))
     mytests.append(Test("Summer16v3sig","PrivateSamples.EMJ_2016_mMed-1000_mDark-20_ctau-1000_unflavored-down",numevents,"emerging=True deepAK8=False deepDoubleB=False doZinv=False nestedVectors=False splitLevel=99"+command,inputFilesConfig="PrivateSamples.EMJ_2016_mMed-1000_mDark-20_ctau-1000_unflavored-down",nstart=0,nfiles=10))
+    mytests.append(Test("Autumn18sig","PrivateSamples.boostedSVJ_2018_mZprime-250_mDark-10_rinv-0p3_alpha-peak",numevents,"boostedsemivisible=1 lostlepton=0 doZinv=0 systematics=0 deepAK8=0 deepDoubleB=0 doPDFs=0 nestedVectors=False splitLevel=99"+command,inputFilesConfig="PrivateSamples.boostedSVJ_2018_mZprime-250_mDark-10_rinv-0p3_alpha-peak",nstart=0,nfiles=1))
 
 def unitTest():
     # Read parameters

@@ -1163,6 +1163,106 @@ def makeTreeFromMiniAOD(self,process):
             'trackFilter:trkshitpattern(Tracks_hitPattern)',
         ])
 
+
+    ## ----------------------------------------------------------------------------------------------
+    ## AK15 jets
+    ## ----------------------------------------------------------------------------------------------
+
+    if self.boostedsemivisible:
+
+        from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+        jetToolbox(process,
+            'ak15',
+            'jetSequence',
+            'out',
+            PUMethod = 'Puppi',
+            miniAOD = True,
+            runOnMC = self.geninfo,
+            Cut = 'pt>20.',
+            addPruning = False, # different from AK8
+            addSoftDrop = True,
+            addSoftDropSubjets = True,
+            addNsub = True,
+            maxTau = 3,
+            subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
+            addEnergyCorrFunc = True,
+            associateTask = False,
+            verbosity = 2 if self.verbose else 0,
+            # 
+            JETCorrPayload = 'AK8PFPuppi',
+            subJETCorrPayload = 'AK4PFPuppi',
+            JETCorrLevels = levels,
+            subJETCorrLevels = levels,
+        )
+
+        JetAK15Tag = cms.InputTag("packedPatJetsAK15PFPuppiSoftDrop")
+        subJetAK15Tag = cms.InputTag("selectedPatJetsAK15PFPuppiSoftDropPacked:SubJets")
+
+        # get puppi-specific multiplicities
+        from PhysicsTools.PatAlgos.patPuppiJetSpecificProducer_cfi import patPuppiJetSpecificProducer
+        process.puppiSpecificAK15 = patPuppiJetSpecificProducer.clone(
+            src = JetAK15Tag
+        )
+
+        # alternate softdrop parameters
+        process.ak15PFJetsPuppiSoftDropBeta1 = process.ak15PFJetsPuppiSoftDrop.clone(
+            beta = cms.double(1.0),
+        )
+        process.ak15PFJetsPuppiSoftDropMassBeta1 = process.ak15PFJetsPuppiSoftDropMass.clone(
+            src = JetAK15Tag,
+            matched = cms.InputTag("ak15PFJetsPuppiSoftDropBeta1")
+        )
+
+        # update userfloats (used for jet ID, including ID for JEC/JER variations)
+        process, JetAK15Tag = addJetInfo(
+            process, JetAK15Tag,
+            [
+                'puppiSpecificAK15:puppiMultiplicity',
+                'puppiSpecificAK15:neutralPuppiMultiplicity',
+                'puppiSpecificAK15:neutralHadronPuppiMultiplicity',
+                'puppiSpecificAK15:photonPuppiMultiplicity',
+                'puppiSpecificAK15:HFHadronPuppiMultiplicity',
+                'puppiSpecificAK15:HFEMPuppiMultiplicity',
+                'ak15PFJetsPuppiSoftDropMassBeta1',
+            ]
+        )
+
+        process = self.makeJetVarsAK8(
+            process,
+            JetTag=JetAK15Tag,
+            suff='AK15',
+            storeProperties=2,
+            puppiSpecific = 'puppiSpecificAK15',
+            subjetTag = 'SoftDrop',
+            doECFs = True,
+        )
+
+        process.JetPropertiesAK15.properties = [
+            x for x in process.JetPropertiesAK15.properties if x not in [
+                "jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity",
+                "jerFactor", "origIndex"
+            ]
+        ]
+
+        process.JetPropertiesAK15.ecfN2b1 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb1AK15PuppiSoftDropN2')
+        process.JetPropertiesAK15.ecfN2b2 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb2AK15PuppiSoftDropN2')
+        process.JetPropertiesAK15.ecfN3b1 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb1AK15PuppiSoftDropN3')
+        process.JetPropertiesAK15.ecfN3b2 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb2AK15PuppiSoftDropN3')
+
+        process.JetPropertiesAK15.NsubjettinessTau1 = cms.vstring('NjettinessAK15Puppi:tau1')
+        process.JetPropertiesAK15.NsubjettinessTau2 = cms.vstring('NjettinessAK15Puppi:tau2')
+        process.JetPropertiesAK15.NsubjettinessTau3 = cms.vstring('NjettinessAK15Puppi:tau3')
+
+        process.JetPropertiesAK15.neutralHadronPuppiMultiplicity = cms.vstring("puppiSpecificAK15:neutralHadronPuppiMultiplicity")
+        process.JetPropertiesAK15.neutralPuppiMultiplicity = cms.vstring("puppiSpecificAK15:neutralPuppiMultiplicity")
+        process.JetPropertiesAK15.photonPuppiMultiplicity = cms.vstring("puppiSpecificAK15:photonPuppiMultiplicity")
+
+        process.JetPropertiesAK15.properties.append("msd")
+        process.JetPropertiesAK15.msd = cms.vstring("ak15PFJetsPuppiSoftDropMassBeta1")
+        self.VectorDouble.extend([
+            'JetPropertiesAK15:msd(JetsAK15_softDropMassBeta1)'
+        ])
+
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
     ## Final steps
