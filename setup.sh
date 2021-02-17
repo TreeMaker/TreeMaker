@@ -1,8 +1,8 @@
 #!/bin/bash -e
 
-CMSSWVER=CMSSW_10_2_21
+CMSSWVER=CMSSW_10_6_20_patch1
 FORK=TreeMaker
-BRANCH=Run2_2017
+BRANCH=Run2_UL
 ACCESS=ssh
 CORES=8
 NAME=""
@@ -89,29 +89,27 @@ if [[ -n "$BATCH" ]]; then
 fi
 
 # get CMSSW release
-if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
+if [[ "$CMSSWVER" == "CMSSW_10_6_"* ]]; then
 	GCC_VERSION=gcc700
 else
 	echo "Unsupported CMSSW version: $CMSSWVER"
 	exit 1
 fi
 
-if [[ `uname -r` == *"el6"* ]]; then
-	SLC_VERSION="slc6"
-elif [[ `uname -r` == *"el7"* ]]; then
+if [[ `uname -r` == *"el7"* ]]; then
 	SLC_VERSION="slc7"
 elif [[ -f "/etc/redhat-release" ]]; then
 	VERSION_TMP=`awk -F'[ .]' '{print $4}' "/etc/redhat-release"`
-	POSSIBLE_VERSIONS=( 6 7 )
+	POSSIBLE_VERSIONS=( 7 )
 	if [[ "${POSSIBLE_VERSIONS[@]} " =~ " ${VERSION_TMP}" ]]; then
 		SLC_VERSION="slc${VERSION_TMP}"
 	else
-		echo "WARNING::Unknown SLC version. Defaulting to SLC6."
-		SLC_VERSION="slc6"
+		echo "WARNING::Unknown SLC version. Defaulting to SLC7."
+		SLC_VERSION="slc7"
 	fi
 else
-	echo "WARNING::Unknown SLC version. Defaulting to SLC6."
-	SLC_VERSION="slc6"
+	echo "WARNING::Unknown SLC version. Defaulting to SLC7."
+	SLC_VERSION="slc7"
 fi
 export SCRAM_ARCH=${SLC_VERSION}_amd64_${GCC_VERSION}
 
@@ -153,15 +151,13 @@ if [[ "${DEBUG}" == "true" ]]; then
 fi
 
 # CMSSW patches
-if [[ "$CMSSWVER" == "CMSSW_10_2_"* ]]; then
-	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:BoostedDoubleSVTaggerV4-WithWeightFiles-v1_from-CMSSW_10_2_7
-	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:storeJERFactorIndex10220
-	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:AddJetAxis1_1027
-	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:DeepAK8v2_10221
+if [[ "$CMSSWVER" == "CMSSW_10_6_"* ]]; then
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:storeJERFactorIndex10620p1
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:AddJetAxis1_10620p1
 fi
 
 # outside repositories
-git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_94X
+git clone ${ACCESS_GITHUB}TreeMaker/JetToolbox.git JMEAnalysis/JetToolbox -b jetToolbox_102X
 git clone ${ACCESS_GITHUB}kpedro88/CondorProduction.git Condor/Production
 git clone ${ACCESS_GITHUB}${FORK}/TreeMaker.git -b ${BRANCH}
 
@@ -173,3 +169,4 @@ cd TreeMaker/Production/test/condorSub/
 python $CMSSW_BASE/src/Condor/Production/python/linkScripts.py
 
 set +x
+
