@@ -5,6 +5,7 @@ from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
 from TreeMaker.TreeMaker.JetDepot import JetVariations
 from TreeMaker.TreeMaker.makeJetVars import makeJetVars, makeGoodJets, makeJetVarsAK8, makeMHTVars
 from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg, makeJetVarsHadTau
+from TreeMaker.TreeMaker.doPhotons import doPhotonVars
 from TreeMaker.TreeMaker.doLostLeptonBkg import doLostLeptonBkg
 from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg, reclusterZinv
 
@@ -144,6 +145,7 @@ class maker:
         print " storing semi-visible jet variables: "+str(self.semivisible)
         print " storing also boostedsemivisible variables: "+str(self.boostedsemivisible)
         print " storing emerging jet variables: "+str(self.emerging)
+        print " storing photon variables: "+str(self.doPhotons)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
         print " "
@@ -191,4 +193,5 @@ class maker:
     makeJetVarsHadTau = makeJetVarsHadTau
     doLostLeptonBkg = doLostLeptonBkg
     doZinvBkg = doZinvBkg
+    doPhotonVars = doPhotonVars
     reclusterZinv = reclusterZinv
