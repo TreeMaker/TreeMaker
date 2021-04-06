@@ -246,7 +246,7 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `emerging`: switch to enable variables for emerging jets (default=False)
 * `deepAK8`: switch to enable variables from the DeepAK8 tagger (default=True)
 * `deepDoubleB`: switch to enable variables from the DeepDoubleB tagger (default=True)
-* `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)
+* `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
 * `debugtap`: store extra information for the TAP collections (default=False)
