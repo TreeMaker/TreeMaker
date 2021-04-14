@@ -44,12 +44,13 @@ class maker:
         self.getParamDefault("semivisible",True);
         self.getParamDefault("boostedsemivisible",False);
         self.getParamDefault("emerging",False);
+        self.getParamDefault("doPhotons",False);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
-        
+
         # compute the PDF weights
         self.getParamDefault("doPDFs", True);
-        
+
         # other options off by default
         self.getParamDefault("debugtracks", False)
         self.getParamDefault("debugtap", False)
