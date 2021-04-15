@@ -47,6 +47,7 @@ class maker:
         self.getParamDefault("semivisible",True);
         self.getParamDefault("boostedsemivisible",False);
         self.getParamDefault("emerging",False);
+        self.getParamDefault("doPhotons",False);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
         
