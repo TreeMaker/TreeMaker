@@ -5,14 +5,14 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 readFiles.extend( [
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-1.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-2.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-3.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-4.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-5.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-6.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-7.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-8.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-9.root',
-       'gsiftp://hepcms-gridftp.umd.edu//mnt/hadoop/cms/store/group/EMJRunII/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-10.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-1.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-10.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-2.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-3.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-4.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-5.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-6.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-7.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-8.root',
+'root://hepxrd01.colorado.edu:1094///store/user/aperloff/ExoEMJAnalysis2020/Signal/2017/step4_MINIAOD_mMed-1500_mDark-10_ctau-25_unflavored-down_n-500_part-9.root',
 ] )
