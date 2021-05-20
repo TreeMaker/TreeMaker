@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-CMSSWVER=CMSSW_10_6_20_patch1
+CMSSWVER=CMSSW_10_6_25
 FORK=TreeMaker
 BRANCH=Run2_UL
 ACCESS=ssh
