@@ -21,7 +21,7 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     jetToolbox(process,
         'ak8',
         'jetSequence',
-        'out',
+        'noOutput',
         PUMethod = 'Puppi',
         dataTier = 'miniAOD',
         runOnMC = self.geninfo,
