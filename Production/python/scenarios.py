@@ -302,6 +302,18 @@ class Scenario:
                 era="Run2_2018",
                 localera="TM2018",
             )
+        elif sname == "Summer20UL18":
+            self.set_vars(
+                globaltag="106X_upgrade2018_realistic_v11_L1v1",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                jecfile=self.absdatapath+"/jec/Autumn18_V19_MC",
+                jerfile=self.absdatapath+"/jer/Autumn18_V7b_MC",
+                pufile=self.reldatapath+"/PileupHistograms_2018_69mb_pm5.root",
+                era="Run2_2018",
+                localera="TMUL2018",
+            )
         else: # if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
