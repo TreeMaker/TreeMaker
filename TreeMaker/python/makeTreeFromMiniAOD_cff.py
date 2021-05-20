@@ -324,7 +324,7 @@ def makeTreeFromMiniAOD(self,process):
                 'jetSequence',
                 'noOutput',
                 PUMethod = 'Puppi',
-                miniAOD = True,
+                dataTier = 'miniAOD',
                 runOnMC = self.geninfo,
                 postFix = '94Xlike',
                 Cut = 'pt>170.',
@@ -336,7 +336,6 @@ def makeTreeFromMiniAOD(self,process):
                 JETCorrLevels = levels,
                 subJETCorrLevels = levels,
                 addEnergyCorrFunc = False,
-                associateTask = False,
                 verbosity = 2 if self.verbose else 0,
             )
 
@@ -1178,7 +1177,7 @@ def makeTreeFromMiniAOD(self,process):
             'jetSequence',
             'noOutput',
             PUMethod = 'Puppi',
-            miniAOD = True,
+            dataTier = 'miniAOD',
             runOnMC = self.geninfo,
             Cut = 'pt>20.',
             addPruning = False, # different from AK8
@@ -1188,7 +1187,6 @@ def makeTreeFromMiniAOD(self,process):
             maxTau = 3,
             subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
             addEnergyCorrFunc = True,
-            associateTask = False,
             verbosity = 2 if self.verbose else 0,
             # 
             JETCorrPayload = 'AK8PFPuppi',
