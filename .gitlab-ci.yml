@@ -59,39 +59,31 @@ before_script:
         # Build and push the image from the Dockerfile at the root of the project.
         # To push to a specific docker tag, amend the --destination parameter, e.g. --destination $CI_REGISTRY_IMAGE:$CI_BUILD_REF_NAME
         # See https://docs.gitlab.com/ee/ci/variables/predefined_variables.html#variables-reference for available variables
+        - echo "Pipeline source - $CI_PIPELINE_SOURCE"
+        - echo "Base image - $BASE_IMAGE"
         - echo "Building the TreeMaker Docker image on ${DATE}"
-        - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
         - echo ${CI_PROJECT_DIR}/${CONTEXT_DIR}/
         - ls -alh ${CI_PROJECT_DIR}/${CONTEXT_DIR}/
-        - /kaniko/executor --context ${CI_PROJECT_DIR}/${CONTEXT_DIR} --dockerfile ${CI_PROJECT_DIR}/${DOCKERFILE_DIR}/Dockerfile --destination "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${BRANCH_NAME}-${SUFFIX}" --build-arg=BUILD_DATE="${DATE}" --build-arg=VERSION="${DATE}" --build-arg=VCS_URL="${CI_REPOSITORY_URL}" --build-arg=VCS_REF="${CI_COMMIT_SHORT_SHA}" --build-arg=BASEIMAGE="${BASE_IMAGE}" --build-arg=CMSSW_VERSION="${CMSSW_VERSION}"
+        - echo "Logging into the registry ${CI_REGISTRY} and ${DOCKER_REGISTRY}"
+        - export DOCKER_AUTH="$(echo -n $DOCKER_USERNAME:$DOCKER_PASSWORD | base64)" # https://github.com/GoogleContainerTools/kaniko#pushing-to-docker-hub
+        - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"username\":\"${CI_REGISTRY_USER}\",\"password\":\"${CI_REGISTRY_PASSWORD}\"}, \"${DOCKER_REGISTRY}\":{\"auth\":\"${DOCKER_AUTH}\"}}}" > /kaniko/.docker/config.json
+        - /kaniko/executor --context ${CI_PROJECT_DIR}/${CONTEXT_DIR} --dockerfile ${CI_PROJECT_DIR}/${DOCKERFILE_DIR}/Dockerfile --destination "${CI_REGISTRY_IMAGE}/${IMAGE_NAME}:${BRANCH_NAME}-${SUFFIX}" --destination "${DOCKER_GROUP}/${IMAGE_NAME}:${BRANCH_NAME}-${SUFFIX}" --build-arg=BUILD_DATE="${DATE}" --build-arg=VERSION="${DATE}" --build-arg=VCS_URL="${CI_REPOSITORY_URL}" --build-arg=VCS_REF="${CI_COMMIT_SHORT_SHA}" --build-arg=BASEIMAGE="${BASE_IMAGE}" --build-arg=CMSSW_VERSION="${CMSSW_VERSION}"
 
 # Jobs/Includes ---------------------------------------------------------------
-tar_treemaker_Run2_2017:
+tar_treemaker_Run2_UL:
     extends: .job_template_tar
     variables:
-        BASE_IMAGE: index.docker.io/treemaker/treemaker:Run2_2017-latest
-        CMSSW_VERSION: CMSSW_10_2_21
+        BASE_IMAGE: index.docker.io/treemaker/treemaker:Run2_UL-latest
+        CMSSW_VERSION: CMSSW_10_6_25
 
-build_treemaker_Run2_2017-standalone:
+build_treemaker_Run2_UL-standalone:
     extends: .job_template_build
     dependencies:
-        - tar_treemaker_Run2_2017
+        - tar_treemaker_Run2_UL
     variables:
-        BRANCH_NAME: Run2_2017
+        BRANCH_NAME: Run2_UL
         SUFFIX: standalone
-        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-22-2c2fe7c3
-        CMSSW_VERSION: CMSSW_10_2_21
-
-build_treemaker_Run2_2017-standalone-dockerhub:
-    extends: .job_template_build
-    dependencies:
-        - tar_treemaker_Run2_2017
-    variables:
-        CI_REGISTRY: https://index.docker.io/v1/
-        CI_REGISTRY_USER: ${DOCKER_USERNAME}
-        CI_REGISTRY_PASSWORD: ${DOCKER_PASSWORD}
-        CI_REGISTRY_IMAGE:  index.docker.io/treemaker
-        BRANCH_NAME: Run2_2017
-        SUFFIX: standalone
-        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_2_21-2020-04-22-2c2fe7c3
-        CMSSW_VERSION: CMSSW_10_2_21
+        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_6_25-2021-05-20-563715a3
+        CMSSW_VERSION: CMSSW_10_6_25
+        DOCKER_GROUP: treemaker
+        DOCKER_REGISTRY: https://index.docker.io/v1/
