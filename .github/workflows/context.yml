@@ -1,9 +1,9 @@
 on:
   workflow_dispatch:
   push:
-    branches: [ Run2_2017 ]
+    branches: [ Run2_UL ]
   pull_request:
-    branches: [ Run2_2017 ]
+    branches: [ Run2_UL ]
 
 jobs:
   dump_context:

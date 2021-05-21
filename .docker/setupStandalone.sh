@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-CMSSWVER=CMSSW_10_2_21
+CMSSWVER=CMSSW_10_6_25
 DIR="${HOME}"
 TARBALL=""
 URL=""

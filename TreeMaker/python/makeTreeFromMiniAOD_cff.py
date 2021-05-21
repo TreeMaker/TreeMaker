@@ -315,16 +315,16 @@ def makeTreeFromMiniAOD(self,process):
         if self.deepDoubleB:
             ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb'])
 
-        if TMeras.TM80X.isChosen():
+        if TMeras.TM80X._isChosen():
             # use jet toolbox to rerun puppi, recluster AK8 jets, and compute substructure variables
             # do not add discriminators here, several issues
             from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
             jetToolbox(process,
                 'ak8',
                 'jetSequence',
-                'out',
+                'noOutput',
                 PUMethod = 'Puppi',
-                miniAOD = True,
+                dataTier = 'miniAOD',
                 runOnMC = self.geninfo,
                 postFix = '94Xlike',
                 Cut = 'pt>170.',
@@ -336,7 +336,6 @@ def makeTreeFromMiniAOD(self,process):
                 JETCorrLevels = levels,
                 subJETCorrLevels = levels,
                 addEnergyCorrFunc = False,
-                associateTask = False,
                 verbosity = 2 if self.verbose else 0,
             )
 
@@ -612,12 +611,14 @@ def makeTreeFromMiniAOD(self,process):
         self.VarsBool.extend(['ecalBadCalibReducedFilter','ecalBadCalibReducedExtraFilter'])
 
         process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
+        process.BadChargedCandidateFilter.vtx = cms.InputTag("offlineSlimmedPrimaryVertices")
         process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
         process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadChargedCandidateFilter.taggingMode = True
         self.VarsBool.extend(['BadChargedCandidateFilter'])
         
         process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
+        process.BadPFMuonFilter.vtx = cms.InputTag("offlineSlimmedPrimaryVertices")
         process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
         process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
         process.BadPFMuonFilter.taggingMode = True
@@ -869,7 +870,7 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetAK8Tag,
         suff='AK8',
         storeProperties=2,
-        doECFs = not TMeras.TM80X.isChosen(), # temporarily disabled
+        doECFs = not TMeras.TM80X._isChosen(), # temporarily disabled
     )
     TMeras.TM80X.toModify(process.JetPropertiesAK8,
         NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi94Xlike:tau1'),
@@ -1174,9 +1175,9 @@ def makeTreeFromMiniAOD(self,process):
         jetToolbox(process,
             'ak15',
             'jetSequence',
-            'out',
+            'noOutput',
             PUMethod = 'Puppi',
-            miniAOD = True,
+            dataTier = 'miniAOD',
             runOnMC = self.geninfo,
             Cut = 'pt>20.',
             addPruning = False, # different from AK8
@@ -1186,7 +1187,6 @@ def makeTreeFromMiniAOD(self,process):
             maxTau = 3,
             subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
             addEnergyCorrFunc = True,
-            associateTask = False,
             verbosity = 2 if self.verbose else 0,
             # 
             JETCorrPayload = 'AK8PFPuppi',

@@ -21,9 +21,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     jetToolbox(process,
         'ak8',
         'jetSequence',
-        'out',
+        'noOutput',
         PUMethod = 'Puppi',
-        miniAOD = True,
+        dataTier = 'miniAOD',
         runOnMC = self.geninfo,
         postFix='Clean',
         newPFCollection = True,
@@ -39,7 +39,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         JETCorrLevels = jecLevels,
         subJETCorrLevels = jecLevels,
         addEnergyCorrFunc = False,
-        associateTask = False,
         verbosity = 2 if self.verbose else 0,
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
