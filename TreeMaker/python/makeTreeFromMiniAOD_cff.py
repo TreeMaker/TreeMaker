@@ -1071,14 +1071,13 @@ def makeTreeFromMiniAOD(self,process):
             JetTag = JetAK8Tag,
             MetTag = METTag,
             GenTag = cms.InputTag("prunedGenParticles"),
-            GenJetTag = GenJetAK8Tag,
+            GenJetTag = cms.InputTag("slimmedGenJetsAK8"),
             coneSize = cms.double(0.8),
             DarkStableIDs = cms.vuint32(51,52,53),
             DarkQuarkIDs = cms.vuint32(4900101),
             DarkMediatorIDs = cms.vuint32(4900023),
             DarkHadronIDs = cms.vuint32(4900111,4900113,4900211,4900213),
             DarkGluonIDs = cms.vuint32(4900021),
-            SMQuarkIDs = cms.vuint32(1,2,3,4,5,6,7,8),
         )
         if self.tchannel:
             process.HiddenSector.DarkQuarkIDs = [4900101,4900102]
@@ -1098,27 +1097,11 @@ def makeTreeFromMiniAOD(self,process):
             ])
             if self.tchannel:
                 self.VectorInt.extend([
-                    'HiddenSector:hvCategory(GenJetsAK8_hvCategory)',
-                    'HiddenSector:MT2JetsID(GenJetsAK8_MT2JetsID)',
-                    'HiddenSector:genIndex(JetsAK8_genIndex)'
+                    'HiddenSector:hvCategory(JetsAK8_hvCategory)'
                 ])
                 self.VectorDouble.extend([
-                    'HiddenSector:darkPtFrac(GenJetsAK8_darkPtFrac)'
+                    'HiddenSector:darkPtFrac(JetsAK8_darkPtFrac)'
                 ])
-
-    ## ----------------------------------------------------------------------------------------------
-    ## Gen particles for jets
-    ## ----------------------------------------------------------------------------------------------
-    # overwrite NoNu collection, account for SVJ DM particles
-    # (do this at the very end to ensure changes aren't overwritten by JetToolbox)
-    if self.geninfo:
-        setattr(process,GenParticlesForJetTag.value(),
-            cms.EDFilter("CandPtrSelector",
-                src = cms.InputTag("packedGenParticles"),
-                cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16 && abs(pdgId) != 51 && abs(pdgId) != 52 && abs(pdgId) != 53"),
-            )
-        )
-
     ## ----------------------------------------------------------------------------------------------
     ## Photon information
     ## ----------------------------------------------------------------------------------------------
