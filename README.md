@@ -217,6 +217,7 @@ Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=True)
 * `systematics`: switch to enable JEC- and JER-related systematics (default=True)
 * `semivisible`: switch to enable variables for semi-visible jets (default=True)
+* `tchannel`: switch to enable additional variables for t-channel semi-visible jets (default=False)
 * `deepAK8`: switch to enable variables from the DeepAK8 tagger (default=True)
 * `deepDoubleB`: switch to enable variables from the DeepDoubleB tagger (default=True)
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
