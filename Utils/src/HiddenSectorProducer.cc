@@ -49,8 +49,9 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
 		void lastDark(CandPtr part, CandSet& lastDs) const;
 		void medDecay(CandPtr part, CandSet& firstQdM, CandSet& firstQsM) const;
 		void firstDark(CandPtr part, CandSet& firstQd, CandSet& firstGd, CandSet& firstQdM, CandSet& firstQsM) const;
-		int checkLast(const reco::GenJet& jet, const CandSet& lastDs, int value) const;
+		int checkLast(const reco::GenJet& jet, const CandSet& lastDs, int value, double& frac) const;
 		int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
+		std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
 		edm::InputTag JetTag_, MetTag_, GenTag_, GenJetTag_;
 		edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 		edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
@@ -116,12 +117,20 @@ void HiddenSectorProducer::firstDark(CandPtr part, CandSet& firstQd, CandSet& fi
 	}
 }
 
-int HiddenSectorProducer::checkLast(const reco::GenJet& jet, const CandSet& lastDs, int value) const {
+int HiddenSectorProducer::checkLast(const reco::GenJet& jet, const CandSet& lastDs, int value, double& frac) const {
 	//compare jet constituents to set of last particles
+	//also compute dark pt fraction in same loop
+	bool match = false;
+	LorentzVector p4;
 	for(unsigned i = 0; i < jet.numberOfDaughters(); ++i){
-		if(isDark(lastDs,jet.daughter(i))) return value;
+		CandPtr dau = jet.daughter(i);
+		if(isDark(lastDs,dau)) {
+			match = true;
+			p4 += dau->p4();
+		}
 	}
-	return 0;
+	frac = p4.pt()/jet.pt();
+	return match ? value : 0;
 }
 
 int HiddenSectorProducer::checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const {
@@ -130,6 +139,31 @@ int HiddenSectorProducer::checkFirst(const reco::GenJet& jet, const CandSet& fir
 		if(reco::deltaR(jet, *part) < coneSize_) return value;
 	}
 	return 0;
+}
+
+//use official JetMET matching procedure: equiv to set<DR,jet_index,gen_index> sorted by DR
+//from https://github.com/cms-jet/JetMETAnalysis/blob/master/JetUtilities/plugins/MatchRecToGen.cc
+std::vector<int> HiddenSectorProducer::matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const {
+	std::map<double,std::pair<unsigned,unsigned>> matchMap;
+	for(unsigned j = 0; j < jets.size(); ++j){
+		for(unsigned g = 0; g < gen.size(); ++g){
+			matchMap.emplace(std::piecewise_construct, std::forward_as_tuple(reco::deltaR(jets[j],gen[g])), std::forward_as_tuple(j,g));
+		}
+	}
+
+	std::vector<int> genIndex(jets.size(),-1);
+	std::unordered_set<unsigned> j_used, g_used;
+	for(const auto& matchItem: matchMap){
+		unsigned j = matchItem.second.first;
+		unsigned g = matchItem.second.second;
+		if(j_used.find(j)==j_used.end() and g_used.find(g)==g_used.end()){
+			genIndex[j] = g;
+			j_used.insert(j);
+			g_used.insert(g);
+		}
+	}
+
+	return genIndex;
 }
 
 HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
@@ -160,9 +194,10 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
 	produces<double>("DeltaPhi2");
 	produces<double>("DeltaPhiMin");
 	produces<std::vector<bool>>("isHV");
-    //should these be branches for GenJetsAK8? JetsAK8? both? (or just one + a matching index?)
+	//first two branches for GenJetsAK8, last is for JetsAK8 (matching index)
 	produces<std::vector<int>>("hvCategory");
 	produces<std::vector<double>>("darkPtFrac");
+	produces<std::vector<int>>("genIndex");
 }
 
 double HiddenSectorProducer::TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const {
@@ -199,6 +234,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 	auto jet_isHV_vec = std::make_unique<std::vector<bool>>();
 	auto hvCategory = std::make_unique<std::vector<int>>();
 	auto darkPtFrac = std::make_unique<std::vector<int>>();
+	auto genIndex = std::make_unique<std::vector<int>>();
 
 	LorentzVector vpartsSum;
 	if(h_parts.isValid()){
@@ -264,17 +300,23 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 		//loop over gen jets
 		for(const auto& i_jet : *(h_genjets.product())){
 			int category = 0;
-			category += checkLast(i_jet, lastDs, 1);
+			double frac = 0;
+			category += checkLast(i_jet, lastDs, 1, frac);
 			category += checkFirst(i_jet, firstQd, 2);
 			category += checkFirst(i_jet, firstGd, 4);
 			category += checkFirst(i_jet, firstQdM, 8);
 			category += checkFirst(i_jet, firstQsM, 16);
 			hvCategory->push_back(category);
-			//todo: dark pt fraction, gen:reco jet matching, nu:nonu genjet matching?
+			darkPtFrac->push_back(frac);
 		}
+		//gen:reco jet matching
+		*genIndex = matchGenRec(*(h_jets.product()), *(h_genjets.product()));
 	}
 
 	iEvent.put(std::move(jet_isHV_vec),"isHV");
+	iEvent.put(std::move(hvCategory),"hvCategory");
+	iEvent.put(std::move(darkPtFrac),"darkPtFrac");
+	iEvent.put(std::move(genIndex),"genIndex");
 	auto pMJJ = std::make_unique<double>(MJJ);
 	iEvent.put(std::move(pMJJ),"MJJ");
 	auto pMmc = std::make_unique<double>(Mmc);
