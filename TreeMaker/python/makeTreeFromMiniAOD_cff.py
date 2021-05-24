@@ -241,7 +241,6 @@ def makeTreeFromMiniAOD(self,process):
     )
     JetAK8TagInf = cms.InputTag('slimmedJetsAK8Inf')
     SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
-    SubjetName = cms.string("SoftDropPuppi")
     GenJetAK8Tag = cms.InputTag('slimmedGenJetsAK8')
     GenParticlesForJetTag = cms.InputTag("packedGenParticlesForJetsNoNu")
 
@@ -336,6 +335,34 @@ def makeTreeFromMiniAOD(self,process):
             JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiNoCutSoftDrop")
             SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiNoCutSoftDropPacked:SubJets")
             SubjetName = cms.string("SoftDrop")
+            GenJetAK8Tag = cms.InputTag("ak8GenJetsNoNu")
+
+        if self.tchannel:
+            # recluster AK8 jets to remove pT cut
+            # this also produces a reclustered AK8 GenJet collection w/ no pT cut
+            from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
+            jetToolbox(process,
+                'ak8',
+                'jetSequence',
+                'out',
+                PUMethod = 'Puppi',
+                miniAOD = True,
+                runOnMC = self.geninfo,
+                postFix = 'NoCut',
+                addPruning = True,
+                addSoftDropSubjets = True,
+                addNsub = True,
+                maxTau = 3,
+                subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
+                JETCorrLevels = levels,
+                subJETCorrLevels = levels,
+                addEnergyCorrFunc = True,
+                associateTask = False,
+                verbosity = 2 if self.verbose else 0,
+            )
+
+            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiNoCutSoftDrop")
+            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiNoCutSoftDropPacked:SubJets")
             GenJetAK8Tag = cms.InputTag("ak8GenJetsNoNu")
 
         # update the corrections for AK8 jets
@@ -1071,7 +1098,7 @@ def makeTreeFromMiniAOD(self,process):
             JetTag = JetAK8Tag,
             MetTag = METTag,
             GenTag = cms.InputTag("prunedGenParticles"),
-            GenJetTag = cms.InputTag("slimmedGenJetsAK8"),
+            GenJetTag = GenJetAK8Tag,
             coneSize = cms.double(0.8),
             DarkStableIDs = cms.vuint32(51,52,53),
             DarkQuarkIDs = cms.vuint32(4900101),
@@ -1097,10 +1124,11 @@ def makeTreeFromMiniAOD(self,process):
             ])
             if self.tchannel:
                 self.VectorInt.extend([
-                    'HiddenSector:hvCategory(JetsAK8_hvCategory)'
+                    'HiddenSector:hvCategory(GenJetsAK8_hvCategory)'
+                    'HiddenSector:genIndex(JetsAK8_genIndex)'
                 ])
                 self.VectorDouble.extend([
-                    'HiddenSector:darkPtFrac(JetsAK8_darkPtFrac)'
+                    'HiddenSector:darkPtFrac(GenJetsAK8_darkPtFrac)'
                 ])
     ## ----------------------------------------------------------------------------------------------
     ## Photon information
@@ -1278,6 +1306,19 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorDouble.extend([
             'JetPropertiesAK15:msd(JetsAK15_softDropMassBeta1)'
         ])
+
+    ## ----------------------------------------------------------------------------------------------
+    ## Gen particles for jets
+    ## ----------------------------------------------------------------------------------------------
+    # overwrite NoNu collection, account for SVJ DM particles
+    # (do this at the very end to ensure changes aren't overwritten by JetToolbox)
+    if self.geninfo:
+        setattr(process,GenParticlesForJetTag.value(),
+            cms.EDFilter("CandPtrSelector",
+                src = cms.InputTag("packedGenParticles"),
+                cut = cms.string("abs(pdgId) != 12 && abs(pdgId) != 14 && abs(pdgId) != 16 && abs(pdgId) != 51 && abs(pdgId) != 52 && abs(pdgId) != 53"),
+            )
+        )
 
     ## ----------------------------------------------------------------------------------------------
     ## ----------------------------------------------------------------------------------------------
