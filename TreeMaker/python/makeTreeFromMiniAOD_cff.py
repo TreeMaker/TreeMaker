@@ -241,6 +241,7 @@ def makeTreeFromMiniAOD(self,process):
     )
     JetAK8TagInf = cms.InputTag('slimmedJetsAK8Inf')
     SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
+    SubjetName = cms.string("SoftDropPuppi")
     GenJetAK8Tag = cms.InputTag('slimmedGenJetsAK8')
     GenParticlesForJetTag = cms.InputTag("packedGenParticlesForJetsNoNu")
 
@@ -335,34 +336,6 @@ def makeTreeFromMiniAOD(self,process):
             JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiNoCutSoftDrop")
             SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiNoCutSoftDropPacked:SubJets")
             SubjetName = cms.string("SoftDrop")
-            GenJetAK8Tag = cms.InputTag("ak8GenJetsNoNu")
-
-        if self.tchannel:
-            # recluster AK8 jets to remove pT cut
-            # this also produces a reclustered AK8 GenJet collection w/ no pT cut
-            from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-            jetToolbox(process,
-                'ak8',
-                'jetSequence',
-                'out',
-                PUMethod = 'Puppi',
-                miniAOD = True,
-                runOnMC = self.geninfo,
-                postFix = 'NoCut',
-                addPruning = True,
-                addSoftDropSubjets = True,
-                addNsub = True,
-                maxTau = 3,
-                subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
-                JETCorrLevels = levels,
-                subJETCorrLevels = levels,
-                addEnergyCorrFunc = True,
-                associateTask = False,
-                verbosity = 2 if self.verbose else 0,
-            )
-
-            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiNoCutSoftDrop")
-            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiNoCutSoftDropPacked:SubJets")
             GenJetAK8Tag = cms.InputTag("ak8GenJetsNoNu")
 
         # update the corrections for AK8 jets
