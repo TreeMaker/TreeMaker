@@ -233,7 +233,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 
 	auto jet_isHV_vec = std::make_unique<std::vector<bool>>();
 	auto hvCategory = std::make_unique<std::vector<int>>();
-	auto darkPtFrac = std::make_unique<std::vector<int>>();
+	auto darkPtFrac = std::make_unique<std::vector<double>>();
 	auto genIndex = std::make_unique<std::vector<int>>();
 
 	LorentzVector vpartsSum;
