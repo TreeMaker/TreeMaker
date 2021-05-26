@@ -108,6 +108,30 @@ class Scenario:
                 era="Run2_2016",
                 localera="TM2016",
             )
+        elif sname == "Summer20UL16":
+            self.set_vars(
+                globaltag="106X_mcRun2_asymptotic_v15",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                jecfile=self.absdatapath+"/jec/Summer16_07Aug2017_V11_MC",
+                jerfile=self.absdatapath+"/jer/Summer16_25nsV1_MC",
+                pufile=self.reldatapath+"/PileupHistograms_2016_69mb_pm5.root",
+                era="Run2_2016",
+                localera="TMUL2016",
+            )
+        elif sname == "Summer20UL16APV":
+            self.set_vars(
+                globaltag="106X_mcRun2_asymptotic_preVFP_v9",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                jecfile=self.absdatapath+"/jec/Summer16_07Aug2017_V11_MC",
+                jerfile=self.absdatapath+"/jer/Summer16_25nsV1_MC",
+                pufile=self.reldatapath+"/PileupHistograms_2016_69mb_pm5.root",
+                era="Run2_2016",
+                localera="TMUL2016",
+            )
         elif sname == "Fall17":
             self.set_vars(
                 globaltag="94X_mc2017_realistic_v13",
@@ -190,6 +214,18 @@ class Scenario:
                 residual=True,
                 era="Run2_2017",
                 localera="TM2017",
+            )
+        elif sname == "Summer20UL17":
+            self.set_vars(
+                globaltag="106X_mc2017_realistic_v8",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                jecfile=self.absdatapath+"/jec/Fall17_17Nov2017_V32_102X_MC",
+                jerfile=self.absdatapath+"/jer/Fall17_V3_94X_MC",
+                pufile=self.reldatapath+"/PileupHistograms_2017_69mb_pm5.root",
+                era="Run2_2017",
+                localera="TMUL2017",
             )
         elif sname == "Autumn18":
             self.set_vars(
@@ -304,7 +340,7 @@ class Scenario:
             )
         elif sname == "Summer20UL18":
             self.set_vars(
-                globaltag="106X_upgrade2018_realistic_v11_L1v1",
+                globaltag="106X_upgrade2018_realistic_v15_L1v1",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
