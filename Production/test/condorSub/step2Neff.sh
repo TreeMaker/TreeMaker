@@ -63,12 +63,10 @@ fi
 echo "$CMDSTR output for condor"
 for FILE in *.root; do
 	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE}"
-	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
+	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE} -r -c '*.root'
 	XRDEXIT=$?
 	if [[ $XRDEXIT -ne 0 ]]; then
-		rm *.root
 		echo "exit code $XRDEXIT, failure in $CMDSTR"
 		exit $XRDEXIT
 	fi
-	rm ${FILE}
 done
