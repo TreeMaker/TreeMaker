@@ -110,13 +110,11 @@ for FILE in *.root; do
 		echo -e "\t   After change: ${FILE_DST}"
 	fi
 	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE_DST}"
-	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE_DST}
+	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE_DST} -r -c '*.root'
 	XRDEXIT=$?
 	if [[ $XRDEXIT -ne 0 ]]; then
-		rm *.root
 		echo "exit code $XRDEXIT, failure in $CMDSTR"
 		exit $XRDEXIT
 	fi
-	rm ${FILE}
 done
 
