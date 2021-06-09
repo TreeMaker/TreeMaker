@@ -30,6 +30,7 @@ export OPTIND=1
 export USE_FOLDERS="false"
 while [[ $OPTIND -le $# ]]; do
 	# getopts in silent mode, don't exit on errors
+	OPTOLD=$OPTIND
 	getopts ":fj:p:o:x:" opt || status=$?
 	case "$opt" in
 		f) export USE_FOLDERS="true"
@@ -42,8 +43,8 @@ while [[ $OPTIND -le $# ]]; do
 		;;
 		x) export REDIR=$OPTARG
 		;;
-		# keep going if getopts had an error
-		\? | :) OPTIND=$((OPTIND+1))
+		# keep going if getopts had an error, but make sure not to skip anything
+		\? | :) OPTIND=$((OPTOLD+1))
 		;;
 	esac
 done
