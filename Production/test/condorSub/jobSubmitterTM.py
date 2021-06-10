@@ -17,6 +17,7 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-x", "--redir", dest="redir", default="", help="input file redirector (default = %default)")
         parser.add_option("-f", "--use-folders", dest="useFolders", default=False, action="store_true", help="store the output in folders based on era and dataset (default = %default)")
         parser.add_option("--maxJobs", dest="maxJobs", default=-1, type=int, help="Max number of jobs to run")
+        parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
 
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterTM,self).checkExtraOptions(options,parser)
@@ -158,7 +159,7 @@ class jobSubmitterTM(jobSubmitter):
                         
                     # write job options to file - will be transferred with job
                     if self.prepare:
-                        jname = job.makeName(job.nums[-1])
+                        jname = job.makeName(job.nums[-1]+self.offset)
                         with open("input/args_"+jname+".txt",'w') as argfile:
                             args = (self.args+" " if len(self.args)>0 else "")+"outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
                             argfile.write(args)
