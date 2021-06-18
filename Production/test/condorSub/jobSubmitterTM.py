@@ -15,7 +15,8 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-A", "--args", dest="args", default="", help="additional common args to use for all jobs (default = %default)")
         parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="enable verbose output (default = %default)")
         parser.add_option("-x", "--redir", dest="redir", default="", help="input file redirector (default = %default)")
-        
+        parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
+
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterTM,self).checkExtraOptions(options,parser)
     
@@ -152,7 +153,7 @@ class jobSubmitterTM(jobSubmitter):
                         
                     # write job options to file - will be transferred with job
                     if self.prepare:
-                        jname = job.makeName(job.nums[-1])
+                        jname = job.makeName(job.nums[-1]+self.offset)
                         with open("input/args_"+jname+".txt",'w') as argfile:
                             args = (self.args+" " if len(self.args)>0 else "")+"outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
                             argfile.write(args)

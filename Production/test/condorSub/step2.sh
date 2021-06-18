@@ -5,8 +5,9 @@ export PROCESS=""
 export OUTDIR=""
 export REDIR=""
 export OPTIND=1
-while [[ $OPTIND -lt $# ]]; do
+while [[ $OPTIND -le $# ]]; do
 	# getopts in silent mode, don't exit on errors
+	OPTOLD=$OPTIND
 	getopts ":j:p:o:x:" opt || status=$?
 	case "$opt" in
 		j) export JOBNAME=$OPTARG
@@ -17,8 +18,8 @@ while [[ $OPTIND -lt $# ]]; do
 		;;
 		x) export REDIR=$OPTARG
 		;;
-		# keep going if getopts had an error
-		\? | :) OPTIND=$((OPTIND+1))
+		# keep going if getopts had an error, but make sure not to skip anything
+		\? | :) OPTIND=$((OPTOLD+1))
 		;;
 	esac
 done
@@ -57,24 +58,31 @@ if [[ $CMSEXIT -ne 0 ]]; then
 fi
 
 # copy output to eos
+echo "CMSSITE currently set to: ${CMSSITE}"
+if [[ -z "$CMSSITE" ]] || [[ "$CMSSITE" == "" ]]; then
+	echo -e "\tGetting CMSSITE from the job ClassAd"
+	CMSSITE=$(getFromClassAd MachineAttrGLIDEIN_CMSSite0)
+	echo -e "\tCMSSITE is now set to: ${CMSSITE}"
+fi
 export CMDSTR="xrdcp"
 export GFLAG=""
-if [[ ( "$CMSSITE" == "T1_US_FNAL" && "$USER" == "cmsgli" && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
+if [[ ( "$CMSSITE" == *"T1_US_FNAL"* && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
 	export CMDSTR="gfal-copy"
 	export GFLAG="-g"
-    export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
+	export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
 	export OUTDIR=${GSIFTP_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
+elif [[ "${OUTDIR}" == *"gsiftp://"* ]]; then
+	export CMDSTR="gfal-copy"
+	export GFLAG="-g"
 fi
 echo "$CMDSTR output for condor"
 for FILE in *.root; do
 	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE}"
-	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE}
+	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE} -r -c '*.root'
 	XRDEXIT=$?
 	if [[ $XRDEXIT -ne 0 ]]; then
-		rm *.root
 		echo "exit code $XRDEXIT, failure in $CMDSTR"
 		exit $XRDEXIT
 	fi
-	rm ${FILE}
 done
 
