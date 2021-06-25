@@ -83,7 +83,7 @@ jobs:
         output_name: Summer16.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8_opendata
         integration_test_image: treemaker/treemaker:${{ env.current_branch }}-latest
         docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker
-      run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "cd ${{ env.cmssw_ver }}/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=0 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99 && rm ${{ env.file_name }} && cd /home/cmsuser/"
+      run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "cd ${{ env.cmssw_ver }}/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=0 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99 && rm ${{ env.file_name }} && cd /home/cmsusr/"
     - name: Commit the changes
       run: docker commit -c 'ENTRYPOINT ["/run.sh"]' -c 'CMD []' treemaker treemaker/treemaker:${{ env.current_branch }}-cache
     - name: Log into registry

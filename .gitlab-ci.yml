@@ -29,7 +29,7 @@ before_script:
         - docker info
         - sleep 300
         - echo --------- INNER CONTAINER -------------
-        - docker run --rm -i -e CVMFS_MOUNTS="none" -v ${PWD}/:/home/cmsuser/workdir/ ${BASE_IMAGE} -- -i -c "tar -czf ${CMSSW_VERSION}.tar.gz --exclude .git* ${CMSSW_VERSION} && mv ${CMSSW_VERSION}.tar.gz /home/cmsuser/workdir/  && cd /home/cmsuser/workdir/ && pwd && ls -alh ./ && cd /home/cmsuser/"
+        - docker run --rm -i -e CVMFS_MOUNTS="none" -v ${PWD}/:/home/cmsusr/workdir/ ${BASE_IMAGE} -- -i -c "tar -czf ${CMSSW_VERSION}.tar.gz --exclude .git* ${CMSSW_VERSION} && mv ${CMSSW_VERSION}.tar.gz /home/cmsusr/workdir/  && cd /home/cmsusr/workdir/ && pwd && ls -alh ./ && cd /home/cmsusr/"
         - echo --------- OUTER CONTAINER -------------
         - pwd
         - ls -alh ./
