@@ -32,7 +32,7 @@ class maker:
         outfilesuff=self.parameters.value("outfilesuff","_RA2AnalysisTree")
         self.outfile += outfilesuff
         self.getParamDefault("treename","PreSelection")
-        
+
         # background estimations on by default
         self.getParamDefault("lostlepton", True)
         self.getParamDefault("hadtau", False)
@@ -45,12 +45,13 @@ class maker:
         self.getParamDefault("boostedsemivisible",False);
         self.getParamDefault("emerging",False);
         self.getParamDefault("doPhotons",False);
+        self.getParamDefault("tchannel",False);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
-        
+
         # compute the PDF weights
         self.getParamDefault("doPDFs", True);
-        
+
         # other options off by default
         self.getParamDefault("debugtracks", False)
         self.getParamDefault("debugtap", False)
@@ -62,7 +63,7 @@ class maker:
         self.getParamDefault("nestedVectors", True)
         self.getParamDefault("storeOffsets", False)
         self.getParamDefault("splitLevel", 0)
-        
+
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
         self.getParamDefault("tagname",self.scenario.tagname)
@@ -79,13 +80,13 @@ class maker:
         self.getParamDefault("pufile",self.scenario.pufile)
         self.getParamDefault("era",self.scenario.era)
         self.getParamDefault("localera",self.scenario.localera)
-        
+
         # temporary redirector fix
         self.getParamDefault("redir", "root://cmsxrootd.fnal.gov/")
         # handle site name usage
         if self.redir[0]=="T":
             self.redir = "root://cmsxrootd.fnal.gov//store/test/xrootd/"+self.redir
-        
+
         # Load input files
         self.readFiles = cms.untracked.vstring()
 
@@ -96,11 +97,11 @@ class maker:
             else:
                 self.readFiles.extend( readFilesImport[self.nstart:(self.nstart+self.nfiles)] )
 
-        if self.dataset!=[] :    
+        if self.dataset!=[] :
             self.readFiles.extend( [self.dataset] )
 
         self.readFiles = [(self.redir if val.startswith("/") else "")+val for val in self.readFiles]
-        
+
         # branches for treemaker
         self.VectorRecoCand                 = cms.vstring()
         self.VarsXYZVector                  = cms.vstring()
@@ -134,7 +135,7 @@ class maker:
 
     def getParamDefault(self,param,default):
         setattr(self,param,self.parameters.value(param,default))
-        
+
     def printSetup(self):
         print " readFiles: "+str(self.readFiles)
         print " outfile: "+self.outfile
@@ -147,6 +148,7 @@ class maker:
         print " storing also boostedsemivisible variables: "+str(self.boostedsemivisible)
         print " storing emerging jet variables: "+str(self.emerging)
         print " storing photon variables: "+str(self.doPhotons)
+        print " storing t-channel semi-visible jet variables: "+str(self.tchannel)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
         print " "
