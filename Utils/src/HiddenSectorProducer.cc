@@ -50,7 +50,7 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     void firstDark(CandPtr part, CandSet& firstMd, CandSet& firstQd, CandSet& firstGd, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const;
     int checkLast(const reco::GenJet& jet, const CandSet& lastDs, int value, double& frac) const;
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
-    void matchPFMtoJet(CandPtr& part, vector<LorentzVector>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, const int& mt2ID) const;
+    void matchPFMtoJet(CandPtr& part, std::vector<LorentzVector>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, const int& mt2ID) const;
     std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
     edm::InputTag JetTag_, MetTag_, GenTag_, GenJetTag_;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
@@ -90,7 +90,7 @@ void HiddenSectorProducer::lastDark(CandPtr part, CandSet& lastDs) const {
   if(static_cast<const reco::GenParticle*>(part)->isLastCopy() and isDark(DarkHadronIDs_,part)) lastDau(part, lastDs);
 }
 
-void HiddenSectorProducer::medDecay(CandPtr part, CandSet& firstQdM, CandSet& firstQsM) const {
+void HiddenSectorProducer::medDecay(CandPtr part, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const {
   for(unsigned i = 0; i < part->numberOfDaughters(); i++){
     CandPtr dau = part->daughter(i);
     // if the first dark mediator's daughter is still a dark mediator, then check the daughters of this daughter dark mediator until we get daughters that are not dark mediator
@@ -159,9 +159,8 @@ int HiddenSectorProducer::checkFirst(const reco::GenJet& jet, const CandSet& fir
 }
 
 // match particles from mediator to jets
-void HiddenSectorProducer::matchPFMtoJet(CandPtr& part, vector<LorentzVector>& matchedJets,
-  const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, const int& mt2ID) const {
-  if(reco::deltaR(jet,*part) < coneSize)
+void HiddenSectorProducer::matchPFMtoJet(CandPtr& part, std::vector<LorentzVector>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, const int& mt2ID) const {
+  if(reco::deltaR(jet,*part) < coneSize_)
   {
     matchedJets.push_back(jet.p4());
     nPartPerJet ++;
@@ -321,11 +320,13 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     //gen particle organization: last daughters of last copies of dark hadrons, first copies of dark quarks/gluons/mediators, first copies of quarks/gluons/SM quarks from mediator
     //naming scheme: dark particles Pd, SM particles Ps; P = D (generic daughters), Q (quarks), G (gluons), M (mediators)
     CandPtr firstQdM1, firstQdM2, firstQsM1, firstQsM2;
-    CandSet lastDs, firstQd, firstGd, firstQdM, firstQsM;
+    CandSet lastDs, firstMd, firstQd, firstGd, firstQdM, firstQsM;
+    bool secondDM = false;
+    bool secondSM = false;
     //loop over gen particles
     for(const auto& i_part : *(h_parts.product())){
       lastDark(&i_part, lastDs);
-      firstDark(&i_part, firstQd, firstGd, firstQdM, firstQsM);
+      firstDark(&i_part, firstMd, firstQd, firstGd, firstQdM1, firstQdM2, firstQsM1, firstQsM2,secondDM,secondSM);
     }
     firstQdM.insert(firstQdM1);
     firstQdM.insert(firstQdM2);
