@@ -11,7 +11,7 @@ from TreeMaker.TreeMaker.doZinvBkg import doZinvBkg, reclusterZinv
 class maker:
     def __init__(self,parameters):
         self.parameters = parameters
-    
+
         # auto configuration for different scenarios
         self.scenarioName=self.parameters.value("scenario","")
         from TreeMaker.Production.scenarios import Scenario
@@ -19,7 +19,7 @@ class maker:
 
         # to keep track of MET fix, currently applied to all 2017 data and MC
         self.doMETfix = ("Fall17" in self.scenarioName or "2017" in self.scenarioName)
-        
+
         self.getParamDefault("verbose",True)
         self.getParamDefault("inputFilesConfig","")
         self.getParamDefault("dataset",[])
@@ -34,7 +34,7 @@ class maker:
         outfilesuff=self.parameters.value("outfilesuff","_RA2AnalysisTree")
         self.outfile += outfilesuff
         self.getParamDefault("treename","PreSelection")
-        
+
         # background estimations on by default
         self.getParamDefault("lostlepton", True)
         self.getParamDefault("hadtau", False)
@@ -44,17 +44,18 @@ class maker:
         # special signal stuff
         self.getParamDefault("systematics",True);
         self.getParamDefault("semivisible",True);
+        self.getParamDefault("tchannel",False);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
-        
+
         # compute the PDF weights
         self.getParamDefault("doPDFs", True);
-        
+
         # other options off by default
         self.getParamDefault("debugtracks", False)
         self.getParamDefault("applybaseline", False)
         self.getParamDefault("saveMinimalGenParticles", True)
-        
+
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
         self.getParamDefault("tagname",self.scenario.tagname)
@@ -71,13 +72,13 @@ class maker:
         self.getParamDefault("wrongpufile",self.scenario.wrongpufile)
         self.getParamDefault("era",self.scenario.era)
         self.getParamDefault("localera",self.scenario.localera)
-        
+
         # temporary redirector fix
         self.getParamDefault("redir", "root://cmsxrootd.fnal.gov/")
         # handle site name usage
         if self.redir[0]=="T":
             self.redir = "root://cmsxrootd.fnal.gov//store/test/xrootd/"+self.redir
-        
+
         # Load input files
         self.readFiles = cms.untracked.vstring()
 
@@ -88,11 +89,11 @@ class maker:
             else:
                 self.readFiles.extend( readFilesImport[self.nstart:(self.nstart+self.nfiles)] )
 
-        if self.dataset!=[] :    
+        if self.dataset!=[] :
             self.readFiles.extend( [self.dataset] )
 
         self.readFiles = [(self.redir if val[0:6]=="/store" else "")+val for val in self.readFiles]
-        
+
         # branches for treemaker
         self.VectorRecoCand             = cms.vstring()
         self.VarsDouble                 = cms.vstring()
@@ -111,7 +112,7 @@ class maker:
 
     def getParamDefault(self,param,default):
         setattr(self,param,self.parameters.value(param,default))
-        
+
     def printSetup(self):
         print " readFiles: "+str(self.readFiles)
         print " outfile: "+self.outfile
@@ -121,6 +122,7 @@ class maker:
         print " storing hadtau variables: "+str(self.hadtau)+" w/ reclustering "+str(self.hadtaurecluster)
         print " storing Zinv variables: "+str(self.doZinv)
         print " storing semi-visible jet variables: "+str(self.semivisible)
+        print " storing t-channel semi-visible jet variables: "+str(self.tchannel)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
         print " "
