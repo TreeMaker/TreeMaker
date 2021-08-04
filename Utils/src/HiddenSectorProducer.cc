@@ -1,3 +1,4 @@
+
 // system include files
 #include <memory>
 #include <vector>
@@ -44,11 +45,10 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     bool isDark(const PidSet& darkList, CandPtr part) const;
     bool isDark(const PidSet& darkList, int pid) const;
     bool isDark(const CandSet& darkList, CandPtr part) const;
-    void lastDau(CandPtr part, CandSet& lastDs) const;
-    void lastDark(CandPtr part, CandSet& lastDs) const;
+    bool isAncestor(const PidSet& darkList, CandPtr part) const;
     void medDecay(CandPtr part, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const;
     void firstDark(CandPtr part, CandSet& firstMd, CandSet& firstQd, CandSet& firstGd, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const;
-    int checkLast(const reco::GenJet& jet, const CandSet& lastDs, int value, double& frac) const;
+    int checkLast(const reco::GenJet& jet, CandSet stableDs, int value, double& frac) const;
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
     void matchPFMtoJet(CandPtr& part, std::vector<LorentzVector>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, const int& mt2ID) const;
     std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
@@ -78,16 +78,13 @@ bool HiddenSectorProducer::isDark(const CandSet& darkList, CandPtr part) const {
   return darkList.find(part) != darkList.end();
 }
 
-void HiddenSectorProducer::lastDau(CandPtr part, CandSet& lastDs) const {
-  for(unsigned i = 0; i < part->numberOfDaughters(); ++i){
-    CandPtr dau = part->daughter(i);
-    if(dau->numberOfDaughters() == 0 and !isDark(DarkStableIDs_,dau)) lastDs.insert(dau);
-    else if(dau->numberOfDaughters() > 0) lastDau(dau, lastDs);
+bool HiddenSectorProducer::isAncestor(const PidSet& darkList, CandPtr part) const {
+  if(isDark(darkList, part)) return true;
+  for(size_t i=0;i< part->numberOfMothers();i++)
+  {
+    if(isAncestor(darkList,part->mother(i))) return true;
   }
-}
-
-void HiddenSectorProducer::lastDark(CandPtr part, CandSet& lastDs) const {
-  if(static_cast<const reco::GenParticle*>(part)->isLastCopy() and isDark(DarkHadronIDs_,part)) lastDau(part, lastDs);
+  return false;
 }
 
 void HiddenSectorProducer::medDecay(CandPtr part, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const {
@@ -133,20 +130,27 @@ void HiddenSectorProducer::firstDark(CandPtr part, CandSet& firstMd, CandSet& fi
   }
 }
 
-int HiddenSectorProducer::checkLast(const reco::GenJet& jet, const CandSet& lastDs, int value, double& frac) const {
+int HiddenSectorProducer::checkLast(const reco::GenJet& jet, CandSet stableDs, int value, double& frac) const {
   //compare jet constituents to set of last particles
   //also compute dark pt fraction in same loop
   bool match = false;
   LorentzVector p4;
+  LorentzVector totPt = jet.p4();
   for(unsigned i = 0; i < jet.numberOfDaughters(); ++i){
     CandPtr dau = jet.daughter(i);
-    if(isDark(lastDs,dau)) {
-      match = true;
-      p4 += dau->p4();
+    if(isAncestor(DarkHadronIDs_,dau)){
+        match = true;
+        p4 += dau->p4();
     }
-    if(isDark(DarkStableIDs_,dau)) p4 += dau->p4();
   }
-  frac = p4.pt()/jet.pt();
+  for(const auto& part : stableDs){
+     if(reco::deltaR(jet, *part) < coneSize_)
+     {
+       p4 += part->p4();
+       totPt += part->p4();
+     }
+  }
+  frac = p4.pt()/totPt.pt();
   return match ? value : 0;
 }
 
@@ -218,6 +222,7 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
   produces<double>("MJJ");
   produces<double>("Mmc");
   produces<double>("MT");
+  produces<double>("tchMT2");
   produces<double>("DeltaPhi1");
   produces<double>("DeltaPhi2");
   produces<double>("DeltaPhiMin");
@@ -225,6 +230,7 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
   //first two branches for GenJetsAK8, last is for JetsAK8 (matching index)
   produces<std::vector<int>>("hvCategory");
   produces<std::vector<double>>("darkPtFrac");
+  produces<std::vector<int>>("MT2JetsID");
   produces<std::vector<int>>("genIndex");
 }
 
@@ -262,6 +268,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
   auto jet_isHV_vec = std::make_unique<std::vector<bool>>();
   auto hvCategory = std::make_unique<std::vector<int>>();
   auto darkPtFrac = std::make_unique<std::vector<double>>();
+  auto MT2JetsID = std::make_unique<std::vector<int>>();
   auto genIndex = std::make_unique<std::vector<int>>();
 
   LorentzVector vpartsSum;
@@ -273,7 +280,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     }
   }
 
-  double MJJ = 0, Mmc = 0, MT = 0, DeltaPhi1 = 10, DeltaPhi2 = 10, DeltaPhiMin = 10;
+  double MJJ = 0, Mmc = 0, MT = 0, tchMT2 = 0, DeltaPhi1 = 10, DeltaPhi2 = 10, DeltaPhiMin = 10;
   //only fill these parts if there are >=2 jets
   if(h_jets->size()>=2){
     //delta phi
@@ -320,13 +327,16 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     //gen particle organization: last daughters of last copies of dark hadrons, first copies of dark quarks/gluons/mediators, first copies of quarks/gluons/SM quarks from mediator
     //naming scheme: dark particles Pd, SM particles Ps; P = D (generic daughters), Q (quarks), G (gluons), M (mediators)
     CandPtr firstQdM1, firstQdM2, firstQsM1, firstQsM2;
-    CandSet lastDs, firstMd, firstQd, firstGd, firstQdM, firstQsM;
-    bool secondDM = false;
-    bool secondSM = false;
+    CandSet stableDs, firstMd, firstQd, firstGd, firstQdM, firstQsM;
+    std::vector<LorentzVector> dQM1Js,dQM2Js,SMM1Js,SMM2Js;
+    std::vector<int> t_MT2JetIDList;
+    bool secondDM = false, secondSM = false, manyParticlesPerJet = false;
+    int nJets = 0;
     //loop over gen particles
+    std::cout << "Event" << std::endl;
     for(const auto& i_part : *(h_parts.product())){
-      lastDark(&i_part, lastDs);
       firstDark(&i_part, firstMd, firstQd, firstGd, firstQdM1, firstQdM2, firstQsM1, firstQsM2,secondDM,secondSM);
+      if(static_cast<const reco::GenParticle*>(&i_part)->isLastCopy() and isDark(DarkStableIDs_,&i_part)) stableDs.insert(&i_part);
     }
     firstQdM.insert(firstQdM1);
     firstQdM.insert(firstQdM2);
@@ -334,17 +344,49 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     firstQsM.insert(firstQsM2);
     //loop over gen jets
     for(const auto& i_jet : *(h_genjets.product())){
-      if(i_jet.pt() > 100){
-        int category = 0;
-        double frac = 0;
-        category += checkLast(i_jet, lastDs, 1, frac);
-        category += checkFirst(i_jet, firstQd, 2);
-        category += checkFirst(i_jet, firstGd, 4);
-        category += checkFirst(i_jet, firstQdM, 8);
-        category += checkFirst(i_jet, firstQsM, 16);
-        hvCategory->push_back(category);
-        darkPtFrac->push_back(frac);
+      int category = 0;
+      double frac = 0;
+      nJets ++;
+      category += checkLast(i_jet, stableDs, 1, frac);
+      category += checkFirst(i_jet, firstQd, 2);
+      category += checkFirst(i_jet, firstGd, 4);
+      category += checkFirst(i_jet, firstQdM, 8);
+      category += checkFirst(i_jet, firstQsM, 16);
+      hvCategory->push_back(category);
+      darkPtFrac->push_back(frac);
+      // t-channel MT2 Right Combination
+      if(firstMd.size()==2){
+        int t_MT2JetID = 0;
+        int nPartPerJet = 0;
+        matchPFMtoJet(firstQdM1,dQM1Js,i_jet,nPartPerJet,t_MT2JetID,1);
+        matchPFMtoJet(firstQdM2,dQM2Js,i_jet,nPartPerJet,t_MT2JetID,2);
+        matchPFMtoJet(firstQsM1,SMM1Js,i_jet,nPartPerJet,t_MT2JetID,3);
+        matchPFMtoJet(firstQsM2,SMM2Js,i_jet,nPartPerJet,t_MT2JetID,4);
+        t_MT2JetIDList.push_back(t_MT2JetID);
+        if(nPartPerJet > 1) manyParticlesPerJet = true;
       }
+    }
+    bool oneJetPerParticle = dQM1Js.size() == 1 && dQM2Js.size() == 1 && SMM1Js.size() == 1 && SMM2Js.size() == 1;
+    if(oneJetPerParticle && !manyParticlesPerJet)
+    {
+      const auto& i_met = h_mets->at(0);
+      double METx = i_met.px();
+      double METy = i_met.py();
+      LorentzVector FJet0 = dQM1Js[0] + SMM1Js[0];
+      LorentzVector FJet1 = dQM2Js[0] + SMM2Js[0];
+      tchMT2 = asymm_mt2_lester_bisect::get_mT2(
+        FJet0.M(), FJet0.Px(), FJet0.Py(),
+        FJet1.M(), FJet1.Px(), FJet1.Py(),
+        METx, METy, 0.0, 0.0, 0
+      );
+    }
+    else
+    {
+      std::vector<int> zeros(nJets,0);
+      t_MT2JetIDList = zeros;
+    }
+    for(const auto& t_MT2JetID : t_MT2JetIDList){
+      MT2JetsID->push_back(t_MT2JetID);
     }
     //gen:reco jet matching
     *genIndex = matchGenRec(*(h_jets.product()), *(h_genjets.product()));
@@ -353,6 +395,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
   iEvent.put(std::move(jet_isHV_vec),"isHV");
   iEvent.put(std::move(hvCategory),"hvCategory");
   iEvent.put(std::move(darkPtFrac),"darkPtFrac");
+  iEvent.put(std::move(MT2JetsID),"MT2JetsID");
   iEvent.put(std::move(genIndex),"genIndex");
   auto pMJJ = std::make_unique<double>(MJJ);
   iEvent.put(std::move(pMJJ),"MJJ");
@@ -360,6 +403,8 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
   iEvent.put(std::move(pMmc),"Mmc");
   auto pMT = std::make_unique<double>(MT);
   iEvent.put(std::move(pMT),"MT");
+  auto pMT2 = std::make_unique<double>(tchMT2);
+  iEvent.put(std::move(pMT2),"tchMT2");
   auto pDeltaPhi1 = std::make_unique<double>(DeltaPhi1);
   iEvent.put(std::move(pDeltaPhi1),"DeltaPhi1");
   auto pDeltaPhi2 = std::make_unique<double>(DeltaPhi2);
