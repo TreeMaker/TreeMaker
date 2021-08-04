@@ -1139,6 +1139,7 @@ def makeTreeFromMiniAOD(self,process):
             'HiddenSector:MJJ(MJJ_AK8)',
             'HiddenSector:Mmc(Mmc_AK8)',
             'HiddenSector:MT(MT_AK8)',
+            'HiddenSector:tchMT2(tchMT2_AK8)',
             'HiddenSector:DeltaPhi1(DeltaPhi1_AK8)',
             'HiddenSector:DeltaPhi2(DeltaPhi2_AK8)',
             'HiddenSector:DeltaPhiMin(DeltaPhiMin_AK8)',
@@ -1149,7 +1150,8 @@ def makeTreeFromMiniAOD(self,process):
             ])
             if self.tchannel:
                 self.VectorInt.extend([
-                    'HiddenSector:hvCategory(GenJetsAK8_hvCategory)'
+                    'HiddenSector:hvCategory(GenJetsAK8_hvCategory)',
+                    'HiddenSector:MT2JetsID(GenJetsAK8_MT2JetsID)',
                     'HiddenSector:genIndex(JetsAK8_genIndex)'
                 ])
                 self.VectorDouble.extend([
