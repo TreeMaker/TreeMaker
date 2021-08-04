@@ -1130,6 +1130,7 @@ def makeTreeFromMiniAOD(self,process):
             DarkMediatorIDs = cms.vuint32(4900023),
             DarkHadronIDs = cms.vuint32(4900111,4900113,4900211,4900213),
             DarkGluonIDs = cms.vuint32(4900021),
+            SMQuarkIDs = cms.vuint32(1,2,3,4,5,6,7,8),
         )
         if self.tchannel:
             process.HiddenSector.DarkQuarkIDs = [4900101,4900102]
@@ -1149,7 +1150,8 @@ def makeTreeFromMiniAOD(self,process):
             ])
             if self.tchannel:
                 self.VectorInt.extend([
-                    'HiddenSector:hvCategory(GenJetsAK8_hvCategory)'
+                    'HiddenSector:hvCategory(GenJetsAK8_hvCategory)',
+                    'HiddenSector:MT2JetsID(GenJetsAK8_MT2JetsID)',
                     'HiddenSector:genIndex(JetsAK8_genIndex)'
                 ])
                 self.VectorDouble.extend([
