@@ -5,7 +5,7 @@ import FWCore.ParameterSet.Config as cms
 # i.e. '_v' must be present at the end, no errant spaces
 # specify '_v#' if only that specific version is desired (not typical)
 
-#updated the triggerlist with dilepton triggers (52 of them) and some more for 0 lepton triggers from Semra's study. -BB
+#updated the triggerlist with dilepton triggers (Line 175 and below) and some more for 0 lepton triggers from Semra's study. Didn't delete the ones that was already here.  -BB
 triggerNameList = cms.vstring(
     # handle duplicates
 	list(sorted(set([
