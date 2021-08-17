@@ -6,4 +6,5 @@ genjetproperties = cms.EDProducer('GenJetProperties',
     SoftDropGenJetTag = cms.InputTag(""),
     distMax = cms.double(0.4),
     jetPtFilter = cms.double(0.0),
+    doHV = cms.bool(False),
 )

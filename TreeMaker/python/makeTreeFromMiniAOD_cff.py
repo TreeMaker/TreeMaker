@@ -904,7 +904,17 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo:
         # store all genjets
-        self.VectorRecoCand.extend ( [ 'slimmedGenJets(GenJets)' ] )
+        from TreeMaker.Utils.genjetproperties_cfi import genjetproperties
+        if self.emerging:
+            process.genJetProperties = genjetproperties.clone(
+                GenJetTag = cms.InputTag("slimmedGenJets"),
+                doHV = cms.bool(True),
+            )
+            self.VectorRecoCand.extend(['genJetProperties(GenJets)'])
+            self.VectorInt.extend(['genJetProperties:multiplicity(GenJets_multiplicity)'])
+            self.VectorInt.extend(['genJetProperties:nHVAncestors(GenJets_nHVAncestors)'])
+        else:
+            self.VectorRecoCand.extend(['slimmedGenJets(GenJets)'])
         
         from TreeMaker.Utils.subJetSelection_cfi import SubGenJetSelection
         
@@ -959,12 +969,13 @@ def makeTreeFromMiniAOD(self,process):
             src = cms.InputTag("packedGenParticles"),
         )
 
-        process.ak8GenJetProperties = cms.EDProducer("GenJetProperties",
+        process.ak8GenJetProperties = genjetproperties.clone(
             GenJetTag = cms.InputTag("slimmedGenJetsAK8"),
             PrunedGenJetTag = cms.InputTag("ak8GenJetsPruned"),
             SoftDropGenJetTag = cms.InputTag("ak8GenJetsSoftDrop"),
             distMax = cms.double(0.8),
             jetPtFilter = cms.double(150),
+            doHV = cms.bool(True if self.emerging else False),
         )
         self.VectorDouble.extend([
             'ak8GenJetProperties:softDropMass(GenJetsAK8_softDropMass)',
@@ -972,6 +983,10 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorInt.extend([
             'ak8GenJetProperties:multiplicity(GenJetsAK8_multiplicity)',
         ])
+        if self.emerging:
+            self.VectorInt.extend([
+                'ak8GenJetProperties:nHVAncestors(GenJetsAK8_nHVAncestors)'
+            ])
         # store AK8 genjets above pt cut
         self.VectorRecoCand.extend (['ak8GenJetProperties(GenJetsAK8)'])
 
