@@ -11,6 +11,7 @@ class TMEras(object):
             'TM2017',
             'TM2018',
             'TMUL2016',
+            'TMUL2016APV',
             'TMUL2017',
             'TMUL2018',
         ]
