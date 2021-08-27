@@ -1,4 +1,3 @@
-
 // system include files
 #include <memory>
 #include <vector>
@@ -46,8 +45,8 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     bool isDark(const PidSet& darkList, int pid) const;
     bool isDark(const CandSet& darkList, CandPtr part) const;
     bool isAncestor(const PidSet& darkList, CandPtr part) const;
-    void medDecay(CandPtr part, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const;
-    void firstDark(CandPtr part, CandSet& firstMd, CandSet& firstQd, CandSet& firstGd, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const;
+    void medDecay(CandPtr part, CandSet& firstQdM, CandSet& firstQsM, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const;
+    void firstDark(CandPtr part, CandSet& firstMd, CandSet& firstQd, CandSet& firstGd, CandSet& firstQdM, CandSet& firstQsM, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const;
     int checkLast(const reco::GenJet& jet, CandSet stableDs, int value, double& frac) const;
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
     void matchPFMtoJet(CandPtr& part, std::vector<LorentzVector>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, const int& mt2ID) const;
@@ -87,13 +86,14 @@ bool HiddenSectorProducer::isAncestor(const PidSet& darkList, CandPtr part) cons
   return false;
 }
 
-void HiddenSectorProducer::medDecay(CandPtr part, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const {
+void HiddenSectorProducer::medDecay(CandPtr part, CandSet& firstQdM, CandSet& firstQsM, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const {
   for(unsigned i = 0; i < part->numberOfDaughters(); i++){
     CandPtr dau = part->daughter(i);
     // if the first dark mediator's daughter is still a dark mediator, then check the daughters of this daughter dark mediator until we get daughters that are not dark mediator
-    if(isDark(DarkMediatorIDs_,dau)) medDecay(dau,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
+    if(isDark(DarkMediatorIDs_,dau)) medDecay(dau,firstQdM,firstQsM,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
     else{
       if(isDark(DarkQuarkIDs_,dau)){
+        firstQdM.insert(dau);
         if(secondDM == false){
           firstQdM1 = dau;
           secondDM = true;
@@ -101,6 +101,7 @@ void HiddenSectorProducer::medDecay(CandPtr part, CandPtr& firstQdM1, CandPtr& f
         else firstQdM2 = dau;
       }
       else if(isDark(SMQuarkIDs_,dau)){
+        firstQsM.insert(dau);
         if(secondSM == false){
           firstQsM1 = dau;
           secondSM = true;
@@ -111,17 +112,17 @@ void HiddenSectorProducer::medDecay(CandPtr part, CandPtr& firstQdM1, CandPtr& f
   }
 }
 
-void HiddenSectorProducer::firstDark(CandPtr part, CandSet& firstMd, CandSet& firstQd, CandSet& firstGd, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const {
+void HiddenSectorProducer::firstDark(CandPtr part, CandSet& firstMd, CandSet& firstQd, CandSet& firstGd, CandSet& firstQdM, CandSet& firstQsM, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const {
   if(isDark(DarkFirstIDs_,part)){
     CandPtr parent = part->mother(0);
-    if(isDark(DarkFirstIDs_,parent)) firstDark(parent, firstMd, firstQd, firstGd, firstQdM1, firstQdM2, firstQsM1, firstQsM2, secondDM, secondSM);
+    if(isDark(DarkFirstIDs_,parent)) firstDark(parent, firstMd, firstQd, firstGd, firstQdM, firstQsM, firstQdM1, firstQdM2, firstQsM1, firstQsM2, secondDM, secondSM);
     else{
       //SM parent of first dark particles: fill first two vectors here, use mediators to fill second two vectors
       for(unsigned i = 0; i < part->numberOfDaughters(); i++){
         CandPtr dau = part->daughter(i);
         if (isDark(DarkMediatorIDs_,dau)){
           firstMd.insert(dau);
-          medDecay(dau,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
+          medDecay(dau,firstQdM,firstQsM,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
         }
         else if (isDark(DarkQuarkIDs_,dau)) firstQd.insert(dau);
         else if (isDark(DarkGluonIDs_,dau)) firstGd.insert(dau);
@@ -333,16 +334,17 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     bool secondDM = false, secondSM = false, manyParticlesPerJet = false;
     int nJets = 0;
     //loop over gen particles
-    std::cout << "Event" << std::endl;
     for(const auto& i_part : *(h_parts.product())){
-      firstDark(&i_part, firstMd, firstQd, firstGd, firstQdM1, firstQdM2, firstQsM1, firstQsM2,secondDM,secondSM);
+      firstDark(&i_part, firstMd, firstQd, firstGd, firstQdM, firstQsM, firstQdM1, firstQdM2, firstQsM1, firstQsM2,secondDM,secondSM);
       if(static_cast<const reco::GenParticle*>(&i_part)->isLastCopy() and isDark(DarkStableIDs_,&i_part)) stableDs.insert(&i_part);
     }
-    firstQdM.insert(firstQdM1);
-    firstQdM.insert(firstQdM2);
-    firstQsM.insert(firstQsM1);
-    firstQsM.insert(firstQsM2);
+    // firstQdM.insert(firstQdM1);
+    // firstQdM.insert(firstQdM2);
+    // firstQsM.insert(firstQsM1);
+    // firstQsM.insert(firstQsM2);
     //loop over gen jets
+
+    // if(firstQdM.size() != 2) std::cout << firstQdM.size() << std::endl;
     for(const auto& i_jet : *(h_genjets.product())){
       int category = 0;
       double frac = 0;
