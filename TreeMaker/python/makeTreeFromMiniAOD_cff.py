@@ -979,21 +979,40 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## Prefiring weights
     ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.L1ECALNonPrefiringProbProducer_cfi import L1ECALNonPrefiringProbProducer
-    prefiringDataEra = cms.PSet(value = cms.string(""))
-    TMeras.TM2016.toModify(prefiringDataEra, value = "2016BtoH")
-    TMeras.TM2017.toModify(prefiringDataEra, value = "2017BtoF")
-    if len(prefiringDataEra.value.value())>0:
-        process.L1ECALNonPrefiringProbProducer = L1ECALNonPrefiringProbProducer.clone(
+    from TreeMaker.Utils.L1NonPrefiringProbProducer_cfi import L1NonPrefiringProbProducer
+    prefiringDataEraECAL = cms.PSet(value = cms.string(""))
+    prefiringDataEraMuon = cms.PSet(value = cms.string(""))
+
+    TMeras.TMUL2016.toModify(prefiringDataEraECAL,    value = "UL2016preVFP")
+    TMeras.TMUL2016APV.toModify(prefiringDataEraECAL, value = "UL2016postVFP")
+    TMeras.TMUL2017.toModify(prefiringDataEraECAL,    value = "UL2017BtoF")
+    TMeras.TMUL2018.toModify(prefiringDataEraECAL,    value = "None")
+
+    TMeras.TMUL2016.toModify(prefiringDataEraMuon,    value = "2016preVFP")
+    TMeras.TMUL2016APV.toModify(prefiringDataEraMuon, value = "2016postVFP")
+    TMeras.TMUL2017.toModify(prefiringDataEraMuon,    value = "20172018")
+    TMeras.TMUL2018.toModify(prefiringDataEraMuon,    value = "20172018")
+
+    if len(prefiringDataEraECAL.value.value())>0 and len(prefiringDataEraMuon.value.value())>0:
+        process.L1NonPrefiringProbProducer = L1NonPrefiringProbProducer.clone(
             TheJets = JetTag,
-            DataEra = prefiringDataEra.value,
-            L1Maps = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1PrefiringMaps_new.root'),
+            DataEraECAL = prefiringDataEraECAL.value,
+            DataEraMuon = prefiringDataEraMuon.value,
+            L1MapsECAL = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1PrefiringMaps.root'),
+            L1ParamsMuon = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1MuonPrefiringParameterizations.root'),
         )
         self.VarsDouble.extend([
-            'L1ECALNonPrefiringProbProducer:NonPrefiringProb',
-            'L1ECALNonPrefiringProbProducer:NonPrefiringProbUp',
-            'L1ECALNonPrefiringProbProducer:NonPrefiringProbDown',
+            'L1NonPrefiringProbProducer:NonPrefiringProb',
+            'L1NonPrefiringProbProducer:NonPrefiringProbUp',
+            'L1NonPrefiringProbProducer:NonPrefiringProbDown',
+            'L1NonPrefiringProbProducer:NonPrefiringProbECAL',
+            'L1NonPrefiringProbProducer:NonPrefiringProbECALUp',
+            'L1NonPrefiringProbProducer:NonPrefiringProbECALDown',
+            'L1NonPrefiringProbProducer:NonPrefiringProbMuon',
+            'L1NonPrefiringProbProducer:NonPrefiringProbMuonUp',
+            'L1NonPrefiringProbProducer:NonPrefiringProbMuonDown',
         ])
+
 
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
