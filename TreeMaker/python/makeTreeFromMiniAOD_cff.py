@@ -1122,6 +1122,7 @@ def makeTreeFromMiniAOD(self,process):
         process.HiddenSector = cms.EDProducer("HiddenSectorProducer",
             JetTag = JetAK8Tag,
             MetTag = METTag,
+            GenMetTag = cms.InputTag("genMetTrue"),
             GenTag = cms.InputTag("prunedGenParticles"),
             GenJetTag = GenJetAK8Tag,
             coneSize = cms.double(0.8),

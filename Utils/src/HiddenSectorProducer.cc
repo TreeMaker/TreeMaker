@@ -51,9 +51,10 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
     void matchPFMtoJet(CandPtr& part, std::vector<LorentzVector>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, const int& mt2ID) const;
     std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
-    edm::InputTag JetTag_, MetTag_, GenTag_, GenJetTag_;
+    edm::InputTag JetTag_, MetTag_, GenMetTag_, GenTag_, GenJetTag_;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
     edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
+    edm::EDGetTokenT<edm::View<reco::GenMET>> GenMetTok_;
     edm::EDGetTokenT<edm::View<reco::GenParticle>> GenTok_;
     edm::EDGetTokenT<edm::View<reco::GenJet>> GenJetTok_;
     double coneSize_;
@@ -165,7 +166,7 @@ int HiddenSectorProducer::checkFirst(const reco::GenJet& jet, const CandSet& fir
 
 // match particles from mediator to jets
 void HiddenSectorProducer::matchPFMtoJet(CandPtr& part, std::vector<LorentzVector>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, const int& mt2ID) const {
-  if(reco::deltaR(jet,*part) < coneSize_)
+  if(reco::deltaR(jet,*part) < coneSize_ and jet.pt() > 100)
   {
     matchedJets.push_back(jet.p4());
     nPartPerJet ++;
@@ -201,10 +202,12 @@ std::vector<int> HiddenSectorProducer::matchGenRec(const edm::View<pat::Jet>& je
 HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
   JetTag_(iConfig.getParameter<edm::InputTag>("JetTag")),
   MetTag_(iConfig.getParameter<edm::InputTag>("MetTag")),
+  GenMetTag_(iConfig.getParameter<edm::InputTag>("GenMetTag")),
   GenTag_(iConfig.getParameter<edm::InputTag>("GenTag")),
   GenJetTag_(iConfig.getParameter<edm::InputTag>("GenJetTag")),
   JetTok_(consumes<edm::View<pat::Jet>>(JetTag_)),
   MetTok_(consumes<edm::View<pat::MET>>(MetTag_)),
+  GenMetTok_(consumes<edm::View<reco::GenMET>>(GenMetTag_)),
   GenTok_(consumes<edm::View<reco::GenParticle>>(GenTag_)),
   GenJetTok_(consumes<edm::View<reco::GenJet>>(GenJetTag_)),
   coneSize_(iConfig.getParameter<double>("coneSize"))
@@ -259,6 +262,9 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 
   edm::Handle<edm::View<pat::MET>> h_mets;
   iEvent.getByToken(MetTok_, h_mets);
+
+  edm::Handle<edm::View<reco::GenMET>> h_genmets;
+  iEvent.getByToken(GenMetTok_, h_genmets);
 
   edm::Handle<edm::View<reco::GenParticle>> h_parts;
   iEvent.getByToken(GenTok_, h_parts);
@@ -338,13 +344,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
       firstDark(&i_part, firstMd, firstQd, firstGd, firstQdM, firstQsM, firstQdM1, firstQdM2, firstQsM1, firstQsM2,secondDM,secondSM);
       if(static_cast<const reco::GenParticle*>(&i_part)->isLastCopy() and isDark(DarkStableIDs_,&i_part)) stableDs.insert(&i_part);
     }
-    // firstQdM.insert(firstQdM1);
-    // firstQdM.insert(firstQdM2);
-    // firstQsM.insert(firstQsM1);
-    // firstQsM.insert(firstQsM2);
     //loop over gen jets
-
-    // if(firstQdM.size() != 2) std::cout << firstQdM.size() << std::endl;
     for(const auto& i_jet : *(h_genjets.product())){
       int category = 0;
       double frac = 0;
@@ -371,7 +371,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     bool oneJetPerParticle = dQM1Js.size() == 1 && dQM2Js.size() == 1 && SMM1Js.size() == 1 && SMM2Js.size() == 1;
     if(oneJetPerParticle && !manyParticlesPerJet)
     {
-      const auto& i_met = h_mets->at(0);
+      const auto& i_met = h_genmets->front();
       double METx = i_met.px();
       double METy = i_met.py();
       LorentzVector FJet0 = dQM1Js[0] + SMM1Js[0];
@@ -387,9 +387,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
       std::vector<int> zeros(nJets,0);
       t_MT2JetIDList = zeros;
     }
-    for(const auto& t_MT2JetID : t_MT2JetIDList){
-      MT2JetsID->push_back(t_MT2JetID);
-    }
+    for(const auto& t_MT2JetID : t_MT2JetIDList) MT2JetsID->push_back(t_MT2JetID);
     //gen:reco jet matching
     *genIndex = matchGenRec(*(h_jets.product()), *(h_genjets.product()));
   }

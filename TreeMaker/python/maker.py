@@ -44,7 +44,7 @@ class maker:
         # special signal stuff
         self.getParamDefault("systematics",True);
         self.getParamDefault("semivisible",True);
-        self.getParamDefault("tchannel",False);
+        self.getParamDefault("tchannel",True);
         self.getParamDefault("deepAK8",True);
         self.getParamDefault("deepDoubleB",True);
 
