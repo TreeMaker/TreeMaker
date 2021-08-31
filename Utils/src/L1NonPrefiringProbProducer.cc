@@ -2,11 +2,10 @@
 #include <memory>
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/global/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "FWCore/Utilities/interface/StreamID.h"
 
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
@@ -24,7 +23,7 @@
 #include <array>
 #include <cmath>
 
-//based on: https://github.com/lathomas/cmssw/blob/L1Prefiring_9_4_9/L1Prefiring/EventWeightProducer/plugins/L1NonPrefiringProbProducer.cc
+//based on: https://cmssdt.cern.ch/lxr/source/PhysicsTools/PatUtils/plugins/L1PrefiringWeightProducer.cc
 
 namespace {
    void dot(std::array<double,3>& a1, const std::array<double,3>& a2){
@@ -34,14 +33,14 @@ namespace {
    }
 }
 
-class L1NonPrefiringProbProducer : public edm::global::EDProducer<> {
+class L1NonPrefiringProbProducer : public edm::stream::EDProducer<> {
 public:
   explicit L1NonPrefiringProbProducer(const edm::ParameterSet&);
   
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
   
 private:
-  void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+  void produce(edm::Event&, const edm::EventSetup&) override;
   std::array<double,3> getNonPrefiringRateECAL( double eta, double pt, TH2F * h_prefmap) const;
   std::array<double,3> getNonPrefiringRateMuon( double eta, double phi, double pt) const;
  
@@ -51,24 +50,17 @@ private:
 
   TH2F* h_prefmap_photon; 
   TH2F* h_prefmap_jet;
-  TF1* h_prefparam_muon_0p00to0p20;
-  TF1* h_prefparam_muon_0p20to0p30;
-  TF1* h_prefparam_muon_0p30to0p55;
-  TF1* h_prefparam_muon_0p55to0p83;
-  TF1* h_prefparam_muon_0p83to1p24;
-  TF1* h_prefparam_muon_1p24to1p40;
-  TF1* h_prefparam_muon_1p40to1p60;
-  TF1* h_prefparam_muon_1p60to1p80;
-  TF1* h_prefparam_muon_1p80to2p10;
-  TF1* h_prefparam_muon_2p10to2p25;
-  TF1* h_prefparam_muon_2p25to2p40;
   TF1* h_prefparam_muon_hotspot;
+  std::map<double, TF1*> h_prefparam_muon;
   std::string dataeraecal_;
   std::string dataeramuon_;
   bool useEMpt_;
   double prefiringRateSystUncECAL_;
   double prefiringRateSystUncMuon_;
   double jet_max_muon_fraction_;
+  bool doPrefireMuon_;
+  bool doPrefireECAL_;
+  bool checkHotspot_;
 
 };
 
@@ -83,61 +75,52 @@ L1NonPrefiringProbProducer::L1NonPrefiringProbProducer(const edm::ParameterSet& 
   prefiringRateSystUncMuon_(iConfig.getParameter<double>("PrefiringRateSystematicUnctyMuon")),
   jet_max_muon_fraction_(iConfig.getParameter<double>("JetMaxMuonFraction"))
 {
-  std::string fnameecal =  iConfig.getParameter<std::string>("L1MapsECAL");
-  TFile* file_ecalprefiringmaps = TFile::Open(fnameecal.c_str(),"read");
+  doPrefireMuon_ = dataeramuon_ != "None";
+  doPrefireECAL_ = dataeraecal_ != "None";
+  checkHotspot_ = dataeramuon_.find("2016") != std::string::npos;
 
-  std::string mapphotonfullname = "L1prefiring_photonptvseta_"+ dataeraecal_; 
-  file_ecalprefiringmaps->ls();
-  h_prefmap_photon = (TH2F*)file_ecalprefiringmaps->Get(mapphotonfullname.c_str());
-  h_prefmap_photon->SetDirectory(0);
+  if (doPrefireECAL_) {
+    std::string fnameecal =  iConfig.getParameter<std::string>("L1MapsECAL");
+    TFile* file_ecalprefiringmaps = TFile::Open(fnameecal.c_str(),"read");
 
-  std::string mapjetfullname = "L1prefiring_jet";
-  mapjetfullname += (useEMpt_ ? "empt" : "pt");
-  mapjetfullname += "vseta_" + dataeraecal_;
-  h_prefmap_jet = (TH2F*)file_ecalprefiringmaps->Get(mapjetfullname.c_str());
-  h_prefmap_jet->SetDirectory(0);
-  file_ecalprefiringmaps->Close();
+    std::string mapphotonfullname = "L1prefiring_photonptvseta_"+ dataeraecal_; 
+    h_prefmap_photon = (TH2F*)file_ecalprefiringmaps->Get(mapphotonfullname.c_str());
+    h_prefmap_photon->SetDirectory(0);
 
-  std::string fnamemuon =  iConfig.getParameter<std::string>("L1ParamsMuon");
-  TFile* file_muonprefiringparams = TFile::Open(fnamemuon.c_str(), "read");
+    std::string mapjetfullname = "L1prefiring_jet";
+    mapjetfullname += (useEMpt_ ? "empt" : "pt");
+    mapjetfullname += "vseta_" + dataeraecal_;
+    h_prefmap_jet = (TH2F*)file_ecalprefiringmaps->Get(mapjetfullname.c_str());
+    h_prefmap_jet->SetDirectory(0);
+    file_ecalprefiringmaps->Close();
+  }
 
-  std::string mapmuonfullname = "L1prefiring_muonparam_HotSpot_" + dataeramuon_;
-  h_prefparam_muon_hotspot = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
+  if (doPrefireMuon_) {
+    std::string fnamemuon =  iConfig.getParameter<std::string>("L1ParamsMuon");
+    TFile* file_muonprefiringparams = TFile::Open(fnamemuon.c_str(), "read");
 
-  mapmuonfullname = "L1prefiring_muonparam_0.0To0.2_" + dataeramuon_;
-  h_prefparam_muon_0p00to0p20 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
+    std::string mapmuonfullname_hotspot = "L1prefiring_muonparam_HotSpot_" + dataeramuon_;
+    h_prefparam_muon_hotspot = (TF1*)file_muonprefiringparams->Get(mapmuonfullname_hotspot.c_str());
 
-  mapmuonfullname = "L1prefiring_muonparam_0.2To0.3_" + dataeramuon_;
-  h_prefparam_muon_0p20to0p30 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
+    std::vector<std::pair<std::string, double> > mapmuonfullname = { {"L1prefiring_muonparam_0.0To0.2_", 0.2},
+                                                                     {"L1prefiring_muonparam_0.2To0.3_", 0.3},
+                                                                     {"L1prefiring_muonparam_0.3To0.55_", 0.55},
+                                                                     {"L1prefiring_muonparam_0.55To0.83_", 0.83},
+                                                                     {"L1prefiring_muonparam_0.83To1.24_", 1.24},
+                                                                     {"L1prefiring_muonparam_1.24To1.4_", 1.4},
+                                                                     {"L1prefiring_muonparam_1.4To1.6_", 1.6},
+                                                                     {"L1prefiring_muonparam_1.6To1.8_", 1.8},
+                                                                     {"L1prefiring_muonparam_1.8To2.1_", 2.1},
+                                                                     {"L1prefiring_muonparam_2.1To2.25_", 2.25},
+                                                                     {"L1prefiring_muonparam_2.25To2.4_", 2.4}
+    };
 
-  mapmuonfullname = "L1prefiring_muonparam_0.3To0.55_" + dataeramuon_;
-  h_prefparam_muon_0p30to0p55 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
+    for (const auto& pair : mapmuonfullname) {
+        h_prefparam_muon[pair.second] = (TF1*)file_muonprefiringparams->Get((pair.first + dataeramuon_).c_str());
+    }
 
-  mapmuonfullname = "L1prefiring_muonparam_0.55To0.83_" + dataeramuon_;
-  h_prefparam_muon_0p55to0p83 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-
-  mapmuonfullname = "L1prefiring_muonparam_0.83To1.24_" + dataeramuon_;
-  h_prefparam_muon_0p83to1p24 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-
-  mapmuonfullname = "L1prefiring_muonparam_1.24To1.4_" + dataeramuon_;
-  h_prefparam_muon_1p24to1p40 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-
-  mapmuonfullname = "L1prefiring_muonparam_1.4To1.6_" + dataeramuon_;
-  h_prefparam_muon_1p40to1p60 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-
-  mapmuonfullname = "L1prefiring_muonparam_1.6To1.8_" + dataeramuon_;
-  h_prefparam_muon_1p60to1p80 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-
-  mapmuonfullname = "L1prefiring_muonparam_1.8To2.1_" + dataeramuon_;
-  h_prefparam_muon_1p80to2p10 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-
-  mapmuonfullname = "L1prefiring_muonparam_2.1To2.25_" + dataeramuon_;
-  h_prefparam_muon_2p10to2p25 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-
-  mapmuonfullname = "L1prefiring_muonparam_2.25To2.4_" + dataeramuon_;
-  h_prefparam_muon_2p25to2p40 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-
-  file_muonprefiringparams->Close();
+    file_muonprefiringparams->Close();
+  }
 
   produces<double>( "NonPrefiringProb" );
   produces<double>( "NonPrefiringProbUp" );
@@ -152,7 +135,7 @@ L1NonPrefiringProbProducer::L1NonPrefiringProbProducer(const edm::ParameterSet& 
 }
 
 void
-L1NonPrefiringProbProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
+L1NonPrefiringProbProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
    using namespace edm;
 
@@ -174,65 +157,69 @@ L1NonPrefiringProbProducer::produce(edm::StreamID, edm::Event& iEvent, const edm
    std::array<double,3> NonPrefiringProbsECAL = {{1.,1.,1.}}; //0: central, 1: up, 2: down
    std::array<double,3> NonPrefiringProbsMuon = {{1.,1.,1.}}; //0: central, 1: up, 2: down
 
-   //Start by applying the prefiring maps to photons in the affected regions.
-   std::vector<pat::Photon> affectedphotons;
-   for(const auto& photon : *(thePhotons.product())){
-      double pt = photon.pt();
-      double eta = photon.eta();
-      if(pt < 20.0 or abs(eta) < 2. or abs(eta) > 3.) continue;
-      affectedphotons.push_back(photon);
-      const auto& nonprefiringprob_gam = getNonPrefiringRateECAL(eta, pt, h_prefmap_photon);
-      dot(NonPrefiringProbs,nonprefiringprob_gam);
-   }
-
-   //Now apply the prefiring maps to jets in the affected regions. 
-   for(const auto& jet : *(theJets.product())){
-      double pt = jet.pt();
-      double eta = jet.eta();
-      if(pt < 20.0 or abs(eta) < 2. or abs(eta) > 3.) continue;
-      
-      //Loop over photons to remove overlap
-      std::array<double,3> NonPrefiringProbOverlap = {{1.,1.,1.}};
-      bool overlap = false;
-      for(const auto& photon: affectedphotons){
-         double dR = reco::deltaR(jet,photon);
-         if(dR > 0.4) continue;
-         overlap = true;
-         const auto& nonprefiringprob_gam = getNonPrefiringRateECAL(photon.eta(), photon.pt(), h_prefmap_photon);
-         dot(NonPrefiringProbOverlap,nonprefiringprob_gam);
+   if (doPrefireECAL_) {
+      //Start by applying the prefiring maps to photons in the affected regions.
+      std::vector<pat::Photon> affectedphotons;
+      for(const auto& photon : *(thePhotons.product())){
+         double pt = photon.pt();
+         double eta = photon.eta();
+         if(pt < 20.0 or abs(eta) < 2. or abs(eta) > 3.) continue;
+         affectedphotons.push_back(photon);
+         const auto& nonprefiringprob_gam = getNonPrefiringRateECAL(eta, pt, h_prefmap_photon);
+         dot(NonPrefiringProbs,nonprefiringprob_gam);
       }
 
-      EnergyFractionCalculator efc(jet);
-      double ptem = pt*(efc.neutralEmEnergyFraction() + efc.chargedEmEnergyFraction());
-      const auto& nonprefiringprob_jet = getNonPrefiringRateECAL(eta, useEMpt_ ? ptem : pt, h_prefmap_jet);
-      
-      //If there are no overlapping photons, just multiply by the jet non prefiring rate
-      if(!overlap) dot(NonPrefiringProbs,nonprefiringprob_jet);
-      else {
-         for(unsigned i = 0; i < NonPrefiringProbs.size(); ++i){
-            //If overlapping photons have a non prefiring rate larger than the jet, then replace these weights by the jet one
-            if(NonPrefiringProbOverlap[i] > nonprefiringprob_jet[i]){
-               if(NonPrefiringProbOverlap[i] > 0.) NonPrefiringProbs[i] *= nonprefiringprob_jet[i]/NonPrefiringProbOverlap[i];
-               else NonPrefiringProbs[i] = 0.;
+      //Now apply the prefiring maps to jets in the affected regions. 
+      for(const auto& jet : *(theJets.product())){
+         double pt = jet.pt();
+         double eta = jet.eta();
+         if(pt < 20.0 or abs(eta) < 2. or abs(eta) > 3. or (jet.muonEnergyFraction() > jet_max_muon_fraction_)) continue;
+         
+         //Loop over photons to remove overlap
+         std::array<double,3> NonPrefiringProbOverlap = {{1.,1.,1.}};
+         bool overlap = false;
+         for(const auto& photon: affectedphotons){
+            double dR = reco::deltaR(jet,photon);
+            if(dR > 0.4) continue;
+            overlap = true;
+            const auto& nonprefiringprob_gam = getNonPrefiringRateECAL(photon.eta(), photon.pt(), h_prefmap_photon);
+            dot(NonPrefiringProbOverlap,nonprefiringprob_gam);
+         }
+
+         EnergyFractionCalculator efc(jet);
+         double ptem = pt*(efc.neutralEmEnergyFraction() + efc.chargedEmEnergyFraction());
+         const auto& nonprefiringprob_jet = getNonPrefiringRateECAL(eta, useEMpt_ ? ptem : pt, h_prefmap_jet);
+         
+         //If there are no overlapping photons, just multiply by the jet non prefiring rate
+         if(!overlap) dot(NonPrefiringProbs,nonprefiringprob_jet);
+         else {
+            for(unsigned i = 0; i < NonPrefiringProbs.size(); ++i){
+               //If overlapping photons have a non prefiring rate larger than the jet, then replace these weights by the jet one
+               if(NonPrefiringProbOverlap[i] > nonprefiringprob_jet[i]){
+                  if(NonPrefiringProbOverlap[i] > 0.) NonPrefiringProbs[i] *= nonprefiringprob_jet[i]/NonPrefiringProbOverlap[i];
+                  else NonPrefiringProbs[i] = 0.;
+               }
+               //If overlapping photons have a non prefiring rate smaller than the jet, don't consider the jet in the event weight
             }
-            //If overlapping photons have a non prefiring rate smaller than the jet, don't consider the jet in the event weight
          }
       }
    }
 
-   for(const auto& muon : *(theMuons.product())){
-      double pt = muon.pt();
-      double phi = muon.phi();
-      double eta = muon.eta();
+   if (doPrefireMuon_) {
+      for(const auto& muon : *(theMuons.product())){
+         double pt = muon.pt();
+         double phi = muon.phi();
+         double eta = muon.eta();
  
-      // remove low quality muons that would not prefire the L1 trigger
-      if (pt < 5 || !muon.isLooseMuon())
-         continue;
+         // remove low quality muons that would not prefire the L1 trigger
+         if (pt < 5 || !muon.isLooseMuon())
+            continue;
 
-      const auto& nonprefiringprob_mu = getNonPrefiringRateMuon(eta, phi, pt);
+         const auto& nonprefiringprob_mu = getNonPrefiringRateMuon(eta, phi, pt);
 
-      dot(NonPrefiringProbsMuon, nonprefiringprob_mu);
-      dot(NonPrefiringProbs, nonprefiringprob_mu);
+         dot(NonPrefiringProbsMuon, nonprefiringprob_mu);
+         dot(NonPrefiringProbs, nonprefiringprob_mu);
+      }
    }
 
    auto NonPrefiringProb = std::make_unique <double> ( NonPrefiringProbs[0]);
@@ -277,44 +264,15 @@ std::array<double,3> L1NonPrefiringProbProducer::getNonPrefiringRateMuon( double
 
    double abseta = abs(eta);
    double prefrate = 0.0; double preferr = 0.0;
-   if ((dataeramuon_.find("2016") != std::string::npos) && (eta > 1.24 && eta < 1.6) && (phi > 2.44346 && phi < 2.79253)){
+   if (checkHotspot_ && (eta > 1.24 && eta < 1.6) && (phi > 2.44346 && phi < 2.79253)){
       prefrate = h_prefparam_muon_hotspot->Eval(pt);
       preferr = h_prefparam_muon_hotspot->GetParError(2); 
-   } else if (abseta < 0.2) {
-      prefrate = h_prefparam_muon_0p00to0p20->Eval(pt);
-      preferr = h_prefparam_muon_0p00to0p20->GetParError(2);
-   } else if (abseta < 0.3) {
-      prefrate = h_prefparam_muon_0p20to0p30->Eval(pt);
-      preferr = h_prefparam_muon_0p20to0p30->GetParError(2);
-   } else if (abseta < 0.55) {
-      prefrate = h_prefparam_muon_0p30to0p55->Eval(pt);
-      preferr = h_prefparam_muon_0p30to0p55->GetParError(2);
-   } else if (abseta < 0.83) {
-      prefrate = h_prefparam_muon_0p55to0p83->Eval(pt);
-      preferr = h_prefparam_muon_0p55to0p83->GetParError(2);
-   } else if (abseta < 1.24) {
-      prefrate = h_prefparam_muon_0p83to1p24->Eval(pt);
-      preferr = h_prefparam_muon_0p83to1p24->GetParError(2);
-   } else if (abseta < 1.4) {
-      prefrate = h_prefparam_muon_1p24to1p40->Eval(pt);
-      preferr = h_prefparam_muon_1p24to1p40->GetParError(2);
-   } else if (abseta < 1.6) {
-      prefrate = h_prefparam_muon_1p40to1p60->Eval(pt);
-      preferr = h_prefparam_muon_1p40to1p60->GetParError(2);
-   } else if (abseta < 1.8) {
-      prefrate = h_prefparam_muon_1p60to1p80->Eval(pt);
-      preferr = h_prefparam_muon_1p60to1p80->GetParError(2);
-   } else if (abseta < 2.1) {
-      prefrate = h_prefparam_muon_1p80to2p10->Eval(pt);
-      preferr = h_prefparam_muon_1p80to2p10->GetParError(2);
-   } else if (abseta < 2.25) {
-      prefrate = h_prefparam_muon_2p10to2p25->Eval(pt);
-      preferr = h_prefparam_muon_2p10to2p25->GetParError(2);
-   } else if (abseta < 2.4) {
-      prefrate = h_prefparam_muon_2p25to2p40->Eval(pt);
-      preferr = h_prefparam_muon_2p25to2p40->GetParError(2);
-   } else {
+   } else if (abseta > 2.4) {
       return {{0.,0.,0.}};
+   } else {
+      std::map<double, TF1*>::const_iterator iter = h_prefparam_muon.upper_bound(abseta);
+      prefrate = iter->second->Eval(pt);
+      preferr = iter->second->GetParError(2);
    }
 
    double prefrate_up = std::min(std::max(prefrate + preferr, (1. + prefiringRateSystUncMuon_)*prefrate),1.);

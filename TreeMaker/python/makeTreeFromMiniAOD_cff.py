@@ -980,26 +980,19 @@ def makeTreeFromMiniAOD(self,process):
     ## Prefiring weights
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.Utils.L1NonPrefiringProbProducer_cfi import L1NonPrefiringProbProducer
-    prefiringDataEraECAL = cms.PSet(value = cms.string(""))
-    prefiringDataEraMuon = cms.PSet(value = cms.string(""))
-
-    TMeras.TMUL2016.toModify(prefiringDataEraECAL,    value = "UL2016preVFP")
-    TMeras.TMUL2016APV.toModify(prefiringDataEraECAL, value = "UL2016postVFP")
-    TMeras.TMUL2017.toModify(prefiringDataEraECAL,    value = "UL2017BtoF")
-    TMeras.TMUL2018.toModify(prefiringDataEraECAL,    value = "None")
-
-    TMeras.TMUL2016.toModify(prefiringDataEraMuon,    value = "2016preVFP")
-    TMeras.TMUL2016APV.toModify(prefiringDataEraMuon, value = "2016postVFP")
-    TMeras.TMUL2017.toModify(prefiringDataEraMuon,    value = "20172018")
-    TMeras.TMUL2018.toModify(prefiringDataEraMuon,    value = "20172018")
 
     process.L1NonPrefiringProbProducer = L1NonPrefiringProbProducer.clone(
         TheJets = JetTag,
-        DataEraECAL = prefiringDataEraECAL.value,
-        DataEraMuon = prefiringDataEraMuon.value,
+        DataEraECAL = cms.string("UL2016postVFP"),
+        DataEraMuon = cms.string("2016postVFP"),
         L1MapsECAL = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1PrefiringMaps.root'),
         L1ParamsMuon = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1MuonPrefiringParameterizations.root'),
     )
+
+    TMeras.TMUL2016APV.toModify(process.L1NonPrefiringProbProducer, DataEraECAL = "UL2016preVFP", DataEraMuon = "2016preVFP")
+    TMeras.TMUL2017.toModify(process.L1NonPrefiringProbProducer, DataEraECAL = "UL2017BtoF", DataEraMuon = "20172018")
+    TMeras.TMUL2018.toModify(process.L1NonPrefiringProbProducer, DataEraECAL = "None", DataEraMuon = "20172018")
+
     self.VarsDouble.extend([
         'L1NonPrefiringProbProducer:NonPrefiringProb',
         'L1NonPrefiringProbProducer:NonPrefiringProbUp',
@@ -1011,7 +1004,6 @@ def makeTreeFromMiniAOD(self,process):
         'L1NonPrefiringProbProducer:NonPrefiringProbMuonUp',
         'L1NonPrefiringProbProducer:NonPrefiringProbMuonDown',
     ])
-
 
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
