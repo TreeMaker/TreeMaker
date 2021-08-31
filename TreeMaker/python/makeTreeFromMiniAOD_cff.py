@@ -993,25 +993,24 @@ def makeTreeFromMiniAOD(self,process):
     TMeras.TMUL2017.toModify(prefiringDataEraMuon,    value = "20172018")
     TMeras.TMUL2018.toModify(prefiringDataEraMuon,    value = "20172018")
 
-    if len(prefiringDataEraECAL.value.value())>0 and len(prefiringDataEraMuon.value.value())>0:
-        process.L1NonPrefiringProbProducer = L1NonPrefiringProbProducer.clone(
-            TheJets = JetTag,
-            DataEraECAL = prefiringDataEraECAL.value,
-            DataEraMuon = prefiringDataEraMuon.value,
-            L1MapsECAL = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1PrefiringMaps.root'),
-            L1ParamsMuon = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1MuonPrefiringParameterizations.root'),
-        )
-        self.VarsDouble.extend([
-            'L1NonPrefiringProbProducer:NonPrefiringProb',
-            'L1NonPrefiringProbProducer:NonPrefiringProbUp',
-            'L1NonPrefiringProbProducer:NonPrefiringProbDown',
-            'L1NonPrefiringProbProducer:NonPrefiringProbECAL',
-            'L1NonPrefiringProbProducer:NonPrefiringProbECALUp',
-            'L1NonPrefiringProbProducer:NonPrefiringProbECALDown',
-            'L1NonPrefiringProbProducer:NonPrefiringProbMuon',
-            'L1NonPrefiringProbProducer:NonPrefiringProbMuonUp',
-            'L1NonPrefiringProbProducer:NonPrefiringProbMuonDown',
-        ])
+    process.L1NonPrefiringProbProducer = L1NonPrefiringProbProducer.clone(
+        TheJets = JetTag,
+        DataEraECAL = prefiringDataEraECAL.value,
+        DataEraMuon = prefiringDataEraMuon.value,
+        L1MapsECAL = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1PrefiringMaps.root'),
+        L1ParamsMuon = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1MuonPrefiringParameterizations.root'),
+    )
+    self.VarsDouble.extend([
+        'L1NonPrefiringProbProducer:NonPrefiringProb',
+        'L1NonPrefiringProbProducer:NonPrefiringProbUp',
+        'L1NonPrefiringProbProducer:NonPrefiringProbDown',
+        'L1NonPrefiringProbProducer:NonPrefiringProbECAL',
+        'L1NonPrefiringProbProducer:NonPrefiringProbECALUp',
+        'L1NonPrefiringProbProducer:NonPrefiringProbECALDown',
+        'L1NonPrefiringProbProducer:NonPrefiringProbMuon',
+        'L1NonPrefiringProbProducer:NonPrefiringProbMuonUp',
+        'L1NonPrefiringProbProducer:NonPrefiringProbMuonDown',
+    ])
 
 
     ## ----------------------------------------------------------------------------------------------
