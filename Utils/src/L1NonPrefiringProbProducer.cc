@@ -83,21 +83,13 @@ L1NonPrefiringProbProducer::L1NonPrefiringProbProducer(const edm::ParameterSet& 
   prefiringRateSystUncMuon_(iConfig.getParameter<double>("PrefiringRateSystematicUnctyMuon")),
   jet_max_muon_fraction_(iConfig.getParameter<double>("JetMaxMuonFraction"))
 {
-  std::cout << __LINE__ << std::endl;
   std::string fnameecal =  iConfig.getParameter<std::string>("L1MapsECAL");
-  std::cout << fnameecal << std::endl;
   TFile* file_ecalprefiringmaps = TFile::Open(fnameecal.c_str(),"read");
 
-  std::cout << __LINE__ << std::endl;
-
   std::string mapphotonfullname = "L1prefiring_photonptvseta_"+ dataeraecal_; 
-  std::cout << file_ecalprefiringmaps << std::endl;
-  std::cout << mapphotonfullname << std::endl;
   file_ecalprefiringmaps->ls();
   h_prefmap_photon = (TH2F*)file_ecalprefiringmaps->Get(mapphotonfullname.c_str());
-  std::cout << h_prefmap_photon << std::endl;
   h_prefmap_photon->SetDirectory(0);
-  std::cout << __LINE__ << std::endl;
 
   std::string mapjetfullname = "L1prefiring_jet";
   mapjetfullname += (useEMpt_ ? "empt" : "pt");
@@ -105,62 +97,47 @@ L1NonPrefiringProbProducer::L1NonPrefiringProbProducer(const edm::ParameterSet& 
   h_prefmap_jet = (TH2F*)file_ecalprefiringmaps->Get(mapjetfullname.c_str());
   h_prefmap_jet->SetDirectory(0);
   file_ecalprefiringmaps->Close();
-  std::cout << __LINE__ << std::endl;
 
   std::string fnamemuon =  iConfig.getParameter<std::string>("L1ParamsMuon");
   TFile* file_muonprefiringparams = TFile::Open(fnamemuon.c_str(), "read");
-  std::cout << __LINE__ << std::endl;
 
   std::string mapmuonfullname = "L1prefiring_muonparam_HotSpot_" + dataeramuon_;
   h_prefparam_muon_hotspot = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_0.0To0.2_" + dataeramuon_;
   h_prefparam_muon_0p00to0p20 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_0.2To0.3_" + dataeramuon_;
   h_prefparam_muon_0p20to0p30 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_0.3To0.55_" + dataeramuon_;
   h_prefparam_muon_0p30to0p55 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_0.55To0.83_" + dataeramuon_;
   h_prefparam_muon_0p55to0p83 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_0.83To1.24_" + dataeramuon_;
   h_prefparam_muon_0p83to1p24 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_1.24To1.4_" + dataeramuon_;
   h_prefparam_muon_1p24to1p40 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_1.4To1.6_" + dataeramuon_;
   h_prefparam_muon_1p40to1p60 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_1.6To1.8_" + dataeramuon_;
   h_prefparam_muon_1p60to1p80 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_1.8To2.1_" + dataeramuon_;
   h_prefparam_muon_1p80to2p10 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_2.1To2.25_" + dataeramuon_;
   h_prefparam_muon_2p10to2p25 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   mapmuonfullname = "L1prefiring_muonparam_2.25To2.4_" + dataeramuon_;
   h_prefparam_muon_2p25to2p40 = (TF1*)file_muonprefiringparams->Get(mapmuonfullname.c_str());
-  std::cout << __LINE__ << std::endl;
 
   file_muonprefiringparams->Close();
-   std::cout << __LINE__ << std::endl;
 
   produces<double>( "NonPrefiringProb" );
   produces<double>( "NonPrefiringProbUp" );
@@ -171,7 +148,6 @@ L1NonPrefiringProbProducer::L1NonPrefiringProbProducer(const edm::ParameterSet& 
   produces<double>( "NonPrefiringProbMuon" );
   produces<double>( "NonPrefiringProbMuonUp" );
   produces<double>( "NonPrefiringProbMuonDown" );
-  std::cout << __LINE__ << std::endl;
 
 }
 
