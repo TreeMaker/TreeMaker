@@ -1131,7 +1131,7 @@ def makeTreeFromMiniAOD(self,process):
             DarkMediatorIDs = cms.vuint32(4900023),
             DarkHadronIDs = cms.vuint32(4900111,4900113,4900211,4900213),
             DarkGluonIDs = cms.vuint32(4900021),
-            SMQuarkIDs = cms.vuint32(1,2,3,4,5,6,7,8),
+            SMQuarkIDs = cms.vuint32(1,2,3,4,5,6),
         )
         if self.tchannel:
             process.HiddenSector.DarkQuarkIDs = [4900101,4900102]
@@ -1140,7 +1140,7 @@ def makeTreeFromMiniAOD(self,process):
             'HiddenSector:MJJ(MJJ_AK8)',
             'HiddenSector:Mmc(Mmc_AK8)',
             'HiddenSector:MT(MT_AK8)',
-            'HiddenSector:tchMT2(tchMT2_AK8)',
+            'HiddenSector:GenMT2(GenMT2_AK8)',
             'HiddenSector:DeltaPhi1(DeltaPhi1_AK8)',
             'HiddenSector:DeltaPhi2(DeltaPhi2_AK8)',
             'HiddenSector:DeltaPhiMin(DeltaPhiMin_AK8)',
