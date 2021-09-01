@@ -5,11 +5,6 @@ import FWCore.ParameterSet.Config as cms
 class TMEras(object):
     def __init__(self):
         allEras = [
-            'TM2016',
-            'TM80X',
-            'TM2016_80X',
-            'TM2017',
-            'TM2018',
             'TMUL2016',
             'TMUL2016APV',
             'TMUL2017',
