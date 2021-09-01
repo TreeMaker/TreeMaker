@@ -284,12 +284,6 @@ def makeTreeFromMiniAOD(self,process):
         
         # rerun DeepCSV on AK4 jets for 2016 80X MC
         ak4updates = cms.PSet(discrs = cms.vstring())
-        TMeras.TM80X.toModify(ak4updates,
-            discrs = cms.vstring(
-                ['pfDeepCSVJetTags:'+x for x in ['probb','probbb']] +
-                ['pfDeepCSVDiscriminatorsJetTags:'+x for x in ['BvsAll']]
-            )
-        )
 
         updateJetCollection(
             process,
@@ -314,33 +308,6 @@ def makeTreeFromMiniAOD(self,process):
 
         if self.deepDoubleB:
             ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb'])
-
-        if TMeras.TM80X._isChosen():
-            # use jet toolbox to rerun puppi, recluster AK8 jets, and compute substructure variables
-            # do not add discriminators here, several issues
-            from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-            jetToolbox(process,
-                'ak8',
-                'jetSequence',
-                'noOutput',
-                PUMethod = 'Puppi',
-                dataTier = 'miniAOD',
-                runOnMC = self.geninfo,
-                postFix = '94Xlike',
-                Cut = 'pt>170.',
-                addPruning = True,
-                addSoftDropSubjets = True,
-                addNsub = True,
-                maxTau = 3,
-                subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
-                JETCorrLevels = levels,
-                subJETCorrLevels = levels,
-                addEnergyCorrFunc = False,
-                verbosity = 2 if self.verbose else 0,
-            )
-
-            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppi94XlikeSoftDrop")
-            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppi94XlikeSoftDropPacked:SubJets")
 
         # update the corrections for AK8 jets
         # and add any extra discriminators
@@ -467,10 +434,6 @@ def makeTreeFromMiniAOD(self,process):
         UseMiniIsolation   = cms.bool(True),
         METTag             = METTag,
         rhoCollection      = cms.InputTag("fixedGridRhoFastjetAll")
-    )
-    (TMeras.TM80X | TMeras.TM2016).toModify(process.LeptonsNew,
-        #https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt
-        electronEAValues = cms.vdouble(0.1703, 0.1715, 0.1213, 0.1230, 0.1635, 0.1937, 0.2393),
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
@@ -862,7 +825,6 @@ def makeTreeFromMiniAOD(self,process):
             NewName = cms.string("SoftDropPuppiUpdated"),
         )
     )
-    TMeras.TM80X.toModify(getattr(process, JetAK8TagSJU.value()), OldName = "SoftDrop")
     JetAK8Tag = JetAK8TagSJU
     
     # apply jet ID and get properties
@@ -870,20 +832,7 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetAK8Tag,
         suff='AK8',
         storeProperties=2,
-        doECFs = not TMeras.TM80X._isChosen(), # temporarily disabled
-    )
-    TMeras.TM80X.toModify(process.JetPropertiesAK8,
-        NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi94Xlike:tau1'),
-        NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi94Xlike:tau2'),
-        NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi94Xlike:tau3'),
-#        ecfN2b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN2'),
-#        ecfN2b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN2'),
-#        ecfN3b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN3'),
-#        ecfN3b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN3'),
-#        prunedMass = cms.vstring('ak8PFJetsPuppi94XlikePrunedMass'),
-        softDropMass = cms.vstring('SoftDrop'),
-        subjets = cms.vstring('SoftDrop'),
-        SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags'),
+        doECFs = True, # temporarily disabled
     )
     if self.systematics:
         process.JetPropertiesAK8.properties.extend(["jecUnc"])
@@ -1004,6 +953,7 @@ def makeTreeFromMiniAOD(self,process):
         'L1NonPrefiringProbProducer:NonPrefiringProbMuonUp',
         'L1NonPrefiringProbProducer:NonPrefiringProbMuonDown',
     ])
+
 
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters
