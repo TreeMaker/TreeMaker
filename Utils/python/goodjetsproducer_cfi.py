@@ -34,7 +34,7 @@ GoodJetsProducer = cms.EDFilter('GoodJetsProducer',
 )
 
 from TreeMaker.TreeMaker.TMEras import TMeras
-TMeras.TM2017.toModify(GoodJetsProducer,
+TMeras.TMUL2017.toModify(GoodJetsProducer,
     varnames  = cms.vstring('nhf','nef','nc', 'mf','chf','cm','cef','nhf','nef','mf','cm','cef','nef','nm','nhf','nef','nm'),
     etamin    = cms.vdouble( -1.0, -1.0,-1.0,-1.0, -1.0,-1.0, -1.0,  2.6,  2.6,  2.6, 2.6, 2.6,  2.7,  2.7, 3.0,  3.0,  3.0),
     etamax    = cms.vdouble(  2.6,  2.6, 2.6, 2.6,  2.6, 2.6,  2.6,  2.7,  2.7,  2.7, 2.7, 2.7,  3.0,  3.0, 5.0,  5.0,  5.0),
@@ -42,7 +42,7 @@ TMeras.TM2017.toModify(GoodJetsProducer,
     cutvalmax = cms.vdouble( 0.90, 0.90,-1.0, 0.80,-1.0,-1.0,  0.80, 0.90, 0.99, 0.80,-1.0,0.80, 0.99,-1.0,-1.0,  0.9, -1.0),
 )
 # 2017 and 2018 has the same values.
-TMeras.TM2018.toModify(GoodJetsProducer,
+TMeras.TMUL2018.toModify(GoodJetsProducer,
     varnames  = cms.vstring('nhf','nef','nc', 'mf','chf','cm','cef','nhf','nef','mf','cm','cef','nef','nm','nhf','nef','nm'),
     etamin    = cms.vdouble( -1.0, -1.0,-1.0,-1.0, -1.0,-1.0, -1.0,  2.6,  2.6,  2.6, 2.6, 2.6,  2.7,  2.7, 3.0,  3.0,  3.0),
     etamax    = cms.vdouble(  2.6,  2.6, 2.6, 2.6,  2.6, 2.6,  2.6,  2.7,  2.7,  2.7, 2.7, 2.7,  3.0,  3.0, 5.0,  5.0,  5.0),
@@ -61,7 +61,7 @@ GoodJetsPuppiProducer = GoodJetsProducer.clone(
     cutvalmax = cms.vdouble( 0.90,  0.90,-1.0, 0.80,-1.0, -1.0,  0.8, 0.98, 0.99, -1.0, 0.9, -1.0 ),
 )
 
-TMeras.TM2017.toModify(GoodJetsPuppiProducer,
+TMeras.TMUL2017.toModify(GoodJetsPuppiProducer,
     varnames  = cms.vstring('nhf','nef','nc', 'mf','chf','cm','cef','nhf','nef','mf','cef','nhf', 'nef','nm'),
     etamin    = cms.vdouble( -1.0, -1.0,-1.0,-1.0, -1.0,-1.0, -1.0,  2.6,  2.6,  2.6, 2.6,  2.7,  3.0,  3.0),
     etamax    = cms.vdouble(  2.6,  2.6, 2.6, 2.6,  2.6, 2.6,  2.6,  2.7,  2.7,  2.7, 2.7,  3.0,   5.0,  5.0),
@@ -69,7 +69,7 @@ TMeras.TM2017.toModify(GoodJetsPuppiProducer,
     cutvalmax = cms.vdouble( 0.90, 0.90,-1.0, 0.80,-1.0,-1.0,  0.80, 0.90, 0.99, 0.80,0.80, 0.9999,0.9, -1.0),
 )
 # 2018 puppi-specific settings not available yet
-TMeras.TM2018.toModify(GoodJetsPuppiProducer,
+TMeras.TMUL2018.toModify(GoodJetsPuppiProducer,
     varnames  = cms.vstring('nhf','nef','nc', 'mf','chf','cm','cef','nhf','nef','mf','cef','nhf', 'nef','nm'),
     etamin    = cms.vdouble( -1.0, -1.0,-1.0,-1.0, -1.0,-1.0, -1.0,  2.6,  2.6,  2.6, 2.6,  2.7,  3.0,  3.0),
     etamax    = cms.vdouble(  2.6,  2.6, 2.6, 2.6,  2.6, 2.6,  2.6,  2.7,  2.7,  2.7, 2.7,  3.0,   5.0,  5.0),
