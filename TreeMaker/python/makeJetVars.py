@@ -108,22 +108,17 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.btagint_cfi import btagint
-    BTags = btagint.clone(
-        JetTag       = HTJetsTag,
-        BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-        BTagCutValue = cms.double(0.8484)
-    )
-    (TMeras.TM2017 | TMeras.TM2018).toModify(BTags,BTagCutValue = cms.double(0.8838))
-    setattr(process,"BTags"+suff,BTags)
-    self.VarsInt.extend(['BTags'+suff])
 
     BTagsDeepCSV = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
-        BTagCutValue = cms.double(0.6321)
+        BTagCutValue = cms.double(0.6321) #TODO: wait for UL16 recommendations
     )
-    (TMeras.TM2017).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
-    (TMeras.TM2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4184))
+    # Medium DeepCSV UL WPs from:
+    # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL18#AK4_b_tagging
+    # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
+    (TMeras.TMUL2017).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4506))
+    (TMeras.TMUL2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4168))
     setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
     self.VarsInt.extend(['BTagsDeepCSV'+suff])
     
@@ -194,9 +189,6 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
             'JetProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
             'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)',
         ])
-        if TMeras.TM80X._isChosen():
-            JetProperties.properties = cms.vstring([x for x in JetProperties.properties.value() if not "DeepFlavour" in x])
-            self.VectorDouble.setValue([x for x in self.VectorDouble.value() if not "DeepFlavour" in x])
         if storeProperties>1:
             JetProperties.properties.extend(["jecFactor"])
             self.VectorDouble.extend([
