@@ -4,6 +4,7 @@
 import FWCore.ParameterSet.Config as cms
 import sys,os
 from itertools import chain
+
 def makeTreeFromMiniAOD(self,process):
 
     ## ----------------------------------------------------------------------------------------------
@@ -14,6 +15,7 @@ def makeTreeFromMiniAOD(self,process):
 
     # files to process
     import FWCore.PythonUtilities.LumiList as LumiList
+    from TreeMaker.TreeMaker.TMEras import TMeras
     process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(self.numevents)
     )
@@ -113,12 +115,15 @@ def makeTreeFromMiniAOD(self,process):
         from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
         process.PDFWeights = PDFWeightProducer.clone(
             recalculatePDFs = cms.bool(self.signal),
+            recalculateScales = cms.bool(False),
             normalize = (not "SVJ" in self.sample), # skip normalization only for SVJ signals
             pdfSetName = cms.string("NNPDF31_nlo_as_0118"),
         )
         if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
             process.PDFWeights.nScales = 0
             process.PDFWeights.nPDFs = 0
+            process.PDFWeights.nEM = 2
+            process.PDFWeights.recalculateScales = True
         self.VectorFloat.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
 
     ## ----------------------------------------------------------------------------------------------
@@ -279,7 +284,6 @@ def makeTreeFromMiniAOD(self,process):
         levels  = ['L1FastJet','L2Relative','L3Absolute']
         if self.residual: levels.append('L2L3Residual')
         
-        from TreeMaker.TreeMaker.TMEras import TMeras
         from PhysicsTools.PatAlgos.tools.jetTools import updateJetCollection
 
         # rerun DeepCSV on AK4 jets for 2016 80X MC
