@@ -2,6 +2,8 @@
 #include <cmath>
 #include <memory>
 #include <mutex>
+#include <vector>
+#include <string>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -12,11 +14,13 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-
+#include "FWCore/Utilities/interface/Exception.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "TVector2.h"
+
+#include <Pythia8/Pythia.h>
 
 enum class wtype { scale = 0, pdf = 1, ps = 2 };
 
@@ -81,12 +85,13 @@ private:
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   // ----------member data ---------------------------
-  unsigned nScales_, nPDFs_, nPSs_;
-  bool norm_, recalculatePDFs_;
+  unsigned nScales_, nPDFs_, nPSs_, nQCD_, nEM_;
+  bool norm_, recalculatePDFs_, recalculateScales_, debug_;
   std::string pdfSetName_;
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
   static std::mutex mutex_;
+  std::unique_ptr<Pythia8::Pythia> pythia_;
 };
 
 std::mutex PDFWeightProducer::mutex_;
@@ -95,8 +100,12 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   nScales_(iConfig.getParameter<unsigned>("nScales")),
   nPDFs_(iConfig.getParameter<unsigned>("nPDFs")),
   nPSs_(iConfig.getParameter<unsigned>("nPSs")),
+  nQCD_(iConfig.getParameter<unsigned>("nQCD")),
+  nEM_(iConfig.getParameter<unsigned>("nEM")),
   norm_(iConfig.getParameter<bool>("normalize")),
   recalculatePDFs_(iConfig.getParameter<bool>("recalculatePDFs")),
+  recalculateScales_(iConfig.getParameter<bool>("recalculateScales")),
+  debug_(iConfig.getParameter<bool>("debug")),
   getterOfProducts_(edm::ProcessMatch("*"), this), 
   genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
 {
@@ -104,6 +113,19 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   if(!pdfSetName_.empty()){
      LHAPDF::initPDFSet(1,pdfSetName_);
      LHAPDF::setVerbosity(0);
+  }
+  if(recalculateScales_){
+    pythia_ = std::make_unique<Pythia8::Pythia>("../share/Pythia8/xmldoc",false);
+    //from https://github.com/cms-sw/cmssw/blob/master/FastSimulation/ParticleDecay/src/PythiaDecays.cc
+    pythia_->settings.flag("ProcessLevel:all", false);
+    pythia_->settings.flag("Print:quiet", true);
+    //following https://github.com/cms-sw/cmssw/blob/master/GeneratorInterface/Pythia8Interface/src/Py8InterfaceBase.cc
+    const auto& manual_settings = iConfig.getParameter<std::vector<std::string>>("pythiaSettings");
+    for(const auto& s : manual_settings){
+      if(!pythia_->readString(s))
+        throw cms::Exception("PythiaError") << "Pythia 8 did not accept \"" << s << "\"." << std::endl;
+    }
+    pythia_->init();
   }
 
   callWhenNewProductsRegistered(getterOfProducts_);
@@ -164,24 +186,15 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     }
 
     //if pdf weights still not found, recalculate them
-    //taken from https://github.com/cms-sw/cmssw/blob/master/ElectroWeakAnalysis/Utilities/src/PdfWeightProducer.cc
-    //not sure what to do about missing scale weights
+    //taken from https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/ElectroWeakAnalysis/Utilities/src/PdfWeightProducer.cc
     if(!found_pdfs and recalculatePDFs_){
       float Q = genHandle->pdf()->scalePDF;
 
       int id1 = genHandle->pdf()->id.first;
       double x1 = genHandle->pdf()->x.first;
-      double pdf1 = genHandle->pdf()->xPDF.first;
 
       int id2 = genHandle->pdf()->id.second;
       double x2 = genHandle->pdf()->x.second;
-      double pdf2 = genHandle->pdf()->xPDF.second;
-      if(pdf1 <= 0 && pdf2 <= 0) {
-         std::lock_guard<std::mutex> lock(mutex_);
-         LHAPDF::usePDFMember(1,0);
-         pdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
-         pdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
-      }
 
       unsigned nweights = 1;
       if(LHAPDF::numberPDF(1)>1) nweights += LHAPDF::numberPDF(1);
@@ -200,6 +213,70 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
         }
       }
       found_pdfs = true;
+    }
+
+    //if rf scale weights still not found, recalculate them
+    //based on https://gitlab.cern.ch/cms-desy-top/TopAnalysis/-/blob/Htottbar_2016/ZTopUtils/plugins/EventWeightMCSystematicRecalc.cc
+    if(!found_scales and recalculateScales_){
+      double kUp = 2;
+      double kDn = 0.5;
+      float Q = genHandle->pdf()->scalePDF;
+
+      //factorization scale
+      int id1 = genHandle->pdf()->id.first;
+      double x1 = genHandle->pdf()->x.first;
+
+      int id2 = genHandle->pdf()->id.second;
+      double x2 = genHandle->pdf()->x.second;
+
+      double pdf1, pdf1up, pdf1dn;
+      double pdf2, pdf2up, pdf2dn;
+      {
+         std::lock_guard<std::mutex> lock(mutex_);
+         LHAPDF::usePDFMember(1,0);
+         pdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
+         pdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
+         pdf1up = LHAPDF::xfx(1, x1, kUp*Q, id1)/x1;
+         pdf2up = LHAPDF::xfx(1, x2, kUp*Q, id2)/x2;
+         pdf1dn = LHAPDF::xfx(1, x1, kDn*Q, id1)/x1;
+         pdf2dn = LHAPDF::xfx(1, x2, kDn*Q, id2)/x2;
+      }
+      if(debug_)
+        edm::LogInfo("TreeMaker") << "PDFWeightProducer: pdf1 = " << pdf1 << ", pdf1up = " << pdf1up << ", pdf1dn = " << pdf1dn << ", pdf2 = " << pdf2 << ", pdf2up = " << pdf2up << ", pdf2dn = " << pdf2dn << std::endl;
+
+      double weightFacUp = (pdf1up*pdf2up)/(pdf1*pdf2);
+      double weightFacDn = (pdf1dn*pdf2dn)/(pdf1*pdf2);
+
+      //renormalization scale
+      //compute directly from Pythia for consistency
+      auto coup = pythia_->couplingsPtr;
+      double Q2 = Q*Q;
+      double alpEM = coup->alphaEM(Q2);
+      double alpEMup = coup->alphaEM(kUp*kUp*Q2);
+      double alpEMdn = coup->alphaEM(kDn*kDn*Q2);
+      double alpS = coup->alphaS(Q2);
+      double alpSup = coup->alphaS(kUp*kUp*Q2);
+      double alpSdn = coup->alphaS(kDn*kDn*Q2);
+      if(debug_)
+        edm::LogInfo("TreeMaker") << "PDFWeightProducer: alpEM = " << alpEM << ", alpEMup = " << alpEMup << ", alpEMdn = " << alpEMdn << ", alpS = " << alpS << ", alpSup = " << alpSup << ", alpSdn = " << alpSdn << std::endl;
+
+      //weights require process-dependent information about number of QCD and EM vertices
+      double weightRenUp = std::pow(alpEMup/alpEM, nEM_) * std::pow(alpSup/alpS, nQCD_);
+      double weightRenDn = std::pow(alpEMdn/alpEM, nEM_) * std::pow(alpSdn/alpS, nQCD_);
+
+      //compute all variations to be consistent w/ what madgraph provides:
+      //[mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
+      *scaleweights = {
+        1.0,
+        weightFacUp,
+        weightFacDn,
+        weightRenUp,
+        weightRenUp*weightFacUp,
+        weightRenUp*weightFacDn,
+        weightRenDn,
+        weightRenDn*weightFacUp,
+        weightRenDn*weightFacDn
+      };
     }
   }
 
