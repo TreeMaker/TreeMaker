@@ -86,7 +86,7 @@ private:
   
   // ----------member data ---------------------------
   unsigned nScales_, nPDFs_, nPSs_, nQCD_, nEM_;
-  bool norm_, recalculatePDFs_, recalculateScales_;
+  bool norm_, recalculatePDFs_, recalculateScales_, debug_;
   std::string pdfSetName_;
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
@@ -105,6 +105,7 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   norm_(iConfig.getParameter<bool>("normalize")),
   recalculatePDFs_(iConfig.getParameter<bool>("recalculatePDFs")),
   recalculateScales_(iConfig.getParameter<bool>("recalculateScales")),
+  debug_(iConfig.getParameter<bool>("debug")),
   getterOfProducts_(edm::ProcessMatch("*"), this), 
   genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
 {
@@ -240,8 +241,8 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
          pdf1dn = LHAPDF::xfx(1, x1, kDn*Q, id1)/x1;
          pdf2dn = LHAPDF::xfx(1, x2, kDn*Q, id2)/x2;
       }
-      //for debugging
-      //std::cout << "pdf1 = " << pdf1 << ", pdf1up = " << pdf1up << ", pdf1dn = " << pdf1dn << ", pdf2 = " << pdf2 << ", pdf2up = " << pdf2up << ", pdf2dn = " << pdf2dn << std::endl;
+      if(debug_)
+        edm::LogInfo("TreeMaker") << "PDFWeightProducer: pdf1 = " << pdf1 << ", pdf1up = " << pdf1up << ", pdf1dn = " << pdf1dn << ", pdf2 = " << pdf2 << ", pdf2up = " << pdf2up << ", pdf2dn = " << pdf2dn << std::endl;
 
       double weightFacUp = (pdf1up*pdf2up)/(pdf1*pdf2);
       double weightFacDn = (pdf1dn*pdf2dn)/(pdf1*pdf2);
@@ -256,8 +257,8 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       double alpS = coup->alphaS(Q2);
       double alpSup = coup->alphaS(kUp*kUp*Q2);
       double alpSdn = coup->alphaS(kDn*kDn*Q2);
-      //for debugging
-      //std::cout << "alpEM = " << alpEM << ", alpEMup = " << alpEMup << ", alpEMdn = " << alpEMdn << ", alpS = " << alpS << ", alpSup = " << alpSup << ", alpSdn = " << alpSdn << std::endl;
+      if(debug_)
+        edm::LogInfo("TreeMaker") << "PDFWeightProducer: alpEM = " << alpEM << ", alpEMup = " << alpEMup << ", alpEMdn = " << alpEMdn << ", alpS = " << alpS << ", alpSup = " << alpSup << ", alpSdn = " << alpSdn << std::endl;
 
       //weights require process-dependent information about number of QCD and EM vertices
       double weightRenUp = std::pow(alpEMup/alpEM, nEM_) * std::pow(alpSup/alpS, nQCD_);

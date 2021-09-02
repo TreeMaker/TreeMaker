@@ -8,6 +8,7 @@ PDFWeightProducer = cms.EDProducer("PDFWeightProducer",
     nEM = cms.uint32(0),
     normalize = cms.bool(True),
     pythiaSettings = cms.vstring(),
+    debug = cms.bool(False),
 )
 
 from TreeMaker.TreeMaker.TMEras import TMeras
