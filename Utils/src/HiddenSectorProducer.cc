@@ -50,6 +50,10 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     int checkLast(const reco::GenJet& jet, const CandSet& stableDs, int value, double& frac) const;
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
     void matchPFMtoJet(CandPtr part, std::vector<const reco::GenJet*>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, int mt2ID) const;
+    double calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const reco::GenJet*& dQM1J, const reco::GenJet*& SMM1J, const reco::GenJet*& dQM2J, const reco::GenJet*& SMM2J) const;
+    double calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const LorentzVector& dQM1J, const LorentzVector& SMM1J, const LorentzVector& dQM2J, const LorentzVector& SMM2J) const;
+    const reco::GenJet* highPt(std::vector<const reco::GenJet*>& Js) const;
+    LorentzVector comPt(std::vector<const reco::GenJet*>& Js) const;
     std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
     edm::InputTag JetTag_, MetTag_, GenMetTag_, GenTag_, GenJetTag_;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
@@ -181,6 +185,44 @@ void HiddenSectorProducer::matchPFMtoJet(CandPtr part, std::vector<const reco::G
   }
 }
 
+double HiddenSectorProducer::calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const reco::GenJet*& dQM1J, const reco::GenJet*& SMM1J, const reco::GenJet*& dQM2J, const reco::GenJet*& SMM2J) const {
+  const auto& i_met = h_genmets->front();
+  double METx = i_met.px();
+  double METy = i_met.py();
+  LorentzVector FJet0 = dQM1J->p4() + SMM1J->p4();
+  LorentzVector FJet1 = dQM2J->p4() + SMM2J->p4();
+  return asymm_mt2_lester_bisect::get_mT2(
+    FJet0.M(), FJet0.Px(), FJet0.Py(),
+    FJet1.M(), FJet1.Px(), FJet1.Py(),
+    METx, METy, 0.0, 0.0, 0
+  );
+}
+
+double HiddenSectorProducer::calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const LorentzVector& dQM1J, const LorentzVector& SMM1J, const LorentzVector& dQM2J, const LorentzVector& SMM2J) const {
+  const auto& i_met = h_genmets->front();
+  double METx = i_met.px();
+  double METy = i_met.py();
+  LorentzVector FJet0 = dQM1J + SMM1J;
+  LorentzVector FJet1 = dQM2J + SMM2J;
+  return asymm_mt2_lester_bisect::get_mT2(
+    FJet0.M(), FJet0.Px(), FJet0.Py(),
+    FJet1.M(), FJet1.Px(), FJet1.Py(),
+    METx, METy, 0.0, 0.0, 0
+  );
+}
+
+const reco::GenJet* HiddenSectorProducer::highPt(std::vector<const reco::GenJet*>& Js) const {
+  double largestPt = 0;
+  const reco::GenJet* largestPtJ;
+  for(const auto& J: Js){
+    if(J->pt() > largestPt){
+      largestPt = J->pt();
+      largestPtJ = J;
+    }
+  }
+  return largestPtJ;
+}
+
 //use official JetMET matching procedure: equiv to set<DR,jet_index,gen_index> sorted by DR
 //from https://github.com/cms-jet/JetMETAnalysis/blob/master/JetUtilities/plugins/MatchRecToGen.cc
 std::vector<int> HiddenSectorProducer::matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const {
@@ -295,7 +337,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     }
   }
 
-  double MJJ = 0, Mmc = 0, MT = 0, GenMT2_AK8 = 0, DeltaPhi1 = 10, DeltaPhi2 = 10, DeltaPhiMin = 10;
+  double MJJ = 0, Mmc = 0, MT = 0, GenMT2 = 0, DeltaPhi1 = 10, DeltaPhi2 = 10, DeltaPhiMin = 10;
   //only fill these parts if there are >=2 jets
   if(h_jets->size()>=2){
     //delta phi
@@ -376,19 +418,14 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
         if(nPartPerJet > 1) manyParticlesPerJet = true;
       }
     }
-    bool oneJetPerParticle = dQM1Js.size() == 1 && dQM2Js.size() == 1 && SMM1Js.size() == 1 && SMM2Js.size() == 1;
-    if(oneJetPerParticle && !manyParticlesPerJet)
-    {
-      const auto& i_met = h_genmets->front();
-      double METx = i_met.px();
-      double METy = i_met.py();
-      LorentzVector FJet0 = dQM1Js[0]->p4() + SMM1Js[0]->p4();
-      LorentzVector FJet1 = dQM2Js[0]->p4() + SMM2Js[0]->p4();
-      GenMT2_AK8 = asymm_mt2_lester_bisect::get_mT2(
-        FJet0.M(), FJet0.Px(), FJet0.Py(),
-        FJet1.M(), FJet1.Px(), FJet1.Py(),
-        METx, METy, 0.0, 0.0, 0
-      );
+    bool manyJetsPerParticle = dQM1Js.size() >= 1 && dQM2Js.size() >= 1 && SMM1Js.size() >= 1 && SMM2Js.size() == 1;
+    if(manyJetsPerParticle and !manyParticlesPerJet){
+      // using the highest pT jet if more than one jet contains the same particle
+      const reco::GenJet* dQM1J = highPt(dQM1Js);
+      const reco::GenJet* SMM1J = highPt(SMM1Js);
+      const reco::GenJet* dQM2J = highPt(dQM2Js);
+      const reco::GenJet* SMM2J = highPt(SMM2Js);
+      GenMT2 = calculateMT2(h_genmets,dQM1J,SMM1J,dQM2J,SMM2J);
     }
     else
     {
@@ -396,6 +433,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
       t_MT2JetIDList = zeros;
     }
     for(const auto& t_MT2JetID : t_MT2JetIDList) MT2JetsID->push_back(t_MT2JetID);
+
     //gen:reco jet matching
     *genIndex = matchGenRec(*(h_jets.product()), *(h_genjets.product()));
   }
@@ -411,7 +449,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
   iEvent.put(std::move(pMmc),"Mmc");
   auto pMT = std::make_unique<double>(MT);
   iEvent.put(std::move(pMT),"MT");
-  auto pMT2 = std::make_unique<double>(GenMT2_AK8);
+  auto pMT2 = std::make_unique<double>(GenMT2);
   iEvent.put(std::move(pMT2),"GenMT2");
   auto pDeltaPhi1 = std::make_unique<double>(DeltaPhi1);
   iEvent.put(std::move(pDeltaPhi1),"DeltaPhi1");
