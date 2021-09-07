@@ -117,6 +117,7 @@ Python:
 * `-v, --verbose`: enable verbose output (default = False)
 * `-x, --redir`: input file redirector
 * `-f, --use-folders`: store the output in folders based on era and dataset (default = False)
+* `--offset [num]`: offset for arg file naming in chain jobs (default = 0)
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):
 * `-o [dir]`: output directory
