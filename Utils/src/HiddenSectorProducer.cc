@@ -51,7 +51,6 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
     void matchPFMtoJet(CandPtr part, std::vector<const reco::GenJet*>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, int mt2ID) const;
     double calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const reco::GenJet*& dQM1J, const reco::GenJet*& SMM1J, const reco::GenJet*& dQM2J, const reco::GenJet*& SMM2J) const;
-    double calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const LorentzVector& dQM1J, const LorentzVector& SMM1J, const LorentzVector& dQM2J, const LorentzVector& SMM2J) const;
     const reco::GenJet* highPt(std::vector<const reco::GenJet*>& Js) const;
     LorentzVector comPt(std::vector<const reco::GenJet*>& Js) const;
     std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
@@ -198,22 +197,9 @@ double HiddenSectorProducer::calculateMT2(edm::Handle<edm::View<reco::GenMET>> h
   );
 }
 
-double HiddenSectorProducer::calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const LorentzVector& dQM1J, const LorentzVector& SMM1J, const LorentzVector& dQM2J, const LorentzVector& SMM2J) const {
-  const auto& i_met = h_genmets->front();
-  double METx = i_met.px();
-  double METy = i_met.py();
-  LorentzVector FJet0 = dQM1J + SMM1J;
-  LorentzVector FJet1 = dQM2J + SMM2J;
-  return asymm_mt2_lester_bisect::get_mT2(
-    FJet0.M(), FJet0.Px(), FJet0.Py(),
-    FJet1.M(), FJet1.Px(), FJet1.Py(),
-    METx, METy, 0.0, 0.0, 0
-  );
-}
-
 const reco::GenJet* HiddenSectorProducer::highPt(std::vector<const reco::GenJet*>& Js) const {
   double largestPt = 0;
-  const reco::GenJet* largestPtJ;
+  const reco::GenJet* largestPtJ = nullptr;
   for(const auto& J: Js){
     if(J->pt() > largestPt){
       largestPt = J->pt();
