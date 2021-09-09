@@ -404,7 +404,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
         if(nPartPerJet > 1) manyParticlesPerJet = true;
       }
     }
-    bool manyJetsPerParticle = dQM1Js.size() >= 1 && dQM2Js.size() >= 1 && SMM1Js.size() >= 1 && SMM2Js.size() == 1;
+    bool manyJetsPerParticle = dQM1Js.size() >= 1 && dQM2Js.size() >= 1 && SMM1Js.size() >= 1 && SMM2Js.size() >= 1;
     if(manyJetsPerParticle and !manyParticlesPerJet){
       // using the highest pT jet if more than one jet contains the same particle
       const reco::GenJet* dQM1J = highPt(dQM1Js);
