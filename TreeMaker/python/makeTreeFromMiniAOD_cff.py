@@ -918,10 +918,9 @@ def makeTreeFromMiniAOD(self,process):
         self.VarsDouble.extend(['GenMHT:Pt(GenMHT)','GenMHT:Phi(GenMHTPhi)'])
 
         # substructure for genjets
-        GenJetAK8Tag = cms.InputTag("slimmedGenJetsAK8")
-        from RecoJets.Configuration.RecoGenJets_cff import ak8GenJetsNoNu
+        from RecoJets.Configuration.RecoGenJets_cff import ak8GenJetsNoNu as ak8GenJetsNoNuDefault
         from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
-        process.ak8GenJetsPruned = ak8GenJetsNoNu.clone(
+        process.ak8GenJetsPruned = ak8GenJetsNoNuDefault.clone(
             SubJetParameters,
             usePruning = cms.bool(True),
             useExplicitGhosts = cms.bool(True),
@@ -931,7 +930,7 @@ def makeTreeFromMiniAOD(self,process):
             doAreaFastjet = cms.bool(False),
             src = GenParticlesForJetTag,
         )
-        process.ak8GenJetsSoftDrop = ak8GenJetsNoNu.clone(
+        process.ak8GenJetsSoftDrop = ak8GenJetsNoNuDefault.clone(
             useSoftDrop = cms.bool(True),
             zcut = cms.double(0.1),
             beta = cms.double(0.0),
