@@ -70,7 +70,7 @@ class Scenario:
                 tagname="RECO", #no change
                 hlttagname="HLT", #no change
                 jsonfile=self.absdatapath+"/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
-                jecfile=self.absdatapath+"/jec/Summer19UL18_RunD_V5_DATA", #placeholder until we decide
+                jecfile=self.absdatapath+"/jec/Summer19UL18_V5_DATA", 
                 residual=True,
                 era="Run2_2018",
                 localera="TMUL2018",
