@@ -536,21 +536,32 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsInt.extend(['ecalBadCalibFilter'])
 
-        process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
-        process.BadChargedCandidateFilter.vtx = cms.InputTag("offlineSlimmedPrimaryVertices")
-        process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
-        process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
-        process.BadChargedCandidateFilter.taggingMode = True
-        self.VarsBool.extend(['BadChargedCandidateFilter'])
-        
-        process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
-        process.BadPFMuonFilter.vtx = cms.InputTag("offlineSlimmedPrimaryVertices")
-        process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
-        process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
-        process.BadPFMuonFilter.taggingMode = True
-        self.VarsBool.extend(['BadPFMuonFilter'])
-        
+        process.hfNoisyHitsFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_hfNoisyHitsFilter"),
+        )
+        self.VarsInt.extend(['hfNoisyHitsFilter'])
+
+        process.BadChargedCandidateFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_BadChargedCandidateFilter"),
+        )
+        self.VarsInt.extend(['BadChargedCandidateFilter'])
+
+        process.BadPFMuonFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_BadPFMuonFilter"),
+        )
+        self.VarsInt.extend(['BadPFMuonFilter'])
+
         # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#Recipe_for_BadPFMuonDz_filter_in
+        # Not in MiniAODv1 but in MiniAODv2, so cannot rely on getting from TriggerResults
         process.load('RecoMET.METFilters.BadPFMuonDzFilter_cfi')
         process.BadPFMuonDzFilter.vtx = cms.InputTag("offlineSlimmedPrimaryVertices")
         process.BadPFMuonDzFilter.muons = cms.InputTag("slimmedMuons")
@@ -804,7 +815,6 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetAK8Tag,
         suff='AK8',
         storeProperties=2,
-        doECFs = True, # temporarily disabled
     )
     if self.systematics:
         process.JetPropertiesAK8.properties.extend(["jecUnc"])
