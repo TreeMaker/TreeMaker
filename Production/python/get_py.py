@@ -16,17 +16,28 @@ def getHosted(dataset):
     sys.path.insert(0,rucio_path+'/lib/python2.7/site-packages/')
 
     warnings.filterwarnings("ignore", message=".*cryptography.*")
+    from rucio.client.client import Client
+    client = Client()
+
+    # loop over blocks to avoid timeout error from too-large response
+    all_blocks = list(client.list_content(scope='cms',name=dataset))
+    # batch some blocks together for fewer requests
+    # not fully optimized, but n=10 tested to be ~15% faster than n=1
+    nblocks = 10
+    block_groups = [all_blocks[i:i+nblocks] for i in range(0, len(all_blocks), nblocks)]
+
     from rucio.client.replicaclient import ReplicaClient
     rep_client = ReplicaClient()
-    reps = list(rep_client.list_replicas([{'scope': 'cms', 'name': dataset}]))
 
     filelist = set()
     sitelist = defaultdict(int)
-    for rep in reps:
-        for site,state in rep['states'].iteritems():
-            if state=='AVAILABLE':
-                filelist.add(rep['name'])
-                sitelist[site] += 1
+    for block_group in block_groups:
+        reps = list(rep_client.list_replicas([{'scope': 'cms', 'name': block['name']} for block in block_group]))
+        for rep in reps:
+            for site,state in rep['states'].iteritems():
+                if state=='AVAILABLE':
+                    filelist.add(rep['name'])
+                    sitelist[site] += 1
 
     sys.path.pop(0)
     return filelist, sitelist
