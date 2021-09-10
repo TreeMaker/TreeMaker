@@ -5,8 +5,9 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 readFiles.extend( [
-       '/store/mc/RunIISummer20UL16MiniAODAPV/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v8-v2/270000/60913982-3D96-8940-B7F0-80F3C1BC6613.root',
-       '/store/mc/RunIISummer20UL16MiniAODAPV/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v8-v2/270000/6AADC725-C26C-D840-BF9E-7784C0652FA4.root',
-       '/store/mc/RunIISummer20UL16MiniAODAPV/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v8-v2/270000/B4E6989C-B2EA-CB49-81F9-2A921089E7A3.root',
-       '/store/mc/RunIISummer20UL16MiniAODAPV/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v8-v2/270000/EDF40366-A069-9A49-9CAD-18CEFF55D5E8.root',
+       '/store/mc/RunIISummer20UL16MiniAODAPVv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/120000/AD222467-9FF4-5E48-BECE-C32C579CAEC0.root',
+       '/store/mc/RunIISummer20UL16MiniAODAPVv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/280000/350146FD-795E-4042-BD1A-82FF85AFBC8C.root',
+       '/store/mc/RunIISummer20UL16MiniAODAPVv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/280000/4358AFE9-AB37-FD49-B46A-D492FA2A31CA.root',
+       '/store/mc/RunIISummer20UL16MiniAODAPVv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/280000/4DA9E95E-26D2-9B40-9E60-1BB9B9613BF5.root',
+       '/store/mc/RunIISummer20UL16MiniAODAPVv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_preVFP_v11-v1/280000/E83DF6AE-C005-8C4F-9D86-1ED0CFDC039A.root',
 ] )

@@ -5,11 +5,10 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 readFiles.extend( [
-       '/store/mc/RunIISummer20UL16MiniAOD/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/230000/39237E31-AEB1-3141-BA09-BFFF964A7A06.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/230000/43CCDEB7-93C0-8447-9B51-CFBE3F110E67.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/230000/846DAF02-F33D-0B4B-95C4-8F5F8DC25746.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/230000/942BEA65-273B-434E-8F03-8A1F525463D3.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/230000/C9B7A817-6AA0-4440-9628-3175583F468A.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/230000/CA6069A7-7714-0A49-A2CB-57626D48D08C.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/230000/DD075A54-9B2C-2442-87CC-2E5964B618CC.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/0BD1D957-D2BA-2A40-B3D3-AA4230AF4C3C.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/6FEFC983-493B-AF48-A6FB-D90FDD5BE759.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/80A664E5-1649-7744-A06B-F0532C255EA3.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/9C58BE54-17E6-6343-889A-E3AF58349FFF.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/270000/7A23DC04-74EA-284B-B4D5-63F0357634C5.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/270000/F1FFC265-F9D9-D344-A71F-DAA550EF1089.root',
 ] )

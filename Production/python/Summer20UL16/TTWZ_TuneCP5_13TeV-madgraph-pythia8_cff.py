@@ -5,11 +5,10 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 readFiles.extend( [
-       '/store/mc/RunIISummer20UL16MiniAOD/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/270000/3EAC8D8E-1BD5-434C-9D85-D7E2C13D84D0.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/270000/40D53B75-11CF-2B4F-86A9-F4EFC39FD838.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/270000/67111EE0-6476-2C42-BEA5-2E21DE369901.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/270000/9A13CBC8-5458-0F4E-9423-E161E1259546.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/270000/A153F550-531B-7745-9688-69F2767D8AE6.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/270000/A32366A8-204C-1D44-8266-F25ED710436F.root',
-       '/store/mc/RunIISummer20UL16MiniAOD/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v13-v2/270000/B7841D91-9A2F-F24A-94F4-22AC01B80C84.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/79CAE5E1-3215-D047-B940-DFD97247D8DB.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/7AD014BA-0DB2-EF49-AEBD-3F066614F971.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/A63C661C-EB35-B24C-83C0-29E9F72A4589.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/F74FE799-E534-6A4C-9EC6-9FCB38F10DB5.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/120000/FB14D6C0-670A-6B4C-BDBE-AAB90E605DE0.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/TTWZ_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/A917ACE9-219C-FA44-99D8-654E5081D377.root',
 ] )
