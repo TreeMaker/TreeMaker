@@ -115,7 +115,7 @@ def makeTreeFromMiniAOD(self,process):
         process.PDFWeights = PDFWeightProducer.clone(
             recalculatePDFs = cms.bool(self.signal),
             normalize = (not "SVJ" in self.sample), # skip normalization only for SVJ signals
-            pdfSetName = cms.string("NNPDF31_lo_as_0130"),
+            pdfSetName = cms.string("NNPDF31_nlo_as_0118"),
         )
         if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
             process.PDFWeights.nScales = 0
@@ -243,8 +243,7 @@ def makeTreeFromMiniAOD(self,process):
     JetAK8TagInf = cms.InputTag('slimmedJetsAK8Inf')
     SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
 
-    process.load("CondCore.DBCommon.CondDBCommon_cfi")
-    from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
+    process.load("CondCore.CondDB.CondDB_cfi")
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
@@ -252,10 +251,9 @@ def makeTreeFromMiniAOD(self,process):
     if len(self.jecfile)>0:
         #get name of JECs without any directories
         JECera = self.jecfile.split('/')[-1]
-        JECPatch = cms.string('sqlite_file:'+self.jecfile+'.db')
+        process.CondDB.connect = cms.string('sqlite_file:'+self.jecfile+'.db')
 
-        process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-            connect = JECPatch,
+        process.jec = cms.ESSource("PoolDBESSource",process.CondDB,
             toGet   = cms.VPSet(
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
@@ -640,10 +638,9 @@ def makeTreeFromMiniAOD(self,process):
     if len(self.jerfile)>0:
         #get name of JERs without any directories
         JERera = self.jerfile.split('/')[-1]
-        JERPatch = cms.string('sqlite_file:'+self.jerfile+'.db')
+        process.CondDB.connect = cms.string('sqlite_file:'+self.jerfile+'.db')
     
-        process.jer = cms.ESSource("PoolDBESSource",CondDBSetup,
-            connect = JERPatch,
+        process.jer = cms.ESSource("PoolDBESSource",process.CondDB,
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetResolutionRcd'),
@@ -737,10 +734,9 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
 
     # get updated QG training
-    QGPatch = cms.string('sqlite_file:'+os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/QGL_cmssw8020_v2.db')
+    process.CondDB.connect = cms.string('sqlite_file:'+os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/QGL_cmssw8020_v2.db')
 
-    process.qgdb = cms.ESSource("PoolDBESSource",CondDBSetup,
-        connect = QGPatch,
+    process.qgdb = cms.ESSource("PoolDBESSource",process.CondDB,
         toGet   = cms.VPSet(
             cms.PSet(
                 record = cms.string('QGLikelihoodRcd'),
