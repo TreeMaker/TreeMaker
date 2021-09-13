@@ -8,6 +8,6 @@ PDFWeightProducer = cms.EDProducer("PDFWeightProducer",
 )
 
 from TreeMaker.TreeMaker.TMEras import TMeras
-(TMeras.TM2017 | TMeras.TM2018).toModify(PDFWeightProducer,
+(TMeras.TMUL2017 | TMeras.TMUL2018).toModify(PDFWeightProducer,
     nPDFs = 102,
 )

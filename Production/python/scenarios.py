@@ -27,7 +27,7 @@ class Scenario:
                 jerfile=self.absdatapath+"/jer/Summer20UL16APV_JRV3_MC",
                 pufile=self.reldatapath+"/PileupHistograms_UL2016APV_69mb_pm5.root",
                 era="Run2_2016",
-                localera="TMUL2016",
+                localera="TMUL2016APV",
             )
         elif sname == "Summer20UL17":
             self.set_vars(
@@ -60,7 +60,7 @@ class Scenario:
                 geninfo=True,
                 jecfile=self.absdatapath+"/jec/Summer19UL18_V5_MC",
                 jerfile=self.absdatapath+"/jer/Summer19UL18_JRV2_MC",
-                pufile=self.reldatapath+"/PileupHistogram-goldenJSON-13tev-2018-69200ub-99bins.root",
+                pufile=self.reldatapath+"/PileupHistograms_UL2018_69mb_pm5.root",
                 era="Run2_2018",
                 localera="TMUL2018",
             )
