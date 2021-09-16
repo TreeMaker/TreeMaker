@@ -1660,9 +1660,7 @@ class MCSampleValuesHelper():
         """
         fields = [self.__key_field_map[key][0]+"_"+energy,self.__key_field_map[key][0]+"_"+year]
         if not name in self.__values_dict:
-            print("ERROR MCSampleValuesHelper::Unknown process \"" + str(name) + "\"")
-            return -1.0
-            #raise KeyError("ERROR MCSampleValuesHelper::Unknown process \"" + str(name) + "\"")
+            raise KeyError("ERROR MCSampleValuesHelper::Unknown process \"" + str(name) + "\"")
         if not key in self.__values_dict[name]:
             if strict:
                 print self.__values_dict[name]
