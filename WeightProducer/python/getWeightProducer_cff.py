@@ -22,7 +22,6 @@ def getWeightProducer(fileName, scan=False):
     weightProducer.SampleName = cms.string("")
     weightProducer.FileNamePUDataDistribution = cms.string("")
     weightProducer.FileNamePUMCDistribution = cms.string("")
-    weightProducer.RemakePU = cms.bool(False)
 
     # assign cross sections for signal scans
     if scan:
@@ -59,7 +58,6 @@ def getWeightProducer(fileName, scan=False):
             weightProducer.Method     = cms.string(sample.Method)
             weightProducer.XS         = cms.double(sample.XS*sample.BR*sample.kFactor*sample.corr)
             weightProducer.NumberEvts = cms.double(sample.NumberEvtsDiff)
-            weightProducer.RemakePU   = cms.bool(sample.WrongPU)
             print sample.name+", "+sample.production+" : '"+fileName+"'"
             applyWeight = True
             weightProducer.weight = cms.double(-1.)

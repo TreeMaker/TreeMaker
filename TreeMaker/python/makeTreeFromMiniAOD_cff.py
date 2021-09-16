@@ -101,7 +101,6 @@ def makeTreeFromMiniAOD(self,process):
         process.WeightProducer = getWeightProducer(process.source.fileNames[0],process.SignalScan.signalType!="None")
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string(self.pufile)
-        process.WeightProducer.FileNamePUMCDistribution = cms.string(self.wrongpufile)
         process.WeightProducer.SampleName = cms.string(self.sample)
         self.VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
@@ -352,7 +351,6 @@ def makeTreeFromMiniAOD(self,process):
             isData=not self.geninfo, # controls gen met
             jetCollUnskimmed=JetTag,
             reapplyJEC=False,
-            fixEE2017=self.doMETfix,
         )
         METTag = cms.InputTag('slimmedMETs','',process.name_())
 
@@ -769,7 +767,6 @@ def makeTreeFromMiniAOD(self,process):
         suff='',
         storeProperties=2,
         SkipTag=SkipTag,
-        METfix=self.doMETfix,
     )
     if self.systematics:
         process.JetProperties.properties.extend(["jecUnc"])

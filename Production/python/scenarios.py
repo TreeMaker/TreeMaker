@@ -35,7 +35,7 @@ class Scenario:
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
-                jecfile=self.absdatapath+"/jec/Summer19UL17_V7_MC",
+                jecfile=self.absdatapath+"/jec/Summer19UL17_V5_MC",
                 jerfile=self.absdatapath+"/jer/Summer19UL17_JRV2_MC",
                 pufile=self.reldatapath+"/PileupHistograms_UL2017_69mb_pm5.root",
                 era="Run2_2017",
@@ -78,7 +78,7 @@ class Scenario:
         else: # if no recognized scenario, cannot go forward
             raise ValueError('Unknown scenario name: '+sname)
 
-    def set_vars(self, globaltag, era, localera, tagname, hlttagname="", geninfo=False, fastsim=False, signal=False, pmssm=False, scan=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile="", wrongpufile=""):
+    def set_vars(self, globaltag, era, localera, tagname, hlttagname="", geninfo=False, fastsim=False, signal=False, pmssm=False, scan=False, jsonfile="", jecfile="", residual=False, jerfile="", pufile=""):
         self.globaltag  = globaltag
         self.tagname    = tagname
         self.hlttagname = hlttagname
@@ -92,6 +92,5 @@ class Scenario:
         self.residual   = residual
         self.jerfile    = jerfile
         self.pufile     = pufile
-        self.wrongpufile= wrongpufile
         self.era        = era
         self.localera   = localera

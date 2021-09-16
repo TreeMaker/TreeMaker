@@ -17,9 +17,6 @@ class maker:
         from TreeMaker.Production.scenarios import Scenario
         self.scenario = Scenario(self.scenarioName)
 
-        # to keep track of MET fix, currently applied to all 2017 data and MC
-        self.doMETfix = ("Fall17" in self.scenarioName or "2017" in self.scenarioName)
-        
         self.getParamDefault("verbose",True)
         self.getParamDefault("inputFilesConfig","")
         self.getParamDefault("dataset",[])
@@ -78,7 +75,6 @@ class maker:
         self.getParamDefault("residual",self.scenario.residual)
         self.getParamDefault("jerfile",self.scenario.jerfile)
         self.getParamDefault("pufile",self.scenario.pufile)
-        self.getParamDefault("wrongpufile",self.scenario.wrongpufile)
         self.getParamDefault("era",self.scenario.era)
         self.getParamDefault("localera",self.scenario.localera)
         

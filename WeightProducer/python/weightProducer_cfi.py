@@ -21,6 +21,5 @@ weightProducer = cms.EDProducer('WeightProducer',
    # a multiplicative PU weight factor is applied.
    FileNamePUDataDistribution = cms.string(""),
    FileNamePUMCDistribution = cms.string(""),
-   RemakePU = cms.bool(False),
    SampleName = cms.string(""),
 )

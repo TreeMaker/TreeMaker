@@ -157,25 +157,9 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         recoMetFromPFCs=True, # to recompute
         reclusterJets=False, # without reclustering
         reapplyJEC=False,
-        fixEE2017=self.doMETfix,
         postfix=postfix,
     )
     METTag = cms.InputTag('slimmedMETs'+postfix)
-    if self.doMETfix:
-        runMetCorAndUncFromMiniAOD(
-            process,
-            isData=not self.geninfo, # controls gen met
-            jetCollUnskimmed='patJetsAK4PFCLEAN'+suff,
-            pfCandColl=cleanedCandidates.value(),
-            recoMetFromPFCs=True, # to recompute
-            reclusterJets=False, # without reclustering
-            reapplyJEC=False,
-            postfix=postfix+'Orig',
-            computeMETSignificance=False,
-        )
-        METTagOrig = cms.InputTag('slimmedMETs'+postfix+'Orig')
-    else:
-        METTagOrig = None
     
     # isolated tracks
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
@@ -242,7 +226,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         JetTag = JetTagClean,
         suff=postfix,
         storeProperties=1,
-        METfix=self.doMETfix,
     )
 
     from TreeMaker.Utils.metdouble_cfi import metdouble
