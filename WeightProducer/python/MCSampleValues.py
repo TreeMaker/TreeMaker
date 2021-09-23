@@ -812,7 +812,6 @@ class MCSampleValuesHelper():
                 XS_13TeV=41.39, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "ST_s-channel_4f_hadronicDecays" : {
             "CrossSection" : XSValues(
                 XS_2017=11.24, XSSource_2017="GenXSecAnalyzer",
@@ -829,7 +828,6 @@ class MCSampleValuesHelper():
                 XS_13TeV=10.12, XSSource_13TeV="XSDB (unknown)",
             ),
         },
-        #TODO
         "ST_t-channel_top_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
                 XS_2016=136.02, XSSource_2016="Unknown (GenXSecAnalyzer/XSDB return 0.0)",
@@ -837,7 +835,6 @@ class MCSampleValuesHelper():
                 XS_2018=115.3,  XSSource_2018="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "ST_t-channel_antitop_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
                 XS_2016=80.95, XSSource_2016="Unknown (GenXSecAnalyzer/XSDB return 0.0)",
@@ -886,13 +883,11 @@ class MCSampleValuesHelper():
                 XS_13TeV=0.07561, XSSource_13TeV="XSDB (unknown)",
             ),
         },
-        #TODO
         "tZq_W_lept_Z_hadron_4f_ckm" : {
             "CrossSection" : XSValues(
                 XS_2016=0.1573, XSSource_13TeV="XSDB (unknown)",
             ),
         },
-        #TODO
         "tZq_Zhad_Wlept_4f_ckm" : {
             "CrossSection" : XSValues(
                 XS_2017=0.1518, XSSource_2017="XSDB (unknown)",
@@ -928,7 +923,6 @@ class MCSampleValuesHelper():
                 XS_13TeV=0.8092, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "WWTo1L1Nu2Q" : {
             "CrossSection" : XSValues(
                 XS_2016=45.68, XSSource_2016="XSDB (LO)",
@@ -936,7 +930,6 @@ class MCSampleValuesHelper():
                 XS_2018=81.46, XSSource_2018="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "WZTo1L1Nu2Q" : {
             "CrossSection" : XSValues(
                 XS_2016=10.73, XSSource_2016="XSDB (LO)",
@@ -944,7 +937,6 @@ class MCSampleValuesHelper():
                 XS_2018=11.76, XSSource_2018="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "WZTo1L3Nu" : {
             "CrossSection" : XSValues(
                 XS_2016=3.054, XSSource_2016="XSDB (LO)",
@@ -967,7 +959,6 @@ class MCSampleValuesHelper():
                  XS_13TeV=51.07, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "ZGTo2NuG" : {
             "CrossSection" : XSValues(
                 XS_2016=28.04, XSSource_2016="XSDB (unknown)",
@@ -978,7 +969,6 @@ class MCSampleValuesHelper():
                 XS_13TeV=0.9738, XSSource_13TeV="XSDB (NLO)",
             ),
         },
-        #TODO
         "ZZTo2L2Q" : {
             "CrossSection" : XSValues(
                 XS_2016=3.222, XSSource_2016="XSDB (unknown)",
@@ -1058,7 +1048,6 @@ class MCSampleValuesHelper():
                 BR_13TeV=0.577, BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
             ),
         },
-        #TODO
         "TTTT" : {
             "CrossSection" : XSValues(
                 XS_2016=0.009103, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#TT_X, NLO",
@@ -1066,7 +1055,6 @@ class MCSampleValuesHelper():
                 XS_2018=0.008213, XSSource_2018="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "TTHH" : {
             "CrossSection" : XSValues(
                 XS_2016=0.0007367, XSSource_2016="XSDB (LO)",
@@ -1074,7 +1062,6 @@ class MCSampleValuesHelper():
                 XS_2018=0.0006651, XSSource_2018="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "TTTW" : {
             "CrossSection" : XSValues(
                 XS_2016=0.0008612, XSSource_2016="XSDB (LO)",
@@ -1082,7 +1069,6 @@ class MCSampleValuesHelper():
                 XS_2018=0.0007317, XSSource_2018="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "TTWH" : {
             "CrossSection" : XSValues(
                 XS_2016=0.001344, XSSource_2016="XSDB (LO)",
@@ -1100,7 +1086,6 @@ class MCSampleValuesHelper():
                 XS_13TeV=0.002453, XSSource_13TeV="XSDB (LO)",
             ),
         },
-        #TODO
         "TTZH" : {
             "CrossSection" : XSValues(
                 XS_2016=0.001244, XSSource_2016="XSDB (LO)",
@@ -1113,7 +1098,6 @@ class MCSampleValuesHelper():
                 XS_13TeV=0.001389, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
-        #TODO
         "TTTJ" : {
             "CrossSection" : XSValues(
                 XS_2016=0.0004812, XSSource_2016="XSDB (LO)",
