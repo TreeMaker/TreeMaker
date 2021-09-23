@@ -1,6 +1,6 @@
 flist = {
 
-   "scenario": "Summer20UL18",
+   "scenario": "Summer20UL18sig",
    "samples": [
 
 
