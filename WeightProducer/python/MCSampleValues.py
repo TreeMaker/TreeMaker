@@ -22,6 +22,10 @@ class MCSampleHelper():
     """
 
     __energy_dict = {
+        "2010" : "7TeV",
+        "2011" : "7TeV",
+        "2012" : "8TeV",
+        "2015" : "13TeV",
         "2016" : "13TeV",
         "2017" : "13TeV",
         "2018" : "13TeV",
@@ -30,7 +34,7 @@ class MCSampleHelper():
     __names_to_strip = {
         "generators"    : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"         : ["(.Tune)([^_]*)"],
-        "added_info"    : ["(.PSweights)([^_]*)","(.PSWeights)([^_]*)"],
+        "added_info"    : ["(.PS[W,w]eights)([^_]*)"],
         "other"         : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","SVJ_","_erdON","_ext([0-9])","_hdamp(UP|DOWN)"],
     }
 
