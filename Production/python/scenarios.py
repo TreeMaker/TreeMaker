@@ -42,6 +42,33 @@ class Scenario:
                 era="Run2_2016",
                 localera="TMUL2016",
             )
+        elif sname == "Summer20UL16Fast":
+            self.set_vars(
+                globaltag="106X_mcRun2_asymptotic_v17",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                fastsim=True,
+                jecfile=self.absdatapath+"/jec/Summer19UL16_V7_MC",
+                jerfile=self.absdatapath+"/jer/Summer20UL16_JRV3_MC",
+                pufile=self.reldatapath+"/PileupHistograms_UL2016_69mb_pm5.root",
+                era="Run2_2016",
+                localera="TMUL2016",
+            )
+        elif sname == "Summer20UL16Fastsig":
+            self.set_vars(
+                globaltag="106X_mcRun2_asymptotic_v17",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                signal=True,
+                fastsim=True,
+                jecfile=self.absdatapath+"/jec/Summer19UL16_V7_MC",
+                jerfile=self.absdatapath+"/jer/Summer20UL16_JRV3_MC",
+                pufile=self.reldatapath+"/PileupHistograms_UL2016_69mb_pm5.root",
+                era="Run2_2016",
+                localera="TMUL2016",
+            )
         elif sname == "Summer20UL16APVsig":
             self.set_vars(
                 globaltag="106X_mcRun2_asymptotic_preVFP_v11",
@@ -55,7 +82,33 @@ class Scenario:
                 era="Run2_2016",
                 localera="TMUL2016APV",
             )
-
+        elif sname == "Summer20UL16APVFast":
+            self.set_vars(
+                globaltag="106X_mcRun2_asymptotic_preVFP_v11",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                fastsim=True,
+                jecfile=self.absdatapath+"/jec/Summer19UL16APV_V7_MC",
+                jerfile=self.absdatapath+"/jer/Summer20UL16APV_JRV3_MC",
+                pufile=self.reldatapath+"/PileupHistograms_UL2016APV_69mb_pm5.root",
+                era="Run2_2016",
+                localera="TMUL2016APV",
+            )
+        elif sname == "Summer20UL16APVFastsig":
+            self.set_vars(
+                globaltag="106X_mcRun2_asymptotic_preVFP_v11",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                signal=True,
+                fastsim=True,
+                jecfile=self.absdatapath+"/jec/Summer19UL16APV_V7_MC",
+                jerfile=self.absdatapath+"/jer/Summer20UL16APV_JRV3_MC",
+                pufile=self.reldatapath+"/PileupHistograms_UL2016APV_69mb_pm5.root",
+                era="Run2_2016",
+                localera="TMUL2016APV",
+            )
         elif sname == "Summer20UL16_DATA":
             self.set_vars(
                 globaltag="106X_dataRun2_v33",
@@ -92,6 +145,33 @@ class Scenario:
                 era="Run2_2017",
                 localera="TMUL2017",
             )
+        elif sname == "Summer20UL17Fast":
+            self.set_vars(
+                globaltag="106X_mc2017_realistic_v8",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                fastsim=True,
+                jecfile=self.absdatapath+"/jec/Summer19UL17_V5_MC",
+                jerfile=self.absdatapath+"/jer/Summer19UL17_JRV2_MC",
+                pufile=self.reldatapath+"/PileupHistograms_UL2017_69mb_pm5.root",
+                era="Run2_2017",
+                localera="TMUL2017",
+            )
+        elif sname == "Summer20UL17Fastsig":
+            self.set_vars(
+                globaltag="106X_mc2017_realistic_v8",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                signal=True,
+                fastsim=True,
+                jecfile=self.absdatapath+"/jec/Summer19UL17_V5_MC",
+                jerfile=self.absdatapath+"/jer/Summer19UL17_JRV2_MC",
+                pufile=self.reldatapath+"/PileupHistograms_UL2017_69mb_pm5.root",
+                era="Run2_2017",
+                localera="TMUL2017",
+            )
         elif sname == "Summer20UL17_DATA":
             self.set_vars(
                 globaltag="106X_dataRun2_v33",
@@ -122,6 +202,33 @@ class Scenario:
                 hlttagname="HLT",
                 geninfo=True,
                 signal=True,
+                jecfile=self.absdatapath+"/jec/Summer19UL18_V5_MC",
+                jerfile=self.absdatapath+"/jer/Summer19UL18_JRV2_MC",
+                pufile=self.reldatapath+"/PileupHistograms_UL2018_69mb_pm5.root",
+                era="Run2_2018",
+                localera="TMUL2018",
+            )
+        elif sname == "Summer20UL18Fast":
+            self.set_vars(
+                globaltag="106X_upgrade2018_realistic_v15_L1v1",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                fastsim=True,
+                jecfile=self.absdatapath+"/jec/Summer19UL18_V5_MC",
+                jerfile=self.absdatapath+"/jer/Summer19UL18_JRV2_MC",
+                pufile=self.reldatapath+"/PileupHistograms_UL2018_69mb_pm5.root",
+                era="Run2_2018",
+                localera="TMUL2018",
+            )
+        elif sname == "Summer20UL18Fastsig":
+            self.set_vars(
+                globaltag="106X_upgrade2018_realistic_v15_L1v1",
+                tagname="PAT",
+                hlttagname="HLT",
+                geninfo=True,
+                signal=True,
+                fastsim=True,
                 jecfile=self.absdatapath+"/jec/Summer19UL18_V5_MC",
                 jerfile=self.absdatapath+"/jer/Summer19UL18_JRV2_MC",
                 pufile=self.reldatapath+"/PileupHistograms_UL2018_69mb_pm5.root",
