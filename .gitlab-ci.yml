@@ -20,6 +20,7 @@ before_script:
     variables:
         DOCKER_DRIVER: overlay2
         NO_CACHE: "true"
+        CONTAINER_HOME: "/home/cmsusr/"
     script:
         - echo --------- OUTER CONTAINER -------------
         - pwd
@@ -29,7 +30,7 @@ before_script:
         - docker info
         - sleep 300
         - echo --------- INNER CONTAINER -------------
-        - docker run --rm -i -e CVMFS_MOUNTS="none" -v ${PWD}/:/home/cmsusr/workdir/ ${BASE_IMAGE} -- -i -c "tar -czf ${CMSSW_VERSION}.tar.gz --exclude .git* ${CMSSW_VERSION} && mv ${CMSSW_VERSION}.tar.gz ${HOME}/workdir/  && cd ${HOME}/workdir/ && pwd && ls -alh ./ && cd ${HOME}"
+        - docker run --rm -i -e CVMFS_MOUNTS="none" -v ${PWD}/:${CONTAINER_HOME}/workdir/ ${BASE_IMAGE} -- -i -c "tar -czf ${CMSSW_VERSION}.tar.gz --exclude .git* ${CMSSW_VERSION} && mv ${CMSSW_VERSION}.tar.gz ${CONTAINER_HOME}/workdir/  && cd ${CONTAINER_HOME}/workdir/ && pwd && ls -alh ./ && cd ${CONTAINER_HOME}"
         - echo --------- OUTER CONTAINER -------------
         - pwd
         - ls -alh ./
