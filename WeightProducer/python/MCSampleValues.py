@@ -120,7 +120,7 @@ class MCSampleValuesHelper():
     __values_dict = {
         "TTJets" : {
             "CrossSection" : XSValues(
-                XS_13TeV=750.5, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=831.8, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2019/reviews/rpp2019-rev-top-quark.pdf",
             ),
         },
         "TTJets_SingleLeptFromT" : {
@@ -251,7 +251,7 @@ class MCSampleValuesHelper():
         },
         "TTTo2L2Nu" : {
             "CrossSection" : XSValues(
-                XS_13TeV=687.1, XSSource_13TeV="XSDB (NLO)",
+                XS_13TeV=87.34, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
             ),
         },
         "TTTo2L2Nu_mtop166p5" : {
@@ -286,7 +286,7 @@ class MCSampleValuesHelper():
         },
         "TTToHadronic" : {
             "CrossSection" : XSValues(
-                XS_13TeV=687.1, XSSource_13TeV="XSDB (NLO)",
+                XS_13TeV=380.1, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
             ),
         },
         "TTToHadronic_mtop166p5" : {
@@ -321,7 +321,7 @@ class MCSampleValuesHelper():
         },
         "TTToSemiLeptonic" : {
             "CrossSection" : XSValues(
-                XS_13TeV=687.1, XSSource_13TeV="XSDB (NLO)",
+                XS_13TeV=364.3, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
             ),
         },
         "TTToSemiLeptonic_mtop166p5" : {
@@ -371,110 +371,71 @@ class MCSampleValuesHelper():
         },
         "WJetsToLNu" : {
            "CrossSection" : XSValues(
-                 XS_13TeV=53870.0, XSSource_13TeV="XSDB (LO)",
+                 XS_13TeV=61526.7, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#W_jets (NNLO)",
             ),
         },
         "WJetsToLNu_HT-70To100" : {
             "CrossSection" : XSValues(
                 XS_13TeV=1264.0, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
-            #    kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
-            #    kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
+            ),
         },
         "WJetsToLNu_HT-100To200" : {
             "CrossSection" : XSValues(
                 XS_13TeV=1256.0, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
-            #    kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
-            #    kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
+            ),
         },
         "WJetsToLNu_HT-200To400" : {
             "CrossSection" : XSValues(
                 XS_13TeV=335.5, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
-            #    kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
-            #    kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
+            ),
         },
         "WJetsToLNu_HT-400To600" : {
             "CrossSection" : XSValues(
                 XS_13TeV=45.25, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
-            #    kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
-            #    kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
+            ),
         },
         "WJetsToLNu_HT-600To800" : {
             "CrossSection" : XSValues(
                 XS_13TeV=10.97, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
-            #    kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
-            #    kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
+            ),
         },
         "WJetsToLNu_HT-800To1200" : {
             "CrossSection" : XSValues(
                 XS_13TeV=4.933, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
-            #    kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
-            #    kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
+            ),
         },
         "WJetsToLNu_HT-1200To2500" : {
             "CrossSection" : XSValues(
                 XS_13TeV=1.16, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
-            #    kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
-            #    kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
+            ),
         },
         "WJetsToLNu_HT-2500ToInf" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.02627, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.224, kFactorSource_2016="XSDB NNLO/LO=61526.7/50260",
-            #    kFactor_2017=1.162, kFactorSource_2017="XSDB NNLO/LO=61526.7/52940",
-            #    kFactor_2018=1.164, kFactorSource_2018="XSDB NNLO/LO=61526.7/52850",
-            #),
-        },
-        "WJetsToQQ_HT400to600_qc19_3j" : {
-            "CrossSection" : XSValues(
-                XS_2017=315.2, XSSource_2017="GenXSecAnalyzer",
-                XS_2018=314.6, XSSource_2018="GenXSecAnalyzer",
-            ),
-        },
-        "WJetsToQQ_HT600to800_qc19_3j" : {
-            "CrossSection" : XSValues(
-                XS_2017=68.61, XSSource_2017="GenXSecAnalyzer",
-                XS_2018=68.58, XSSource_2018="GenXSecAnalyzer",
-            ),
-        },
-        "WJetsToQQ_HT-800toInf_qc19_3j" : {
-            "CrossSection" : XSValues(
-                XS_2017=34.71, XSSource_2017="GenXSecAnalyzer",
-                XS_2018=34.74, XSSource_2018="GenXSecAnalyzer",
-            ),
-        },
-        "WJetsToQQ_HT-600ToInf" : {
-            "CrossSection" : XSValues(
-                XS_2016=99.65, XSSource_2016="XSDB (LO)"
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
             ),
         },
         "QCD_HT50to100" : {
@@ -601,160 +562,133 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(
                 XS_13TeV=139.9, XSSource_13TeV="GenXSecAnalyzer",
             ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "DYJetsToLL_M-50_HT-100to200" : {
             "CrossSection" : XSValues(
                 XS_13TeV=140.3, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "DYJetsToLL_M-50_HT-200to400" : {
             "CrossSection" : XSValues(
                 XS_13TeV=38.37, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "DYJetsToLL_M-50_HT-400to600" : {
             "CrossSection" : XSValues(
                 XS_13TeV=5.212, XSSource_13TeV="GenXSecAnalzyer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "DYJetsToLL_M-50_HT-600to800" : {
             "CrossSection" : XSValues(
                 XS_13TeV=1.267, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "DYJetsToLL_M-50_HT-800to1200" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.5678, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "DYJetsToLL_M-50_HT-1200to2500" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.1332, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "DYJetsToLL_M-50_HT-2500toInf" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.002988, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "DYJetsToLL_M-50" : {
             "CrossSection" : XSValues(
-                XS_13TeV=5398, XSSource_13TeV="XSDB (LO)",
+                XS_13TeV=6077.22, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#DY_Z (NNLO)",
             ),
         },
         "ZJetsToNuNu_HT-100To200" : {
             "CrossSection" : XSValues(
                 XS_13TeV=267.0, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "ZJetsToNuNu_HT-200To400" : {
             "CrossSection" : XSValues(
                 XS_13TeV=73.08, XSSource_13TeV="XSDB (LO)",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "ZJetsToNuNu_HT-400To600" : {
             "CrossSection" : XSValues(
                 XS_13TeV=9.921, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "ZJetsToNuNu_HT-600To800" : {
             "CrossSection" : XSValues(
                 XS_13TeV=2.409, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "ZJetsToNuNu_HT-800To1200" : {
             "CrossSection" : XSValues(
                 XS_13TeV=1.078, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "ZJetsToNuNu_HT-1200To2500" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.2514, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "ZJetsToNuNu_HT-2500ToInf" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.005614, XSSource_13TeV="GenXSecAnalyzer",
             ),
-            #"kFactor" : kFactorValues(
-            #    kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-            #    kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-            #    kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
-            #),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
+            ),
         },
         "ZJetsToNuNu_Zpt-100to200" : {
             "CrossSection" : XSValues(
                 XS_2016=35.99, XSSource_2016="XSDB (LO)",
             ),
             "kFactor" : kFactorValues(
-                kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-                kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-                kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
             ),
         },
         "ZJetsToNuNu_Zpt-200toInf" : {
@@ -762,9 +696,7 @@ class MCSampleValuesHelper():
                 XS_2016=4.201, XSSource_2016="XSDB (LO)",
             ),
             "kFactor" : kFactorValues(
-                kFactor_2016=1.2245, kFactorSource_2016="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/4963",
-                kFactor_2017=1.1374, kFactorSource_2017="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5343",
-                kFactor_2018=1.1421, kFactorSource_2018="XSDB DYJetsToLL_M-50 NNLO/LO=6077.22/5321",
+                kFactor_13TeV=1.1347, kFactorSource_13TeV="XSDB NNLO/LO=6077.22/5356",
             ),
         },
         "GJets_HT-40To100" : {
@@ -820,26 +752,22 @@ class MCSampleValuesHelper():
         },
         "ST_s-channel_4f_leptonDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=3.549, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=3.36, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Single_top (NLO)",
             ),
         },
         "ST_s-channel_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=10.12, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=10.32, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_s_channel_cross_secti (NLO)",
             ),
         },
         "ST_t-channel_top_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_2016=136.02, XSSource_2016="Unknown (GenXSecAnalyzer/XSDB return 0.0)",
-                XS_2017=113.3,  XSSource_2017="XSDB (NLO)",
-                XS_2018=115.3,  XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=136.02, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_t_channel_cross_secti (NLO)",
             ),
         },
         "ST_t-channel_antitop_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_2016=80.95, XSSource_2016="Unknown (GenXSecAnalyzer/XSDB return 0.0)",
-                XS_2017=67.91, XSSource_2017="XSDB (NLO)",
-                XS_2018=69.09, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=80.95, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_t_channel_cross_secti (NLO)",
             ),
         },
         "ST_t-channel_antitop_5f_InclusiveDecays" : {
@@ -880,7 +808,7 @@ class MCSampleValuesHelper():
         },
         "tZq_ll_4f_ckm" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.07561, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.07561, XSSource_13TeV="XSDB (NLO)",
             ),
         },
         "tZq_W_lept_Z_hadron_4f_ckm" : {
@@ -895,22 +823,22 @@ class MCSampleValuesHelper():
         },
         "WW" : {
             "CrossSection" : XSValues(
-                XS_13TeV=75.95, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=118.7, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/StandardModelCrossSectionsat13TeV (NNLO)",
             ),
         },
         "WZ" : {
             "CrossSection" : XSValues(
-                XS_13TeV=27.59, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=47.13, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson (NLO)",
             ),
         },
         "ZZ" : {
             "CrossSection" : XSValues(
-                XS_13TeV=12.17, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=16.523, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson (NLO)",
             ),
         },
         "WWTo2L2Nu" : {
             "CrossSection" : XSValues(
-                XS_13TeV=11.09, XSSource_13TeV="XSDB (NLO)",
+                XS_13TeV=12.178, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson (NNLO)",
             ),
         },
         "WGJets_MonoPhoton_PtG-40to130" : {
@@ -1003,12 +931,18 @@ class MCSampleValuesHelper():
         },
         "TTWJetsToLNu" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.2161, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.6008, XSSource_13TeV="http://cds.cern.ch/record/2227475/files/CERN-2017-002-M.pdf?version=1 (p. 160, NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=(1.-0.6741), BRSource_13TeV="https://pdg.lbl.gov/2021/tables/rpp2021-sum-gauge-higgs-bosons.pdf (p. 1)",
             ),
         },
         "TTWJetsToQQ" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.4377, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.6008, XSSource_13TeV="http://cds.cern.ch/record/2227475/files/CERN-2017-002-M.pdf?version=1 (p. 160, NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.6741, BRSource_13TeV="https://pdg.lbl.gov/2021/tables/rpp2021-sum-gauge-higgs-bosons.pdf (p. 1)",
             ),
         },
         "TTGJets" : {
@@ -1018,7 +952,7 @@ class MCSampleValuesHelper():
         },
         "ttHJetToNonbb_M125" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.5066, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.509, XSSource_13TeV="http://cds.cern.ch/record/2227475/files/CERN-2017-002-M.pdf?version=1 (p. 146, NLO+NLL)",
             ),
             "BranchingRatio" : BRValues(
                 BR_13TeV=(1-0.577), BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
@@ -1026,7 +960,7 @@ class MCSampleValuesHelper():
         },
         "ttHJetTobb_M125" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.5023, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.509, XSSource_13TeV="http://cds.cern.ch/record/2227475/files/CERN-2017-002-M.pdf?version=1 (p. 146, NLO+NLL)",
             ),
             "BranchingRatio" : BRValues(
                 BR_13TeV=0.577, BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
@@ -1034,7 +968,7 @@ class MCSampleValuesHelper():
         },
         "ttHToNonbb_M125" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.5066, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.509, XSSource_13TeV="http://cds.cern.ch/record/2227475/files/CERN-2017-002-M.pdf?version=1 (p. 146, NLO+NLL)",
             ),
             "BranchingRatio" : BRValues(
                 BR_13TeV=(1-0.577), BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
@@ -1042,7 +976,7 @@ class MCSampleValuesHelper():
         },
         "ttHTobb_M125" : {
             "CrossSection" : XSValues(
-                XS_2018=0.5023, XSSource_2018="XSDB (unknown)",
+                XS_13TeV=0.509, XSSource_13TeV="http://cds.cern.ch/record/2227475/files/CERN-2017-002-M.pdf?version=1 (p. 146, NLO+NLL)",
             ),
             "BranchingRatio" : BRValues(
                 BR_13TeV=0.577, BRSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#ttH",
@@ -1107,17 +1041,17 @@ class MCSampleValuesHelper():
         },
         "WWW_4F" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.2158, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.2158, XSSource_13TeV="XSDB (NLO)",
             ),
         },
         "WWZ_4F" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.1707, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.1707, XSSource_13TeV="XSDB (NLO)",
             ),
         },
         "WWZ" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.1651, XSSource_13TeV="XSDB",
+                XS_13TeV=0.1651, XSSource_13TeV="XSDB (NLO)",
             ),
         },
         "WWG" : {
@@ -1132,12 +1066,12 @@ class MCSampleValuesHelper():
         },
         "WZZ" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.05709, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.05709, XSSource_13TeV="XSDB (NLO)",
             ),
         },
         "ZZZ" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.01476, XSSource_13TeV="XSDB (unknown)",
+                XS_13TeV=0.01476, XSSource_13TeV="XSDB (NLO)",
             ),
         },
         "SMS-T1bbbb_mGluino-1000_mLSP-900" : {
