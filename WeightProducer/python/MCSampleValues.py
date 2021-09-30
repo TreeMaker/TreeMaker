@@ -251,107 +251,224 @@ class MCSampleValuesHelper():
         },
         "TTTo2L2Nu" : {
             "CrossSection" : XSValues(
-                XS_13TeV=87.34, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+                XS_13TeV=831.8, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.105, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
             ),
         },
         "TTTo2L2Nu_mtop166p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=811.4, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.105, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTTo2L2Nu_mtop169p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=746.2, XSSource_13TeV="XSDB (NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.105, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
             ),
         },
         "TTTo2L2Nu_mtop171p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=706.1, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.105, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTTo2L2Nu_mtop173p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=668.6, XSSource_13TeV="XSDB (NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.105, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
             ),
         },
         "TTTo2L2Nu_mtop175p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=633.4, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.105, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTTo2L2Nu_mtop178p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=584.6, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.105, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTToHadronic" : {
             "CrossSection" : XSValues(
-                XS_13TeV=380.1, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+                XS_13TeV=831.8, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.457, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
             ),
         },
         "TTToHadronic_mtop166p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=811.4, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.457, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTToHadronic_mtop169p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=746.2, XSSource_13TeV="XSDB (NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.457, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
             ),
         },
         "TTToHadronic_mtop171p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=706.1, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.457, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTToHadronic_mtop173p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=668.6, XSSource_13TeV="XSDB (NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.457, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
             ),
         },
         "TTToHadronic_mtop175p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=633.4, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.457, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTToHadronic_mtop178p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=584.6, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.457, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTToSemiLeptonic" : {
             "CrossSection" : XSValues(
-                XS_13TeV=364.3, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+                XS_13TeV=831.8, XSSource_13TeV="PDG XS - https://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.438, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
             ),
         },
         "TTToSemiLeptonic_mtop166p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=811.4, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.438, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTToSemiLeptonic_mtop169p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=746.2, XSSource_13TeV="XSDB (NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.438, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
             ),
         },
         "TTToSemiLeptonic_mtop171p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=706.1, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.438, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTToSemiLeptonic_mtop173p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=668.6, XSSource_13TeV="XSDB (NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.438, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
             ),
         },
         "TTToSemiLeptonic_mtop175p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=633.4, XSSource_13TeV="XSDB (NLO)",
             ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.438, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
+            ),
         },
         "TTToSemiLeptonic_mtop178p5" : {
            "CrossSection" : XSValues(
                  XS_13TeV=584.6, XSSource_13TeV="XSDB (NLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.438, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.211, kFactorSource_13TeV="XSDB NNLO/NLO=831.8/687.1",
             ),
         },
         "TTGamma_SingleLept" : {
