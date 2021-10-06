@@ -101,7 +101,6 @@ def makeTreeFromMiniAOD(self,process):
         process.WeightProducer = getWeightProducer(process.source.fileNames[0],process.SignalScan.signalType!="None")
         process.WeightProducer.Lumi                       = cms.double(1) #default: 1 pb-1 (unit value)
         process.WeightProducer.FileNamePUDataDistribution = cms.string(self.pufile)
-        process.WeightProducer.FileNamePUMCDistribution = cms.string(self.wrongpufile)
         process.WeightProducer.SampleName = cms.string(self.sample)
         self.VarsDouble.extend(['WeightProducer:weight(Weight)','WeightProducer:xsec(CrossSection)','WeightProducer:nevents(NumEvents)',
                            'WeightProducer:TrueNumInteractions','WeightProducer:PUweight(puWeight)','WeightProducer:PUSysUp(puSysUp)','WeightProducer:PUSysDown(puSysDown)'])
@@ -115,7 +114,7 @@ def makeTreeFromMiniAOD(self,process):
         process.PDFWeights = PDFWeightProducer.clone(
             recalculatePDFs = cms.bool(self.signal),
             normalize = (not "SVJ" in self.sample), # skip normalization only for SVJ signals
-            pdfSetName = cms.string("NNPDF31_lo_as_0130"),
+            pdfSetName = cms.string("NNPDF31_nlo_as_0118"),
         )
         if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
             process.PDFWeights.nScales = 0
@@ -243,8 +242,7 @@ def makeTreeFromMiniAOD(self,process):
     JetAK8TagInf = cms.InputTag('slimmedJetsAK8Inf')
     SubjetTag = cms.InputTag('slimmedJetsAK8PFPuppiSoftDropPacked:SubJets')
 
-    process.load("CondCore.DBCommon.CondDBCommon_cfi")
-    from CondCore.DBCommon.CondDBSetup_cfi import CondDBSetup
+    process.load("CondCore.CondDB.CondDB_cfi")
     
     # get the JECs (disabled by default)
     # this requires the user to download the .db file from this twiki
@@ -252,10 +250,9 @@ def makeTreeFromMiniAOD(self,process):
     if len(self.jecfile)>0:
         #get name of JECs without any directories
         JECera = self.jecfile.split('/')[-1]
-        JECPatch = cms.string('sqlite_file:'+self.jecfile+'.db')
+        process.CondDB.connect = cms.string('sqlite_file:'+self.jecfile+'.db')
 
-        process.jec = cms.ESSource("PoolDBESSource",CondDBSetup,
-            connect = JECPatch,
+        process.jec = cms.ESSource("PoolDBESSource",process.CondDB,
             toGet   = cms.VPSet(
                 cms.PSet(
                     record = cms.string("JetCorrectionsRecord"),
@@ -284,12 +281,6 @@ def makeTreeFromMiniAOD(self,process):
         
         # rerun DeepCSV on AK4 jets for 2016 80X MC
         ak4updates = cms.PSet(discrs = cms.vstring())
-        TMeras.TM80X.toModify(ak4updates,
-            discrs = cms.vstring(
-                ['pfDeepCSVJetTags:'+x for x in ['probb','probbb']] +
-                ['pfDeepCSVDiscriminatorsJetTags:'+x for x in ['BvsAll']]
-            )
-        )
 
         updateJetCollection(
             process,
@@ -314,33 +305,6 @@ def makeTreeFromMiniAOD(self,process):
 
         if self.deepDoubleB:
             ak8updates.extend(['pfMassIndependentDeepDoubleBvLJetTags:probHbb'])
-
-        if TMeras.TM80X._isChosen():
-            # use jet toolbox to rerun puppi, recluster AK8 jets, and compute substructure variables
-            # do not add discriminators here, several issues
-            from JMEAnalysis.JetToolbox.jetToolbox_cff import jetToolbox
-            jetToolbox(process,
-                'ak8',
-                'jetSequence',
-                'noOutput',
-                PUMethod = 'Puppi',
-                dataTier = 'miniAOD',
-                runOnMC = self.geninfo,
-                postFix = '94Xlike',
-                Cut = 'pt>170.',
-                addPruning = True,
-                addSoftDropSubjets = True,
-                addNsub = True,
-                maxTau = 3,
-                subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
-                JETCorrLevels = levels,
-                subJETCorrLevels = levels,
-                addEnergyCorrFunc = False,
-                verbosity = 2 if self.verbose else 0,
-            )
-
-            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppi94XlikeSoftDrop")
-            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppi94XlikeSoftDropPacked:SubJets")
 
         # update the corrections for AK8 jets
         # and add any extra discriminators
@@ -387,7 +351,6 @@ def makeTreeFromMiniAOD(self,process):
             isData=not self.geninfo, # controls gen met
             jetCollUnskimmed=JetTag,
             reapplyJEC=False,
-            fixEE2017=self.doMETfix,
         )
         METTag = cms.InputTag('slimmedMETs','',process.name_())
 
@@ -467,10 +430,6 @@ def makeTreeFromMiniAOD(self,process):
         UseMiniIsolation   = cms.bool(True),
         METTag             = METTag,
         rhoCollection      = cms.InputTag("fixedGridRhoFastjetAll")
-    )
-    (TMeras.TM80X | TMeras.TM2016).toModify(process.LeptonsNew,
-        #https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/RecoEgamma/ElectronIdentification/data/Summer16/effAreaElectrons_cone03_pfNeuHadronsAndPhotons_80X.txt
-        electronEAValues = cms.vdouble(0.1703, 0.1715, 0.1213, 0.1230, 0.1635, 0.1937, 0.2393),
     )
     self.VectorRecoCand.extend(['LeptonsNew:IdMuon(Muons)','LeptonsNew:IdElectron(Electrons)'])
     self.VectorInt.extend(['LeptonsNew:IdMuonCharge(Muons_charge)','LeptonsNew:IdElectronCharge(Electrons_charge)'])
@@ -573,57 +532,40 @@ def makeTreeFromMiniAOD(self,process):
         )
         self.VarsInt.extend(['ecalBadCalibFilter'])
 
-        # some filters need to be rerun
-        from RecoMET.METFilters.ecalBadCalibFilter_cfi import ecalBadCalibFilter
-        process.ecalBadCalibReducedFilter = ecalBadCalibFilter.clone(
-            EcalRecHitSource = cms.InputTag("reducedEgamma:reducedEERecHits"),
-            ecalMinEt = cms.double(50.),
-            baddetEcal = cms.vuint32([
-                872439604,872422825,872420274,872423218,
-                872423215,872416066,872435036,872439336,
-                872420273,872436907,872420147,872439731,
-                872436657,872420397,872439732,872439339,
-                872439603,872422436,872439861,872437051,
-                872437052,872420649,872422436,872421950,
-                872437185,872422564,872421566,872421695,
-                872421955,872421567,872437184,872421951,
-                872421694,872437056,872437057,872437313
-            ]),
-            taggingMode = cms.bool(True),
+        process.hfNoisyHitsFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_hfNoisyHitsFilter"),
         )
-        process.ecalBadCalibReducedExtraFilter = process.ecalBadCalibReducedFilter.clone(
-            baddetEcal = cms.vuint32([
-                872439604,872422825,872420274,872423218,
-                872423215,872416066,872435036,872439336,
-                872420273,872436907,872420147,872439731,
-                872436657,872420397,872439732,872439339,
-                872439603,872422436,872439861,872437051,
-                872437052,872420649,872421950,872437185,
-                872422564,872421566,872421695,872421955,
-                872421567,872437184,872421951,872421694,
-                872437056,872437057,872437313,872438182,
-                872438951,872439990,872439864,872439609,
-                872437181,872437182,872437053,872436794,
-                872436667,872436536,872421541,872421413,
-                872421414,872421031,872423083,872421439
-            ])
-        )
-        self.VarsBool.extend(['ecalBadCalibReducedFilter','ecalBadCalibReducedExtraFilter'])
+        self.VarsInt.extend(['hfNoisyHitsFilter'])
 
-        process.load('RecoMET.METFilters.BadChargedCandidateFilter_cfi')
-        process.BadChargedCandidateFilter.vtx = cms.InputTag("offlineSlimmedPrimaryVertices")
-        process.BadChargedCandidateFilter.muons = cms.InputTag("slimmedMuons")
-        process.BadChargedCandidateFilter.PFCandidates = cms.InputTag("packedPFCandidates")
-        process.BadChargedCandidateFilter.taggingMode = True
-        self.VarsBool.extend(['BadChargedCandidateFilter'])
-        
-        process.load('RecoMET.METFilters.BadPFMuonFilter_cfi')
-        process.BadPFMuonFilter.vtx = cms.InputTag("offlineSlimmedPrimaryVertices")
-        process.BadPFMuonFilter.muons = cms.InputTag("slimmedMuons")
-        process.BadPFMuonFilter.PFCandidates = cms.InputTag("packedPFCandidates")
-        process.BadPFMuonFilter.taggingMode = True
-        self.VarsBool.extend(['BadPFMuonFilter'])
-        
+        process.BadChargedCandidateFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_BadChargedCandidateFilter"),
+        )
+        self.VarsInt.extend(['BadChargedCandidateFilter'])
+
+        process.BadPFMuonFilter = filterDecisionProducer.clone(
+            trigTagArg1  = cms.string('TriggerResults'),
+            trigTagArg2  = cms.string(''),
+            trigTagArg3  = cms.string(self.tagname),
+            filterName  =   cms.string("Flag_BadPFMuonFilter"),
+        )
+        self.VarsInt.extend(['BadPFMuonFilter'])
+
+        # https://twiki.cern.ch/twiki/bin/view/CMS/MissingETOptionalFiltersRun2#Recipe_for_BadPFMuonDz_filter_in
+        # Not in MiniAODv1 but in MiniAODv2, so cannot rely on getting from TriggerResults
+        process.load('RecoMET.METFilters.BadPFMuonDzFilter_cfi')
+        process.BadPFMuonDzFilter.vtx = cms.InputTag("offlineSlimmedPrimaryVertices")
+        process.BadPFMuonDzFilter.muons = cms.InputTag("slimmedMuons")
+        process.BadPFMuonDzFilter.PFCandidates = cms.InputTag("packedPFCandidates")
+        process.BadPFMuonDzFilter.taggingMode = True
+        process.BadPFMuonDzFilter.minDzBestTrack = cms.double(0.5)
+        self.VarsBool.extend(['BadPFMuonDzFilter'])
+
     ## ----------------------------------------------------------------------------------------------
     ## Triggers
     ## ----------------------------------------------------------------------------------------------
@@ -694,10 +636,9 @@ def makeTreeFromMiniAOD(self,process):
     if len(self.jerfile)>0:
         #get name of JERs without any directories
         JERera = self.jerfile.split('/')[-1]
-        JERPatch = cms.string('sqlite_file:'+self.jerfile+'.db')
+        process.CondDB.connect = cms.string('sqlite_file:'+self.jerfile+'.db')
     
-        process.jer = cms.ESSource("PoolDBESSource",CondDBSetup,
-            connect = JERPatch,
+        process.jer = cms.ESSource("PoolDBESSource",process.CondDB,
             toGet = cms.VPSet(
                 cms.PSet(
                     record = cms.string('JetResolutionRcd'),
@@ -791,10 +732,9 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
 
     # get updated QG training
-    QGPatch = cms.string('sqlite_file:'+os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/QGL_cmssw8020_v2.db')
+    process.CondDB.connect = cms.string('sqlite_file:'+os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/QGL_cmssw8020_v2.db')
 
-    process.qgdb = cms.ESSource("PoolDBESSource",CondDBSetup,
-        connect = QGPatch,
+    process.qgdb = cms.ESSource("PoolDBESSource",process.CondDB,
         toGet   = cms.VPSet(
             cms.PSet(
                 record = cms.string('QGLikelihoodRcd'),
@@ -827,7 +767,6 @@ def makeTreeFromMiniAOD(self,process):
         suff='',
         storeProperties=2,
         SkipTag=SkipTag,
-        METfix=self.doMETfix,
     )
     if self.systematics:
         process.JetProperties.properties.extend(["jecUnc"])
@@ -862,7 +801,6 @@ def makeTreeFromMiniAOD(self,process):
             NewName = cms.string("SoftDropPuppiUpdated"),
         )
     )
-    TMeras.TM80X.toModify(getattr(process, JetAK8TagSJU.value()), OldName = "SoftDrop")
     JetAK8Tag = JetAK8TagSJU
     
     # apply jet ID and get properties
@@ -870,20 +808,6 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetAK8Tag,
         suff='AK8',
         storeProperties=2,
-        doECFs = not TMeras.TM80X._isChosen(), # temporarily disabled
-    )
-    TMeras.TM80X.toModify(process.JetPropertiesAK8,
-        NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi94Xlike:tau1'),
-        NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi94Xlike:tau2'),
-        NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi94Xlike:tau3'),
-#        ecfN2b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN2'),
-#        ecfN2b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN2'),
-#        ecfN3b1 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb1AK8Puppi94XlikeSoftDropN3'),
-#        ecfN3b2 = cms.vstring('ak8PFJetsPuppi94XlikeSoftDropValueMap:nb2AK8Puppi94XlikeSoftDropN3'),
-#        prunedMass = cms.vstring('ak8PFJetsPuppi94XlikePrunedMass'),
-        softDropMass = cms.vstring('SoftDrop'),
-        subjets = cms.vstring('SoftDrop'),
-        SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags'),
     )
     if self.systematics:
         process.JetPropertiesAK8.properties.extend(["jecUnc"])
@@ -979,21 +903,32 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## Prefiring weights
     ## ----------------------------------------------------------------------------------------------
-    from TreeMaker.Utils.L1ECALNonPrefiringProbProducer_cfi import L1ECALNonPrefiringProbProducer
-    prefiringDataEra = cms.PSet(value = cms.string(""))
-    TMeras.TM2016.toModify(prefiringDataEra, value = "2016BtoH")
-    TMeras.TM2017.toModify(prefiringDataEra, value = "2017BtoF")
-    if len(prefiringDataEra.value.value())>0:
-        process.L1ECALNonPrefiringProbProducer = L1ECALNonPrefiringProbProducer.clone(
-            TheJets = JetTag,
-            DataEra = prefiringDataEra.value,
-            L1Maps = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1PrefiringMaps_new.root'),
-        )
-        self.VarsDouble.extend([
-            'L1ECALNonPrefiringProbProducer:NonPrefiringProb',
-            'L1ECALNonPrefiringProbProducer:NonPrefiringProbUp',
-            'L1ECALNonPrefiringProbProducer:NonPrefiringProbDown',
-        ])
+    from TreeMaker.Utils.L1NonPrefiringProbProducer_cfi import L1NonPrefiringProbProducer
+
+    process.L1NonPrefiringProbProducer = L1NonPrefiringProbProducer.clone(
+        TheJets = JetTag,
+        DataEraECAL = cms.string("UL2016postVFP"),
+        DataEraMuon = cms.string("2016postVFP"),
+        L1MapsECAL = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1PrefiringMaps.root'),
+        L1ParamsMuon = cms.string(os.environ['CMSSW_BASE']+'/src/TreeMaker/Production/test/data/L1MuonPrefiringParameterizations.root'),
+    )
+
+    TMeras.TMUL2016APV.toModify(process.L1NonPrefiringProbProducer, DataEraECAL = "UL2016preVFP", DataEraMuon = "2016preVFP")
+    TMeras.TMUL2017.toModify(process.L1NonPrefiringProbProducer, DataEraECAL = "UL2017BtoF", DataEraMuon = "20172018")
+    TMeras.TMUL2018.toModify(process.L1NonPrefiringProbProducer, DataEraECAL = "None", DataEraMuon = "20172018")
+
+    self.VarsDouble.extend([
+        'L1NonPrefiringProbProducer:NonPrefiringProb',
+        'L1NonPrefiringProbProducer:NonPrefiringProbUp',
+        'L1NonPrefiringProbProducer:NonPrefiringProbDown',
+        'L1NonPrefiringProbProducer:NonPrefiringProbECAL',
+        'L1NonPrefiringProbProducer:NonPrefiringProbECALUp',
+        'L1NonPrefiringProbProducer:NonPrefiringProbECALDown',
+        'L1NonPrefiringProbProducer:NonPrefiringProbMuon',
+        'L1NonPrefiringProbProducer:NonPrefiringProbMuonUp',
+        'L1NonPrefiringProbProducer:NonPrefiringProbMuonDown',
+    ])
+
 
     ## ----------------------------------------------------------------------------------------------
     ## Baseline filters

@@ -16,7 +16,7 @@ print n
     __helper = MCSampleHelper()
     __val_helper = MCSampleValuesHelper([EMJxsecs,SVJxsecs])
 
-    def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, WrongPU = False, NumberEvtsDiff = None):
+    def __init__(self, name, production, mcVersion, Method, NumberEvtsTotal, NumberEvtsDiff = None):
         self.name = name
         self.process = self.__helper.get_minimal_name(self.name)
         self.production = production
@@ -29,7 +29,6 @@ print n
         self.kFactor = self.__val_helper.get_kfactor(self.process,self.energy,self.year)
         self.corr = self.__val_helper.get_corr(self.process,self.energy,self.year)
         self.NumberEvtsTotal = NumberEvtsTotal
-        self.WrongPU = WrongPU
         self.NumberEvtsDiff = NumberEvtsTotal if NumberEvtsDiff==None else NumberEvtsDiff
 
     def get_effective_lumi(self):
@@ -46,9 +45,9 @@ print n
     def __repr__(self):
         rep = ""
         if self.NumberEvtsTotal==self.NumberEvtsDiff:
-            rep = "%s(%r, %r, %r, %r, %i, %r)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.WrongPU)
+            rep = "%s(%r, %r, %r, %r, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal)
         else:
-            rep = "%s(%r, %r, %r, %r, %i, %r, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.WrongPU,self.NumberEvtsDiff)
+            rep = "%s(%r, %r, %r, %r, %i, %i)" % (self.__class__.__name__, self.name,self.production,self.mcVersion,self.Method,self.NumberEvtsTotal,self.NumberEvtsDiff)
         return rep
 
     def __str__(self):
@@ -69,4 +68,4 @@ print n
                 rep_format += ")"
         return rep_format.format('name',self.name,' ','process',self.process,' ', 'production',self.production,' ','mcVersion',self.mcVersion,' ', \
                                  'year',self.year,' ','energy',self.energy,' ','Method',self.Method,' ','XS',self.XS,' ','BR',self.BR,' ','kFactor',self.kFactor,' ', \
-                                 'correction',self.corr,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ','WrongPU',self.WrongPU,' ','NumberEvtsDiff',self.NumberEvtsDiff)
+                                 'correction',self.corr,' ','NumberEvtsTotal',self.NumberEvtsTotal,' ','NumberEvtsDiff',self.NumberEvtsDiff)

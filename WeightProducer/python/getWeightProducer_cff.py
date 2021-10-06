@@ -22,7 +22,6 @@ def getWeightProducer(fileName, scan=False):
     weightProducer.SampleName = cms.string("")
     weightProducer.FileNamePUDataDistribution = cms.string("")
     weightProducer.FileNamePUMCDistribution = cms.string("")
-    weightProducer.RemakePU = cms.bool(False)
 
     # assign cross sections for signal scans
     if scan:
@@ -42,16 +41,14 @@ def getWeightProducer(fileName, scan=False):
     
     # list of samples
     samples = []
-    from MCSamples_Summer16 import Summer16samples
-    from MCSamples_Fall17 import Fall17samples
-    from MCSamples_Summer16v3 import Summer16v3samples
-    from MCSamples_Autumn18 import Autumn18samples
+    from MCSamples_Summer20UL16 import Summer20UL16samples
+    from MCSamples_Summer20UL16APV import Summer20UL16APVsamples
+    from MCSamples_Summer20UL17 import Summer20UL17samples
     from MCSamples_Summer20UL18 import Summer20UL18samples
     from SVJsamples import SVJsamples
-    samples += Summer16samples
-    samples += Fall17samples
-    samples += Summer16v3samples
-    samples += Autumn18samples
+    samples += Summer20UL16samples
+    samples += Summer20UL16APVsamples
+    samples += Summer20UL17samples
     samples += Summer20UL18samples
     samples += SVJsamples
     
@@ -61,7 +58,6 @@ def getWeightProducer(fileName, scan=False):
             weightProducer.Method     = cms.string(sample.Method)
             weightProducer.XS         = cms.double(sample.XS*sample.BR*sample.kFactor*sample.corr)
             weightProducer.NumberEvts = cms.double(sample.NumberEvtsDiff)
-            weightProducer.RemakePU   = cms.bool(sample.WrongPU)
             print sample.name+", "+sample.production+" : '"+fileName+"'"
             applyWeight = True
             weightProducer.weight = cms.double(-1.)

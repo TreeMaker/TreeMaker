@@ -1,19 +1,13 @@
 import FWCore.ParameterSet.Config as cms
 from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
-def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff, MaxEta=5.0, METfix=False):
+def makeMHTVars(self, process, JetTag, HTJetsTag, storeProperties, suff, MHTsuff, MaxEta=5.0):
     from TreeMaker.Utils.subJetSelection_cfi import SubJetSelection
     MHTJets = SubJetSelection.clone(
         JetTag = JetTag,
         MinPt  = cms.double(30),
         MaxEta = cms.double(MaxEta),
     )
-    if METfix:
-        MHTJets.veto = True
-        MHTJets.VetoMaxPt = process.pfCandidateJetsWithEEnoise.ptThreshold
-        MHTJets.VetoMinEta = process.pfCandidateJetsWithEEnoise.minEtaThreshold
-        MHTJets.VetoMaxEta = process.pfCandidateJetsWithEEnoise.maxEtaThreshold
-        MHTJets.VetoRawPt = process.pfCandidateJetsWithEEnoise.userawPt
     setattr(process,"MHTJets"+suff+MHTsuff,MHTJets)
     if storeProperties>1: self.VectorBool.extend(['MHTJets'+suff+MHTsuff+':SubJetMask(Jets'+suff+'_MHT'+MHTsuff+'Mask)'])
     MHTJetsTag = cms.InputTag("MHTJets"+suff+MHTsuff)
@@ -65,7 +59,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
 # 0 = scalars (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", METfix=False):
+def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType=""):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -108,29 +102,25 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     ## ----------------------------------------------------------------------------------------------
     from TreeMaker.TreeMaker.TMEras import TMeras
     from TreeMaker.Utils.btagint_cfi import btagint
-    BTags = btagint.clone(
-        JetTag       = HTJetsTag,
-        BTagInputTag = cms.string('pfCombinedInclusiveSecondaryVertexV2BJetTags'),
-        BTagCutValue = cms.double(0.8484)
-    )
-    (TMeras.TM2017 | TMeras.TM2018).toModify(BTags,BTagCutValue = cms.double(0.8838))
-    setattr(process,"BTags"+suff,BTags)
-    self.VarsInt.extend(['BTags'+suff])
 
     BTagsDeepCSV = btagint.clone(
         JetTag       = HTJetsTag,
         BTagInputTag = cms.string('pfDeepCSVDiscriminatorsJetTags:BvsAll'),
-        BTagCutValue = cms.double(0.6321)
+        BTagCutValue = cms.double(0.5847) # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL16postVFP#AK4_b_tagging
     )
-    (TMeras.TM2017).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4941))
-    (TMeras.TM2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4184))
+    # Medium DeepCSV UL WPs from:
+    
+    # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL18#AK4_b_tagging
+    # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
+    (TMeras.TMUL2017).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4506))
+    (TMeras.TMUL2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4168))
     setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
     self.VarsInt.extend(['BTagsDeepCSV'+suff])
     
     ## ----------------------------------------------------------------------------------------------
     ## MHT, DeltaPhi
     ## ----------------------------------------------------------------------------------------------
-    process, MHTJetsTag = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "", METfix=METfix)
+    process, MHTJetsTag = self.makeMHTVars(process, JetTag, HTJetsTag, storeProperties, suff, "")
 
     # extra HT version using MHT collection w/ |eta| < 5, to filter forward beam halo events
     HT5 = htdouble.clone(
@@ -194,9 +184,6 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
             'JetProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
             'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)',
         ])
-        if TMeras.TM80X._isChosen():
-            JetProperties.properties = cms.vstring([x for x in JetProperties.properties.value() if not "DeepFlavour" in x])
-            self.VectorDouble.setValue([x for x in self.VectorDouble.value() if not "DeepFlavour" in x])
         if storeProperties>1:
             JetProperties.properties.extend(["jecFactor"])
             self.VectorDouble.extend([
