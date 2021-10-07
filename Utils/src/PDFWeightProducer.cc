@@ -244,8 +244,8 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       if(debug_)
         edm::LogInfo("TreeMaker") << "PDFWeightProducer: pdf1 = " << pdf1 << ", pdf1up = " << pdf1up << ", pdf1dn = " << pdf1dn << ", pdf2 = " << pdf2 << ", pdf2up = " << pdf2up << ", pdf2dn = " << pdf2dn << std::endl;
 
-      double weightFacUp = (pdf1up*pdf2up)/(pdf1*pdf2);
-      double weightFacDn = (pdf1dn*pdf2dn)/(pdf1*pdf2);
+      float weightFacUp = (pdf1up*pdf2up)/(pdf1*pdf2);
+      float weightFacDn = (pdf1dn*pdf2dn)/(pdf1*pdf2);
 
       //renormalization scale
       //compute directly from Pythia for consistency
@@ -261,8 +261,8 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
         edm::LogInfo("TreeMaker") << "PDFWeightProducer: alpEM = " << alpEM << ", alpEMup = " << alpEMup << ", alpEMdn = " << alpEMdn << ", alpS = " << alpS << ", alpSup = " << alpSup << ", alpSdn = " << alpSdn << std::endl;
 
       //weights require process-dependent information about number of QCD and EM vertices
-      double weightRenUp = std::pow(alpEMup/alpEM, nEM_) * std::pow(alpSup/alpS, nQCD_);
-      double weightRenDn = std::pow(alpEMdn/alpEM, nEM_) * std::pow(alpSdn/alpS, nQCD_);
+      float weightRenUp = std::pow(alpEMup/alpEM, nEM_) * std::pow(alpSup/alpS, nQCD_);
+      float weightRenDn = std::pow(alpEMdn/alpEM, nEM_) * std::pow(alpSdn/alpS, nQCD_);
 
       //compute all variations to be consistent w/ what madgraph provides:
       //[mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
