@@ -36,7 +36,7 @@ def getWeightProducer(fileName, scan=False):
             weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2_NNLO.txt")
         elif "SMS-T2qq" in fileName:
             weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2qq_NNLO.txt")
-        elif all(pattern in fileName for pattern in ("SMS-TChiHH", "2D")) ||
+        elif all(pattern in fileName for pattern in ("SMS-TChiHH", "2D")) or \
              any(pattern+"_Tune" in fileName for pattern in ("SMS-TChiHH", "SMS-TChiHZ", "SMS-TChiZZ")):
             weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_TChiHH_N2N1_MassDegenerate_NLO.txt")
         elif "SMS-TChiHH" in fileName:
@@ -46,6 +46,7 @@ def getWeightProducer(fileName, scan=False):
         elif "SVJ" in fileName:
             weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_Zprime.txt")
         print "Setup WeightProducer for '"+fileName+"'"
+        print "Using the XsecFile: "+weightProducer.XsecFile.value()
         return weightProducer
     
     # list of samples
