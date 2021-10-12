@@ -30,5 +30,9 @@ flist = {
         ['Fall17Fast.SMS-T5qqqqVV_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Fall17Fast.SMS-TChiHH_HToBB_HToBB_TuneCP2_13TeV-madgraphMLM-pythia8'],
         ['Fall17Fast.SMS-TChiHH_HToBB_HToBB_2D_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Fall17Fast.SMS-T5qqqqHH_mGl-1000to2550_mN1-0to1600_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Fall17Fast.SMS-TChiHH_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Fall17Fast.SMS-TChiHZ_TuneCP2_13TeV-madgraphMLM-pythia8'],
+        ['Fall17Fast.SMS-TChiZZ_TuneCP2_13TeV-madgraphMLM-pythia8'],
     ]
 }

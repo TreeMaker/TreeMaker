@@ -30,14 +30,23 @@ def getWeightProducer(fileName, scan=False):
         weightProducer.Method = cms.string("SignalScan")
         weightProducer.NumberEvts = cms.double(1.0)
         weightProducer.modelIdentifier = cms.InputTag("SignalScan:SignalParameters")
-        if "SMS-T1" in fileName or "SMS-T5" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T1_NNLO.txt")
-        elif "SMS-T2tt" in fileName or "SMS-T2bb" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2_NNLO.txt")
-        elif "SMS-T2qq" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2qq_NNLO.txt")
-        elif "SMS-TChiHH" in fileName and "2D" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_TChiHH_N2N1_MassDegenerate_NLO.txt")
-        elif "SMS-TChiHH" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_TChiHH.txt")
-        elif "pMSSM_MCMC1" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/pmssm-xsecs-scan1.txt")
-        elif "SVJ" in fileName: weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_Zprime.txt")
+        if "SMS-T1" in fileName or "SMS-T5" in fileName:
+            weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T1_NNLO.txt")
+        elif "SMS-T2tt" in fileName or "SMS-T2bb" in fileName:
+            weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2_NNLO.txt")
+        elif "SMS-T2qq" in fileName:
+            weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_T2qq_NNLO.txt")
+        elif all(pattern in fileName for pattern in ("SMS-TChiHH", "2D")) or \
+             any(pattern+"_Tune" in fileName for pattern in ("SMS-TChiHH", "SMS-TChiHZ", "SMS-TChiZZ")):
+            weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_TChiHH_N2N1_MassDegenerate_NLO.txt")
+        elif "SMS-TChiHH" in fileName:
+            weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_TChiHH.txt")
+        elif "pMSSM_MCMC1" in fileName:
+            weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/pmssm-xsecs-scan1.txt")
+        elif "SVJ" in fileName:
+            weightProducer.XsecFile = cms.string("TreeMaker/Production/test/data/dict_xsec_Zprime.txt")
         print "Setup WeightProducer for '"+fileName+"'"
+        print "Using the XsecFile: "+weightProducer.XsecFile.value()
         return weightProducer
     
     # list of samples

@@ -8,6 +8,8 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
+#include "DataFormats/Candidate/interface/Candidate.h"
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
 #include "TreeMaker/Utils/interface/parse.h"
@@ -29,7 +31,8 @@ enum class signal_type {
 	None=0,
 	SUSY=1,
 	pMSSM=2,
-	SVJ=3
+	SVJ=3,
+	SUSYGenPart=4
 };
 
 class SignalScanProducer : public edm::stream::EDProducer<> {
@@ -44,16 +47,21 @@ class SignalScanProducer : public edm::stream::EDProducer<> {
 		void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
 
 		void reset();
+		void resetLSP();
 		
 		void getSUSYComment(const LHEEventProduct& lhe);
 		void getSUSYComment(const GenLumiInfoHeader& gen);
 		void getSUSYModelInfo(std::string comment);
+		void getSUSYGenPartComment(const GenLumiInfoHeader& gen);
 
 		void getpMSSMComment(const LHEEventProduct& lhe);
 		//todo: add pMSSM parser for GenLumiInfoHeader, once available/understood
 
 		//LHE will never be used for SVJ
 		void getSVJComment(const GenLumiInfoHeader& gen);
+
+		//only use in specific instances when the configDescription doesn't contain the necessary information
+		void getmLSPFromGenParticles(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands);
 		
 		// ----------member data ---------------------------
 		edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
@@ -62,6 +70,9 @@ class SignalScanProducer : public edm::stream::EDProducer<> {
 		signal_type type_;
 		std::vector<double> signalParameters_;
 		double motherMass_, lspMass_;
+		edm::InputTag genCollection_;
+		edm::EDGetTokenT<edm::View<reco::GenParticle>> genCollectionToken_;
+		int motherPDGID_, lspPDGID_;
 };
 
 SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) : 
@@ -78,7 +89,15 @@ SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) :
 	else if(stype=="SUSY") type_ = signal_type::SUSY;
 	else if(stype=="pMSSM") type_ = signal_type::pMSSM;
 	else if(stype=="SVJ") type_ = signal_type::SVJ;
+	else if(stype=="SUSYGenPart") type_ = signal_type::SUSYGenPart;
 	else throw cms::Exception("UnknownType") << "SignalScanProducer: unknown signal type " << stype;
+
+	if(type_ == signal_type::SUSYGenPart) {
+		genCollection_ = iConfig.getParameter<edm::InputTag>("genCollection");
+		genCollectionToken_ = consumes<edm::View<reco::GenParticle>>(genCollection_);
+		motherPDGID_ = iConfig.getParameter<int>("motherPDGID");
+		lspPDGID_ = iConfig.getParameter<int>("lspPDGID");
+	}
 
 	callWhenNewProductsRegistered(getterOfProducts_);
 	produces<std::vector<double>>("SignalParameters");
@@ -111,6 +130,14 @@ void SignalScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSet
 			else if(type_==signal_type::pMSSM) getpMSSMComment(*product);
 		}
 	}
+	else if(!isLHE_ && shouldScan_ && type_ ==  signal_type::SUSYGenPart) {
+		resetLSP();
+		if(debug_) edm::LogInfo("TreeMaker") << "SignalScanProducer: checking the generator particles collection for the LSP mass";
+		edm::Handle<edm::View<reco::GenParticle> > genPartCands;
+		iEvent.getByToken(genCollectionToken_, genPartCands);
+		getmLSPFromGenParticles(genPartCands);
+	}
+
 	//otherwise, values are picked up in beginLuminosityBlock()
 
 	auto signalParameters = std::make_unique<std::vector<double>>(signalParameters_);
@@ -134,6 +161,7 @@ SignalScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm:
 		edm::Handle<GenLumiInfoHeader> gen_header;
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);
 		if(type_==signal_type::SUSY) getSUSYComment(*gen_header);
+		else if(type_==signal_type::SUSYGenPart) getSUSYGenPartComment(*gen_header);
 		else if(type_==signal_type::SVJ) getSVJComment(*gen_header);
 	}
 }
@@ -152,6 +180,14 @@ SignalScanProducer::fillDescriptions(edm::ConfigurationDescriptions& description
 void SignalScanProducer::reset(){
 	signalParameters_.clear();
 	motherMass_ = 0;
+	lspMass_ = 0;
+}
+
+//reset only the LSP used in the SUSYGenPart type
+void SignalScanProducer::resetLSP(){
+	if(signalParameters_.size() == 2) {
+		signalParameters_.pop_back();
+	}
 	lspMass_ = 0;
 }
 
@@ -202,6 +238,29 @@ void SignalScanProducer::getSUSYModelInfo(std::string comment){
 	signalParameters_.push_back(lspMass_);
 }
 
+//parse model comment for SUSYGenPart
+void SignalScanProducer::getSUSYGenPartComment(const GenLumiInfoHeader& gen){
+	//get the config description from the header
+	std::string comment = gen.configDescription();
+
+	//strip newline
+	if(comment.back()=='\n') comment.pop_back();
+	
+	if(debug_) edm::LogInfo("TreeMaker") << comment;
+	
+	std::vector<std::string> fields;
+	//underscore-delimited data
+	parse::process(comment,'_',fields);
+
+	//format:
+	//model name_mMother (1+1 fields)
+	//just take the last value and convert to double
+	//the lsp mass will be set elsewhere
+	std::stringstream sfield1(fields.end()[-1]);
+	sfield1 >> motherMass_;
+	signalParameters_.push_back(motherMass_);
+}
+
 //parse LHE for pMSSM
 void SignalScanProducer::getpMSSMComment(const LHEEventProduct& lhe){
 	for(auto cit = lhe.comments_begin(); cit != lhe.comments_end(); ++cit){
@@ -246,6 +305,33 @@ void SignalScanProducer::getSVJComment(const GenLumiInfoHeader& gen){
 			sval >> val;
 		}
 		signalParameters_.push_back(val);
+	}
+}
+
+//scan the generator particles collection for the LSP mass
+void SignalScanProducer::getmLSPFromGenParticles(const edm::Handle< edm::View<reco::GenParticle> >& genPartCands){
+	bool mother_mass_matches = false;
+	bool found_lsp = false;
+	for(const auto& iPart : *genPartCands) {
+		// Skip starting particles which are not from the hard process
+		if(!iPart.isHardProcess() && !iPart.fromHardProcessBeforeFSR()) continue;
+		auto absPdgId = abs(iPart.pdgId());
+		auto mass = iPart.mass();
+		if(!mother_mass_matches && absPdgId == motherPDGID_) {
+			if(std::abs(mass - motherMass_) < 0.001) {
+				mother_mass_matches = true;
+			}
+			else {
+				throw cms::Exception("MassMismatch") << "SignalScanProducer: The mother mass from the configDescription (" << motherMass_ << ")does "
+																	 "not match the mother mass in the generator particles collection (" << mass << ")";
+			}
+		}
+		if(absPdgId == lspPDGID_) {
+			lspMass_ = mass;
+			signalParameters_.push_back(lspMass_);
+			found_lsp = true;
+		}
+		if(mother_mass_matches && found_lsp) break;
 	}
 }
 

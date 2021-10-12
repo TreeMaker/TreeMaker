@@ -81,6 +81,12 @@ def makeTreeFromMiniAOD(self,process):
         # set scan type ("None" by default, producer does nothing)
         if self.signal:
             if self.pmssm: process.SignalScan.signalType = "pMSSM"
+            elif (self.fastsim and
+                 any(pattern+"_Tune" in self.sample for pattern in ("SMS-TChiHH", "SMS-TChiHZ", "SMS-TChiZZ"))):
+                    process.SignalScan.signalType = "SUSYGenPart"
+                    process.SignalScan.genCollection = cms.InputTag("prunedGenParticles")
+                    process.SignalScan.motherPDGID = cms.int32(1000023)
+                    process.SignalScan.lspPDGID = cms.int32(1000022)
             elif self.fastsim: process.SignalScan.signalType = "SUSY"
             elif "SVJ" in self.sample and "Scan" in self.sample: process.SignalScan.signalType = "SVJ"
             elif self.scan: process.SignalScan.signalType = "SUSY"
