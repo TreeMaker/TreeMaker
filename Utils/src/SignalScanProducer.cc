@@ -52,7 +52,7 @@ class SignalScanProducer : public edm::stream::EDProducer<> {
 		void getSUSYComment(const LHEEventProduct& lhe);
 		void getSUSYComment(const GenLumiInfoHeader& gen);
 		void getSUSYModelInfo(std::string comment);
-		void getSUSYGenPartModelInfo(std::string comment);
+		void getSUSYGenPartComment(const GenLumiInfoHeader& gen);
 
 		void getpMSSMComment(const LHEEventProduct& lhe);
 		//todo: add pMSSM parser for GenLumiInfoHeader, once available/understood
@@ -160,7 +160,8 @@ SignalScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm:
 		if(debug_) edm::LogInfo("TreeMaker") << "SignalScanProducer: checking GenLumiInfoHeader";
 		edm::Handle<GenLumiInfoHeader> gen_header;
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);
-		if(type_==signal_type::SUSY || type_==signal_type::SUSYGenPart) getSUSYComment(*gen_header);
+		if(type_==signal_type::SUSY) getSUSYComment(*gen_header);
+		else if(type_==signal_type::SUSYGenPart) getSUSYGenPartComment(*gen_header);
 		else if(type_==signal_type::SVJ) getSVJComment(*gen_header);
 	}
 }
@@ -207,12 +208,7 @@ void SignalScanProducer::getSUSYComment(const LHEEventProduct& lhe){
 
 //parse GenLumiInfo for SUSY
 void SignalScanProducer::getSUSYComment(const GenLumiInfoHeader& gen){
-	if(type_ == signal_type::SUSYGenPart) {
-		getSUSYGenPartModelInfo(gen.configDescription());
-	}
-	else {
-		getSUSYModelInfo(gen.configDescription());
-	}
+	getSUSYModelInfo(gen.configDescription());
 }
 
 //parse model comment for SUSY
@@ -243,7 +239,10 @@ void SignalScanProducer::getSUSYModelInfo(std::string comment){
 }
 
 //parse model comment for SUSYGenPart
-void SignalScanProducer::getSUSYGenPartModelInfo(std::string comment){
+void SignalScanProducer::getSUSYGenPartComment(const GenLumiInfoHeader& gen){
+	//get the config description from the header
+	std::string comment = gen.configDescription();
+
 	//strip newline
 	if(comment.back()=='\n') comment.pop_back();
 	
