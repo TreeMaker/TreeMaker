@@ -117,6 +117,7 @@ Python:
 * `-v, --verbose`: enable verbose output (default = False)
 * `-x, --redir`: input file redirector
 * `-f, --use-folders`: store the output in folders based on era and dataset (default = False)
+* `--offset [num]`: offset for arg file naming in chain jobs (default = 0)
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):
 * `-o [dir]`: output directory
@@ -239,10 +240,12 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `hadtau`: switch to enable the hadronic tau background estimation processes (storing soft jets and reclustering) (default=False)
 * `hadtaurecluster`: switch to enable the hadronic tau reclustering to include jets with pT < 10 GeV, options: 0 = never, 1 = only TTJets/WJets MC, 2 = all MC, 3 = always (default=0)
 * `doZinv`: switch to enable the Z->invisible background estimation processes (default=True)
+* `doPhotons`: switch to ensure photon variables are stored, implied with `doZinv` (default=False)
 * `systematics`: switch to enable JEC- and JER-related systematics (default=True)
 * `semivisible`: switch to enable variables for semi-visible jets (default=True)
 * `boostedsemivisible`: switch to enable variables for boosted semi-visible jets, i.e. AK15 jets (default=False)
 * `emerging`: switch to enable variables for emerging jets (default=False)
+* `tchannel`: switch to enable additional variables for t-channel semi-visible jets (default=False)
 * `deepAK8`: switch to enable variables from the DeepAK8 tagger (default=True)
 * `deepDoubleB`: switch to enable variables from the DeepDoubleB tagger (default=True)
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
