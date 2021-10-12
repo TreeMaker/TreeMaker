@@ -9,7 +9,7 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
-#include <DataFormats/HepMCCandidate/interface/GenParticle.h>
+#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
 #include "TreeMaker/Utils/interface/parse.h"
@@ -52,6 +52,7 @@ class SignalScanProducer : public edm::stream::EDProducer<> {
 		void getSUSYComment(const LHEEventProduct& lhe);
 		void getSUSYComment(const GenLumiInfoHeader& gen);
 		void getSUSYModelInfo(std::string comment);
+		void getSUSYGenPartModelInfo(std::string comment);
 
 		void getpMSSMComment(const LHEEventProduct& lhe);
 		//todo: add pMSSM parser for GenLumiInfoHeader, once available/understood
@@ -206,7 +207,12 @@ void SignalScanProducer::getSUSYComment(const LHEEventProduct& lhe){
 
 //parse GenLumiInfo for SUSY
 void SignalScanProducer::getSUSYComment(const GenLumiInfoHeader& gen){
-	getSUSYModelInfo(gen.configDescription());
+	if(type_ == signal_type::SUSYGenPart) {
+		getSUSYGenPartModelInfo(gen.configDescription());
+	}
+	else {
+		getSUSYModelInfo(gen.configDescription());
+	}
 }
 
 //parse model comment for SUSY
@@ -220,31 +226,40 @@ void SignalScanProducer::getSUSYModelInfo(std::string comment){
 	//underscore-delimited data
 	parse::process(comment,'_',fields);
 
-	if (type_ == signal_type::SUSYGenPart) {
-		//format:
-		//model name_mMother (1+1 fields)
-		//just take the last value and convert to double
-		//the lsp mass will be set elsewhere
-		std::stringstream sfield1(fields.end()[-1]);
-		sfield1 >> motherMass_;
-		signalParameters_.push_back(motherMass_);
-	}
-	else {
-		//several possible formats:
-		//model name_mMother_mLSP (1+2 fields)
-		//model name_xChi_mMother_mLSP (1+3 fields)
-		//model name_name_name_mMother_mLSP (3+2 fields)
-		//just take last two values and convert to doubles
+	//several possible formats:
+	//model name_mMother_mLSP (1+2 fields)
+	//model name_xChi_mMother_mLSP (1+3 fields)
+	//model name_name_name_mMother_mLSP (3+2 fields)
+	//just take last two values and convert to doubles
 	
-		std::stringstream sfield1(fields.end()[-1]);
-		sfield1 >> lspMass_;
+	std::stringstream sfield1(fields.end()[-1]);
+	sfield1 >> lspMass_;
 	
-		std::stringstream sfield2(fields.end()[-2]);
-		sfield2 >> motherMass_;
+	std::stringstream sfield2(fields.end()[-2]);
+	sfield2 >> motherMass_;
 
-		signalParameters_.push_back(motherMass_);
-		signalParameters_.push_back(lspMass_);
-	}
+	signalParameters_.push_back(motherMass_);
+	signalParameters_.push_back(lspMass_);
+}
+
+//parse model comment for SUSYGenPart
+void SignalScanProducer::getSUSYGenPartModelInfo(std::string comment){
+	//strip newline
+	if(comment.back()=='\n') comment.pop_back();
+	
+	if(debug_) edm::LogInfo("TreeMaker") << comment;
+	
+	std::vector<std::string> fields;
+	//underscore-delimited data
+	parse::process(comment,'_',fields);
+
+	//format:
+	//model name_mMother (1+1 fields)
+	//just take the last value and convert to double
+	//the lsp mass will be set elsewhere
+	std::stringstream sfield1(fields.end()[-1]);
+	sfield1 >> motherMass_;
+	signalParameters_.push_back(motherMass_);
 }
 
 //parse LHE for pMSSM
