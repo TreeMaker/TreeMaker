@@ -60,9 +60,9 @@ class maker:
         self.getParamDefault("saveMinimalGenParticles", True)
         self.getParamDefault("saveGenTops", False)
         self.getParamDefault("doMT2",False)
-        self.getParamDefault("nestedVectors", True)
+        self.getParamDefault("nestedVectors", False)
         self.getParamDefault("storeOffsets", False)
-        self.getParamDefault("splitLevel", 0)
+        self.getParamDefault("splitLevel", 99)
 
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
