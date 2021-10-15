@@ -16,6 +16,7 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="enable verbose output (default = %default)")
         parser.add_option("-x", "--redir", dest="redir", default="", help="input file redirector (default = %default)")
         parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
+        parser.add_option("--maxJobs", dest="maxJobs", default=-1, type=int, help="Max number of jobs to run")
 
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterTM,self).checkExtraOptions(options,parser)
@@ -109,6 +110,10 @@ class jobSubmitterTM(jobSubmitter):
                     nJobs = fileListLen / int( self.nFiles )
                     if ( fileListLen % int( self.nFiles ) != 0 ) :
                         nJobs += 1
+
+                if self.maxJobs >= 0:
+                    print "Limiting to max {0} jobs".format(self.maxJobs)
+                    nJobs = min([nJobs, self.maxJobs])
 
                 netJobs = nJobs - int(firstJob)
                 if self.verbose:
