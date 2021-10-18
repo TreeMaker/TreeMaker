@@ -322,7 +322,7 @@ def makeTreeFromMiniAOD(self,process):
                 'jetSequence',
                 'out',
                 PUMethod = 'Puppi',
-                miniAOD = True,
+                dataTier='miniAOD',
                 runOnMC = self.geninfo,
                 postFix = 'NoCut',
                 addPruning = True,
