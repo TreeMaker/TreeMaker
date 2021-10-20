@@ -109,6 +109,18 @@ class Scenario:
                 era="Run2_2016",
                 localera="TMUL2016APV",
             )
+        elif sname == "Summer20UL16APV_DATA":
+
+            self.set_vars(
+                globaltag="106X_dataRun2_v33",
+                tagname="PAT",
+                hlttagname="HLT",
+                jsonfile=self.absdatapath+"/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
+                jecfile=self.absdatapath+"/jec/Summer19UL16_RunBCDEFGH_Combined_V7_DATA",
+                residual=True,
+                era="Run2_2016",
+                localera="TMUL2016APV",
+            )
         elif sname == "Summer20UL16_DATA":
             self.set_vars(
                 globaltag="106X_dataRun2_v33",
