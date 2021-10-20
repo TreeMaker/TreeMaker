@@ -145,5 +145,58 @@ SVJxsecs = {
     "mZprime-5100" : {
         "CrossSection" : XSValues(XS_13TeV=0.0001523),
     },
+    # Full t-channel cross section
+    # currently commented out in favor of pair production cross sections (below)
+    # todo for UL: improve naming scheme to disambiguate, recalculate cross sections w/ newer PDFs
+    #"t-channel_mMed-200" : {
+    #    "CrossSection" : XSValues(XS_13TeV=990.8), # uncertainty: 3.617
+    #},
+    # "t-channel_mMed-400" : {
+    #     "CrossSection" : XSValues(XS_13TeV=54.24), # uncertainty: 0.2163
+    # },
+    #"t-channel_mMed-500" : {
+    #    "CrossSection" : XSValues(XS_13TeV=21.7), # uncertainty: 0.08651
+    #},
+    # "t-channel_mMed-600" : {
+    #     "CrossSection" : XSValues(XS_13TeV=10.07), # uncertainty: 0.04063
+    # },
+    # "t-channel_mMed-800" : {
+    #     "CrossSection" : XSValues(XS_13TeV=3.096), # uncertainty: 0.0124
+    # },
+    # "t-channel_mMed-1000" : {
+    #     "CrossSection" : XSValues(XS_13TeV=1.247), # uncertainty: 0.004968
+    # },
+    # "t-channel_mMed-2000" : {
+    #     "CrossSection" : XSValues(XS_13TeV=0.08492), # uncertainty: 3.290e-04
+    # },
+    # "t-channel_mMed-3000" : {
+    #     "CrossSection" : XSValues(XS_13TeV=0.01891), # uncertainty: 7.277e-05
+    # },
+    #"t-channel_mMed-4000" : {
+    #    "CrossSection" : XSValues(XS_13TeV=0.006132), # uncertainty: 2.361e-05
+    #},
+    #"t-channel_mMed-6000" : {
+    #    "CrossSection" : XSValues(XS_13TeV=0.001269), # uncertainty: 4.938e-06
+    #},
+    # t-channel pair production cross sections
+    "t-channel_mMed-400" : {
+        "CrossSection" : XSValues(XS_13TeV=13.68), # uncertainty: 0.2579
+    },
+    "t-channel_mMed-600" : {
+        "CrossSection" : XSValues(XS_13TeV=1.315), # uncertainty: 0.02370
+    },
+    "t-channel_mMed-800" : {
+        "CrossSection" : XSValues(XS_13TeV=0.2092), # uncertainty: 0.003806
+    },
+    "t-channel_mMed-1000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.04452), # uncertainty: 8.065e-04
+    },
+    "t-channel_mMed-2000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.0001209), # uncertainty: 2.216e-06
+    },
+    "t-channel_mMed-3000" : {
+        "CrossSection" : XSValues(XS_13TeV=0.000001462), # uncertainty: 2.812e-08
+    },
+
 }
 

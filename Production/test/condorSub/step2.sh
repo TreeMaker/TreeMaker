@@ -30,6 +30,7 @@ export OPTIND=1
 export USE_FOLDERS="false"
 while [[ $OPTIND -le $# ]]; do
 	# getopts in silent mode, don't exit on errors
+	OPTOLD=$OPTIND
 	getopts ":fj:p:o:x:" opt || status=$?
 	case "$opt" in
 		f) export USE_FOLDERS="true"
@@ -42,8 +43,8 @@ while [[ $OPTIND -le $# ]]; do
 		;;
 		x) export REDIR=$OPTARG
 		;;
-		# keep going if getopts had an error
-		\? | :) OPTIND=$((OPTIND+1))
+		# keep going if getopts had an error, but make sure not to skip anything
+		\? | :) OPTIND=$((OPTOLD+1))
 		;;
 	esac
 done
@@ -110,13 +111,11 @@ for FILE in *.root; do
 		echo -e "\t   After change: ${FILE_DST}"
 	fi
 	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE_DST}"
-	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE_DST}
+	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE_DST} -r -c '*.root'
 	XRDEXIT=$?
 	if [[ $XRDEXIT -ne 0 ]]; then
-		rm *.root
 		echo "exit code $XRDEXIT, failure in $CMDSTR"
 		exit $XRDEXIT
 	fi
-	rm ${FILE}
 done
 
