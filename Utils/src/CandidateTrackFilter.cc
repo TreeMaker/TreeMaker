@@ -291,7 +291,7 @@ private:
 	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> pfCandidatesTok_;
 	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> lostTracksTok_;
 	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> lostEleTracksTok_;
-	edm::EDGetTokenT<edm::View<pat::PackedCandidate>> displacedStandAloneMuonsTok_;
+	edm::EDGetTokenT<edm::View<reco::Track>> displacedStandAloneMuonsTok_;
 	edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
 	edm::EDGetTokenT<edm::View<reco::VertexRef>> storedVerticesTok_;
 
@@ -325,7 +325,7 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 
 	if (iConfig.exists("displacedStandAloneMuonsTag")) {
 		displacedStandAloneMuonsTag_ = iConfig.getParameter<edm::InputTag>("displacedStandAloneMuonsTag"),
-		displacedStandAloneMuonsTok_ = consumes<edm::View<pat::PackedCandidate>>(displacedStandAloneMuonsTag_);
+		displacedStandAloneMuonsTok_ = consumes<edm::View<reco::Track>>(displacedStandAloneMuonsTag_);
 		doDisplacedMuons_ = true;
 	}
 
@@ -427,13 +427,14 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		//-------------------------------------------------------------------------------------------------
 		// get displacedStandAloneMuons collection
 		//-------------------------------------------------------------------------------------------------
-		edm::Handle<edm::View<pat::PackedCandidate> > displacedStandAloneMuons;
+		edm::Handle<edm::View<reco::Track> > displacedStandAloneMuons;
 		iEvent.getByToken(displacedStandAloneMuonsTok_, displacedStandAloneMuons);
 
 		//-------------------------------------------------------------------------------------------------
 		// loop over displacedStandAloneMuons
 		//-------------------------------------------------------------------------------------------------
-		loopOverCollection(infos,displacedStandAloneMuons,ttBuilder,primaryVertex,storedVertices,false); //Do these overlap with the packedPFCandidate collection? Are they matched?
+		//todo: rewrite this to work with reco::Track
+		//loopOverCollection(infos,displacedStandAloneMuons,ttBuilder,primaryVertex,storedVertices,false); //Do these overlap with the packedPFCandidate collection? Are they matched?
 	}
 
 	//-------------------------------------------------------------------------------------------------
