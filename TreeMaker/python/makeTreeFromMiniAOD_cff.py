@@ -333,7 +333,6 @@ def makeTreeFromMiniAOD(self,process):
                 JETCorrLevels = levels,
                 subJETCorrLevels = levels,
                 addEnergyCorrFunc = True,
-                associateTask = False,
                 verbosity = 2 if self.verbose else 0,
             )
 
