@@ -18,7 +18,7 @@ class maker:
         from TreeMaker.Production.scenarios import Scenario
         self.scenario = Scenario(self.scenarioName)
 
-        self.getParamDefault("verbose",True)
+        self.getParamDefault("verbose",True,bool)
         self.getParamDefault("inputFilesConfig","")
         self.getParamDefault("dataset",[])
         self.getParamDefault("nstart",0)
@@ -34,34 +34,34 @@ class maker:
         self.getParamDefault("treename","PreSelection")
 
         # background estimations on by default
-        self.getParamDefault("lostlepton", True)
-        self.getParamDefault("hadtau", False)
+        self.getParamDefault("lostlepton", True, bool)
+        self.getParamDefault("hadtau", False, bool)
         self.getParamDefault("hadtaurecluster", 0)
-        self.getParamDefault("doZinv", True)
+        self.getParamDefault("doZinv", True, bool)
 
         # special signal stuff
-        self.getParamDefault("systematics",True);
-        self.getParamDefault("semivisible",True);
-        self.getParamDefault("boostedsemivisible",False);
-        self.getParamDefault("emerging",False);
-        self.getParamDefault("doPhotons",False);
-        self.getParamDefault("tchannel",False);
-        self.getParamDefault("deepAK8",True);
-        self.getParamDefault("deepDoubleB",True);
+        self.getParamDefault("systematics",True, bool);
+        self.getParamDefault("semivisible",True, bool);
+        self.getParamDefault("boostedsemivisible",False, bool);
+        self.getParamDefault("emerging",False, bool);
+        self.getParamDefault("doPhotons",False, bool);
+        self.getParamDefault("tchannel",False, bool);
+        self.getParamDefault("deepAK8",True, bool);
+        self.getParamDefault("deepDoubleB",True, bool);
 
         # compute the PDF weights
-        self.getParamDefault("doPDFs", True);
+        self.getParamDefault("doPDFs", True, bool);
 
         # other options off by default
-        self.getParamDefault("debugtracks", False)
-        self.getParamDefault("debugtap", False)
-        self.getParamDefault("debugsubjets", False)
-        self.getParamDefault("applybaseline", False)
-        self.getParamDefault("saveMinimalGenParticles", True)
-        self.getParamDefault("saveGenTops", False)
-        self.getParamDefault("doMT2",False)
-        self.getParamDefault("nestedVectors", False)
-        self.getParamDefault("storeOffsets", False)
+        self.getParamDefault("debugtracks", False, bool)
+        self.getParamDefault("debugtap", False, bool)
+        self.getParamDefault("debugsubjets", False, bool)
+        self.getParamDefault("applybaseline", False, bool)
+        self.getParamDefault("saveMinimalGenParticles", True, bool)
+        self.getParamDefault("saveGenTops", False, bool)
+        self.getParamDefault("doMT2",False, bool)
+        self.getParamDefault("nestedVectors", False, bool)
+        self.getParamDefault("storeOffsets", False, bool)
         self.getParamDefault("splitLevel", 99)
 
         # take command line input (w/ defaults from scenario if specified)
@@ -133,8 +133,10 @@ class maker:
         self.AssocVectorVectorXYZPoint      = cms.vstring()
         self.TitleMap                       = cms.vstring()
 
-    def getParamDefault(self,param,default):
-        setattr(self,param,self.parameters.value(param,default))
+    def getParamDefault(self,param,default,ptype=None):
+        tmp = self.parameters.value(param,default)
+        if ptype is not None: tmp = ptype(tmp)
+        setattr(self,param,tmp)
 
     def printSetup(self):
         print " readFiles: "+str(self.readFiles)
