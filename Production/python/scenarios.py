@@ -250,7 +250,7 @@ class Scenario:
         elif sname == "Summer20UL18_DATA":
             self.set_vars(
                 globaltag="106X_dataRun2_v33",
-                tagname="RECO",
+                tagname="PAT",
                 hlttagname="HLT",
                 jsonfile=self.absdatapath+"/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
                 jecfile=self.absdatapath+"/jec/Summer19UL18_V5_DATA", 
