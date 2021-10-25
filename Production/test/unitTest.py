@@ -105,6 +105,10 @@ def defineTests(mytests, scenario, name, numevents, command, dataset, inputFiles
     mytests.append(Test("Summer20UL17_DATA",name,numevents,command,inputFilesConfig="Run2017E-UL2017-v1.SingleMuon",nstart=0,nfiles=1))
     mytests.append(Test("Summer20UL18_DATA",name,numevents,command,inputFilesConfig="Run2018A-UL2018-v2.MET",nstart=0,nfiles=1))
     mytests.append(Test("Summer20UL18_DATA",name,numevents,command,inputFilesConfig="Run2018C-UL2018-v1.EGamma",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL16","GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16.GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL16APV","GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL17","GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL17.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL18","GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL18.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
 
 def unitTest():
     # Read parameters
