@@ -51,7 +51,7 @@ public:
    
 private:
    void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
-   virtual double DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets ) const;
+   virtual double DeltaT(unsigned int i, const edm::Handle< edm::View<pat::Jet> >& Jets ) const;
    
    // ----------member data ---------------------------
    edm::InputTag metTag_, genMetTag_, JetTag_, InfTagAK4_, InfTagAK8_;
@@ -248,7 +248,7 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
 }
 
 // ------------ helper method to calculate DeltaT ------------
-double METDouble::DeltaT(unsigned int i, edm::Handle< edm::View<pat::Jet> > Jets ) const {
+double METDouble::DeltaT(unsigned int i, const edm::Handle< edm::View<pat::Jet> >& Jets ) const {
    
    double deltaT=0;
    float jres=0.1;

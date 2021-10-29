@@ -478,7 +478,7 @@ void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Han
 	// loop over PFCandidates
 	//-------------------------------------------------------------------------------------------------
 	for (size_t i=0; i<collection->size(); i++) {
-		const pat::PackedCandidate pfCand = (*collection)[i];
+		const pat::PackedCandidate& pfCand = (*collection)[i];
 
 		//-------------------------------------------------------------------------------------------------
 		// pull the track details, if available
@@ -499,7 +499,7 @@ void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Han
 		//-------------------------------------------------------------------------------------------------
 		// fill the track values and PFCandidate values we'd like to save
 		//-------------------------------------------------------------------------------------------------
-		auto transientTrack = ttBuilder->build(track);
+		const auto& transientTrack = ttBuilder->build(track);
 		infos.fill(primaryVertex,pfCand,track,transientTrack,trackMatch,vtxIdx);
 	}
 }

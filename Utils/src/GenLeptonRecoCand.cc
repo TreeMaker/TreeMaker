@@ -56,9 +56,9 @@ private:
   const reco::GenParticle* BosonFound(const reco::GenParticle * particle) const;
   const reco::GenParticle* TauFound(const reco::GenParticle * particle) const;
 
-  void GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
-  const int MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) const;
-  const double GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track) const;
+  void GetTrkIso(const edm::Handle<pat::PackedCandidateCollection>& pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+  const int MatchToPFCand(const edm::Handle<pat::PackedCandidateCollection>& pfcands, const reco::GenParticle* gen_track) const;
+  const double GetGenRecoD3(const edm::Handle<pat::PackedCandidateCollection>& pfcands, const int tkInd, const reco::GenParticle* gen_track) const;
 	
 	
   // ----------member data ---------------------------
@@ -178,10 +178,10 @@ GenLeptonRecoCand::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSe
       if( (abs((*pruned)[i].pdgId() ) == 24 || abs((*pruned)[i].pdgId() ) == 23 || abs((*pruned)[i].pdgId() ) == 1000024 ) && (*pruned)[i].status()==22) // needs to be checked if this workes for Z 23 as well
 	{
 	  const reco::GenParticle * FinalBoson = BosonFound(&(*pruned)[i]);
-	  size_t bosonDaugthers = FinalBoson->numberOfDaughters();
+	  size_t bosonDaughters = FinalBoson->numberOfDaughters();
 	  selectedBoson->push_back(*FinalBoson);
 	  selectedBosonPDGId->push_back(FinalBoson->pdgId());
-	  for(size_t ii=0;ii< bosonDaugthers; ii++)
+	  for(size_t ii=0;ii< bosonDaughters; ii++)
 	    {
 	      if(abs(FinalBoson->daughter(ii)->pdgId())== 11) 
 		{
@@ -403,7 +403,7 @@ const reco::GenParticle* GenLeptonRecoCand::TauFound(const reco::GenParticle * p
 }
 
 
-void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
+void GenLeptonRecoCand::GetTrkIso(const edm::Handle<pat::PackedCandidateCollection>& pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
   if (tkInd>pfcands->size()) {
 	  trkiso = -999.;
 	  activity = -999.;
@@ -428,7 +428,7 @@ void GenLeptonRecoCand::GetTrkIso(edm::Handle<pat::PackedCandidateCollection> pf
   activity = activity/pfcands->at(tkInd).pt();
 }
 
-const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateCollection> pfcands, const reco::GenParticle* gen_track) const {
+const int GenLeptonRecoCand::MatchToPFCand(const edm::Handle<pat::PackedCandidateCollection>& pfcands, const reco::GenParticle* gen_track) const {
   int pdgId=abs(gen_track->pdgId());
   if (pdgId!=11&&pdgId!=13) pdgId=211;
   double mind3=99999.;
@@ -448,7 +448,7 @@ const int GenLeptonRecoCand::MatchToPFCand(edm::Handle<pat::PackedCandidateColle
   return matched_track;
 }
 
-const double GenLeptonRecoCand::GetGenRecoD3(edm::Handle<pat::PackedCandidateCollection> pfcands, const int tkInd, const reco::GenParticle* gen_track) const {
+const double GenLeptonRecoCand::GetGenRecoD3(const edm::Handle<pat::PackedCandidateCollection>& pfcands, const int tkInd, const reco::GenParticle* gen_track) const {
   if (tkInd<0||tkInd>(int)pfcands->size()) return -999.;
   const pat::PackedCandidate &pfc = pfcands->at(tkInd);
   TVector3 genTrk3(gen_track->px(), gen_track->py(), gen_track->pz());

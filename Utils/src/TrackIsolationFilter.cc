@@ -98,7 +98,7 @@ private:
 	edm::EDGetTokenT<edm::View<pat::MET>> MetInputTok_;
 	std::vector<edm::EDGetTokenT<reco::CandidateView>> LeptonTok_;
 
-	void GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+	void GetTrkIso(const edm::Handle<edm::View<pat::PackedCandidate> >& pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
 	bool hasLeptonMatch(const std::vector<reco::CandidatePtr>& leptonPfCands, const reco::CandidatePtr&  candPtr) const;
 };
 
@@ -334,7 +334,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	return result;
 }
 
-void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
+void TrackIsolationFilter::GetTrkIso(const edm::Handle<edm::View<pat::PackedCandidate> >& pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
 	if (tkInd>pfcands->size()) {
 		trkiso = -999.;
 		activity = -999.;
