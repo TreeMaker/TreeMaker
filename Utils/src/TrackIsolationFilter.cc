@@ -223,7 +223,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	// miniAOD
 	for(size_t i=0; i<pfCandidates->size();i++)
 	{
-		const pat::PackedCandidate pfCand = (*pfCandidates)[i];
+		const pat::PackedCandidate& pfCand = (*pfCandidates)[i];
 
 		//to keep track of cuts in debug case (when continues are not used)
 		bool goodCand = true;
