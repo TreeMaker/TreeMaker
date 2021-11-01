@@ -65,8 +65,8 @@ class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 		// ----------member data ---------------------------
 		edm::Service<TFileService> fs;
 		string treeName;
-		TTree* tree;	
-		bool doLorentz, sortBranches, debugTitles, nestedVectors, storeOffsets;
+		TTree* tree;
+		bool doLorentz, sortBranches, debugTitles, nestedVectors, storeOffsets, saveFloat;
 		int splitLevel;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
@@ -195,9 +195,11 @@ class TreeObject : public TreeObjectBase {
 				edm::LogWarning("TreeMaker") << "WARNING ... " << tagName << " is NOT valid?!";
 			}
 		}
-		//these will be implemented below for specializations
-		void AddBranch() override {}
-		void SetDefault() override {}
+		//most common cases here
+		string GetBranchType() { return nameInTree; }
+		void AddBranch() override { if(tree) branch = tree->Branch(nameInTree.c_str(),GetBranchType().c_str(),&value,32000,splitLevel); }
+		void SetDefault() override { value.clear(); }
+		//implemented below for specializations (mostly primitive types)
 		
 	protected:
 		//member variables
@@ -206,7 +208,7 @@ class TreeObject : public TreeObjectBase {
 		int splitLevel{};
 };
 
-//typedefs
+//typedefs for float conversions
 typedef TreeObject<double,float> TreeObjectDoubleToF;
 typedef TreeObject<vector<double>,vector<float>> TreeObjectVDoubleToF;
 typedef TreeObject<vector<vector<double>>,vector<vector<float>>> TreeObjectVVDoubleToF;
@@ -219,6 +221,19 @@ typedef TreeObject<vector<math::XYZPoint>,vector<math::XYZPointF>> TreeObjectVXY
 typedef TreeObject<vector<vector<math::PtEtaPhiELorentzVector>>,vector<vector<math::PtEtaPhiELorentzVectorF>>> TreeObjectVVLVToF;
 typedef TreeObject<vector<vector<math::XYZVector>>,vector<vector<math::XYZVectorF>>> TreeObjectVVXYZVToF;
 typedef TreeObject<vector<vector<math::XYZPoint>>,vector<vector<math::XYZPointF>>> TreeObjectVVXYZPToF;
+//typedefs for doubles
+typedef TreeObject<double> TreeObjectDouble;
+typedef TreeObject<vector<double>> TreeObjectVDouble;
+typedef TreeObject<vector<vector<double>>> TreeObjectVVDouble;
+typedef TreeObject<math::PtEtaPhiELorentzVector> TreeObjectLV;
+typedef TreeObject<math::XYZVector> TreeObjectXYZV;
+typedef TreeObject<math::XYZPoint> TreeObjectXYZP;
+typedef TreeObject<vector<math::PtEtaPhiELorentzVector>> TreeObjectVLV;
+typedef TreeObject<vector<math::XYZVector>> TreeObjectVXYZV;
+typedef TreeObject<vector<math::XYZPoint>> TreeObjectVXYZP;
+typedef TreeObject<vector<vector<math::PtEtaPhiELorentzVector>>> TreeObjectVVLV;
+typedef TreeObject<vector<vector<math::XYZVector>>> TreeObjectVVXYZV;
+typedef TreeObject<vector<vector<math::XYZPoint>>> TreeObjectVVXYZP;
 //todo: typedef the rest for consistency
 
 //convert double to float
@@ -276,43 +291,53 @@ void TreeObject<int>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_
 template<>
 void TreeObjectDoubleToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/F").c_str()); }
 template<>
+void TreeObjectDouble::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/D").c_str()); }
+template<>
 void TreeObject<string>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
-void TreeObjectLVToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value,32000,splitLevel); }
+string TreeObject<vector<bool> >::GetBranchType() { return "vector<bool>"; }
 template<>
-void TreeObjectXYZVToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value,32000,splitLevel); }
+string TreeObject<vector<int> >::GetBranchType() { return "vector<int>"; }
 template<>
-void TreeObjectXYZPToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value,32000,splitLevel); }
+string TreeObject<vector<float> >::GetBranchType() { return "vector<float>"; }
 template<>
-void TreeObject<vector<bool> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<bool>",&value,32000,splitLevel); }
+string TreeObjectVDoubleToF::GetBranchType() { return "vector<float>"; }
 template<>
-void TreeObject<vector<int> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<int>",&value,32000,splitLevel); }
+string TreeObjectVDouble::GetBranchType() { return "vector<double>"; }
 template<>
-void TreeObject<vector<float> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<float>",&value,32000,splitLevel); }
+string TreeObject<vector<string> >::GetBranchType() { return "vector<string>"; }
 template<>
-void TreeObjectVDoubleToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<float>",&value,32000,splitLevel); }
+string TreeObjectVLVToF::GetBranchType() { return "vector<math::PtEtaPhiELorentzVectorF>"; }
 template<>
-void TreeObject<vector<string> >::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<string>",&value,32000,splitLevel); }
+string TreeObjectVLV::GetBranchType() { return "vector<math::PtEtaPhiELorentzVector>"; }
 template<>
-void TreeObjectVLVToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::PtEtaPhiELorentzVectorF>",&value,32000,splitLevel); }
+string TreeObjectVXYZVToF::GetBranchType() { return "vector<math::XYZVectorF>"; }
 template<>
-void TreeObjectVXYZVToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::XYZVectorF>",&value,32000,splitLevel); }
+string TreeObjectVXYZV::GetBranchType() { return "vector<math::XYZVector>"; }
 template<>
-void TreeObjectVXYZPToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<math::XYZPointF>",&value,32000,splitLevel); }
+string TreeObjectVXYZPToF::GetBranchType() { return "vector<math::XYZPointF>"; }
 template<>
-void TreeObject<vector<vector<bool>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<bool>>",&value,32000,splitLevel); }
+string TreeObjectVXYZP::GetBranchType() { return "vector<math::XYZPoint>"; }
 template<>
-void TreeObject<vector<vector<int>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<int>>",&value,32000,splitLevel); }
+string TreeObject<vector<vector<bool>>>::GetBranchType() { return "vector<vector<bool>>"; }
 template<>
-void TreeObjectVVDoubleToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<float>>",&value,32000,splitLevel); }
+string TreeObject<vector<vector<int>>>::GetBranchType() { return "vector<vector<int>>"; }
 template<>
-void TreeObject<vector<vector<string>>>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<string>>",&value,32000,splitLevel); }
+string TreeObjectVVDoubleToF::GetBranchType() { return "vector<vector<float>>"; }
 template<>
-void TreeObjectVVLVToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::PtEtaPhiELorentzVectorF>>",&value,32000,splitLevel); }
+string TreeObjectVVDouble::GetBranchType() { return "vector<vector<double>>"; }
 template<>
-void TreeObjectVVXYZVToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::XYZVectorF>>",&value,32000,splitLevel); }
+string TreeObject<vector<vector<string>>>::GetBranchType() { return "vector<vector<string>>"; }
 template<>
-void TreeObjectVVXYZPToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),"vector<vector<math::XYZPointF>>",&value,32000,splitLevel); }
+string TreeObjectVVLVToF::GetBranchType() { return "vector<vector<math::PtEtaPhiELorentzVectorF>>"; }
+template<>
+string TreeObjectVVLV::GetBranchType() { return "vector<vector<math::PtEtaPhiELorentzVector>>"; }
+template<>
+string TreeObjectVVXYZVToF::GetBranchType() { return "vector<vector<math::XYZVectorF>>"; }
+template<>
+string TreeObjectVVXYZPToF::GetBranchType() { return "vector<vector<math::XYZPointF>>"; }
+template<>
+string TreeObjectVVXYZP::GetBranchType() { return "vector<vector<math::XYZPoint>>"; }
 
 template<>
 void TreeObject<bool>::SetDefault() { value = false; }
@@ -321,43 +346,21 @@ void TreeObject<int>::SetDefault() { value = 9999; }
 template<>
 void TreeObjectDoubleToF::SetDefault() { value = 9999.; }
 template<>
+void TreeObjectDouble::SetDefault() { value = 9999.; }
+template<>
 void TreeObject<string>::SetDefault() { value = ""; }
 template<>
 void TreeObjectLVToF::SetDefault() { value.SetXYZT(0,0,0,0); }
 template<>
+void TreeObjectLV::SetDefault() { value.SetXYZT(0,0,0,0); }
+template<>
 void TreeObjectXYZVToF::SetDefault() { value.SetXYZ(0,0,0); }
+template<>
+void TreeObjectXYZV::SetDefault() { value.SetXYZ(0,0,0); }
 template<>
 void TreeObjectXYZPToF::SetDefault() { value.SetXYZ(0,0,0); }
 template<>
-void TreeObject<vector<bool> >::SetDefault() { value.clear(); }
-template<>
-void TreeObject<vector<int> >::SetDefault() { value.clear(); }
-template<>
-void TreeObject<vector<float> >::SetDefault() { value.clear(); }
-template<>
-void TreeObjectVDoubleToF::SetDefault() { value.clear(); }
-template<>
-void TreeObject<vector<string> >::SetDefault() { value.clear(); }
-template<>
-void TreeObjectVLVToF::SetDefault() { value.clear(); }
-template<>
-void TreeObjectVXYZVToF::SetDefault() { value.clear(); }
-template<>
-void TreeObjectVXYZPToF::SetDefault() { value.clear(); }
-template<>
-void TreeObject<vector<vector<bool>>>::SetDefault() { value.clear(); }
-template<>
-void TreeObject<vector<vector<int>>>::SetDefault() { value.clear(); }
-template<>
-void TreeObjectVVDoubleToF::SetDefault() { value.clear(); }
-template<>
-void TreeObject<vector<vector<string>>>::SetDefault() { value.clear(); }
-template<>
-void TreeObjectVVLVToF::SetDefault() { value.clear(); }
-template<>
-void TreeObjectVVXYZVToF::SetDefault() { value.clear(); }
-template<>
-void TreeObjectVVXYZPToF::SetDefault() { value.clear(); }
+void TreeObjectXYZP::SetDefault() { value.SetXYZ(0,0,0); }
 
 //derived version of vector<math::PtEtaPhiELorentzVector> for RecoCand
 //with switch for vector<double> pt, eta, phi, energy instead
@@ -405,13 +408,13 @@ class TreeRecoCandT : public T {
 		void AddBranch() override {
 			if(this->tree){
 				if(doLorentz){
-					this->tree->Branch(this->nameInTree.c_str(),BranchType().c_str(),&(this->value),32000,this->splitLevel);
+					this->tree->Branch(this->nameInTree.c_str(),this->GetBranchType().c_str(),&(this->value),32000,this->splitLevel);
 				}
 				else {
-					this->tree->Branch((this->nameInTree+"Pt").c_str(),BranchType().c_str(),&pt,32000,this->splitLevel);
-					this->tree->Branch((this->nameInTree+"Eta").c_str(),BranchType().c_str(),&eta,32000,this->splitLevel);
-					this->tree->Branch((this->nameInTree+"Phi").c_str(),BranchType().c_str(),&phi,32000,this->splitLevel);
-					this->tree->Branch((this->nameInTree+"E").c_str(),BranchType().c_str(),&energy,32000,this->splitLevel);
+					this->tree->Branch((this->nameInTree+"Pt").c_str(),this->GetBranchType().c_str(),&pt,32000,this->splitLevel);
+					this->tree->Branch((this->nameInTree+"Eta").c_str(),this->GetBranchType().c_str(),&eta,32000,this->splitLevel);
+					this->tree->Branch((this->nameInTree+"Phi").c_str(),this->GetBranchType().c_str(),&phi,32000,this->splitLevel);
+					this->tree->Branch((this->nameInTree+"E").c_str(),this->GetBranchType().c_str(),&energy,32000,this->splitLevel);
 				}
 			}
 		}
@@ -426,7 +429,7 @@ class TreeRecoCandT : public T {
 				energy.clear();
 			}
 		}
-		string BranchType() const;
+		string GetBranchType() { return ""; }
 
 	protected:
 		//member variables
@@ -437,10 +440,16 @@ class TreeRecoCandT : public T {
 
 //specializations of type names
 typedef TreeRecoCandT<TreeObjectVLVToF> TreeRecoCandToF;
+typedef TreeRecoCandT<TreeObjectVLV> TreeRecoCand;
 template<>
-string TreeRecoCandToF::BranchType() const {
+string TreeRecoCandToF::GetBranchType() {
   if(doLorentz) return "vector<math::PtEtaPhiELorentzVectorF>";
   else return "vector<float>";
+}
+template<>
+string TreeRecoCand::GetBranchType() {
+  if(doLorentz) return "vector<math::PtEtaPhiELorentzVector>";
+  else return "vector<double>";
 }
 
 // Derived version of vector<vector<T>> with switch for vector<T> values and vector<int> offsets instead
@@ -543,6 +552,10 @@ typedef TreeNestedVector<double,float> TreeNVDoubleToF;
 typedef TreeNestedVector<math::PtEtaPhiELorentzVector,math::PtEtaPhiELorentzVectorF> TreeNVLVToF;
 typedef TreeNestedVector<math::XYZVector,math::XYZVectorF> TreeNVXYZVToF;
 typedef TreeNestedVector<math::XYZPoint,math::XYZPointF> TreeNVXYZPToF;
+typedef TreeNestedVector<double> TreeNVDouble;
+typedef TreeNestedVector<math::PtEtaPhiELorentzVector> TreeNVLV;
+typedef TreeNestedVector<math::XYZVector> TreeNVXYZV;
+typedef TreeNestedVector<math::XYZPoint> TreeNVXYZP;
 
 // A specialization for each type where you don't like the string returned by typeid
 template <>
@@ -552,13 +565,21 @@ const string TreeNestedVector<int>::GetBaseType() { return "int"; }
 template <>
 const string TreeNVDoubleToF::GetBaseType() { return "float"; }
 template <>
+const string TreeNVDouble::GetBaseType() { return "double"; }
+template <>
 const string TreeNestedVector<string>::GetBaseType() { return "string"; }
 template <>
 const string TreeNVLVToF::GetBaseType() { return "math::PtEtaPhiELorentzVectorF"; }
 template <>
+const string TreeNVLV::GetBaseType() { return "math::PtEtaPhiELorentzVector"; }
+template <>
 const string TreeNVXYZVToF::GetBaseType() { return "math::XYZVectorF"; }
 template <>
+const string TreeNVXYZV::GetBaseType() { return "math::XYZVector"; }
+template <>
 const string TreeNVXYZPToF::GetBaseType() { return "math::XYZPointF"; }
+template <>
+const string TreeNVXYZP::GetBaseType() { return "math::XYZPoint"; }
 
 
 

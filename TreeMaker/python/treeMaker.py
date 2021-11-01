@@ -18,6 +18,8 @@ nestedVectors = cms.bool(True),
 storeOffsets = cms.bool(False),
 #split level for the TBranches
 splitLevel = cms.int32(0),
+#convert doubles to floats in output
+saveFloat = cms.bool(False),
 # list of reco candidate objects: for each reco cand collection, the math::LorentzVector will be stored in a vector.
 VarsBool = cms.vstring(),
 VarsInt = cms.vstring(),

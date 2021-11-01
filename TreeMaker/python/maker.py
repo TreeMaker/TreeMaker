@@ -63,6 +63,7 @@ class maker:
         self.getParamDefault("nestedVectors", False, bool)
         self.getParamDefault("storeOffsets", False, bool)
         self.getParamDefault("splitLevel", 99)
+        self.getParamDefault("saveFloat", True, bool)
 
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
@@ -170,6 +171,7 @@ class maker:
                 print " Saving counts (not offsets) for nested vectors"
         else: print " Saving nested vectors as vector<T> + vector<int>"
         print " TTree split level: "+str(self.splitLevel)
+        if self.saveFloat: print " Converting doubles to floats in output"
         print " "
         print " scenario: "+self.scenarioName
         print " global tag: "+self.globaltag

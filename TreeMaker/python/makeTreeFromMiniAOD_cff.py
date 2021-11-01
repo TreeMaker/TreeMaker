@@ -67,6 +67,7 @@ def makeTreeFromMiniAOD(self,process):
         nestedVectors                  = self.nestedVectors,
         storeOffsets                   = self.storeOffsets,
         splitLevel                     = self.splitLevel,
+        saveFloat                      = self.saveFloat,
     )
 
     ## ----------------------------------------------------------------------------------------------

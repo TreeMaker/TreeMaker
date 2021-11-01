@@ -261,6 +261,7 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `nestedVectors`: switch to change from saving `vector<vector<T>>` to saving `vector<T>` values and `vector<int>` counts (default=False)
 * `storeOffsets`: if set to True, stores offsets rather than counts when using `nestedVectors=False` (default=False)
 * `splitLevel`: split level for output TBranches (default=99)
+* `saveFloat`: convert doubles to floats in output (default=True)
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
