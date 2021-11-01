@@ -234,7 +234,17 @@ typedef TreeObject<vector<math::XYZPoint>> TreeObjectVXYZP;
 typedef TreeObject<vector<vector<math::PtEtaPhiELorentzVector>>> TreeObjectVVLV;
 typedef TreeObject<vector<vector<math::XYZVector>>> TreeObjectVVXYZV;
 typedef TreeObject<vector<vector<math::XYZPoint>>> TreeObjectVVXYZP;
-//todo: typedef the rest for consistency
+//typedef the rest for consistency
+typedef TreeObject<bool> TreeObjectBool;
+typedef TreeObject<int> TreeObjectInt;
+typedef TreeObject<string> TreeObjectString;
+typedef TreeObject<vector<bool>> TreeObjectVBool;
+typedef TreeObject<vector<int>> TreeObjectVInt;
+typedef TreeObject<vector<string>> TreeObjectVString;
+typedef TreeObject<vector<float>> TreeObjectVFloat;
+typedef TreeObject<vector<vector<bool>>> TreeObjectVVBool;
+typedef TreeObject<vector<vector<int>>> TreeObjectVVInt;
+typedef TreeObject<vector<vector<string>>> TreeObjectVVString;
 
 //convert double to float
 template<>
@@ -285,27 +295,27 @@ void TreeObjectVVXYZPToF::GetValue(const edm::Handle<vector<vector<math::XYZPoin
 //specialize!
 
 template<>
-void TreeObject<bool>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/O").c_str()); }
+void TreeObjectBool::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/O").c_str()); }
 template<>
-void TreeObject<int>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/I").c_str()); }
+void TreeObjectInt::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/I").c_str()); }
 template<>
 void TreeObjectDoubleToF::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/F").c_str()); }
 template<>
 void TreeObjectDouble::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),&value,(nameInTree+"/D").c_str()); }
 template<>
-void TreeObject<string>::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
+void TreeObjectString::AddBranch() { if(tree) branch = tree->Branch(nameInTree.c_str(),nameInTree.c_str(),&value); }
 template<>
-string TreeObject<vector<bool> >::GetBranchType() { return "vector<bool>"; }
+string TreeObjectVBool::GetBranchType() { return "vector<bool>"; }
 template<>
-string TreeObject<vector<int> >::GetBranchType() { return "vector<int>"; }
+string TreeObjectVInt::GetBranchType() { return "vector<int>"; }
 template<>
-string TreeObject<vector<float> >::GetBranchType() { return "vector<float>"; }
+string TreeObjectVFloat::GetBranchType() { return "vector<float>"; }
 template<>
 string TreeObjectVDoubleToF::GetBranchType() { return "vector<float>"; }
 template<>
 string TreeObjectVDouble::GetBranchType() { return "vector<double>"; }
 template<>
-string TreeObject<vector<string> >::GetBranchType() { return "vector<string>"; }
+string TreeObjectVString::GetBranchType() { return "vector<string>"; }
 template<>
 string TreeObjectVLVToF::GetBranchType() { return "vector<math::PtEtaPhiELorentzVectorF>"; }
 template<>
@@ -319,15 +329,15 @@ string TreeObjectVXYZPToF::GetBranchType() { return "vector<math::XYZPointF>"; }
 template<>
 string TreeObjectVXYZP::GetBranchType() { return "vector<math::XYZPoint>"; }
 template<>
-string TreeObject<vector<vector<bool>>>::GetBranchType() { return "vector<vector<bool>>"; }
+string TreeObjectVVBool::GetBranchType() { return "vector<vector<bool>>"; }
 template<>
-string TreeObject<vector<vector<int>>>::GetBranchType() { return "vector<vector<int>>"; }
+string TreeObjectVVInt::GetBranchType() { return "vector<vector<int>>"; }
 template<>
 string TreeObjectVVDoubleToF::GetBranchType() { return "vector<vector<float>>"; }
 template<>
 string TreeObjectVVDouble::GetBranchType() { return "vector<vector<double>>"; }
 template<>
-string TreeObject<vector<vector<string>>>::GetBranchType() { return "vector<vector<string>>"; }
+string TreeObjectVVString::GetBranchType() { return "vector<vector<string>>"; }
 template<>
 string TreeObjectVVLVToF::GetBranchType() { return "vector<vector<math::PtEtaPhiELorentzVectorF>>"; }
 template<>
@@ -340,15 +350,15 @@ template<>
 string TreeObjectVVXYZP::GetBranchType() { return "vector<vector<math::XYZPoint>>"; }
 
 template<>
-void TreeObject<bool>::SetDefault() { value = false; }
+void TreeObjectBool::SetDefault() { value = false; }
 template<>
-void TreeObject<int>::SetDefault() { value = 9999; }
+void TreeObjectInt::SetDefault() { value = 9999; }
 template<>
 void TreeObjectDoubleToF::SetDefault() { value = 9999.; }
 template<>
 void TreeObjectDouble::SetDefault() { value = 9999.; }
 template<>
-void TreeObject<string>::SetDefault() { value = ""; }
+void TreeObjectString::SetDefault() { value = ""; }
 template<>
 void TreeObjectLVToF::SetDefault() { value.SetXYZT(0,0,0,0); }
 template<>
@@ -556,18 +566,22 @@ typedef TreeNestedVector<double> TreeNVDouble;
 typedef TreeNestedVector<math::PtEtaPhiELorentzVector> TreeNVLV;
 typedef TreeNestedVector<math::XYZVector> TreeNVXYZV;
 typedef TreeNestedVector<math::XYZPoint> TreeNVXYZP;
+//typedef the rest for consistency
+typedef TreeNestedVector<bool> TreeNVBool;
+typedef TreeNestedVector<int> TreeNVInt;
+typedef TreeNestedVector<string> TreeNVString;
 
 // A specialization for each type where you don't like the string returned by typeid
 template <>
-const string TreeNestedVector<bool>::GetBaseType() { return "bool"; }
+const string TreeNVBool::GetBaseType() { return "bool"; }
 template <>
-const string TreeNestedVector<int>::GetBaseType() { return "int"; }
+const string TreeNVInt::GetBaseType() { return "int"; }
 template <>
 const string TreeNVDoubleToF::GetBaseType() { return "float"; }
 template <>
 const string TreeNVDouble::GetBaseType() { return "double"; }
 template <>
-const string TreeNestedVector<string>::GetBaseType() { return "string"; }
+const string TreeNVString::GetBaseType() { return "string"; }
 template <>
 const string TreeNVLVToF::GetBaseType() { return "math::PtEtaPhiELorentzVectorF"; }
 template <>
@@ -580,6 +594,3 @@ template <>
 const string TreeNVXYZPToF::GetBaseType() { return "math::XYZPointF"; }
 template <>
 const string TreeNVXYZP::GetBaseType() { return "math::XYZPoint"; }
-
-
-
