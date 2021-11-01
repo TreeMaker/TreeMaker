@@ -1020,7 +1020,6 @@ def makeTreeFromMiniAOD(self,process):
     process.MET = metdouble.clone(
         METTag = METTag,
         GenMETTag = cms.InputTag("slimmedMETs","",self.tagname), #original collection used deliberately here
-        JetTag = cms.InputTag('HTJets'),
         geninfo = cms.untracked.bool(self.geninfo),
         InfTagAK8 = JetAK8TagInf,
     )

@@ -51,12 +51,10 @@ public:
    
 private:
    void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
-   virtual double DeltaT(unsigned int i, const edm::Handle< edm::View<pat::Jet> >& Jets ) const;
    
    // ----------member data ---------------------------
-   edm::InputTag metTag_, genMetTag_, JetTag_, InfTagAK4_, InfTagAK8_;
+   edm::InputTag metTag_, genMetTag_, InfTagAK8_;
    edm::EDGetTokenT<edm::View<pat::MET>> metTok_, genMetTok_;
-   edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
    edm::EDGetTokenT<edm::View<pat::Jet>> InfTokAK8_;
    double MinJetPt_,MaxJetEta_;
    bool geninfo_;
@@ -70,7 +68,6 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
 {
    metTag_    = iConfig.getParameter<edm::InputTag> ("METTag");
    genMetTag_ = iConfig.getParameter<edm::InputTag> ("GenMETTag");
-   JetTag_    = iConfig.getParameter<edm::InputTag> ("JetTag");
    InfTagAK8_ = iConfig.getParameter<edm::InputTag> ("InfTagAK8");
    MinJetPt_  = iConfig.getUntrackedParameter<double> ("minJetPt",30.);
    MaxJetEta_ = iConfig.getUntrackedParameter<double> ("minJetEta",5.);
@@ -78,17 +75,12 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    
    metTok_ = consumes<edm::View<pat::MET>>(metTag_);
    genMetTok_ = consumes<edm::View<pat::MET>>(genMetTag_);
-   JetTok_ = consumes<edm::View<pat::Jet>>(JetTag_);
    InfTokAK8_ = consumes<edm::View<pat::Jet>>(InfTagAK8_);
    
    uncUpList = {pat::MET::JetResUp, pat::MET::JetEnUp, pat::MET::MuonEnUp, pat::MET::ElectronEnUp, pat::MET::TauEnUp, pat::MET::UnclusteredEnUp, pat::MET::PhotonEnUp};
    uncDownList = {pat::MET::JetResDown, pat::MET::JetEnDown, pat::MET::MuonEnDown, pat::MET::ElectronEnDown, pat::MET::TauEnDown, pat::MET::UnclusteredEnDown, pat::MET::PhotonEnDown};
    
    //register your product
-   produces<double>("DeltaPhiN1");
-   produces<double>("DeltaPhiN2");
-   produces<double>("DeltaPhiN3");
-   produces<double>("minDeltaPhiN");
    produces<double>("Pt");
    produces<double>("Phi");
    produces<double>("RawPt");
@@ -142,11 +134,7 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
    edm::Handle< edm::View<pat::MET> > GenMET;
    iEvent.getByToken(genMetTok_,GenMET);
    
-   edm::Handle< edm::View<pat::Jet> > Jets;
-   iEvent.getByToken(JetTok_,Jets);
-   
    double dpnhat[3];
-   unsigned int goodcount=0;
    
    for(double & i : dpnhat)i=-999;
    reco::MET::LorentzVector metLorentz(0,0,0,0);
@@ -221,48 +209,6 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
        auto uncp4 = std::make_unique<std::vector<double>>(metPhiDown_);
        iEvent.put(std::move(uncp4),"PhiDown");
    }
-
-   if( Jets.isValid() ) {
-      for(unsigned int i=0; i<Jets->size();i++){
-         if(goodcount<3 && Jets->at(i).pt()>MinJetPt_ && fabs( Jets->at(i).eta() ) < MaxJetEta_ ){
-            float dphi=std::abs(reco::deltaPhi(Jets->at(i).phi(),metLorentz.phi()));
-            float dT=DeltaT(i, Jets);
-            if(dT/metLorentz.pt()>=1.0)dpnhat[goodcount]=dphi/(TMath::Pi()/2.0);
-            else dpnhat[goodcount]=dphi/asin(dT/metLorentz.pt());
-            ++goodcount;
-         }
-      }// end loop over jets
-   }// end Jets.isValid()
-   auto htp3 = std::make_unique<double>(dpnhat[0]);
-   iEvent.put(std::move(htp3),"DeltaPhiN1");
-   auto htp4 = std::make_unique<double>(dpnhat[1]);
-   iEvent.put(std::move(htp4),"DeltaPhiN2");
-   auto htp5 = std::make_unique<double>(dpnhat[2]);
-   iEvent.put(std::move(htp5),"DeltaPhiN3");
-   float mindpn=9999;
-   for(double i : dpnhat){
-      if(mindpn>fabs(i))mindpn=fabs(i);
-   }
-   auto htp6 = std::make_unique<double>(mindpn);
-   iEvent.put(std::move(htp6),"minDeltaPhiN");
-}
-
-// ------------ helper method to calculate DeltaT ------------
-double METDouble::DeltaT(unsigned int i, const edm::Handle< edm::View<pat::Jet> >& Jets ) const {
-   
-   double deltaT=0;
-   float jres=0.1;
-   double sum=0;
-   if( Jets.isValid() ) {
-      for(unsigned int j=0; j<Jets->size(); ++j){
-         if(j==i)continue;
-         sum=sum+(Jets->at(i).px()*Jets->at(j).py()-Jets->at(j).px()*Jets->at(i).py()) * (Jets->at(i).px()*Jets->at(j).py()-Jets->at(j).px()*Jets->at(i).py());
-      }
-      deltaT=jres*sqrt(sum)/Jets->at(i).pt();
-      
-   }
-   
-   return deltaT;
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
