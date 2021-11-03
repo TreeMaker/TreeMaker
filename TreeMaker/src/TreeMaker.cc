@@ -54,7 +54,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 	nestedVectors = iConfig.getParameter<bool>("nestedVectors");
 	storeOffsets = iConfig.getParameter<bool>("storeOffsets");
 	splitLevel = iConfig.getParameter<int>("splitLevel");
-    saveFloat = iConfig.getParameter<bool>("saveFloat");
+	saveFloat = iConfig.getParameter<bool>("saveFloat");
 
 	// parse the TitleMap
 	stringstream skipMessage;
