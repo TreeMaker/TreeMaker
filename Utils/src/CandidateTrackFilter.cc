@@ -210,19 +210,19 @@ public:
 
 	template <typename T>
 	void applyPermutationInPlace(std::unique_ptr<vector<T>>& vec, const vector<size_t>& idx) {
-	    vector<bool> done(vec->size());
-	    for (size_t i = 0; i < vec->size(); ++i) {
-	        if (done[i]) continue;
-	        done[i] = true;
-	        size_t prev_j = i;
-	        size_t j = idx[i];
-	        while (i != j) {
-	            std::swap(vec->at(prev_j), vec->at(j));
-	            done[j] = true;
-	            prev_j = j;
-	            j = idx[j];
-	        }
-	    }
+		vector<bool> done(vec->size());
+		for (size_t i = 0; i < vec->size(); ++i) {
+			if (done[i]) continue;
+			done[i] = true;
+			size_t prev_j = i;
+			size_t j = idx[i];
+			while (i != j) {
+				std::swap(vec->at(prev_j), vec->at(j));
+				done[j] = true;
+				prev_j = j;
+				j = idx[j];
+			}
+		}
 	}
 
 	// Based on: https://stackoverflow.com/questions/17074324/how-can-i-sort-two-vectors-in-the-same-way-with-criteria-that-uses-only-one-of
