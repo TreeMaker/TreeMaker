@@ -80,13 +80,14 @@ public:
 		int current_vtx_idx = -1;
 		for (unsigned int itrk=0; itrk<trks->size(); itrk++) {
 			current_vtx_idx = pfcands_vtxidx->at(itrk);
+			if (current_vtx_idx == -1) continue;
 			vtx_sumtrackpt2->at(current_vtx_idx) += trks->at(itrk).Perp2();
 		}
 	}
 
-	void fill(const reco::Vertex * primaryVertex, const pat::PackedCandidate & pfCand,
-	          const reco::Track & track, const reco::TransientTrack & transientTrack,
-	          bool trackMatch, int vtxIdx) {
+	void fill(const reco::Vertex * primaryVertex, const pat::PackedCandidate * pfCand,
+			  const reco::Track & track, const reco::TransientTrack & transientTrack,
+			  bool trackMatch, int vtxIdx) {
 		// basic information from the reco::Track
 		//   Reference: https://github.com/cms-sw/cmssw/blob/master/DataFormats/TrackReco/interface/Track.h
 		trks->push_back(track.momentum());
@@ -143,14 +144,25 @@ public:
 
 		// information from the pat::PackedCandidate
 		//   Reference: https://github.com/cms-sw/cmssw/blob/master/DataFormats/ParticleFlowCandidate/interface/PFCandidate.h
-		pfcands_energy->push_back(pfCand.energy());
-		pfcands_pdgid->push_back(pfCand.pdgId());
-		pfcands_numberofhits->push_back(pfCand.numberOfHits());
-		pfcands_numberofpixelhits->push_back(pfCand.numberOfPixelHits());
-		pfcands_firsthit->push_back(pfCand.firstHit());
-		pfcands_frompv->push_back(pfCand.fromPV()); //fromPV() returns a number between 3 and 0 to define how tight the association with the PV is
-		pfcands_pvassociationquality->push_back(pfCand.pvAssociationQuality());
-		pfcands_dzassociatedpv->push_back(pfCand.dzAssociatedPV()); //returns the ip wrt the PV associated to this candidate
+		if ( pfCand ) {
+			pfcands_energy->push_back(pfCand->energy());
+			pfcands_pdgid->push_back(pfCand->pdgId());
+			pfcands_numberofhits->push_back(pfCand->numberOfHits());
+			pfcands_numberofpixelhits->push_back(pfCand->numberOfPixelHits());
+			pfcands_firsthit->push_back(pfCand->firstHit());
+			pfcands_frompv->push_back(pfCand->fromPV()); //fromPV() returns a number between 3 and 0 to define how tight the association with the PV is
+			pfcands_pvassociationquality->push_back(pfCand->pvAssociationQuality());
+			pfcands_dzassociatedpv->push_back(pfCand->dzAssociatedPV()); //returns the ip wrt the PV associated to this candidate
+		} else {
+			pfcands_energy->push_back(-100);
+			pfcands_pdgid->push_back(-100);
+			pfcands_numberofhits->push_back(-100);
+			pfcands_numberofpixelhits->push_back(-100);
+			pfcands_firsthit->push_back(-100);
+			pfcands_frompv->push_back(-100);
+			pfcands_pvassociationquality->push_back(-100);
+			pfcands_dzassociatedpv->push_back(-100);
+		}
 		pfcands_vtxidx->push_back(vtxIdx);
 	}
 
@@ -274,11 +286,15 @@ public:
 
 private:
 	bool filter(edm::StreamID, edm::Event & iEvent, const edm::EventSetup & iSetup) const override;
-	bool filterOnTrack(const pat::PackedCandidate & pfCand, const reco::Track & track) const;
+	bool filterOnTrack(const reco::Track & track) const;
 	int  getVertexIndex(const pat::PackedCandidate & pfCand, const edm::Handle<edm::View<reco::VertexRef> > & goodVertices) const;
 	void loopOverCollection(TrackInfos & infos, const edm::Handle<edm::View<pat::PackedCandidate> > & collection,
 							const edm::ESHandle<TransientTrackBuilder> & ttBuilder,
-							const reco::Vertex * primaryVertex, const edm::Handle<edm::View<reco::VertexRef> > & goodVertices,
+							const reco::Vertex * primaryVertex, const edm::Handle<edm::View<reco::VertexRef> > & storedVertices,
+							bool trackMatch) const;
+	void loopOverCollection(TrackInfos & infos, const edm::Handle<edm::View<reco::Track> > & collection,
+							const edm::ESHandle<TransientTrackBuilder> & ttBuilder,
+							const reco::Vertex * primaryVertex, const edm::Handle<edm::View<reco::VertexRef> > & storedVertices,
 							bool trackMatch) const;
 
 	// ----------member data ---------------------------
@@ -296,7 +312,7 @@ private:
 	edm::EDGetTokenT<edm::View<reco::VertexRef>> storedVerticesTok_;
 
 	double minPt_, maxEta_, maxdz_, maxdxy_, maxnormchi2_;
-	bool debug_, doFilter_, doDisplacedMuons_;
+	bool debug_, doFilter_;
 };
 
 //
@@ -306,6 +322,7 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	pfCandidatesTag_            (iConfig.getParameter<edm::InputTag>("pfCandidatesTag")),
 	lostTracksTag_              (iConfig.getParameter<edm::InputTag>("lostTracksTag")),
 	lostEleTracksTag_           (iConfig.getParameter<edm::InputTag>("lostEleTracksTag")),
+	displacedStandAloneMuonsTag_(iConfig.getParameter<edm::InputTag>("displacedStandAloneMuonsTag")),
 	vertexInputTag_             (iConfig.getParameter<edm::InputTag>("vertexInputTag")),
 	storedVerticesTag_          (iConfig.getParameter<edm::InputTag>("storedVerticesTag")),
 	minPt_                      (iConfig.getParameter<double>       ("minPt")),
@@ -314,20 +331,14 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	maxdxy_                     (iConfig.getParameter<double>       ("maxdxy")),
 	maxnormchi2_                (iConfig.getParameter<double>       ("maxnormchi2")),
 	debug_                      (iConfig.getParameter<bool>         ("debug")),
-	doFilter_                   (iConfig.getParameter<bool>         ("doFilter")),
-	doDisplacedMuons_           (false)
+	doFilter_                   (iConfig.getParameter<bool>         ("doFilter"))
 {
 	pfCandidatesTok_             = consumes<edm::View<pat::PackedCandidate>>(pfCandidatesTag_);
 	lostTracksTok_               = consumes<edm::View<pat::PackedCandidate>>(lostTracksTag_);
 	lostEleTracksTok_            = consumes<edm::View<pat::PackedCandidate>>(lostEleTracksTag_);
+	displacedStandAloneMuonsTok_ = consumes<edm::View<reco::Track>>(displacedStandAloneMuonsTag_);
 	vertexInputTok_              = consumes<edm::View<reco::Vertex>>(vertexInputTag_);
 	storedVerticesTok_           = consumes<edm::View<reco::VertexRef>>(storedVerticesTag_);
-
-	if (iConfig.exists("displacedStandAloneMuonsTag")) {
-		displacedStandAloneMuonsTag_ = iConfig.getParameter<edm::InputTag>("displacedStandAloneMuonsTag"),
-		displacedStandAloneMuonsTok_ = consumes<edm::View<reco::Track>>(displacedStandAloneMuonsTag_);
-		doDisplacedMuons_ = true;
-	}
 
 	produces<vector<pat::PackedCandidate> > ("");
 	produces<vector<math::XYZVector> >      ("trks");
@@ -398,9 +409,11 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	edm::Handle<edm::View<pat::PackedCandidate> > pfCandidates;
 	edm::Handle<edm::View<pat::PackedCandidate> > lostTracks;
 	edm::Handle<edm::View<pat::PackedCandidate> > lostEleTracks;
+	edm::Handle<edm::View<reco::Track> > displacedStandAloneMuons;
 	iEvent.getByToken(pfCandidatesTok_, pfCandidates);
 	iEvent.getByToken(lostTracksTok_, lostTracks);
 	iEvent.getByToken(lostEleTracksTok_, lostEleTracks);
+	iEvent.getByToken(displacedStandAloneMuonsTok_, displacedStandAloneMuons);
 
 	//-------------------------------------------------------------------------------------------------
 	// loop over the various track containing collections
@@ -423,18 +436,10 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 		edm::LogWarning("TreeMaker")<<"CandidateTrackFilter: Collection "<<lostEleTracksTag_<<" not found!";
 	}
 
-	if (doDisplacedMuons_) {
-		//-------------------------------------------------------------------------------------------------
-		// get displacedStandAloneMuons collection
-		//-------------------------------------------------------------------------------------------------
-		edm::Handle<edm::View<reco::Track> > displacedStandAloneMuons;
-		iEvent.getByToken(displacedStandAloneMuonsTok_, displacedStandAloneMuons);
-
-		//-------------------------------------------------------------------------------------------------
-		// loop over displacedStandAloneMuons
-		//-------------------------------------------------------------------------------------------------
-		//todo: rewrite this to work with reco::Track
-		//loopOverCollection(infos,displacedStandAloneMuons,ttBuilder,primaryVertex,storedVertices,false); //Do these overlap with the packedPFCandidate collection? Are they matched?
+	if ( displacedStandAloneMuons.isValid() ){
+		loopOverCollection(infos,displacedStandAloneMuons,ttBuilder,primaryVertex,storedVertices,false); //Do these overlap with the packedPFCandidate collection? Are they matched?
+	} else {
+		edm::LogWarning("TreeMaker")<<"CandidateTrackFilter: Collection "<<displacedStandAloneMuonsTag_<<" not found!";
 	}
 
 	//-------------------------------------------------------------------------------------------------
@@ -456,7 +461,7 @@ bool CandidateTrackFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 }
 
 // ------------ other methods  ------------
-bool CandidateTrackFilter::filterOnTrack(const pat::PackedCandidate & pfCand, const reco::Track & track) const {
+bool CandidateTrackFilter::filterOnTrack(const reco::Track & track) const {
 	return (track.pt() >= minPt_) && (std::abs(track.eta()) < maxEta_) && // cut on track pT and eta
 		   (std::abs(track.dz()) <= maxdz_) && (std::abs(track.dxy()) <= maxdxy_) && // cut on impact parameter quantities
 		   (std::abs(track.normalizedChi2()) <= maxnormchi2_); // cut on chi2
@@ -478,7 +483,7 @@ void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Han
 	// loop over PFCandidates
 	//-------------------------------------------------------------------------------------------------
 	for (size_t i=0; i<collection->size(); i++) {
-		const pat::PackedCandidate& pfCand = (*collection)[i];
+		const pat::PackedCandidate& pfCand = collection->at(i);
 
 		//-------------------------------------------------------------------------------------------------
 		// pull the track details, if available
@@ -489,7 +494,7 @@ void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Han
 		//-------------------------------------------------------------------------------------------------
 		// place some minimal cuts on the tracks
 		//-------------------------------------------------------------------------------------------------
-		if (!filterOnTrack(pfCand,track)) continue;
+		if (!filterOnTrack(track)) continue;
 
 		//-------------------------------------------------------------------------------------------------
 		// find the index of the associated vertex in the good vertices collection
@@ -500,7 +505,30 @@ void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Han
 		// fill the track values and PFCandidate values we'd like to save
 		//-------------------------------------------------------------------------------------------------
 		const auto& transientTrack = ttBuilder->build(track);
-		infos.fill(primaryVertex,pfCand,track,transientTrack,trackMatch,vtxIdx);
+		infos.fill(primaryVertex,&pfCand,track,transientTrack,trackMatch,vtxIdx);
+	}
+}
+
+void CandidateTrackFilter::loopOverCollection(TrackInfos & infos, const edm::Handle<edm::View<reco::Track> > & collection,
+											  const edm::ESHandle<TransientTrackBuilder> & ttBuilder,
+											  const reco::Vertex * primaryVertex, const edm::Handle<edm::View<reco::VertexRef> > & storedVertices,
+											  bool trackMatch) const {
+	//-------------------------------------------------------------------------------------------------
+	// loop over PFCandidates
+	//-------------------------------------------------------------------------------------------------
+	for (size_t i=0; i<collection->size(); i++) {
+		const reco::Track& track = collection->at(i);
+
+		//-------------------------------------------------------------------------------------------------
+		// place some minimal cuts on the tracks
+		//-------------------------------------------------------------------------------------------------
+		if (!filterOnTrack(track)) continue;
+
+		//-------------------------------------------------------------------------------------------------
+		// fill the track values and PFCandidate values we'd like to save
+		//-------------------------------------------------------------------------------------------------
+		const auto& transientTrack = ttBuilder->build(track);
+		infos.fill(primaryVertex,nullptr,track,transientTrack,trackMatch,-1);
 	}
 }
 
