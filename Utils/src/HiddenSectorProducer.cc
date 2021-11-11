@@ -50,9 +50,7 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     int checkLast(const reco::GenJet& jet, const CandSet& stableDs, int value, double& frac) const;
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
     void matchPFMtoJet(CandPtr part, std::vector<const reco::GenJet*>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, int mt2ID) const;
-    double calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const reco::GenJet*& dQM1J, const reco::GenJet*& SMM1J, const reco::GenJet*& dQM2J, const reco::GenJet*& SMM2J) const;
-    const reco::GenJet* highPt(std::vector<const reco::GenJet*>& Js) const;
-    LorentzVector comPt(std::vector<const reco::GenJet*>& Js) const;
+    double calculateMT2(const edm::Handle<edm::View<reco::GenMET>>& h_genmets, const reco::GenJet* dQM1J, const reco::GenJet* SMM1J, const reco::GenJet* dQM2J, const reco::GenJet* SMM2J) const;
     std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
     edm::InputTag JetTag_, MetTag_, GenMetTag_, GenTag_, GenJetTag_;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
@@ -184,7 +182,7 @@ void HiddenSectorProducer::matchPFMtoJet(CandPtr part, std::vector<const reco::G
   }
 }
 
-double HiddenSectorProducer::calculateMT2(edm::Handle<edm::View<reco::GenMET>> h_genmets, const reco::GenJet*& dQM1J, const reco::GenJet*& SMM1J, const reco::GenJet*& dQM2J, const reco::GenJet*& SMM2J) const {
+double HiddenSectorProducer::calculateMT2(const edm::Handle<edm::View<reco::GenMET>>& h_genmets, const reco::GenJet* dQM1J, const reco::GenJet* SMM1J, const reco::GenJet* dQM2J, const reco::GenJet* SMM2J) const {
   const auto& i_met = h_genmets->front();
   double METx = i_met.px();
   double METy = i_met.py();
@@ -195,18 +193,6 @@ double HiddenSectorProducer::calculateMT2(edm::Handle<edm::View<reco::GenMET>> h
     FJet1.M(), FJet1.Px(), FJet1.Py(),
     METx, METy, 0.0, 0.0, 0
   );
-}
-
-const reco::GenJet* HiddenSectorProducer::highPt(std::vector<const reco::GenJet*>& Js) const {
-  double largestPt = 0;
-  const reco::GenJet* largestPtJ = nullptr;
-  for(const auto& J: Js){
-    if(J->pt() > largestPt){
-      largestPt = J->pt();
-      largestPtJ = J;
-    }
-  }
-  return largestPtJ;
 }
 
 //use official JetMET matching procedure: equiv to set<DR,jet_index,gen_index> sorted by DR
@@ -407,11 +393,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     bool manyJetsPerParticle = dQM1Js.size() >= 1 && dQM2Js.size() >= 1 && SMM1Js.size() >= 1 && SMM2Js.size() >= 1;
     if(manyJetsPerParticle and !manyParticlesPerJet){
       // using the highest pT jet if more than one jet contains the same particle
-      const reco::GenJet* dQM1J = highPt(dQM1Js);
-      const reco::GenJet* SMM1J = highPt(SMM1Js);
-      const reco::GenJet* dQM2J = highPt(dQM2Js);
-      const reco::GenJet* SMM2J = highPt(SMM2Js);
-      GenMT2 = calculateMT2(h_genmets,dQM1J,SMM1J,dQM2J,SMM2J);
+      GenMT2 = calculateMT2(h_genmets,dQM1Js[0],SMM1Js[0],dQM2Js[0],SMM2Js[0]);
     }
     else
     {

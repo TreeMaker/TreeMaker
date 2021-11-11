@@ -93,12 +93,12 @@ def defineTests(mytests, scenario, name, numevents, command, dataset, inputFiles
     mytests.append(Test(scenario,name,numevents,command,dataset,inputFilesConfig,nstart=0,nfiles=10,redir=""))
 
     # pre-defined tests
-    mytests.append(Test("Summer20UL16","TTToHadronic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL16.TTToHadronic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16APV","TTToHadronic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.TTToHadronic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL17","TTToHadronic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL17.TTToHadronic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL18","TTToHadronic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL18.TTToHadronic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16","GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16.GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16APV","GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL16","Summer20UL16.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL16.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL16APV","Summer20UL16APV.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL17","Summer20UL17.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL17.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL18","Summer20UL18.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL18.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL16","Summer20UL16.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL16APV","Summer20UL16APV.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
 
 def unitTest():
     # Read parameters

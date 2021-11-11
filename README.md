@@ -118,6 +118,7 @@ Python:
 * `-x, --redir`: input file redirector
 * `-f, --use-folders`: store the output in folders based on era and dataset (default = False)
 * `--offset [num]`: offset for arg file naming in chain jobs (default = 0)
+* `--maxJobs [num]`: max number of jobs to run (default = -1 -> not applied)
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):
 * `-o [dir]`: output directory
@@ -257,8 +258,10 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `saveMinimalGenParticles`: save only the hard scatter gen particles coming from top decays, boson decays, semi-visible jets, or SUSY particles (default=True)
 * `saveGenTops`: save the 4-vectors of the generated tops and the TTbar reweighting scale factor (default=False)
 * `doMT2`: switch to enable the storage of the MT2 variable (default=False)
-* `nestedVectors`: switch to change from saving vector<\vector<T>> to saving vector<T> values and vector<\int> counts (default=True)
+* `nestedVectors`: switch to change from saving `vector<vector<T>>` to saving `vector<T>` values and `vector<int>` counts (default=False)
 * `storeOffsets`: if set to True, stores offsets rather than counts when using `nestedVectors=False` (default=False)
+* `splitLevel`: split level for output TBranches (default=99)
+* `saveFloat`: convert doubles to floats in output (default=True)
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))

@@ -48,7 +48,7 @@ public:
 		vtx_ntracks->push_back(vertex.nTracks());
 	}
 
-	void fillRef(const edm::Handle<reco::VertexCollection> & vertices, const size_t & i) {
+	void fillRef(const edm::Handle<reco::VertexCollection> & vertices, size_t i) {
 		vtx_ref->push_back(reco::VertexRef(vertices, i));
 	}
 
@@ -159,7 +159,7 @@ PrimaryVerticesProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::E
 	VertexInfos infos;
 	if (saveVertices_){
 		for (size_t i=0; i<vertices->size();i++) {
-			const reco::Vertex vertex = (*vertices)[i];
+			const reco::Vertex& vertex = (*vertices)[i];
 
 			reco::VertexCollection::const_iterator it;
 			it = std::find_if(goodVertices->begin(), goodVertices->end(), [&vertex](reco::Vertex const& obj){

@@ -1,14 +1,12 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/stream/EDProducer.h"
-#include "FWCore/Framework/interface/GetterOfProducts.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/Utilities/interface/Exception.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
-#include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
 #include "TreeMaker/Utils/interface/parse.h"
 
@@ -21,10 +19,6 @@
 #include <iostream>
 #include <iomanip>
 
-//
-// class declaration
-//
-
 enum class signal_type {
 	None=0,
 	SUSY=1,
@@ -35,7 +29,7 @@ enum class signal_type {
 class SignalScanProducer : public edm::stream::EDProducer<> {
 	public:
 		explicit SignalScanProducer(const edm::ParameterSet&);
-		~SignalScanProducer() override;
+		~SignalScanProducer() override {}
 		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 	private:
@@ -45,30 +39,21 @@ class SignalScanProducer : public edm::stream::EDProducer<> {
 
 		void reset();
 		
-		void getSUSYComment(const LHEEventProduct& lhe);
-		void getSUSYComment(const GenLumiInfoHeader& gen);
-		void getSUSYModelInfo(std::string comment);
-
-		void getpMSSMComment(const LHEEventProduct& lhe);
+		void getSUSYComment(const std::string& comment);
+		void getSVJComment(const std::string& gen);
 		//todo: add pMSSM parser for GenLumiInfoHeader, once available/understood
-
-		//LHE will never be used for SVJ
-		void getSVJComment(const GenLumiInfoHeader& gen);
 		
 		// ----------member data ---------------------------
-		edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
 		edm::EDGetTokenT<GenLumiInfoHeader> genLumiHeaderToken_;
-		bool shouldScan_, debug_, isLHE_;
+		bool shouldScan_, debug_;
 		signal_type type_;
 		std::vector<double> signalParameters_;
 };
 
 SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) : 
-	getterOfProducts_(edm::ProcessMatch("*"), this),
 	genLumiHeaderToken_(consumes<GenLumiInfoHeader,edm::InLumi>(edm::InputTag("generator"))),
 	shouldScan_(true),
-	debug_(iConfig.getParameter<bool>("debug")),
-	isLHE_(iConfig.getParameter<bool>("isLHE"))
+	debug_(iConfig.getParameter<bool>("debug"))
 {
 	std::string stype(iConfig.getParameter<std::string>("signalType"));
 	if(stype=="None") { type_ = signal_type::None; shouldScan_ = false; }
@@ -77,36 +62,11 @@ SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) :
 	else if(stype=="SVJ") type_ = signal_type::SVJ;
 	else throw cms::Exception("UnknownType") << "SignalScanProducer: unknown signal type " << stype;
 
-	callWhenNewProductsRegistered(getterOfProducts_);
 	produces<std::vector<double>>("SignalParameters");
-}
-
-SignalScanProducer::~SignalScanProducer()
-{
-	
-	// do anything here that needs to be done at desctruction time
-	// (e.g. close files, deallocate resources etc.)
-	
 }
 
 void SignalScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-	using namespace edm;
-
-	if(isLHE_ && shouldScan_){
-		reset();
-		if(debug_) edm::LogInfo("TreeMaker") << "SignalScanProducer: checking LHEEventProduct";
-		std::vector<edm::Handle<LHEEventProduct> > handles;
-		getterOfProducts_.fillHandles(iEvent, handles);
-
-		if(!handles.empty()){
-			edm::Handle<LHEEventProduct> product = handles[0];
-			if(type_==signal_type::SUSY) getSUSYComment(*product);
-			else if(type_==signal_type::pMSSM) getpMSSMComment(*product);
-		}
-	}
-	//otherwise, values are picked up in beginLuminosityBlock()
-
 	auto signalParameters = std::make_unique<std::vector<double>>(signalParameters_);
 	iEvent.put(std::move(signalParameters), "SignalParameters");
 }
@@ -116,13 +76,14 @@ void
 SignalScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const& iSetup)
 {
 	//new way of getting SUSY scan info
-	if(!isLHE_ && shouldScan_){
+	if(shouldScan_){
 		reset();
 		if(debug_) edm::LogInfo("TreeMaker") << "SignalScanProducer: checking GenLumiInfoHeader";
 		edm::Handle<GenLumiInfoHeader> gen_header;
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);
-		if(type_==signal_type::SUSY) getSUSYComment(*gen_header);
-		else if(type_==signal_type::SVJ) getSVJComment(*gen_header);
+		const auto& configDesc = gen_header->configDescription();
+		if(type_==signal_type::SUSY) getSUSYComment(configDesc);
+		else if(type_==signal_type::SVJ) getSVJComment(configDesc);
 	}
 }
 
@@ -141,36 +102,15 @@ void SignalScanProducer::reset(){
 	signalParameters_.clear();
 }
 
-//parse LHE for SUSY
-void SignalScanProducer::getSUSYComment(const LHEEventProduct& lhe){
-	for(auto cit = lhe.comments_begin(); cit != lhe.comments_end(); ++cit){
-		size_t found = (*cit).find("model");
-		if(found != std::string::npos){
-			//parse string
-			std::string comment = *cit;
-			getSUSYModelInfo(comment);
-
-			//finished with this event
-			break;
-		}
-	}
-}
-
-//parse GenLumiInfo for SUSY
-void SignalScanProducer::getSUSYComment(const GenLumiInfoHeader& gen){
-	getSUSYModelInfo(gen.configDescription());
-}
-
 //parse model comment for SUSY
-void SignalScanProducer::getSUSYModelInfo(std::string comment){
-	//strip newline
-	if(comment.back()=='\n') comment.pop_back();
-	
+void SignalScanProducer::getSUSYComment(const std::string& comment){
 	if(debug_) edm::LogInfo("TreeMaker") << comment;
 	
 	std::vector<std::string> fields;
 	//underscore-delimited data
 	parse::process(comment,'_',fields);
+	//strip newline
+	if(fields.back().back()=='\n') fields.back().pop_back();
 
 	//several possible formats:
 	//model name_mMother_mLSP (1+2 fields)
@@ -190,37 +130,16 @@ void SignalScanProducer::getSUSYModelInfo(std::string comment){
 	signalParameters_.push_back(lspMass);
 }
 
-//parse LHE for pMSSM
-void SignalScanProducer::getpMSSMComment(const LHEEventProduct& lhe){
-	for(auto cit = lhe.comments_begin(); cit != lhe.comments_end(); ++cit){
-		size_t found = (*cit).find(".slha");
-		if(found != std::string::npos){
-			std::string comment = (*cit).substr(1,(*cit).find(".slha")-1);
-			if(comment.back()=='\n') comment.pop_back();
-			std::vector<std::string> nameblocks;
-			parse::process(comment, '_', nameblocks);
-			std::string character_string = nameblocks[2]+nameblocks[3];
-			std::stringstream s0(character_string);
-			double pmssmId;
-			s0 >> pmssmId;
-			signalParameters_.push_back(pmssmId);
-			if(debug_) edm::LogInfo("TreeMaker") << comment;
-			break; //finished with this event
-		}
-	}
-}
-
 //parse GenLumiInfo for SVJ
-void SignalScanProducer::getSVJComment(const GenLumiInfoHeader& gen){
+void SignalScanProducer::getSVJComment(const std::string& comment){
 	const std::map<std::string,double> alpha_vals{
 		{"peak",-2.},
 		{"high",-1.},
 		{"low",-3.},
 	};
-	std::string model = gen.configDescription();
-	if(debug_) edm::LogInfo("TreeMaker") << model;
+	if(debug_) edm::LogInfo("TreeMaker") << comment;
 	std::vector<std::string> fields;
-	parse::process(model,'_',fields);
+	parse::process(comment,'_',fields);
 
 	//format: SVJ_mZprime-X_mDark-Y_rinv-Z_alpha-W
 	for(const auto& f : fields){

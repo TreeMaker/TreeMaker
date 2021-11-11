@@ -27,7 +27,7 @@ class BasicSubstructureProducer : public edm::global::EDProducer<> {
 	private:
 		void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 		template <class T>
-		void helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, std::string name) const;
+		void helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, const std::string& name) const;
 		edm::InputTag JetTag_;
 		edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
 };
@@ -40,7 +40,7 @@ BasicSubstructureProducer::BasicSubstructureProducer(const edm::ParameterSet& iC
 }
 
 template <class T>
-void BasicSubstructureProducer::helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, std::string name) const {
+void BasicSubstructureProducer::helpProduce(edm::Event& iEvent, const edm::Handle<edm::View<pat::Jet>>& jets, const std::vector<T>& vec, const std::string& name) const {
 	//store as userfloat
 	auto out = std::make_unique<edm::ValueMap<T>>();
 	typename edm::ValueMap<T>::Filler filler(*out);
