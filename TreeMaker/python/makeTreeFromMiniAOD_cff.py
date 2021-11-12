@@ -1158,7 +1158,7 @@ def makeTreeFromMiniAOD(self,process):
             'trackFilter:trksphierror(Tracks_phiError)',
             'trackFilter:trksqoverperror(Tracks_qoverpError)',
             'trackFilter:trksip2d(Tracks_IP2DPV0)',
-            'trackFilter:trksip2dsig(Tracks_IP2dSigPV0)',
+            'trackFilter:trksip2dsig(Tracks_IP2DSigPV0)',
             'trackFilter:trksip3d(Tracks_IP3DPV0)',
             'trackFilter:trksip3dsig(Tracks_IP3DSigPV0)',
             'trackFilter:pfcandsenergy(Tracks_pfEnergy)',
