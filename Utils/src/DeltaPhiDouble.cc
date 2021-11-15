@@ -117,7 +117,7 @@ DeltaPhiDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup
       edm::Handle< edm::View<reco::Candidate> > MHTJets;
       iEvent.getByToken(MHTJetTok_,MHTJets);
       if( MHTJets.isValid() ) {
-         reco::MET::LorentzVector mhtLorentz = utils::calculateMHT(MHTJets.product());
+         const reco::MET::LorentzVector& mhtLorentz = utils::calculateMHT(MHTJets.product());
          mhtLorentzPhi = mhtLorentz.phi();
       }
       else edm::LogWarning("TreeMaker")<<"DeltaPhiDouble::Invalid MHT Jet Tag: "<<MHTJetTag_;

@@ -231,7 +231,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     from TreeMaker.Utils.metdouble_cfi import metdouble
     METclean = metdouble.clone(
        METTag = METTag,
-       JetTag = cms.InputTag('HTJets'+postfix)
     )
     setattr(process,"METclean"+suff,METclean)
     self.VarsDouble.extend(['METclean'+suff+':Pt(METclean'+suff+')','METclean'+suff+':Phi(METPhiclean'+suff+')'])

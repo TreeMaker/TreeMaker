@@ -67,6 +67,7 @@ def makeTreeFromMiniAOD(self,process):
         nestedVectors                  = self.nestedVectors,
         storeOffsets                   = self.storeOffsets,
         splitLevel                     = self.splitLevel,
+        saveFloat                      = self.saveFloat,
     )
 
     ## ----------------------------------------------------------------------------------------------
@@ -322,18 +323,20 @@ def makeTreeFromMiniAOD(self,process):
                 'jetSequence',
                 'out',
                 PUMethod = 'Puppi',
-                miniAOD = True,
+                useExistingWeights=True,
+                dataTier='miniAOD',
                 runOnMC = self.geninfo,
                 postFix = 'NoCut',
                 addPruning = True,
                 addSoftDropSubjets = True,
                 addNsub = True,
                 maxTau = 3,
+                bTagDiscriminators = None, # can't use ak8updates here because "pfDeepBoostedJetTagInfos only supports running via updateJetCollection"
                 subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
                 JETCorrLevels = levels,
                 subJETCorrLevels = levels,
                 addEnergyCorrFunc = True,
-                associateTask = False,
+                ecfBeta = [1.0,2.0],
                 verbosity = 2 if self.verbose else 0,
             )
 
@@ -364,7 +367,7 @@ def makeTreeFromMiniAOD(self,process):
         JetAK8Tag = cms.InputTag('updatedPatJetsTransientCorrectedAK8UpdatedJEC')
  
         # update the corrections for the subjets from the AK8 jets
-        # the references from the AK8 jets to the subjects will be fixed later on
+        # the references from the AK8 jets to the subjets will be fixed later on
         updateJetCollection(
             process,
             jetSource = SubjetTag,
@@ -1018,7 +1021,6 @@ def makeTreeFromMiniAOD(self,process):
     process.MET = metdouble.clone(
         METTag = METTag,
         GenMETTag = cms.InputTag("slimmedMETs","",self.tagname), #original collection used deliberately here
-        JetTag = cms.InputTag('HTJets'),
         geninfo = cms.untracked.bool(self.geninfo),
         InfTagAK8 = JetAK8TagInf,
     )
@@ -1140,14 +1142,7 @@ def makeTreeFromMiniAOD(self,process):
         process.load("TrackingTools/TransientTrack/TransientTrackBuilder_cfi")
         from TreeMaker.Utils.candidateTrackMaker_cfi import candidateTrackFilter
         process.trackFilter = candidateTrackFilter.clone(
-            vertexInputTag    = cms.InputTag("goodVertices"),
             storedVerticesTag = cms.InputTag("primaryVertices","vtxref"),
-            pfCandidatesTag   = cms.InputTag("packedPFCandidates"),
-            lostTracksTag     = cms.InputTag("lostTracks"),
-            lostEleTracksTag  = cms.InputTag("lostTracks","eleTracks"),
-        )
-        (TMeras.TMUL2016 | TMeras.TMUL2017 | TMeras.TMUL2018).toModify(process.trackFilter,
-            displacedStandAloneMuonsTag = cms.InputTag("displacedStandAloneMuons")
         )
         self.VectorXYZVector.extend(['trackFilter:trks(Tracks)'])
         self.VectorXYZPoint.extend(['trackFilter:trksreferencepoint(Tracks_referencePoint)'])
@@ -1200,6 +1195,7 @@ def makeTreeFromMiniAOD(self,process):
             'jetSequence',
             'noOutput',
             PUMethod = 'Puppi',
+            useExistingWeights=True,
             dataTier = 'miniAOD',
             runOnMC = self.geninfo,
             Cut = 'pt>20.',
@@ -1210,6 +1206,7 @@ def makeTreeFromMiniAOD(self,process):
             maxTau = 3,
             subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
             addEnergyCorrFunc = True,
+            ecfBeta = [1.0,2.0],
             verbosity = 2 if self.verbose else 0,
             # 
             JETCorrPayload = 'AK8PFPuppi',
@@ -1260,12 +1257,10 @@ def makeTreeFromMiniAOD(self,process):
             doECFs = True,
         )
 
-        process.JetPropertiesAK15.properties = [
-            x for x in process.JetPropertiesAK15.properties if x not in [
-                "jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity",
-                "jerFactor", "origIndex"
-            ]
-        ]
+        _omit_AK15 = ["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity", "jerFactor", "origIndex"]
+        process.JetPropertiesAK15.properties = [x for x in process.JetPropertiesAK15.properties if x not in _omit_AK15]
+        for branchlist in [self.VectorDouble, self.VectorInt, self.AssocVectorVectorDouble, self.AssocVectorVectorInt]:
+            branchlist.setValue([x for x in branchlist if not ("AK15" in x and any([y in x for y in _omit_AK15]))])
 
         process.JetPropertiesAK15.ecfN2b1 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb1AK15PuppiSoftDropN2')
         process.JetPropertiesAK15.ecfN2b2 = cms.vstring('ak15PFJetsPuppiSoftDropValueMap:nb2AK15PuppiSoftDropN2')
