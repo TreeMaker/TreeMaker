@@ -4,5 +4,14 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
 readFiles.extend( [
-
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-1.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-10.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-2.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-3.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-4.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-5.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-6.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-7.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-8.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL17/step4_MINIAODv2_mMed-1600_mDark-2_kappa-1p06_aligned-down_n-500_part-9.root',
 ] )

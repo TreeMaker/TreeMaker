@@ -13,4 +13,5 @@ readFiles.extend( [
 'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL18/step4_MINIAODv2_mMed-1000_mDark-10_ctau-5_unflavored-down_n-500_part-6.root',
 'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL18/step4_MINIAODv2_mMed-1000_mDark-10_ctau-5_unflavored-down_n-500_part-7.root',
 'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL18/step4_MINIAODv2_mMed-1000_mDark-10_ctau-5_unflavored-down_n-500_part-8.root',
+'root://cmseos.fnal.gov///store/group/lpcsusyhad/ExoEMJAnalysis2020/Signal.Oct.2021/UL18/step4_MINIAODv2_mMed-1000_mDark-10_ctau-5_unflavored-down_n-500_part-9.root',
 ] )
