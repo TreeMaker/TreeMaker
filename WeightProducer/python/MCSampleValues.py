@@ -501,6 +501,26 @@ class MCSampleValuesHelper():
                 kFactor_13TeV=1.139, kFactorSource_13TeV="XSDB NNLO/LO=61526.7/54000",
             ),
         },
+        "WJetsToQQ_HT-200to400" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=2549.0, XSSource_13TeV="XSDB (LO)",
+            ),
+        },
+        "WJetsToQQ_HT-400to600" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=276.5, XSSource_13TeV="XSDB (LO)",
+            ),
+        },
+        "WJetsToQQ_HT-600to800" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=59.25, XSSource_13TeV="XSDB (LO)",
+            ),
+        },
+        "WJetsToQQ_HT-800toInf" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=28.75, XSSource_13TeV="XSDB (LO)",
+            ),
+        },
         "QCD_HT50to100" : {
            "CrossSection" : XSValues(
                  XS_13TeV=186100000.0, XSSource_13TeV="XSDB (LO)",

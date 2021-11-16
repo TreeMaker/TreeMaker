@@ -12,6 +12,8 @@ Summer20UL18samples = [
     MCSample('WW_TuneCP5_13TeV-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 15679000),
     MCSample('WZG_TuneCP5_13TeV-amcatnlo-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 2000000, 1764512),
     MCSample('WZTo2Q2Nu_TuneCP5_13TeV-amcatnloFXFX-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 19771910),
+    MCSample('WWTo1L1Nu2Q_TuneCP5_13TeV-amcatnloFXFX-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 18974055, 12116937),
+    MCSample('WZTo1L1Nu2Q_TuneCP5_13TeV-amcatnloFXFX-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 20179969, 12108591),
     MCSample('WZZ_TuneCP5_13TeV-amcatnlo-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v3', 'RunIISummer20UL18MiniAODv2', 'Constant', 10294000, 9346132), # subtotal = 271866, straight subtotal = 300000
     MCSample('WZZ_TuneCP5_13TeV-amcatnlo-pythia8', '106X_upgrade2018_realistic_v16_L1v1_ext1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 10294000, 9346132), # subtotal = 9074266, straight subtotal = 9994000
     MCSample('WZ_TuneCP5_13TeV-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 7940000),
@@ -33,6 +35,9 @@ Summer20UL18samples = [
     MCSample('TTWW_TuneCP5_13TeV-madgraph-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 944000),
     MCSample('TTWZ_TuneCP5_13TeV-madgraph-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 498000),
     MCSample('TTZZ_TuneCP5_13TeV-madgraph-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 498000),
+    MCSample('TTTJ_TuneCP5_13TeV-madgraph-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 500000),
+    MCSample('TTTW_TuneCP5_13TeV-madgraph-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 494000),
+    MCSample('TTWH_TuneCP5_13TeV-madgraph-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 497000),
     MCSample('ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 10051443, 3300043),
     MCSample('ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 10020658, 3294534),
     MCSample('QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 19730000),
@@ -77,6 +82,9 @@ Summer20UL18samples = [
     MCSample('WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 66569448),
     MCSample('WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 7306187),
     MCSample('WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 82442496),
+    MCSample('WJetsToQQ_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 14494966),
+    MCSample('WJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 9335298),
+    MCSample('WJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 13633226),
     MCSample('TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 146010000),
     MCSample('TTTo2L2Nu_TuneCP5_erdON_13TeV-powheg-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 59973000),
     MCSample('TTTo2L2Nu_TuneCP5down_13TeV-powheg-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 59919000),

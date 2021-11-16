@@ -9,6 +9,8 @@ flist = {
        ['Summer20UL18.WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8'],
        ['Summer20UL18.WW_TuneCP5_13TeV-pythia8'],
        ['Summer20UL18.WZG_TuneCP5_13TeV-amcatnlo-pythia8'],
+       ['Summer20UL18.WWTo1L1Nu2Q_TuneCP5_13TeV-amcatnloFXFX-pythia8'],
+       ['Summer20UL18.WZTo1L1Nu2Q_TuneCP5_13TeV-amcatnloFXFX-pythia8'],
        ['Summer20UL18.WZTo2Q2Nu_TuneCP5_13TeV-amcatnloFXFX-pythia8'],
        ['Summer20UL18.WZZ_TuneCP5_13TeV-amcatnlo-pythia8'],
        ['Summer20UL18.WZZ_TuneCP5_13TeV-amcatnlo-pythia8_ext1'],
