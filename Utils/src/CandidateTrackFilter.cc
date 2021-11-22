@@ -93,11 +93,8 @@ public:
 		trks->push_back(track.momentum());
 		trks_referencepoint->push_back(track.referencePoint());
 		trks_chg->push_back(track.charge());
-		trks_dzpv->push_back(track.dz()); //returns the ip wrt PV[0]
-		trks_dzerrorpv->push_back(track.dzError());
-		trks_dxypv->push_back(track.dxy());
-		trks_dxyerrorpv->push_back(track.dxyError());
 		trks_normalizedchi2->push_back(track.normalizedChi2());
+		trks_dzerrorpv->push_back(track.dzError());
 		trks_pterror->push_back(track.ptError());
 		trks_etaerror->push_back(track.etaError());
 		trks_phierror->push_back(track.phiError());
@@ -119,13 +116,21 @@ public:
 		trks_quality->push_back(track.qualityMask());
 		// impact parameter variables
 		if( primaryVertex ){
-			std::pair<bool,Measurement1D> ip2d = IPTools::absoluteTransverseImpactParameter(transientTrack, *primaryVertex);
-			std::pair<bool,Measurement1D> ip3d = IPTools::absoluteImpactParameter3D(transientTrack, *primaryVertex);
+			const auto& primaryVertexPos = primaryVertex->position();
+			trks_dxypv->push_back(track.dxy(primaryVertexPos));
+			trks_dxyerrorpv->push_back(track.dxyError(primaryVertexPos, primaryVertex->error()));
+			trks_dzpv->push_back(track.dz(primaryVertexPos)); //returns the ip wrt PV[0]
+			Global3DVector dir(track.px(), track.py(), track.pz());
+			const auto& ip2d = IPTools::signedTransverseImpactParameter(transientTrack, dir, *primaryVertex); // return type: std::pair<bool,Measurement1D>
+			const auto& ip3d = IPTools::signedImpactParameter3D(transientTrack, dir, *primaryVertex); // return type: std::pair<bool,Measurement1D>
 			trks_ip2d->push_back(ip2d.second.value());
 			trks_ip2dsig->push_back(ip2d.second.significance());
 			trks_ip3d->push_back(ip3d.second.value());
 			trks_ip3dsig->push_back(ip3d.second.significance());
 		} else {
+			trks_dxypv->push_back(-100);
+			trks_dxyerrorpv->push_back(-100);
+			trks_dzpv->push_back(-100);
 			trks_ip2d->push_back(-100);
 			trks_ip2dsig->push_back(-100);
 			trks_ip3d->push_back(-100);
