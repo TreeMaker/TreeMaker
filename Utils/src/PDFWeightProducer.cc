@@ -192,9 +192,11 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
 
       int id1 = genHandle->pdf()->id.first;
       double x1 = genHandle->pdf()->x.first;
+      id1 = std::abs(id1) == 21 ? 0 : id1;
 
       int id2 = genHandle->pdf()->id.second;
       double x2 = genHandle->pdf()->x.second;
+      id2 = std::abs(id2) == 21 ? 0 : id2;
 
       unsigned nweights = 1;
       if(LHAPDF::numberPDF(1)>1) nweights += LHAPDF::numberPDF(1);
@@ -210,6 +212,12 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
           pdfweights->push_back(newpdf1*newpdf2);
           if(i==0 and norm_) norm = 1/pdfweights->back();
           pdfweights->back() *= norm;
+          if(debug_) {
+            edm::LogInfo("TreeMaker") << "PDFWeightProducer: index = " << i << ", x1 = " << x1 << ", x2 = " << x2
+                                      << ", Q = " << Q << ", id1 = " << id1 << ", id2 = " << id2
+                                      << ", newpdf1 = " << newpdf1 << ", newpdf2 = " << newpdf2
+                                      << ", norm = " << norm << ", pdfweight = " << pdfweights->back() << std::endl;
+          }
         }
       }
       found_pdfs = true;
@@ -225,9 +233,11 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       //factorization scale
       int id1 = genHandle->pdf()->id.first;
       double x1 = genHandle->pdf()->x.first;
+      id1 = std::abs(id1) == 21 ? 0 : id1;
 
       int id2 = genHandle->pdf()->id.second;
       double x2 = genHandle->pdf()->x.second;
+      id2 = std::abs(id2) == 21 ? 0 : id2;
 
       double pdf1, pdf1up, pdf1dn;
       double pdf2, pdf2up, pdf2dn;
@@ -242,7 +252,10 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
          pdf2dn = LHAPDF::xfx(1, x2, kDn*Q, id2)/x2;
       }
       if(debug_)
-        edm::LogInfo("TreeMaker") << "PDFWeightProducer: pdf1 = " << pdf1 << ", pdf1up = " << pdf1up << ", pdf1dn = " << pdf1dn << ", pdf2 = " << pdf2 << ", pdf2up = " << pdf2up << ", pdf2dn = " << pdf2dn << std::endl;
+        edm::LogInfo("TreeMaker") << "PDFWeightProducer: x1 = " << x1 << ", x2 = " << x2 << ", Q = " << Q
+                                  << ", id1 = " << id1 << ", id2 = " << id2 << ", kUp = " << kUp << ", pdf1 = " << pdf1
+                                  << ", pdf1up = " << pdf1up << ", pdf1dn = " << pdf1dn << ", pdf2 = " << pdf2
+                                  << ", pdf2up = " << pdf2up << ", pdf2dn = " << pdf2dn << std::endl;
 
       float weightFacUp = (pdf1up*pdf2up)/(pdf1*pdf2);
       float weightFacDn = (pdf1dn*pdf2dn)/(pdf1*pdf2);
@@ -258,7 +271,9 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       double alpSup = coup->alphaS(kUp*kUp*Q2);
       double alpSdn = coup->alphaS(kDn*kDn*Q2);
       if(debug_)
-        edm::LogInfo("TreeMaker") << "PDFWeightProducer: alpEM = " << alpEM << ", alpEMup = " << alpEMup << ", alpEMdn = " << alpEMdn << ", alpS = " << alpS << ", alpSup = " << alpSup << ", alpSdn = " << alpSdn << std::endl;
+        edm::LogInfo("TreeMaker") << "PDFWeightProducer: alpEM = " << alpEM << ", alpEMup = " << alpEMup
+                                  << ", alpEMdn = " << alpEMdn << ", alpS = " << alpS << ", alpSup = " << alpSup\
+                                  << ", alpSdn = " << alpSdn << std::endl;
 
       //weights require process-dependent information about number of QCD and EM vertices
       float weightRenUp = std::pow(alpEMup/alpEM, nEM_) * std::pow(alpSup/alpS, nQCD_);
