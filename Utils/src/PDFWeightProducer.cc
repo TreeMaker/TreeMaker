@@ -82,6 +82,7 @@ public:
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 private:
+  int lhapdfPDGID(const int pdgid) const { return std::abs(pdgid) == 21 ? 0 : pdgid; }
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
   // ----------member data ---------------------------
@@ -190,13 +191,11 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     if(!found_pdfs and recalculatePDFs_){
       float Q = genHandle->pdf()->scalePDF;
 
-      int id1 = genHandle->pdf()->id.first;
+      int id1 = lhapdfPDGID(genHandle->pdf()->id.first);
       double x1 = genHandle->pdf()->x.first;
-      id1 = std::abs(id1) == 21 ? 0 : id1;
 
-      int id2 = genHandle->pdf()->id.second;
+      int id2 = lhapdfPDGID(genHandle->pdf()->id.second);
       double x2 = genHandle->pdf()->x.second;
-      id2 = std::abs(id2) == 21 ? 0 : id2;
 
       unsigned nweights = 1;
       if(LHAPDF::numberPDF(1)>1) nweights += LHAPDF::numberPDF(1);
@@ -231,13 +230,11 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       float Q = genHandle->pdf()->scalePDF;
 
       //factorization scale
-      int id1 = genHandle->pdf()->id.first;
+      int id1 = lhapdfPDGID(genHandle->pdf()->id.first);
       double x1 = genHandle->pdf()->x.first;
-      id1 = std::abs(id1) == 21 ? 0 : id1;
 
-      int id2 = genHandle->pdf()->id.second;
+      int id2 = lhapdfPDGID(genHandle->pdf()->id.second);
       double x2 = genHandle->pdf()->x.second;
-      id2 = std::abs(id2) == 21 ? 0 : id2;
 
       double pdf1, pdf1up, pdf1dn;
       double pdf2, pdf2up, pdf2dn;
@@ -272,7 +269,7 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       double alpSdn = coup->alphaS(kDn*kDn*Q2);
       if(debug_)
         edm::LogInfo("TreeMaker") << "PDFWeightProducer: alpEM = " << alpEM << ", alpEMup = " << alpEMup
-                                  << ", alpEMdn = " << alpEMdn << ", alpS = " << alpS << ", alpSup = " << alpSup\
+                                  << ", alpEMdn = " << alpEMdn << ", alpS = " << alpS << ", alpSup = " << alpSup
                                   << ", alpSdn = " << alpSdn << std::endl;
 
       //weights require process-dependent information about number of QCD and EM vertices
