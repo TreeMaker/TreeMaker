@@ -23,7 +23,7 @@ The following installation instructions assume the user wants to process Run 2 u
 wget https://raw.githubusercontent.com/TreeMaker/TreeMaker/Run2_UL/setup.sh
 chmod +x setup.sh
 ./setup.sh
-cd CMSSW_10_6_25/src/
+cd CMSSW_10_6_29/src/
 cmsenv
 cd TreeMaker/Production/test
 ```
@@ -33,10 +33,10 @@ The script [setup.sh](./setup.sh) has options to allow installing a different fo
 * `-f [fork]`: which fork to download (`git@github.com:fork/TreeMaker.git`, default = TreeMaker)
 * `-b [branch]`: which branch to download (`-b branch`, default = Run2_UL)
 * `-B`: configure some settings for checkout within batch setups
-* `-c [version]`: which CMSSW version to use (default = CMSSW_10_6_25)
+* `-c [version]`: which CMSSW version to use (default = CMSSW_10_6_29)
 * `-a [protocol]`: which protocol to use for `git clone` (default = ssh, alternative = https)
 * `-j [cores]`: run CMSSW compilation on # cores (default = 8)
-* `-n [name]`: name of the CMSSW directory if not CMSSW_X_Y_Z (default = CMSSW_10_6_25)
+* `-n [name]`: name of the CMSSW directory if not CMSSW_X_Y_Z (default = CMSSW_10_6_29)
 * `-d [dir]`: project installation area for the CMSSW directory (default = ${PWD})
 * `-D`: print additional debug statements (default = false)
 * `-h`: display help message and exit
