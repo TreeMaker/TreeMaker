@@ -75,7 +75,7 @@ tar_treemaker_Run2_UL:
     extends: .job_template_tar
     variables:
         BASE_IMAGE: index.docker.io/treemaker/treemaker:Run2_UL-latest
-        CMSSW_VERSION: CMSSW_10_6_25
+        CMSSW_VERSION: CMSSW_10_6_29
 
 build_treemaker_Run2_UL-standalone:
     extends: .job_template_build
@@ -84,7 +84,7 @@ build_treemaker_Run2_UL-standalone:
     variables:
         BRANCH_NAME: Run2_UL
         SUFFIX: standalone
-        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_6_25-2021-05-20-563715a3
-        CMSSW_VERSION: CMSSW_10_6_25
+        BASE_IMAGE: gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_6_29-2021-05-20-563715a3
+        CMSSW_VERSION: CMSSW_10_6_29
         DOCKER_GROUP: treemaker
         DOCKER_REGISTRY: https://index.docker.io/v1/
