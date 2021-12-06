@@ -110,8 +110,10 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     )
     # Medium DeepCSV UL WPs from:
     
+    # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL16preVFP#AK4_b_tagging
     # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL18#AK4_b_tagging
     # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
+    (TMeras.TMUL2016APV).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.6001))
     (TMeras.TMUL2017).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4506))
     (TMeras.TMUL2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4168))
     setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
