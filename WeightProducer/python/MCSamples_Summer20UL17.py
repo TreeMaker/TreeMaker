@@ -31,6 +31,8 @@ Summer20UL17samples = [
     MCSample('TTGamma_Dilept_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v1', 'RunIISummer20UL17MiniAODv2', 'Constant', 10018000),
     MCSample('TTGamma_Hadronic_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v1', 'RunIISummer20UL17MiniAODv2', 'Constant', 10697000),
     MCSample('TTGamma_SingleLept_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v1', 'RunIISummer20UL17MiniAODv2', 'Constant', 19066000),
+    MCSample('TTZH_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v2', 'RunIISummer20UL17MiniAODv2', 'Constant', 350000),
+    MCSample('TTWH_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v2', 'RunIISummer20UL17MiniAODv2', 'Constant', 360000),
     MCSample('TTWW_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v1', 'RunIISummer20UL17MiniAODv2', 'Constant', 698000),
     MCSample('TTWZ_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v1', 'RunIISummer20UL17MiniAODv2', 'Constant', 350000),
     MCSample('TTZZ_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v1', 'RunIISummer20UL17MiniAODv2', 'Constant', 327000),
