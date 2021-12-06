@@ -46,12 +46,14 @@ def getWeightProducer(fileName, scan=False):
     from MCSamples_Summer20UL17 import Summer20UL17samples
     from MCSamples_Summer20UL18 import Summer20UL18samples
     from SVJsamples import SVJsamples
+    from EMJsamples import EMJsamples
     samples += Summer20UL16samples
     samples += Summer20UL16APVsamples
     samples += Summer20UL17samples
     samples += Summer20UL18samples
     samples += SVJsamples
-    
+    samples += EMJsamples
+
     # loop over all samples until we find a match
     for sample in samples:
         if sample.name in fileName and sample.production in fileName:

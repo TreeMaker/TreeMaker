@@ -107,6 +107,10 @@ def defineTests(mytests, scenario, name, numevents, command, dataset, inputFiles
     mytests.append(Test("Summer20UL17_DATA","Summer20UL17_DATA.Run2017E-UL2017-v1.SingleMuon",numevents,command,inputFilesConfig="Run2017E-UL2017-v1.SingleMuon",nstart=0,nfiles=1))
     mytests.append(Test("Summer20UL18_DATA","Summer20UL18_DATA.Run2018A-UL2018-v2.MET",numevents,command,inputFilesConfig="Run2018A-UL2018-v2.MET",nstart=0,nfiles=1))
     mytests.append(Test("Summer20UL18_DATA","Summer20UL18_DATA.Run2018C-UL2018-v1.EGamma",numevents,command,inputFilesConfig="Run2018C-UL2018-v1.EGamma",nstart=0,nfiles=1))
+    mytests.append(Test("Summer20UL16sig","PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_kappa-0p25_aligned-down",numevents,"emerging=True doPhotons=True deepAK8=False deepDoubleB=False doZinv=False nestedVectors=False splitLevel=99"+command,inputFilesConfig="PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_kappa-0p25_aligned-down",nstart=0,nfiles=10))
+    mytests.append(Test("Summer20UL16sig","PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_ctau-150_unflavored-down",numevents,"emerging=True doPhotons=True deepAK8=False deepDoubleB=False doZinv=False nestedVectors=False splitLevel=99"+command,inputFilesConfig="PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_ctau-150_unflavored-down",nstart=0,nfiles=10))
+    mytests.append(Test("Summer20UL17sig","PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_kappa-0p25_aligned-down",numevents,"emerging=True doPhotons=True deepAK8=False deepDoubleB=False doZinv=False nestedVectors=False splitLevel=99"+command,inputFilesConfig="PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_kappa-0p25_aligned-down",nstart=0,nfiles=10))
+    mytests.append(Test("Summer20UL17sig","PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_ctau-150_unflavored-down",numevents,"emerging=True doPhotons=True deepAK8=False deepDoubleB=False doZinv=False nestedVectors=False splitLevel=99"+command,inputFilesConfig="PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_ctau-150_unflavored-down",nstart=0,nfiles=10))
 
 def unitTest():
     # Read parameters
