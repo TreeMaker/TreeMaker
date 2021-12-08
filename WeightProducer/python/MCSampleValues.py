@@ -936,16 +936,12 @@ class MCSampleValuesHelper():
         },
         "WWTo1L1Nu2Q" : {
             "CrossSection" : XSValues(
-                XS_2016=45.68, XSSource_2016="XSDB (LO)",
-                XS_2017=80.74, XSSource_2017="XSDB (LO)",
-                XS_2018=81.46, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=49.997, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Diboson (NNLO)",
             ),
         },
         "WZTo1L1Nu2Q" : {
             "CrossSection" : XSValues(
-                XS_2016=10.73, XSSource_2016="XSDB (LO)",
-                XS_2017=11.66, XSSource_2017="XSDB (LO)",
-                XS_2018=11.76, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=11.70, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "WZTo1L3Nu" : {
@@ -1067,30 +1063,22 @@ class MCSampleValuesHelper():
         },
         "TTTT" : {
             "CrossSection" : XSValues(
-                XS_2016=0.009103, XSSource_2016="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#TT_X, NLO",
-                XS_2017=0.008213, XSSource_2017="XSDB (unknown)",
-                XS_2018=0.008213, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=0.01197, XSSource_13TeV="https://link.springer.com/content/pdf/10.1007/JHEP02(2018)031.pdf (p. 20, NLO)",
             ),
         },
         "TTHH" : {
             "CrossSection" : XSValues(
-                XS_2016=0.0007367, XSSource_2016="XSDB (LO)",
-                XS_2017=0.0006655, XSSource_2017="XSDB (LO)",
-                XS_2018=0.0006651, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=0.0006683, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTTW" : {
             "CrossSection" : XSValues(
-                XS_2016=0.0008612, XSSource_2016="XSDB (LO)",
-                XS_2017=0.0007314, XSSource_2017="XSDB (LO)",
-                XS_2018=0.0007317, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=0.0007299, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTWH" : {
             "CrossSection" : XSValues(
-                XS_2016=0.001344, XSSource_2016="XSDB (LO)",
-                XS_2017=0.001141, XSSource_2017="XSDB (LO)",
-                XS_2018=0.001140, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=0.001143, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTWW" : {
@@ -1105,9 +1093,7 @@ class MCSampleValuesHelper():
         },
         "TTZH" : {
             "CrossSection" : XSValues(
-                XS_2016=0.001244, XSSource_2016="XSDB (LO)",
-                XS_2017=0.00113,  XSSource_2017="XSDB (LO)",
-                XS_2018=0.001131, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=0.001134, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTZZ" : {
@@ -1117,9 +1103,7 @@ class MCSampleValuesHelper():
         },
         "TTTJ" : {
             "CrossSection" : XSValues(
-                XS_2016=0.0004812, XSSource_2016="XSDB (LO)",
-                XS_2017=0.0003974, XSSource_2017="XSDB (LO)",
-                XS_2018=0.0003972, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=0.0004010, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "WWW_4F" : {
@@ -1144,7 +1128,7 @@ class MCSampleValuesHelper():
         },
         "WZG" : {
            "CrossSection" : XSValues(
-                 XS_13TeV=0.07876, XSSource_2017="GenXSecAnalyzer",
+                 XS_13TeV=0.07876, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "WZZ" : {
