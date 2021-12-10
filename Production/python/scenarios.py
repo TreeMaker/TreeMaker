@@ -112,7 +112,7 @@ class Scenario:
         elif sname == "Summer20UL16APV_DATA":
 
             self.set_vars(
-                globaltag="106X_dataRun2_v33",
+                globaltag="106X_dataRun2_v35",
                 tagname="PAT",
                 hlttagname="HLT",
                 jsonfile=self.absdatapath+"/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
@@ -123,7 +123,7 @@ class Scenario:
             )
         elif sname == "Summer20UL16_DATA":
             self.set_vars(
-                globaltag="106X_dataRun2_v33",
+                globaltag="106X_dataRun2_v35",
                 tagname="PAT",
                 hlttagname="HLT",
                 jsonfile=self.absdatapath+"/Cert_271036-284044_13TeV_Legacy2016_Collisions16_JSON.txt",
@@ -134,7 +134,7 @@ class Scenario:
             )
         elif sname == "Summer20UL17":
             self.set_vars(
-                globaltag="106X_mc2017_realistic_v8",
+                globaltag="106X_mc2017_realistic_v9",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -146,7 +146,7 @@ class Scenario:
             )
         elif sname == "Summer20UL17sig":
             self.set_vars(
-                globaltag="106X_mc2017_realistic_v8",
+                globaltag="106X_mc2017_realistic_v9",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -159,7 +159,7 @@ class Scenario:
             )
         elif sname == "Summer20UL17Fast":
             self.set_vars(
-                globaltag="106X_mc2017_realistic_v8",
+                globaltag="106X_mc2017_realistic_v9",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -172,7 +172,7 @@ class Scenario:
             )
         elif sname == "Summer20UL17Fastsig":
             self.set_vars(
-                globaltag="106X_mc2017_realistic_v8",
+                globaltag="106X_mc2017_realistic_v9",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -186,7 +186,7 @@ class Scenario:
             )
         elif sname == "Summer20UL17_DATA":
             self.set_vars(
-                globaltag="106X_dataRun2_v33",
+                globaltag="106X_dataRun2_v35",
                 tagname="PAT",
                 hlttagname="HLT",
                 jsonfile=self.absdatapath+"/Cert_294927-306462_13TeV_UL2017_Collisions17_GoldenJSON.txt",
@@ -197,7 +197,7 @@ class Scenario:
             )
         elif sname == "Summer20UL18":
             self.set_vars(
-                globaltag="106X_upgrade2018_realistic_v15_L1v1",
+                globaltag="106X_upgrade2018_realistic_v16_L1v1",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -209,7 +209,7 @@ class Scenario:
             )
         elif sname == "Summer20UL18sig":
             self.set_vars(
-                globaltag="106X_upgrade2018_realistic_v15_L1v1",
+                globaltag="106X_upgrade2018_realistic_v16_L1v1",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -222,7 +222,7 @@ class Scenario:
             )
         elif sname == "Summer20UL18Fast":
             self.set_vars(
-                globaltag="106X_upgrade2018_realistic_v15_L1v1",
+                globaltag="106X_upgrade2018_realistic_v16_L1v1",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -235,7 +235,7 @@ class Scenario:
             )
         elif sname == "Summer20UL18Fastsig":
             self.set_vars(
-                globaltag="106X_upgrade2018_realistic_v15_L1v1",
+                globaltag="106X_upgrade2018_realistic_v16_L1v1",
                 tagname="PAT",
                 hlttagname="HLT",
                 geninfo=True,
@@ -249,7 +249,7 @@ class Scenario:
             )
         elif sname == "Summer20UL18_DATA":
             self.set_vars(
-                globaltag="106X_dataRun2_v33",
+                globaltag="106X_dataRun2_v35",
                 tagname="PAT",
                 hlttagname="HLT",
                 jsonfile=self.absdatapath+"/Cert_314472-325175_13TeV_Legacy2018_Collisions18_JSON.txt",
