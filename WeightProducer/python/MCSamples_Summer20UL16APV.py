@@ -41,6 +41,7 @@ Summer20UL16APVsamples = [
     MCSample('TTTT_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 4207000, 1837028),
     MCSample('TTWH_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 140000),
     MCSample('TTZH_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 140000),
+    MCSample('TTTJ_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 138000),
     MCSample('ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 5013363, 1648005),
     MCSample('QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 19077000),
     MCSample('QCD_Pt_120to170_TuneCP5_13TeV_pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 28652000),
@@ -87,7 +88,6 @@ Summer20UL16APVsamples = [
     MCSample('QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 56868784),
     MCSample('QCD_HT50to100_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 36599034),
     MCSample('QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 15808790),
-
     MCSample('QCD_HT1500to2000_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 10031077),
     MCSample('QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 4996082),
     MCSample('QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 56868784),

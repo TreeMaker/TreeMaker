@@ -47,6 +47,7 @@ Summer20UL16samples = [
     MCSample('TTTT_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 4602000, 2011850),
     MCSample('TTWH_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 160000),
     MCSample('TTZH_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 160000),
+    MCSample('TTTJ_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 160000),
     MCSample('ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 4941250, 1622956),
     MCSample('ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 5231575, 1719499),
     MCSample('QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 19892000),
