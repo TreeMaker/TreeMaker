@@ -203,6 +203,13 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
                 'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
                 'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
                 'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
+
+                'JetProperties'+suff+':bJetTagDeepFlavourprobb(Jets'+suff+'_bJetTagDeepFlavourprobb)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobbb(Jets'+suff+'_bJetTagDeepFlavourprobbb)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobc(Jets'+suff+'_bJetTagDeepFlavourprobc)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobg(Jets'+suff+'_bJetTagDeepFlavourprobg)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobuds(Jets'+suff+'_bJetTagDeepFlavourprobuds)',
+
             ])
             if self.geninfo:
                 JetProperties.properties.extend(["jerFactor"])
@@ -226,7 +233,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
                 'JetProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
                 'JetProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
             ])
-                                             
+
     return process
 
 # AK8 storeProperties levels:
