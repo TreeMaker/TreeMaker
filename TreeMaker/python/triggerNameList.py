@@ -197,7 +197,7 @@ triggerNameList = cms.vstring(
     'HLT_Mu8_Ele8_CaloIdM_TrackIdM_Mass8_PFHT300_v', 
     'HLT_Mu8_TrkIsoVVL_Ele17_CaloIdL_TrackIdL_IsoVL_v', 
     'HLT_Mu8_TrkIsoVVL_Ele23_CaloIdL_TrackIdL_IsoVL_DZ_v', 
-    'HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v'
+    'HLT_TkMu17_TrkIsoVVL_TkMu8_TrkIsoVVL_DZ_v',
     'HLT_PFHT400_FivePFJet_100_100_60_30_30_DoublePFBTagDeepCSV_4p5_v',
     'HLT_PFHT450_SixPFJet36_PFBTagDeepCSV_1p59_v',
     ])))
