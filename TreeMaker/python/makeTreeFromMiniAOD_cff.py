@@ -1079,6 +1079,7 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     if self.semivisible:
         process.HiddenSector = cms.EDProducer("HiddenSectorProducer",
+            signal = cms.bool(self.signal and "SVJ" in self.sample),
             JetTag = JetAK8Tag,
             MetTag = METTag,
             GenMetTag = cms.InputTag("genMetTrue"),
@@ -1086,15 +1087,13 @@ def makeTreeFromMiniAOD(self,process):
             GenJetTag = GenJetAK8Tag,
             coneSize = cms.double(0.8),
             DarkStableIDs = cms.vuint32(51,52,53),
-            DarkQuarkIDs = cms.vuint32(4900101),
-            DarkMediatorIDs = cms.vuint32(4900023),
+            DarkQuarkIDs = cms.vuint32(4900101,4900102),
+            DarkSMediatorIDs = cms.vuint32(4900023),
+            DarkTMediatorIDs = cms.vuint32(4900001,4900002,4900003,4900004,4900005,4900006),
             DarkHadronIDs = cms.vuint32(4900111,4900113,4900211,4900213),
             DarkGluonIDs = cms.vuint32(4900021),
             SMQuarkIDs = cms.vuint32(1,2,3,4,5,6),
         )
-        if self.tchannel:
-            process.HiddenSector.DarkQuarkIDs = [4900101,4900102]
-            process.HiddenSector.DarkMediatorIDs = [4900001,4900002,4900003,4900004,4900005,4900006]
         self.VarsDouble.extend([
             'HiddenSector:MJJ(MJJ_AK8)',
             'HiddenSector:Mmc(Mmc_AK8)',
@@ -1104,19 +1103,18 @@ def makeTreeFromMiniAOD(self,process):
             'HiddenSector:DeltaPhi2(DeltaPhi2_AK8)',
             'HiddenSector:DeltaPhiMin(DeltaPhiMin_AK8)',
         ])
-        if self.geninfo:
+        if self.geninfo and process.HiddenSector.signal:
             self.VectorBool.extend([
                 'HiddenSector:isHV(JetsAK8_isHV)'
             ])
-            if self.tchannel:
-                self.VectorInt.extend([
-                    'HiddenSector:hvCategory(GenJetsAK8_hvCategory)',
-                    'HiddenSector:MT2JetsID(GenJetsAK8_MT2JetsID)',
-                    'HiddenSector:genIndex(JetsAK8_genIndex)'
-                ])
-                self.VectorDouble.extend([
-                    'HiddenSector:darkPtFrac(GenJetsAK8_darkPtFrac)'
-                ])
+            self.VectorInt.extend([
+                'HiddenSector:hvCategory(GenJetsAK8_hvCategory)',
+                'HiddenSector:MT2JetsID(GenJetsAK8_MT2JetsID)',
+                'HiddenSector:genIndex(JetsAK8_genIndex)'
+            ])
+            self.VectorDouble.extend([
+                'HiddenSector:darkPtFrac(GenJetsAK8_darkPtFrac)'
+            ])
     ## ----------------------------------------------------------------------------------------------
     ## Photon information
     ## ----------------------------------------------------------------------------------------------

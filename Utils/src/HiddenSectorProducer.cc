@@ -52,6 +52,7 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     void matchPFMtoJet(CandPtr part, std::vector<const reco::GenJet*>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, int mt2ID) const;
     double calculateMT2(const edm::Handle<edm::View<reco::GenMET>>& h_genmets, const reco::GenJet* dQM1J, const reco::GenJet* SMM1J, const reco::GenJet* dQM2J, const reco::GenJet* SMM2J) const;
     std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
+    bool signal_;
     edm::InputTag JetTag_, MetTag_, GenMetTag_, GenTag_, GenJetTag_;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
     edm::EDGetTokenT<edm::View<pat::MET>> MetTok_;
@@ -59,7 +60,7 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     edm::EDGetTokenT<edm::View<reco::GenParticle>> GenTok_;
     edm::EDGetTokenT<edm::View<reco::GenJet>> GenJetTok_;
     double coneSize_;
-    PidSet DarkMediatorIDs_, DarkQuarkIDs_, DarkHadronIDs_, DarkGluonIDs_, DarkStableIDs_, DarkFirstIDs_, SMQuarkIDs_;
+    PidSet DarkSMediatorIDs_, DarkTMediatorIDs_, DarkQuarkIDs_, DarkHadronIDs_, DarkGluonIDs_, DarkStableIDs_, DarkFirstIDs_, SMQuarkIDs_;
 };
 
 void HiddenSectorProducer::fillSet(PidSet& IDset, const std::string& name, const edm::ParameterSet& iConfig){
@@ -93,7 +94,7 @@ void HiddenSectorProducer::medDecay(CandPtr part, CandSet& firstQdM, CandSet& fi
   for(unsigned i = 0; i < part->numberOfDaughters(); i++){
     CandPtr dau = part->daughter(i);
     // if the first dark mediator's daughter is still a dark mediator, then check the daughters of this daughter dark mediator until we get daughters that are not dark mediator
-    if(isParticle(DarkMediatorIDs_,dau)) medDecay(dau,firstQdM,firstQsM,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
+    if(isParticle(DarkTMediatorIDs_,dau)) medDecay(dau,firstQdM,firstQsM,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
     else{
       // a mediator decays into a dark and an SM quark. Here we are collecting the dark quarks from the mediators while labeling them firstQdM1 and firstQdM2 depending on which mediator the quarks came from.
       if(isParticle(DarkQuarkIDs_,dau)){
@@ -128,7 +129,7 @@ void HiddenSectorProducer::firstDark(CandPtr part, CandSet& firstMd, CandSet& fi
       // looping through the daughters of this SM parent
       for(unsigned i = 0; i < part->numberOfDaughters(); i++){
         CandPtr dau = part->daughter(i);
-        if (isParticle(DarkMediatorIDs_,dau)){
+        if (isParticle(DarkTMediatorIDs_,dau)){
           firstMd.insert(dau);
           // once a mediator daughter is found, we look for the descendants of the mediator
           medDecay(dau,firstQdM,firstQsM,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
@@ -221,6 +222,7 @@ std::vector<int> HiddenSectorProducer::matchGenRec(const edm::View<pat::Jet>& je
 }
 
 HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
+  signal_(iConfig.getParameter<bool>("signal")),
   JetTag_(iConfig.getParameter<edm::InputTag>("JetTag")),
   MetTag_(iConfig.getParameter<edm::InputTag>("MetTag")),
   GenMetTag_(iConfig.getParameter<edm::InputTag>("GenMetTag")),
@@ -233,14 +235,15 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
   GenJetTok_(consumes<edm::View<reco::GenJet>>(GenJetTag_)),
   coneSize_(iConfig.getParameter<double>("coneSize"))
 {
-  fillSet(DarkMediatorIDs_,"DarkMediatorIDs",iConfig);
+  fillSet(DarkSMediatorIDs_,"DarkSMediatorIDs",iConfig);
+  fillSet(DarkTMediatorIDs_,"DarkTMediatorIDs",iConfig);
   fillSet(DarkQuarkIDs_,"DarkQuarkIDs",iConfig);
   fillSet(DarkHadronIDs_,"DarkHadronIDs",iConfig);
   fillSet(DarkGluonIDs_,"DarkGluonIDs",iConfig);
   fillSet(DarkStableIDs_,"DarkStableIDs",iConfig);
   fillSet(SMQuarkIDs_,"SMQuarkIDs",iConfig);
   //combined list of possible first particles
-  DarkFirstIDs_.insert(DarkMediatorIDs_.begin(),DarkMediatorIDs_.end());
+  DarkFirstIDs_.insert(DarkTMediatorIDs_.begin(),DarkTMediatorIDs_.end());
   DarkFirstIDs_.insert(DarkQuarkIDs_.begin(),DarkQuarkIDs_.end());
   DarkFirstIDs_.insert(DarkGluonIDs_.begin(),DarkGluonIDs_.end());
   asymm_mt2_lester_bisect::disableCopyrightMessage();
@@ -252,12 +255,14 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
   produces<double>("DeltaPhi1");
   produces<double>("DeltaPhi2");
   produces<double>("DeltaPhiMin");
-  produces<std::vector<bool>>("isHV");
-  //first two branches for GenJetsAK8, last is for JetsAK8 (matching index)
-  produces<std::vector<int>>("hvCategory");
-  produces<std::vector<double>>("darkPtFrac");
-  produces<std::vector<int>>("MT2JetsID");
-  produces<std::vector<int>>("genIndex");
+  if(signal_){
+    produces<std::vector<bool>>("isHV");
+    //first two branches for GenJetsAK8, last is for JetsAK8 (matching index)
+    produces<std::vector<int>>("hvCategory");
+    produces<std::vector<double>>("darkPtFrac");
+    produces<std::vector<int>>("MT2JetsID");
+    produces<std::vector<int>>("genIndex");
+  }
 }
 
 double HiddenSectorProducer::TransverseMass(double px1, double py1, double m1, double px2, double py2, double m2) const {
@@ -331,13 +336,13 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
   }
 
   //ISRJetProducer method, find jets with hard process particles at their 'core' and other jets are ISR
-  if(h_parts.isValid()){
+  if(signal_ and h_parts.isValid()){
     for(const auto& i_jet : *(h_jets.product())){ // loop over AK8 jets
       bool matched = false; // matched == true means that this jet has a hard process (descendant particle of the Z') at its 'core'
       for (const auto& i_part : *(h_parts.product())){ // loop over GenParticles
         if (matched) break; // only need to match one particle to the jet to tag it as FSR
         if(i_part.status()!=23) continue; // only want particles outgoing from the hard process
-        if(isParticle(DarkMediatorIDs_,i_part.mother())) continue; // only want direct descendants of Z' (kind of redundant)
+        if(isParticle(DarkSMediatorIDs_,i_part.mother())) continue; // only want direct descendants of Z' (kind of redundant)
         //check against daughters in case of hard initial splitting, from ISRJetProducer...
         std::vector<CandPtr> listOfDaughters;
         addDaughters(&i_part,listOfDaughters);
@@ -406,11 +411,13 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     *genIndex = matchGenRec(*(h_jets.product()), *(h_genjets.product()));
   }
 
-  iEvent.put(std::move(jet_isHV_vec),"isHV");
-  iEvent.put(std::move(hvCategory),"hvCategory");
-  iEvent.put(std::move(darkPtFrac),"darkPtFrac");
-  iEvent.put(std::move(MT2JetsID),"MT2JetsID");
-  iEvent.put(std::move(genIndex),"genIndex");
+  if(signal_){
+    iEvent.put(std::move(jet_isHV_vec),"isHV");
+    iEvent.put(std::move(hvCategory),"hvCategory");
+    iEvent.put(std::move(darkPtFrac),"darkPtFrac");
+    iEvent.put(std::move(MT2JetsID),"MT2JetsID");
+    iEvent.put(std::move(genIndex),"genIndex");
+  }
   auto pMJJ = std::make_unique<double>(MJJ);
   iEvent.put(std::move(pMJJ),"MJJ");
   auto pMmc = std::make_unique<double>(Mmc);
