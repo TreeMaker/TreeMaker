@@ -1,5 +1,5 @@
 # Make the base image configurable:
-ARG BASEIMAGE=gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_6_29-2021-12-03-857162bc
+ARG BASEIMAGE=gitlab-registry.cern.ch/treemaker/cmssw-docker/cmssw:CMSSW_10_6_29_patch1-2022-01-04-f15a56a0
 
 # Set up the CMSSW base:
 FROM ${BASEIMAGE}
@@ -21,7 +21,7 @@ LABEL   org.label-schema.build-date=$BUILD_DATE \
 USER    cmsusr
 WORKDIR /home/cmsusr
 
-ARG CMSSW_VERSION=CMSSW_10_6_29
+ARG CMSSW_VERSION=CMSSW_10_6_29_patch1
 
 COPY .docker/setupStandalone.sh ./setupStandalone.sh
 COPY ${CMSSW_VERSION}.tar.gz ./${CMSSW_VERSION}.tar.gz
