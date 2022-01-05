@@ -16,6 +16,7 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="enable verbose output (default = %default)")
         parser.add_option("-x", "--redir", dest="redir", default="", help="input file redirector (default = %default)")
         parser.add_option("-f", "--use-folders", dest="useFolders", default=False, action="store_true", help="store the output in folders based on era and dataset (default = %default)")
+        parser.add_option("-i", "--ignore-args", dest="ignoreArgs", default=False, action="store_true", help="ignore args specified in the input dict (default = %default)")
         parser.add_option("--maxJobs", dest="maxJobs", default=-1, type=int, help="Max number of jobs to run")
         parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
 
@@ -58,6 +59,10 @@ class jobSubmitterTM(jobSubmitter):
             # loop over dict entries
             process = input.replace(".py","")
             flist = __import__("dict_"+process).flist
+            # args can be specified like scenario in dict
+            # args specified on the command line appended to dict args (so command line overrides dict)
+            if not self.ignoreArgs and "args" in flist:
+                self.args = " ".join([x for x in [flist["args"],self.args] if len(x)>0])
             scenarioName = flist["scenario"]
             scenario = Scenario(scenarioName)
             data = not scenario.geninfo
@@ -161,7 +166,8 @@ class jobSubmitterTM(jobSubmitter):
                     if self.prepare:
                         jname = job.makeName(job.nums[-1]+self.offset)
                         with open("input/args_"+jname+".txt",'w') as argfile:
-                            args = (self.args+" " if len(self.args)>0 else "")+"outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
+                            args = "outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
+                            if len(self.args)>0: args = args+" "+self.args
                             argfile.write(args)
 
                 # append queue comment
