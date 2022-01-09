@@ -1,4 +1,7 @@
-import os, subprocess, re, sys
+import os
+import re
+import subprocess
+import sys
 
 class Test:
     def __init__(self, scenario, name, numevents, command, dataset="", inputFilesConfig="", nstart=0, nfiles=0, redir=""):
@@ -63,6 +66,10 @@ class Test:
                 sts = os.waitpid(p.pid, 0)[1]
                 print "\nTest is done! ["+str(p.pid)+"]"
                 if clean: self.cleanFiles(clean)
+                exitstatus_pid = "{0:b}".format(sts)
+                exitstatus = int(exitstatus_pid[0:8],2)
+                if exitstatus != 0:
+                    raise RuntimeError("\nERROR::The Test did not complete successfully!")
 
     def run(self, log, clean):
         out = None
@@ -74,9 +81,11 @@ class Test:
                 print line,
                 if log: out.write(line)
         p.wait()
-        if log: out.close()
         print "\nTest is done!"
+        if log: out.close()
         if clean: self.cleanFiles(clean)
+        if p.returncode != 0:
+            raise RuntimeError("\nERROR::The Test did not complete successfully!")
 
     def cleanFiles(self, clean):
         print "\nCleaning output files..."
@@ -130,7 +139,7 @@ def unitTest():
     # sanity check for defining an on-the-fly test
     if test==0 and dataset=="" and inputFilesConfig=="":
         print "If defining a unitTest on-the-fly, you must either specify a \'dataset\' or an \'inputFilesConfig\'."
-        sys.exit(-1)
+        sys.exit(1)
 
     if test<0 or test>=len(mytests):
         print "Predefined tests:"
@@ -139,10 +148,14 @@ def unitTest():
     else:
         mytests[test].printTest(test,log)
         if run:
-            if fork:
-                mytests[test].forkAndRun(clean)
-            else:
-                mytests[test].run(log,clean)
+            try:
+                if fork:
+                    mytests[test].forkAndRun(clean)
+                else:
+                    mytests[test].run(log,clean)
+            except RuntimeError, e:
+                print str(e)
+                sys.exit(2)
 
 if __name__ == '__main__':
     unitTest()
