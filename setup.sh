@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-CMSSWVER=CMSSW_10_6_29
+CMSSWVER=CMSSW_10_6_29_patch1
 FORK=TreeMaker
 BRANCH=Run2_UL
 ACCESS=ssh
@@ -154,7 +154,6 @@ fi
 if [[ "$CMSSWVER" == "CMSSW_10_6_"* ]]; then
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:storeJERFactorIndex10620p1
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:AddJetAxis1_10620p1
-	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:SpeedupPuppi106X
 fi
 
 # outside repositories
