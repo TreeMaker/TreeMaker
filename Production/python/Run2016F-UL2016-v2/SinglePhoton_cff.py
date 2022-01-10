@@ -1,0 +1,29 @@
+import FWCore.ParameterSet.Config as cms
+
+maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+readFiles = cms.untracked.vstring()
+secFiles = cms.untracked.vstring()
+source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
+readFiles.extend( [
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/D99C8FE5-81CF-EC40-9D13-D27507815581.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/A5D2C586-0760-6A4E-B3A4-8256D7A858A4.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/516F01E7-C19D-9A46-A2EA-41DA67241C2A.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/63687078-E15D-964E-A9BF-AC4903B64C34.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/8EB400A1-3626-EC4A-8D31-2F48E46F4DAA.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/C3B4415D-DC87-9242-9501-3605921F02E0.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/62B4E166-B598-4646-99F6-7160C14EB438.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/F7784DFD-4F2A-1E4A-B68A-E82C716A0BAE.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/5FCDA5BC-8C16-844A-A7CC-D98603E7AC8E.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/43B0C81F-9572-2541-AFCC-B5BAD6E9A759.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/C27D04E9-1045-A840-9577-EEC29DD7B9BD.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/51584D7E-3FCF-8442-9F6F-D249CD1C3629.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/891CB373-859B-AA43-8142-B76C8717E3CA.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/40EBCF53-CF80-1344-98AD-EC60F1F302D8.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/1E9EE8C4-FE6E-E04E-B25D-E0F5F09A322B.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/AA767EFC-C9FE-0E45-A5E7-5BB25BDD05FF.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/D39281C2-254B-594F-8179-BB8162AE4CFB.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/DC0F1045-70A7-F444-BDD5-5034F3F90BAB.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/C5D45840-59D3-9847-9D2C-0E3D32576DF3.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/41988A25-8186-484C-8BA1-6187A87B7143.root',
+    '/store/data/Run2016F/SinglePhoton/MINIAOD/UL2016_MiniAODv2-v2/270000/754551CB-2475-6941-B618-61A316352071.root',
+] )

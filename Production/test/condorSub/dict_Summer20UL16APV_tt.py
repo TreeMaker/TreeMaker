@@ -13,6 +13,9 @@ flist = {
        ['Summer20UL16APV.TTWW_TuneCP5_13TeV-madgraph-pythia8'],
        ['Summer20UL16APV.TTWZ_TuneCP5_13TeV-madgraph-pythia8'],
        ['Summer20UL16APV.TTZZ_TuneCP5_13TeV-madgraph-pythia8'],
+       ['Summer20UL16APV.TTTT_TuneCP5_13TeV-amcatnlo-pythia8'],
+       ['Summer20UL16APV.TTWH_TuneCP5_13TeV-madgraph-pythia8'],
+       ['Summer20UL16APV.TTZH_TuneCP5_13TeV-madgraph-pythia8'],
        ['Summer20UL16APV.ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8'],
 
    ]

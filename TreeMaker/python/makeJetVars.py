@@ -110,8 +110,10 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     )
     # Medium DeepCSV UL WPs from:
     
+    # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL16preVFP#AK4_b_tagging
     # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL18#AK4_b_tagging
     # https://twiki.cern.ch/twiki/bin/view/CMS/BtagRecommendation106XUL17#AK4_b_tagging
+    (TMeras.TMUL2016APV).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.6001))
     (TMeras.TMUL2017).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4506))
     (TMeras.TMUL2018).toModify(BTagsDeepCSV,BTagCutValue = cms.double(0.4168))
     setattr(process,"BTagsDeepCSV"+suff,BTagsDeepCSV)
@@ -201,6 +203,17 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
                 'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
                 'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
                 'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobb(Jets'+suff+'_bJetTagDeepFlavourprobb)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobbb(Jets'+suff+'_bJetTagDeepFlavourprobbb)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobc(Jets'+suff+'_bJetTagDeepFlavourprobc)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobg(Jets'+suff+'_bJetTagDeepFlavourprobg)',
+                'JetProperties'+suff+':bJetTagDeepFlavourprobuds(Jets'+suff+'_bJetTagDeepFlavourprobuds)',
+                'JetProperties'+suff+':bJetTagDeepCSVprobb(Jets'+suff+'_bJetTagDeepCSVprobb)',
+                'JetProperties'+suff+':bJetTagDeepCSVprobbb(Jets'+suff+'_bJetTagDeepCSVprobbb)',
+                'JetProperties'+suff+':bJetTagDeepCSVprobc(Jets'+suff+'_bJetTagDeepCSVprobc)',
+                'JetProperties'+suff+':bJetTagDeepCSVprobudsg(Jets'+suff+'_bJetTagDeepCSVprobudsg)',
+
+
             ])
             if self.geninfo:
                 JetProperties.properties.extend(["jerFactor"])
@@ -224,7 +237,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
                 'JetProperties'+suff+':chargedMultiplicity(Jets'+suff+'_chargedMultiplicity)',
                 'JetProperties'+suff+':neutralMultiplicity(Jets'+suff+'_neutralMultiplicity)',
             ])
-                                             
+
     return process
 
 # AK8 storeProperties levels:

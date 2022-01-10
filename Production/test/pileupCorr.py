@@ -27,7 +27,7 @@ if __name__ == "__main__":
     parser.add_option("-D", "--data", dest="data", default="", help="ROOT file w/ data pileup distributions (in case already computed)")
     parser.add_option("-M", "--mc", dest="mc", default="", help="ROOT file w/ MC pileup distribution (overrides scenario)")
     parser.add_option("-n", "--name", dest="name", default="", help="Name for input MC pileup distribution (TrueNumInteractions_###)")
-    parser.add_option("-m", "--minbias", dest="minbias", default=71300, help="minbias xsec in mb (default = %default)")
+    parser.add_option("-m", "--minbias", dest="minbias", default=69200, help="minbias xsec in mb (default = %default)")
     parser.add_option("-u", "--uncertainty", dest="uncertainty", default=0.0485, help="minbias xsec uncertainty (default = %default)")
     parser.add_option("-b", "--nbins", dest="nbins", default=50, help="max number of bins for histos (default = %default)")
     (options, args) = parser.parse_args()
@@ -69,10 +69,17 @@ if __name__ == "__main__":
         hdata_up.SetName("data_pu_up")
         hdata_down.SetName("data_pu_down")
     else:
-        dfile = TFile.Open(options.data)
-        hdata_central = dfile.Get("data_pu_central")
-        hdata_up = dfile.Get("data_pu_up")
-        hdata_down = dfile.Get("data_pu_down")
+        dfile  = TFile.Open(options.data, "READ") # nominal with min bias xsec 69200 ub
+        dfiled = TFile.Open(options.data.replace("69200", "66000"), "READ") # down variation with min bias xsec 66000 ub
+        dfileu = TFile.Open(options.data.replace("69200", "72400"), "READ") # up variation with min bias xsec 72400 ub
+
+        hdata_central = dfile.Get("pileup"); hdata_central.SetName("data_pu_central")
+        hdata_up      = dfileu.Get("pileup"); hdata_up.SetName("data_pu_up")
+        hdata_down    = dfiled.Get("pileup"); hdata_down.SetName("data_pu_down")
+
+        hdata_central.Scale(1.0/hdata_central.Integral(1,int(options.nbins)))
+        hdata_up.Scale(1.0/hdata_up.Integral(1,int(options.nbins)))     
+        hdata_down.Scale(1.0/hdata_down.Integral(1,int(options.nbins)))   
 
         # override nbins
         options.nbins = hdata_central.GetNbinsX()
@@ -85,6 +92,7 @@ if __name__ == "__main__":
         mix = getattr(__import__(options.scenario,fromlist=["mix"]),"mix")
         probvalue = mix.input.nbPileupEvents.probValue
 
+    fout.cd()
     # save data histos
     hdata_central.Write()
     hdata_up.Write()
@@ -96,7 +104,7 @@ if __name__ == "__main__":
         if len(options.mc)>0: hMC25ns.SetBinContent(b+1, hMCneff.GetBinContent(b+1) if b <= hMCneff.GetNbinsX() else 0)
         else: hMC25ns.SetBinContent(b+1,probvalue[b] if b < len(probvalue) else 0)
         hMC25ns.SetBinError(b+1,0)
-    hMC25ns.Scale(1/hMC25ns.Integral(1,int(options.nbins)))
+    hMC25ns.Scale(1.0/hMC25ns.Integral(1,int(options.nbins)))
     hMC25ns.Write()
     
     # divide histos
