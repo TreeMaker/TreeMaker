@@ -53,10 +53,10 @@ jobs:
     - name: Run the container and perform an integration test
       if: github.event_name == 'pull_request'
       env:
-        download_url: https://cernbox.cern.ch/index.php/s/DsfTPyDEgCjTmBQ/download
-        file_name: eos.opendata.cms.MonteCarlo2016.RunIISummer16MiniAODv2.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8.MINIAODSIM.PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1.70000.0048131D-3CB3-E611-813A-001E67DFFB31_100evt.root
-        era: Summer16
-        output_name: Summer16.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8_opendata
+        download_url: https://cernbox.cern.ch/index.php/s/bPISUrvVEdMfp5I/download
+        file_name: store.mc.RunIISummer20UL16MiniAODv2.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8.MINIAODSIM.106X_mcRun2_asymptotic_v17-v1.120000.0605C02A-A789-C548-8D73-9B7D0A4D5561_100evt.root
+        era: Summer20UL16
+        output_name: Summer20UL16.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8
         integration_test_image: treemaker/treemaker:${{ env.current_branch }}-latest
         docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker-integration
       run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "cd ${{ env.cmssw_ver }}/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=0 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99"
@@ -77,10 +77,10 @@ jobs:
       run: echo "current_user=$(echo ${{ github.repository }} | sed -E 's|/.*||')" >> $GITHUB_ENV
     - name: Run the container and perform an integration test
       env:
-        download_url: https://cernbox.cern.ch/index.php/s/DsfTPyDEgCjTmBQ/download
-        file_name: eos.opendata.cms.MonteCarlo2016.RunIISummer16MiniAODv2.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8.MINIAODSIM.PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1.70000.0048131D-3CB3-E611-813A-001E67DFFB31_100evt.root
-        era: Summer16
-        output_name: Summer16.QCD_Pt_600to800_TuneCUETP8M1_13TeV_pythia8_opendata
+        download_url: https://cernbox.cern.ch/index.php/s/bPISUrvVEdMfp5I/download
+        file_name: store.mc.RunIISummer20UL16MiniAODv2.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8.MINIAODSIM.106X_mcRun2_asymptotic_v17-v1.120000.0605C02A-A789-C548-8D73-9B7D0A4D5561_100evt.root
+        era: Summer20UL16
+        output_name: Summer20UL16.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8
         integration_test_image: treemaker/treemaker:${{ env.current_branch }}-latest
         docker_options: -t -P --device /dev/fuse --cap-add SYS_ADMIN --security-opt apparmor:unconfined -e CVMFS_MOUNTS="cms.cern.ch" --name treemaker
       run: docker run ${{ env.docker_options }} ${{ env.integration_test_image }} -- -i -c "pushd . && cd ${{ env.cmssw_ver }}/src/ && cmsenv && cd TreeMaker/Production/test/ && wget ${{ env.download_url }} -O ${{ env.file_name }} && python unitTest.py test=0 scenario=${{ env.era }} dataset=file:${{ env.file_name }} name=${{ env.output_name }} run=True fork=False log=False clean=99 && rm ${{ env.file_name }} && popd"
