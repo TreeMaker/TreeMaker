@@ -37,14 +37,14 @@ class maker:
         self.getParamDefault("lostlepton", True, bool)
         self.getParamDefault("hadtau", False, bool)
         self.getParamDefault("hadtaurecluster", 0)
-        self.getParamDefault("doZinv", True, bool)
+        self.getParamDefault("doZinv", False, bool)
 
         # special signal stuff
         self.getParamDefault("systematics",True, bool);
         self.getParamDefault("semivisible",True, bool);
         self.getParamDefault("boostedsemivisible",False, bool);
         self.getParamDefault("emerging",False, bool);
-        self.getParamDefault("doPhotons",False, bool);
+        self.getParamDefault("doPhotons",True, bool);
         self.getParamDefault("tchannel",False, bool);
         self.getParamDefault("deepAK8",True, bool);
         self.getParamDefault("deepDoubleB",True, bool);
