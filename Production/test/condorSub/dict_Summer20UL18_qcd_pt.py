@@ -1,6 +1,7 @@
 flist = {
 
    "scenario": "Summer20UL18",
+   "args": "saveMinimalGenParticles=True,boostedsemivisible=True,emerging=False",
    "samples": [
 
        ['Summer20UL18.QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8'],
