@@ -1212,7 +1212,7 @@ def makeTreeFromMiniAOD(self,process):
             addEnergyCorrFunc = True,
             ecfType = ["N","M","C","D"],
             ecfBeta = [1.0,2.0],
-            ecfN3 = 250, # pt cut for 3-jet ECFs
+            # use default pt cut for 3-jet ECFs: effectively disable them
             verbosity = 2 if self.verbose else 0,
             # 
             JETCorrPayload = 'AK8PFPuppi',
@@ -1263,15 +1263,15 @@ def makeTreeFromMiniAOD(self,process):
             doECFs = True,
         )
 
-        _omit_AK15 = ["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity", "jerFactor", "origIndex"]
+        _omit_AK15 = ["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity", "jerFactor", "origIndex", "ecfN3b1", "ecfN3b2"]
         process.JetPropertiesAK15.properties = [x for x in process.JetPropertiesAK15.properties if x not in _omit_AK15]
         for branchlist in [self.VectorDouble, self.VectorInt, self.AssocVectorVectorDouble, self.AssocVectorVectorInt]:
             branchlist.setValue([x for x in branchlist if not ("AK15" in x and any([y in x for y in _omit_AK15]))])
 
         # more ECFs
-        _all_ECFs = ["ecfN2b1","ecfN2b2","ecfN3b1","ecfN3b2","ecfC2b1","ecfC2b2","ecfC3b1","ecfC3b2","ecfM2b1","ecfM2b2","ecfM3b1","ecfM3b2","ecfD2b1","ecfD2b2"]
-        process.JetPropertiesAK15.properties.extend(_all_ECFs[4:]) # N-types already included
-        self.VectorDouble.extend(['JetPropertiesAK15:{0}(JetsAK15_{0})'.format(_ecf) for _ecf in _all_ECFs[4:]])
+        _all_ECFs = ["ecfN2b1","ecfN2b2","ecfC2b1","ecfC2b2","ecfM2b1","ecfM2b2","ecfD2b1","ecfD2b2"]
+        process.JetPropertiesAK15.properties.extend(_all_ECFs[2:]) # N-types already included
+        self.VectorDouble.extend(['JetPropertiesAK15:{0}(JetsAK15_{0})'.format(_ecf) for _ecf in _all_ECFs[2:]])
         for _ecf in _all_ECFs:
             _ecfT = _ecf[3:5]
             _ecfB = _ecf[6]
