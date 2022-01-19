@@ -1,7 +1,7 @@
 flist = {
 
    "scenario": "Summer20UL16APV",
-   "args": "saveMinimalGenParticles=True,boostedsemivisible=True,emerging=False",
+   "args": "boostedsemivisible=True",
    "samples": [
 
        ['Summer20UL16APV.ZJetsToNuNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8'],
