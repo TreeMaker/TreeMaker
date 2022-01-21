@@ -212,8 +212,6 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
                 'JetProperties'+suff+':bJetTagDeepCSVprobbb(Jets'+suff+'_bJetTagDeepCSVprobbb)',
                 'JetProperties'+suff+':bJetTagDeepCSVprobc(Jets'+suff+'_bJetTagDeepCSVprobc)',
                 'JetProperties'+suff+':bJetTagDeepCSVprobudsg(Jets'+suff+'_bJetTagDeepCSVprobudsg)',
-
-
             ])
             if self.geninfo:
                 JetProperties.properties.extend(["jerFactor"])
@@ -406,6 +404,8 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 "NsubjettinessTau3"     ,
                 "NumBhadrons"           ,
                 "NumChadrons"           ,
+                "partonFlavor"          ,
+                "hadronFlavor"          ,
             ])
             JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
             JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
@@ -417,7 +417,9 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             ])
             self.VectorInt.extend([
                 'JetProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
-                'JetProperties'+suff+':NumChadrons(Jets'+suff+'_NumChadrons)'
+                'JetProperties'+suff+':NumChadrons(Jets'+suff+'_NumChadrons)',
+                'JetProperties'+suff+':partonFlavor(Jets'+suff+'_partonFlavor)',
+                'JetProperties'+suff+':hadronFlavor(Jets'+suff+'_hadronFlavor)',
             ])
 
             # fractions and multiplicities (use puppi versions for neutral mults)
