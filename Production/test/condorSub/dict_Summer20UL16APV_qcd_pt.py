@@ -1,6 +1,7 @@
 flist = {
 
    "scenario": "Summer20UL16APV",
+   "args": "boostedsemivisible=True",
    "samples": [
 
        ['Summer20UL16APV.QCD_Pt_1000to1400_TuneCP5_13TeV_pythia8'],

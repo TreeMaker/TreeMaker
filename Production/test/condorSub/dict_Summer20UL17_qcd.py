@@ -1,6 +1,7 @@
 flist = {
 
    "scenario": "Summer20UL17",
+   "args": "boostedsemivisible=True emerging=True",
    "samples": [
 
        ['Summer20UL17.QCD_HT1000to1500_TuneCP5_PSWeights_13TeV-madgraph-pythia8'],
@@ -12,6 +13,5 @@ flist = {
        ['Summer20UL17.QCD_HT500to700_TuneCP5_PSWeights_13TeV-madgraph-pythia8'],
        ['Summer20UL17.QCD_HT50to100_TuneCP5_PSWeights_13TeV-madgraph-pythia8'],
        ['Summer20UL17.QCD_HT700to1000_TuneCP5_PSWeights_13TeV-madgraph-pythia8'],
-
    ]
 }
