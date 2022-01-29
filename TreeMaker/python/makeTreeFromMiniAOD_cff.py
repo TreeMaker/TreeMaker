@@ -203,6 +203,15 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorRecoCand.append("genTops(GenTops)")
         self.VarsDouble.append("genTops:weight(GenTopWeight)")
 
+        #Event weight to fix FastSim pre-UL bug
+        if self.fastsim:
+            process.FastSimWeightPR31285To36122 = cms.EDProducer("FastSimWeightPR31285To36122",
+                genCollection = cms.InputTag("prunedGenParticles"),
+                genJetTag = cms.InputTag('slimmedGenJets'),
+                recJetTag = cms.InputTag("slimmedJets")
+            )
+            self.VarsDouble.append("FastSimWeightPR31285To36122:EventWeight(FastSimWeightPR31285To36122)")
+
     ## ----------------------------------------------------------------------------------------------
     ## JECs
     ## ----------------------------------------------------------------------------------------------
