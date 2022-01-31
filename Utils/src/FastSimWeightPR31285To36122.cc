@@ -175,7 +175,6 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
                         break;
                     }
                 }
-                   
             }
             leadHadronPt = xax->GetBinLowEdge(xax->FindBin(std::min(leadHadronPt, 498.)));
             if (jetHasOffendingGp_)
