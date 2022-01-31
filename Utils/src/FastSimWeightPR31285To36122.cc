@@ -137,6 +137,7 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
     const float justInsidePipe = 2.16;
     const float justOutsidePipe = 2.17;
     const float farOutsideCaloButNotTooFarAway = 2000;
+    const float justInsideTheHighestBinEdge = 498.;
     for(const auto& genJet : *genJets) 
     {
            if (!(genJet.pt()>genJetPtThreshold)) continue;
@@ -175,7 +176,7 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
                     }
                 }
             }
-            leadHadronPt = xax->GetBinLowEdge(xax->FindBin(std::min(leadHadronPt, 498.)));
+            leadHadronPt = xax->GetBinLowEdge(xax->FindBin(std::min(leadHadronPt, justInsideTheHighestBinEdge)));
             if (jetHasOffendingGp_)
             {
                 EventWeight*=0;
