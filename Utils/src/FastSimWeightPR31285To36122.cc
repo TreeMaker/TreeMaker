@@ -131,13 +131,12 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
     float decayxy;       
     int hadronFlavor;     
     int pdgid;
-    float genJetPtThreshold = 30;
-    float genParticlePtThreshold = 15;
-    float drThreshold = 0.4;
-    float justInsidePipe = 2.16;
-    float justOutsidePipe = 2.17;
-    float farOutsideCaloButNotTooFarAway = 2000;
-    
+    const float genJetPtThreshold = 30;
+    const float genParticlePtThreshold = 15;
+    const float drThreshold = 0.4;
+    const float justInsidePipe = 2.16;
+    const float justOutsidePipe = 2.17;
+    const float farOutsideCaloButNotTooFarAway = 2000;
     for(const auto& genJet : *genJets) 
     {
            if (!(genJet.pt()>genJetPtThreshold)) continue;
