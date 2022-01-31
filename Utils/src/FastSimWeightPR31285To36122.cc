@@ -4,7 +4,6 @@
 // Authors:   Sam Bein 
 //         Created:  Wed March 7, 2014
 //         Modified: Thurs March 3, 2021
-
 #include <memory>
 #include <iostream>
 #include <unordered_set>
@@ -19,41 +18,27 @@
 #include <DataFormats/HepMCCandidate/interface/GenParticle.h>
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
-#include "TLorentzVector.h"
-
+#include "DataFormats/Math/interface/deltaR.h"
+//#include "TLorentzVector.h"
 #include <vector>
-
 class FastSimWeightPR31285To36122 : public edm::global::EDProducer<> {
-
 public:
     explicit FastSimWeightPR31285To36122(const edm::ParameterSet&);
-    ~FastSimWeightPR31285To36122() override;
-
     static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
 private:
     void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
     // ----------member data ---------------------------
-
     edm::InputTag genCollection;
     edm::EDGetTokenT<edm::View<reco::GenParticle>> genCollectionTok;
-    
     edm::InputTag genJetTag;
     edm::EDGetTokenT<edm::View<reco::GenJet>> genJetTok;    
     edm::InputTag recJetTag;
-    edm::EDGetTokenT<edm::View<pat::Jet>> recJetTok;   
-    
-    
+    edm::EDGetTokenT<edm::View<pat::Jet>> recJetTok;
    TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorLt4;
    TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4;
    TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5;
    TAxis * xax;
-   
-    
-
 };
-
-
 FastSimWeightPR31285To36122::FastSimWeightPR31285To36122(const edm::ParameterSet& iConfig):
   genCollection(iConfig.getParameter<edm::InputTag>("genCollection")),
   genCollectionTok(consumes<edm::View<reco::GenParticle>>(genCollection)),
@@ -62,8 +47,7 @@ FastSimWeightPR31285To36122::FastSimWeightPR31285To36122(const edm::ParameterSet
   recJetTag(iConfig.getParameter<edm::InputTag>("recJetTag")),
   recJetTok(consumes<edm::View<pat::Jet>>(recJetTag))  
 {
-    produces< double >("EventWeight"); 
-    
+   produces< double >();   
    hRatio_GenJetHadronPtGenJetHadronFlavorLt4 = new TH1F("hRatio_GenJetHadronPtGenJetHadronFlavorLt4","",20,0,500);
    hRatio_GenJetHadronPtGenJetHadronFlavorLt4->SetBinContent(1,1.001089);
    hRatio_GenJetHadronPtGenJetHadronFlavorLt4->SetBinContent(2,1.015741);
@@ -86,8 +70,6 @@ FastSimWeightPR31285To36122::FastSimWeightPR31285To36122(const edm::ParameterSet
    hRatio_GenJetHadronPtGenJetHadronFlavorLt4->SetBinContent(19,1);
    hRatio_GenJetHadronPtGenJetHadronFlavorLt4->SetBinContent(20,1.034483);
    xax = (TAxis*)hRatio_GenJetHadronPtGenJetHadronFlavorLt4->GetXaxis();
-   
-   
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4 = new TH1F("hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4","",20,0,500);
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4->SetBinContent(1,1.013215);
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4->SetBinContent(2,1.040373);
@@ -109,7 +91,6 @@ FastSimWeightPR31285To36122::FastSimWeightPR31285To36122(const edm::ParameterSet
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4->SetBinContent(18,2.625);
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4->SetBinContent(19,3);
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4->SetBinContent(20,2.2);
-   
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5 = new TH1F("hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5","",20,0,500);
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->SetBinContent(1,1.010584);
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->SetBinContent(2,1.01473);
@@ -130,37 +111,19 @@ FastSimWeightPR31285To36122::FastSimWeightPR31285To36122(const edm::ParameterSet
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->SetBinContent(17,5.119048);
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->SetBinContent(18,5.574074);
    hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->SetBinContent(19,6.516129);
-   hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->SetBinContent(20,7.685393);
-   
-   
+   hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->SetBinContent(20,7.685393);  
 }
-
-FastSimWeightPR31285To36122::~FastSimWeightPR31285To36122() {
-  // do anything here that needs to be done at destruction time
-  // (e.g. close files, deallocate resources etc.)
-}
-
-
 // ------------ method called for each event  ------------
 void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
     using namespace edm;
-
     double EventWeight = 1.0;    
-    
     edm::Handle< View<reco::GenParticle> > genPartCands;
     iEvent.getByToken(genCollectionTok, genPartCands);
-    
     edm::Handle< View<reco::GenJet> > genJets;
     iEvent.getByToken(genJetTok, genJets);
-    
     edm::Handle< View<pat::Jet> > recJets;
     iEvent.getByToken(recJetTok, recJets);   
-    
-    
     bool jetHasOffendingGp_;
-    TLorentzVector genJet_tlv;
-    TLorentzVector recJet_tlv;
-    TLorentzVector genPart_tlv;    
     float dr;    
     float mindr;
     double leadHadronPt;
@@ -168,12 +131,16 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
     float decayxy;       
     int hadronFlavor;     
     int pdgid;
+    float genJetPtThreshold = 30;
+    float genParticlePtThreshold = 15;
+    float drThreshold = 0.4;
+    float justInsidePipe = 2.16;
+    float justOutsidePipe = 2.17;
+    float farOutsideCaloButNotTooFarAway = 2000;
     
-
     for(const auto& genJet : *genJets) 
     {
-           if (!(genJet.pt()>30)) continue;
-           genJet_tlv.SetPxPyPzE(genJet.px(), genJet.py(), genJet.pz(), genJet.energy());
+           if (!(genJet.pt()>genJetPtThreshold)) continue;
            jetHasOffendingGp_ = false;//must use
            mindr = 99;
            hadronFlavor = -11;
@@ -181,36 +148,28 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
            originxy = -1;
            for(const auto& recJet : *recJets) 
             {
-                recJet_tlv.SetPxPyPzE(recJet.px(), recJet.py(), recJet.pz(), recJet.energy());
-                dr = recJet_tlv.DeltaR(genJet_tlv);
-                if (!(dr<0.4 && dr<mindr)) continue;
+                dr = deltaR(recJet.p4(),genJet.p4());
+                if (!(dr<drThreshold && dr<mindr)) continue;
                 mindr = dr;
                 hadronFlavor = std::max(1,recJet.hadronFlavour());
-                if (hadronFlavor==22) hadronFlavor = 1;
-                
                 for(const auto& iPart : *genPartCands) {
-                    if (!(iPart.pt()>15)) continue;
+                    if (!(iPart.pt()>genParticlePtThreshold)) continue;
                     pdgid = abs(iPart.pdgId());
-                    genPart_tlv.SetPxPyPzE(iPart.px(), iPart.py(), iPart.pz(), iPart.energy());
-                    if (!(genPart_tlv.DeltaR(genJet_tlv)<0.4)) continue;
-                    if(!(pdgid>100 && pdgid<600)) continue;
-                    if (hadronFlavor<4 && pdgid>100 && pdgid<400)
-                    {
-                        if(iPart.pt()>leadHadronPt) {leadHadronPt = iPart.pt();}
-                    }
-                    else if (hadronFlavor==4 && pdgid>400 && pdgid<500)
-                    {
-                        if(iPart.pt()>leadHadronPt) {leadHadronPt = iPart.pt();}
-                    }
-                    else if (hadronFlavor==5 && pdgid>400 && pdgid<600)
-                    {
-                    if(iPart.pt()>leadHadronPt) {leadHadronPt = iPart.pt();}
-                    }        
+                    if (!(deltaR(iPart,genJet)<drThreshold)) continue;
+                    if(!(pdgid>100 && pdgid<600)) continue; //only consider hadrons
+                    if (iPart.pt()>leadHadronPt) {
+                        if ( (hadronFlavor<4 && pdgid>100 && pdgid<400) ||//only consider hadrons
+                             (hadronFlavor==4 && pdgid>400 && pdgid<500) ||//only consider hadrons
+                             (hadronFlavor==5 && pdgid>400 && pdgid<600) )//only consider hadrons
+                        {
+                            leadHadronPt = iPart.pt();
+                        }
+                    }                       
                     if(!(iPart.numberOfDaughters()>1)) continue;
-                    originxy = sqrt(pow(iPart.vx(),2) + pow(iPart.vy(),2)); originxy = originxy;
-                    if(!(originxy<2.16)) continue;
+                    originxy = sqrt(pow(iPart.vx(),2) + pow(iPart.vy(),2));
+                    if(!(originxy<justInsidePipe)) continue;
                     decayxy = sqrt(pow(iPart.daughter(0)->vx(),2) + pow(iPart.daughter(0)->vy(),2));
-                    if (decayxy>2.17 and decayxy<2000)
+                    if (decayxy>justOutsidePipe and decayxy<farOutsideCaloButNotTooFarAway)
                     {
                         jetHasOffendingGp_ = true;
                         break;
@@ -230,17 +189,12 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
                else if (hadronFlavor==5) EventWeight*=hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->Interpolate(leadHadronPt);           
             }
         }
-               
         auto EventWeight_double = std::make_unique<double>(EventWeight);
-        iEvent.put(std::move(EventWeight_double), "EventWeight");
-    
+        iEvent.put(std::move(EventWeight_double));
 }
-
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void FastSimWeightPR31285To36122::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
 }
-
 #include "FWCore/Framework/interface/MakerMacros.h"
-
 //define this as a plug-in
 DEFINE_FWK_MODULE(FastSimWeightPR31285To36122);
