@@ -19,7 +19,6 @@
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/Math/interface/deltaR.h"
-//#include "TLorentzVector.h"
 #include <vector>
 class FastSimWeightPR31285To36122 : public edm::global::EDProducer<> {
 public:
@@ -34,10 +33,10 @@ private:
     edm::EDGetTokenT<edm::View<reco::GenJet>> genJetTok;    
     edm::InputTag recJetTag;
     edm::EDGetTokenT<edm::View<pat::Jet>> recJetTok;
-   TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorLt4;
-   TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4;
-   TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5;
-   TAxis * xax;
+    TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorLt4;
+    TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4;
+    TH1F *hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5;
+    TAxis * xax;
 };
 FastSimWeightPR31285To36122::FastSimWeightPR31285To36122(const edm::ParameterSet& iConfig):
   genCollection(iConfig.getParameter<edm::InputTag>("genCollection")),
@@ -127,17 +126,21 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
     float dr;    
     float mindr;
     double leadHadronPt;
-    float originxy;   
-    float decayxy;       
+    float originxy_squared;   
+    float decayxy_squared;       
     int hadronFlavor;     
     int pdgid;
     const float genJetPtThreshold = 30;
     const float genParticlePtThreshold = 15;
     const float drThreshold = 0.4;
-    const float justInsidePipe = 2.16;
-    const float justOutsidePipe = 2.17;
-    const float farOutsideCaloButNotTooFarAway = 2000;
-    const float justInsideTheHighestBinEdge = 498.;
+    const float justInsidePipe_squared = 2.16*2.16;
+    const float justOutsidePipe_squared = 2.17*2.17;
+    const float farOutsideCaloButNotTooFarAway_squared = 2000*2000.;
+    const double justInsideTheHighestBinEdge = 498.;
+    const int lowerBoundForLightHadron = 100;
+    const int lowerBoundForCHadron = 400;
+    const int lowerBoundForBHadron = 500;
+    const int upperBoundForHadron = 600;
     for(const auto& genJet : *genJets) 
     {
            if (!(genJet.pt()>genJetPtThreshold)) continue;
@@ -145,7 +148,7 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
            mindr = 99;
            hadronFlavor = -11;
            leadHadronPt = 1;
-           originxy = -1;
+           originxy_squared = -1;
            for(const auto& recJet : *recJets) 
             {
                 dr = deltaR(recJet.p4(),genJet.p4());
@@ -156,20 +159,20 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
                     if (!(iPart.pt()>genParticlePtThreshold)) continue;
                     pdgid = abs(iPart.pdgId());
                     if (!(deltaR(iPart,genJet)<drThreshold)) continue;
-                    if(!(pdgid>100 && pdgid<600)) continue; //only consider hadrons
+                    if(!(pdgid>lowerBoundForLightHadron && pdgid<upperBoundForHadron)) continue; //only consider hadrons
                     if (iPart.pt()>leadHadronPt) {
-                        if ( (hadronFlavor<4 && pdgid>100 && pdgid<400) ||//only consider hadrons
-                             (hadronFlavor==4 && pdgid>400 && pdgid<500) ||//only consider hadrons
-                             (hadronFlavor==5 && pdgid>400 && pdgid<600) )//only consider hadrons
+                        if ( (hadronFlavor<4 && pdgid>lowerBoundForLightHadron && pdgid<lowerBoundForCHadron) ||//only consider hadrons
+                             (hadronFlavor==4 && pdgid>lowerBoundForCHadron && pdgid<lowerBoundForBHadron) ||//only consider hadrons
+                             (hadronFlavor==5 && pdgid>lowerBoundForCHadron && pdgid<upperBoundForHadron) )//only consider hadrons
                         {
                             leadHadronPt = iPart.pt();
                         }
                     }                       
                     if(!(iPart.numberOfDaughters()>1)) continue;
-                    originxy = sqrt(pow(iPart.vx(),2) + pow(iPart.vy(),2));
-                    if(!(originxy<justInsidePipe)) continue;
-                    decayxy = sqrt(pow(iPart.daughter(0)->vx(),2) + pow(iPart.daughter(0)->vy(),2));
-                    if (decayxy>justOutsidePipe and decayxy<farOutsideCaloButNotTooFarAway)
+                    originxy_squared = pow(iPart.vx(),2) + pow(iPart.vy(),2);
+                    if(!(originxy_squared<justInsidePipe_squared)) continue;
+                    decayxy_squared = pow(iPart.daughter(0)->vx(),2) + pow(iPart.daughter(0)->vy(),2);
+                    if (decayxy_squared>justOutsidePipe_squared and decayxy_squared<farOutsideCaloButNotTooFarAway_squared)
                     {
                         jetHasOffendingGp_ = true;
                         break;
