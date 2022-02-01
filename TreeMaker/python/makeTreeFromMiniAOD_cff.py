@@ -210,7 +210,7 @@ def makeTreeFromMiniAOD(self,process):
                 genJetTag = cms.InputTag('slimmedGenJets'),
                 recJetTag = cms.InputTag("slimmedJets")
             )
-            self.VarsDouble.append("FastSimWeightPR31285To36122(FastSimWeightPR31285To36122)")
+            self.VarsDouble.append("FastSimWeightPR31285To36122")
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs

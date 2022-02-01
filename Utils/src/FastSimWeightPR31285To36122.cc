@@ -150,7 +150,7 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
            leadHadronPt = 1;
            originxy_squared = -1;
            for(const auto& recJet : *recJets) 
-            {
+           {
                 dr = deltaR(recJet.p4(),genJet.p4());
                 if (!(dr<drThreshold && dr<mindr)) continue;
                 mindr = dr;
@@ -178,21 +178,21 @@ void FastSimWeightPR31285To36122::produce(edm::StreamID, edm::Event& iEvent, con
                         break;
                     }
                 }
-            }
-            leadHadronPt = xax->GetBinLowEdge(xax->FindBin(std::min(leadHadronPt, justInsideTheHighestBinEdge)));
-            if (jetHasOffendingGp_)
-            {
-                EventWeight*=0;
-            }
-            else
-            {
-               if (hadronFlavor<4) EventWeight*=hRatio_GenJetHadronPtGenJetHadronFlavorLt4->Interpolate(leadHadronPt);
-               else if (hadronFlavor==4) EventWeight*=hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4->Interpolate(leadHadronPt);
-               else if (hadronFlavor==5) EventWeight*=hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->Interpolate(leadHadronPt);           
-            }
-        }
-        auto EventWeight_double = std::make_unique<double>(EventWeight);
-        iEvent.put(std::move(EventWeight_double));
+           }
+           leadHadronPt = xax->GetBinLowEdge(xax->FindBin(std::min(leadHadronPt, justInsideTheHighestBinEdge)));
+           if (jetHasOffendingGp_)
+           {
+               EventWeight*=0;
+           }
+           else
+           {
+              if (hadronFlavor<4) EventWeight*=hRatio_GenJetHadronPtGenJetHadronFlavorLt4->Interpolate(leadHadronPt);
+              else if (hadronFlavor==4) EventWeight*=hRatio_GenJetHadronPtGenJetHadronFlavorEqEq4->Interpolate(leadHadronPt);
+              else if (hadronFlavor==5) EventWeight*=hRatio_GenJetHadronPtGenJetHadronFlavorEqEq5->Interpolate(leadHadronPt);           
+           }
+    }
+    auto EventWeight_double = std::make_unique<double>(EventWeight);
+    iEvent.put(std::move(EventWeight_double));
 }
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
 void FastSimWeightPR31285To36122::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
