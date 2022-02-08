@@ -16,6 +16,7 @@
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 #include "FWCore/Framework/interface/ConsumesCollector.h"
+#include "DataFormats/Math/interface/libminifloat.h"
 
 //ROOT headers
 #include "TString.h"
@@ -67,7 +68,7 @@ class TreeMaker : public edm::one::EDAnalyzer<edm::one::SharedResources> {
 		string treeName;
 		TTree* tree;
 		bool doLorentz, sortBranches, debugTitles, nestedVectors, storeOffsets, saveFloat;
-		int splitLevel;
+		int splitLevel, reduceFloatPrecision;
 		vector<string> VarTypeNames;
 		vector<TreeTypes> VarTypes;
 		map<string,unsigned> nameCache;
@@ -112,6 +113,12 @@ class TreeObjectBase {
 				nameCache[nameInTree] = 1;
 			}
 		}
+		template<typename BaseIn>
+		BaseIn reduceMantissaToNbitsRounding(BaseIn source, const int& mantissaPrecision) {
+			return source;
+		}
+		template <typename T>
+		void reduceMantissaToNbitsRounding(int mantissaPrecision, T source, T dest) { };
 		
 	protected:
 		//member variables
@@ -120,6 +127,24 @@ class TreeObjectBase {
 		edm::InputTag tag;
 		TBranch* branch{};
 };
+
+//reduce precision based on https://github.com/cms-sw/cmssw/blob/c9da596d0807a487c46d5940ffbb727da0de8064/DataFormats/Math/interface/libminifloat.h
+// Information about precision:
+//    https://en.wikipedia.org/wiki/IEEE_754#Basic_and_interchange_formats
+//    https://en.wikipedia.org/wiki/Double-precision_floating-point_format
+//    https://en.wikipedia.org/wiki/Single-precision_floating-point_format
+//    https://en.wikipedia.org/wiki/Half-precision_floating-point_format
+template <>
+float TreeObjectBase::reduceMantissaToNbitsRounding<float>(float source, const int& mantissaPrecision) {
+	return (mantissaPrecision >= 0 && mantissaPrecision <= 23) ? MiniFloatConverter::reduceMantissaToNbitsRounding(source, mantissaPrecision) : source;
+}
+
+template <>
+void TreeObjectBase::reduceMantissaToNbitsRounding<std::vector<float>>(int mantissaPrecision, std::vector<float> source, std::vector<float> dest) {
+	if (mantissaPrecision >= 0 && mantissaPrecision <= 23) {
+		std::transform(std::begin(source), std::end(source), std::begin(dest), MiniFloatConverter::ReduceMantissaToNbitsRounding(mantissaPrecision));
+	}
+}
 
 //comparator (case-insensitive sort)
 class TreeObjectComp {
@@ -143,7 +168,10 @@ class TreeObject : public TreeObjectBase {
 		typedef Tout T_out;
 		//constructor
 		TreeObject() : TreeObjectBase() {}
-		TreeObject(string tempFull_, string title_, int splitLevel_=0) : TreeObjectBase(tempFull_,title_), splitLevel(splitLevel_) {}
+		TreeObject(string tempFull_, string title_, int splitLevel_=0, int mantissaPrecision_=-1) :
+			TreeObjectBase(tempFull_,title_),
+			splitLevel(splitLevel_),
+			mantissaPrecision(mantissaPrecision_) {}
 		//destructor
 		~TreeObject() override {}
 		//functions
@@ -195,6 +223,7 @@ class TreeObject : public TreeObjectBase {
 				edm::LogWarning("TreeMaker") << "WARNING ... " << tagName << " is NOT valid?!";
 			}
 		}
+
 		//most common cases here
 		string GetBranchType() { return nameInTree; }
 		void AddBranch() override { if(tree) branch = tree->Branch(nameInTree.c_str(),GetBranchType().c_str(),&value,32000,splitLevel); }
@@ -205,7 +234,7 @@ class TreeObject : public TreeObjectBase {
 		//member variables
 		Tout value;
 		edm::EDGetTokenT<Tin> tok;
-		int splitLevel{};
+		int splitLevel{}, mantissaPrecision{};
 };
 
 //typedefs for float conversions
@@ -248,33 +277,62 @@ typedef TreeObject<vector<vector<string>>> TreeObjectVVString;
 
 //convert double to float
 template<>
+void TreeObjectVFloat::GetValue(const edm::Handle<vector<float>>& var) {
+	value = *var;
+	reduceMantissaToNbitsRounding(mantissaPrecision, value, value);
+}
+template<>
 void TreeObjectVDoubleToF::GetValue(const edm::Handle<vector<double>>& var) {
 	value = vector<float>(var->begin(),var->end());
+	reduceMantissaToNbitsRounding(mantissaPrecision, value, value);
 }
 template<>
 void TreeObjectVVDoubleToF::GetValue(const edm::Handle<vector<vector<double>>>& var) {
 	value.reserve(var->size());
 	for(const auto& ivar: *var){
 		value.emplace_back(ivar.begin(),ivar.end());
+		reduceMantissaToNbitsRounding(mantissaPrecision, value, value);
 	}
 }
 template<>
 void TreeObjectVLVToF::GetValue(const edm::Handle<vector<math::PtEtaPhiELorentzVector>>& var) {
 	value = vector<math::PtEtaPhiELorentzVectorF>(var->begin(),var->end());
+	for (auto& ival : value) {
+		ival.SetCoordinates(reduceMantissaToNbitsRounding(ival.Pt(), mantissaPrecision),
+							reduceMantissaToNbitsRounding(ival.Eta(), mantissaPrecision),
+							reduceMantissaToNbitsRounding(ival.Phi(), mantissaPrecision),
+							reduceMantissaToNbitsRounding(ival.E(), mantissaPrecision));
+	}
 }
 template<>
 void TreeObjectVXYZVToF::GetValue(const edm::Handle<vector<math::XYZVector>>& var) {
 	value = vector<math::XYZVectorF>(var->begin(),var->end());
+	for (auto& ival : value) {
+		ival.SetXYZ(reduceMantissaToNbitsRounding(ival.X(), mantissaPrecision),
+					reduceMantissaToNbitsRounding(ival.Y(), mantissaPrecision),
+					reduceMantissaToNbitsRounding(ival.Z(), mantissaPrecision));
+	}
 }
 template<>
 void TreeObjectVXYZPToF::GetValue(const edm::Handle<vector<math::XYZPoint>>& var) {
 	value = vector<math::XYZPointF>(var->begin(),var->end());
+	for (auto& ival : value) {
+		ival.SetXYZ(reduceMantissaToNbitsRounding(ival.X(), mantissaPrecision),
+					reduceMantissaToNbitsRounding(ival.Y(), mantissaPrecision),
+					reduceMantissaToNbitsRounding(ival.Z(), mantissaPrecision));
+	}
 }
 template<>
 void TreeObjectVVLVToF::GetValue(const edm::Handle<vector<vector<math::PtEtaPhiELorentzVector>>>& var) {
 	value.reserve(var->size());
 	for(const auto& ivar: *var){
 		value.emplace_back(ivar.begin(),ivar.end());
+		for (auto& iival : value.back()) {
+			iival.SetCoordinates(reduceMantissaToNbitsRounding(iival.Pt(), mantissaPrecision),
+								 reduceMantissaToNbitsRounding(iival.Eta(), mantissaPrecision),
+								 reduceMantissaToNbitsRounding(iival.Phi(), mantissaPrecision),
+								 reduceMantissaToNbitsRounding(iival.E(), mantissaPrecision));
+		}
 	}
 }
 template<>
@@ -282,6 +340,11 @@ void TreeObjectVVXYZVToF::GetValue(const edm::Handle<vector<vector<math::XYZVect
 	value.reserve(var->size());
 	for(const auto& ivar: *var){
 		value.emplace_back(ivar.begin(),ivar.end());
+		for (auto& iival : value.back()) {
+			iival.SetXYZ(reduceMantissaToNbitsRounding(iival.X(), mantissaPrecision),
+						 reduceMantissaToNbitsRounding(iival.Y(), mantissaPrecision),
+						 reduceMantissaToNbitsRounding(iival.Z(), mantissaPrecision));
+		}
 	}
 }
 template<>
@@ -289,6 +352,11 @@ void TreeObjectVVXYZPToF::GetValue(const edm::Handle<vector<vector<math::XYZPoin
 	value.reserve(var->size());
 	for(const auto& ivar: *var){
 		value.emplace_back(ivar.begin(),ivar.end());
+		for (auto& iival : value.back()) {
+			iival.SetXYZ(reduceMantissaToNbitsRounding(iival.X(), mantissaPrecision),
+						 reduceMantissaToNbitsRounding(iival.Y(), mantissaPrecision),
+						 reduceMantissaToNbitsRounding(iival.Z(), mantissaPrecision));
+		}
 	}
 }
 
@@ -379,7 +447,7 @@ class TreeRecoCandT : public T {
 	public:
 		//constructor
 		TreeRecoCandT() : T() {}
-		TreeRecoCandT(string tempFull_, string title_="", bool doLorentz_=true, int splitLevel_=0) : T(tempFull_,title_,splitLevel_), doLorentz(doLorentz_) {}
+		TreeRecoCandT(string tempFull_, string title_="", bool doLorentz_=true, int splitLevel_=0, int mantissaPrecision_=-1) : T(tempFull_,title_,splitLevel_,mantissaPrecision_), doLorentz(doLorentz_) {}
 		//destructor
 		~TreeRecoCandT() override {}
 		
@@ -395,7 +463,10 @@ class TreeRecoCandT : public T {
 				if(doLorentz){
 					this->value.reserve(cands->size());
 					for(auto iPart = cands->begin(); iPart != cands->end(); ++iPart){
-						this->value.emplace_back(iPart->pt(), iPart->eta(), iPart->phi(), iPart->energy());
+						this->value.emplace_back(this->reduceMantissaToNbitsRounding(iPart->pt(), this->mantissaPrecision),
+						                         this->reduceMantissaToNbitsRounding(iPart->eta(), this->mantissaPrecision),
+												 this->reduceMantissaToNbitsRounding(iPart->phi(), this->mantissaPrecision),
+												 this->reduceMantissaToNbitsRounding(iPart->energy(), this->mantissaPrecision));
 					}
 				}
 				else{
@@ -404,10 +475,10 @@ class TreeRecoCandT : public T {
 					phi.reserve(cands->size());
 					energy.reserve(cands->size());
 					for(auto iPart = cands->begin(); iPart != cands->end(); ++iPart){
-						pt.emplace_back(iPart->pt());
-						eta.emplace_back(iPart->eta());
-						phi.emplace_back(iPart->phi());
-						energy.emplace_back(iPart->energy());
+						pt.emplace_back(this->reduceMantissaToNbitsRounding(iPart->pt(), this->mantissaPrecision));
+						eta.emplace_back(this->reduceMantissaToNbitsRounding(iPart->eta(), this->mantissaPrecision));
+						phi.emplace_back(this->reduceMantissaToNbitsRounding(iPart->phi(), this->mantissaPrecision));
+						energy.emplace_back(this->reduceMantissaToNbitsRounding(iPart->energy(), this->mantissaPrecision));
 					}
 				}
 			}
@@ -474,8 +545,8 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<BaseIn>>,std:
 
 		// Constructor
 		TreeNestedVector() : TreeObject<TopIn,TopOut>() {}
-		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true, bool storeOffsets_=true, bool associated_=false, int splitLevel_=0) :
-			TreeObject<TopIn,TopOut>(tempFull_,title_,splitLevel_), nestedVectors(nestedVectors_), storeOffsets(storeOffsets_), associated(associated_) {}
+		TreeNestedVector(string tempFull_, string title_="", bool nestedVectors_=true, bool storeOffsets_=true, bool associated_=false, int splitLevel_=0, int mantissaPrecision_=-1) :
+			TreeObject<TopIn,TopOut>(tempFull_,title_,splitLevel_,mantissaPrecision_), nestedVectors(nestedVectors_), storeOffsets(storeOffsets_), associated(associated_) {}
 		// Destructor
 		~TreeNestedVector() override {}
 		
@@ -512,6 +583,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<BaseIn>>,std:
 					values.reserve(totalLength);
 					if (!associated) offsets.reserve(var->size());
 					flatten(*var,values,offsets);
+					this->reduceMantissaToNbitsRounding(this->mantissaPrecision, values, values);
 				}
 			}
 			else {

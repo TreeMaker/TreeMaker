@@ -68,6 +68,7 @@ def makeTreeFromMiniAOD(self,process):
         storeOffsets                   = self.storeOffsets,
         splitLevel                     = self.splitLevel,
         saveFloat                      = self.saveFloat,
+        reduceFloatPrecision           = self.reduceFloatPrecision,
     )
 
     ## ----------------------------------------------------------------------------------------------

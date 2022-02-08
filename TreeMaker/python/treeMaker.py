@@ -20,6 +20,8 @@ storeOffsets = cms.bool(False),
 splitLevel = cms.int32(0),
 #convert doubles to floats in output
 saveFloat = cms.bool(False),
+#reduce the mantissa in the single precision floating point values in the output
+reduceFloatPrecision = cms.int32(-1),
 # list of reco candidate objects: for each reco cand collection, the math::LorentzVector will be stored in a vector.
 VarsBool = cms.vstring(),
 VarsInt = cms.vstring(),

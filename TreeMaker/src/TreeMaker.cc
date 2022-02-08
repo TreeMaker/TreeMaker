@@ -55,6 +55,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 	storeOffsets = iConfig.getParameter<bool>("storeOffsets");
 	splitLevel = iConfig.getParameter<int>("splitLevel");
 	saveFloat = iConfig.getParameter<bool>("saveFloat");
+	reduceFloatPrecision = iConfig.getParameter<int>("reduceFloatPrecision");
 
 	// parse the TitleMap
 	stringstream skipMessage;
@@ -111,34 +112,34 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 			switch(VarTypes[v]){
 				case TreeTypes::t_bool      : tmp = new TreeObjectBool(VarName,VarTitle); break;
 				case TreeTypes::t_int       : tmp = new TreeObjectInt(VarName,VarTitle); break;
-				case TreeTypes::t_double    : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectDoubleToF(VarName,VarTitle)) : (TreeObjectBase*)(new TreeObjectDouble(VarName,VarTitle)); break;
+				case TreeTypes::t_double    : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectDoubleToF(VarName,VarTitle,0,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeObjectDouble(VarName,VarTitle)); break;
 				case TreeTypes::t_string    : tmp = new TreeObjectString(VarName,VarTitle); break;
-				case TreeTypes::t_lorentz   : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectLVToF(VarName,VarTitle,splitLevel)) : (TreeObjectBase*)(new TreeObjectLV(VarName,VarTitle,splitLevel)); break;
-				case TreeTypes::t_xyzv      : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectXYZVToF(VarName,VarTitle,splitLevel)) : (TreeObjectBase*)(new TreeObjectXYZV(VarName,VarTitle,splitLevel)); break;
-				case TreeTypes::t_xyzp      : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectXYZPToF(VarName,VarTitle,splitLevel)) : (TreeObjectBase*)(new TreeObjectXYZP(VarName,VarTitle,splitLevel)); break;
+				case TreeTypes::t_lorentz   : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectLVToF(VarName,VarTitle,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeObjectLV(VarName,VarTitle,splitLevel)); break;
+				case TreeTypes::t_xyzv      : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectXYZVToF(VarName,VarTitle,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeObjectXYZV(VarName,VarTitle,splitLevel)); break;
+				case TreeTypes::t_xyzp      : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectXYZPToF(VarName,VarTitle,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeObjectXYZP(VarName,VarTitle,splitLevel)); break;
 				case TreeTypes::t_vbool     : tmp = new TreeObjectVBool(VarName,VarTitle,splitLevel); break;
 				case TreeTypes::t_vint      : tmp = new TreeObjectVInt(VarName,VarTitle,splitLevel); break;
-				case TreeTypes::t_vfloat    : tmp = new TreeObjectVFloat(VarName,VarTitle,splitLevel); break;
-				case TreeTypes::t_vdouble   : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectVDoubleToF(VarName,VarTitle,splitLevel)) : (TreeObjectBase*)(new TreeObjectVDouble(VarName,VarTitle,splitLevel)); break;
+				case TreeTypes::t_vfloat    : tmp = new TreeObjectVFloat(VarName,VarTitle,splitLevel,reduceFloatPrecision); break;
+				case TreeTypes::t_vdouble   : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectVDoubleToF(VarName,VarTitle,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeObjectVDouble(VarName,VarTitle,splitLevel)); break;
 				case TreeTypes::t_vstring   : tmp = new TreeObjectVString(VarName,VarTitle,splitLevel); break;
-				case TreeTypes::t_vlorentz  : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectVLVToF(VarName,VarTitle,splitLevel)) : (TreeObjectBase*)(new TreeObjectVLV(VarName,VarTitle,splitLevel)); break;
-				case TreeTypes::t_vxyzv     : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectVXYZVToF(VarName,VarTitle,splitLevel)) : (TreeObjectBase*)(new TreeObjectVXYZV(VarName,VarTitle,splitLevel)); break;
-				case TreeTypes::t_vxyzp     : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectVXYZPToF(VarName,VarTitle,splitLevel)) : (TreeObjectBase*)(new TreeObjectVXYZP(VarName,VarTitle,splitLevel)); break;
+				case TreeTypes::t_vlorentz  : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectVLVToF(VarName,VarTitle,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeObjectVLV(VarName,VarTitle,splitLevel)); break;
+				case TreeTypes::t_vxyzv     : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectVXYZVToF(VarName,VarTitle,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeObjectVXYZV(VarName,VarTitle,splitLevel)); break;
+				case TreeTypes::t_vxyzp     : tmp = saveFloat ? (TreeObjectBase*)(new TreeObjectVXYZPToF(VarName,VarTitle,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeObjectVXYZP(VarName,VarTitle,splitLevel)); break;
 				case TreeTypes::t_vvbool    : tmp = new TreeNVBool(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel); break;
 				case TreeTypes::t_vvint     : tmp = new TreeNVInt(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel); break;
-				case TreeTypes::t_vvdouble  : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVDoubleToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNVDouble(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
+				case TreeTypes::t_vvdouble  : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVDoubleToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeNVDouble(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
 				case TreeTypes::t_vvstring  : tmp = new TreeNVString(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel); break;
-				case TreeTypes::t_vvlorentz : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVLVToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNVLV(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
-				case TreeTypes::t_vvxyzv    : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZVToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNVXYZV(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
-				case TreeTypes::t_vvxyzp    : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZPToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNVXYZP(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
+				case TreeTypes::t_vvlorentz : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVLVToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeNVLV(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
+				case TreeTypes::t_vvxyzv    : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZVToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeNVXYZV(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
+				case TreeTypes::t_vvxyzp    : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZPToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeNVXYZP(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
 				case TreeTypes::t_avvbool   : tmp = new TreeNVBool(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel); break;
 				case TreeTypes::t_avvint    : tmp = new TreeNVInt(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel); break;
-				case TreeTypes::t_avvdouble : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVDoubleToF(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)) : (TreeObjectBase*)(new TreeNVDouble(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)); break;
+				case TreeTypes::t_avvdouble : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVDoubleToF(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeNVDouble(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)); break;
 				case TreeTypes::t_avvstring : tmp = new TreeNVString(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel); break;
-				case TreeTypes::t_avvlorentz: tmp = saveFloat ? (TreeObjectBase*)(new TreeNVLVToF(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)) : (TreeObjectBase*)(new TreeNVLV(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)); break;
-				case TreeTypes::t_avvxyzv   : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZVToF(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)) : (TreeObjectBase*)(new TreeNVXYZV(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)); break;
-				case TreeTypes::t_avvxyzp   : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZPToF(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)) : (TreeObjectBase*)(new TreeNVXYZP(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)); break;
-				case TreeTypes::t_recocand  : tmp = saveFloat ? (TreeObjectBase*)(new TreeRecoCandToF(VarName,VarTitle,doLorentz,splitLevel)) : (TreeObjectBase*)(new TreeRecoCand(VarName,VarTitle,doLorentz,splitLevel)); break;
+				case TreeTypes::t_avvlorentz: tmp = saveFloat ? (TreeObjectBase*)(new TreeNVLVToF(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeNVLV(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)); break;
+				case TreeTypes::t_avvxyzv   : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZVToF(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeNVXYZV(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)); break;
+				case TreeTypes::t_avvxyzp   : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZPToF(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeNVXYZP(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel)); break;
+				case TreeTypes::t_recocand  : tmp = saveFloat ? (TreeObjectBase*)(new TreeRecoCandToF(VarName,VarTitle,doLorentz,splitLevel,reduceFloatPrecision)) : (TreeObjectBase*)(new TreeRecoCand(VarName,VarTitle,doLorentz,splitLevel)); break;
 			}
 			//if a known type was found, initialize and store the object
 			if(tmp) {
