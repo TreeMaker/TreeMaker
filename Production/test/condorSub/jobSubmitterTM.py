@@ -19,6 +19,11 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-i", "--ignore-args", dest="ignoreArgs", default=False, action="store_true", help="ignore args specified in the input dict (default = %default)")
         parser.add_option("--maxJobs", dest="maxJobs", default=-1, type=int, help="Max number of jobs to run")
         parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
+        parser.add_option("-r", "--resubmit", dest="resubmit", default=False, action="store_true", help="resubmit the jobs based on where the input files are located (default = %default)")
+        parser.add_option("--resubmit_options", dest="resubmit_options", default="", type=str, help="Options to be passed to file_finder_resubmitter.py, remember to add quotes around the string (default = %default)")
+        self.modes.update({
+            "resubmit": 1,
+        })
 
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterTM,self).checkExtraOptions(options,parser)
@@ -182,3 +187,9 @@ class jobSubmitterTM(jobSubmitter):
     def finishedToJobName(self,val):
         return val.split("/")[-1].replace("_RA2AnalysisTree.root","")
 
+    def run(self):
+        if self.resubmit:
+            from file_finder_resubmitter import find_file_and_resubmit
+            find_file_and_resubmit(["-u", self.user] + self.resubmit_options.split())
+        else:
+            super(jobSubmitterTM,self).run()
