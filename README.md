@@ -120,7 +120,7 @@ Python:
 * `-i, --ignore-args`: ignore args specified in the input dict (default = False)
 * `--offset [num]`: offset for arg file naming in chain jobs (default = 0)
 * `--maxJobs [num]`: max number of jobs to run (default = -1 -> not applied)
-* `-r, --resubmit`: resubmit the jobs based on where the input files are located (default = False)
+* `-r, --resubmit`: resubmit the jobs based on where the input files are located (new operation mode, default = False)
 * `--resubmit_options`: Options to be passed to file_finder_resubmitter.py, remember to add quotes around the string (default = "")
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):

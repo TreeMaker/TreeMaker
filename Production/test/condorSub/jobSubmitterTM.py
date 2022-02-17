@@ -15,11 +15,11 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-A", "--args", dest="args", default="", help="additional common args to use for all jobs (default = %default)")
         parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="enable verbose output (default = %default)")
         parser.add_option("-x", "--redir", dest="redir", default="", help="input file redirector (default = %default)")
-        parser.add_option("-f", "--use-folders", dest="useFolders", default=False, action="store_true", help="store the output in folders based on era and dataset (default = %default)")
+        parser.add_option("-F", "--use-folders", dest="useFolders", default=False, action="store_true", help="store the output in folders based on era and dataset (default = %default)")
         parser.add_option("-i", "--ignore-args", dest="ignoreArgs", default=False, action="store_true", help="ignore args specified in the input dict (default = %default)")
         parser.add_option("--maxJobs", dest="maxJobs", default=-1, type=int, help="Max number of jobs to run")
         parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
-        parser.add_option("-r", "--resubmit", dest="resubmit", default=False, action="store_true", help="resubmit the jobs based on where the input files are located (default = %default)")
+        parser.add_option("-f", "--resubmit", dest="resubmit", default=False, action="store_true", help="resubmit the jobs based on where the input files are located (default = %default)")
         parser.add_option("--resubmit_options", dest="resubmit_options", default="", type=str, help="Options to be passed to file_finder_resubmitter.py, remember to add quotes around the string (default = %default)")
         self.modes.update({
             "resubmit": 1,
