@@ -31,6 +31,16 @@ typedef std::unordered_set<unsigned> PidSet;
 typedef const reco::Candidate* CandPtr;
 typedef std::unordered_set<CandPtr> CandSet;
 
+//some daughters (primarily GenParticles) may be dropped from miniAOD
+//trying to access these daughers directly with the daughter() accessor will cause an exception:
+//InvalidID get by product ID: invalid ProductID supplied
+//to work around this, we check the corresponding edm::Ptr to see if its ProductID is valid
+template <typename T>
+CandPtr daughter_noexcept(const T& mother, unsigned i) {
+  auto tmp = mother.daughterPtr(i);
+  return tmp.id().isValid() ? &*tmp : nullptr;
+}
+
 class HiddenSectorProducer : public edm::global::EDProducer<> {
   public:
     explicit HiddenSectorProducer(const edm::ParameterSet&);
@@ -148,7 +158,8 @@ int HiddenSectorProducer::checkLast(const reco::GenJet& jet, const CandSet& stab
   LorentzVector p4;
   LorentzVector totPt = jet.p4();
   for(unsigned i = 0; i < jet.numberOfDaughters(); ++i){
-    CandPtr dau = jet.daughter(i);
+    CandPtr dau = daughter_noexcept(jet,i);
+    if(!dau) continue;
     if(isAncestor(DarkHadronIDs_,dau)){
         match = true;
         p4 += dau->p4();
@@ -275,7 +286,7 @@ double HiddenSectorProducer::TransverseMass(double px1, double py1, double m1, d
 template <class P>
 void HiddenSectorProducer::addDaughters(const P* i_part, std::vector<CandPtr>& listOfDaughters) const {
   for (unsigned idau=0; idau < i_part->numberOfDaughters(); ++idau) { // add all daughters of HVquark to list
-    const reco::Candidate *dau = i_part->daughter(idau);
+    CandPtr dau = i_part->daughter(idau);
     if(isParticle(DarkQuarkIDs_,dau)) addDaughters(dau,listOfDaughters); // recurse down to HV-quark copy's daughters
     else listOfDaughters.push_back(dau);
   }
