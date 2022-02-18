@@ -114,18 +114,21 @@ class maker:
                 value = "\"" + ",".join(self.readFiles) + "\""
                 try:
                     chirp_command = "condor_chirp set_job_attr_delayed " + key + " " + value
+                    if self.verbose:
+                        print chirp_command
                     proc = subprocess.Popen(chirp_command.split(), shell = False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     outs, errs = proc.communicate()
                 except Exception as e:
                     proc.kill()
-                    print "An exception occurred: {}".format(e)
+                    print "An exception occurred when adding classad {}: {}".format(key,e)
                 finally:
                     if proc.returncode:
                         print "WARNING::condor_chirp failed to set the attribute \'" + key + "\'" 
                     else:
-                        print "HTCondor classad \'" + key + "\' set to " + value
+                        if self.verbose:
+                            print "HTCondor classad \'" + key + "\' set to " + value
         except KeyError:
-            print "<Not on a condor worker node>"
+            pass
 
         # branches for treemaker
         self.VectorRecoCand                 = cms.vstring()
