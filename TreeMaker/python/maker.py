@@ -123,6 +123,7 @@ class maker:
                     print "An exception occurred when adding classad {}: {}".format(key,e)
                 finally:
                     if proc.returncode:
+                        # TODO: Right now this is fairly permissive. We may want to make this an exception in the future.
                         print "WARNING::condor_chirp failed to set the attribute \'" + key + "\'" 
                     else:
                         if self.verbose:
