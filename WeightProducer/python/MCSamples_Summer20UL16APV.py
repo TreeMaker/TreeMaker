@@ -122,4 +122,6 @@ Summer20UL16APVsamples = [
     MCSample('TTToHadronic_mtop169p5_TuneCP5_13TeV-powheg-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 39491000),
     MCSample('TTToHadronic_mtop173p5_TuneCP5_13TeV-powheg-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 39151000),
     MCSample('TTToHadronic_mtop175p5_TuneCP5_13TeV-powheg-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 39751000),
+    MCSample('RPV_2t6j_mStop-300to1400_mN1-100_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 2896728),
+    MCSample('StealthSHH_2t4b_mStop-300to1400_mSo-100_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 3125387),
 ]
