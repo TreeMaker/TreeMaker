@@ -1,5 +1,6 @@
 flist = {
-    "scenario":  "Summer20UL16_sig",
+    "scenario":  "Summer20UL16sig",
+    "args": "emerging=True",
     "samples": [
         ["PrivateSamples.EMJ_UL16_mMed-1000_mDark-2_kappa-1_aligned-down"],
         ["PrivateSamples.EMJ_UL16_mMed-1000_mDark-2_kappa-3p12_aligned-down"],
