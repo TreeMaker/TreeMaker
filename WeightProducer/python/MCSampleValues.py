@@ -1285,13 +1285,19 @@ class MCSampleValuesHelper():
         # RPV and Stealth samples have all mass points mixed together, so XSValue here is meaningless
         # Just put placeholder
         "StealthSYY_2t6j_mStop-300to1400_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=1.0),
+            "CrossSection" : XSValues(
+                XS_13TeV=1.0
+            ),
         },
         "StealthSHH_2t4b_mStop-300to1400_mSo-100" : {
-            "CrossSection" : XSValues(XS_13TeV=1.0),
+            "CrossSection" : XSValues(
+                XS_13TeV=1.0
+            ),
         },
         "RPV_2t6j_mStop-300to1400_mN1-100" : {
-            "CrossSection" : XSValues(XS_13TeV=1.0),
+            "CrossSection" : XSValues(
+                XS_13TeV=1.0
+            ),
         }
     }
 
