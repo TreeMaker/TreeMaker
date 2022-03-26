@@ -6,6 +6,7 @@ import array
 from multiprocessing import Pool
 from optparse import OptionParser
 from XRootD import client
+import imp
 
 # ------------------------------------------------------------
 # ------------------------------------------------------------
@@ -143,7 +144,8 @@ if __name__ == "__main__":
     if not os.path.isdir(options.outdir):
         os.mkdir(options.outdir)
 
-    dict = __import__(options.dictfile.replace(".py",""))
+    module_name = os.path.basename(options.dictfile).replace(".py","")
+    dict = imp.load_source(module_name,options.dictfile)
 
     #common list of options
     optlist = [options.outdir, options.basedir, options.verbose]
