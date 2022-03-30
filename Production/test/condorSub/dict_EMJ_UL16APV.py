@@ -1,4 +1,4 @@
-flist = 
+flist = {
     "scenario":  "Summer20UL16APVsig",
     "args": "emerging=True",
     "samples": [
