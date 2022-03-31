@@ -183,39 +183,27 @@ class MCSampleValuesHelper():
         },
         "TTJets_DiLept_genMET-150" : {
             "CrossSection" : XSValues(
-                XS_13TeV=3.333, XSSource_13TeV="XSDB",
+                XS_13TeV=3.333, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTJets_HT-600to800" : {
             "CrossSection" : XSValues(
-                XS_13TeV=1.821, XSSource_13TeV="XSDB",
-            ),
-            "kFactor" : kFactorValues(
-                kFactor_13TeV=1.679, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+                XS_13TeV=1.388, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTJets_HT-800to1200" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.7532, XSSource_13TeV="XSDB",
-            ),
-            "kFactor" : kFactorValues(
-                kFactor_13TeV=1.679, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+                XS_13TeV=0.5623, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTJets_HT-1200to2500" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.1313, XSSource_13TeV="GenXSecAnalyzer",
-            ),
-            "kFactor" : kFactorValues(
-                kFactor_13TeV=1.679, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+                XS_13TeV=0.09817, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTJets_HT-2500toInf" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.001410, XSSource_13TeV="GenXSecAnalyzer",
-            ),
-            "kFactor" : kFactorValues(
-                kFactor_13TeV=1.679, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+                XS_13TeV=0.001126, XSSource_13TeV="GenXSecAnalyzer",
             ),
         },
         "TTTo2L2Nu" : {
