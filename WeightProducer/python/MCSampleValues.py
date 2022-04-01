@@ -159,6 +159,9 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(
                 XS_13TeV=5.508, XSSource_13TeV="GenXSecAnalyzer",
             ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.679, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+            ),
         },
         "TTJets_SingleLeptFromTbar_genMET-80" : {
             "CrossSection" : XSValues(
@@ -171,6 +174,9 @@ class MCSampleValuesHelper():
         "TTJets_SingleLeptFromTbar_genMET-150" : {
             "CrossSection" : XSValues(
                 XS_13TeV=5.466, XSSource_13TeV="GenXSecAnalyzer",
+            ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.679, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
             ),
         },
         "TTJets_DiLept_genMET-80" : {
@@ -185,26 +191,42 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(
                 XS_13TeV=3.333, XSSource_13TeV="GenXSecAnalyzer",
             ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.679, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+            ),
         },
         "TTJets_HT-600to800" : {
             "CrossSection" : XSValues(
                 XS_13TeV=1.388, XSSource_13TeV="GenXSecAnalyzer",
             ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.693, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/491.4",
+            ), 
         },
         "TTJets_HT-800to1200" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.5623, XSSource_13TeV="GenXSecAnalyzer",
             ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.693, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/491.4",
+            ), 
         },
         "TTJets_HT-1200to2500" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.09817, XSSource_13TeV="GenXSecAnalyzer",
+
             ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.693, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/491.4",
+            ), 
         },
         "TTJets_HT-2500toInf" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.001126, XSSource_13TeV="GenXSecAnalyzer",
             ),
+            "kFactor" : kFactorValues(
+                kFactor_13TeV=1.693, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/491.4",
+            ), 
         },
         "TTTo2L2Nu" : {
             "CrossSection" : XSValues(
