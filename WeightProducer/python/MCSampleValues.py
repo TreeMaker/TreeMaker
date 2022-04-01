@@ -835,22 +835,12 @@ class MCSampleValuesHelper():
         },
         "ST_s-channel_4f_leptonDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=3.36, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/viewauth/CMS/SummaryTable1G25ns#Single_top (NLO)",
+                XS_13TeV=3.549, XSSource_13TeV="XSDB",
             ),
         },
         "ST_s-channel_4f_InclusiveDecays" : {
             "CrossSection" : XSValues(
                 XS_13TeV=10.32, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_s_channel_cross_secti (NLO)",
-            ),
-        },
-        "ST_t-channel_top_4f_InclusiveDecays" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=136.02, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_t_channel_cross_secti (NLO)",
-            ),
-        },
-        "ST_t-channel_antitop_4f_InclusiveDecays" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=80.95, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_t_channel_cross_secti (NLO)",
             ),
         },
         "ST_t-channel_antitop_5f_InclusiveDecays" : {
@@ -861,22 +851,6 @@ class MCSampleValuesHelper():
         "ST_t-channel_top_5f_InclusiveDecays" : {
             "CrossSection" : XSValues(
                 XS_13TeV=119.7, XSSource_13TeV="XSDB (NLO)",
-            ),
-        },
-        "ST_tW_top_5f_NoFullyHadronicDecays" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=32.45, XSSource_13TeV="XSDB (NLO)",
-            ),
-            "BranchingRatio" : BRValues(
-                BR_13TeV=(1-(1-3*0.105)**2), BRSource_13TeV="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
-            ),
-        },
-        "ST_tW_antitop_5f_NoFullyHadronicDecays" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=32.51, XSSource_13TeV="XSDB (NLO)",
-            ),
-            "BranchingRatio" : BRValues(
-                BR_13TeV=(1-(1-3*0.105)**2), BRSource_13TeV="http://pdg.lbl.gov/2019/reviews/rpp2018-rev-top-quark.pdf",
             ),
         },
         "ST_tW_top_5f_inclusiveDecays" : {
@@ -892,16 +866,6 @@ class MCSampleValuesHelper():
         "tZq_ll_4f_ckm" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.07561, XSSource_13TeV="XSDB (NLO)",
-            ),
-        },
-        "tZq_W_lept_Z_hadron_4f_ckm" : {
-            "CrossSection" : XSValues(
-                XS_2016=0.1573, XSSource_13TeV="XSDB (unknown)",
-            ),
-        },
-        "tZq_Zhad_Wlept_4f_ckm" : {
-            "CrossSection" : XSValues(
-                XS_2017=0.1518, XSSource_2017="XSDB (unknown)",
             ),
         },
         "WW" : {
