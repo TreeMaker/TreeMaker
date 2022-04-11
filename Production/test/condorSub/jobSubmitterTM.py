@@ -179,6 +179,46 @@ class jobSubmitterTM(jobSubmitter):
                 # store protojob
                 self.protoJobs.append(job)
 
+    def doMissing(self,job):
+        jobSet, jobDict = self.findJobs(job)
+
+        #add to finished files in case the files are folderized
+        if self.useFolders:
+            if hasattr(self,"output"):
+                finishedFilesPerJob = pyxrdfsls(self.output + "/" + job.name.replace('.','/'))
+                finishedFilesPerJobSplit = [finished.split('/') for finished in finishedFilesPerJob]
+                finishedFilesPerJob = ['.'.join(finished[-3:-1]) + "_" + finished[-1].replace("_RA2AnalysisTree.root","") for finished in finishedFilesPerJobSplit]
+                self.filesSet |= set(finishedFilesPerJob)
+
+        # replace name if necessary
+        if len(job.chainName)>0:
+            runSetTmp = {x.replace(job.chainName,job.name) for x in self.runSet}
+        else:
+            runSetTmp = self.runSet
+        # find difference
+        diffSet = jobSet - self.filesSet - runSetTmp
+        diffList = list(sorted(diffSet))
+        if len(diffList)>0:
+            if len(self.resub)>0:
+                numlist = sorted([jobDict[j] for j in diffList])
+                if self.noQueueArg:
+                    # get jdl lines for this job
+                    with open(job.jdl,'r') as file:
+                        jdlLines = [line for line in file]
+                    # overwrite queue command in jdl
+                    with open(job.jdl,'w') as file:
+                        for line in jdlLines:
+                            if line.startswith("Queue"):
+                                file.write("#"+line)
+                                file.write("Queue Process in "+','.join(map(str,numlist))+"\n")
+                            else:
+                                file.write(line)
+                    self.missingLines.append('condor_submit '+job.jdl)
+                else:
+                    self.missingLines.append('condor_submit '+job.jdl+' -queue "Process in '+','.join(map(str,numlist))+'"')
+            else:
+                self.missingLines.extend(diffList)
+
     def finishedToJobName(self,val):
         return val.split("/")[-1].replace("_RA2AnalysisTree.root","")
 
