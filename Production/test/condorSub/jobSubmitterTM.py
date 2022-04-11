@@ -180,9 +180,7 @@ class jobSubmitterTM(jobSubmitter):
                 self.protoJobs.append(job)
 
     def doMissing(self,job):
-        jobSet, jobDict = self.findJobs(job)
-
-        #add to finished files in case the files are folderized
+        # add to finished files in case the files are folderized
         if self.useFolders:
             if not hasattr(self,"checkedDirectories"):
                 setattr(self,"checkedDirectories",set())
@@ -196,34 +194,8 @@ class jobSubmitterTM(jobSubmitter):
                     self.filesSet |= set(finishedFilesPerJob)
                     self.checkedDirectories.add(bottomDir)
 
-        # replace name if necessary
-        if len(job.chainName)>0:
-            runSetTmp = {x.replace(job.chainName,job.name) for x in self.runSet}
-        else:
-            runSetTmp = self.runSet
-        # find difference
-        diffSet = jobSet - self.filesSet - runSetTmp
-        diffList = list(sorted(diffSet))
-        if len(diffList)>0:
-            if len(self.resub)>0:
-                numlist = sorted([jobDict[j] for j in diffList])
-                if self.noQueueArg:
-                    # get jdl lines for this job
-                    with open(job.jdl,'r') as file:
-                        jdlLines = [line for line in file]
-                    # overwrite queue command in jdl
-                    with open(job.jdl,'w') as file:
-                        for line in jdlLines:
-                            if line.startswith("Queue"):
-                                file.write("#"+line)
-                                file.write("Queue Process in "+','.join(map(str,numlist))+"\n")
-                            else:
-                                file.write(line)
-                    self.missingLines.append('condor_submit '+job.jdl)
-                else:
-                    self.missingLines.append('condor_submit '+job.jdl+' -queue "Process in '+','.join(map(str,numlist))+'"')
-            else:
-                self.missingLines.extend(diffList)
+        # now do the rest of missing mode
+        super(jobSubmitterTM,self).doMissing(job)
 
     def finishedToJobName(self,val):
         return val.split("/")[-1].replace("_RA2AnalysisTree.root","")
