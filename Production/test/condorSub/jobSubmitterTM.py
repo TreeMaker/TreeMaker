@@ -179,6 +179,24 @@ class jobSubmitterTM(jobSubmitter):
                 # store protojob
                 self.protoJobs.append(job)
 
+    def doMissing(self,job):
+        # add to finished files in case the files are folderized
+        if self.useFolders:
+            if not hasattr(self,"checkedDirectories"):
+                setattr(self,"checkedDirectories",set())
+
+            if hasattr(self,"output"):
+                bottomDir = self.output + "/" + job.name.replace('.','/')
+                if bottomDir not in self.checkedDirectories:
+                    finishedFilesPerJob = pyxrdfsls(bottomDir)
+                    finishedFilesPerJobSplit = [finished.split('/') for finished in finishedFilesPerJob]
+                    finishedFilesPerJob = ['.'.join(finished[-3:-1]) + "_" + finished[-1].replace("_RA2AnalysisTree.root","") for finished in finishedFilesPerJobSplit]
+                    self.filesSet |= set(finishedFilesPerJob)
+                    self.checkedDirectories.add(bottomDir)
+
+        # now do the rest of missing mode
+        super(jobSubmitterTM,self).doMissing(job)
+
     def finishedToJobName(self,val):
         return val.split("/")[-1].replace("_RA2AnalysisTree.root","")
 
