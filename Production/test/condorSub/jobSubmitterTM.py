@@ -61,8 +61,9 @@ class jobSubmitterTM(jobSubmitter):
             flist = __import__("dict_"+process).flist
             # args can be specified like scenario in dict
             # args specified on the command line appended to dict args (so command line overrides dict)
+            dictArgs = self.args[:]
             if not self.ignoreArgs and "args" in flist:
-                self.args = " ".join([x for x in [flist["args"],self.args] if len(x)>0])
+                dictArgs = " ".join([x for x in [flist["args"],dictArgs] if len(x)>0])
             scenarioName = flist["scenario"]
             scenario = Scenario(scenarioName)
             data = not scenario.geninfo
@@ -167,7 +168,7 @@ class jobSubmitterTM(jobSubmitter):
                         jname = job.makeName(job.nums[-1]+self.offset)
                         with open("input/args_"+jname+".txt",'w') as argfile:
                             args = "outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
-                            if len(self.args)>0: args = args+" "+self.args
+                            if len(dictArgs)>0: args = args+" "+dictArgs
                             argfile.write(args)
 
                 # append queue comment
