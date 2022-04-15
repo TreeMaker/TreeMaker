@@ -160,7 +160,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=5.508, XSSource_13TeV="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
-                kFactor_13TeV=1.679, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+                kFactor_13TeV=1.746, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/476.5",
             ),
         },
         "TTJets_SingleLeptFromTbar_genMET-80" : {
@@ -176,7 +176,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=5.466, XSSource_13TeV="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
-                kFactor_13TeV=1.679, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+                kFactor_13TeV=1.746, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/476.5",
             ),
         },
         "TTJets_DiLept_genMET-80" : {
@@ -192,7 +192,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=3.333, XSSource_13TeV="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
-                kFactor_13TeV=1.679, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/495.3",
+                kFactor_13TeV=1.746, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/476.5",
             ),
         },
         "TTJets_HT-600to800" : {
@@ -200,7 +200,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=1.388, XSSource_13TeV="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
-                kFactor_13TeV=1.693, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/491.4",
+                kFactor_13TeV=1.746, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/476.5",
             ), 
         },
         "TTJets_HT-800to1200" : {
@@ -208,7 +208,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=0.5623, XSSource_13TeV="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
-                kFactor_13TeV=1.693, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/491.4",
+                kFactor_13TeV=1.746, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/476.5",
             ), 
         },
         "TTJets_HT-1200to2500" : {
@@ -217,7 +217,7 @@ class MCSampleValuesHelper():
 
             ),
             "kFactor" : kFactorValues(
-                kFactor_13TeV=1.693, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/491.4",
+                kFactor_13TeV=1.746, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/476.5",
             ), 
         },
         "TTJets_HT-2500toInf" : {
@@ -225,7 +225,7 @@ class MCSampleValuesHelper():
                 XS_13TeV=0.001126, XSSource_13TeV="GenXSecAnalyzer",
             ),
             "kFactor" : kFactorValues(
-                kFactor_13TeV=1.693, kFactorSource_13TeV="[Non-UL, but CP5 result] XSDB/GenXSecAnalyzer NNLO/LO=831.76/491.4",
+                kFactor_13TeV=1.746, kFactorSource_13TeV="XSDB/GenXSecAnalyzer NNLO/LO=831.76/476.5",
             ), 
         },
         "TTTo2L2Nu" : {
