@@ -3,6 +3,8 @@ flist = {
    "scenario": "Summer20UL18",
    "samples": [
 
+       ['Summer20UL18.TTZToLLNuNu_M-10_TuneCP5_13TeV-amcatnlo-pythia8'],
+       ['Summer20UL18.TTZToNuNu_TuneCP5_13TeV-amcatnlo-pythia8'],
        ['Summer20UL18.TTZToQQ_Dilept_TuneCP5_13TeV-amcatnlo-pythia8'],
        ['Summer20UL18.TTZToQQ_TuneCP5_13TeV-amcatnlo-pythia8'],
        ['Summer20UL18.TTWJetsToLNu_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8'],
