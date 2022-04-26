@@ -67,6 +67,7 @@ class maker:
         self.getParamDefault("storeOffsets", False, bool)
         self.getParamDefault("splitLevel", 99)
         self.getParamDefault("saveFloat", True, bool)
+        self.getParamDefault("reduceFloatPrecision", -1)
 
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
@@ -198,6 +199,7 @@ class maker:
         else: print " Saving nested vectors as vector<T> + vector<int>"
         print " TTree split level: "+str(self.splitLevel)
         if self.saveFloat: print " Converting doubles to floats in output"
+        if self.reduceFloatPrecision >= 0 : print " Reducing the precision of the mantissa in the single precision floating point outputs to " + str(self.reduceFloatPrecision) + " bits"
         print " "
         print " scenario: "+self.scenarioName
         print " global tag: "+self.globaltag

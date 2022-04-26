@@ -263,6 +263,7 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `storeOffsets`: if set to True, stores offsets rather than counts when using `nestedVectors=False` (default=False)
 * `splitLevel`: split level for output TBranches (default=99)
 * `saveFloat`: convert doubles to floats in output (default=True)
+* `reduceFloatPrecision`: reduce the precision of the mantissa in the single precision floating point values in the output tree to the specified number of bits (default=-1 (off), minimum=0, maximum=23)
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
