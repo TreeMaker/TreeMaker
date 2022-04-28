@@ -947,6 +947,9 @@ def makeTreeFromMiniAOD(self,process):
             jetPtFilter = cms.double(0. if self.tchannel else 150),
             doHV = cms.bool(True if self.emerging else False),
         )
+        if self.tchannel:
+            # avoid doing this twice
+            process.ak8GenJetProperties.SoftDropGenJetTag = cms.InputTag("ak8GenJetsNoNuSoftDrop")
         self.VectorDouble.extend([
             'ak8GenJetProperties:softDropMass(GenJetsAK8_softDropMass)',
         ])
