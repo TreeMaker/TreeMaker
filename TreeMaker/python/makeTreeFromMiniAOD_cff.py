@@ -346,6 +346,25 @@ def makeTreeFromMiniAOD(self,process):
                 verbosity = 2 if self.verbose else 0,
             )
 
+            # todo: revamp jet toolbox to handle this
+
+            process.ak8GenJetsNoNu = process.ak8GenJetsNoNuSoftDrop.clone(
+                oneShotTransform = cms.bool(True),
+                jetPtMin = process.ak8GenJetsNoNu.jetPtMin,
+                jetCollInstanceName = getattr(process.ak8GenJetsNoNu,'jetCollInstanceName',''),
+                writeCompound = getattr(process.ak8GenJetsNoNu,'writeCompound',False),
+                jetPtMinTransform = process.ak8GenJetsNoNuSoftDrop.jetPtMin,
+                jetTransformName = cms.string("SoftDrop"),
+                jetTransformCollName = process.ak8GenJetsNoNuSoftDrop.jetCollInstanceName,
+            )
+            del process.ak8GenJetsNoNuSoftDrop
+            process.ak8GenJetsNoNuSoftDrop = cms.EDAlias(
+                ak8GenJetsNoNu = cms.VPSet(
+                    cms.PSet(type = cms.string("recoBasicJets"), fromProductInstance = cms.string("SoftDrop"), toProductInstance = cms.string("")),
+                    cms.PSet(type = cms.string("recoGenJets"), fromProductInstance = cms.string("SoftDropSubJets"), toProductInstance = cms.string("SubJets")),
+                )
+            )
+
             JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiNoCutSoftDrop")
             SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiNoCutSoftDropPacked:SubJets")
             SubjetName = cms.string("SoftDrop")
