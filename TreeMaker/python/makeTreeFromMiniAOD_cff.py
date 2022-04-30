@@ -9,15 +9,17 @@ def transformJetSeq(self, process, baseModule, transformModule, jetType, transfo
     base = getattr(process, baseModule)
     transform = getattr(process, transformModule)
 
-    base = transform.clone(
-        oneShotTransform = cms.bool(True),
-        jetPtMin = base.jetPtMin,
-        jetCollInstanceName = getattr(base,'jetCollInstanceName',''),
-        writeCompound = getattr(base,'writeCompound',False),
-        jetTransformName = cms.string(transformName),
-        jetPtMinTransform = transform.jetPtMin,
-        jetTransformCollName = transform.jetCollInstanceName,
+    setattr(process, baseModule, transform.clone(
+            oneShotTransform = cms.bool(True),
+            jetPtMin = base.jetPtMin,
+            jetCollInstanceName = getattr(base,'jetCollInstanceName',''),
+            writeCompound = getattr(base,'writeCompound',False),
+            jetTransformName = cms.string(transformName),
+            jetPtMinTransform = transform.jetPtMin,
+            jetTransformCollName = transform.jetCollInstanceName,
+        )
     )
+    base = getattr(process, baseModule)
     delattr(process, transformModule)
     setattr(process, transformModule, cms.EDAlias(
             **{baseModule: cms.VPSet(
