@@ -5,6 +5,30 @@ import FWCore.ParameterSet.Config as cms
 import sys,os
 from itertools import chain
 
+def transformJetSeq(self, process, baseModule, transformModule, jetType, transformName="SoftDrop"):
+    base = getattr(process, baseModule)
+    transform = getattr(process, transformModule)
+
+    base = transform.clone(
+        oneShotTransform = cms.bool(True),
+        jetPtMin = base.jetPtMin,
+        jetCollInstanceName = getattr(base,'jetCollInstanceName',''),
+        writeCompound = getattr(base,'writeCompound',False),
+        jetTransformName = cms.string(transformName),
+        jetPtMinTransform = transform.jetPtMin,
+        jetTransformCollName = transform.jetCollInstanceName,
+    )
+    delattr(process, transformModule)
+    setattr(process, transformModule, cms.EDAlias(
+            **{baseModule: cms.VPSet(
+                cms.PSet(type = cms.string("recoBasicJets"), fromProductInstance = cms.string(transformName), toProductInstance = cms.string("")),
+                cms.PSet(type = cms.string(jetType), fromProductInstance = cms.string(transformName+base.jetTransformCollName.value()), toProductInstance = cms.string(base.jetTransformCollName.value())),
+            )}
+        )
+    )
+
+    return process
+
 def makeTreeFromMiniAOD(self,process):
 
     ## ----------------------------------------------------------------------------------------------
@@ -347,23 +371,9 @@ def makeTreeFromMiniAOD(self,process):
             )
 
             # todo: revamp jet toolbox to handle this
-
-            process.ak8GenJetsNoNu = process.ak8GenJetsNoNuSoftDrop.clone(
-                oneShotTransform = cms.bool(True),
-                jetPtMin = process.ak8GenJetsNoNu.jetPtMin,
-                jetCollInstanceName = getattr(process.ak8GenJetsNoNu,'jetCollInstanceName',''),
-                writeCompound = getattr(process.ak8GenJetsNoNu,'writeCompound',False),
-                jetPtMinTransform = process.ak8GenJetsNoNuSoftDrop.jetPtMin,
-                jetTransformName = cms.string("SoftDrop"),
-                jetTransformCollName = process.ak8GenJetsNoNuSoftDrop.jetCollInstanceName,
-            )
-            del process.ak8GenJetsNoNuSoftDrop
-            process.ak8GenJetsNoNuSoftDrop = cms.EDAlias(
-                ak8GenJetsNoNu = cms.VPSet(
-                    cms.PSet(type = cms.string("recoBasicJets"), fromProductInstance = cms.string("SoftDrop"), toProductInstance = cms.string("")),
-                    cms.PSet(type = cms.string("recoGenJets"), fromProductInstance = cms.string("SoftDropSubJets"), toProductInstance = cms.string("SubJets")),
-                )
-            )
+            process = self.transformJetSeq(process, "ak8GenJetsNoNu", "ak8GenJetsNoNuSoftDrop", "recoGenJets")
+            process = self.transformJetSeq(process, "ak8PFJetsPuppiNoCut", "ak8PFJetsPuppiNoCutSoftDrop", "recoPFJets")
+#            process.ak8PFJetsPuppiNoCut.jetPtMinTransform = cms.double(5.0) # to match central clustering
 
             JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiNoCutSoftDrop")
             SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiNoCutSoftDropPacked:SubJets")
@@ -1252,6 +1262,10 @@ def makeTreeFromMiniAOD(self,process):
             src = JetAK15Tag,
             matched = cms.InputTag("ak15PFJetsPuppiSoftDropBeta1")
         )
+
+        process = self.transformJetSeq(process, "ak15GenJetsNoNu", "ak15GenJetsNoNuSoftDrop", "recoGenJets")
+        process = self.transformJetSeq(process, "ak15PFJetsPuppi", "ak15PFJetsPuppiSoftDrop", "recoPFJets")
+        # todo: incorporate SoftDropBeta1 also (needs factory/plugin pattern)
 
         # update userfloats (used for jet ID, including ID for JEC/JER variations)
         process, JetAK15Tag = addJetInfo(
