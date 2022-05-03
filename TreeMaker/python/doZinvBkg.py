@@ -44,8 +44,8 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
 
     # todo: avoid interference w/ this and full AK8 reclustering for tchannel
-    process = self.transformJetSeq(process, "ak8GenJetsNoNu", "ak8GenJetsNoNuSoftDrop", "recoGenJets")
-    process = self.transformJetSeq(process, "ak8PFJetsPuppiClean", "ak8PFJetsPuppiCleanSoftDrop", "recoPFJets")
+    process = self.transformJetSeq(process, "ak8GenJetsNoNu", {"SoftDrop":"ak8GenJetsNoNuSoftDrop"}, "recoGenJets")
+    process = self.transformJetSeq(process, "ak8PFJetsPuppiClean", {"SoftDrop":"ak8PFJetsPuppiCleanSoftDrop"}, "recoPFJets")
 
     if doJERsmearing:
         # do central smearing and replace jet tag
