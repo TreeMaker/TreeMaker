@@ -28,8 +28,8 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
         postFix='Clean',
         newPFCollection = True,
         nameNewPFCollection = cleanedCandidates.value(),
-        Cut = 'pt>170.',
-        addPruning = True,
+        Cut = 'pt>170.' if not self.tchannel else '',
+        addPruning = False,
         addSoftDropSubjets = True,
         addNsub = True,
         maxTau = 3,
@@ -43,7 +43,6 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     )
     JetAK8CleanTag = cms.InputTag("packedPatJetsAK8PFPuppiCleanSoftDrop")
 
-    # todo: avoid interference w/ this and full AK8 reclustering for tchannel
     process = self.transformJetSeq(process, "ak8GenJetsNoNu", {"SoftDrop":"ak8GenJetsNoNuSoftDrop"}, "recoGenJets")
     process = self.transformJetSeq(process, "ak8PFJetsPuppiClean", {"SoftDrop":"ak8PFJetsPuppiCleanSoftDrop"}, "recoPFJets")
 

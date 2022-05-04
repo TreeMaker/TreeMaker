@@ -385,7 +385,8 @@ def makeTreeFromMiniAOD(self,process):
             )
 
             # todo: revamp jet toolbox to handle this
-            process = self.transformJetSeq(process, "ak8GenJetsNoNu", {"SoftDrop":"ak8GenJetsNoNuSoftDrop"}, "recoGenJets")
+            if not self.doZinv: # calling jet toolbox again for ak8 would break after this, so skip it
+                process = self.transformJetSeq(process, "ak8GenJetsNoNu", {"SoftDrop":"ak8GenJetsNoNuSoftDrop"}, "recoGenJets")
             process.ak8PFJetsPuppiNoCutSoftDrop.jetPtMin = cms.double(5.0) # to match central clustering
             process = self.transformJetSeq(process, "ak8PFJetsPuppiNoCut", {"SoftDrop":"ak8PFJetsPuppiNoCutSoftDrop"}, "recoPFJets")
 
@@ -995,7 +996,7 @@ def makeTreeFromMiniAOD(self,process):
             jetPtFilter = cms.double(0. if self.tchannel else 150),
             doHV = cms.bool(True if self.emerging else False),
         )
-        if self.tchannel:
+        if self.tchannel or self.doZinv:
             # avoid doing this twice
             process.ak8GenJetProperties.SoftDropGenJetTag = cms.InputTag("ak8GenJetsNoNuSoftDrop")
         self.VectorDouble.extend([
