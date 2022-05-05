@@ -20,6 +20,7 @@ Summer20UL18samples = [
     MCSample('ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 56886000),
     MCSample('ZZTo2Q2Nu_TuneCP5_13TeV-amcatnloFXFX-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 19813764),
     MCSample('ZZZ_TuneCP5_13TeV-amcatnlo-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 250000, 222716),
+    MCSample('ZZ_TuneCP5_13TeV-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v2', 'RunIISummer20UL18MiniAODv2', 'Constant', 3526000),
     MCSample('ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 19365999, 12607741),
     MCSample('ST_tW_antitop_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 11015956),
     MCSample('ST_tW_top_5f_NoFullyHadronicDecays_TuneCP5_13TeV-powheg-pythia8', '106X_upgrade2018_realistic_v16_L1v1-v1', 'RunIISummer20UL18MiniAODv2', 'Constant', 11270430),

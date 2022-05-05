@@ -41,6 +41,7 @@ Summer20UL17samples = [
     MCSample('TTTT_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mc2017_realistic_v9-v2', 'RunIISummer20UL17MiniAODv2', 'Constant', 10351000, 4526556),
     MCSample('TTTW_TuneCP5_13TeV-madgraph-pythia8', '106X_mc2017_realistic_v9-v2', 'RunIISummer20UL17MiniAODv2', 'Constant', 360000),
     MCSample('ttHJetTobb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', '106X_mc2017_realistic_v9-v1', 'RunIISummer20UL17MiniAODv2', 'Constant', 9883355, 3251105),
+    MCSample('ttHJetToNonbb_M125_TuneCP5_13TeV_amcatnloFXFX_madspin_pythia8', '106X_mc2017_realistic_v9-v2', 'RunIISummer20UL17MiniAODv2', 'Constant', 9689788, 3183372),
     MCSample('TTJets_DiLept_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mc2017_realistic_v9-v2', 'RunIISummer20UL17MiniAODv2', 'Constant', 30187083),
     MCSample('TTJets_DiLept_genMET-150_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mc2017_realistic_v9-v2', 'RunIISummer20UL17MiniAODv2', 'Constant', 9565099),
     MCSample('TTJets_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mc2017_realistic_v9-v2', 'RunIISummer20UL17MiniAODv2', 'Constant', 2039938),
