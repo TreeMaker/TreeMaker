@@ -333,7 +333,7 @@ def makeTreeFromMiniAOD(self,process):
                 dataTier='miniAOD',
                 runOnMC = self.geninfo,
                 postFix = 'NoCut',
-                addPruning = True,
+                addPruning = False,
                 addSoftDropSubjets = True,
                 addNsub = True,
                 maxTau = 3,
@@ -862,7 +862,6 @@ def makeTreeFromMiniAOD(self,process):
         process.JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb2AK8PuppiNoCutSoftDropN2')
         process.JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb1AK8PuppiNoCutSoftDropN3')
         process.JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb2AK8PuppiNoCutSoftDropN3')
-        process.JetPropertiesAK8.prunedMass = cms.vstring('ak8PFJetsPuppiNoCutPrunedMass')
         process.JetPropertiesAK8.softDropMass = cms.vstring('SoftDrop')
         process.JetPropertiesAK8.subjets = cms.vstring('SoftDrop')
         process.JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags')
@@ -929,16 +928,6 @@ def makeTreeFromMiniAOD(self,process):
         # substructure for genjets
         from RecoJets.Configuration.RecoGenJets_cff import ak8GenJetsNoNu as ak8GenJetsNoNuDefault
         from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
-        process.ak8GenJetsPruned = ak8GenJetsNoNuDefault.clone(
-            SubJetParameters,
-            usePruning = cms.bool(True),
-            useExplicitGhosts = cms.bool(True),
-            writeCompound = cms.bool(True),
-            jetCollInstanceName=cms.string("SubJets"),
-            jetPtMin = 0. if self.tchannel else 170.,
-            doAreaFastjet = cms.bool(False),
-            src = GenParticlesForJetTag,
-        )
         process.ak8GenJetsSoftDrop = ak8GenJetsNoNuDefault.clone(
             useSoftDrop = cms.bool(True),
             zcut = cms.double(0.1),
@@ -953,12 +942,14 @@ def makeTreeFromMiniAOD(self,process):
 
         process.ak8GenJetProperties = genjetproperties.clone(
             GenJetTag = GenJetAK8Tag,
-            PrunedGenJetTag = cms.InputTag("ak8GenJetsPruned"),
             SoftDropGenJetTag = cms.InputTag("ak8GenJetsSoftDrop"),
             distMax = cms.double(0.8),
             jetPtFilter = cms.double(0. if self.tchannel else 150),
             doHV = cms.bool(True if self.emerging else False),
         )
+        if self.tchannel:
+            # avoid doing this twice
+            process.ak8GenJetProperties.SoftDropGenJetTag = cms.InputTag("ak8GenJetsNoNuSoftDrop")
         self.VectorDouble.extend([
             'ak8GenJetProperties:softDropMass(GenJetsAK8_softDropMass)',
         ])
