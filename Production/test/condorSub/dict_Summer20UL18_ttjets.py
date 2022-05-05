@@ -13,6 +13,7 @@ flist = {
        ['Summer20UL18.TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8'],
        ['Summer20UL18.TTJets_SingleLeptFromT_genMET-150_TuneCP5_13TeV-madgraphMLM-pythia8'],
        ['Summer20UL18.TTJets_SingleLeptFromTbar_TuneCP5_13TeV-madgraphMLM-pythia8'],
+       ['Summer20UL18.TTJets_SingleLeptFromTbar_genMET-150_TuneCP5_13TeV-madgraphMLM-pythia8'],
        ['Summer20UL18.TTJets_TuneCP5_13TeV-madgraphMLM-pythia8'],
 
    ]
