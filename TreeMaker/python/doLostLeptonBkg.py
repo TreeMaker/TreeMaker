@@ -3,10 +3,10 @@ import FWCore.ParameterSet.Config as cms
 def doLostLeptonBkg(self,process,METTag):
     if self.geninfo:
         from TreeMaker.Utils.genLeptonRecoCand_cfi import genLeptonRecoCand
-        process.GenLeptons = genLeptonRecoCand.clone(
-            PrunedGenParticleTag  = cms.InputTag("prunedGenParticles"),
-            pfCandsTag  = cms.InputTag('packedPFCandidates')
-        )
+        process.GenLeptons = genLeptonRecoCand.clone()
+        # gen information on leptons
+        self.VectorRecoCand.extend(['GenLeptons:Muon(GenMuons)','GenLeptons:Electron(GenElectrons)','GenLeptons:Tau(GenTaus)'])
+        self.VectorBool.extend(['GenLeptons:TauHadronic(GenTaus_had)'])
 
     from TreeMaker.Utils.trackIsolationMaker_cfi import trackIsolationFilter
 
@@ -75,8 +75,5 @@ def doLostLeptonBkg(self,process,METTag):
             self.VectorDouble.extend(['TAP'+type+'Tracks:pfcandsdzpv(TAP'+type+'Tracks_dzpv)'])
             self.VectorInt.extend(['TAP'+type+'Tracks:pfcandschg(TAP'+type+'Tracks_charge)'])
             self.VectorInt.extend(['TAP'+type+'Tracks:pfcandsid(TAP'+type+'Tracks_id)'])
-    if self.geninfo: # gen information on leptons
-        self.VectorRecoCand.extend(['GenLeptons:Muon(GenMuons)','GenLeptons:Electron(GenElectrons)','GenLeptons:Tau(GenTaus)'])
-        self.VectorBool.extend(['GenLeptons:TauHadronic(GenTaus_had)'])
-    
+
     return process

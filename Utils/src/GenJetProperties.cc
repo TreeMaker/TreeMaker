@@ -38,8 +38,8 @@ private:
 
   edm::InputTag GenJetTag;
   edm::EDGetTokenT<edm::View<reco::GenJet>> GenJetTok;
-  edm::InputTag PrunedTag, SoftDropTag;
-  edm::EDGetTokenT<std::vector<reco::BasicJet>> PrunedTok, SoftDropTok;
+  edm::InputTag SoftDropTag;
+  edm::EDGetTokenT<std::vector<reco::BasicJet>> SoftDropTok;
   double distMax, jetPtFilter, doHV;
 
   // ----------member data ---------------------------
@@ -72,16 +72,12 @@ enum particle_type
 GenJetProperties::GenJetProperties(const edm::ParameterSet& iConfig) :
   GenJetTag(iConfig.getParameter<edm::InputTag>("GenJetTag")),
   GenJetTok(consumes<edm::View<reco::GenJet>>(GenJetTag)),
-  PrunedTag(iConfig.getParameter<edm::InputTag>("PrunedGenJetTag")),
   SoftDropTag(iConfig.getParameter<edm::InputTag>("SoftDropGenJetTag")),
   distMax(iConfig.getParameter<double>("distMax")),
   jetPtFilter(iConfig.getParameter<double>("jetPtFilter")),
   doHV(iConfig.getParameter<bool>("doHV"))
 {
   // Create the tokens if the InputTags aren't empty strings
-  if(!PrunedTag.label().empty()) {
-    PrunedTok = consumes<std::vector<reco::BasicJet>>(PrunedTag);
-  }
   if(!SoftDropTag.label().empty()) {
     SoftDropTok = consumes<std::vector<reco::BasicJet>>(SoftDropTag);
   }
@@ -89,7 +85,6 @@ GenJetProperties::GenJetProperties(const edm::ParameterSet& iConfig) :
   //register your products
   produces<std::vector<reco::GenJet>>();
   produces<std::vector<double>>("invisibleEnergy");
-  produces<std::vector<double>>("prunedMass");
   produces<std::vector<double>>("softDropMass");
   produces<std::vector<int>>("multiplicity");
   produces<std::vector<int>>("nHVAncestors");
@@ -138,7 +133,6 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
 
   auto genJetsOut = std::make_unique<std::vector<reco::GenJet>>();
   auto invisibleEnergy = std::make_unique<std::vector<double>>();
-  auto prunedMass = std::make_unique<std::vector<double>>();
   auto softDropMass = std::make_unique<std::vector<double>>();
   auto mult = std::make_unique<std::vector<int>>();
   auto nHVAncestors = std::make_unique<std::vector<int>>();
@@ -146,16 +140,7 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
   edm::Handle< edm::View<reco::GenJet> > GenJets;
   iEvent.getByToken(GenJetTok,GenJets);
   if( GenJets.isValid() ) {
-    bool doPruned(false), doSoftDrop(false);
-
-    edm::Handle<std::vector<reco::BasicJet>> PrunedJets;
-    if(!PrunedTok.isUninitialized()) {
-      iEvent.getByToken(PrunedTok,PrunedJets);
-      doPruned = PrunedJets.isValid();
-    }
-    else {
-      doPruned = false;
-    }
+    bool doSoftDrop(false);
 
     edm::Handle<std::vector<reco::BasicJet>> SoftDropJets;
     if(!SoftDropTok.isUninitialized()) {
@@ -171,18 +156,9 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
       genJetsOut->push_back(GenJet);
 
       invisibleEnergy->push_back( GenJet.invisibleEnergy() );
-      double pruned = 0.0;
       double softdrop = 0.0;
       int hvConstituents = 0;
 
-      if(doPruned){
-        for(const auto& PrunedJet: *PrunedJets){
-          if(reco::deltaR(GenJet,PrunedJet)<distMax){
-            pruned = PrunedJet.mass();
-            break;
-          }
-        }
-      }
       if(doSoftDrop){
         for(const auto& SoftDropJet: *SoftDropJets){
           if(reco::deltaR(GenJet,SoftDropJet)<distMax){
@@ -203,7 +179,6 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
         }
       }
 
-      prunedMass->push_back(pruned);
       softDropMass->push_back(softdrop);
       mult->push_back(GenJet.numberOfDaughters());
       nHVAncestors->push_back(hvConstituents);
@@ -212,7 +187,6 @@ GenJetProperties::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSet
 
   iEvent.put(std::move(genJetsOut));
   iEvent.put(std::move(invisibleEnergy),"invisibleEnergy");
-  iEvent.put(std::move(prunedMass),"prunedMass");
   iEvent.put(std::move(softDropMass),"softDropMass");
   iEvent.put(std::move(mult),"multiplicity");
   iEvent.put(std::move(nHVAncestors),"nHVAncestors");

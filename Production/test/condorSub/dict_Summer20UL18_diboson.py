@@ -20,6 +20,7 @@ flist = {
        ['Summer20UL18.ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8'],
        ['Summer20UL18.ZZTo2Q2Nu_TuneCP5_13TeV-amcatnloFXFX-pythia8'],
        ['Summer20UL18.ZZZ_TuneCP5_13TeV-amcatnlo-pythia8'],
+       ['Summer20UL18.ZZ_TuneCP5_13TeV-pythia8'],
 
    ]
 }

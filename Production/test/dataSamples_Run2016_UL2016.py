@@ -1,0 +1,58 @@
+dataSamples = [
+    # 2016B datasets: UL2016_HIPM
+    [ "HTMHT_2016B_HIPM",           "Run2016B-UL2016_HIPM-ver2-v1.HTMHT_*"],
+    [ "MET_2016B_HIPM",             "Run2016B-UL2016_HIPM-ver2-v2.MET_*"],
+    [ "SingleElectron_2016B_HIPM",  "Run2016B-UL2016_HIPM-ver2-v2.SingleElectron_*"],
+    [ "SingleMuon_2016B_HIPM",      "Run2016B-UL2016_HIPM-ver2-v2.SingleMuon_*"],
+    [ "SinglePhoton_2016B_HIPM",    "Run2016B-UL2016_HIPM-ver2-v2.SinglePhoton_*"],
+    [ "JetHT_2016B_HIPM",           "Run2016B-UL2016_HIPM-ver2-v3.JetHT_*"],
+    # 2016C datasets: UL2016_HIPM
+    [ "HTMHT_2016C_HIPM",           "Run2016C-UL2016_HIPM-v1.HTMHT_*"],
+    [ "JetHT_2016C_HIPM",           "Run2016C-UL2016_HIPM-v2.JetHT_*"],
+    [ "MET_2016C_HIPM",             "Run2016C-UL2016_HIPM-v2.MET_*"],
+    [ "SingleElectron_2016C_HIPM",  "Run2016C-UL2016_HIPM-v2.SingleElectron_*"],
+    [ "SingleMuon_2016C_HIPM",      "Run2016C-UL2016_HIPM-v2.SingleMuon_*"],
+    [ "SinglePhoton_2016C_HIPM",    "Run2016C-UL2016_HIPM-v2.SinglePhoton_*"],
+    # 2016D datasets: UL2016_HIPM
+    [ "HTMHT_2016D_HIPM",           "Run2016D-UL2016_HIPM-v1.HTMHT_*"],
+    [ "JetHT_2016D_HIPM",           "Run2016D-UL2016_HIPM-v2.JetHT_*"],
+    [ "MET_2016D_HIPM",             "Run2016D-UL2016_HIPM-v2.MET_*"],
+    [ "SingleElectron_2016D_HIPM",  "Run2016D-UL2016_HIPM-v2.SingleElectron_*"],
+    [ "SingleMuon_2016D_HIPM",      "Run2016D-UL2016_HIPM-v2.SingleMuon_*"],
+    [ "SinglePhoton_2016D_HIPM",    "Run2016D-UL2016_HIPM-v2.SinglePhoton_*"],
+    # 2016E datasets: UL2016_HIPM
+    [ "HTMHT_2016E_HIPM",           "Run2016E-UL2016_HIPM-v1.HTMHT_*"],
+    [ "JetHT_2016E_HIPM",           "Run2016E-UL2016_HIPM-v2.JetHT_*"],
+    [ "MET_2016E_HIPM",             "Run2016E-UL2016_HIPM-v2.MET_*"],
+    [ "SingleMuon_2016E_HIPM",      "Run2016E-UL2016_HIPM-v2.SingleMuon_*"],
+    [ "SinglePhoton_2016E_HIPM",    "Run2016E-UL2016_HIPM-v2.SinglePhoton_*"],
+    [ "SingleElectron_2016E_HIPM",  "Run2016E-UL2016_HIPM-v5.SingleElectron_*"],
+    # 2016F datasets: UL2016
+    [ "HTMHT_2016F",                "Run2016F-UL2016-v1.HTMHT_*"],
+    [ "JetHT_2016F",                "Run2016F-UL2016-v2.JetHT_*"],
+    [ "MET_2016F",                  "Run2016F-UL2016-v2.MET_*"],
+    [ "SingleElectron_2016F",       "Run2016F-UL2016-v2.SingleElectron_*"],
+    [ "SingleMuon_2016F",           "Run2016F-UL2016-v2.SingleMuon_*"],
+    [ "SinglePhoton_2016F",         "Run2016F-UL2016-v2.SinglePhoton_*"],
+    # 2016F datasets: UL2016_HIPM
+    [ "HTMHT_2016F_HIPM",           "Run2016F-UL2016_HIPM-v1.HTMHT_*"],
+    [ "JetHT_2016F_HIPM",           "Run2016F-UL2016_HIPM-v2.JetHT_*"],
+    [ "MET_2016F_HIPM",             "Run2016F-UL2016_HIPM-v2.MET_*"],
+    [ "SingleElectron_2016F_HIPM",  "Run2016F-UL2016_HIPM-v2.SingleElectron_*"],
+    [ "SingleMuon_2016F_HIPM",      "Run2016F-UL2016_HIPM-v2.SingleMuon_*"],
+    [ "SinglePhoton_2016F_HIPM",    "Run2016F-UL2016_HIPM-v2.SinglePhoton_*"],
+    # 2016G datasets: UL2016
+    [ "HTMHT_2016G",                "Run2016G-UL2016-v1.HTMHT_*"],
+    [ "JetHT_2016G",                "Run2016G-UL2016-v2.JetHT_*"],
+    [ "MET_2016G",                  "Run2016G-UL2016-v2.MET_*"],
+    [ "SingleElectron_2016G",       "Run2016G-UL2016-v2.SingleElectron_*"],
+    [ "SingleMuon_2016G",           "Run2016G-UL2016-v2.SingleMuon_*"],
+    [ "SinglePhoton_2016G",         "Run2016G-UL2016-v3.SinglePhoton_*"],
+    # 2016H datasets: UL2016
+    [ "HTMHT_2016H",                "Run2016H-UL2016-v1.HTMHT_*"],
+    [ "JetHT_2016H",                "Run2016H-UL2016-v2.JetHT_*"],
+    [ "MET_2016H",                  "Run2016H-UL2016-v2.MET_*"],
+    [ "SingleElectron_2016H",       "Run2016H-UL2016-v2.SingleElectron_*"],
+    [ "SingleMuon_2016H",           "Run2016H-UL2016-v2.SingleMuon_*"],
+    [ "SinglePhoton_2016H",         "Run2016H-UL2016-v2.SinglePhoton_*"],
+]
