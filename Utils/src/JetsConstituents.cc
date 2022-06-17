@@ -30,7 +30,7 @@ private:
 	const std::string suffix_;
 	std::vector<edm::InputTag> JetsTags_;
 	std::vector<std::string> JetsNames_;
-    std::vector<edm::EDGetTokenT<edm::View<pat::Jet>>> JetsToks_;
+	std::vector<edm::EDGetTokenT<edm::View<pat::Jet>>> JetsToks_;
 	edm::EDGetTokenT<edm::View<reco::Candidate>> CandTok_;
 };
 
@@ -48,6 +48,7 @@ JetsConstituents::JetsConstituents(const edm::ParameterSet& iConfig) :
 		produces<std::vector<std::vector<int>>>(name+suffix_);
 	}
 	produces<std::vector<LorentzVector>>();
+	produces<std::vector<int>>("PdgId");
 }
 
 void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
@@ -64,6 +65,7 @@ void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::Eve
 	edm::Handle<edm::View<reco::Candidate>> h_cands;
 	iEvent.getByToken(CandTok_, h_cands);
 	auto cands_out = std::make_unique<std::vector<LorentzVector>>();
+	auto pdgids_out = std::make_unique<std::vector<int>>();
 
 	//loop over PF candidate collection once: check every jet in every jet collection
 	//only PF candidates found in a jet collection will be kept
@@ -92,6 +94,7 @@ void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::Eve
 		}
 		if(keep){
 			cands_out->emplace_back(cand.pt(),cand.eta(),cand.phi(),cand.energy());
+			pdgids_out->emplace_back(cand.pdgId());
 		}
 	}
 
@@ -99,6 +102,7 @@ void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::Eve
 		iEvent.put(std::move(indices_out[i]),JetsNames_[i]+suffix_);
 	}
 	iEvent.put(std::move(cands_out));
+	iEvent.put(std::move(pdgids_out),"PdgId");
 }
 
 //define this as a plug-in

@@ -1306,6 +1306,7 @@ def makeTreeFromMiniAOD(self,process):
             CandTag = cms.InputTag("packedPFCandidates"),
         )
         self.VectorLorentzVector.append("JetsConstituents")
+        self.VectorInt.append("JetsConstituents:PdgId(JetsConstituents_PdgId)")
         self.VectorVectorInt.extend(["JetsConstituents:{}{}({}{})".format(JetsName,process.JetsConstituents.suffix.value(),JetsName,"_constituentsIndex") for JetsName in self.JetsNames])
 
     ## ----------------------------------------------------------------------------------------------
