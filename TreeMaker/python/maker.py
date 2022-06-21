@@ -67,6 +67,9 @@ class maker:
         self.getParamDefault("storeOffsets", False, bool)
         self.getParamDefault("splitLevel", 99)
         self.getParamDefault("saveFloat", True, bool)
+        self.getParamDefault("jetsconstituents", False, bool)
+        self.JetsTags = []
+        self.JetsNames = []
 
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
@@ -191,6 +194,7 @@ class maker:
         print " Storing a minimal set of GenParticles: "+str(self.saveMinimalGenParticles)
         print " Storing the GenTops: "+str(self.saveGenTops)
         print " Saving the MT2 variable: "+str(self.doMT2)
+        print " Saving jets' constituents: "+str(self.jetsconstituents)
         if self.nestedVectors:
             print " Saving nested vectors as vector<vector<T>>"
             if self.storeOffsets:

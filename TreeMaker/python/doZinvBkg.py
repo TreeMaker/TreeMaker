@@ -146,6 +146,10 @@ def reclusterZinv(self, process, cleanedCandidates, suff):
     setattr(process,'reclusteredJets'+suff,reclusteredJets)
     JetTagClean = cms.InputTag("reclusteredJets"+suff)
 
+    # record final jet collections
+    self.JetsTags.extend([JetTagClean,JetAK8CleanTag])
+    self.JetsNames.extend(["JetsClean","JetsAK8Clean"])
+
     # recalculate MET from cleaned candidates and reclustered jets
     postfix="clean"+suff
     from PhysicsTools.PatUtils.tools.runMETCorrectionsAndUncertainties import runMetCorAndUncFromMiniAOD

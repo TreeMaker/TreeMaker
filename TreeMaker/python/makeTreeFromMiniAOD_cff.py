@@ -880,6 +880,10 @@ def makeTreeFromMiniAOD(self,process):
             'JetPropertiesAK8:jerFactorDown(JetsAK8_jerFactorDown)',
         ])
 
+    # record final jet collections
+    self.JetsTags.extend([JetTag,JetAK8Tag])
+    self.JetsNames.extend(["Jets","JetsAK8"])
+
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables
     ## ----------------------------------------------------------------------------------------------
@@ -1284,6 +1288,24 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorDouble.extend([
             'JetPropertiesAK15:msd(JetsAK15_softDropMassBeta1)'
         ])
+
+        # record final jet collection
+        self.JetsTags.append(JetAK15Tag)
+        self.JetsNames.append("JetsAK15")
+
+    ## ----------------------------------------------------------------------------------------------
+    ## Jet constituents
+    ## ----------------------------------------------------------------------------------------------
+    if self.jetsconstituents and len(self.JetsTags)>0:
+        process.JetsConstituents = cms.EDProducer("JetsConstituents",
+            suffix = cms.string("ConstituentsIndex"),
+            JetsTags = cms.VInputTag(self.JetsTags),
+            JetsNames = cms.vstring(self.JetsNames),
+            CandTag = cms.InputTag("packedPFCandidates"),
+        )
+        self.VectorLorentzVector.append("JetsConstituents")
+        self.VectorInt.append("JetsConstituents:PdgId(JetsConstituents_PdgId)")
+        self.VectorVectorInt.extend(["JetsConstituents:{}{}({}{})".format(JetsName,process.JetsConstituents.suffix.value(),JetsName,"_constituentsIndex") for JetsName in self.JetsNames])
 
     ## ----------------------------------------------------------------------------------------------
     ## Gen particles for jets
