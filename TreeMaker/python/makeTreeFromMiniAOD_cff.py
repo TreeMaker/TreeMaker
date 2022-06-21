@@ -370,7 +370,8 @@ def makeTreeFromMiniAOD(self,process):
                 useExistingWeights=True,
                 dataTier='miniAOD',
                 runOnMC = self.geninfo,
-                postFix = 'NoCut',
+                Cut = 'pt>10.',
+                postFix = 'LowCut',
                 addPruning = False,
                 addSoftDropSubjets = True,
                 addNsub = True,
@@ -387,11 +388,11 @@ def makeTreeFromMiniAOD(self,process):
             # todo: revamp jet toolbox to handle this
             if not self.doZinv: # calling jet toolbox again for ak8 would break after this, so skip it
                 process = self.transformJetSeq(process, "ak8GenJetsNoNu", {"SoftDrop":"ak8GenJetsNoNuSoftDrop"}, "recoGenJets")
-            process.ak8PFJetsPuppiNoCutSoftDrop.jetPtMin = cms.double(5.0) # to match central clustering
-            process = self.transformJetSeq(process, "ak8PFJetsPuppiNoCut", {"SoftDrop":"ak8PFJetsPuppiNoCutSoftDrop"}, "recoPFJets")
+            process.ak8PFJetsPuppiLowCutSoftDrop.jetPtMin = cms.double(10) # to match central clustering
+            process = self.transformJetSeq(process, "ak8PFJetsPuppiLowCut", {"SoftDrop":"ak8PFJetsPuppiLowCutSoftDrop"}, "recoPFJets")
 
-            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiNoCutSoftDrop")
-            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiNoCutSoftDropPacked:SubJets")
+            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiLowCutSoftDrop")
+            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiLowCutSoftDropPacked:SubJets")
             SubjetName = cms.string("SoftDrop")
             GenJetAK8Tag = cms.InputTag("ak8GenJetsNoNu")
 
@@ -899,13 +900,13 @@ def makeTreeFromMiniAOD(self,process):
         storeProperties=2,
     )
     if self.tchannel:
-        process.JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8PuppiNoCut:tau1')
-        process.JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiNoCut:tau2')
-        process.JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiNoCut:tau3')
-        process.JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb1AK8PuppiNoCutSoftDropN2')
-        process.JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb2AK8PuppiNoCutSoftDropN2')
-        process.JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb1AK8PuppiNoCutSoftDropN3')
-        process.JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb2AK8PuppiNoCutSoftDropN3')
+        process.JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8PuppiLowCut:tau1')
+        process.JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiLowCut:tau2')
+        process.JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiLowCut:tau3')
+        process.JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb1AK8PuppiLowCutSoftDropN2')
+        process.JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb2AK8PuppiLowCutSoftDropN2')
+        process.JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb1AK8PuppiLowCutSoftDropN3')
+        process.JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb2AK8PuppiLowCutSoftDropN3')
         process.JetPropertiesAK8.softDropMass = cms.vstring('SoftDrop')
         process.JetPropertiesAK8.subjets = cms.vstring('SoftDrop')
         process.JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags')
