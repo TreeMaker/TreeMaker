@@ -3,6 +3,8 @@
 #include <string>
 #include <vector>
 #include <algorithm>
+#include <functional>
+#include <unordered_set>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -18,6 +20,14 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 typedef math::PtEtaPhiELorentzVector LorentzVector;
+
+typedef edm::Ptr<reco::Candidate> CandPtr;
+struct ptr_cand_hash : public std::unary_function<CandPtr, std::size_t> {
+	std::size_t operator()(const CandPtr& ptr) const {
+		return size_t(ptr.product());
+	}
+};
+typedef std::unordered_set<CandPtr,ptr_cand_hash> CandPtrSet;
 
 class JetsConstituents : public edm::global::EDProducer<> {
 public:
@@ -53,11 +63,20 @@ JetsConstituents::JetsConstituents(const edm::ParameterSet& iConfig) :
 
 void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
 	std::vector<edm::Handle<edm::View<pat::Jet>>> h_jets;
+	std::vector<std::vector<CandPtrSet>> jets_cands_sets;
 	std::vector<std::unique_ptr<std::vector<std::vector<int>>>> indices_out;
 	for(unsigned i = 0; i < JetsToks_.size(); ++i){
 		edm::Handle<edm::View<pat::Jet>> handle;
 		iEvent.getByToken(JetsToks_[i], handle);
 		h_jets.push_back(handle);
+
+		//make a hash table to search jet constituent list more efficiently
+		jets_cands_sets.emplace_back();
+		auto& jet_cands_sets = jets_cands_sets.back();
+		for(const auto& jet : *h_jets.back()){
+			jet_cands_sets.emplace_back(jet.daughterPtrVector().begin(), jet.daughterPtrVector().end());
+		}
+
 		auto ptr = std::make_unique<std::vector<std::vector<int>>>(handle->size());
 		indices_out.push_back(std::move(ptr));
 	}
@@ -76,15 +95,14 @@ void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::Eve
 		unsigned potential_index = cands_out->size();
 		bool keep = false;
 		for(unsigned i = 0; i < h_jets.size(); ++i){
-			const auto& h_jet = h_jets[i];
-			for(unsigned j = 0; j < h_jet->size(); ++j){
-				const auto& jet = h_jet->at(j);
-				const auto& daughterPtrs = jet.daughterPtrVector();
+			const auto& jet_cands_sets = jets_cands_sets[i];
+			for(unsigned j = 0; j < jet_cands_sets.size(); ++j){
+				const auto& jet_cands_set = jet_cands_sets[j];
 				auto& jet_indices = (*indices_out[i])[j];
 				//optimization: skip find for jets whose constituents have all already been found
-				if(jet_indices.size()==daughterPtrs.size()) continue;
-				const auto& candPtr_in_jet = std::find(daughterPtrs.begin(), daughterPtrs.end(), candPtr);
-				if(candPtr_in_jet != daughterPtrs.end()){
+				if(jet_indices.size()==jet_cands_set.size()) continue;
+				const auto& candPtr_in_jet = jet_cands_set.find(candPtr);
+				if(candPtr_in_jet != jet_cands_set.end()){
 					jet_indices.push_back(potential_index);
 					keep = true;
 					//in a given jet collection, a candidate can only be in one jet
