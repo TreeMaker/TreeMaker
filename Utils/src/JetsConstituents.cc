@@ -24,7 +24,7 @@ typedef math::PtEtaPhiELorentzVector LorentzVector;
 typedef edm::Ptr<reco::Candidate> CandPtr;
 struct ptr_cand_hash : public std::unary_function<CandPtr, std::size_t> {
 	std::size_t operator()(const CandPtr& ptr) const {
-		return size_t(ptr.product());
+		return ptr.key() ^ ptr.id().processIndex() ^ ptr.id().productIndex();
 	}
 };
 typedef std::unordered_set<CandPtr,ptr_cand_hash> CandPtrSet;
