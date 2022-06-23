@@ -36,7 +36,7 @@ class NamedPtrBase {
 	public:
 		//constructor
 		NamedPtrBase() : name(""), fraction(false) {}
-		NamedPtrBase(std::string name_, edm::stream::EDProducer<>* edprod, const edm::ParameterSet& iConfig) : 
+		NamedPtrBase(const std::string& name_, edm::stream::EDProducer<>* edprod, const edm::ParameterSet& iConfig) :
 			name(name_),
 			fraction(name.find("Fraction")!=std::string::npos),
 			response(name.find("response")!=std::string::npos)
@@ -65,7 +65,7 @@ class NamedPtr : public NamedPtrBase {
 	public:
 		//constructor
 		NamedPtr() : NamedPtrBase() {}
-		NamedPtr(std::string name_, edm::stream::EDProducer<>* edprod, const edm::ParameterSet& iConfig) : NamedPtrBase(name_,edprod,iConfig), ptr(std::make_unique<std::vector<T>>()) {
+		NamedPtr(const std::string& name_, edm::stream::EDProducer<>* edprod, const edm::ParameterSet& iConfig) : NamedPtrBase(name_,edprod,iConfig), ptr(std::make_unique<std::vector<T>>()) {
 			edprod->produces<std::vector<T>>(name);
 		}
 		//destructor
@@ -80,7 +80,7 @@ class NamedPtr : public NamedPtrBase {
 };
 
 // factory
-typedef edmplugin::PluginFactory<NamedPtrBase *(std::string, edm::stream::EDProducer<>*, const edm::ParameterSet&)> NamedPtrFactory;
+typedef edmplugin::PluginFactory<NamedPtrBase *(const std::string&, edm::stream::EDProducer<>*, const edm::ParameterSet&)> NamedPtrFactory;
 EDM_REGISTER_PLUGINFACTORY(NamedPtrFactory, "NamedPtrFactory");
 #define DEFINE_NAMED_PTR(type) DEFINE_EDM_PLUGIN(NamedPtrFactory,NamedPtr_##type,#type)
 #define DEFAULT_NAMED_PTR(type,name) DEFINE_EDM_PLUGIN(NamedPtrFactory,NamedPtr_##type,#name)
@@ -545,12 +545,12 @@ JetProperties::JetProperties(const edm::ParameterSet& iConfig)
 	}
 
 	//get lists of desired properties
-	std::vector<std::string> props = iConfig.getParameter<std::vector<std::string>> ("properties");
+	const auto& props = iConfig.getParameter<std::vector<std::string>> ("properties");
 
 	auto fac = NamedPtrFactory::get();
 	Ptrs_.reserve(props.size());
 	//register your products
-	for(auto& p : props){
+	for(const auto& p : props){
 		Ptrs_.push_back(fac->create(p,p,this,iConfig));
 	}	
 }
