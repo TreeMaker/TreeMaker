@@ -365,7 +365,7 @@ def makeTreeFromMiniAOD(self,process):
             jetToolbox(process,
                 'ak8',
                 'jetSequence',
-                'out',
+                'noOutput',
                 PUMethod = 'Puppi',
                 useExistingWeights=True,
                 dataTier='miniAOD',
