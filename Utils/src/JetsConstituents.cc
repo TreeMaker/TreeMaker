@@ -8,7 +8,7 @@
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/global/EDProducer.h"
+#include "FWCore/Framework/interface/stream/EDProducer.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
@@ -29,19 +29,69 @@ struct ptr_cand_hash : public std::unary_function<CandPtr, std::size_t> {
 };
 typedef std::unordered_set<CandPtr,ptr_cand_hash> CandPtrSet;
 
-class JetsConstituents : public edm::global::EDProducer<> {
+//base class for constituent properties
+class CandPropBase {
+	public:
+		//constructor
+		CandPropBase() : name("") {}
+		CandPropBase(const std::string& name_, edm::stream::EDProducer<>* edprod) : name(name_) {}
+		//destructor
+		virtual ~CandPropBase() {}
+		//accessors
+		virtual void put(edm::Event& iEvent) {}
+		virtual void reset() {}
+		virtual void get_property(const reco::Candidate& cand) {}
+
+		//member variables
+		std::string name;
+};
+
+template <class T>
+class CandProp : public CandPropBase {
+	public:
+		//constructor
+		CandProp() : CandPropBase() {}
+		CandProp(const std::string& name_, edm::stream::EDProducer<>* edprod) : CandPropBase(name_, edprod) {
+			edprod->produces<std::vector<T>>(name);
+		}
+		//destructor
+		~CandProp() override {}
+		//accessors
+		void put(edm::Event& iEvent) override { iEvent.put(std::move(ptr),name); }
+		void reset() override { ptr.reset(new std::vector<T>()); }
+		void push_back(T tmp) { ptr->push_back(tmp); }
+
+		//member variables
+		std::unique_ptr<std::vector<T>> ptr;
+};
+
+// factory
+typedef edmplugin::PluginFactory<CandPropBase *(const std::string&, edm::stream::EDProducer<>*)> CandPropFactory;
+EDM_REGISTER_PLUGINFACTORY(CandPropFactory, "CandPropFactory");
+#define DEFINE_CAND_PROP(type) DEFINE_EDM_PLUGIN(CandPropFactory,CandProp_##type,#type)
+
+// helper classes
+class CandProp_PdgId : public CandProp<int> {
+	public:
+		using CandProp<int>::CandProp;
+		void get_property(const reco::Candidate& cand) override { push_back(cand.pdgId()); }
+};
+DEFINE_CAND_PROP(PdgId);
+
+class JetsConstituents : public edm::stream::EDProducer<> {
 public:
 	explicit JetsConstituents(const edm::ParameterSet&);
-	~JetsConstituents() override {}
+	~JetsConstituents() override;
 
 private:
-	void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+	void produce(edm::Event&, const edm::EventSetup&) override;
 
 	const std::string suffix_;
 	std::vector<edm::InputTag> JetsTags_;
 	std::vector<std::string> JetsNames_;
 	std::vector<edm::EDGetTokenT<edm::View<pat::Jet>>> JetsToks_;
 	edm::EDGetTokenT<edm::View<reco::Candidate>> CandTok_;
+	std::vector<CandPropBase*> Props_;
 };
 
 JetsConstituents::JetsConstituents(const edm::ParameterSet& iConfig) :
@@ -58,10 +108,30 @@ JetsConstituents::JetsConstituents(const edm::ParameterSet& iConfig) :
 		produces<std::vector<std::vector<int>>>(name+suffix_);
 	}
 	produces<std::vector<LorentzVector>>();
-	produces<std::vector<int>>("PdgId");
+
+	//get list of desired additional properties
+	const auto& props = iConfig.getParameter<std::vector<std::string>>("properties");
+
+	auto fac = CandPropFactory::get();
+	Props_.reserve(props.size());
+	for(const auto& p : props){
+		Props_.push_back(fac->create(p,p,this));
+	}
 }
 
-void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const {
+JetsConstituents::~JetsConstituents() {
+	for(auto& Prop: Props_){
+		delete Prop;
+	}
+	Props_.clear();
+}
+
+void JetsConstituents::produce(edm::Event& iEvent, const edm::EventSetup& iSetup) {
+	//reset ptrs
+	for(auto & Prop : Props_){
+		Prop->reset();
+	}
+
 	std::vector<edm::Handle<edm::View<pat::Jet>>> h_jets;
 	std::vector<std::vector<CandPtrSet>> jets_cands_sets;
 	std::vector<std::unique_ptr<std::vector<std::vector<int>>>> indices_out;
@@ -112,7 +182,9 @@ void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::Eve
 		}
 		if(keep){
 			cands_out->emplace_back(cand.pt(),cand.eta(),cand.phi(),cand.energy());
-			pdgids_out->emplace_back(cand.pdgId());
+			for(auto & Prop : Props_){
+				Prop->get_property(cand);
+			}
 		}
 	}
 
@@ -120,7 +192,9 @@ void JetsConstituents::produce(edm::StreamID, edm::Event& iEvent, const edm::Eve
 		iEvent.put(std::move(indices_out[i]),JetsNames_[i]+suffix_);
 	}
 	iEvent.put(std::move(cands_out));
-	iEvent.put(std::move(pdgids_out),"PdgId");
+	for(auto & Prop : Props_){
+		Prop->put(iEvent);
+	}
 }
 
 //define this as a plug-in
