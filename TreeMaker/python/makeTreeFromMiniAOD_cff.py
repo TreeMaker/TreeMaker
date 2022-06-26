@@ -880,9 +880,9 @@ def makeTreeFromMiniAOD(self,process):
             'JetPropertiesAK8:jerFactorDown(JetsAK8_jerFactorDown)',
         ])
 
-    # record final jet collections
-    self.JetsTags.extend([JetTag,JetAK8Tag])
-    self.JetsNames.extend(["Jets","JetsAK8"])
+    # record final jet collections (excluding AK4)
+    self.JetsTags.extend([JetAK8Tag])
+    self.JetsNames.extend(["JetsAK8"])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenJet variables
@@ -1301,7 +1301,7 @@ def makeTreeFromMiniAOD(self,process):
             suffix = cms.string("ConstituentsIndex"),
             JetsTags = cms.VInputTag(self.JetsTags),
             JetsNames = cms.vstring(self.JetsNames),
-            CandTag = cms.InputTag("packedPFCandidates"),
+            CandTag = cms.InputTag("puppipackedPFCandidates"),
             properties = cms.vstring("PdgId"),
         )
         self.VectorLorentzVector.append("JetsConstituents")

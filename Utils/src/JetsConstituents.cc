@@ -3,8 +3,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <functional>
-#include <unordered_set>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -20,14 +18,6 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 typedef math::PtEtaPhiELorentzVector LorentzVector;
-
-typedef edm::Ptr<reco::Candidate> CandPtr;
-struct ptr_cand_hash : public std::unary_function<CandPtr, std::size_t> {
-	std::size_t operator()(const CandPtr& ptr) const {
-		return ptr.key() ^ ptr.id().processIndex() ^ ptr.id().productIndex();
-	}
-};
-typedef std::unordered_set<CandPtr,ptr_cand_hash> CandPtrSet;
 
 //base class for constituent properties
 class CandPropBase {
@@ -133,18 +123,35 @@ void JetsConstituents::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	}
 
 	std::vector<edm::Handle<edm::View<pat::Jet>>> h_jets;
-	std::vector<std::vector<CandPtrSet>> jets_cands_sets;
+	std::vector<std::vector<int>> jets_cands_indices;
 	std::vector<std::unique_ptr<std::vector<std::vector<int>>>> indices_out;
+	//assumption: all constituents come from a single product (will be checked explicitly)
+	std::vector<int> processIndex(JetsToks_.size(),-1);
+	std::vector<int> productIndex(JetsToks_.size(),-1);
 	for(unsigned i = 0; i < JetsToks_.size(); ++i){
 		edm::Handle<edm::View<pat::Jet>> handle;
 		iEvent.getByToken(JetsToks_[i], handle);
 		h_jets.push_back(handle);
+		const auto& h_jet = h_jets.back();
 
-		//make a hash table to search jet constituent list more efficiently
-		jets_cands_sets.emplace_back();
-		auto& jet_cands_sets = jets_cands_sets.back();
-		for(const auto& jet : *h_jets.back()){
-			jet_cands_sets.emplace_back(jet.daughterPtrVector().begin(), jet.daughterPtrVector().end());
+		//custom data structure ala perfect hash:
+		//vector where index = constituent key (from edm::Ptr), value = jet index
+		//relies on above assumption and each constituent only appearing in one jet in the collection
+		jets_cands_indices.emplace_back();
+		auto& jet_cands_indices = jets_cands_indices.back();
+		for(unsigned j = 0; j < h_jet->size(); ++j){
+			const auto& jet = h_jet->at(j);
+			for(const auto& cand : jet.daughterPtrVector()){
+				if(processIndex[i]==-1) processIndex[i] = cand.id().processIndex();
+				if(productIndex[i]==-1) productIndex[i] = cand.id().productIndex();
+				//grow vector when needed
+				if(cand.key()>=jet_cands_indices.size()) jet_cands_indices.resize(cand.key()+1,-1);
+				//within-collection safety check
+				if(cand.id().processIndex()!=processIndex[i] or cand.id().productIndex()!=productIndex[i]){
+					throw cms::Exception("CandidateMismatch") << "Candidate with key " << cand.key() << " has indices (" << cand.id().processIndex() << ", " << cand.id().productIndex() << ") but collection defaults are (" << processIndex[i] << ", " << productIndex[i] << ")";
+				}
+				jet_cands_indices[cand.key()] = j;
+			}
 		}
 
 		auto ptr = std::make_unique<std::vector<std::vector<int>>>(handle->size());
@@ -156,23 +163,39 @@ void JetsConstituents::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	auto cands_out = std::make_unique<std::vector<LorentzVector>>();
 	auto pdgids_out = std::make_unique<std::vector<int>>();
 
+	//between-collection safety check (also include constituent collection)
+	processIndex.push_back(h_cands->ptrs()[0].id().processIndex());
+	productIndex.push_back(h_cands->ptrs()[0].id().productIndex());
+	if(std::adjacent_find(processIndex.begin(),processIndex.end(),std::not_equal_to<int>())!=processIndex.end() or std::adjacent_find(productIndex.begin(),productIndex.end(),std::not_equal_to<int>())!=productIndex.end()){
+		std::stringstream ss;
+		for(unsigned i = 0; i < processIndex.size(); ++i){
+			ss << "(" << processIndex[i] << ", " << productIndex[i] << "), ";
+		}
+		throw cms::Exception("CollectionMismatch") << "Collection indices are not identical: " << ss.str();
+	}
+
+	//TODO: handle different sets of candidates, i.e. PF and PUPPI (derived from PF w/ puppi weight applied)
+	//      this would require substantially more logic: separate candidate collection for each jet collection, check sourceCandidatePtr for "derived" candidate collections, allow different process/product indices
+	//      for now, just omit AK4 jets...
+
 	//loop over PF candidate collection once: check every jet in every jet collection
 	//only PF candidates found in a jet collection will be kept
 	for(unsigned c = 0; c < h_cands->size(); ++c){
-		const auto& cand = h_cands->at(c);
 		const auto& candPtr = h_cands->ptrs()[c];
 		//if this cand is kept, it will be appended to cands_out
 		unsigned potential_index = cands_out->size();
 		bool keep = false;
 		for(unsigned i = 0; i < h_jets.size(); ++i){
-			const auto& jet_cands_sets = jets_cands_sets[i];
-			for(unsigned j = 0; j < jet_cands_sets.size(); ++j){
-				const auto& jet_cands_set = jet_cands_sets[j];
+			const auto& h_jet = h_jets[i];
+			const auto& jet_cands_indices = jets_cands_indices[i];
+			for(unsigned j = 0; j < h_jet->size(); ++j){
+				const auto& jet = h_jet->at(j);
+				const auto& daughterPtrs = jet.daughterPtrVector();
 				auto& jet_indices = (*indices_out[i])[j];
 				//optimization: skip find for jets whose constituents have all already been found
-				if(jet_indices.size()==jet_cands_set.size()) continue;
-				const auto& candPtr_in_jet = jet_cands_set.find(candPtr);
-				if(candPtr_in_jet != jet_cands_set.end()){
+				if(jet_indices.size()==daughterPtrs.size()) continue;
+				bool candPtr_in_jet = candPtr.key() < jet_cands_indices.size() and jet_cands_indices[candPtr.key()]==(int)j;
+				if(candPtr_in_jet){
 					jet_indices.push_back(potential_index);
 					keep = true;
 					//in a given jet collection, a candidate can only be in one jet
@@ -181,6 +204,7 @@ void JetsConstituents::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 			}
 		}
 		if(keep){
+			const auto& cand = h_cands->at(c);
 			cands_out->emplace_back(cand.pt(),cand.eta(),cand.phi(),cand.energy());
 			for(auto & Prop : Props_){
 				Prop->get_property(cand);
