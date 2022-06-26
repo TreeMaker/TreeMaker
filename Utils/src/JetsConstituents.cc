@@ -14,6 +14,7 @@
 #include "FWCore/PluginManager/interface/PluginFactory.h"
 #include "FWCore/Utilities/interface/Exception.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
+#include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/Candidate/interface/Candidate.h"
 #include "DataFormats/Math/interface/LorentzVector.h"
 
@@ -67,6 +68,13 @@ class CandProp_PdgId : public CandProp<int> {
 		void get_property(const reco::Candidate& cand) override { push_back(cand.pdgId()); }
 };
 DEFINE_CAND_PROP(PdgId);
+
+class CandProp_PuppiWeight : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const reco::Candidate& cand) override { push_back(((pat::PackedCandidate*)(&cand))->puppiWeight()); }
+};
+DEFINE_CAND_PROP(PuppiWeight);
 
 class JetsConstituents : public edm::stream::EDProducer<> {
 public:
