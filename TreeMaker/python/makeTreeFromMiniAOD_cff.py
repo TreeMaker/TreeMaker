@@ -5,6 +5,44 @@ import FWCore.ParameterSet.Config as cms
 import sys,os
 from itertools import chain
 
+def transformJetSeq(self, process, baseModule, transformModules, jetType):
+    transformProperties = [
+        "jetCollInstanceName","jetPtMin","useMassDropTagger","useFiltering","useDynamicFiltering","useTrimming","usePruning",
+        "useCMSBoostedTauSeedingAlgorithm","useKtPruning","useConstituentSubtraction","useSoftDrop","correctShape","muCut",
+        "yCut","rFilt","rFiltFactor","trimPtFracMin","zcut","rcut_factor","csRho_EtaMax","csRParam","beta","R0","gridMaxRapidity",
+        "gridSpacing","subjetPtMin","muMin","muMax","yMin","yMax","dRMin","dRMax","maxDepth","nFilt",
+    ]
+
+    transformPSets = []
+    for transformName,transformModule in transformModules.iteritems():
+        transform = getattr(process, transformModule)
+        transformPSets.append(cms.PSet(
+            **{p:getattr(transform, p) for p in transformProperties if hasattr(transform,p)}
+        ))
+        transformPSets[-1].name = cms.string(transformName)
+        collName = getattr(transformPSets[-1],transformProperties[0],cms.string("")).value()
+        delattr(process, transformModule)
+        setattr(process, transformModule, cms.EDAlias(
+                **{baseModule: cms.VPSet(
+                    cms.PSet(type = cms.string("recoBasicJets"), fromProductInstance = cms.string(transformName), toProductInstance = cms.string("")),
+                    cms.PSet(type = cms.string(jetType), fromProductInstance = cms.string(transformName+collName), toProductInstance = cms.string(collName)),
+                )}
+            )
+        )
+
+    base = getattr(process, baseModule)
+    # skip the first two that are also used in base clustering
+    for p in transformProperties[2:]:
+        if hasattr(base,p): delattr(base,p)
+    base.doBaseClustering = cms.bool(True)
+    base.jetTransforms = cms.VPSet(transformPSets)
+    # has to be done here because area definition happens in VirtualJetProducer constructor before FastjetJetProducer constructor
+    if len(transformPSets)>0: base.useExplicitGhosts = cms.bool(True)
+
+    setattr(process, baseModule, base)
+
+    return process
+
 def makeTreeFromMiniAOD(self,process):
 
     ## ----------------------------------------------------------------------------------------------
@@ -327,12 +365,13 @@ def makeTreeFromMiniAOD(self,process):
             jetToolbox(process,
                 'ak8',
                 'jetSequence',
-                'out',
+                'noOutput',
                 PUMethod = 'Puppi',
                 useExistingWeights=True,
                 dataTier='miniAOD',
                 runOnMC = self.geninfo,
-                postFix = 'NoCut',
+                Cut = 'pt>10.',
+                postFix = 'LowCut',
                 addPruning = False,
                 addSoftDropSubjets = True,
                 addNsub = True,
@@ -346,8 +385,14 @@ def makeTreeFromMiniAOD(self,process):
                 verbosity = 2 if self.verbose else 0,
             )
 
-            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiNoCutSoftDrop")
-            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiNoCutSoftDropPacked:SubJets")
+            # todo: revamp jet toolbox to handle this
+            if not self.doZinv: # calling jet toolbox again for ak8 would break after this, so skip it
+                process = self.transformJetSeq(process, "ak8GenJetsNoNu", {"SoftDrop":"ak8GenJetsNoNuSoftDrop"}, "recoGenJets")
+            process.ak8PFJetsPuppiLowCutSoftDrop.jetPtMin = cms.double(10) # to match central clustering
+            process = self.transformJetSeq(process, "ak8PFJetsPuppiLowCut", {"SoftDrop":"ak8PFJetsPuppiLowCutSoftDrop"}, "recoPFJets")
+
+            JetAK8Tag = cms.InputTag("packedPatJetsAK8PFPuppiLowCutSoftDrop")
+            SubjetTag = cms.InputTag("selectedPatJetsAK8PFPuppiLowCutSoftDropPacked:SubJets")
             SubjetName = cms.string("SoftDrop")
             GenJetAK8Tag = cms.InputTag("ak8GenJetsNoNu")
 
@@ -855,13 +900,13 @@ def makeTreeFromMiniAOD(self,process):
         storeProperties=2,
     )
     if self.tchannel:
-        process.JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8PuppiNoCut:tau1')
-        process.JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiNoCut:tau2')
-        process.JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiNoCut:tau3')
-        process.JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb1AK8PuppiNoCutSoftDropN2')
-        process.JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb2AK8PuppiNoCutSoftDropN2')
-        process.JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb1AK8PuppiNoCutSoftDropN3')
-        process.JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiNoCutSoftDropValueMap:nb2AK8PuppiNoCutSoftDropN3')
+        process.JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8PuppiLowCut:tau1')
+        process.JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiLowCut:tau2')
+        process.JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiLowCut:tau3')
+        process.JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb1AK8PuppiLowCutSoftDropN2')
+        process.JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb2AK8PuppiLowCutSoftDropN2')
+        process.JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb1AK8PuppiLowCutSoftDropN3')
+        process.JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb2AK8PuppiLowCutSoftDropN3')
         process.JetPropertiesAK8.softDropMass = cms.vstring('SoftDrop')
         process.JetPropertiesAK8.subjets = cms.vstring('SoftDrop')
         process.JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags')
@@ -933,15 +978,16 @@ def makeTreeFromMiniAOD(self,process):
         from RecoJets.Configuration.RecoGenJets_cff import ak8GenJetsNoNu as ak8GenJetsNoNuDefault
         from RecoJets.JetProducers.SubJetParameters_cfi import SubJetParameters
         process.ak8GenJetsSoftDrop = ak8GenJetsNoNuDefault.clone(
-            useSoftDrop = cms.bool(True),
-            zcut = cms.double(0.1),
-            beta = cms.double(0.0),
-            R0   = cms.double(0.5),
-            useExplicitGhosts = cms.bool(True),
-            writeCompound = cms.bool(True),
-            jetCollInstanceName=cms.string("SubJets"),
-            jetPtMin = 0. if self.tchannel else 170.,
+            jetTransforms = cms.VPSet(cms.PSet(
+                useSoftDrop = cms.bool(True),
+                zcut = cms.double(0.1),
+                beta = cms.double(0.0),
+                R0   = cms.double(0.5),
+                jetCollInstanceName=cms.string("SubJets"),
+                jetPtMin = cms.double(0. if self.tchannel else 170.),
+            )),
             src = GenParticlesForJetTag,
+            doBaseClustering = cms.bool(False),
         )
 
         process.ak8GenJetProperties = genjetproperties.clone(
@@ -951,7 +997,7 @@ def makeTreeFromMiniAOD(self,process):
             jetPtFilter = cms.double(0. if self.tchannel else 150),
             doHV = cms.bool(True if self.emerging else False),
         )
-        if self.tchannel:
+        if self.tchannel or self.doZinv:
             # avoid doing this twice
             process.ak8GenJetProperties.SoftDropGenJetTag = cms.InputTag("ak8GenJetsNoNuSoftDrop")
         self.VectorDouble.extend([
@@ -1233,6 +1279,9 @@ def makeTreeFromMiniAOD(self,process):
             src = JetAK15Tag,
             matched = cms.InputTag("ak15PFJetsPuppiSoftDropBeta1")
         )
+
+        process = self.transformJetSeq(process, "ak15GenJetsNoNu", {"SoftDrop":"ak15GenJetsNoNuSoftDrop"}, "recoGenJets")
+        process = self.transformJetSeq(process, "ak15PFJetsPuppi", {"SoftDrop":"ak15PFJetsPuppiSoftDrop", "SoftDropBeta1":"ak15PFJetsPuppiSoftDropBeta1"}, "recoPFJets")
 
         # update userfloats (used for jet ID, including ID for JEC/JER variations)
         process, JetAK15Tag = addJetInfo(
