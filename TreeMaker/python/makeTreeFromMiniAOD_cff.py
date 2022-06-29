@@ -1342,6 +1342,9 @@ def makeTreeFromMiniAOD(self,process):
         self.JetsTags.append(JetAK15Tag)
         self.JetsNames.append("JetsAK15")
 
+        # store AK15 genjets
+        self.VectorRecoCand.extend (['ak15GenJetsNoNu(GenJetsAK15)'])
+
     ## ----------------------------------------------------------------------------------------------
     ## Jet constituents
     ## ----------------------------------------------------------------------------------------------
