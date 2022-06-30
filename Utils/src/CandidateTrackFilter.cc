@@ -54,6 +54,7 @@ public:
 		trks_etaerror                = std::make_unique<vector<double>>();
 		trks_phierror                = std::make_unique<vector<double>>();
 		trks_qoverperror             = std::make_unique<vector<double>>();
+		trks_ipsign                  = std::make_unique<vector<int>>();
 		trks_ip2d                    = std::make_unique<vector<double>>();
 		trks_ip2dsig                 = std::make_unique<vector<double>>();
 		trks_ip3d                    = std::make_unique<vector<double>>();
@@ -127,11 +128,18 @@ public:
 			trks_ip2dsig->push_back(ip2d.second.significance());
 			trks_ip3d->push_back(ip3d.second.value());
 			trks_ip3dsig->push_back(ip3d.second.significance());
+
+			const double pvx = track.referencePoint().x() - primaryVertexPos.x();
+			const double pvy = track.referencePoint().y() - primaryVertexPos.y();
+			const double prod = (pvx * track.py() - pvy * track.px())*track.charge();
+			trks_ipsign->push_back(prod < 0 ? -1 : 1);
+
 		} else {
 			trks_dxypv->push_back(-100);
 			trks_dxyerrorpv->push_back(-100);
 			trks_dzpv->push_back(-100);
 			trks_ip2d->push_back(-100);
+			trks_ipsign->push_back(0);
 			trks_ip2dsig->push_back(-100);
 			trks_ip3d->push_back(-100);
 			trks_ip3dsig->push_back(-100);
@@ -184,6 +192,7 @@ public:
 		iEvent.put(std::move(trks_etaerror               ), "trksetaerror");
 		iEvent.put(std::move(trks_phierror               ), "trksphierror");
 		iEvent.put(std::move(trks_qoverperror            ), "trksqoverperror");
+		iEvent.put(std::move(trks_ipsign                 ), "trksipsign");
 		iEvent.put(std::move(trks_ip2d                   ), "trksip2d");
 		iEvent.put(std::move(trks_ip2dsig                ), "trksip2dsig");
 		iEvent.put(std::move(trks_ip3d                   ), "trksip3d");
@@ -252,6 +261,7 @@ public:
 		applyPermutationInPlace(trks_etaerror,idx);
 		applyPermutationInPlace(trks_phierror,idx);
 		applyPermutationInPlace(trks_qoverperror,idx);
+		applyPermutationInPlace(trks_ipsign,idx);
 		applyPermutationInPlace(trks_ip2d,idx);
 		applyPermutationInPlace(trks_ip2dsig,idx);
 		applyPermutationInPlace(trks_ip3d,idx);
@@ -279,7 +289,7 @@ public:
 	std::unique_ptr<vector<double>> trks_dzpv,trks_dzerrorpv,trks_dxypv,trks_dxyerrorpv,trks_normalizedchi2,trks_pterror,trks_etaerror,
 									trks_phierror,trks_qoverperror,trks_ip2d,trks_ip2dsig,trks_ip3d,trks_ip3dsig, pfcands_energy,
 									pfcands_dzassociatedpv, vtx_sumtrackpt2;
-	std::unique_ptr<vector<int>> trks_chg, trks_found, trks_lost, trks_quality, pfcands_pdgid, pfcands_numberofhits, pfcands_numberofpixelhits,
+	std::unique_ptr<vector<int>> trks_chg, trks_found, trks_lost, trks_quality, trks_ipsign, pfcands_pdgid, pfcands_numberofhits, pfcands_numberofpixelhits,
 								 pfcands_firsthit, pfcands_frompv, pfcands_pvassociationquality, pfcands_vtxidx;
 	std::unique_ptr<vector<vector<int>>> trks_hitpattern;
 };
@@ -350,6 +360,7 @@ CandidateTrackFilter::CandidateTrackFilter(const edm::ParameterSet& iConfig) :
 	produces<vector<double> >               ("trksetaerror");
 	produces<vector<double> >               ("trksphierror");
 	produces<vector<double> >               ("trksqoverperror");
+	produces<vector<int> >                  ("trksipsign");
 	produces<vector<double> >               ("trksip2d");
 	produces<vector<double> >               ("trksip2dsig");
 	produces<vector<double> >               ("trksip3d");
