@@ -119,7 +119,7 @@ class jobSubmitterTM(jobSubmitter):
                         nJobs += 1
 
                 if self.maxJobs >= 0:
-                    print "Limiting to max {0} jobs".format(self.maxJobs)
+                    if self.verbose: print "Limiting to max {0} jobs".format(self.maxJobs)
                     nJobs = min([nJobs, self.maxJobs])
 
                 netJobs = nJobs - int(firstJob)
