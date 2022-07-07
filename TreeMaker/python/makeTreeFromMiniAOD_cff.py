@@ -1359,6 +1359,10 @@ def makeTreeFromMiniAOD(self,process):
             CandTag = cms.InputTag("puppipackedPFCandidates"),
             properties = cms.vstring("PdgId"),
         )
+        # if jets have not been reclustered, use the default miniAOD candidate collection
+        # WARNING: the case where some jet collections are reclustered, but others are not, will not work properly (todo)
+        if not self.boostedsemivisible and not self.tchannel:
+            process.JetsConstituents.CandTag = cms.InputTag("packedPFCandidates")
         self.VectorLorentzVector.append("JetsConstituents")
         self.VectorInt.append("JetsConstituents:PdgId(JetsConstituents_PdgId)")
         self.VectorVectorInt.extend(["JetsConstituents:{}{}({}{})".format(JetsName,process.JetsConstituents.suffix.value(),JetsName,"_constituentsIndex") for JetsName in self.JetsNames])
