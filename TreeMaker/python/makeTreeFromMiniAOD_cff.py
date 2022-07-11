@@ -1346,7 +1346,7 @@ def makeTreeFromMiniAOD(self,process):
 
         # store AK15 genjets
         if self.geninfo:
-	        self.VectorRecoCand.extend(['ak15GenJetsNoNu(GenJetsAK15)'])
+            self.VectorRecoCand.extend(['ak15GenJetsNoNu(GenJetsAK15)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet constituents
