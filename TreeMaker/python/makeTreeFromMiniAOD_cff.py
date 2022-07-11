@@ -386,7 +386,7 @@ def makeTreeFromMiniAOD(self,process):
             )
 
             # todo: revamp jet toolbox to handle this
-            if not self.doZinv: # calling jet toolbox again for ak8 would break after this, so skip it
+            if self.geninfo and not self.doZinv: # calling jet toolbox again for ak8 would break after this, so skip it
                 process = self.transformJetSeq(process, "ak8GenJetsNoNu", {"SoftDrop":"ak8GenJetsNoNuSoftDrop"}, "recoGenJets")
             process.ak8PFJetsPuppiLowCutSoftDrop.jetPtMin = cms.double(10) # to match central clustering
             process = self.transformJetSeq(process, "ak8PFJetsPuppiLowCut", {"SoftDrop":"ak8PFJetsPuppiLowCutSoftDrop"}, "recoPFJets")
@@ -1281,7 +1281,8 @@ def makeTreeFromMiniAOD(self,process):
             matched = cms.InputTag("ak15PFJetsPuppiSoftDropBeta1")
         )
 
-        process = self.transformJetSeq(process, "ak15GenJetsNoNu", {"SoftDrop":"ak15GenJetsNoNuSoftDrop"}, "recoGenJets")
+        if self.geninfo:
+            process = self.transformJetSeq(process, "ak15GenJetsNoNu", {"SoftDrop":"ak15GenJetsNoNuSoftDrop"}, "recoGenJets")
         process = self.transformJetSeq(process, "ak15PFJetsPuppi", {"SoftDrop":"ak15PFJetsPuppiSoftDrop", "SoftDropBeta1":"ak15PFJetsPuppiSoftDropBeta1"}, "recoPFJets")
 
         # update userfloats (used for jet ID, including ID for JEC/JER variations)
@@ -1344,7 +1345,8 @@ def makeTreeFromMiniAOD(self,process):
         self.JetsNames.append("JetsAK15")
 
         # store AK15 genjets
-        self.VectorRecoCand.extend (['ak15GenJetsNoNu(GenJetsAK15)'])
+        if self.geninfo:
+            self.VectorRecoCand.extend(['ak15GenJetsNoNu(GenJetsAK15)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet constituents
@@ -1357,6 +1359,10 @@ def makeTreeFromMiniAOD(self,process):
             CandTag = cms.InputTag("puppipackedPFCandidates"),
             properties = cms.vstring("PdgId"),
         )
+        # if jets have not been reclustered, use the default miniAOD candidate collection
+        # WARNING: the case where some jet collections are reclustered, but others are not, will not work properly (todo)
+        if not self.boostedsemivisible and not self.tchannel:
+            process.JetsConstituents.CandTag = cms.InputTag("packedPFCandidates")
         self.VectorLorentzVector.append("JetsConstituents")
         self.VectorInt.append("JetsConstituents:PdgId(JetsConstituents_PdgId)")
         self.VectorVectorInt.extend(["JetsConstituents:{}{}({}{})".format(JetsName,process.JetsConstituents.suffix.value(),JetsName,"_constituentsIndex") for JetsName in self.JetsNames])

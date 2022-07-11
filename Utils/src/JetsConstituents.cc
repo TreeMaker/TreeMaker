@@ -20,6 +20,20 @@
 
 typedef math::PtEtaPhiELorentzVector LorentzVector;
 
+namespace {
+
+bool same_indices(const std::vector<int>& values){
+	int base_value = -1;
+	for(auto value : values){
+		if(value==-1) continue;
+		if(base_value==-1) base_value = value;
+		else if(base_value!=value) return false;
+	}
+	return true;
+}
+
+}
+
 //base class for constituent properties
 class CandPropBase {
 	public:
@@ -174,7 +188,7 @@ void JetsConstituents::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	//between-collection safety check (also include constituent collection)
 	processIndex.push_back(h_cands->ptrs()[0].id().processIndex());
 	productIndex.push_back(h_cands->ptrs()[0].id().productIndex());
-	if(std::adjacent_find(processIndex.begin(),processIndex.end(),std::not_equal_to<int>())!=processIndex.end() or std::adjacent_find(productIndex.begin(),productIndex.end(),std::not_equal_to<int>())!=productIndex.end()){
+	if(!same_indices(processIndex) or !same_indices(productIndex)){
 		std::stringstream ss;
 		for(unsigned i = 0; i < processIndex.size(); ++i){
 			ss << "(" << processIndex[i] << ", " << productIndex[i] << "), ";
