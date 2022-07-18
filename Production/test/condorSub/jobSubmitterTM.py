@@ -189,7 +189,7 @@ class jobSubmitterTM(jobSubmitter):
             if hasattr(self,"output"):
                 bottomDir = self.output + "/" + job.name.replace('.','/')
                 if bottomDir not in self.checkedDirectories:
-                    finishedFilesPerJob = pyxrdfsls(bottomDir)
+                    finishedFilesPerJob = pyxrdfsls(bottomDir,self.minDate,self.maxDate)
                     finishedFilesPerJobSplit = [finished.split('/') for finished in finishedFilesPerJob]
                     finishedFilesPerJob = ['.'.join(finished[-3:-1]) + "_" + finished[-1].replace("_RA2AnalysisTree.root","") for finished in finishedFilesPerJobSplit]
                     self.filesSet |= set(finishedFilesPerJob)
