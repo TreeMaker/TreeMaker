@@ -63,9 +63,9 @@ export GFLAG=""
 if [[ ( "$CMSSITE" == *"T1_US_FNAL"* && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
     export CMDSTR="gfal-copy"
     export GFLAG="-g"
-    export GSIFTP_ENDPOINT="gsiftp://cmseos-gridftp.fnal.gov//eos/uscms/store/user/"
-    export OUTDIR=${GSIFTP_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
-elif [[ "${OUTDIR}" == *"gsiftp://"* ]]; then
+    export WEBDAV_ENDPOINT="davs://cmseos.fnal.gov:9000/eos/uscms/store/user/"
+    export OUTDIR=${WEBDAV_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
+elif [[ "${OUTDIR}" == *"davs://"* ]]; then
     export CMDSTR="gfal-copy"
     export GFLAG="-g"
 fi
