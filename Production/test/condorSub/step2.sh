@@ -92,14 +92,17 @@ if [[ -z "$CMSSITE" ]] || [[ "$CMSSITE" == "" ]]; then
 fi
 export CMDSTR="xrdcp"
 export GFLAG=""
+export COPYARGS="-f"
 if [[ ( "$CMSSITE" == *"T1_US_FNAL"* && "${OUTDIR}" == *"root://cmseos.fnal.gov/"* ) ]]; then
 	export CMDSTR="gfal-copy"
 	export GFLAG="-g"
+	export COPYARGS="${COPYARGS} -p"
 	export WEBDAV_ENDPOINT="davs://cmseos.fnal.gov:9000/eos/uscms/store/user/"
 	export OUTDIR=${WEBDAV_ENDPOINT}${OUTDIR#root://cmseos.fnal.gov//store/user/}
 elif [[ "${OUTDIR}" == *"davs://"* ]]; then
 	export CMDSTR="gfal-copy"
 	export GFLAG="-g"
+	export COPYARGS="${COPYARGS} -p"
 fi
 echo "$CMDSTR output for condor"
 for FILE in *.root; do
@@ -111,7 +114,7 @@ for FILE in *.root; do
 		echo -e "\t   After change: ${FILE_DST}"
 	fi
 	echo "${CMDSTR} -f ${FILE} ${OUTDIR}/${FILE_DST}"
-	stageOut ${GFLAG} -x "-f" -i ${FILE} -o ${OUTDIR}/${FILE_DST} -r -c '*.root'
+	stageOut ${GFLAG} -x ${COPYARGS} -i ${FILE} -o ${OUTDIR}/${FILE_DST} -r -c '*.root'
 	XRDEXIT=$?
 	if [[ $XRDEXIT -ne 0 ]]; then
 		echo "exit code $XRDEXIT, failure in $CMDSTR"
