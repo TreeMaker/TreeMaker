@@ -80,7 +80,7 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorDouble.extend(['SignalScan:SignalParameters'])
         # set scan type ("None" by default, producer does nothing)
         if self.signal:
-            if self.pmssm: process.SignalScan.signalType = "pMSSM"
+            if "PMSSM" in self.sample: process.SignalScan.signalType = "pMSSM"
             elif (self.fastsim and
                  any(pattern+"_Tune" in self.sample for pattern in ("SMS-TChiHH", "SMS-TChiHZ", "SMS-TChiZZ"))):
                     process.SignalScan.signalType = "SUSYGenPart"

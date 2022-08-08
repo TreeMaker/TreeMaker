@@ -66,7 +66,6 @@ class maker:
         self.getParamDefault("tagname",self.scenario.tagname)
         self.getParamDefault("hlttagname",self.scenario.hlttagname)
         self.getParamDefault("geninfo",self.scenario.geninfo)
-        self.getParamDefault("pmssm",self.scenario.pmssm)
         self.getParamDefault("fastsim",self.scenario.fastsim)
         self.getParamDefault("signal",self.scenario.signal)
         self.getParamDefault("scan",self.scenario.scan)
@@ -158,7 +157,6 @@ class maker:
         print " Instance name of tag information: "+self.tagname
         print " Instance name of HLT tag information: "+self.hlttagname
         print " Including gen-level information: "+str(self.geninfo)
-        print " Including pMSSM-related information: "+str(self.pmssm)
         print " Using fastsim settings: "+str(self.fastsim)
         print " Using scan settings: "+str(self.scan)
         print " Running signal uncertainties: "+str(self.signal)
