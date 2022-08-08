@@ -72,7 +72,7 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorDouble.extend(['SignalScan:SignalParameters'])
         # set scan type ("None" by default, producer does nothing)
         if self.signal:
-            if self.pmssm: process.SignalScan.signalType = "pMSSM"
+            if "PMSSM" in self.sample: process.SignalScan.signalType = "pMSSM"
             elif self.fastsim: process.SignalScan.signalType = "SUSY"
             elif "SVJ" in self.sample and "Scan" in self.sample: process.SignalScan.signalType = "SVJ"
 

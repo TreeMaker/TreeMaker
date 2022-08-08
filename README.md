@@ -232,7 +232,6 @@ The following parameters take their default values from the specified scenario:
 * `tagname`: tag name for collections that can have different tags for data or MC
 * `geninfo`: switch to enable use of generator information, should only be used for MC
 * `fastsim`: switch to enable special settings for SUSY signal scans produced with FastSim
-* `pmssm`: switch to enable special settings for pMSSM signal scans
 * `signal`: switch to enable assessment of signal systematics (currently unused)
 * `jsonfile`: name of JSON file to apply to data
 * `jecfile`: name of a database file from which to get JECs
