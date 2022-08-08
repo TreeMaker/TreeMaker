@@ -226,6 +226,9 @@ Brief explanation of the options in [makeTree.py](./TreeMaker/python/makeTree.py
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
 * `applybaseline`: switch to apply the baseline HT selection (default=False)
 * `saveMinimalGenParticles`: save only the hard scatter gen particles coming from top decays, boson decays, semi-visible jets, or SUSY particles (default=True)
+* `includeBranches`: write out only the specified list of branches, which can be provided as a comma-separated list or a text file (filename ending in `.txt`). This option uses regular expressions by default (see below). To match a branch name exactly when regex is enabled, surround it in `^$`, e.g. `^Jets$`.
+* `excludeBranches`: write out only branches that do not match the specified list. This option is exclusive with the option `includeBranches` (only one can be used). See above for details.
+* `exactBranches`: disables regex for above branch control commands
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))

@@ -1,4 +1,6 @@
 import FWCore.ParameterSet.Config as cms
+from TreeMaker.Utils.pfnInPath import pfnInPath
+import os
 
 # import functions to be assigned as class methods
 from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
@@ -56,6 +58,21 @@ class maker:
         self.getParamDefault("applybaseline", False)
         self.getParamDefault("saveMinimalGenParticles", True)
 
+        # branch control options
+        self.getParamDefault("includeBranches", "")
+        self.getParamDefault("excludeBranches", "")
+        self.getParamDefault("exactBranches", False)
+        if len(self.includeBranches)>0 and len(self.excludeBranches)>0:
+            raise ValueError("includeBranches and excludeBranches are exclusive options; pick one!")
+        for branchListName in ["includeBranches","excludeBranches"]:
+            branches = getattr(self,branchListName)
+            if not isinstance(branches,list) and branches.endswith(".txt"):
+                # get full path ala FileInPath
+                branchesFilePath = os.path.realpath(pfnInPath(branches).split(':')[-1])
+                with open(branchesFilePath,'r') as bfile:
+                    branches = [line.rstrip() for line in bfile.readlines()]
+                    setattr(self,branchListName,branches)
+
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
         self.getParamDefault("tagname",self.scenario.tagname)
@@ -94,20 +111,13 @@ class maker:
         self.readFiles = [(self.redir if val[0:6]=="/store" else "")+val for val in self.readFiles]
 
         # branches for treemaker
-        self.VectorRecoCand             = cms.vstring()
-        self.VarsDouble                 = cms.vstring()
-        self.VarsInt                    = cms.vstring()
-        self.VarsBool                   = cms.vstring()
-        self.VectorTLorentzVector       = cms.vstring()
-        self.VectorDouble               = cms.vstring()
-        self.VectorString               = cms.vstring()
-        self.VectorInt                  = cms.vstring()
-        self.VectorBool                 = cms.vstring()
-        self.VectorVectorBool           = cms.vstring()
-        self.VectorVectorInt            = cms.vstring()
-        self.VectorVectorDouble         = cms.vstring()
-        self.VectorVectorString         = cms.vstring()
-        self.VectorVectorTLorentzVector = cms.vstring()
+        self.branchLists = [
+            'VarsDouble','VarsInt','VarsBool',
+            'VectorRecoCand','VectorTLorentzVector','VectorDouble','VectorString','VectorInt','VectorBool',
+            'VectorVectorBool','VectorVectorInt','VectorVectorDouble','VectorVectorString','VectorVectorTLorentzVector',
+        ]
+        for branchList in self.branchLists:
+            setattr(self,branchList,cms.vstring())
 
     def getParamDefault(self,param,default):
         setattr(self,param,self.parameters.value(param,default))
@@ -139,6 +149,9 @@ class maker:
         print " Including gen-level information: "+str(self.geninfo)
         print " Using fastsim settings: "+str(self.fastsim)
         print " Running signal uncertainties: "+str(self.signal)
+        if len(self.includeBranches)>0: print " Including branches: "+','.join(self.includeBranches)
+        if len(self.excludeBranches)>0: print " Excluding branches: "+','.join(self.excludeBranches)
+        if self.exactBranches: print "  Using exact branches (no regex)"
         if len(self.jsonfile)>0: print " JSON file applied: "+self.jsonfile
         if len(self.jecfile)>0: print " JECs applied: "+self.jecfile+(" (residuals)" if self.residual else "")
         if len(self.jerfile)>0: print " JERs applied: "+self.jerfile
