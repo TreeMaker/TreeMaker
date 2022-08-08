@@ -254,6 +254,9 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `saveGenTops`: save the 4-vectors of the generated tops and the TTbar reweighting scale factor (default=False)
 * `doMT2`: switch to enable the storage of the MT2 variable (default=False)
 * `nestedVectors`: switch to change from saving vector<\vector<T>> to saving vector<T> values and vector<\int> offsets (default=True)
+* `includeBranches`: write out only the specified list of branches, which can be provided as a comma-separated list or a text file (filename ending in `.txt`). This option uses regular expressions by default (see below). To match a branch name exactly when regex is enabled, surround it in `^$`, e.g. `^Jets$`.
+* `excludeBranches`: write out only branches that do not match the specified list. This option is exclusive with the option `includeBranches` (only one can be used). See above for details.
+* `exactBranches`: disables regex for above branch control commands
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
