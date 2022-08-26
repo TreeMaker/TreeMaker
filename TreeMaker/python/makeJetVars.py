@@ -257,10 +257,6 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
                 'JetProperties'+suff+':electronEnergyFraction(Jets'+suff+'_electronEnergyFraction)',
                 'JetProperties'+suff+':hfEMEnergyFraction(Jets'+suff+'_hfEMEnergyFraction)',
                 'JetProperties'+suff+':hfHadronEnergyFraction(Jets'+suff+'_hfHadronEnergyFraction)',
-                'JetProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
-                'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
-                'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
-                'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
                 'JetProperties'+suff+':jecFactor(Jets'+suff+'_jecFactor)',
             ])
             if self.geninfo:
@@ -281,9 +277,25 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
                 'JetProperties'+suff+':muonMultiplicity(Jets'+suff+'_muonMultiplicity)',
                 'JetProperties'+suff+':neutralHadronMultiplicity(Jets'+suff+'_neutralHadronMultiplicity)',
                 'JetProperties'+suff+':photonMultiplicity(Jets'+suff+'_photonMultiplicity)',
-                'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
             ])
-                                             
+
+            if self.doQG:
+                JetProperties.properties.extend(["qgLikelihood","ptD","axisminor","axismajor","multiplicity"])
+                JetProperties.qgLikelihood = cms.vstring('QGTagger:qgLikelihood')
+                JetProperties.ptD = cms.vstring('QGTagger:ptD')
+                JetProperties.axisminor = cms.vstring('QGTagger:axis2')
+                JetProperties.axismajor = cms.vstring('QGTagger:axis1')
+                JetProperties.multiplicity = cms.vstring('QGTagger:mult')
+                self.VectorDouble.extend([
+                    'JetProperties'+suff+':qgLikelihood(Jets'+suff+'_qgLikelihood)',
+                    'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
+                    'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
+                    'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
+                ])
+                self.VectorInt.extend([
+                    'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
+                ])
+
     return process
 
 # AK8 storeProperties levels:
@@ -319,10 +331,6 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             JetTag = GoodJetsTag
         )
         setattr(process,"BasicSubstructure"+suff,BasicSubstructure)
-        QGTagger = process.QGTagger.clone(
-            srcJets = GoodJetsTag
-        )
-        setattr(process,"QGTagger"+suff,QGTagger)
         ak8floats.extend([
             'BasicSubstructure'+suff+':girth',
             'BasicSubstructure'+suff+':momenthalf',
@@ -331,13 +339,21 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             'NjettinessBeta1'+suff+':tau1phiAxis1',
             'NjettinessBeta2'+suff+':tau1etaAxis1',
             'NjettinessBeta2'+suff+':tau1phiAxis1',
-            'QGTagger'+suff+':ptD',
-            'QGTagger'+suff+':axis1',
-            'QGTagger'+suff+':axis2',
         ])
-        ak8ints.extend([
-            'QGTagger'+suff+':mult',
-        ])
+
+        if self.doQG:
+            QGTagger = process.QGTagger.clone(
+                srcJets = GoodJetsTag
+            )
+            setattr(process,"QGTagger"+suff,QGTagger)
+            ak8floats.extend([
+                'QGTagger'+suff+':ptD',
+                'QGTagger'+suff+':axis1',
+                'QGTagger'+suff+':axis2',
+            ])
+            ak8ints.extend([
+                'QGTagger'+suff+':mult',
+            ])
 
     # add discriminator and update tag
     if len(ak8floats)>0 or len(ak8ints)>0:
@@ -522,37 +538,30 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             ])
 
             # extra stuff for subjets
-            JetPropertiesAK8.properties.extend(["SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
-            JetPropertiesAK8.SJptD = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:ptD')
-            JetPropertiesAK8.SJaxismajor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis1')
-            JetPropertiesAK8.SJaxisminor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis2')
-            JetPropertiesAK8.SJmultiplicity = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:mult')
-            self.VectorVectorDouble.extend([
-                'JetProperties'+suff+':SJptD(Jets'+suff+'_subjets_ptD)',
-                'JetProperties'+suff+':SJaxismajor(Jets'+suff+'_subjets_axismajor)',
-                'JetProperties'+suff+':SJaxisminor(Jets'+suff+'_subjets_axisminor)',
-            ])
-            self.VectorVectorInt.extend([
-                'JetProperties'+suff+':SJmultiplicity(Jets'+suff+'_subjets_multiplicity)',
-            ])
+            if self.doQG:
+                JetPropertiesAK8.properties.extend(["SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity"])
+                JetPropertiesAK8.SJptD = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:ptD')
+                JetPropertiesAK8.SJaxismajor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis1')
+                JetPropertiesAK8.SJaxisminor = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:axis2')
+                JetPropertiesAK8.SJmultiplicity = cms.vstring('SoftDropPuppiUpdated','QGTaggerSubjets:mult')
+                self.VectorVectorDouble.extend([
+                    'JetProperties'+suff+':SJptD(Jets'+suff+'_subjets_ptD)',
+                    'JetProperties'+suff+':SJaxismajor(Jets'+suff+'_subjets_axismajor)',
+                    'JetProperties'+suff+':SJaxisminor(Jets'+suff+'_subjets_axisminor)',
+                ])
+                self.VectorVectorInt.extend([
+                    'JetProperties'+suff+':SJmultiplicity(Jets'+suff+'_subjets_multiplicity)',
+                ])
 
         if self.semivisible and storeProperties>1:
             JetPropertiesAK8.properties.extend([
                 'girth',
                 'momenthalf',
-                'ptD',
-                'axismajor',
-                'axisminor',
-                'multiplicity',
                 'ptdrlog',
                 'lean',
             ])
             JetPropertiesAK8.girth = cms.vstring('BasicSubstructure'+suff+':girth')
             JetPropertiesAK8.momenthalf = cms.vstring('BasicSubstructure'+suff+':momenthalf')
-            JetPropertiesAK8.ptD = cms.vstring('QGTagger'+suff+':ptD')
-            JetPropertiesAK8.axismajor = cms.vstring('QGTagger'+suff+':axis1')
-            JetPropertiesAK8.axisminor = cms.vstring('QGTagger'+suff+':axis2')
-            JetPropertiesAK8.multiplicity = cms.vstring('QGTagger'+suff+':mult')
             JetPropertiesAK8.ptdrlog = cms.vstring('BasicSubstructure'+suff+':ptdrlog')
             JetPropertiesAK8.lean = cms.vstring(
                 'NjettinessBeta1'+suff+':tau1etaAxis1',
@@ -563,15 +572,29 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             self.VectorDouble.extend([
                 'JetProperties'+suff+':girth(Jets'+suff+'_girth)',
                 'JetProperties'+suff+':momenthalf(Jets'+suff+'_momenthalf)',
-                'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
-                'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
-                'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
                 'JetProperties'+suff+':ptdrlog(Jets'+suff+'_ptdrlog)',
                 'JetProperties'+suff+':lean(Jets'+suff+'_lean)',
             ])
-            self.VectorInt.extend([
-                'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
-            ])
+
+            if self.doQG:
+                JetPropertiesAK8.properties.extend([
+                    'ptD',
+                    'axismajor',
+                    'axisminor',
+                    'multiplicity',
+                ])
+                JetPropertiesAK8.ptD = cms.vstring('QGTagger'+suff+':ptD')
+                JetPropertiesAK8.axismajor = cms.vstring('QGTagger'+suff+':axis1')
+                JetPropertiesAK8.axisminor = cms.vstring('QGTagger'+suff+':axis2')
+                JetPropertiesAK8.multiplicity = cms.vstring('QGTagger'+suff+':mult')
+                self.VectorDouble.extend([
+                    'JetProperties'+suff+':ptD(Jets'+suff+'_ptD)',
+                    'JetProperties'+suff+':axismajor(Jets'+suff+'_axismajor)',
+                    'JetProperties'+suff+':axisminor(Jets'+suff+'_axisminor)',
+                ])
+                self.VectorInt.extend([
+                    'JetProperties'+suff+':multiplicity(Jets'+suff+'_multiplicity)',
+                ])
 
             if storeProperties>2:
                 JetPropertiesAK8.properties.extend(['constituents'])

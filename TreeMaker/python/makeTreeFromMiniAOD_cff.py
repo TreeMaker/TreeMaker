@@ -823,37 +823,38 @@ def makeTreeFromMiniAOD(self,process):
     ## Jet variables
     ## ----------------------------------------------------------------------------------------------
 
-    # get updated QG training
-    QGPatch = cms.string('sqlite_file:data/QGL_cmssw8020_v2.db')
+    if self.doQG:
+        # get updated QG training
+        QGPatch = cms.string('sqlite_file:data/QGL_cmssw8020_v2.db')
 
-    process.qgdb = cms.ESSource("PoolDBESSource",CondDBSetup,
-        connect = QGPatch,
-        toGet   = cms.VPSet(
-            cms.PSet(
-                record = cms.string('QGLikelihoodRcd'),
-                tag    = cms.string('QGLikelihoodObject_cmssw8020_v2_AK4PFchs'),
-                label  = cms.untracked.string('QGL_AK4PFchs')
-            ),
-            cms.PSet(
-                record = cms.string('QGLikelihoodRcd'),
-                tag    = cms.string('QGLikelihoodObject_cmssw8020_v2_AK4PFchs_antib'),
-                label  = cms.untracked.string('QGL_AK4PFchs_antib')
-            ),
+        process.qgdb = cms.ESSource("PoolDBESSource",CondDBSetup,
+            connect = QGPatch,
+            toGet   = cms.VPSet(
+                cms.PSet(
+                    record = cms.string('QGLikelihoodRcd'),
+                    tag    = cms.string('QGLikelihoodObject_cmssw8020_v2_AK4PFchs'),
+                    label  = cms.untracked.string('QGL_AK4PFchs')
+                ),
+                cms.PSet(
+                    record = cms.string('QGLikelihoodRcd'),
+                    tag    = cms.string('QGLikelihoodObject_cmssw8020_v2_AK4PFchs_antib'),
+                    label  = cms.untracked.string('QGL_AK4PFchs_antib')
+                ),
+            )
         )
-    )
-    process.es_prefer_qg = cms.ESPrefer("PoolDBESSource","qgdb")
+        process.es_prefer_qg = cms.ESPrefer("PoolDBESSource","qgdb")
 
-    # get QG tagging discriminant
-    process.QGTagger = cms.EDProducer('QGTagger',
-        srcJets             = JetTag,
-        jetsLabel           = cms.string('QGL_AK4PFchs'),
-        srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),
-        srcVertexCollection = cms.InputTag('offlinePrimaryVerticesWithBS'),
-        useQualityCuts      = cms.bool(False)
-    )
+        # get QG tagging discriminant
+        process.QGTagger = cms.EDProducer('QGTagger',
+            srcJets             = JetTag,
+            jetsLabel           = cms.string('QGL_AK4PFchs'),
+            srcRho              = cms.InputTag('fixedGridRhoFastjetAll'),
+            srcVertexCollection = cms.InputTag('offlinePrimaryVerticesWithBS'),
+            useQualityCuts      = cms.bool(False)
+        )
 
-    # add userfloats & update tag
-    process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2', 'QGTagger:axis1'], ['QGTagger:mult'])
+        # add userfloats & update tag
+        process, JetTag = addJetInfo(process, JetTag, ['QGTagger:qgLikelihood','QGTagger:ptD', 'QGTagger:axis2', 'QGTagger:axis1'], ['QGTagger:mult'])
 
     process = self.makeJetVars(process,
         JetTag=JetTag,
@@ -862,6 +863,7 @@ def makeTreeFromMiniAOD(self,process):
         SkipTag=SkipTag,
         METfix=self.doMETfix,
     )
+
     if self.systematics:
         process.JetProperties.properties.extend(["jecUnc"])
         process.JetProperties.jecUnc = cms.vstring(JetTagJECTmp.value())
@@ -877,25 +879,26 @@ def makeTreeFromMiniAOD(self,process):
             'JetProperties:jerFactorDown(Jets_jerFactorDown)',
         ])
 
-    # get QG tagging discriminant for subjets
-    process.QGTaggerSubjets = process.QGTagger.clone(
-        srcJets = SubjetTag
-    )
-
-    # add userfloats & update subjet tag
-    process, SubjetTag = addJetInfo(process, SubjetTag,
-        ['QGTaggerSubjets:qgLikelihood','QGTaggerSubjets:ptD', 'QGTaggerSubjets:axis2', 'QGTaggerSubjets:axis1'], ['QGTaggerSubjets:mult'])
-    # update subjets in jet coll
-    JetAK8TagSJU = cms.InputTag(JetAK8Tag.value()+'SJUpdate')
-    setattr(process, JetAK8TagSJU.value(),
-        cms.EDProducer('SubjetUpdater',
-            JetTag = JetAK8Tag,
-            SubjetTag = SubjetTag,
-            OldName = SubjetName,
-            NewName = cms.string("SoftDropPuppiUpdated"),
+    if self.doQG:
+        # get QG tagging discriminant for subjets
+        process.QGTaggerSubjets = process.QGTagger.clone(
+            srcJets = SubjetTag
         )
-    )
-    JetAK8Tag = JetAK8TagSJU
+
+        # add userfloats & update subjet tag
+        process, SubjetTag = addJetInfo(process, SubjetTag,
+            ['QGTaggerSubjets:qgLikelihood','QGTaggerSubjets:ptD', 'QGTaggerSubjets:axis2', 'QGTaggerSubjets:axis1'], ['QGTaggerSubjets:mult'])
+        # update subjets in jet coll
+        JetAK8TagSJU = cms.InputTag(JetAK8Tag.value()+'SJUpdate')
+        setattr(process, JetAK8TagSJU.value(),
+            cms.EDProducer('SubjetUpdater',
+                JetTag = JetAK8Tag,
+                SubjetTag = SubjetTag,
+                OldName = SubjetName,
+                NewName = cms.string("SoftDropPuppiUpdated"),
+            )
+        )
+        JetAK8Tag = JetAK8TagSJU
 
     # apply jet ID and get properties
     process = self.makeJetVarsAK8(process,
