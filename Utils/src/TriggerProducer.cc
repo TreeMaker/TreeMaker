@@ -49,7 +49,7 @@ private:
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
 
   // ----------member data ---------------------------
-  void GetInputTag(edm::InputTag& tag, std::string arg1, std::string arg2, std::string arg3, std::string arg1_default);
+  void GetInputTag(edm::InputTag& tag, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg1_default);
   int GetVersion(std::string& triggerName) const;
   edm::InputTag trigResultsTag_, trigPrescalesTag_;
   edm::EDGetTokenT<edm::TriggerResults> trigResultsTok_;
@@ -136,19 +136,19 @@ TriggerProducer::~TriggerProducer()
 
 // ------------ helper function to make InputTags ------------
 void
-TriggerProducer::GetInputTag(edm::InputTag& tag, std::string arg1, std::string arg2, std::string arg3, std::string arg1_default=""){
+TriggerProducer::GetInputTag(edm::InputTag& tag, const std::string& arg1, const std::string& arg2, const std::string& arg3, const std::string& arg1_default=""){
   // We we make the producer a little smarter. There are four cases we look at
   // 1) arg1 and arg3 are set, if this is the case we create the label bases on all three arguments
   // 2) arg3 is not set, in this case we create the label based only on arg1
   // 3) Neither arg1 nor arg3 are set, in this case we default to searching for arg1_default
   // 4) arg1 is not set, but arg3 is set, we look for arg1_default in the process defined by arg3
 
-  if(arg1.empty()) arg1 = arg1_default;
+  const auto& arg1_actual(arg1.empty() ? arg1_default : arg1);
   
   if(arg3.empty()){
-    tag = edm::InputTag(arg1);
+    tag = edm::InputTag(arg1_actual);
   } else {
-    tag = edm::InputTag(arg1,arg2,arg3);
+    tag = edm::InputTag(arg1_actual,arg2,arg3);
   }
 }
 

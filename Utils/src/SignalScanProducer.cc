@@ -47,10 +47,11 @@ class SignalScanProducer : public edm::stream::EDProducer<> {
 		
 		void getSUSYComment(const LHEEventProduct& lhe);
 		void getSUSYComment(const GenLumiInfoHeader& gen);
-		void getSUSYModelInfo(std::string comment);
+		void getSUSYModelInfo(const std::string& comment);
 
 		void getpMSSMComment(const LHEEventProduct& lhe);
-		//todo: add pMSSM parser for GenLumiInfoHeader, once available/understood
+		void getpMSSMComment(const GenLumiInfoHeader& gen);
+		void getpMSSMModelInfo(const std::string& comment, bool combined);
 
 		//LHE will never be used for SVJ
 		void getSVJComment(const GenLumiInfoHeader& gen);
@@ -134,6 +135,7 @@ SignalScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm:
 		edm::Handle<GenLumiInfoHeader> gen_header;
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);
 		if(type_==signal_type::SUSY) getSUSYComment(*gen_header);
+		else if(type_==signal_type::pMSSM) getpMSSMComment(*gen_header);
 		else if(type_==signal_type::SVJ) getSVJComment(*gen_header);
 	}
 }
@@ -176,15 +178,14 @@ void SignalScanProducer::getSUSYComment(const GenLumiInfoHeader& gen){
 }
 
 //parse model comment for SUSY
-void SignalScanProducer::getSUSYModelInfo(std::string comment){
-	//strip newline
-	if(comment.back()=='\n') comment.pop_back();
-	
+void SignalScanProducer::getSUSYModelInfo(const std::string& comment){
 	if(debug_) edm::LogInfo("TreeMaker") << comment;
 	
 	std::vector<std::string> fields;
 	//underscore-delimited data
 	parse::process(comment,'_',fields);
+	//strip newline
+	if(fields.back().back()=='\n') fields.back().pop_back();
 
 	//several possible formats:
 	//model name_mMother_mLSP (1+2 fields)
@@ -194,7 +195,7 @@ void SignalScanProducer::getSUSYModelInfo(std::string comment){
 	
 	std::stringstream sfield1(fields.end()[-1]);
 	sfield1 >> lspMass_;
-	
+
 	std::stringstream sfield2(fields.end()[-2]);
 	sfield2 >> motherMass_;
 
@@ -207,18 +208,46 @@ void SignalScanProducer::getpMSSMComment(const LHEEventProduct& lhe){
 	for(auto cit = lhe.comments_begin(); cit != lhe.comments_end(); ++cit){
 		size_t found = (*cit).find(".slha");
 		if(found != std::string::npos){
-			std::string comment = (*cit).substr(1,(*cit).find(".slha")-1);
-			if(comment.back()=='\n') comment.pop_back();
-			std::vector<std::string> nameblocks;
-			parse::process(comment, '_', nameblocks);
-			std::string character_string = nameblocks[2]+nameblocks[3];
-			std::stringstream s0(character_string);
-			double pmssmId;
-			s0 >> pmssmId;
-			signalParameters_.push_back(pmssmId);
-			if(debug_) edm::LogInfo("TreeMaker") << comment;
+			//parse string
+			std::string comment = *cit;
+			getpMSSMModelInfo(comment, true);
 			break; //finished with this event
 		}
+	}
+}
+
+//parse GenLumiInfo for pMSSM
+void SignalScanProducer::getpMSSMComment(const GenLumiInfoHeader& gen){
+	getpMSSMModelInfo(gen.configDescription(), false);
+}
+
+//parse model comment for pMSSM
+void SignalScanProducer::getpMSSMModelInfo(const std::string& comment, bool combined){
+	if(debug_) edm::LogInfo("TreeMaker") << comment;
+
+	std::vector<std::string> fields;
+	parse::process(comment, '_', fields);
+	//strip ".slha", newline
+	fields.back() = fields.back().substr(0,fields.back().find(".slha")-1);
+
+	if(combined){
+		std::string character_string = fields[2]+fields[3];
+		std::stringstream s0(character_string);
+		double pmssmId;
+		s0 >> pmssmId;
+		signalParameters_.push_back(pmssmId);
+	}
+	else {
+		//format: pMSSM_MCMC_id1_id2.slha
+
+		std::stringstream sfield1(fields.end()[-1]);
+		sfield1 >> lspMass_;
+
+		std::stringstream sfield2(fields.end()[-2]);
+		sfield2 >> motherMass_;
+
+		signalParameters_.push_back(motherMass_);
+		signalParameters_.push_back(lspMass_);
 	}
 }
 

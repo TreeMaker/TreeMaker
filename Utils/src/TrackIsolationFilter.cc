@@ -87,7 +87,7 @@ private:
   edm::EDGetTokenT<edm::View<reco::Vertex>> vertexInputTok_;
   edm::EDGetTokenT<edm::View<pat::MET>> MetInputTok_;
 
-  void GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
+  void GetTrkIso(const edm::Handle<edm::View<pat::PackedCandidate> >& pfcands, const unsigned tkInd, float& trkiso, float& activity) const;
 
 };
 
@@ -174,7 +174,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
     // miniAOD
     for(size_t i=0; i<pfCandidates->size();i++)
     {
-		const pat::PackedCandidate pfCand = (*pfCandidates)[i];
+		const pat::PackedCandidate& pfCand = (*pfCandidates)[i];
 
 		//to keep track of cuts in debug case (when continues are not used)
 		bool goodCand = true;
@@ -273,7 +273,7 @@ bool TrackIsolationFilter::filter(edm::StreamID, edm::Event& iEvent, const edm::
 	return result;
 }
 
-void TrackIsolationFilter::GetTrkIso(edm::Handle<edm::View<pat::PackedCandidate> > pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
+void TrackIsolationFilter::GetTrkIso(const edm::Handle<edm::View<pat::PackedCandidate> >& pfcands, const unsigned tkInd, float& trkiso, float& activity) const {
   if (tkInd>pfcands->size()) {
 	  trkiso = -999.;
 	  activity = -999.;
