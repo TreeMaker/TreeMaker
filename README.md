@@ -264,6 +264,9 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `storeOffsets`: if set to True, stores offsets rather than counts when using `nestedVectors=False` (default=False)
 * `splitLevel`: split level for output TBranches (default=99)
 * `saveFloat`: convert doubles to floats in output (default=True)
+* `includeBranches`: write out only the specified list of branches, which can be provided as a comma-separated list or a text file (filename ending in `.txt`). This option uses regular expressions by default (see below). To match a branch name exactly when regex is enabled, surround it in `^$`, e.g. `^Jets$`.
+* `excludeBranches`: write out only branches that do not match the specified list. This option is exclusive with the option `includeBranches` (only one can be used). See above for details.
+* `exactBranches`: disables regex for above branch control commands
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
