@@ -41,7 +41,7 @@ class SignalScanProducer : public edm::stream::EDProducer<> {
 		
 		void getSUSYComment(const std::string& comment);
 		void getSVJComment(const std::string& gen);
-		//todo: add pMSSM parser for GenLumiInfoHeader, once available/understood
+		void getpMSSMComment(const std::string& gen);
 		
 		// ----------member data ---------------------------
 		edm::EDGetTokenT<GenLumiInfoHeader> genLumiHeaderToken_;
@@ -83,6 +83,7 @@ SignalScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm:
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);
 		const auto& configDesc = gen_header->configDescription();
 		if(type_==signal_type::SUSY) getSUSYComment(configDesc);
+		else if(type_==signal_type::pMSSM) getpMSSMComment(configDesc);
 		else if(type_==signal_type::SVJ) getSVJComment(configDesc);
 	}
 }
@@ -105,7 +106,7 @@ void SignalScanProducer::reset(){
 //parse model comment for SUSY
 void SignalScanProducer::getSUSYComment(const std::string& comment){
 	if(debug_) edm::LogInfo("TreeMaker") << comment;
-	
+
 	std::vector<std::string> fields;
 	//underscore-delimited data
 	parse::process(comment,'_',fields);
@@ -122,7 +123,7 @@ void SignalScanProducer::getSUSYComment(const std::string& comment){
 
 	std::stringstream sfield1(fields.end()[-1]);
 	sfield1 >> lspMass;
-	
+
 	std::stringstream sfield2(fields.end()[-2]);
 	sfield2 >> motherMass;
 
@@ -154,6 +155,28 @@ void SignalScanProducer::getSVJComment(const std::string& comment){
 		}
 		signalParameters_.push_back(val);
 	}
+}
+
+//parse model comment for pMSSM
+void SignalScanProducer::getpMSSMComment(const std::string& comment){
+	if(debug_) edm::LogInfo("TreeMaker") << comment;
+
+	std::vector<std::string> fields;
+	parse::process(comment, '_', fields);
+	//strip ".slha", newline
+	fields.back() = fields.back().substr(0,fields.back().find(".slha")-1);
+
+	//format: pMSSM_MCMC_id1_id2.slha
+
+	double field1, field2;
+	std::stringstream sfield1(fields.end()[-1]);
+	sfield1 >> field1;
+
+	std::stringstream sfield2(fields.end()[-2]);
+	sfield2 >> field2;
+
+	signalParameters_.push_back(field1);
+	signalParameters_.push_back(field2);
 }
 
 //define this as a plug-in
