@@ -51,6 +51,7 @@ class maker:
         self.getParamDefault("tchannel",False, bool);
         self.getParamDefault("deepAK8",True, bool);
         self.getParamDefault("deepDoubleB",True, bool);
+        self.getParamDefault("doQG",True);
 
         # compute the PDF weights
         self.getParamDefault("doPDFs", True, bool);
@@ -177,6 +178,7 @@ class maker:
         print " storing t-channel semi-visible jet variables: "+str(self.tchannel)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
+        print " storing quark/gluon variables: "+str(self.doQG)
         print " "
         print " storing JEC/JER systematics: "+str(self.systematics)
         print " storing PDF weights: "+str(self.doPDFs)
