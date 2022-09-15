@@ -107,7 +107,10 @@ Python:
 * `-A, --args [list]`: additional common args to use for all jobs (passed to [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFromMiniAOD_cfg.py))
 * `-v, --verbose`: enable verbose output (default = False)
 * `-x, --redir`: input file redirector
+* `-f, --use-folders`: store the output in folders based on era and dataset (default = False)
+* `-i, --ignore-args`: ignore args specified in the input dict (default = False)
 * `--offset [num]`: offset for arg file naming in chain jobs (default = 0)
+* `--maxJobs [num]`: max number of jobs to run (default = -1 -> not applied)
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):
 * `-o [dir]`: output directory
