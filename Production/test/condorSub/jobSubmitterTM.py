@@ -15,8 +15,10 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-A", "--args", dest="args", default="", help="additional common args to use for all jobs (default = %default)")
         parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="enable verbose output (default = %default)")
         parser.add_option("-x", "--redir", dest="redir", default="", help="input file redirector (default = %default)")
-        parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
+        parser.add_option("-f", "--use-folders", dest="useFolders", default=False, action="store_true", help="store the output in folders based on era and dataset (default = %default)")
+        parser.add_option("-i", "--ignore-args", dest="ignoreArgs", default=False, action="store_true", help="ignore args specified in the input dict (default = %default)")
         parser.add_option("--maxJobs", dest="maxJobs", default=-1, type=int, help="Max number of jobs to run")
+        parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
 
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterTM,self).checkExtraOptions(options,parser)
@@ -32,7 +34,7 @@ class jobSubmitterTM(jobSubmitter):
         job.patterns.update([
             ("JOBNAME",job.name+"_$(Process)_$(Cluster)"),
             ("EXTRAINPUTS","input/args_"+job.name+"_$(Process).txt"),
-            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output+(" -x "+self.redir if len(self.redir)>0 else "")),
+            ("EXTRAARGS","-j "+job.name+" -p $(Process) -o "+self.output+(" -x "+self.redir if len(self.redir)>0 else "")+(" -f " if self.useFolders else "")),
         ])
         if "cmslpc" in os.uname()[1]:
             job.appends.append(
@@ -57,6 +59,11 @@ class jobSubmitterTM(jobSubmitter):
             # loop over dict entries
             process = input.replace(".py","")
             flist = __import__("dict_"+process).flist
+            # args can be specified like scenario in dict
+            # args specified on the command line appended to dict args (so command line overrides dict)
+            dictArgs = self.args[:]
+            if not self.ignoreArgs and "args" in flist:
+                dictArgs = " ".join([x for x in [flist["args"],dictArgs] if len(x)>0])
             scenarioName = flist["scenario"]
             scenario = Scenario(scenarioName)
             data = not scenario.geninfo
@@ -64,7 +71,7 @@ class jobSubmitterTM(jobSubmitter):
             if data and self.json=="":
                 # get from scenario
                 # data directory is next to condor directory
-                self.json = "../"+scenario.jsonfile
+                self.json = scenario.jsonfile
             if data and self.json=="":
                 raise Exception, "data was specified, but no json file was found"
 
@@ -112,7 +119,7 @@ class jobSubmitterTM(jobSubmitter):
                         nJobs += 1
 
                 if self.maxJobs >= 0:
-                    print "Limiting to max {0} jobs".format(self.maxJobs)
+                    if self.verbose: print "Limiting to max {0} jobs".format(self.maxJobs)
                     nJobs = min([nJobs, self.maxJobs])
 
                 netJobs = nJobs - int(firstJob)
@@ -160,7 +167,8 @@ class jobSubmitterTM(jobSubmitter):
                     if self.prepare:
                         jname = job.makeName(job.nums[-1]+self.offset)
                         with open("input/args_"+jname+".txt",'w') as argfile:
-                            args = (self.args+" " if len(self.args)>0 else "")+"outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
+                            args = "outfile="+jname+" inputFilesConfig="+filesConfig+" nstart="+str(nstart)+" nfiles="+str(self.nFiles)+" scenario="+scenarioName
+                            if len(dictArgs)>0: args = args+" "+dictArgs
                             argfile.write(args)
 
                 # append queue comment
@@ -171,6 +179,35 @@ class jobSubmitterTM(jobSubmitter):
                 
                 # store protojob
                 self.protoJobs.append(job)
+
+    def findFolderizedJobs(self,job):
+        if not hasattr(self,"checkedDirectories"):
+            setattr(self,"checkedDirectories",set())
+
+        if hasattr(self,"output"):
+            bottomDir = self.output + "/" + job.name.replace('.','/')
+            if bottomDir not in self.checkedDirectories:
+                finishedFilesPerJob = pyxrdfsls(bottomDir)
+                finishedFilesPerJobSplit = [finished.split('/') for finished in finishedFilesPerJob]
+                finishedFilesPerJob = ['.'.join(finished[-3:-1]) + "_" + finished[-1].replace("_RA2AnalysisTree.root","") for finished in finishedFilesPerJobSplit]
+                self.filesSet |= set(finishedFilesPerJob)
+                self.checkedDirectories.add(bottomDir)
+
+    def doMissing(self,job):
+        # add to finished files in case the files are folderized
+        if self.useFolders:
+            self.findFolderizedJobs(job)
+
+        # now do the rest of missing mode
+        super(jobSubmitterTM,self).doMissing(job)
+
+    def doClean(self,job):
+        # add to finished files in case the files are folderized
+        if self.useFolders:
+            self.findFolderizedJobs(job)
+
+        # now do the rest of clean mode
+        super(jobSubmitterTM,self).doClean(job)
 
     def finishedToJobName(self,val):
         return val.split("/")[-1].replace("_RA2AnalysisTree.root","")
