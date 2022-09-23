@@ -142,7 +142,7 @@ TriggerProducer::GetInputTag(edm::InputTag& tag, const std::string& arg1, const 
   // 3) Neither arg1 nor arg3 are set, in this case we default to searching for arg1_default
   // 4) arg1 is not set, but arg3 is set, we look for arg1_default in the process defined by arg3
 
-  const auto& arg1_actual(arg1.empty() ? arg1 : arg1_default);
+  const auto& arg1_actual(arg1.empty() ? arg1_default : arg1);
   
   if(arg3.empty()){
     tag = edm::InputTag(arg1_actual);

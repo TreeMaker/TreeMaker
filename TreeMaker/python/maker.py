@@ -1,5 +1,5 @@
 import FWCore.ParameterSet.Config as cms
-
+from FWCore.ParameterSet.pfnInPath import pfnInPath
 import os
 import subprocess
 
@@ -51,6 +51,7 @@ class maker:
         self.getParamDefault("tchannel",False, bool);
         self.getParamDefault("deepAK8",True, bool);
         self.getParamDefault("deepDoubleB",True, bool);
+        self.getParamDefault("doQG",True);
 
         # compute the PDF weights
         self.getParamDefault("doPDFs", True, bool);
@@ -71,12 +72,26 @@ class maker:
         self.JetsTags = []
         self.JetsNames = []
 
+        # branch control options
+        self.getParamDefault("includeBranches", "")
+        self.getParamDefault("excludeBranches", "")
+        self.getParamDefault("exactBranches", False, bool)
+        if len(self.includeBranches)>0 and len(self.excludeBranches)>0:
+            raise ValueError("includeBranches and excludeBranches are exclusive options; pick one!")
+        for branchListName in ["includeBranches","excludeBranches"]:
+            branches = getattr(self,branchListName)
+            if not isinstance(branches,list) and branches.endswith(".txt"):
+                # get full path ala FileInPath
+                branchesFilePath = os.path.realpath(pfnInPath(branches).split(':')[-1])
+                with open(branchesFilePath,'r') as bfile:
+                    branches = [line.rstrip() for line in bfile.readlines()]
+                    setattr(self,branchListName,branches)
+
         # take command line input (w/ defaults from scenario if specified)
         self.getParamDefault("globaltag",self.scenario.globaltag)
         self.getParamDefault("tagname",self.scenario.tagname)
         self.getParamDefault("hlttagname",self.scenario.hlttagname)
         self.getParamDefault("geninfo",self.scenario.geninfo)
-        self.getParamDefault("pmssm",self.scenario.pmssm)
         self.getParamDefault("fastsim",self.scenario.fastsim)
         self.getParamDefault("signal",self.scenario.signal)
         self.getParamDefault("scan",self.scenario.scan)
@@ -133,35 +148,15 @@ class maker:
                         print "HTCondor classad \'" + key + "\' set to " + value
 
         # branches for treemaker
-        self.VectorRecoCand                 = cms.vstring()
-        self.VarsXYZVector                  = cms.vstring()
-        self.VarsXYZPoint                   = cms.vstring()
-        self.VarsDouble                     = cms.vstring()
-        self.VarsInt                        = cms.vstring()
-        self.VarsBool                       = cms.vstring()
-        self.VectorLorentzVector            = cms.vstring()
-        self.VectorXYZVector                = cms.vstring()
-        self.VectorXYZPoint                 = cms.vstring()
-        self.VectorFloat                    = cms.vstring()
-        self.VectorDouble                   = cms.vstring()
-        self.VectorString                   = cms.vstring()
-        self.VectorInt                      = cms.vstring()
-        self.VectorBool                     = cms.vstring()
-        self.VectorVectorBool               = cms.vstring()
-        self.VectorVectorInt                = cms.vstring()
-        self.VectorVectorDouble             = cms.vstring()
-        self.VectorVectorString             = cms.vstring()
-        self.VectorVectorLorentzVector      = cms.vstring()
-        self.VectorVectorXYZVector          = cms.vstring()
-        self.VectorVectorXYZPoint           = cms.vstring()
-        self.AssocVectorVectorBool          = cms.vstring()
-        self.AssocVectorVectorInt           = cms.vstring()
-        self.AssocVectorVectorDouble        = cms.vstring()
-        self.AssocVectorVectorString        = cms.vstring()
-        self.AssocVectorVectorLorentzVector = cms.vstring()
-        self.AssocVectorVectorXYZVector     = cms.vstring()
-        self.AssocVectorVectorXYZPoint      = cms.vstring()
-        self.TitleMap                       = cms.vstring()
+        self.TitleMap = cms.vstring()
+        self.branchLists = [
+            'VarsXYZVector','VarsXYZPoint','VarsDouble','VarsInt','VarsBool',
+            'VectorRecoCand','VectorLorentzVector','VectorXYZVector','VectorXYZPoint','VectorFloat','VectorDouble','VectorString','VectorInt','VectorBool',
+            'VectorVectorBool','VectorVectorInt','VectorVectorDouble','VectorVectorString','VectorVectorLorentzVector','VectorVectorXYZVector','VectorVectorXYZPoint',
+            'AssocVectorVectorBool','AssocVectorVectorInt','AssocVectorVectorDouble','AssocVectorVectorString','AssocVectorVectorLorentzVector','AssocVectorVectorXYZVector','AssocVectorVectorXYZPoint',
+        ]
+        for branchList in self.branchLists:
+            setattr(self,branchList,cms.vstring())
 
     def getParamDefault(self,param,default,ptype=None):
         tmp = self.parameters.value(param,default)
@@ -183,6 +178,7 @@ class maker:
         print " storing t-channel semi-visible jet variables: "+str(self.tchannel)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
+        print " storing quark/gluon variables: "+str(self.doQG)
         print " "
         print " storing JEC/JER systematics: "+str(self.systematics)
         print " storing PDF weights: "+str(self.doPDFs)
@@ -208,10 +204,12 @@ class maker:
         print " Instance name of tag information: "+self.tagname
         print " Instance name of HLT tag information: "+self.hlttagname
         print " Including gen-level information: "+str(self.geninfo)
-        print " Including pMSSM-related information: "+str(self.pmssm)
         print " Using fastsim settings: "+str(self.fastsim)
         print " Using scan settings: "+str(self.scan)
         print " Running signal uncertainties: "+str(self.signal)
+        if len(self.includeBranches)>0: print " Including branches: "+','.join(self.includeBranches)
+        if len(self.excludeBranches)>0: print " Excluding branches: "+','.join(self.excludeBranches)
+        if self.exactBranches: print "  Using exact branches (no regex)"
         if len(self.jsonfile)>0: print " JSON file applied: "+self.jsonfile
         if len(self.jecfile)>0: print " JECs applied: "+self.jecfile+(" (residuals)" if self.residual else "")
         if len(self.jerfile)>0: print " JERs applied: "+self.jerfile
