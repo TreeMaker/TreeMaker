@@ -859,6 +859,7 @@ def makeTreeFromMiniAOD(self,process):
         suff='',
         storeProperties=2,
         SkipTag=SkipTag,
+        storePileupIds=True
     )
 
     if self.systematics:

@@ -127,6 +127,21 @@ DEFAULT_NAMED_PTR(D,neutralHadronPuppiMultiplicity);
 DEFAULT_NAMED_PTR(D,photonPuppiMultiplicity);
 DEFAULT_NAMED_PTR(D,msd); // softdrop mass as userfloat rather than from subjets
 
+class NamedPtr_pileupId : public NamedPtr<double> {
+	public:
+		using NamedPtr<double>::NamedPtr;
+		//default for user floats
+		void get_property(const pat::Jet& Jet) override { 
+                    if(Jet.pt() < 50.0 ){
+                        push_back(Jet.userFloat(extraInfo.at(0)));
+                    } else {
+                        push_back(-HUGE_VAL);
+                    }
+                }
+};
+
+DEFAULT_NAMED_PTR(pileupId,pileupJetId); 
+
 class NamedPtr_I : public NamedPtr<int> {
 	public:
 		using NamedPtr<int>::NamedPtr;
@@ -246,6 +261,8 @@ DEFAULT_NAMED_PTR(bDiscriminator,pfMassDecorrelatedDeepBoostedDiscriminatorsJetT
 DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleBvLJetTagsProbHbb);
 DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleCvLJetTagsProbHcc);
 DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleCvBJetTagsProbHcc);
+
+
 
 class NamedPtr_jecFactor : public NamedPtr<double> {
 	public:
