@@ -174,7 +174,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
             JetTag       = GoodJetsTag
         )
 
-        if storePileupIds:
+        if self.addPileupId:
             from TreeMaker.Utils.pileupjetid_cfi import pileupJetId, pileupjetalgos
             pileupJetIdUpdated = pileupJetId.clone(
                 jets = GoodJetsTag,
