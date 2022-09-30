@@ -262,8 +262,6 @@ DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleBvLJetTagsProbHbb);
 DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleCvLJetTagsProbHcc);
 DEFAULT_NAMED_PTR(bDiscriminator,pfMassIndependentDeepDoubleCvBJetTagsProbHcc);
 
-
-
 class NamedPtr_jecFactor : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
