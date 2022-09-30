@@ -1,6 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 from TreeMaker.Utils.pfnInPath import pfnInPath
 import os
+import subprocess
 
 # import functions to be assigned as class methods
 from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD
@@ -110,6 +111,29 @@ class maker:
             self.readFiles.extend( [self.dataset] )
 
         self.readFiles = [(self.redir if val[0:6]=="/store" else "")+val for val in self.readFiles]
+
+        # https://htcondor.readthedocs.io/en/latest/man-pages/condor_chirp.html?highlight=set_job_attr_delayed#chirp-commands
+        # https://github.com/cms-sw/cmssw/blob/master/FWCore/Services/plugins/CondorStatusUpdater.cc#L377-L410
+        chirp_env = "_CONDOR_CHIRP_CONFIG"
+        if chirp_env in os.environ and os.environ[chirp_env]:
+            key = "ChirpTreeMakerReadFiles"
+            value = "\"" + ",".join(self.readFiles) + "\""
+            try:
+                chirp_command = "condor_chirp set_job_attr_delayed " + key + " " + value
+                if self.verbose:
+                    print chirp_command
+                proc = subprocess.Popen(chirp_command.split(), shell = False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+                outs, errs = proc.communicate()
+            except Exception as e:
+                proc.kill()
+                print "An exception occurred when adding classad {}: {}".format(key,e)
+            finally:
+                if proc.returncode:
+                    # TODO: Right now this is fairly permissive. We may want to make this an exception in the future.
+                    print "WARNING::condor_chirp failed to set the attribute \'" + key + "\'" 
+                else:
+                    if self.verbose:
+                        print "HTCondor classad \'" + key + "\' set to " + value
 
         # branches for treemaker
         self.branchLists = [
