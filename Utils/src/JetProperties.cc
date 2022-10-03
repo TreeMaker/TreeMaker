@@ -212,7 +212,7 @@ class NamedPtr_hfHadronEnergyFraction : public NamedPtr<double> {
 };
 DEFINE_NAMED_PTR(hfHadronEnergyFraction);
 
-class NamedPtr_pileupId : public NamedPtr<double> {
+class NamedPtr_pileupJetId : public NamedPtr<double> {
 	public:
 		using NamedPtr<double>::NamedPtr;
 		//default for user floats
@@ -224,7 +224,7 @@ class NamedPtr_pileupId : public NamedPtr<double> {
                         }
                 }
 };
-DEFINE_NAMED_PTR(pileupId,pileupJetId); 
+DEFINE_NAMED_PTR(pileupJetId); 
 
 class NamedPtr_bDiscriminator : public NamedPtr<double> {
 	public:

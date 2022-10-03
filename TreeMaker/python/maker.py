@@ -179,11 +179,8 @@ class maker:
         print " storing t-channel semi-visible jet variables: "+str(self.tchannel)
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
-<<<<<<< HEAD
         print " storing quark/gluon variables: "+str(self.doQG)
-=======
         print " adding PileupJetId for AK4 : "+str(self.addPileupId)
->>>>>>> Adding flag to turn on Ak4 PilupJetID
         print " "
         print " storing JEC/JER systematics: "+str(self.systematics)
         print " storing PDF weights: "+str(self.doPDFs)
