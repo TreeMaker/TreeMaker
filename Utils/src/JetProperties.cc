@@ -127,20 +127,6 @@ DEFAULT_NAMED_PTR(D,neutralHadronPuppiMultiplicity);
 DEFAULT_NAMED_PTR(D,photonPuppiMultiplicity);
 DEFAULT_NAMED_PTR(D,msd); // softdrop mass as userfloat rather than from subjets
 
-class NamedPtr_pileupId : public NamedPtr<double> {
-	public:
-		using NamedPtr<double>::NamedPtr;
-		//default for user floats
-		void get_property(const pat::Jet& Jet) override { 
-                        if(Jet.pt() < 50.0 ){
-                                push_back(Jet.userFloat(extraInfo.at(0)));
-                        } else {
-                                push_back(-HUGE_VAL);
-                        }
-                }
-};
-
-DEFAULT_NAMED_PTR(pileupId,pileupJetId); 
 
 class NamedPtr_I : public NamedPtr<int> {
 	public:
@@ -225,6 +211,20 @@ class NamedPtr_hfHadronEnergyFraction : public NamedPtr<double> {
 		void get_property(const EnergyFractionCalculator& Jet) override { push_back(Jet.HFHadronEnergyFraction()); }
 };
 DEFINE_NAMED_PTR(hfHadronEnergyFraction);
+
+class NamedPtr_pileupId : public NamedPtr<double> {
+	public:
+		using NamedPtr<double>::NamedPtr;
+		//default for user floats
+		void get_property(const pat::Jet& Jet) override { 
+                        if(Jet.pt() < 50.0 ){
+                                push_back(Jet.userFloat(extraInfo.at(0)));
+                        } else {
+                                push_back(-HUGE_VAL);
+                        }
+                }
+};
+DEFINE_NAMED_PTR(pileupId,pileupJetId); 
 
 class NamedPtr_bDiscriminator : public NamedPtr<double> {
 	public:
