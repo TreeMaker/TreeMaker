@@ -250,6 +250,7 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `tchannel`: switch to enable additional variables for t-channel semi-visible jets (default=False)
 * `deepAK8`: switch to enable variables from the DeepAK8 tagger (default=True)
 * `deepDoubleB`: switch to enable variables from the DeepDoubleB tagger (default=True)
+* `doQG`: switch to enable quark/gluon tagging variables for AK4 jets, AK8 jets, AK8 subjets (default=True)  
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
@@ -259,17 +260,20 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `saveMinimalGenParticles`: save only the hard scatter gen particles coming from top decays, boson decays, semi-visible jets, or SUSY particles (default=True)
 * `saveGenTops`: save the 4-vectors of the generated tops and the TTbar reweighting scale factor (default=False)
 * `doMT2`: switch to enable the storage of the MT2 variable (default=False)
+* `jetsconstituents`: store all constituents from all jet collections; each jet collection gets an index branch into the single vector of all constituents (default=False)
 * `nestedVectors`: switch to change from saving `vector<vector<T>>` to saving `vector<T>` values and `vector<int>` counts (default=False)
 * `storeOffsets`: if set to True, stores offsets rather than counts when using `nestedVectors=False` (default=False)
 * `splitLevel`: split level for output TBranches (default=99)
 * `saveFloat`: convert doubles to floats in output (default=True)
+* `includeBranches`: write out only the specified list of branches, which can be provided as a comma-separated list or a text file (filename ending in `.txt`). This option uses regular expressions by default (see below). To match a branch name exactly when regex is enabled, surround it in `^$`, e.g. `^Jets$`.
+* `excludeBranches`: write out only branches that do not match the specified list. This option is exclusive with the option `includeBranches` (only one can be used). See above for details.
+* `exactBranches`: disables regex for above branch control commands
 
 The following parameters take their default values from the specified scenario:
 * `globaltag`: global tag for CMSSW database conditions (ref. [FrontierConditions](https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideFrontierConditions))
 * `tagname`: tag name for collections that can have different tags for data or MC
 * `geninfo`: switch to enable use of generator information, should only be used for MC
 * `fastsim`: switch to enable special settings for SUSY signal scans produced with FastSim
-* `pmssm`: switch to enable special settings for pMSSM signal scans
 * `scan`: switch to enable special settings for scans produced with FullSim
 * `signal`: switch to enable assessment of signal systematics (currently unused)
 * `jsonfile`: name of JSON file to apply to data

@@ -231,7 +231,7 @@ GoodJetsProducer::filter(edm::StreamID, edm::Event& iEvent, const edm::EventSetu
 
 			//save good jets, potentially regardless of id or pt
 			if (good || saveAllId_) {
-				prodJets->push_back(Jet(iJet));
+				prodJets->push_back(iJet);
 				jetsMask->push_back(good);
 				leptonMask->push_back(isLepton);
 			}
