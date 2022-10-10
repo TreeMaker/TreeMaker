@@ -59,7 +59,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
 # 0 = scalars (+ origIndex,jerFactor for syst)
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
-def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", storePileupIds=False):
+def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType=""):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -149,8 +149,6 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
     ## ----------------------------------------------------------------------------------------------
     ## Jet properties
     ## ----------------------------------------------------------------------------------------------
-
-
     if storeProperties==0:
         # for systematics
         JetProperties = cms.EDProducer("JetProperties",
@@ -169,28 +167,29 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
         self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
     elif storeProperties>0:
         # make jet properties producer
+        if self.addPileupId:
+            from TreeMaker.Utils.pileupjetid_cfi import pileupJetId, pileupjetalgos
+            pileupJetIdUpdated = pileupJetId.clone(
+                jets = GoodJetsTag,
+                inputIsCorrected = True,
+                applyJec = False,
+                vertexes = cms.InputTag("offlineSlimmedPrimaryVertices"),
+                algos = pileupjetalgos["2016UL"]
+            )
+            (TMeras.TMUL2016APV).toModify(pileupJetIdUpdated,algos = pileupjetalgos["2016UL_APV"])
+            (TMeras.TMUL2017).toModify(pileupJetIdUpdated,algos = pileupjetalgos["2017UL"])
+            (TMeras.TMUL2018).toModify(pileupJetIdUpdated,algos = pileupjetalgos["2018UL"])
+
+            setattr(process,"pileupJetIdUpdated"+suff,pileupJetIdUpdated)
+            process, GoodJetsTag = addJetInfo(process, GoodJetsTag, ["pileupJetIdUpdated" + suff + ":fullDiscriminant"], [])
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetProperties = jetproperties.clone(
             JetTag       = GoodJetsTag
         )
 
         if self.addPileupId:
-            from TreeMaker.Utils.pileupjetid_cfi import pileupJetId, pileupjetalgos
-            pileupJetIdUpdated = pileupJetId.clone(
-                jets = GoodJetsTag,
-                inputIsCorrected=True,
-                applyJec=False,
-                vertexes = cms.InputTag("offlineSlimmedPrimaryVertices"),
-                algos=pileupjetalgos["2016UL"]
-            )
-            (TMeras.TMUL2016APV).toModify(pileupJetIdUpdated,algos = pileupjetalgos["2016UL_APV"])
-            (TMeras.TMUL2017).toModify(pileupJetIdUpdated,algos = pileupjetalgos["2017UL"])
-            (TMeras.TMUL2018).toModify(pileupJetIdUpdated,algos = pileupjetalgos["2018UL"])
-
-            setattr(process,"pileupJetId"+suff,pileupJetIdUpdated)
-
             JetProperties.properties.extend(["pileupJetId"])
-            JetProperties.pileupJetId = cms.vstring('pileupJetId' + suff + ':fullDiscriminant')
+            JetProperties.pileupJetId = cms.vstring('pileupJetIdUpdated' + suff + ':fullDiscriminant')
             self.VectorDouble.extend([
                 'JetProperties'+suff+':pileupJetId(Jets'+suff+'_pileupId)'
             ])

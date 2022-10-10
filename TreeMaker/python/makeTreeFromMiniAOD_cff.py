@@ -858,8 +858,7 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetTag,
         suff='',
         storeProperties=2,
-        SkipTag=SkipTag,
-        storePileupIds=True
+        SkipTag=SkipTag
     )
 
     if self.systematics:
