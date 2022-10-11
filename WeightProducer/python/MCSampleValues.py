@@ -808,43 +808,43 @@ class MCSampleValuesHelper():
         },
         "ST_s-channel_4f_hadronicDecays" : {
             "CrossSection" : XSValues(
-                XS_2017=11.24, XSSource_2017="GenXSecAnalyzer",
-                XS_2018=11.24, XSSource_2018="GenXSecAnalyzer",
+                XS_13TeV=11.03, XSSource_13TeV="https://journals.aps.org/prd/pdf/10.1103/PhysRevD.98.071501 (NNLO)",
+            ),
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.457, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
             ),
         },
         "ST_s-channel_4f_leptonDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=3.549, XSSource_13TeV="XSDB",
+                XS_13TeV=11.03, XSSource_13TeV="https://journals.aps.org/prd/pdf/10.1103/PhysRevD.98.071501 (NNLO)",
             ),
-        },
-        "ST_s-channel_4f_InclusiveDecays" : {
-            "CrossSection" : XSValues(
-                XS_13TeV=10.32, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_s_channel_cross_secti (NLO)",
+            "BranchingRatio" : BRValues(
+                BR_13TeV=0.438, BRSource_13TeV="http://pdg.lbl.gov/2021/reviews/rpp2020-rev-top-quark.pdf",
             ),
         },
         "ST_t-channel_antitop_5f_InclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=71.74, XSSource_13TeV="XSDB (NLO)",
+                XS_13TeV=80.95, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_t_channel_cross_secti (NLO)",
             ),
         },
         "ST_t-channel_top_5f_InclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=119.7, XSSource_13TeV="XSDB (NLO)",
+                XS_13TeV=136.02, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_t_channel_cross_secti (NLO)",
             ),
         },
         "ST_tW_top_5f_inclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=32.45, XSSource_13TeV="GenXSecAnalyzer",
+                XS_13TeV=35.85, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_Wt_channel_cross_sect (NLO)",
             ),
         },
         "ST_tW_antitop_5f_inclusiveDecays" : {
             "CrossSection" : XSValues(
-                XS_13TeV=32.51, XSSource_13TeV="GenXSecAnalyzer",
+                XS_13TeV=35.85, XSSource_13TeV="https://twiki.cern.ch/twiki/bin/view/LHCPhysics/SingleTopRefXsec#Single_top_Wt_channel_cross_sect (NLO)",
             ),
         },
         "tZq_ll_4f_ckm" : {
             "CrossSection" : XSValues(
-                XS_13TeV=0.07561, XSSource_13TeV="XSDB (NLO)",
+                XS_13TeV=0.0756, XSSource_13TeV="XSDB (NLO)",
             ),
         },
         "WW" : {
@@ -1592,8 +1592,8 @@ class MCSampleValuesHelper():
 
     __alternate_names_dict = {
         "TTJets" : ["TT","TTbar"],
-        "ST_t-channel_top_4f_InclusiveDecays" : ["ST_t-channel_top_4f_inclusiveDecays"],
-        "ST_t-channel_antitop_4f_InclusiveDecays" : ["ST_t-channel_antitop_4f_inclusiveDecays"],
+        "ST_t-channel_top_5f_InclusiveDecays" : ["ST_t-channel_top_5f_inclusiveDecays"],
+        "ST_t-channel_antitop_5f_InclusiveDecays" : ["ST_t-channel_antitop_5f_inclusiveDecays"],
     }
 
     def __init__(self, extra_dicts=None):
