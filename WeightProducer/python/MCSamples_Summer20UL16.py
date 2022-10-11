@@ -77,7 +77,7 @@ Summer20UL16samples = [
     MCSample('QCD_Pt_600to800_TuneCP5_13TeV_pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 65088000),
     MCSample('QCD_Pt_800to1000_TuneCP5_13TeV_pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 37782000),
     MCSample('QCD_Pt_80to120_TuneCP5_13TeV_pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 29938000),
-    MCSample('DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8', 'FlatPU0to75_106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 9999840),
+    MCSample('DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 82448537),
     MCSample('GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 4421327),
     MCSample('GJets_DR-0p4_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 13744262),
     MCSample('GJets_DR-0p4_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 4124520),
