@@ -11,7 +11,6 @@ flist = {
        ['Summer20UL16APV.DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8'],
        ['Summer20UL16APV.DYJetsToLL_M-50_HT-70to100_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8'],
        ['Summer20UL16APV.DYJetsToLL_M-50_HT-800to1200_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8'],
-       ['Summer20UL16APV.DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8'],
        ['Summer20UL16APV.DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8'],
 
    ]
