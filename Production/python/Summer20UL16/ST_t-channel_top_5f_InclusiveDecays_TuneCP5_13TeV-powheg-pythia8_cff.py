@@ -397,7 +397,6 @@ readFiles.extend( [
        '/store/mc/RunIISummer20UL16MiniAODv2/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/799D7CD0-DCE0-B54C-AA85-FD48E7CB72EE.root',
        '/store/mc/RunIISummer20UL16MiniAODv2/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/79CA1B67-A9E2-4240-9DC1-E979B3869FD4.root',
        '/store/mc/RunIISummer20UL16MiniAODv2/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/79FB8B57-9494-7C4D-8392-A279278C124B.root',
-       '/store/mc/RunIISummer20UL16MiniAODv2/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/7A06AEB6-D757-D247-8BE1-7274C4E72F54.root',
        '/store/mc/RunIISummer20UL16MiniAODv2/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/7A1FB0E4-7ADC-5346-8C3F-86C287212E13.root',
        '/store/mc/RunIISummer20UL16MiniAODv2/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/7A9627E8-D3D4-DD45-A586-318B25C0C4A3.root',
        '/store/mc/RunIISummer20UL16MiniAODv2/ST_t-channel_top_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/280000/805D4414-58BB-684A-919B-DF310B72C37A.root',
