@@ -22,7 +22,6 @@ Summer20UL16samples = [
     MCSample('ZZZ_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 4606000, 4103694), # subtotal = 64358, straight subtotal = 72000
     MCSample('ZZZ_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mcRun2_asymptotic_v17_ext1-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 4606000, 4103694), # subtotal = 4039336, straight subtotal = 4534000
     MCSample('ZZ_TuneCP5_13TeV-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 1151000),
-    MCSample('ST_t-channel_antitop_5f_InclusiveDecays_TuneCP5_13TeV-powheg-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 29394000),
     MCSample('WJetsToQQ_HT-200to400_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 7065076),
     MCSample('WJetsToQQ_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 4455853),
     MCSample('WJetsToQQ_HT-600to800_TuneCP5_13TeV-madgraphMLM-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 6793578),
