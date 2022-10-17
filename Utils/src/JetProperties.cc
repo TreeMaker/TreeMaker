@@ -104,6 +104,7 @@ DEFAULT_NAMED_PTR(D,prunedMass);
 DEFAULT_NAMED_PTR(D,NsubjettinessTau1);
 DEFAULT_NAMED_PTR(D,NsubjettinessTau2);
 DEFAULT_NAMED_PTR(D,NsubjettinessTau3);
+DEFAULT_NAMED_PTR(D,NsubjettinessTau4);
 DEFAULT_NAMED_PTR(D,overflow);
 DEFAULT_NAMED_PTR(D,girth);
 DEFAULT_NAMED_PTR(D,momenthalf);

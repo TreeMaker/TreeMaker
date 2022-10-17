@@ -1253,7 +1253,7 @@ def makeTreeFromMiniAOD(self,process):
             addSoftDrop = True,
             addSoftDropSubjets = True,
             addNsub = True,
-            maxTau = 3,
+            maxTau = 4,
             subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
             addEnergyCorrFunc = True,
             ecfType = ["N","M","C","D"],
@@ -1318,8 +1318,8 @@ def makeTreeFromMiniAOD(self,process):
         for branchlist in [self.VectorDouble, self.VectorInt, self.AssocVectorVectorDouble, self.AssocVectorVectorInt]:
             branchlist.setValue([x for x in branchlist if not ("AK15" in x and any([y in x for y in _omit_AK15]))])
 
-        # more ECFs
-        _all_ECFs = ["ecfN2b1","ecfN2b2","ecfC2b1","ecfC2b2","ecfM2b1","ecfM2b2","ecfD2b1","ecfD2b2"]
+        # more ECFs & tau4
+        _all_ECFs = ["ecfN2b1","ecfN2b2","ecfC2b1","ecfC2b2","ecfM2b1","ecfM2b2","ecfD2b1","ecfD2b2","NsubjettinessTau4"]
         process.JetPropertiesAK15.properties.extend(_all_ECFs[2:]) # N-types already included
         self.VectorDouble.extend(['JetPropertiesAK15:{0}(JetsAK15_{0})'.format(_ecf) for _ecf in _all_ECFs[2:]])
         for _ecf in _all_ECFs:
@@ -1333,6 +1333,7 @@ def makeTreeFromMiniAOD(self,process):
         process.JetPropertiesAK15.NsubjettinessTau1 = cms.vstring('NjettinessAK15Puppi:tau1')
         process.JetPropertiesAK15.NsubjettinessTau2 = cms.vstring('NjettinessAK15Puppi:tau2')
         process.JetPropertiesAK15.NsubjettinessTau3 = cms.vstring('NjettinessAK15Puppi:tau3')
+        process.JetPropertiesAK15.NsubjettinessTau4 = cms.vstring('NjettinessAK15Puppi:tau4')
 
         process.JetPropertiesAK15.neutralHadronPuppiMultiplicity = cms.vstring("puppiSpecificAK15:neutralHadronPuppiMultiplicity")
         process.JetPropertiesAK15.neutralPuppiMultiplicity = cms.vstring("puppiSpecificAK15:neutralPuppiMultiplicity")
