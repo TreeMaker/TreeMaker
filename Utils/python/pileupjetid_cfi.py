@@ -7,8 +7,8 @@ import FWCore.ParameterSet.Config as cms
 
 
 pileupjetalgos={
-        "2016UL" : _chsalgos_106X_UL16,
-        "2016UL_APV" : _chsalgos_106X_UL16APV,
-        "2017UL" : _chsalgos_106X_UL17,
-        "2018UL" : _chsalgos_106X_UL18
-        }
+    "2016UL" : _chsalgos_106X_UL16,
+    "2016UL_APV" : _chsalgos_106X_UL16APV,
+    "2017UL" : _chsalgos_106X_UL17,
+    "2018UL" : _chsalgos_106X_UL18
+}
