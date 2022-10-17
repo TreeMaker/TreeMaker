@@ -1356,7 +1356,7 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## Jet constituents
     ## ----------------------------------------------------------------------------------------------
-    if self.jetsconstituents and len(self.JetsTags)>0:
+    if self.jetsconstituents>0 and len(self.JetsTags)>0:
         process.JetsConstituents = cms.EDProducer("JetsConstituents",
             suffix = cms.string("ConstituentsIndex"),
             JetsTags = cms.VInputTag(self.JetsTags),
@@ -1370,6 +1370,15 @@ def makeTreeFromMiniAOD(self,process):
             process.JetsConstituents.CandTag = cms.InputTag("packedPFCandidates")
         self.VectorLorentzVector.append("JetsConstituents")
         self.VectorInt.append("JetsConstituents:PdgId(JetsConstituents_PdgId)")
+        if self.jetsconstituents>1:
+            process.JetsConstituents.properties.extend(['PuppiWeight','dz','dxy','dzsig','dxysig'])
+            self.VectorDouble.extend([
+                "JetsConstituents:PuppiWeight(JetsConstituents_PuppiWeight)",
+                "JetsConstituents:dz(JetsConstituents_dz)",
+                "JetsConstituents:dxy(JetsConstituents_dxy)",
+                "JetsConstituents:dzsig(JetsConstituents_dzsig)",
+                "JetsConstituents:dxysig(JetsConstituents_dxysig)",
+            ])
         self.VectorVectorInt.extend(["JetsConstituents:{}{}({}{})".format(JetsName,process.JetsConstituents.suffix.value(),JetsName,"_constituentsIndex") for JetsName in self.JetsNames])
 
     ## ----------------------------------------------------------------------------------------------

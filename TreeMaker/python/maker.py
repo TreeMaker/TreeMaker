@@ -69,7 +69,7 @@ class maker:
         self.getParamDefault("storeOffsets", False, bool)
         self.getParamDefault("splitLevel", 99)
         self.getParamDefault("saveFloat", True, bool)
-        self.getParamDefault("jetsconstituents", False, bool)
+        self.getParamDefault("jetsconstituents", 0)
         self.JetsTags = []
         self.JetsNames = []
 
