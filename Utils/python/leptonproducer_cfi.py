@@ -41,7 +41,8 @@ leptonproducer = cms.EDProducer('LeptonProducer',
     minMuPt                                = cms.double(10),
     maxMuEta                               = cms.double(2.4),
     muIsoValue                             = cms.double(0.2), #loose (<0.40), medium (<0.20), tight (<0.10), very tight (<0.05)
-    muonEAValues                           = cms.vdouble(0.0735, 0.0619, 0.0465, 0.0433, 0.0577),
+    # https://github.com/cms-data/PhysicsTools-NanoAOD/blob/10e7935ba38c2172ebb75979dcc1d8174b0566cd/effAreaMuons_cone03_pfNeuHadronsAndPhotons_94X.txt
+    muonEAValues                           = cms.vdouble(0.0566, 0.0562, 0.0363, 0.0119, 0.0064),
     muNormalizedChi2Max                    = cms.double(3.0),
     muChi2LocalPositionMax                 = cms.double(12.0),
     muTrkKink                              = cms.double(20.0),
