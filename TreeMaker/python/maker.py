@@ -52,6 +52,7 @@ class maker:
         self.getParamDefault("deepAK8",True, bool);
         self.getParamDefault("deepDoubleB",True, bool);
         self.getParamDefault("doQG",True);
+        self.getParamDefault("addPileupId",True, bool);
 
         # compute the PDF weights
         self.getParamDefault("doPDFs", True, bool);
@@ -179,6 +180,7 @@ class maker:
         print " storing deepAK8 variables: "+str(self.deepAK8)
         print " storing deepDoubleB variables: "+str(self.deepDoubleB)
         print " storing quark/gluon variables: "+str(self.doQG)
+        print " adding PileupJetId for AK4 : "+str(self.addPileupId)
         print " "
         print " storing JEC/JER systematics: "+str(self.systematics)
         print " storing PDF weights: "+str(self.doPDFs)

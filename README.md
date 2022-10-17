@@ -251,6 +251,7 @@ Brief explanation of the options in [maker.py](./TreeMaker/python/maker.py)
 * `deepAK8`: switch to enable variables from the DeepAK8 tagger (default=True)
 * `deepDoubleB`: switch to enable variables from the DeepDoubleB tagger (default=True)
 * `doQG`: switch to enable quark/gluon tagging variables for AK4 jets, AK8 jets, AK8 subjets (default=True)  
+* `addPileupId`: include pileupJetId discriminator for AK4 jets (default=True)
 * `doPDFs`: switch to enable the storage of PDF weights and scale variation weights from LHEEventInfo (default=True)  
   The scale variations stored are: [mur=1, muf=1], [mur=1, muf=2], [mur=1, muf=0.5], [mur=2, muf=1], [mur=2, muf=2], [mur=2, muf=0.5], [mur=0.5, muf=1], [mur=0.5, muf=2], [mur=0.5, muf=0.5]
 * `debugtracks`: store information for all PF candidates in every event (default=False) (use with caution, increases run time and output size by ~10x)
