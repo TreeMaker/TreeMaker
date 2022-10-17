@@ -45,7 +45,7 @@ class CandPropBase {
 		//accessors
 		virtual void put(edm::Event& iEvent) {}
 		virtual void reset() {}
-		virtual void get_property(const reco::Candidate& cand) {}
+		virtual void get_property(const pat::PackedCandidate& cand) {}
 
 		//member variables
 		std::string name;
@@ -79,28 +79,28 @@ EDM_REGISTER_PLUGINFACTORY(CandPropFactory, "CandPropFactory");
 class CandProp_PdgId : public CandProp<int> {
 	public:
 		using CandProp<int>::CandProp;
-		void get_property(const reco::Candidate& cand) override { push_back(cand.pdgId()); }
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.pdgId()); }
 };
 DEFINE_CAND_PROP(PdgId);
 
 class CandProp_PuppiWeight : public CandProp<double> {
 	public:
 		using CandProp<double>::CandProp;
-		void get_property(const reco::Candidate& cand) override { push_back(((pat::PackedCandidate*)(&cand))->puppiWeight()); }
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.puppiWeight()); }
 };
 DEFINE_CAND_PROP(PuppiWeight);
 
 class CandProp_dz : public CandProp<double> {
 	public:
 		using CandProp<double>::CandProp;
-		void get_property(const reco::Candidate& cand) override { push_back(((pat::PackedCandidate*)(&cand))->dz()); }
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.dz()); }
 };
 DEFINE_CAND_PROP(dz);
 
 class CandProp_dxy : public CandProp<double> {
 	public:
 		using CandProp<double>::CandProp;
-		void get_property(const reco::Candidate& cand) override { push_back(((pat::PackedCandidate*)(&cand))->dxy()); }
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.dxy()); }
 };
 DEFINE_CAND_PROP(dxy);
 
@@ -108,20 +108,14 @@ DEFINE_CAND_PROP(dxy);
 class CandProp_dzsig : public CandProp<double> {
 	public:
 		using CandProp<double>::CandProp;
-		void get_property(const reco::Candidate& cand) override {
-			auto pcand = ((pat::PackedCandidate*)(&cand));
-			push_back(pcand->bestTrack() ? pcand->dz() / pcand->dzError() : 0);
-		}
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.bestTrack() ? cand.dz() / cand.dzError() : 0); }
 };
 DEFINE_CAND_PROP(dzsig);
 
 class CandProp_dxysig : public CandProp<double> {
 	public:
 		using CandProp<double>::CandProp;
-		void get_property(const reco::Candidate& cand) override {
-			auto pcand = ((pat::PackedCandidate*)(&cand));
-			push_back(pcand->bestTrack() ? pcand->dxy() / pcand->dxyError() : 0);
-		}
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.bestTrack() ? cand.dxy() / cand.dxyError() : 0); }
 };
 DEFINE_CAND_PROP(dxysig);
 
@@ -262,9 +256,10 @@ void JetsConstituents::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 		}
 		if(keep){
 			const auto& cand = h_cands->at(c);
+			const auto pcand = (pat::PackedCandidate*)(&cand);
 			cands_out->emplace_back(cand.pt(),cand.eta(),cand.phi(),cand.energy());
 			for(auto & Prop : Props_){
-				Prop->get_property(cand);
+				Prop->get_property(*pcand);
 			}
 		}
 	}
