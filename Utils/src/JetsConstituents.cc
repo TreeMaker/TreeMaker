@@ -90,6 +90,41 @@ class CandProp_PuppiWeight : public CandProp<double> {
 };
 DEFINE_CAND_PROP(PuppiWeight);
 
+class CandProp_dz : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const reco::Candidate& cand) override { push_back(((pat::PackedCandidate*)(&cand))->dz()); }
+};
+DEFINE_CAND_PROP(dz);
+
+class CandProp_dxy : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const reco::Candidate& cand) override { push_back(((pat::PackedCandidate*)(&cand))->dxy()); }
+};
+DEFINE_CAND_PROP(dxy);
+
+//based on https://github.com/cms-sw/cmssw/blob/master/RecoBTag/FeatureTools/plugins/DeepBoostedJetTagInfoProducer.cc
+class CandProp_dzsig : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const reco::Candidate& cand) override {
+			auto pcand = ((pat::PackedCandidate*)(&cand));
+			push_back(pcand->bestTrack() ? pcand->dz() / pcand->dzError() : 0);
+		}
+};
+DEFINE_CAND_PROP(dzsig);
+
+class CandProp_dxysig : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const reco::Candidate& cand) override {
+			auto pcand = ((pat::PackedCandidate*)(&cand));
+			push_back(pcand->bestTrack() ? pcand->dxy() / pcand->dxyError() : 0);
+		}
+};
+DEFINE_CAND_PROP(dxysig);
+
 class JetsConstituents : public edm::stream::EDProducer<> {
 public:
 	explicit JetsConstituents(const edm::ParameterSet&);
