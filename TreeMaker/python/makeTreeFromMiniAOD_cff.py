@@ -929,7 +929,10 @@ def makeTreeFromMiniAOD(self,process):
             'JetPropertiesAK8:jerFactorDown(JetsAK8_jerFactorDown)',
         ])
 
-    # record final jet collections (excluding AK4)
+    # record final jet collections (AK4 excluded by default)
+    if self.jetsconstituents>2:
+        self.JetsTags.extend([JetTag])
+        self.JetsNames.extend(["Jets"])
     self.JetsTags.extend([JetAK8Tag])
     self.JetsNames.extend(["JetsAK8"])
 
