@@ -1,7 +1,7 @@
 flist = {
 
    "scenario": "Summer20UL16",
-   "args": "saveMinimalGenParticles=False boostedsemivisible=True",
+   "args": "saveMinimalGenParticles=False",
    "samples": [
        ['Summer20UL16.TTToSemiLeptonic_TuneCP5_erdON_13TeV-powheg-pythia8'],
        ['Summer20UL16.TTToSemiLeptonic_TuneCP5down_13TeV-powheg-pythia8'],

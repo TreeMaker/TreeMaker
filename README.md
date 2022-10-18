@@ -45,29 +45,26 @@ Several predefined scenarios are available for ease of production.
 These scenarios define various sample-dependent parameters, including:  
 global tag, collection tag name, generator info, fastsim, signal, JSON file, JEC file, residual JECs, era.  
 The available scenarios are:  
-1.  `Summer16`: for Summer16 miniAOD MC (80X)
-2.  `Summer16sig`: for Summer16 miniAOD MC (80X) (signal)
-3.  `Summer16v3`: for Summer16 miniAODv3 MC
-4.  `Summer16v3sig`: for Summer16 miniAODv3 MC (signal)
-5.  `Summer16v3sigscan`: for Summer16 miniAODv3 MC with multiple mass points(signal)
-6.  `Summer16v3Fast`: for Summer16 miniAODv3 FastSim MC (background)  
-7.  `Summer16v3Fastsig`: for Summer16 miniAODv3 FastSim MC (signal)  
-8.  `2016ReReco17Jul`: for 2016 miniAODv3 data (17Jul2018), periods B-H  
-9.  `Fall17`: for Fall17 miniAOD MC
-10. `Fall17sig`: for Fall17 miniAOD MC (signal)
-11. `Fall17sigscan`: for Fall17 miniAOD MC with multiple mass points (signal)
-12. `Fall17Fast`: for Fall17 miniAOD FastSim MC (background)
-13. `Fall17Fastsig`: for Fall17 miniAOD FastSim MC (signal)
-14. `2017ReReco31Mar`: for 2017 ReReco data (31Mar), periods B-F
-15. `Autumn18`: for Autumn18 miniAOD MC (102X)
-16. `Autumn18sig`: for Autumn18 miniAOD MC (102X) (signal)
-17. `Autumn18sigscan`: for Autumn18 miniAOD MC with multiple mass points (102X) (signal)
-18. `Autumn18Fast`: for Autumn18 miniAOD FastSim MC (background)
-19. `Autumn18Fastsig`: for Autumn18 miniAOD FastSim MC (signal)
-20. `2018B26Sep`: for 2018 prompt data, partial period B
-21. `2018B26SepHEM`: for 2018 prompt data, partial period B, with the HEM 15/16 issue
-22. `2018PromptReco`: for 2018 prompt data (or 22Jan2019, produced w/ prompt conditions), run period D
-23. `2018ReReco17Sep`: for 17Sep2018 rereco data, periods A, B, and C
+1.  `Summer20UL16APV`: for UL16APV miniAOD MC  
+2.  `Summer20UL16APVsig`: for UL16APV miniAOD MC (signal)  
+3.  `Summer20UL16APVFast`: for UL16APV miniAOD FastSim MC (background)  
+4.  `Summer20UL16APVFastsig`: for UL16APV miniAOD FastSim MC (signal)  
+5.  `Summer20UL16APV_DATA`: for UL16APV miniAOD data  
+6.  `Summer20UL16`: for UL16 miniAOD MC  
+7.  `Summer20UL16sig`: for UL16 miniAOD MC (signal)  
+8.  `Summer20UL16Fast`: for UL16 miniAOD FastSim MC (background)  
+9.  `Summer20UL16Fastsig`: for UL16 miniAOD FastSim MC (signal)  
+10. `Summer20UL16_DATA`: for UL16 miniAOD data  
+11. `Summer20UL17`: for UL17 miniAOD MC  
+12. `Summer20UL17sig`: for UL17 miniAOD MC (signal)  
+13. `Summer20UL17Fast`: for UL17 miniAOD FastSim MC (background)  
+14. `Summer20UL17Fastsig`: for UL17 miniAOD FastSim MC (signal)  
+15. `Summer20UL17_DATA`: for UL17 miniAOD data  
+16. `Summer20UL18`: for UL18 miniAOD MC  
+17. `Summer20UL18sig`: for UL18 miniAOD MC (signal)  
+18. `Summer20UL18Fast`: for UL18 miniAOD FastSim MC (background)  
+19. `Summer20UL18Fastsig`: for UL18 miniAOD FastSim MC (signal)  
+20. `Summer20UL18_DATA`: for UL18 miniAOD data  
 
 ## Unit Tests (Interactive Runs)
 
