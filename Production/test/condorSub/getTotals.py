@@ -42,4 +42,4 @@ def getTotals(dir, fnames, do_overall=False, per_event=False):
 if __name__=="__main__":
     tests = get_sizetest()
     output = getTotals("/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV20",tests,do_overall=True)
-    pprintOD(output,"totals")
+    pprintOD(output,"totals",True)

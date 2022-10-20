@@ -11,12 +11,17 @@ def get_sizetest(name="sizetest.py"):
 
     return tests
 
-def pprintOD(obj,name):
+def pprintOD(obj,name,complete=False):
+    is_dict = isinstance(obj,dict)
+    if complete and is_dict:
+        print "from collections import OrderedDict\n"
+    prefix = "OrderedDict([" if is_dict else "["
+    suffix = "])" if is_dict else "]"
     # a not-very-extensible hack for stable pretty-print of ordered dict
-    print "{} = OrderedDict([".format(name)
-    for key,val in obj.iteritems() if isinstance(obj,dict) else obj:
+    print "{} = {}".format(name,prefix)
+    for key,val in obj.iteritems() if is_dict else obj:
         print '    ("{}", {}),'.format(key, json.dumps(val, sort_keys=True))
-    print "])"
+    print suffix
 
 def get_xrdfs():
     from XRootD import client

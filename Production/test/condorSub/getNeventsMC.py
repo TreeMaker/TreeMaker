@@ -38,4 +38,4 @@ for fname,test in tests.iteritems():
                     if not found: print "WARNING: no entry found for {}".format(f)
         output[fname][fullyear] = outsum
 
-pprintOD(output,"neventsMC")
+pprintOD(output,"neventsMC",True)

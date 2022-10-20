@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 neventsData = OrderedDict([
    ("SingleElectron", {"2016": 963538820, "2017": 479291177, "2018": 0, }),
    ("SingleMuon", {"2016": 806820554, "2017": 1724753460, "2018": 985427444, }),

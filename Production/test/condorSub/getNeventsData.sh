@@ -15,6 +15,7 @@ getNevents(){
 
 readarray -t SAMPLES <<< $(python -c 'from sizetest import tests; print "\n".join([fname for fname,test in tests if test["type"]=="data"])')
 
+echo -e "from collections import OrderedDict\n"
 echo "neventsData = OrderedDict(["
 for SAMPLE in ${SAMPLES[@]}; do
 	LINE="   (\"$SAMPLE\", {"

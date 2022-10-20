@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 totals = OrderedDict([
     ("overall", 176658623850168),
     ("SingleElectron", 2562951154514),
