@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from utils import get_xrdfs, get_sizetest, pprintOD
 
-def getTotals(dir, fnames, do_overall=False, per_event=False):
+def getActuals(dir, fnames, do_overall=False, per_event=False):
     if do_overall and per_event:
         raise RuntimeError("do_overall and per_event options currently not supported together")
 
@@ -41,5 +41,5 @@ def getTotals(dir, fnames, do_overall=False, per_event=False):
 
 if __name__=="__main__":
     tests = get_sizetest()
-    output = getTotals("/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV20",tests,do_overall=True)
-    pprintOD(output,"totals",True)
+    output = getActuals("/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV20",tests,do_overall=True)
+    pprintOD(output,"actuals",True)

@@ -1,6 +1,6 @@
 from collections import OrderedDict
 
-totals = OrderedDict([
+actuals = OrderedDict([
     ("overall", 176658623850168),
     ("SingleElectron", 2562951154514),
     ("SingleMuon", 7691000490270),
