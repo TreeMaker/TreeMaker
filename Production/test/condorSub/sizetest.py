@@ -14,4 +14,6 @@ tests = [
     ("TTJets", {"correction": 0.96, "dname": "ttjets", "sample": "Summer20UL18.TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
     ("WJetsToLNu", {"correction": 0.75, "dname": "wjetslep", "sample": "Summer20UL18.WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
     ("ZJetsToNuNu", {"correction": 0.84, "dname": "zjets", "sample": "Summer20UL18.ZJetsToNuNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
+    ("DYJetsToLL", {"correction": 1.0, "dname": "dyjets", "sample": "Summer20UL18.DYJetsToLL_M-50_HT-600to800_TuneCP5_PSweights_13TeV-madgraphMLM-pythia8", "type": "MC"}),
+    ("ST", {"correction": 1.0, "dname": "singlet", "sample": "Summer20UL18.ST_s-channel_4f_hadronicDecays_TuneCP5_13TeV-amcatnlo-pythia8", "type": "MC"}),
 ]
