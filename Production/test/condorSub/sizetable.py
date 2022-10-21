@@ -18,13 +18,14 @@ parser.add_argument("-d", "--testdirs", dest="testdirs", default=[], type=str, a
 parser.add_argument("-u", "--update", dest="update", default=False, action="store_true", help="update corrections and sizetest .py file")
 parser.add_argument("-o", "--output", dest="output", default="", type=str, help="output sizetest .py file name (if updating and different from input)")
 parser.add_argument("-a", "--actuals", dest="actuals", default=False, action="store_true", help="use actuals.py")
+parser.add_argument("-A", "--actualsOther", dest="actualsOther", default=False, action="store_true", help='use actuals.py just for "other" category')
 args = parser.parse_args()
 
 # todo: make everything configurable... and/or merge into one application
 from neventsMC import neventsMC
 from neventsData import neventsData
 from utils import get_sizetest, pprintOD
-if args.actuals:
+if args.actuals or args.actualsOther:
     from actuals import actuals
 else:
     actuals = None
@@ -38,7 +39,7 @@ if args.actuals:
     columns.insert(3, "actual")
     units.insert(3, "T")
     formats.insert(3, "{:.2f}")
-results = OrderedDict([(fname,{col: 0 for col in columns}) for fname in fnames+(["other"] if args.actuals else [])+["total"]])
+results = OrderedDict([(fname,{col: 0 for col in columns}) for fname in fnames+(["other"] if args.actuals or args.actualsOther else [])+["total"]])
 
 # get sizes from size test
 xrdfs, flags = get_xrdfs()
@@ -58,13 +59,14 @@ for fname in fnames:
     results[fname]["corrected"] = results[fname]["correction"]*results[fname]["projection"]
 
 # compute "other" as the remainder
-if args.actuals:
+if args.actuals or args.actualsOther:
     results["other"]["sizeEvt"] = ""
     results["other"]["nevents"] = ""
-    results["other"]["actual"] = convert_bytes(actuals["overall"],"","T") - sum(results[fname]["actual"] for fname in fnames)
+    other_actual = convert_bytes(actuals["overall"],"","T") - sum(convert_bytes(actuals[fname],"","T") for fname in fnames)
+    if args.actuals: results["other"]["actual"] = other_actual
     results["other"]["correction"] = 1.0
-    results["other"]["corrected"] = results["other"]["actual"]
-    results["other"]["projection"] = results["other"]["actual"]
+    results["other"]["corrected"] = other_actual
+    results["other"]["projection"] = other_actual
 
 # compute totals
 for col,unit in zip(columns,units):
