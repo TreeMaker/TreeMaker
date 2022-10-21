@@ -185,9 +185,6 @@ def main(args):
     if makese:
         sfile.close()
 
-    # avoid weird atexit exception from incompatible packages in rucio dependencies
-    os._exit(0)
-
 if __name__ == '__main__':
     import sys
     main(sys.argv[1:])
