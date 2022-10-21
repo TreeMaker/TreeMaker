@@ -1,3 +1,4 @@
+import sys
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from collections import OrderedDict
 from utils import get_xrdfs, get_sizetest, pprintOD
@@ -15,7 +16,7 @@ parser.add_argument("-s", "--sizetest", dest="sizetest", type=str, help="input s
 parser.add_argument("-d", "--testdirs", dest="testdirs", default=[], type=str, action="append", help="test file directory(s) in priority order", required=True)
 # todo: add "refresh" option for nevents & actuals
 parser.add_argument("-u", "--update", dest="update", default=False, action="store_true", help="update corrections and sizetest .py file")
-parser.add_argument("-o", "--output", dest="output", type=str, help="output sizetest .py file name (if updating and different from input)")
+parser.add_argument("-o", "--output", dest="output", default="", type=str, help="output sizetest .py file name (if updating and different from input)")
 parser.add_argument("-a", "--actuals", dest="actuals", default=False, action="store_true", help="use actuals.py")
 args = parser.parse_args()
 
@@ -88,8 +89,12 @@ if args.update:
     # use original rather than derived format
     tests_orig = __import__(args.sizetest.replace(".py","")).tests
     # get new correction factors
-    for test in tests_orig:
-        tests_orig[test]["correction"] = results[test]["correction"]
+    for itest,test in enumerate(tests_orig):
+        tests_orig[itest][1]["correction"] = float("{:.2f}".format(results[test[0]]["correction"]))
     if len(args.output)==0: args.output = args.sizetest
     with open(args.output,'w') as ofile:
-        ofile.write(pprintOD(tests_orig,"tests"))
+        orig_stdout = sys.stdout
+        # redirect print to file
+        sys.stdout = ofile
+        pprintOD(tests_orig,"tests")
+        sys.stdout = orig_stdout
