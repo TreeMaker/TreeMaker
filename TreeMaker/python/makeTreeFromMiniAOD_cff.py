@@ -929,7 +929,10 @@ def makeTreeFromMiniAOD(self,process):
             'JetPropertiesAK8:jerFactorDown(JetsAK8_jerFactorDown)',
         ])
 
-    # record final jet collections (excluding AK4)
+    # record final jet collections (AK4 excluded by default)
+    if self.jetsconstituents>2:
+        self.JetsTags.extend([JetTag])
+        self.JetsNames.extend(["Jets"])
     self.JetsTags.extend([JetAK8Tag])
     self.JetsNames.extend(["JetsAK8"])
 
@@ -1356,20 +1359,26 @@ def makeTreeFromMiniAOD(self,process):
     ## ----------------------------------------------------------------------------------------------
     ## Jet constituents
     ## ----------------------------------------------------------------------------------------------
-    if self.jetsconstituents and len(self.JetsTags)>0:
+    if self.jetsconstituents>0 and len(self.JetsTags)>0:
         process.JetsConstituents = cms.EDProducer("JetsConstituents",
             suffix = cms.string("ConstituentsIndex"),
             JetsTags = cms.VInputTag(self.JetsTags),
             JetsNames = cms.vstring(self.JetsNames),
-            CandTag = cms.InputTag("puppipackedPFCandidates"),
-            properties = cms.vstring("PdgId"),
+            # puppi retains order of input candidate collection, so rekeying not needed here
+            CandTag = cms.InputTag("packedPFCandidates"),
+            properties = cms.vstring("PdgId","PuppiWeight"),
         )
-        # if jets have not been reclustered, use the default miniAOD candidate collection
-        # WARNING: the case where some jet collections are reclustered, but others are not, will not work properly (todo)
-        if not self.boostedsemivisible and not self.tchannel:
-            process.JetsConstituents.CandTag = cms.InputTag("packedPFCandidates")
         self.VectorLorentzVector.append("JetsConstituents")
         self.VectorInt.append("JetsConstituents:PdgId(JetsConstituents_PdgId)")
+        self.VectorDouble.append("JetsConstituents:PuppiWeight(JetsConstituents_PuppiWeight)")
+        if self.jetsconstituents>1:
+            process.JetsConstituents.properties.extend(['dz','dxy','dzsig','dxysig'])
+            self.VectorDouble.extend([
+                "JetsConstituents:dz(JetsConstituents_dz)",
+                "JetsConstituents:dxy(JetsConstituents_dxy)",
+                "JetsConstituents:dzsig(JetsConstituents_dzsig)",
+                "JetsConstituents:dxysig(JetsConstituents_dxysig)",
+            ])
         self.VectorVectorInt.extend(["JetsConstituents:{}{}({}{})".format(JetsName,process.JetsConstituents.suffix.value(),JetsName,"_constituentsIndex") for JetsName in self.JetsNames])
 
     ## ----------------------------------------------------------------------------------------------

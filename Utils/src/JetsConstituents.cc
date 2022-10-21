@@ -20,20 +20,6 @@
 
 typedef math::PtEtaPhiELorentzVector LorentzVector;
 
-namespace {
-
-bool same_indices(const std::vector<int>& values){
-	int base_value = -1;
-	for(auto value : values){
-		if(value==-1) continue;
-		if(base_value==-1) base_value = value;
-		else if(base_value!=value) return false;
-	}
-	return true;
-}
-
-}
-
 //base class for constituent properties
 class CandPropBase {
 	public:
@@ -45,7 +31,7 @@ class CandPropBase {
 		//accessors
 		virtual void put(edm::Event& iEvent) {}
 		virtual void reset() {}
-		virtual void get_property(const reco::Candidate& cand) {}
+		virtual void get_property(const pat::PackedCandidate& cand) {}
 
 		//member variables
 		std::string name;
@@ -79,16 +65,45 @@ EDM_REGISTER_PLUGINFACTORY(CandPropFactory, "CandPropFactory");
 class CandProp_PdgId : public CandProp<int> {
 	public:
 		using CandProp<int>::CandProp;
-		void get_property(const reco::Candidate& cand) override { push_back(cand.pdgId()); }
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.pdgId()); }
 };
 DEFINE_CAND_PROP(PdgId);
 
 class CandProp_PuppiWeight : public CandProp<double> {
 	public:
 		using CandProp<double>::CandProp;
-		void get_property(const reco::Candidate& cand) override { push_back(((pat::PackedCandidate*)(&cand))->puppiWeight()); }
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.puppiWeight()); }
 };
 DEFINE_CAND_PROP(PuppiWeight);
+
+class CandProp_dz : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.dz()); }
+};
+DEFINE_CAND_PROP(dz);
+
+class CandProp_dxy : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.dxy()); }
+};
+DEFINE_CAND_PROP(dxy);
+
+//based on https://github.com/cms-sw/cmssw/blob/master/RecoBTag/FeatureTools/plugins/DeepBoostedJetTagInfoProducer.cc
+class CandProp_dzsig : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.bestTrack() ? cand.dz() / cand.dzError() : 0); }
+};
+DEFINE_CAND_PROP(dzsig);
+
+class CandProp_dxysig : public CandProp<double> {
+	public:
+		using CandProp<double>::CandProp;
+		void get_property(const pat::PackedCandidate& cand) override { push_back(cand.bestTrack() ? cand.dxy() / cand.dxyError() : 0); }
+};
+DEFINE_CAND_PROP(dxysig);
 
 class JetsConstituents : public edm::stream::EDProducer<> {
 public:
@@ -185,20 +200,7 @@ void JetsConstituents::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 	auto cands_out = std::make_unique<std::vector<LorentzVector>>();
 	auto pdgids_out = std::make_unique<std::vector<int>>();
 
-	//between-collection safety check (also include constituent collection)
-	processIndex.push_back(h_cands->ptrs()[0].id().processIndex());
-	productIndex.push_back(h_cands->ptrs()[0].id().productIndex());
-	if(!same_indices(processIndex) or !same_indices(productIndex)){
-		std::stringstream ss;
-		for(unsigned i = 0; i < processIndex.size(); ++i){
-			ss << "(" << processIndex[i] << ", " << productIndex[i] << "), ";
-		}
-		throw cms::Exception("CollectionMismatch") << "Collection indices are not identical: " << ss.str();
-	}
-
-	//TODO: handle different sets of candidates, i.e. PF and PUPPI (derived from PF w/ puppi weight applied)
-	//      this would require substantially more logic: separate candidate collection for each jet collection, check sourceCandidatePtr for "derived" candidate collections, allow different process/product indices
-	//      for now, just omit AK4 jets...
+	//between-collection safety check REMOVED to avoid need to rekey puppi to packedPF (order already preserved)
 
 	//loop over PF candidate collection once: check every jet in every jet collection
 	//only PF candidates found in a jet collection will be kept
@@ -227,9 +229,10 @@ void JetsConstituents::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 		}
 		if(keep){
 			const auto& cand = h_cands->at(c);
+			const auto pcand = (pat::PackedCandidate*)(&cand);
 			cands_out->emplace_back(cand.pt(),cand.eta(),cand.phi(),cand.energy());
 			for(auto & Prop : Props_){
-				Prop->get_property(cand);
+				Prop->get_property(*pcand);
 			}
 		}
 	}
