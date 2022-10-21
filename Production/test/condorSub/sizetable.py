@@ -3,9 +3,8 @@ from collections import OrderedDict
 from utils import get_xrdfs, get_sizetest, pprintOD
 from getActuals import getActuals
 
-def convert_bytes(val, current, new):
+def convert_bytes(val, current, new, base=1024):
     expo = {"": 0, "k": 1, "M": 2, "G": 3, "T": 4, "P": 5, "E": 6, "Z": 7, "Y": 8}
-    base = 1024
     for prefix in [current,new]:
         if prefix not in expo:
             raise ValueError("Unknown unit {}".format(prefix))
@@ -53,7 +52,7 @@ for fname in fnames:
     neventsDict = neventsMC if tests[fname]["type"]=="MC" else neventsData
     results[fname]["nevents"] = sum([count for year,count in neventsDict[fname].iteritems()])
     results[fname]["projection"] = convert_bytes(results[fname]["sizeEvt"]*results[fname]["nevents"],"k","T")
-    if args.actuals: results[fname]["actual"] = convert_bytes(actuals[fname],"","T")
+    if args.actuals: results[fname]["actual"] = convert_bytes(actuals[fname],"","T",base=1000)
     results[fname]["correction"] = tests[fname]["correction"] if not args.update else results[fname]["actual"]/results[fname]["projection"]
     results[fname]["corrected"] = results[fname]["correction"]*results[fname]["projection"]
 
@@ -62,7 +61,7 @@ if args.actuals:
     results["other"]["sizeEvt"] = ""
     results["other"]["nevents"] = ""
     results["other"]["projection"] = ""
-    results["other"]["actual"] = convert_bytes(actuals["overall"],"","T") - sum(results[fname]["actual"] for fname in fnames)
+    results["other"]["actual"] = convert_bytes(actuals["overall"],"","T",base=1000) - sum(results[fname]["actual"] for fname in fnames)
     results["other"]["correction"] = 1.0
     results["other"]["corrected"] = results["other"]["actual"]
 
