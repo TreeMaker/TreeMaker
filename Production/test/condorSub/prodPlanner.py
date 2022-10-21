@@ -181,10 +181,10 @@ def refresh(args):
             print "done"
 
 def project(args):
-    neventsMC = __import__(args.neventsMC).neventsMC
-    neventsData = __import__(args.neventsData).neventsData
+    neventsMC = __import__(args.neventsMC.replace(".py","")).neventsMC
+    neventsData = __import__(args.neventsData.replace(".py","")).neventsData
     if args.actualsAll or args.actualsOther:
-        actuals = __import__(args.actuals).actuals
+        actuals = __import__(args.actuals.replace(".py","")).actuals
     else:
         actuals = None
 
