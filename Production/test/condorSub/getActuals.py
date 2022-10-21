@@ -35,7 +35,8 @@ def getActuals(dir, fnames, do_overall=False, per_event=False):
 
     if per_event:
         for fname in fnames:
-            output[fname] = float(output[fname])/float(counts[fname])
+            if counts[fname]>0:
+                output[fname] = float(output[fname])/float(counts[fname])
 
     return output
 

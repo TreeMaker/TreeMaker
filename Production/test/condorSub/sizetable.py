@@ -13,7 +13,7 @@ def convert_bytes(val, current, new, base=1000):
 
 parser = ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 parser.add_argument("-s", "--sizetest", dest="sizetest", type=str, help="input sizetest .py file", required=True)
-parser.add_argument("-d", "--testdirs", dest="testdirs", default=[], type=str, action="append", help="test file directory(s) in priority order", required=True)
+parser.add_argument("-d", "--testdirs", dest="testdirs", type=str, nargs='+', help="test file directory(s) in priority order", required=True)
 # todo: add "refresh" option for nevents & actuals
 parser.add_argument("-u", "--update", dest="update", default=False, action="store_true", help="update corrections and sizetest .py file")
 parser.add_argument("-o", "--output", dest="output", default="", type=str, help="output sizetest .py file name (if updating and different from input)")
