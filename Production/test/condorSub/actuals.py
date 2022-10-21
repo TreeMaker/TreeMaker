@@ -14,7 +14,7 @@ actuals = OrderedDict([
     ("GJets_HT", 1302634879792),
     ("GJets_DR-0p4_HT", 3826787080961),
     ("TTTo", 39974440839274),
-    ("TTJets_", 4554295165597),
+    ("TTJets", 4554295165597),
     ("WJetsToLNu", 4310722676188),
     ("ZJetsToNuNu", 1030455253134),
 ])

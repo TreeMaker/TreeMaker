@@ -12,7 +12,7 @@ tests = [
 #    ("GJets_HT", {"correction": 1.0, "dname": "gjets", "sample": "Summer20UL16.GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
 #    ("GJets_DR-0p4_HT", {"correction": 1.0, "dname": "gjets_dr0p4", "sample": "Summer20UL18.GJets_DR-0p4_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
 #    ("TTTo", {"correction": 1.0, "dname": "ttbar", "sample": "Summer20UL18.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8", "type": "MC"}),
-    ("TTJets_", {"correction": 1.0, "dname": "ttjets", "sample": "Summer20UL18.TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
+    ("TTJets", {"correction": 1.0, "dname": "ttjets", "sample": "Summer20UL18.TTJets_SingleLeptFromT_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
     ("WJetsToLNu", {"correction": 1.0, "dname": "wjetslep", "sample": "Summer20UL18.WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
     ("ZJetsToNuNu", {"correction": 1.0, "dname": "zjets", "sample": "Summer20UL18.ZJetsToNuNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8", "type": "MC"}),
 ]
