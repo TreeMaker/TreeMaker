@@ -264,15 +264,15 @@ def assign(args):
     from jobSubmitterTM import jobSubmitterTM
     # supress jobSubmitter printouts
     orig_stdout = sys.stdout
-    if not args.verbose:
+    if args.verbose<2:
         devnull = open(os.devnull, 'w')
         sys.stdout = devnull
     for dict_ in indicts:
-        if args.verbose: print dict_
+        if args.verbose>=2: print dict_
         js = jobSubmitterTM(argv=shlex.split("-c -o . -d {}".format(dict_)))
         js.run()
         dicts.append((js.njobs,dict_))
-    if not args.verbose:
+    if args.verbose<2:
         sys.stdout = orig_stdout
         devnull.close()
     dicts.sort(key=lambda x: -x[0])
@@ -295,7 +295,7 @@ def assign(args):
         user_index += 1
         begin_index += 1
 
-    if args.verbose:
+    if args.verbose>=1:
         print '\n'.join(["{} {} {}".format(user, assignments[user][0], ','.join(assignments[user][1])) for user in users])
         print '\nSanity check: {} {}'.format(sum(x[0] for x in dicts), sum(assignments[user][0] for user in users))
 
@@ -350,9 +350,9 @@ def prodPlanner(argv=None):
 
     # assign-specific options
     parser_assign.add_argument("-p", "--production", dest="production", default="production.py", type=str, help="input production .py file")
-    parser_assign.add_argument("-m", "--maxJobs", dest="maxJobs", default=14000, type=str, help="approximate maximum number of jobs per user")
+    parser_assign.add_argument("-m", "--maxJobs", dest="maxJobs", default=14000, type=int, help="approximate maximum number of jobs per user")
     parser_assign.add_argument("-o", "--outdir", dest="outdir", default="assignments", type=str, help="output directory for .prodconfig files")
-    parser_assign.add_argument("-v", "--verbose", dest="verbose", default=False, action="store_true", help="print verbose output")
+    parser_assign.add_argument("-v", "--verbose", dest="verbose", default=0, type=int, help="verbosity level")
     parser_assign.set_defaults(func=assign)
 
     args = parser.parse_args(args=argv)

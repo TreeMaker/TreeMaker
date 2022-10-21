@@ -4,6 +4,11 @@ from FWCore.PythonUtilities.LumiList import LumiList
 from TreeMaker.Production.scenarios import Scenario
 
 class jobSubmitterTM(jobSubmitter):
+    def initStep1(self):
+        # skip this for count mode
+        if not self.count:
+            super(jobSubmitterTM,self).initStep1()
+
     def addExtraOptions(self,parser):
         super(jobSubmitterTM,self).addExtraOptions(parser)
         
