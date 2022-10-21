@@ -71,4 +71,15 @@ python prodPlanner.py assign
 
 This function takes as input a file `production.py`, containing a list of dictionaries and a list of users, which must be prepared manually.
 
-Options are available to specify an alternate input file, a rough number of maximum jobs per user, and the output directory for the assignment files.
+The assignment algorithm:
+1. sorts the dictionaries by their number of jobs
+2. selects the dictionary with the largest number
+3. adds dictionaries with the smallest numbers until a threshold is reached
+4. removes the selected dictionaries from the list and repeats steps 2-3 for each user until all dictionaries are assigned
+
+The threshold is a rough number of maximum jobs per user.
+The value should be somewhat less than the total number of jobs divided by the total number of users.
+It currently needs to be tuned by hand for optimal distribution.
+The first and last users in the list tend to be assigned slightly more jobs than the others.
+
+Options are available to specify an alternate input file, the maximum jobs per user, the output directory for the assignment files, and the verbosity of printouts.

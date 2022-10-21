@@ -147,4 +147,4 @@ dicts = [
 "UL2018D_singlemuon",
 ]
 
-users = ['cmadrid','pedrok','aperloff','bcrossma','chpapage','ckapsiak','csuarez','csavard','dmahon','gfidalgo','jhiltbrand','keanet','lwang046','nzipper','semrat','snorberg','yichen','klijnsma','vhegde']
+users = ['cmadrid','aperloff','bcrossma','chpapage','ckapsiak','csuarez','csavard','dmahon','gfidalgo','jhiltbrand','keanet','lwang046','nzipper','semrat','snorberg','yichen','klijnsma','vhegde','pedrok']
