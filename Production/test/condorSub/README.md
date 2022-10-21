@@ -61,3 +61,14 @@ The output is a table with these columns:
 ```
 
 If `-a` is not used, the column "actual [TB]" will be omitted.
+
+## Job assignments
+
+Job assignments can be prepared by calling:
+```
+python prodPlanner.py assign
+```
+
+This function takes as input a file `production.py`, containing a list of dictionaries and a list of users, which must be prepared manually.
+
+Options are available to specify an alternate input file, a rough number of maximum jobs per user, and the output directory for the assignment files.

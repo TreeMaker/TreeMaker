@@ -1,4 +1,4 @@
-import sys,json,subprocess,shlex
+import os,sys,json,subprocess,shlex
 from glob import glob
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from collections import OrderedDict
@@ -254,6 +254,65 @@ def project(args):
         if len(args.output)==0: args.output = args.sizetest
         pprintOD(tests_orig,"tests",filename=args.output)
 
+def assign(args):
+    production = __import__(args.production.replace(".py",""),fromlist=["dicts","users"])
+    indicts = getattr(production,"dicts")
+    users = getattr(production,"users")
+
+    # get number of jobs for each dict
+    dicts = []
+    from jobSubmitterTM import jobSubmitterTM
+    # supress jobSubmitter printouts
+    orig_stdout = sys.stdout
+    if not args.verbose:
+        devnull = open(os.devnull, 'w')
+        sys.stdout = devnull
+    for dict_ in indicts:
+        if args.verbose: print dict_
+        js = jobSubmitterTM(argv=shlex.split("-c -o . -d {}".format(dict_)))
+        js.run()
+        dicts.append((js.njobs,dict_))
+    if not args.verbose:
+        sys.stdout = orig_stdout
+        devnull.close()
+    dicts.sort(key=lambda x: -x[0])
+
+    assignments = {user:[0,[]] for user in users}
+
+    def add_dict(user, dict_):
+        assignments[user][0] += dict_[0]
+        assignments[user][1].append(dict_[1])
+
+    user_index = 0
+    begin_index = 0
+    end_index = len(dicts)-1
+    while begin_index < end_index:
+        user = users[user_index]
+        add_dict(user, dicts[begin_index])
+        while (assignments[user][0] < args.maxJobs or user_index >= len(users)-1) and end_index > begin_index:
+            add_dict(user, dicts[end_index])
+            end_index -= 1
+        user_index += 1
+        begin_index += 1
+
+    if args.verbose:
+        print '\n'.join(["{} {} {}".format(user, assignments[user][0], ','.join(assignments[user][1])) for user in users])
+        print '\nSanity check: {} {}'.format(sum(x[0] for x in dicts), sum(assignments[user][0] for user in users))
+
+    if not os.path.isdir(args.outdir):
+        os.mkdir(args.outdir)
+    for user in users:
+        with open("{}/{}.prodconfig".format(args.outdir,user),'w') as outfile:
+            out = [
+                "[manage]",
+                "dir = .",
+                "[caches]",
+                "$CMSSW_BASE/test = 1",
+                "[submit]",
+                "input = {}".format(','.join(assignments[user][1]))
+            ]
+            outfile.write('\n'.join(out))
+
 # main function
 
 def prodPlanner(argv=None):
@@ -268,6 +327,8 @@ def prodPlanner(argv=None):
     parser_refresh = subparsers.add_parser("refresh", formatter_class=ArgumentDefaultsHelpFormatter, help=refresh_desc, description=refresh_desc)
     project_desc = "make size projection table"
     parser_project = subparsers.add_parser("project", formatter_class=ArgumentDefaultsHelpFormatter, help=project_desc, description=project_desc)
+    assign_desc = "assign job dicts to users"
+    parser_assign = subparsers.add_parser("assign", formatter_class=ArgumentDefaultsHelpFormatter, help=assign_desc, description=assign_desc)
 
     # common options
     for subp in [parser_refresh, parser_project]:
@@ -279,13 +340,20 @@ def prodPlanner(argv=None):
     parser_refresh.add_argument("-d", "--dir", dest="dir", type=str, default="/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV20", help="ntuple directory")
     parser_refresh.set_defaults(func=refresh)
 
-    # projection-specific options
+    # project-specific options
     parser_project.add_argument("-d", "--testdirs", dest="testdirs", type=str, nargs='+', help="test file directory(s) in priority order", required=True)
     parser_project.add_argument("-u", "--update", dest="update", default=False, action="store_true", help="update corrections and sizetest .py file")
     parser_project.add_argument("-o", "--output", dest="output", default="", type=str, help="output sizetest .py file name (if updating and different from input)")
     parser_project.add_argument("-a", "--actualsAll", dest="actualsAll", default=False, action="store_true", help="use actuals")
     parser_project.add_argument("-A", "--actualsOther", dest="actualsOther", default=False, action="store_true", help='use actuals just for "other" category')
     parser_project.set_defaults(func=project)
+
+    # assign-specific options
+    parser_assign.add_argument("-p", "--production", dest="production", default="production.py", type=str, help="input production .py file")
+    parser_assign.add_argument("-m", "--maxJobs", dest="maxJobs", default=14000, type=str, help="approximate maximum number of jobs per user")
+    parser_assign.add_argument("-o", "--outdir", dest="outdir", default="assignments", type=str, help="output directory for .prodconfig files")
+    parser_assign.add_argument("-v", "--verbose", dest="verbose", default=False, action="store_true", help="print verbose output")
+    parser_assign.set_defaults(func=assign)
 
     args = parser.parse_args(args=argv)
     args.func(args)
