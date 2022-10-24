@@ -53,7 +53,7 @@ jobs:
     - name: Run the container and perform an integration test
       if: github.event_name == 'pull_request'
       env:
-        download_url: https://cernbox.cern.ch/index.php/s/bPISUrvVEdMfp5I/download
+        download_url: https://cernbox.cern.ch/remote.php/dav/public-files/bPISUrvVEdMfp5I/store.mc.RunIISummer20UL16MiniAODv2.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8.MINIAODSIM.106X_mcRun2_asymptotic_v17-v1.120000.0605C02A-A789-C548-8D73-9B7D0A4D5561_100evt.root
         file_name: store.mc.RunIISummer20UL16MiniAODv2.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8.MINIAODSIM.106X_mcRun2_asymptotic_v17-v1.120000.0605C02A-A789-C548-8D73-9B7D0A4D5561_100evt.root
         era: Summer20UL16
         output_name: Summer20UL16.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8
@@ -77,7 +77,7 @@ jobs:
       run: echo "current_user=$(echo ${{ github.repository }} | sed -E 's|/.*||')" >> $GITHUB_ENV
     - name: Run the container and perform an integration test
       env:
-        download_url: https://cernbox.cern.ch/index.php/s/bPISUrvVEdMfp5I/download
+        download_url: https://cernbox.cern.ch/remote.php/dav/public-files/bPISUrvVEdMfp5I/store.mc.RunIISummer20UL16MiniAODv2.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8.MINIAODSIM.106X_mcRun2_asymptotic_v17-v1.120000.0605C02A-A789-C548-8D73-9B7D0A4D5561_100evt.root
         file_name: store.mc.RunIISummer20UL16MiniAODv2.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8.MINIAODSIM.106X_mcRun2_asymptotic_v17-v1.120000.0605C02A-A789-C548-8D73-9B7D0A4D5561_100evt.root
         era: Summer20UL16
         output_name: Summer20UL16.QCD_HT2000toInf_TuneCP5_PSWeights_13TeV-madgraphMLM-pythia8
