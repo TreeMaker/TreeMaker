@@ -59,8 +59,14 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     void firstDark(CandPtr part, CandSet& firstMd, CandSet& firstQd, CandSet& firstGd, CandSet& firstQdM, CandSet& firstQsM, CandPtr& firstQdM1, CandPtr& firstQdM2, CandPtr& firstQsM1, CandPtr& firstQsM2, bool& secondDM, bool& secondSM) const;
     int checkLast(const reco::GenJet& jet, const CandSet& stableDs, int value, double& frac) const;
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
-    void matchPFMtoJet(CandPtr part, std::vector<const reco::GenJet*>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, int mt2ID) const;
-    double calculateMT2(const edm::Handle<edm::View<reco::GenMET>>& h_genmets, const reco::GenJet* dQM1J, const reco::GenJet* SMM1J, const reco::GenJet* dQM2J, const reco::GenJet* SMM2J) const;
+    double calculateMT2(const edm::Handle<edm::View<reco::GenMET>>& h_genmets, const reco::GenJet& dQM1J, const reco::GenJet& SMM1J, const reco::GenJet& dQM2J, const reco::GenJet& SMM2J) const;
+    template <typename A, typename B>
+    std::vector<int> matchAB(const A& collA, const B& collB) const;
+    template <typename A, typename B>
+    double deltaRAB(const A& candA, const B& candB) const;
+    //looks like a specialization, but actually an overload...
+    template <typename B>
+    double deltaRAB(const reco::Candidate* candA, const B& candB) const;
     std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
     bool signal_;
     edm::InputTag JetTag_, MetTag_, GenMetTag_, GenTag_, GenJetTag_;
@@ -140,9 +146,11 @@ void HiddenSectorProducer::firstDark(CandPtr part, CandSet& firstMd, CandSet& fi
       for(unsigned i = 0; i < part->numberOfDaughters(); i++){
         CandPtr dau = part->daughter(i);
         if (isParticle(DarkTMediatorIDs_,dau)){
-          firstMd.insert(dau);
-          // once a mediator daughter is found, we look for the descendants of the mediator
-          medDecay(dau,firstQdM,firstQsM,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
+          if(firstMd.find(dau)==firstMd.end()){
+            firstMd.insert(dau);
+            // once a mediator daughter is found, we look for the descendants of the mediator
+            medDecay(dau,firstQdM,firstQsM,firstQdM1,firstQdM2,firstQsM1,firstQsM2,secondDM,secondSM);
+          }
         }
         else if (isParticle(DarkQuarkIDs_,dau)) firstQd.insert(dau);
         else if (isParticle(DarkGluonIDs_,dau)) firstGd.insert(dau);
@@ -184,22 +192,12 @@ int HiddenSectorProducer::checkFirst(const reco::GenJet& jet, const CandSet& fir
   return 0;
 }
 
-// match particles from mediator to jets
-void HiddenSectorProducer::matchPFMtoJet(CandPtr part, std::vector<const reco::GenJet*>& matchedJets, const reco::GenJet& jet, int& nPartPerJet, int& t_MT2JetID, int mt2ID) const {
-  if(reco::deltaR(jet,*part) < coneSize_)
-  {
-    matchedJets.push_back(&jet);
-    nPartPerJet ++;
-    t_MT2JetID = mt2ID;
-  }
-}
-
-double HiddenSectorProducer::calculateMT2(const edm::Handle<edm::View<reco::GenMET>>& h_genmets, const reco::GenJet* dQM1J, const reco::GenJet* SMM1J, const reco::GenJet* dQM2J, const reco::GenJet* SMM2J) const {
+double HiddenSectorProducer::calculateMT2(const edm::Handle<edm::View<reco::GenMET>>& h_genmets, const reco::GenJet& dQM1J, const reco::GenJet& SMM1J, const reco::GenJet& dQM2J, const reco::GenJet& SMM2J) const {
   const auto& i_met = h_genmets->front();
   double METx = i_met.px();
   double METy = i_met.py();
-  LorentzVector FJet0 = dQM1J->p4() + SMM1J->p4();
-  LorentzVector FJet1 = dQM2J->p4() + SMM2J->p4();
+  LorentzVector FJet0 = dQM1J.p4() + SMM1J.p4();
+  LorentzVector FJet1 = dQM2J.p4() + SMM2J.p4();
   return asymm_mt2_lester_bisect::get_mT2(
     FJet0.M(), FJet0.Px(), FJet0.Py(),
     FJet1.M(), FJet1.Px(), FJet1.Py(),
@@ -209,27 +207,39 @@ double HiddenSectorProducer::calculateMT2(const edm::Handle<edm::View<reco::GenM
 
 //use official JetMET matching procedure: equiv to set<DR,jet_index,gen_index> sorted by DR
 //from https://github.com/cms-jet/JetMETAnalysis/blob/master/JetUtilities/plugins/MatchRecToGen.cc
-std::vector<int> HiddenSectorProducer::matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const {
+//returns index array of length A pointing to B
+template <typename A, typename B>
+std::vector<int> HiddenSectorProducer::matchAB(const A& collA, const B& collB) const {
   std::map<double,std::pair<unsigned,unsigned>> matchMap;
-  for(unsigned j = 0; j < jets.size(); ++j){
-    for(unsigned g = 0; g < gen.size(); ++g){
-      matchMap.emplace(std::piecewise_construct, std::forward_as_tuple(reco::deltaR(jets[j],gen[g])), std::forward_as_tuple(j,g));
+  for(unsigned a = 0; a < collA.size(); ++a){
+    for(unsigned b = 0; b < collB.size(); ++b){
+      matchMap.emplace(std::piecewise_construct, std::forward_as_tuple(deltaRAB(collA[a],collB[b])), std::forward_as_tuple(a,b));
     }
   }
 
-  std::vector<int> genIndex(jets.size(),-1);
-  std::unordered_set<unsigned> j_used, g_used;
+  std::vector<int> bIndex(collA.size(),-1);
+  std::unordered_set<unsigned> a_used, b_used;
   for(const auto& matchItem: matchMap){
-    unsigned j = matchItem.second.first;
-    unsigned g = matchItem.second.second;
-    if(j_used.find(j)==j_used.end() and g_used.find(g)==g_used.end()){
-      genIndex[j] = g;
-      j_used.insert(j);
-      g_used.insert(g);
+    unsigned a = matchItem.second.first;
+    unsigned b = matchItem.second.second;
+    if(a_used.find(a)==a_used.end() and b_used.find(b)==b_used.end()){
+      bIndex[a] = b;
+      a_used.insert(a);
+      b_used.insert(b);
     }
   }
 
-  return genIndex;
+  return bIndex;
+}
+
+template <typename A, typename B>
+double HiddenSectorProducer::deltaRAB(const A& candA, const B& candB) const {
+  return reco::deltaR(candA,candB);
+}
+
+template <typename B>
+double HiddenSectorProducer::deltaRAB(const reco::Candidate* candA, const B& candB) const {
+  return reco::deltaR(*candA,candB);
 }
 
 HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
@@ -373,10 +383,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     //naming scheme: dark particles Pd, SM particles Ps; P = D (generic daughters), Q (quarks), G (gluons), M (mediators)
     CandSet stableDs, firstMd, firstQd, firstGd, firstQdM, firstQsM;
     CandPtr firstQdM1, firstQdM2, firstQsM1, firstQsM2;
-    bool secondDM = false, secondSM = false, manyParticlesPerJet = false;
-    std::vector<const reco::GenJet*> dQM1Js,dQM2Js,SMM1Js,SMM2Js;
-    std::vector<int> t_MT2JetIDList;
-    int nJets = 0;
+    bool secondDM = false, secondSM = false;
     //loop over gen particles
     for(const auto& i_part : *(h_parts.product())){
       firstDark(&i_part, firstMd, firstQd, firstGd, firstQdM, firstQsM, firstQdM1, firstQdM2, firstQsM1, firstQsM2,secondDM,secondSM);
@@ -386,7 +393,6 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     for(const auto& i_jet : *(h_genjets.product())){
       int category = 0;
       double frac = 0;
-      nJets ++;
       category += checkLast(i_jet, stableDs, 1, frac);
       category += checkFirst(i_jet, firstQd, 2);
       category += checkFirst(i_jet, firstGd, 4);
@@ -394,32 +400,21 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
       category += checkFirst(i_jet, firstQsM, 16);
       hvCategory->push_back(category);
       darkPtFrac->push_back(frac);
-      // t-channel MT2 Right Combination
-      if(firstMd.size()==2){
-        int t_MT2JetID = 0;
-        int nPartPerJet = 0;
-        matchPFMtoJet(firstQdM1,dQM1Js,i_jet,nPartPerJet,t_MT2JetID,1);
-        matchPFMtoJet(firstQdM2,dQM2Js,i_jet,nPartPerJet,t_MT2JetID,2);
-        matchPFMtoJet(firstQsM1,SMM1Js,i_jet,nPartPerJet,t_MT2JetID,3);
-        matchPFMtoJet(firstQsM2,SMM2Js,i_jet,nPartPerJet,t_MT2JetID,4);
-        t_MT2JetIDList.push_back(t_MT2JetID);
-        if(nPartPerJet > 1) manyParticlesPerJet = true;
+    }
+
+    std::vector<CandPtr> firsts{firstQdM1,firstQdM2,firstQsM1,firstQsM2};
+    std::vector<int> pgenIndex(firsts.size(),-1);
+    *MT2JetsID = std::vector<int>(h_genjets->size(),0);
+    if(firstMd.size()==2){
+      pgenIndex = matchAB(firsts,*(h_genjets.product()));
+      for(unsigned p = 0; p < pgenIndex.size(); ++p){
+        if(pgenIndex[p]>-1) MT2JetsID->at(pgenIndex[p]) = p+1;
       }
+      GenMT2 = calculateMT2(h_genmets,h_genjets->at(pgenIndex[0]),h_genjets->at(pgenIndex[2]),h_genjets->at(pgenIndex[1]),h_genjets->at(pgenIndex[3]));
     }
-    bool manyJetsPerParticle = dQM1Js.size() >= 1 && dQM2Js.size() >= 1 && SMM1Js.size() >= 1 && SMM2Js.size() >= 1;
-    if(manyJetsPerParticle and !manyParticlesPerJet){
-      // using the highest pT jet if more than one jet contains the same particle
-      GenMT2 = calculateMT2(h_genmets,dQM1Js[0],SMM1Js[0],dQM2Js[0],SMM2Js[0]);
-    }
-    else
-    {
-      std::vector<int> zeros(nJets,0);
-      t_MT2JetIDList = zeros;
-    }
-    for(const auto& t_MT2JetID : t_MT2JetIDList) MT2JetsID->push_back(t_MT2JetID);
 
     //gen:reco jet matching
-    *genIndex = matchGenRec(*(h_jets.product()), *(h_genjets.product()));
+    *genIndex = matchAB(*(h_jets.product()), *(h_genjets.product()));
   }
 
   if(signal_){
