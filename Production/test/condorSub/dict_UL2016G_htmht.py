@@ -1,7 +1,7 @@
 flist = {
-    "scenario": "Summer20UL17_DATA",
+    "scenario": "Summer20UL16_DATA",
     "args": "boostedsemivisible=True tchannel=True",
     "samples": [
-        ["Run2017D-UL2017-v1.MET"],
+        ["Run2016G-UL2016-v1.HTMHT"],
    ]
 }
