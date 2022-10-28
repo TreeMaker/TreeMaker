@@ -1,6 +1,6 @@
 flist = {
     "scenario": "Summer20UL16_DATA",
-    "args": "boostedsemivisible=True tchannel=True",
+    "args": "jetsconstituents=2 boostedsemivisible=True tchannel=True",
     "samples": [
         ["Run2016G-UL2016-v2.MET"],
    ]
