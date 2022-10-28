@@ -1,7 +1,7 @@
 flist = {
 
    "scenario": "Summer20UL16APV",
-   "args": "boostedsemivisible=True tchannel=True",
+   "args": "jetsconstituents=2 boostedsemivisible=True tchannel=True",
    "samples": [
 
        ['Summer20UL16APV.WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8'],
