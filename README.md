@@ -117,6 +117,7 @@ Python:
 * `-i, --ignore-args`: ignore args specified in the input dict (default = False)
 * `--offset [num]`: offset for arg file naming in chain jobs (default = 0)
 * `--maxJobs [num]`: max number of jobs to run (default = -1 -> not applied)
+* `--mask [file]`: .py file in sizetest format to select specific samples from larger dicts
 
 Shell (in [step2.sh](./Production/test/condorSub/step2.sh)):
 * `-o [dir]`: output directory

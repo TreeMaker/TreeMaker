@@ -4,6 +4,11 @@ from FWCore.PythonUtilities.LumiList import LumiList
 from TreeMaker.Production.scenarios import Scenario
 
 class jobSubmitterTM(jobSubmitter):
+    def initStep1(self):
+        # skip this for count mode
+        if not self.count:
+            super(jobSubmitterTM,self).initStep1()
+
     def addExtraOptions(self,parser):
         super(jobSubmitterTM,self).addExtraOptions(parser)
         
@@ -17,8 +22,9 @@ class jobSubmitterTM(jobSubmitter):
         parser.add_option("-x", "--redir", dest="redir", default="", help="input file redirector (default = %default)")
         parser.add_option("-f", "--use-folders", dest="useFolders", default=False, action="store_true", help="store the output in folders based on era and dataset (default = %default)")
         parser.add_option("-i", "--ignore-args", dest="ignoreArgs", default=False, action="store_true", help="ignore args specified in the input dict (default = %default)")
-        parser.add_option("--maxJobs", dest="maxJobs", default=-1, type=int, help="Max number of jobs to run")
+        parser.add_option("--maxJobs", dest="maxJobs", default=-1, type="int", help="Max number of jobs to run")
         parser.add_option("--offset", dest="offset", default=0, type="int", help="offset for arg file naming in chain jobs (default = %default)")
+        parser.add_option("--mask", dest="mask", default="", type="str", help=".py file in sizetest format to select specific samples from larger dicts (default = %default)")
 
     def checkExtraOptions(self,options,parser):
         super(jobSubmitterTM,self).checkExtraOptions(options,parser)
@@ -54,6 +60,12 @@ class jobSubmitterTM(jobSubmitter):
             )
         
     def generateSubmission(self):
+        # check mask
+        mask = set()
+        if len(self.mask)>0:
+            tests = __import__(self.mask.replace(".py","")).tests
+            mask = set([test["sample"] for fname,test in tests])
+
         # loop over dicts
         for input in self.dicts:
             # loop over dict entries
@@ -78,6 +90,14 @@ class jobSubmitterTM(jobSubmitter):
             # loop over samples
             for file in flist["samples"]:
                 filesConfig = file[0]
+
+                # apply mask if any
+                if len(mask)>0:
+                    if filesConfig not in mask:
+                        continue
+                    elif self.verbose:
+                        print "passed mask: "+filesConfig+" from "+process
+
                 firstJob = 0
                 # extra optional field for updating data
                 if len(file)>1: firstJob = file[1]
