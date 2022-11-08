@@ -128,10 +128,14 @@ class maker:
         if len(self.local)>0:
             for iFile,readFile in enumerate(self.readFiles):
                 if readFile.startswith("/"):
-                    readFileLocal = readFile.replace('/','_')[1:]
+                    tmpdir = "tmp"
+                    if not os.path.isdir(tmpdir): os.mkdir(tmpdir)
+                    readFileLocal = tmpdir+"/"+readFile.replace('/','_')[1:]
                     xrdcp_command = "{} {}{} {}".format(self.local, self.redir, readFile, readFileLocal)
                     proc = subprocess.Popen(xrdcp_command.split()) #, shell = False, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
                     outs, errs = proc.communicate()
+                    if proc.returncode!=0:
+                        raise RuntimeError("{} failed with: {}".format(self.local, errs))
                     self.readFiles[iFile] = "file:{}".format(readFileLocal)
 
         self.readFiles = [(self.redir if val.startswith("/") else "")+val for val in self.readFiles]
