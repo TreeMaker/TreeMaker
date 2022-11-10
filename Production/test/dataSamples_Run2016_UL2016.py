@@ -5,14 +5,14 @@ dataSamples = [
     [ "SingleElectron_2016B_HIPM",  "Run2016B-UL2016_HIPM-ver2-v2.SingleElectron_*"],
     [ "SingleMuon_2016B_HIPM",      "Run2016B-UL2016_HIPM-ver2-v2.SingleMuon_*"],
     [ "SinglePhoton_2016B_HIPM",    "Run2016B-UL2016_HIPM-ver2-v2.SinglePhoton_*"],
-    [ "JetHT_2016B_HIPM",           "Run2016B-UL2016_HIPM-ver2-v3.JetHT_*"],
+    [ "JetHT_2016B_HIPM",           "Run2016B-UL2016_HIPM-ver2-v2.JetHT_*"],
     # 2016C datasets: UL2016_HIPM
     [ "HTMHT_2016C_HIPM",           "Run2016C-UL2016_HIPM-v1.HTMHT_*"],
     [ "JetHT_2016C_HIPM",           "Run2016C-UL2016_HIPM-v2.JetHT_*"],
     [ "MET_2016C_HIPM",             "Run2016C-UL2016_HIPM-v2.MET_*"],
     [ "SingleElectron_2016C_HIPM",  "Run2016C-UL2016_HIPM-v2.SingleElectron_*"],
     [ "SingleMuon_2016C_HIPM",      "Run2016C-UL2016_HIPM-v2.SingleMuon_*"],
-    [ "SinglePhoton_2016C_HIPM",    "Run2016C-UL2016_HIPM-v2.SinglePhoton_*"],
+    [ "SinglePhoton_2016C_HIPM",    "Run2016C-UL2016_HIPM-v4.SinglePhoton_*"],
     # 2016D datasets: UL2016_HIPM
     [ "HTMHT_2016D_HIPM",           "Run2016D-UL2016_HIPM-v1.HTMHT_*"],
     [ "JetHT_2016D_HIPM",           "Run2016D-UL2016_HIPM-v2.JetHT_*"],

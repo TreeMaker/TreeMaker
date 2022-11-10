@@ -20,7 +20,7 @@ dataSamples = [
     [ "SingleElectron_2017D",       "Run2017D-UL2017-v1.SingleElectron_*"],
     [ "SingleMuon_2017D",           "Run2017D-UL2017-v1.SingleMuon_*"],
     [ "SinglePhoton_2017D",         "Run2017D-UL2017-v1.SinglePhoton_*"],
-    [ "SingleElectron_2017D",       "Run2017D-UL2017-v2.SingleElectron_*"],
+    [ "SingleElectron_2017D",       "Run2017D-UL2017-v1.SingleElectron_*"],
     # 2017E datasets: UL2017
     [ "HTMHT_2017E",                "Run2017E-UL2017-v1.HTMHT_*"],
     [ "JetHT_2017E",                "Run2017E-UL2017-v1.JetHT_*"],
