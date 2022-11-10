@@ -252,7 +252,7 @@ def project(args):
         for itest,test in enumerate(tests_orig):
             tests_orig[itest][1]["correction"] = float("{:.2f}".format(results[test[0]]["correction"]))
         if len(args.output)==0: args.output = args.sizetest
-        pprintOD(tests_orig,"tests",filename=args.output)
+        writeOD(tests_orig,"tests",filename=args.output)
 
 def assign(args):
     production = __import__(args.production.replace(".py",""),fromlist=["dicts","users"])
