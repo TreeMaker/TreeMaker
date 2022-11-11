@@ -68,7 +68,7 @@ for f in jsonfiles:
     fsplit = re.split('_|\.',fbase)
     # e.g. lumiSummary_DoubleMuon_2015D.json
     pd = fsplit[1]
-    section = fsplit[2]
+    section = '_'.join(fsplit[2:-1])
     if not pd in output:
         output[pd] = {}
     if not section in sections:
