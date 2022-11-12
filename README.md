@@ -139,7 +139,7 @@ python lumiSummary.py
 python calcLumi.py
 ```
 
-The script [lumiSummary.py](./Production/test/lumiSummary.py) loops over a list of data samples (by default, a list of Run2015C and Run2015D samples) and creates a JSON
+The script [lumiSummary.py](./Production/test/lumiSummary.py) loops over a list of data samples (default lists for each year of Run 2 datataking are provided) and creates a JSON
 file for each sample consisting of the lumisections which were actually processed. Run `python lumiSummary.py --help` to see the available options.
 (This script is based on the CRAB3 client job report scripts.)
 

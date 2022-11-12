@@ -24,16 +24,25 @@ class sampleInfo :
         self.fileNames = fileNames
         self.outName = outName
         self.fileList = []
+        if baseDir[-1]!="/": baseDir = baseDir+"/"
         for f in fileNames:
             self.addToList(baseDir,f)
 
     def addToList( self, baseDir, fileName ):
-        redirector = "root://cmseos.fnal.gov//"
+        redirector = "root://cmseos.fnal.gov/"
         xrdfs = client.FileSystem(redirector)
-        status, listing = xrdfs.dirlist(baseDir)
+        dirToList = baseDir
+        patternToMatch = fileName
+        # detect folderized mode
+        if "/" in fileName:
+            dirToList = baseDir+os.path.dirname(fileName)
+            patternToMatch = os.path.basename(fileName)
+        if dirToList[-1]!="/": dirToList = dirToList+"/"
+        patternToMatch = patternToMatch.strip('*')
+        status, listing = xrdfs.dirlist(dirToList)
         if status.status != 0:
             raise Exception("XRootD failed to stat %s%s" % (str(xrdfs.url),baseDir))
-        files = [redirector+baseDir+entry.name for entry in listing if fileName.strip('*') in entry.name]
+        files = [redirector+dirToList+entry.name for entry in listing if patternToMatch in entry.name]
         self.fileList.extend(files)
 
     def __repr__(self):
@@ -134,7 +143,7 @@ if __name__ == "__main__":
     parser.add_option("-o", "--outdir", dest="outdir", default="json", help="output directory for JSON files (default = %default)")
     parser.add_option("-b", "--basedir", dest="basedir", default="/store/user/lpcsusyhad/SusyRA2Analysis2015/Run2ProductionV4", help="location of data ntuples (default = %default)")
     parser.add_option("-d", "--dict", dest="dictfile", default="dataSamples.py", help="file containing a list of data sample names and files (default = %default)")
-    parser.add_option("-n", "--npool", dest="npool", default=4, help="number of processes to run (default = %default)")
+    parser.add_option("-n", "--npool", dest="npool", default=4, help="number of processes to run (0: don't use multiprocessing, for debugging) (default = %default)")
     parser.add_option("-v", "--verbose", dest="verbose", default=False, action="store_true", help="print extra error messages (default = %default)")
     (options, args) = parser.parse_args()
 
@@ -153,7 +162,10 @@ if __name__ == "__main__":
     #prepend common list to dict
     for i,d in enumerate(dict.dataSamples):
         dict.dataSamples[i] = optlist + dict.dataSamples[i]
-    
-    p = Pool(int(options.npool))
-    p.map(makeJSON,dict.dataSamples)
 
+    if options.npool==0:
+        for d in dict.dataSamples:
+            makeJSON(d)
+    else:
+        p = Pool(int(options.npool))
+        p.map(makeJSON,dict.dataSamples)

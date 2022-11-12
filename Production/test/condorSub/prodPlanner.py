@@ -252,7 +252,7 @@ def project(args):
         for itest,test in enumerate(tests_orig):
             tests_orig[itest][1]["correction"] = float("{:.2f}".format(results[test[0]]["correction"]))
         if len(args.output)==0: args.output = args.sizetest
-        pprintOD(tests_orig,"tests",filename=args.output)
+        writeOD(tests_orig,"tests",filename=args.output)
 
 def assign(args):
     production = __import__(args.production.replace(".py",""),fromlist=["dicts","users"])
@@ -350,7 +350,7 @@ def prodPlanner(argv=None):
 
     # assign-specific options
     parser_assign.add_argument("-p", "--production", dest="production", default="production.py", type=str, help="input production .py file")
-    parser_assign.add_argument("-m", "--maxJobs", dest="maxJobs", default=14750, type=int, help="approximate maximum number of jobs per user")
+    parser_assign.add_argument("-m", "--maxJobs", dest="maxJobs", default=17000, type=int, help="approximate maximum number of jobs per user")
     parser_assign.add_argument("-o", "--outdir", dest="outdir", default="assignments", type=str, help="output directory for .prodconfig files")
     parser_assign.add_argument("-v", "--verbose", dest="verbose", default=0, type=int, help="verbosity level")
     parser_assign.set_defaults(func=assign)
