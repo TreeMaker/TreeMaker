@@ -404,13 +404,16 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
 
     std::vector<CandPtr> firsts{firstQdM1,firstQdM2,firstQsM1,firstQsM2};
     std::vector<int> pgenIndex(firsts.size(),-1);
-    *MT2JetsID = std::vector<int>(h_genjets->size(),0);
+    *MT2JetsID = std::vector<int>(h_genjets->size(),-1);
+    bool matchedAll = true;
     if(firstMd.size()==2){
       pgenIndex = matchAB(firsts,*(h_genjets.product()));
       for(unsigned p = 0; p < pgenIndex.size(); ++p){
         if(pgenIndex[p]>-1) MT2JetsID->at(pgenIndex[p]) = p+1;
+        else matchedAll = false;
       }
-      GenMT2 = calculateMT2(h_genmets,h_genjets->at(pgenIndex[0]),h_genjets->at(pgenIndex[2]),h_genjets->at(pgenIndex[1]),h_genjets->at(pgenIndex[3]));
+      if(matchedAll) GenMT2 = calculateMT2(h_genmets,h_genjets->at(pgenIndex[0]),h_genjets->at(pgenIndex[2]),h_genjets->at(pgenIndex[1]),h_genjets->at(pgenIndex[3]));
+      else GenMT2 = 0.;
     }
 
     //gen:reco jet matching
