@@ -166,6 +166,7 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     found_scales = helper.fillWeights(scaleweights.get(),0,nScales_,wtype::scale);
     //pdf weights
     if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_,nPDFs_,wtype::pdf);
+
   }
   
   //check GenEventInfoProduct if LHEEventProduct not found or empty
@@ -181,14 +182,16 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       //pdf weights
       if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,wtype::pdf);
     }
-    else if(!found_pss and nPSs_>0){
+    if(!found_pss and found_scales and nPSs_>0){
       unsigned offset = 0;
-      found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,wtype::ps);
+      std::cout << "PS WEIGHTS" << std::endl;
+      found_pss = helper.fillWeights(psweights.get(),nScales_+offset,nPSs_,wtype::ps);
     }
 
     //if pdf weights still not found, recalculate them
     //taken from https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/ElectroWeakAnalysis/Utilities/src/PdfWeightProducer.cc
     if(!found_pdfs and recalculatePDFs_){
+
       float Q = genHandle->pdf()->scalePDF;
 
       int id1 = lhapdfPDGID(genHandle->pdf()->id.first);
