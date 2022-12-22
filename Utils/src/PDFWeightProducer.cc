@@ -36,6 +36,8 @@ class PDFWeightHelper {
       output->reserve(max-offset);
       for (unsigned int i = offset; i < max; i++) {
         output->push_back(this->getWeight(i)*norm);
+
+        std::cout << "WEIGHT " << i << ": " << this->getWeight(i)*norm << std::endl;
       }
       return !output->empty();
     }
@@ -182,7 +184,7 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
       if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,wtype::pdf);
     }
     if(!found_pss and found_scales and nPSs_>0){
-      unsigned offset = 0;
+      unsigned offset = 1;
       found_pss = helper.fillWeights(psweights.get(),nScales_+offset,nPSs_,wtype::ps);
     }
 
