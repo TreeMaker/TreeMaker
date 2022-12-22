@@ -157,7 +157,6 @@ def makeTreeFromMiniAOD(self,process):
             recalculateScales = cms.bool(False),
             normalize = (not any(s in self.sample for s in ["SVJ","EMJ"])), # skip normalization only for SVJ and EMJ signals
             pdfSetName = cms.string("NNPDF31_nlo_as_0118"),
-
         )
         if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
             process.PDFWeights.nScales = 0
