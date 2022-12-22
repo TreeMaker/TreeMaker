@@ -158,6 +158,7 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   bool found_scales = false;
   bool found_pdfs = false;
   bool found_pss = false;
+  unsigned offset = 0;
   
   if(!handles.empty()){
     edm::Handle<LHEEventProduct> LheInfo = handles[0];
@@ -175,22 +176,19 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   if(genHandle.isValid()){
     auto helper = makeHelper(genHandle.product(),norm_);
     if((!found_scales and nScales_>0) or (!found_pdfs and nPDFs_>0)){
-      unsigned offset = 1;
       //renormalization/factorization scale weights
+      offset++;
       found_scales = helper.fillWeights(scaleweights.get(),offset,nScales_,wtype::scale);
       //pdf weights
-      if(found_scales) found_pdfs = helper.fillWeights(pdfweights.get(),nScales_+offset,nPDFs_,wtype::pdf);
+      if(found_scales){
+        offset += nScales_;
+        found_pdfs = helper.fillWeights(pdfweights.get(),offset,nPDFs_,wtype::pdf);
+      }
     }
-    else if (!found_pss and nPSs_>0){
-        unsigned offset = 0;
-        found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,wtype::ps);
-    }
-
-    // Extra check here when scales and PS weights are in GenEventInfoProduct
-    // Scales should have just been found above, but still need to go for PS now
-    if(!found_pss and found_scales and nPSs_>0){
-      unsigned offset = 1;
-      found_pss = helper.fillWeights(psweights.get(),nScales_+offset,nPSs_,wtype::ps);
+    if(!found_pss and nPSs_>0){
+      // Check here when scales and PS weights are in GenEventInfoProduct (no PDFs)
+      // Scales should have just been found above, but still need to go for PS now
+      found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,wtype::ps);
     }
 
     //if pdf weights still not found, recalculate them
