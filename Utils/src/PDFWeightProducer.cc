@@ -184,6 +184,11 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
         offset += nScales_;
         found_pdfs = helper.fillWeights(pdfweights.get(),offset,nPDFs_,wtype::pdf);
       }
+      // At this point, no PDFs or scales to be found for current sample,
+      // so set offset back to 0 before attempting to get PSs below
+      else{
+        offset--;
+      }
     }
     if(!found_pss and nPSs_>0){
       // Check here when scales and PS weights are in GenEventInfoProduct (no PDFs)
