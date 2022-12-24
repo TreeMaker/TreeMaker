@@ -169,6 +169,10 @@ def makeTreeFromMiniAOD(self,process):
             process.PDFWeights.nQCD = 2
             process.PDFWeights.nEM = 0
             process.PDFWeights.recalculateScales = True
+        if any(s in self.sample for s in ["RPV", "SYY", "SHH"]):
+            process.PDFWeights.nPDFs = 0
+            process.PDFWeights.pdfSetName = cms.string("NNPDF31_nnlo_as_0118_mc_hessian_pdfas")
+
         self.VectorFloat.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
 
     ## ----------------------------------------------------------------------------------------------
