@@ -363,7 +363,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
       for (const auto& i_part : *(h_parts.product())){ // loop over GenParticles
         if (matched) break; // only need to match one particle to the jet to tag it as FSR
         if(i_part.status()!=23) continue; // only want particles outgoing from the hard process
-        if(isParticle(DarkSMediatorIDs_,i_part.mother())) continue; // only want direct descendants of Z' (kind of redundant)
+        if(!isParticle(DarkSMediatorIDs_,i_part.mother())) continue; // only want direct descendants of Z' (kind of redundant)
         //check against daughters in case of hard initial splitting, from ISRJetProducer...
         std::vector<CandPtr> listOfDaughters;
         addDaughters(&i_part,listOfDaughters);
