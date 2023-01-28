@@ -17,6 +17,7 @@
 #include "FWCore/Utilities/interface/Exception.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
 
 #include "TVector2.h"
 
@@ -28,14 +29,21 @@ template <class P>
 class PDFWeightHelper {
   public:
     PDFWeightHelper(const P* prod, bool use_norm) : product_(prod), use_norm_(use_norm) {}
-    bool fillWeights(std::vector<float>* output, unsigned offset, unsigned nWeights, wtype wt) {
+    bool fillWeights(std::vector<float>* output, unsigned offset, unsigned nWeights, wtype wt, const std::vector<unsigned>& indices={}) {
       unsigned max = this->getMax();
       if(max==0 or offset > max) return false;
       double norm = use_norm_ ? 1./this->getNorm(offset,wt) : 1.;
       max = std::min(nWeights+offset,max);
       output->reserve(max-offset);
-      for (unsigned int i = offset; i < max; i++) {
-        output->push_back(this->getWeight(i)*norm);
+      if(indices.empty()){
+        for (unsigned int i = offset; i < max; i++) {
+          output->push_back(this->getWeight(i)*norm);
+        }
+      }
+      else {
+        for (auto index : indices) {
+          output->push_back(this->getWeight(index)*norm);
+        }
       }
       return !output->empty();
     }
@@ -74,7 +82,12 @@ namespace LHAPDF {
   void setVerbosity(int v);
 }
 
-class PDFWeightProducer : public edm::global::EDProducer<> {
+struct WeightIndices {
+  std::vector<unsigned> scaleWeightIndices_;
+  std::vector<unsigned> psWeightIndices_;
+};
+
+class PDFWeightProducer : public edm::global::EDProducer<edm::LuminosityBlockCache<WeightIndices>> {
 public:
   explicit PDFWeightProducer(const edm::ParameterSet&);
   ~PDFWeightProducer() override;
@@ -84,11 +97,16 @@ public:
 private:
   int lhapdfPDGID(const int pdgid) const { return std::abs(pdgid) == 21 ? 0 : pdgid; }
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
-  
+  std::shared_ptr<WeightIndices> globalBeginLuminosityBlock(const edm::LuminosityBlock&, const edm::EventSetup&) const override;
+  void globalEndLuminosityBlock(const edm::LuminosityBlock&, const edm::EventSetup&) const override {}
+
   // ----------member data ---------------------------
   unsigned nScales_, nPDFs_, nPSs_, nQCD_, nEM_;
   bool norm_, recalculatePDFs_, recalculateScales_, debug_;
   std::string pdfSetName_;
+  std::map<std::string, unsigned> scaleWeightNamesIndices_;
+  std::map<std::string, unsigned> psWeightNamesIndices_;
+  edm::EDGetTokenT<GenLumiInfoHeader> genLumiHeaderToken_;
   edm::GetterOfProducts<LHEEventProduct> getterOfProducts_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
   static std::mutex mutex_;
@@ -107,6 +125,7 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   recalculatePDFs_(iConfig.getParameter<bool>("recalculatePDFs")),
   recalculateScales_(iConfig.getParameter<bool>("recalculateScales")),
   debug_(iConfig.getParameter<bool>("debug")),
+  genLumiHeaderToken_(consumes<GenLumiInfoHeader,edm::InLumi>(edm::InputTag("generator"))),
   getterOfProducts_(edm::ProcessMatch("*"), this), 
   genProductToken_(consumes<GenEventInfoProduct>(edm::InputTag("generator")))
 {
@@ -129,6 +148,24 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
     pythia_->init();
   }
 
+  //transform vectors into map w/ index for easier searching
+  if(nScales_>0){
+    const auto& scaleNames = iConfig.getParameter<std::vector<std::string>>("scaleNames");
+    if (!scaleNames.empty()){
+      nScales_ = scaleNames.size();
+      for(unsigned i = 0; i < nScales_; ++i){
+        scaleWeightNamesIndices_.emplace(scaleNames[i],i);
+      }
+    }
+  }
+  const auto& psNames = iConfig.getParameter<std::vector<std::string>>("psNames");
+  if (!psNames.empty()){
+    nPSs_ = psNames.size();
+    for(unsigned i = 0; i < nPSs_; ++i){
+      psWeightNamesIndices_.emplace(psNames[i],i);
+    }
+  }
+
   callWhenNewProductsRegistered(getterOfProducts_);
   produces<std::vector<float> >("ScaleWeights");
   produces<std::vector<float> >("PDFweights");
@@ -142,6 +179,29 @@ PDFWeightProducer::~PDFWeightProducer()
   // (e.g. close files, deallocate resources etc.)
     
 }
+
+std::shared_ptr<WeightIndices> PDFWeightProducer::globalBeginLuminosityBlock(const edm::LuminosityBlock& iLumi, const edm::EventSetup& iSetup) const {
+  if(scaleWeightNamesIndices_.empty() and psWeightNamesIndices_.empty()) return nullptr;
+
+  edm::Handle<GenLumiInfoHeader> gen_header;
+  iLumi.getByToken(genLumiHeaderToken_, gen_header);
+  const auto& weightNames = gen_header->weightNames();
+
+  auto holder = std::make_shared<WeightIndices>();
+  holder->scaleWeightIndices_.resize(scaleWeightNamesIndices_.size(),0);
+  holder->psWeightIndices_.resize(psWeightNamesIndices_.size(),0);
+  for(unsigned i = 0; i < weightNames.size(); ++i){
+    const auto& weightName(weightNames[i]);
+    auto scale_iter = scaleWeightNamesIndices_.find(weightName);
+    if(scale_iter != scaleWeightNamesIndices_.end())
+      holder->scaleWeightIndices_[scale_iter->second] = i;
+    auto ps_iter = psWeightNamesIndices_.find(weightName);
+    if(ps_iter != psWeightNamesIndices_.end())
+      holder->psWeightIndices_[ps_iter->second] = i;
+  }
+  return holder;
+}
+
 
 void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
@@ -158,7 +218,6 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   bool found_scales = false;
   bool found_pdfs = false;
   bool found_pss = false;
-  unsigned offset = 0;
   
   if(!handles.empty()){
     edm::Handle<LHEEventProduct> LheInfo = handles[0];
@@ -170,31 +229,17 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   }
   
   //check GenEventInfoProduct if LHEEventProduct not found or empty
-  //if LHEEventProduct was filled, check GenEventInfoProduct for parton shower weights from Pythia8
+  //if LHEEventProduct was filled, check GenEventInfoProduct for parton shower weights from Pythia8, and/or scale weights
+  //(no known case w/ PDF weights in GenEventInfoProduct)
   edm::Handle<GenEventInfoProduct> genHandle;
   iEvent.getByToken(genProductToken_, genHandle);
   if(genHandle.isValid()){
     auto helper = makeHelper(genHandle.product(),norm_);
-    if((!found_scales and nScales_>0) or (!found_pdfs and nPDFs_>0)){
-      //renormalization/factorization scale weights
-      offset++;
-      found_scales = helper.fillWeights(scaleweights.get(),offset,nScales_,wtype::scale);
-      //pdf weights
-      if(found_scales){
-        offset += nScales_;
-        found_pdfs = helper.fillWeights(pdfweights.get(),offset,nPDFs_,wtype::pdf);
-      }
-      // At this point, no PDFs or scales to be found for current sample,
-      // so set offset back to 0 before attempting to get PSs below
-      else{
-        offset--;
-      }
-    }
-    if(!found_pss and nPSs_>0){
-      // Check here when scales and PS weights are in GenEventInfoProduct (no PDFs)
-      // Scales should have just been found above, but still need to go for PS now
-      found_pss = helper.fillWeights(psweights.get(),offset,nPSs_,wtype::ps);
-    }
+    auto holder = luminosityBlockCache(iEvent.getLuminosityBlock().index());
+    if(!found_scales and nScales_>0)
+      found_scales = helper.fillWeights(scaleweights.get(),0,nScales_,wtype::scale,holder->scaleWeightIndices_);
+    if(!found_pss and nPSs_>0)
+      found_pss = helper.fillWeights(psweights.get(),0,nPSs_,wtype::ps,holder->psWeightIndices_);
 
     //if pdf weights still not found, recalculate them
     //taken from https://github.com/cms-sw/cmssw/blob/CMSSW_10_2_X/ElectroWeakAnalysis/Utilities/src/PdfWeightProducer.cc

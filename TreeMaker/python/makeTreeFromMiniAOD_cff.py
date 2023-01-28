@@ -156,22 +156,23 @@ def makeTreeFromMiniAOD(self,process):
             recalculatePDFs = cms.bool(self.signal),
             recalculateScales = cms.bool(False),
             normalize = (not any(s in self.sample for s in ["SVJ","EMJ"])), # skip normalization only for SVJ and EMJ signals
-            pdfSetName = cms.string("NNPDF31_nlo_as_0118"),
+            pdfSetName = cms.string("NNPDF31_nnlo_as_0118_mc_hessian_pdfas"),
         )
         if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
             process.PDFWeights.nScales = 0
+            process.PDFWeights.scaleNames = cms.vstring()
             process.PDFWeights.nPDFs = 0
             process.PDFWeights.nEM = 2
             process.PDFWeights.recalculateScales = True
         if "EMJ" in self.sample: # skip trying to get scale and PDF weights for EMJ signals
             process.PDFWeights.nScales = 0
+            process.PDFWeights.scaleNames = cms.vstring()
             process.PDFWeights.nPDFs = 0
             process.PDFWeights.nQCD = 2
             process.PDFWeights.nEM = 0
             process.PDFWeights.recalculateScales = True
         if any(s in self.sample for s in ["RPV", "SYY", "SHH"]):
             process.PDFWeights.nPDFs = 0
-            process.PDFWeights.pdfSetName = cms.string("NNPDF31_nnlo_as_0118_mc_hessian_pdfas")
 
         self.VectorFloat.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
 
