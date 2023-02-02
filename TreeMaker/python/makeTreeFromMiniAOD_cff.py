@@ -153,27 +153,41 @@ def makeTreeFromMiniAOD(self,process):
     if self.geninfo and self.doPDFs:
         from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
         process.PDFWeights = PDFWeightProducer.clone(
+            normalize = (not any(s in self.sample for s in ["SVJ","EMJ"])), # skip normalization only for SVJ and EMJ signals
+        )
+        from TreeMaker.Utils.pdfrecalculator_cfi import PDFRecalculator
+        process.PDFRecalculator = PDFRecalculator.clone(
             recalculatePDFs = cms.bool(self.signal),
             recalculateScales = cms.bool(False),
-            normalize = (not any(s in self.sample for s in ["SVJ","EMJ"])), # skip normalization only for SVJ and EMJ signals
-            pdfSetName = cms.string("NNPDF31_nlo_as_0118"),
+            pdfSetName = cms.string("NNPDF31_nnlo_as_0118_mc_hessian_pdfas"),
+            normalize = process.PDFWeights.normalize,
         )
         if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
             process.PDFWeights.nScales = 0
+            process.PDFWeights.scaleNames = cms.vstring()
             process.PDFWeights.nPDFs = 0
-            process.PDFWeights.nEM = 2
-            process.PDFWeights.recalculateScales = True
+            process.PDFRecalculator.nEM = 2
+            process.PDFRecalculator.recalculateScales = True
         if "EMJ" in self.sample: # skip trying to get scale and PDF weights for EMJ signals
             process.PDFWeights.nScales = 0
+            process.PDFWeights.scaleNames = cms.vstring()
             process.PDFWeights.nPDFs = 0
-            process.PDFWeights.nQCD = 2
-            process.PDFWeights.nEM = 0
-            process.PDFWeights.recalculateScales = True
+            process.PDFRecalculator.nQCD = 2
+            process.PDFRecalculator.nEM = 0
+            process.PDFRecalculator.recalculateScales = True
         if any(s in self.sample for s in ["RPV", "SYY", "SHH"]):
             process.PDFWeights.nPDFs = 0
-            process.PDFWeights.pdfSetName = cms.string("NNPDF31_nnlo_as_0118_mc_hessian_pdfas")
 
-        self.VectorFloat.extend(['PDFWeights:PDFweights','PDFWeights:ScaleWeights','PDFWeights:PSweights'])
+        # handle different sources for weight outputs
+        if process.PDFRecalculator.recalculatePDFs:
+            self.VectorFloat.extend(['PDFRecalculator:PDFweights'])
+        else:
+            self.VectorFloat.extend(['PDFWeights:PDFweights'])
+        if process.PDFRecalculator.recalculateScales:
+            self.VectorFloat.extend(['PDFRecalculator:ScaleWeights'])
+        else:
+            self.VectorFloat.extend(['PDFWeights:ScaleWeights'])
+        self.VectorFloat.extend(['PDFWeights:PSweights'])
 
     ## ----------------------------------------------------------------------------------------------
     ## GenHT for stitching together MC samples
