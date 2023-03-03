@@ -225,10 +225,11 @@ void SignalScanProducer::getpMSSMComment(const GenLumiInfoHeader& gen){
 void SignalScanProducer::getpMSSMModelInfo(const std::string& comment, bool combined){
 	if(debug_) edm::LogInfo("TreeMaker") << comment;
 
-	std::vector<std::string> fields;
-	parse::process(comment, '_', fields);
 	//strip ".slha", newline
-	fields.back() = fields.back().substr(0,fields.back().find(".slha")-1);
+	std::vector<std::string> fields_tmp;
+	parse::process(comment, '.', fields_tmp);
+	std::vector<std::string> fields;
+	parse::process(fields_tmp[0], '_', fields);
 
 	if(combined){
 		std::string character_string = fields[2]+fields[3];
