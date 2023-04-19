@@ -25,4 +25,10 @@ def doPhotonVars(self,process):
     self.VectorBool.append("goodPhotons:electronFakes(Photons_electronFakes)")
     self.VarsBool.append("goodPhotons:hasGenPromptPhoton(hasGenPromptPhoton)")
 
+    ## add MadGraph-level deltaR between photon or Z and status 23 partons
+    if self.geninfo:
+        process.madMinPhotonDeltaR = cms.EDProducer("MinDeltaRDouble")
+        self.VarsDouble.extend(['madMinPhotonDeltaR:madMinPhotonDeltaR(madMinPhotonDeltaR)'])
+        self.VarsInt.extend([   'madMinPhotonDeltaR:madMinDeltaRStatus(madMinDeltaRStatus)'])
+
     return process
