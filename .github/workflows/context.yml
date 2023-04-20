@@ -7,7 +7,7 @@ on:
 
 jobs:
   dump_context:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
       - name: Dump GitHub context
         env:
