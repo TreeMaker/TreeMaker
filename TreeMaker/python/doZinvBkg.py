@@ -255,12 +255,6 @@ def doZinvBkg(self,process):
     ##### add branches for photon studies
     self.doPhotonVars(process)
 
-    ## add MadGraph-level deltaR between photon or Z and status 23 partons
-    if self.geninfo:
-        process.madMinPhotonDeltaR = cms.EDProducer("MinDeltaRDouble")
-        self.VarsDouble.extend(['madMinPhotonDeltaR:madMinPhotonDeltaR(madMinPhotonDeltaR)'])
-        self.VarsInt.extend([   'madMinPhotonDeltaR:madMinDeltaRStatus(madMinDeltaRStatus)'])
-
     from TreeMaker.Utils.zproducer_cfi import ZProducer
     process.makeTheZs = ZProducer.clone(
         ElectronTag = cms.InputTag('LeptonsNew:IdIsoElectron'),
