@@ -37,6 +37,17 @@ if len(theMaker.era)>0:
 if len(theMaker.localera)>0:
 	eralist.append(getattr(TMeras,theMaker.localera))
 process = cms.Process("RA2EventSelection",*eralist)
+#from RecoEgamma.EgammaTools.EgammaPostRecoTools import setupEgammaPostRecoSeq
+from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq 
+setupEgammaPostRecoSeq(process,era='2018-UL',
+                       runVID=True,
+                       eleIDModules=['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff',
+                                    'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
+                                     'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff',
+                                     'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V2_cff'],
+                       phoIDModules=['RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V2_cff',
+                                     'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff']
+                       )
 
 # configure geometry & conditions
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
