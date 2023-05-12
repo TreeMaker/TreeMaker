@@ -1,6 +1,6 @@
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
-#include "FWCore/Framework/interface/stream/EDProducer.h"
+#include "FWCore/Framework/interface/global/EDProducer.h"
 #include "FWCore/Framework/interface/ProcessMatch.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/Framework/interface/MakerMacros.h"
@@ -26,28 +26,25 @@ enum class signal_type {
 	SVJ=3
 };
 
-class SignalScanProducer : public edm::stream::EDProducer<> {
+class SignalScanProducer : public edm::global::EDProducer<edm::LuminosityBlockCache<std::vector<double>>> {
 	public:
 		explicit SignalScanProducer(const edm::ParameterSet&);
 		~SignalScanProducer() override {}
 		static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
 
 	private:
-		void produce(edm::Event&, const edm::EventSetup&) override;
-		
-		void beginLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
+		void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
+		std::shared_ptr<std::vector<double>> globalBeginLuminosityBlock(const edm::LuminosityBlock&, const edm::EventSetup&) const override;
+		void globalEndLuminosityBlock(const edm::LuminosityBlock&, const edm::EventSetup&) const override {}
 
-		void reset();
-		
-		void getSUSYComment(const std::string& comment);
-		void getSVJComment(const std::string& gen);
-		void getpMSSMComment(const std::string& gen);
-		
+		void getSUSYComment(const std::string& comment, std::vector<double>& signalParameters) const;
+		void getSVJComment(const std::string& gen, std::vector<double>& signalParameters) const;
+		void getpMSSMComment(const std::string& gen, std::vector<double>& signalParameters) const;
+
 		// ----------member data ---------------------------
 		edm::EDGetTokenT<GenLumiInfoHeader> genLumiHeaderToken_;
 		bool shouldScan_, debug_;
 		signal_type type_;
-		std::vector<double> signalParameters_;
 };
 
 SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) : 
@@ -65,27 +62,29 @@ SignalScanProducer::SignalScanProducer(const edm::ParameterSet& iConfig) :
 	produces<std::vector<double>>("SignalParameters");
 }
 
-void SignalScanProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
+void SignalScanProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSetup) const
 {
-	auto signalParameters = std::make_unique<std::vector<double>>(signalParameters_);
+    auto holder = luminosityBlockCache(iEvent.getLuminosityBlock().index());
+	auto signalParameters = std::make_unique<std::vector<double>>(*holder);
 	iEvent.put(std::move(signalParameters), "SignalParameters");
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
-void 
-SignalScanProducer::beginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const& iSetup)
+std::shared_ptr<std::vector<double>>
+SignalScanProducer::globalBeginLuminosityBlock(edm::LuminosityBlock const& iLumi, edm::EventSetup const& iSetup) const
 {
+	auto holder = std::make_shared<std::vector<double>>();
 	//new way of getting SUSY scan info
 	if(shouldScan_){
-		reset();
 		if(debug_) edm::LogInfo("TreeMaker") << "SignalScanProducer: checking GenLumiInfoHeader";
 		edm::Handle<GenLumiInfoHeader> gen_header;
 		iLumi.getByToken(genLumiHeaderToken_, gen_header);
 		const auto& configDesc = gen_header->configDescription();
-		if(type_==signal_type::SUSY) getSUSYComment(configDesc);
-		else if(type_==signal_type::pMSSM) getpMSSMComment(configDesc);
-		else if(type_==signal_type::SVJ) getSVJComment(configDesc);
+		if(type_==signal_type::SUSY) getSUSYComment(configDesc,*holder);
+		else if(type_==signal_type::pMSSM) getpMSSMComment(configDesc,*holder);
+		else if(type_==signal_type::SVJ) getSVJComment(configDesc,*holder);
 	}
+	return holder;
 }
 
 // ------------ method fills 'descriptions' with the allowed parameters for the module  ------------
@@ -98,13 +97,8 @@ SignalScanProducer::fillDescriptions(edm::ConfigurationDescriptions& description
 	descriptions.addDefault(desc);
 }
 
-//reset output vars
-void SignalScanProducer::reset(){
-	signalParameters_.clear();
-}
-
 //parse model comment for SUSY
-void SignalScanProducer::getSUSYComment(const std::string& comment){
+void SignalScanProducer::getSUSYComment(const std::string& comment, std::vector<double>& signalParameters) const {
 	if(debug_) edm::LogInfo("TreeMaker") << comment;
 
 	std::vector<std::string> fields;
@@ -127,12 +121,12 @@ void SignalScanProducer::getSUSYComment(const std::string& comment){
 	std::stringstream sfield2(fields.end()[-2]);
 	sfield2 >> motherMass;
 
-	signalParameters_.push_back(motherMass);
-	signalParameters_.push_back(lspMass);
+	signalParameters.push_back(motherMass);
+	signalParameters.push_back(lspMass);
 }
 
 //parse GenLumiInfo for SVJ
-void SignalScanProducer::getSVJComment(const std::string& comment){
+void SignalScanProducer::getSVJComment(const std::string& comment, std::vector<double>& signalParameters) const {
 	const std::map<std::string,double> alpha_vals{
 		{"peak",-2.},
 		{"high",-1.},
@@ -153,12 +147,12 @@ void SignalScanProducer::getSVJComment(const std::string& comment){
 			std::stringstream sval(subfields[1]);
 			sval >> val;
 		}
-		signalParameters_.push_back(val);
+		signalParameters.push_back(val);
 	}
 }
 
 //parse model comment for pMSSM
-void SignalScanProducer::getpMSSMComment(const std::string& comment){
+void SignalScanProducer::getpMSSMComment(const std::string& comment, std::vector<double>& signalParameters) const {
 	if(debug_) edm::LogInfo("TreeMaker") << comment;
 
 	std::vector<std::string> fields;
@@ -175,8 +169,8 @@ void SignalScanProducer::getpMSSMComment(const std::string& comment){
 	std::stringstream sfield2(fields.end()[-2]);
 	sfield2 >> field2;
 
-	signalParameters_.push_back(field1);
-	signalParameters_.push_back(field2);
+	signalParameters.push_back(field1);
+	signalParameters.push_back(field2);
 }
 
 //define this as a plug-in
