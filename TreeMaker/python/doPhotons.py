@@ -6,7 +6,20 @@ def doPhotonVars(self,process):
     process.goodPhotons = PhotonIDisoProducer.clone(
         conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",self.tagname)
     )
-
+    from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq 
+    era = cms.string("2018-UL")
+    TMeras.TMUL2016.toModify(setupEgammaPostRecoSeq, era=cms.string("2016-UL"))
+    TMeras.TMUL2017.toModify(setupEgammaPostRecoSeq, era=cms.string("2017-UL"))
+    TMeras.TMUL2018.toModify(setupEgammaPostRecoSeq, era=cms.string("2018-UL"))
+    setupEgammaPostRecoSeq(process,era=era,
+                           runVID=True,
+                           eleIDModules=['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff',
+                                        'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
+                                         'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_iso_V2_cff',
+                                         'RecoEgamma.ElectronIdentification.Identification.mvaElectronID_Fall17_noIso_V2_cff'],
+                           phoIDModules=['RecoEgamma.PhotonIdentification.Identification.mvaPhotonID_Fall17_94X_V2_cff',
+                                         'RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff']
+    )
     self.VectorRecoCand.append("goodPhotons(Photons)")
     self.VectorDouble.append("goodPhotons:isEB(Photons_isEB)")
     self.VectorDouble.append("goodPhotons:genMatched(Photons_genMatched)")
@@ -24,8 +37,8 @@ def doPhotonVars(self,process):
     self.VectorBool.append("goodPhotons:fullID(Photons_fullID)")
     self.VectorBool.append("goodPhotons:electronFakes(Photons_electronFakes)")
     self.VarsBool.append("goodPhotons:hasGenPromptPhoton(hasGenPromptPhoton)")
-    self.VectorDouble.append("goodPhotons:mvaValuesIDFall17V2(Photons_mvaValuesIDFall17V2)")
-    self.VectorInt.append("goodPhotons:cutBasedIDFall17V2(Photons_cutBasedIDFall17V2)")
+    self.VectorDouble.append("goodPhotons:mvaValuesIDFall17V2(Photons_mvaValuesID)")
+    self.VectorInt.append("goodPhotons:cutBasedIDFall17V2(Photons_cutBasedID)")
 
     ## add MadGraph-level deltaR between photon or Z and status 23 partons
     if self.geninfo:

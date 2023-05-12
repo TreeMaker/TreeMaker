@@ -51,7 +51,7 @@ public:
   ~PhotonIDisoProducer() override;
   
   static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
+  
 private:
   void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
   
@@ -85,6 +85,7 @@ private:
   std::vector<double> effArChHad_,effArNuHad_,effArGamma_; //effective area values for each of the |eta| ranges
   std::vector<double> pfNuIsoRhoCorr_EB_cut_, pfNuIsoRhoCorr_EE_cut_; //Rho corrected PF neutral ISO is calulated as [0] + [1]*pho_pt + [2]*pho_pt^2
   std::vector<double> pfGmIsoRhoCorr_EB_cut_, pfGmIsoRhoCorr_EE_cut_; //Rho corrected PF gamma ISO is calulated as [0] + [1]*pho_pt
+  string mvaBased_phoId_, CutBased_phoId_tight_ , CutBased_phoId_medium_ ,CutBased_phoId_loose_;
 };
 
 
@@ -122,7 +123,11 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   pfNuIsoRhoCorr_EB_cut_(iConfig.getParameter <std::vector<double>> ("pfNuIsoRhoCorr_EB_cut")),
   pfNuIsoRhoCorr_EE_cut_(iConfig.getParameter <std::vector<double>> ("pfNuIsoRhoCorr_EE_cut")),
   pfGmIsoRhoCorr_EB_cut_(iConfig.getParameter <std::vector<double>> ("pfGmIsoRhoCorr_EB_cut")),
-  pfGmIsoRhoCorr_EE_cut_(iConfig.getParameter <std::vector<double>> ("pfGmIsoRhoCorr_EE_cut"))
+  pfGmIsoRhoCorr_EE_cut_(iConfig.getParameter <std::vector<double>> ("pfGmIsoRhoCorr_EE_cut")),
+  mvaBased_phoId_(iConfig.getParameter<string>("mvaBased_phoId_")),
+  CutBased_phoId_tight_(iConfig.getParameter<string>("CutBased_phoId_tight_")),
+  CutBased_phoId_medium_(iConfig.getParameter<string>("CutBased_phoId_medium_")) ,
+  CutBased_phoId_loose_(iConfig.getParameter<string>("CutBased_phoId_loose_"))
 {
   produces< std::vector< pat::Photon > >(); 
   produces< std::vector< pat::Photon > >("highpt"); 
@@ -203,8 +208,8 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   auto   photon_nonPrompt  = std::make_unique<std::vector<bool>>();
   auto   photon_fullID  = std::make_unique<std::vector<bool>>();
   auto   photon_electronFakes  = std::make_unique<std::vector<bool>>();
-  auto photon_mvaValuesIDFall17V2 = std::make_unique<std::vector<double>>();
-  auto photon_cutBasedIDFall17V2 = std::make_unique<std::vector<int>>();
+  auto photon_mvaValuesID = std::make_unique<std::vector<double>>();
+  auto photon_cutBasedID = std::make_unique<std::vector<int>>();
 
   Handle< View< pat::Photon> > photonCands;
   iEvent.getByToken( photonTok_,photonCands);
@@ -235,13 +240,13 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 
     std::vector<float> vCov = clusterTools_.localCovariances( *(iPhoton.superCluster()->seed()) ); 
     const float sieie = (isnan(vCov[0]) ? 0. : sqrt(vCov[0])); 
-    double phoMVAID = iPhoton.userFloat("PhotonMVAEstimatorRunIIFall17v2Values");
+    double phoMVAID = iPhoton.userFloat(mvaBased_phoId_);
     int tmpphoIDbit = -1;
-    bool isPassLoose  = iPhoton.photonID("cutBasedPhotonID-Fall17-94X-V2-loose");
+    bool isPassLoose  = iPhoton.photonID(CutBased_phoId_loose_);
     if (isPassLoose)  tmpphoIDbit=0;
-    bool isPassMedium = iPhoton.photonID("cutBasedPhotonID-Fall17-94X-V2-medium");
+    bool isPassMedium = iPhoton.photonID(CutBased_phoId_medium_);
     if (isPassMedium) tmpphoIDbit= 1;
-    bool isPassTight  = iPhoton.photonID("cutBasedPhotonID-Fall17-94X-V2-tight");
+    bool isPassTight  = iPhoton.photonID(CutBased_phoId_tight_);
     if (isPassTight)  tmpphoIDbit= 2;
 
     double chIso = effAreas.rhoCorrectedIso(  pfCh  , iPhoton.chargedHadronIso() , iPhoton.eta() , rho ); 
@@ -326,8 +331,8 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       photon_hasPixelSeed->push_back( iPhoton.hasPixelSeed() );
       photon_passElectronVeto->push_back( !hasMatchedPromptElectron(iPhoton.superCluster(),electrons, conversions, beamSpot->position()) );
       photon_fullID->push_back(passID&&passIso);
-      photon_mvaValuesIDFall17V2->push_back(phoMVAID);
-      photon_cutBasedIDFall17V2->push_back(tmpphoIDbit);
+      photon_mvaValuesID->push_back(phoMVAID);
+      photon_cutBasedID->push_back(tmpphoIDbit);
 
       if (genParticles.isValid()){//genLevel Stuff
         // loop over gen particles and find nonprompt and hadronization photons
@@ -397,8 +402,8 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   iEvent.put(std::move(photon_electronFakes ), "electronFakes" );
   auto hasGenPromptPhoton = std::make_unique<bool>(foundGenPrompt);  
   iEvent.put(std::move(hasGenPromptPhoton ), "hasGenPromptPhoton" );
-  iEvent.put(std::move(photon_mvaValuesIDFall17V2),"mvaValuesIDFall17V2");
-  iEvent.put(std::move(photon_cutBasedIDFall17V2),"cutBasedIDFall17V2");
+  iEvent.put(std::move(photon_mvaValuesID),"mvaValuesIDFall17V2");
+  iEvent.put(std::move(photon_cutBasedID),"cutBasedIDFall17V2");
  
 }
 

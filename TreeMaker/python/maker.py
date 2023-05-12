@@ -104,7 +104,6 @@ class maker:
         self.getParamDefault("pufile",self.scenario.pufile)
         self.getParamDefault("era",self.scenario.era)
         self.getParamDefault("localera",self.scenario.localera)
-
         # temporary redirector fix
         self.getParamDefault("redir", "root://cmsxrootd.fnal.gov/")
         # handle site name usage
