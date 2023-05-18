@@ -12,7 +12,7 @@ def doPhotonVars(self,process):
     TMeras.TMUL2017.toModify(phoPostRecoEra, value = "2017-UL")
     TMeras.TMUL2016.toModify(phoPostRecoEra, value = "2016postVFP-UL")
     TMeras.TMUL2016APV.toModify(phoPostRecoEra,value ="2016preVFP-UL")
-    setupEgammaPostRecoSeq(process,era=phoPostRecoEra.value.value()),
+    setupEgammaPostRecoSeq(process,era=phoPostRecoEra.value.value(),
                            runVID=True,
                            eleIDModules=['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff',
                                         'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
