@@ -7,11 +7,12 @@ def doPhotonVars(self,process):
         conversionCollection   = cms.untracked.InputTag("reducedEgamma","reducedConversions",self.tagname)
     )
     from TreeMaker.Utils.EgammaPostRecoTools import setupEgammaPostRecoSeq 
-    era = cms.string("2018-UL")
-    TMeras.TMUL2016.toModify(setupEgammaPostRecoSeq, era=cms.string("2016-UL"))
-    TMeras.TMUL2017.toModify(setupEgammaPostRecoSeq, era=cms.string("2017-UL"))
-    TMeras.TMUL2018.toModify(setupEgammaPostRecoSeq, era=cms.string("2018-UL"))
-    setupEgammaPostRecoSeq(process,era=era,
+    phoPostRecoEra = cms.PSet(value = cms.string(""))
+    TMeras.TMUL2018.toModify(phoPostRecoEra, value = "2018-UL")
+    TMeras.TMUL2017.toModify(phoPostRecoEra, value = "2017-UL")
+    TMeras.TMUL2016.toModify(phoPostRecoEra, value = "2016postVFP-UL")
+    TMeras.TMUL2016APV.toModify(phoPostRecoEra,value ="2016preVFP-UL")
+    setupEgammaPostRecoSeq(process,era=phoPostRecoEra.value.value()),
                            runVID=True,
                            eleIDModules=['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff',
                                         'RecoEgamma.ElectronIdentification.Identification.heepElectronID_HEEPV70_cff',
