@@ -162,21 +162,26 @@ def makeTreeFromMiniAOD(self,process):
             pdfSetName = cms.string("NNPDF31_nnlo_as_0118_mc_hessian_pdfas"),
             normalize = process.PDFWeights.normalize,
         )
-        if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
+        if "madgraph" in self.sample.lower():
+            process.PDFRecalculator.recalculateScales = False
+            process.PDFRecalculator.recalculatePDFs = False
+        elif "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
             process.PDFWeights.nScales = 0
             process.PDFWeights.scaleNames = cms.vstring()
             process.PDFWeights.nPDFs = 0
             process.PDFRecalculator.nEM = 2
             process.PDFRecalculator.recalculateScales = True
-        if "EMJ" in self.sample: # skip trying to get scale and PDF weights for EMJ signals
+        elif "EMJ" in self.sample: # skip trying to get scale and PDF weights for EMJ signals
             process.PDFWeights.nScales = 0
             process.PDFWeights.scaleNames = cms.vstring()
             process.PDFWeights.nPDFs = 0
             process.PDFRecalculator.nQCD = 2
             process.PDFRecalculator.nEM = 0
             process.PDFRecalculator.recalculateScales = True
+        # want to recalculate PDFs for these even though madgraph
         if any(s in self.sample for s in ["RPV", "SYY", "SHH"]):
             process.PDFWeights.nPDFs = 0
+            process.PDFRecalculator.recalculatePDFs = True
 
         # handle different sources for weight outputs
         if process.PDFRecalculator.recalculatePDFs:
