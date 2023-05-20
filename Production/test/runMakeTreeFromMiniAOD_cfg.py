@@ -16,6 +16,7 @@ streams=parameters.value("streams",0)
 tmi=parameters.value("tmi",False)
 trace=parameters.value("trace",False)
 debugjets=parameters.value("debugjets",False)
+debugweights=parameters.value("debugweights",False)
 
 # print out settings
 print "***** SETUP ************************************"
@@ -83,12 +84,18 @@ if trace:
 # setup makeTree modules
 process = theMaker.makeTreeFromMiniAOD(process)
 
+producer_types_to_debug = []
 # to check user floats and discriminators
 if debugjets:
+    producer_types_to_debug.extend(["JetProperties"])
+# to check theory weights
+if debugweights:
+    producer_types_to_debug.extend(["LHEWeightProductProducer","GenWeightProductProducer"])
+if len(producer_types_to_debug)>0:
     from HLTrigger.Configuration.common import producers_by_type
-    for prod in producers_by_type(process,"JetProperties"):
+    for prod in producers_by_type(process,*producer_types_to_debug):
         prod.debug = True
-    
+
 # if requested, dump and exit
 if dump:
     print process.dumpPython()

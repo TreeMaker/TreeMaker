@@ -59,7 +59,6 @@ def makeTreeFromMiniAOD(self,process):
     )
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(self.readFiles),
-        inputCommands = cms.untracked.vstring('keep *','drop LHERunInfoProduct_*_*_*'),
     )
     if len(self.jsonfile)>0: process.source.lumisToProcess = LumiList.LumiList(filename = self.jsonfile).getVLuminosityBlockRange()
 
@@ -151,6 +150,16 @@ def makeTreeFromMiniAOD(self,process):
     ## PDF weights for PDF systematics
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo and self.doPDFs:
+        # use new code from https://github.com/cms-sw/cmssw/pull/32167 to parse & organize weights
+        from GeneratorInterface.Core.genWeights_cfi import genWeights
+        from GeneratorInterface.Core.lheWeights_cfi import lheWeights
+        process.lheWeights = lheWeights.clone(
+            failIfInvalidXML = False
+        )
+        process.genWeights = genWeights.clone(
+            allowUnassociatedWeights = True
+        )
+
         from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
         process.PDFWeights = PDFWeightProducer.clone(
             normalize = (not any(s in self.sample for s in ["SVJ","EMJ"])), # skip normalization only for SVJ and EMJ signals
