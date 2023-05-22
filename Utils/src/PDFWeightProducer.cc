@@ -19,7 +19,6 @@
 #include "SimDataFormats/GeneratorProducts/interface/LHERunInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/LHEEventProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
-#include "SimDataFormats/GeneratorProducts/interface/GenLumiInfoHeader.h"
 
 #include "SimDataFormats/GeneratorProducts/interface/GenWeightInfoProduct.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenWeightProduct.h"
@@ -61,6 +60,7 @@ private:
 
   // ----------member data ---------------------------
   bool debug_;
+  bool storePDFs_, storeScales_, storePSs_;
   edm::InputTag lheRunTag_, lheWeightTag_, genWeightTag_;
   edm::EDGetTokenT<LHERunInfoProduct> lheRunToken_;
   edm::EDGetTokenT<GenWeightProduct> lheWeightToken_;
@@ -71,9 +71,12 @@ private:
 
 PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
   debug_(iConfig.getParameter<bool>("debug")),
-  lheRunTag_(edm::InputTag("externalLHEProducer")),
-  lheWeightTag_(edm::InputTag("lheWeights")),
-  genWeightTag_(edm::InputTag("genWeights")),
+  storePDFs_(iConfig.getParameter<bool>("storePDFs")),
+  storeScales_(iConfig.getParameter<bool>("storeScales")),
+  storePSs_(iConfig.getParameter<bool>("storePSs")),
+  lheRunTag_(iConfig.getParameter<edm::InputTag>("lheRunTag")),
+  lheWeightTag_(iConfig.getParameter<edm::InputTag>("lheWeightTag")),
+  genWeightTag_(iConfig.getParameter<edm::InputTag>("genWeightTag")),
   lheRunToken_(consumes<LHERunInfoProduct, edm::InRun>(lheRunTag_)),
   lheWeightToken_(consumes<GenWeightProduct>(lheWeightTag_)),
   lheWeightInfoToken_(consumes<GenWeightInfoProduct, edm::InRun>(lheWeightTag_)),
@@ -87,6 +90,9 @@ PDFWeightProducer::PDFWeightProducer(const edm::ParameterSet& iConfig) :
 
 std::shared_ptr<WeightGroupsToStore> PDFWeightProducer::globalBeginRun(const edm::Run& iRun, const edm::EventSetup& iSetup) const {
   auto holder = defaultCache();
+  //skip if not needed
+  if(!storePDFs_ and !storeScales_)
+    return holder;
 
   std::vector<int> pdfIds;
   edm::Handle<LHERunInfoProduct> lheRunInfoHandle;
@@ -119,6 +125,9 @@ std::shared_ptr<WeightGroupsToStore> PDFWeightProducer::globalBeginRun(const edm
 
 std::shared_ptr<WeightGroupsToStore> PDFWeightProducer::globalBeginLuminosityBlock(const edm::LuminosityBlock& iLumi, const edm::EventSetup& iSetup) const {
   auto holder = defaultCache();
+  //skip if not needed
+  if(!storePSs_ and !storeScales_)
+    return holder;
 
   edm::Handle<GenWeightInfoProduct> genWeightInfoHandle;
   iLumi.getByToken(genWeightInfoToken_, genWeightInfoHandle);
@@ -187,11 +196,11 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     const auto& lheWeightInfos = *runCache(iEvent.getRun().index());
 
     //fill pdf weights
-    if(lheWeightInfos[0].group)
+    if(storePDFs_ and lheWeightInfos[0].group)
       fillPDF(*pdfweights, lheWeights.at(lheWeightInfos[0].index));
 
     //fill scale weights
-    if(lheWeightInfos[1].group)
+    if(storeScales_ and lheWeightInfos[1].group)
       fillScale(*scaleweights, lheWeights.at(lheWeightInfos[1].index), *static_cast<const gen::ScaleWeightGroupInfo*>(lheWeightInfos[1].group));
   }
 
@@ -202,11 +211,11 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     const auto& genWeightInfos = *luminosityBlockCache(iEvent.getLuminosityBlock().index());
 
     //fill scale weights if not already found in lhe
-    if(genWeightInfos[1].group and scaleweights->empty())
+    if(storeScales_ and genWeightInfos[1].group and scaleweights->empty())
       fillScale(*scaleweights, genWeights.at(genWeightInfos[1].index), *static_cast<const gen::ScaleWeightGroupInfo*>(genWeightInfos[1].group));
 
     //fill parton shower weights
-    if(genWeightInfos[2].group)
+    if(storePSs_ and genWeightInfos[2].group)
       fillPS(*psweights, genWeights.at(genWeightInfos[2].index), *static_cast<const gen::PartonShowerWeightGroupInfo*>(genWeightInfos[2].group));
   }
 
