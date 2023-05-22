@@ -10,7 +10,7 @@ PhotonIDisoProducer = cms.EDProducer("PhotonIDisoProducer",
     ecalRecHitsInputTag_EB = cms.InputTag("reducedEgamma","reducedEBRecHits"),
     rhoCollection          = cms.untracked.InputTag("fixedGridRhoFastjetAll"),
     genParCollection       = cms.untracked.InputTag("prunedGenParticles"), 
-    pt_cut                 = cms.double(30),
+    pt_cut                 = cms.double(20),
     high_pt_cut            = cms.double(100),
     effArEtaLow            = cms.vdouble(0.,     1.000,  1.479,  2.0,    2.2,    2.3,     2.4), #lower boundaries of |eta| in effective area(EA) calculation
     effArEtaHigh           = cms.vdouble(1.,     1.479,  2.000,  2.2,    2.3,    2.4,     99.), #upper boundaries of |eta| in effective area(EA) calculation
@@ -27,5 +27,11 @@ PhotonIDisoProducer = cms.EDProducer("PhotonIDisoProducer",
     pfNuIsoRhoCorr_EE_cut  = cms.vdouble(19.722, 0.0117, 0.000023), #Rho corrected PF neutral ISO = [0]+[1]*pt+[2]*pt^2
     pfGmIsoRhoCorr_EB_cut  = cms.vdouble(2.876, 0.004017), #Rho corrected gamma ISO = [0]+[1]*pt
     pfGmIsoRhoCorr_EE_cut  = cms.vdouble(4.162, 0.0037), #Rho corrected gamma ISO = [0]+[1]*pt
+    CutBased_phoId_loose_  =  cms.string('cutBasedPhotonID-Fall17-94X-V2-loose'),                                   
+    CutBased_phoId_medium_  =  cms.string('cutBasedPhotonID-Fall17-94X-V2-medium'),
+    CutBased_phoId_tight_  =  cms.string('cutBasedPhotonID-Fall17-94X-V2-tight'),
+    mvaBased_phoId_  =  cms.string('PhotonMVAEstimatorRunIIFall17v2Values'),                    
+    
     debug                  = cms.untracked.bool(False)
+                                     
 )

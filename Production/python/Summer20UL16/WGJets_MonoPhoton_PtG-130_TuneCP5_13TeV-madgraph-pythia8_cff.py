@@ -1,0 +1,46 @@
+import FWCore.ParameterSet.Config as cms
+
+maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+readFiles = cms.untracked.vstring()
+secFiles = cms.untracked.vstring()
+source = cms.Source ("PoolSource",fileNames = readFiles, secondaryFileNames = secFiles)
+readFiles.extend( [
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/08EC0190-5E54-6A4D-AB3C-94F96014D1BC.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/096C67B2-2CAE-E943-BF6F-AAB6E6AD9055.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/1933143C-D5CC-A04F-81B7-FFDCF697F064.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/26EDB682-7D8F-6C4F-BD11-272D97E1C13C.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/2A745953-1E45-C84B-BBC5-3AFB291655E2.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/2DD17289-F52F-6141-84F2-148EE257B289.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/2E24835B-5643-AB47-B4AE-ED17EA659F56.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/3386EF3C-EAFA-994F-AED3-D7B644BECFD9.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/37011FCE-7738-9B4F-B198-14DDDBFB92C1.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/44B463F8-6D0C-834A-87E9-DAB17FCF5402.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/44BB8B0B-5742-174D-B2A6-AB9C85BDC34B.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/468DD233-882E-0543-8348-CBC04D328363.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/55FDF7BA-3546-AC46-B790-07560A4C7E88.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/57254095-6267-6749-9BFF-2C4E51F67A7C.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/583A2179-1D98-F843-A7C8-9923091D2A7F.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/60D5F0D5-7819-B24C-B6DA-7188E0E6A85C.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/643833BB-7076-EA46-8A5A-CC4D0B57705E.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/66ADD3D8-7E0A-5D4D-B5FD-02F7317ACD84.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/870C37B3-01E6-0E48-BD17-2EBFF1CCD6F5.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/89D22520-B247-6541-AAE9-8E39291D28D4.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/8E4DB5C7-4882-144F-90B0-48F3E3EB2422.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/93CD32CC-477D-A34D-B0F9-3BCE168A32FB.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/9EF5010A-D313-4347-8945-8C460865DC0F.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/A173EBDC-6EEC-B247-84FB-707D5FB91C7E.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/A7BD60B5-EE0A-4440-8180-E39A2C980501.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/ADDEB40B-BB53-C448-A380-251F0345EDDF.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/AF0DDF16-95A6-6344-B600-065E3329557D.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/AFAD947E-E797-4846-8B49-36BD2E22B342.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/C04253F0-8267-6C43-B6BA-F7F4346D2C81.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/C4CCCD76-FD7D-3248-8C25-E2483D2FC33D.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/CCFBFF27-3042-9347-919D-1D81EF5A664B.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/D58556CC-0A1C-DC49-93AC-0A53F72D8D4E.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/D771ABB4-023E-DA48-A32A-62EB5BC61595.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/DB22B76F-271E-944C-BA84-16C5665FAF30.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/DED08686-2B44-5D46-B20B-AE67E2090CEF.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/FE486E3C-AB34-3F44-A816-6FF606A3782A.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/FEC1A1A9-AD33-C74B-87F5-1C10247D5EC0.root',
+       '/store/mc/RunIISummer20UL16MiniAODv2/WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8/MINIAODSIM/106X_mcRun2_asymptotic_v17-v1/2430000/FFCAC487-822A-0C4F-8FFE-692DC8C8B174.root',
+] )
