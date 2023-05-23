@@ -443,6 +443,7 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
                 "NsubjettinessTau1"     ,
                 "NsubjettinessTau2"     ,
                 "NsubjettinessTau3"     ,
+                "NsubjettinessTau4"     ,
                 "NumBhadrons"           ,
                 "NumChadrons"           ,
                 "partonFlavor"          ,
@@ -451,10 +452,12 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
             JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8Puppi:tau1')
             JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8Puppi:tau2')
             JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8Puppi:tau3')
+            JetPropertiesAK8.NsubjettinessTau4 = cms.vstring('NjettinessAK8Puppi:tau4')
             self.VectorDouble.extend([
                 'JetProperties'+suff+':NsubjettinessTau1(Jets'+suff+'_NsubjettinessTau1)',
                 'JetProperties'+suff+':NsubjettinessTau2(Jets'+suff+'_NsubjettinessTau2)',
                 'JetProperties'+suff+':NsubjettinessTau3(Jets'+suff+'_NsubjettinessTau3)',
+                'JetProperties'+suff+':NsubjettinessTau4(Jets'+suff+'_NsubjettinessTau4)',
             ])
             self.VectorInt.extend([
                 'JetProperties'+suff+':NumBhadrons(Jets'+suff+'_NumBhadrons)',
