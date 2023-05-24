@@ -295,6 +295,7 @@ Extra options in [runMakeTreeFromMiniAOD_cfg.py](./Production/test/runMakeTreeFr
 * `tmi`: enable [TimeMemoryInfo](https://github.com/cms-sw/cmssw/blob/master/Validation/Performance/python/TimeMemoryInfo.py) for simple profiling (default=False)
 * `trace`: enable the tracer for debugging (default=False)
 * `debugjets`: print out user floats and discriminators for each jet collection (default=False)
+* `debugweights`: enable printouts from theory weight parsing (PDF, scale, parton shower uncertainties) (default=False)
 
 ## Notes for Contributors
 

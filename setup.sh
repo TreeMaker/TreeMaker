@@ -156,6 +156,7 @@ if [[ "$CMSSWVER" == "CMSSW_10_6_"* ]]; then
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:AddJetAxis1_10620p1
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:PuppiReserve106X
 	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:OneShotTransforms106X
+	git cms-merge-topic -u $ACCESS_CMSSW TreeMaker:GenWeightRefactor_106X_squash
 fi
 
 # outside repositories

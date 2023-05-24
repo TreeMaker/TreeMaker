@@ -38,7 +38,7 @@ private:
   void produce(edm::Event&, const edm::EventSetup&) override;
 
   // ----------member data ---------------------------
-  bool norm_, debug_, recalculatePDFs_, recalculateScales_;
+  bool debug_, recalculatePDFs_, recalculateScales_;
   unsigned nQCD_, nEM_;
   std::string pdfSetName_;
   edm::EDGetTokenT<GenEventInfoProduct> genProductToken_;
@@ -46,7 +46,6 @@ private:
 };
 
 PDFRecalculator::PDFRecalculator(const edm::ParameterSet& iConfig) :
-  norm_(iConfig.getParameter<bool>("normalize")),
   debug_(iConfig.getParameter<bool>("debug")),
   recalculatePDFs_(iConfig.getParameter<bool>("recalculatePDFs")),
   recalculateScales_(iConfig.getParameter<bool>("recalculateScales")),
@@ -101,20 +100,17 @@ void PDFRecalculator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
     unsigned nweights = 1;
     if(LHAPDF::numberPDF(1)>1) nweights += LHAPDF::numberPDF(1);
     pdfweights->reserve(nweights);
-    double norm = 1.;
 
     for (unsigned int i=0; i<nweights; ++i) {
       LHAPDF::usePDFMember(1,i);
       double newpdf1 = LHAPDF::xfx(1, x1, Q, id1)/x1;
       double newpdf2 = LHAPDF::xfx(1, x2, Q, id2)/x2;
       pdfweights->push_back(newpdf1*newpdf2);
-      if(i==0 and norm_) norm = 1/pdfweights->back();
-      pdfweights->back() *= norm;
       if(debug_) {
         edm::LogInfo("TreeMaker") << "PDFRecalculator: index = " << i << ", x1 = " << x1 << ", x2 = " << x2
                                   << ", Q = " << Q << ", id1 = " << id1 << ", id2 = " << id2
                                   << ", newpdf1 = " << newpdf1 << ", newpdf2 = " << newpdf2
-                                  << ", norm = " << norm << ", pdfweight = " << pdfweights->back() << std::endl;
+                                  << ", pdfweight = " << pdfweights->back() << std::endl;
         }
       }
     }

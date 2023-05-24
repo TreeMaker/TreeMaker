@@ -1,7 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 PDFRecalculator = cms.EDProducer("PDFRecalculator",
-    normalize = cms.bool(True),
     debug = cms.bool(False),
     recalculatePDFs = cms.bool(False),
     recalculateScales = cms.bool(False),

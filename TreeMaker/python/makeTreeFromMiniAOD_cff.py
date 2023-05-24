@@ -59,7 +59,6 @@ def makeTreeFromMiniAOD(self,process):
     )
     process.source = cms.Source("PoolSource",
         fileNames = cms.untracked.vstring(self.readFiles),
-        inputCommands = cms.untracked.vstring('keep *','drop LHERunInfoProduct_*_*_*'),
     )
     if len(self.jsonfile)>0: process.source.lumisToProcess = LumiList.LumiList(filename = self.jsonfile).getVLuminosityBlockRange()
 
@@ -151,32 +150,42 @@ def makeTreeFromMiniAOD(self,process):
     ## PDF weights for PDF systematics
     ## ----------------------------------------------------------------------------------------------
     if self.geninfo and self.doPDFs:
-        from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
-        process.PDFWeights = PDFWeightProducer.clone(
-            normalize = (not any(s in self.sample for s in ["SVJ","EMJ"])), # skip normalization only for SVJ and EMJ signals
+        # use new code from https://github.com/cms-sw/cmssw/pull/32167 to parse & organize weights
+        from GeneratorInterface.Core.genWeights_cfi import genWeights
+        from GeneratorInterface.Core.lheWeights_cfi import lheWeights
+        process.lheWeights = lheWeights.clone(
+            failIfInvalidXML = False
         )
+        process.genWeights = genWeights.clone(
+            allowUnassociatedWeights = True
+        )
+
+        from TreeMaker.Utils.pdfweightproducer_cfi import PDFWeightProducer
+        process.PDFWeights = PDFWeightProducer.clone()
         from TreeMaker.Utils.pdfrecalculator_cfi import PDFRecalculator
         process.PDFRecalculator = PDFRecalculator.clone(
             recalculatePDFs = cms.bool(self.signal),
             recalculateScales = cms.bool(False),
             pdfSetName = cms.string("NNPDF31_nnlo_as_0118_mc_hessian_pdfas"),
-            normalize = process.PDFWeights.normalize,
         )
-        if "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
-            process.PDFWeights.nScales = 0
-            process.PDFWeights.scaleNames = cms.vstring()
-            process.PDFWeights.nPDFs = 0
+        if "madgraph" in self.sample.lower():
+            process.PDFRecalculator.recalculateScales = False
+            process.PDFRecalculator.recalculatePDFs = False
+        elif "SVJ" in self.sample: # skip trying to get scale and PDF weights for SVJ signals
+            process.PDFWeights.storeScales = False
+            process.PDFWeights.storePDFs = False
             process.PDFRecalculator.nEM = 2
             process.PDFRecalculator.recalculateScales = True
-        if "EMJ" in self.sample: # skip trying to get scale and PDF weights for EMJ signals
-            process.PDFWeights.nScales = 0
-            process.PDFWeights.scaleNames = cms.vstring()
-            process.PDFWeights.nPDFs = 0
+        elif "EMJ" in self.sample: # skip trying to get scale and PDF weights for EMJ signals
+            process.PDFWeights.storeScales = False
+            process.PDFWeights.storePDFs = False
             process.PDFRecalculator.nQCD = 2
             process.PDFRecalculator.nEM = 0
             process.PDFRecalculator.recalculateScales = True
+        # want to recalculate PDFs for these even though madgraph
         if any(s in self.sample for s in ["RPV", "SYY", "SHH"]):
-            process.PDFWeights.nPDFs = 0
+            process.PDFWeights.storePDFs = False
+            process.PDFRecalculator.recalculatePDFs = True
 
         # handle different sources for weight outputs
         if process.PDFRecalculator.recalculatePDFs:
