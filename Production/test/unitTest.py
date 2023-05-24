@@ -4,7 +4,7 @@ import subprocess
 import sys
 
 class Test:
-    def __init__(self, scenario, name, numevents, command, dataset="", inputFilesConfig="", nstart=0, nfiles=0, redir=""):
+    def __init__(self, scenario, name, numevents, command, dataset="", inputFilesConfig="", nstart=0, nfiles=0, redir="", dump=False):
         self.scenario = scenario
         self.dataset = dataset
         self.inputFilesConfig = inputFilesConfig
@@ -15,6 +15,9 @@ class Test:
         self.command = command
         self.redir = redir
         self.cmd = "cmsRun"
+        self.dump = dump
+        if self.dump:
+            self.cmd = "python"
         self.config = os.environ['CMSSW_BASE']+"/src/TreeMaker/Production/test/runMakeTreeFromMiniAOD_cfg.py"
         self.array = self.getArray()
 
@@ -28,6 +31,8 @@ class Test:
             mytest.append("inputFilesConfig="+self.inputFilesConfig)
             mytest.append("nstart="+str(self.nstart))
             mytest.append("nfiles="+str(self.nfiles))
+        if self.dump:
+            mytest.append("dump=1")
         # different shell commands
         mytest += ["outfile="+self.outfile, "numevents="+str(self.numevents)]
         if len(self.command)>0: 
@@ -96,30 +101,30 @@ class Test:
                 os.remove(file)
         print "\nDone cleaning files!"
 
-def defineTests(mytests, scenario, name, numevents, command, dataset, inputFilesConfig):
+def defineTests(mytests, scenario, name, numevents, command, dataset, inputFilesConfig, dump):
     # User defined test
     # make sure this is the first test defined
     mytests.append(Test(scenario,name,numevents,command,dataset,inputFilesConfig,nstart=0,nfiles=10,redir=""))
 
     # pre-defined tests
-    mytests.append(Test("Summer20UL16","Summer20UL16.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL16.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16APV","Summer20UL16APV.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL17","Summer20UL17.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL17.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL18","Summer20UL18.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL18.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16","Summer20UL16.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16APV","Summer20UL16APV.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL17","Summer20UL17.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL17.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL18","Summer20UL18.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL18.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16_DATA","Summer20UL16_DATA.Run2016G-UL2016-v2.JetHT",numevents,command,inputFilesConfig="Run2016G-UL2016-v2.JetHT",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16_DATA","Summer20UL16_DATA.Run2016H-UL2016-v2.JetHT",numevents,command,inputFilesConfig="Run2016H-UL2016-v2.JetHT",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16APV_DATA","Summer20UL16APV_DATA.Run2016D-UL2016_HIPM-v2.SingleElectron",numevents,command,inputFilesConfig="Run2016D-UL2016_HIPM-v2.SingleElectron",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL17_DATA","Summer20UL17_DATA.Run2017E-UL2017-v1.SingleMuon",numevents,command,inputFilesConfig="Run2017E-UL2017-v1.SingleMuon",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL18_DATA","Summer20UL18_DATA.Run2018A-UL2018-v2.MET",numevents,command,inputFilesConfig="Run2018A-UL2018-v2.MET",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL18_DATA","Summer20UL18_DATA.Run2018C-UL2018-v1.EGamma",numevents,command,inputFilesConfig="Run2018C-UL2018-v1.EGamma",nstart=0,nfiles=1))
-    mytests.append(Test("Summer20UL16sig","PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_kappa-0p25_aligned-down",numevents,"emerging=True deepAK8=False deepDoubleB=False"+command,inputFilesConfig="PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_kappa-0p25_aligned-down",nstart=0,nfiles=10))
-    mytests.append(Test("Summer20UL16sig","PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_ctau-150_unflavored-down",numevents,"emerging=True deepAK8=False deepDoubleB=False"+command,inputFilesConfig="PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_ctau-150_unflavored-down",nstart=0,nfiles=10))
-    mytests.append(Test("Summer20UL17sig","PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_kappa-0p25_aligned-down",numevents,"emerging=True deepAK8=False deepDoubleB=False"+command,inputFilesConfig="PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_kappa-0p25_aligned-down",nstart=0,nfiles=10))
-    mytests.append(Test("Summer20UL17sig","PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_ctau-150_unflavored-down",numevents,"emerging=True deepAK8=False deepDoubleB=False"+command,inputFilesConfig="PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_ctau-150_unflavored-down",nstart=0,nfiles=10))
+    mytests.append(Test("Summer20UL16","Summer20UL16.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL16.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL16APV","Summer20UL16APV.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL17","Summer20UL17.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL17.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL18","Summer20UL18.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",numevents,command,inputFilesConfig="Summer20UL18.TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL16","Summer20UL16.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL16APV","Summer20UL16APV.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL16APV.GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL17","Summer20UL17.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL17.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL18","Summer20UL18.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",numevents,command,inputFilesConfig="Summer20UL18.GJets_DR-0p4_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL16_DATA","Summer20UL16_DATA.Run2016G-UL2016-v2.JetHT",numevents,command,inputFilesConfig="Run2016G-UL2016-v2.JetHT",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL16_DATA","Summer20UL16_DATA.Run2016H-UL2016-v2.JetHT",numevents,command,inputFilesConfig="Run2016H-UL2016-v2.JetHT",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL16APV_DATA","Summer20UL16APV_DATA.Run2016D-UL2016_HIPM-v2.SingleElectron",numevents,command,inputFilesConfig="Run2016D-UL2016_HIPM-v2.SingleElectron",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL17_DATA","Summer20UL17_DATA.Run2017E-UL2017-v1.SingleMuon",numevents,command,inputFilesConfig="Run2017E-UL2017-v1.SingleMuon",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL18_DATA","Summer20UL18_DATA.Run2018A-UL2018-v2.MET",numevents,command,inputFilesConfig="Run2018A-UL2018-v2.MET",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL18_DATA","Summer20UL18_DATA.Run2018C-UL2018-v1.EGamma",numevents,command,inputFilesConfig="Run2018C-UL2018-v1.EGamma",nstart=0,nfiles=1,dump=dump))
+    mytests.append(Test("Summer20UL16sig","PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_kappa-0p25_aligned-down",numevents,"emerging=True deepAK8=False deepDoubleB=False"+command,inputFilesConfig="PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_kappa-0p25_aligned-down",nstart=0,nfiles=10,dump=dump))
+    mytests.append(Test("Summer20UL16sig","PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_ctau-150_unflavored-down",numevents,"emerging=True deepAK8=False deepDoubleB=False"+command,inputFilesConfig="PrivateSamples.EMJ_UL16_mMed-1000_mDark-20_ctau-150_unflavored-down",nstart=0,nfiles=10,dump=dump))
+    mytests.append(Test("Summer20UL17sig","PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_kappa-0p25_aligned-down",numevents,"emerging=True deepAK8=False deepDoubleB=False"+command,inputFilesConfig="PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_kappa-0p25_aligned-down",nstart=0,nfiles=10,dump=dump))
+    mytests.append(Test("Summer20UL17sig","PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_ctau-150_unflavored-down",numevents,"emerging=True deepAK8=False deepDoubleB=False"+command,inputFilesConfig="PrivateSamples.EMJ_UL17_mMed-1000_mDark-20_ctau-150_unflavored-down",nstart=0,nfiles=10,dump=dump))
 
 def unitTest():
     # Read parameters
@@ -131,6 +136,7 @@ def unitTest():
     test=parameters.value("test",-1)
     name=parameters.value("name","")
     run=parameters.value("run",False)
+    dump=parameters.value("dump",False)
     numevents=parameters.value("numevents",100)
     command=parameters.value("command","")
     scenario=parameters.value("scenario","")
@@ -142,7 +148,7 @@ def unitTest():
 
     # list of tests
     mytests = []
-    defineTests(mytests,scenario,name,numevents,command,dataset,inputFilesConfig)
+    defineTests(mytests,scenario,name,numevents,command,dataset,inputFilesConfig,dump)
 
     # sanity check for defining an on-the-fly test
     if test==0 and dataset=="" and inputFilesConfig=="":
