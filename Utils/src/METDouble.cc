@@ -53,8 +53,8 @@ private:
    void produce(edm::StreamID, edm::Event&, const edm::EventSetup&) const override;
    
    // ----------member data ---------------------------
-   edm::InputTag metTag_, genMetTag_, InfTagAK8_;
-   edm::EDGetTokenT<edm::View<pat::MET>> metTok_, genMetTok_;
+   edm::InputTag metTag_, genMetTag_, puppiMetTag_, InfTagAK8_;
+   edm::EDGetTokenT<edm::View<pat::MET>> metTok_, genMetTok_, puppiMetTok_;
    edm::EDGetTokenT<edm::View<pat::Jet>> InfTokAK8_;
    double MinJetPt_,MaxJetEta_;
    bool geninfo_;
@@ -68,6 +68,7 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
 {
    metTag_    = iConfig.getParameter<edm::InputTag> ("METTag");
    genMetTag_ = iConfig.getParameter<edm::InputTag> ("GenMETTag");
+   puppiMetTag_ = iConfig.getParameter<edm::InputTag> ("PuppiMETTag");
    InfTagAK8_ = iConfig.getParameter<edm::InputTag> ("InfTagAK8");
    MinJetPt_  = iConfig.getUntrackedParameter<double> ("minJetPt",30.);
    MaxJetEta_ = iConfig.getUntrackedParameter<double> ("minJetEta",5.);
@@ -75,6 +76,7 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    
    metTok_ = consumes<edm::View<pat::MET>>(metTag_);
    genMetTok_ = consumes<edm::View<pat::MET>>(genMetTag_);
+   puppiMetTok_ = consumes<edm::View<pat::MET>>(puppiMetTag_);
    InfTokAK8_ = consumes<edm::View<pat::Jet>>(InfTagAK8_);
    
    uncUpList = {pat::MET::JetResUp, pat::MET::JetEnUp, pat::MET::MuonEnUp, pat::MET::ElectronEnUp, pat::MET::TauEnUp, pat::MET::UnclusteredEnUp, pat::MET::PhotonEnUp};
@@ -89,6 +91,8 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    produces<double>("CaloPhi");
    produces<double>("GenPt");
    produces<double>("GenPhi");
+   produces<double>("PuppiPt");
+   produces<double>("PuppiPhi");
    produces<double>("PFCaloPtRatio");
    produces<double>("Significance");
 
@@ -96,6 +100,10 @@ METDouble::METDouble(const edm::ParameterSet& iConfig)
    produces<std::vector<double> >("PtDown");
    produces<std::vector<double> >("PhiUp");
    produces<std::vector<double> >("PhiDown");
+   produces<std::vector<double> >("PuppiPtUp");
+   produces<std::vector<double> >("PuppiPtDown");
+   produces<std::vector<double> >("PuppiPhiUp");
+   produces<std::vector<double> >("PuppiPhiDown");
 }
 
 
@@ -121,30 +129,36 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
    double rawmetpt_=0, rawmetphi_=0;
    double genmetpt_=0, genmetphi_=0;
    double calometpt_=0, calometphi_=0;
+   double puppimetpt_=0, puppimetphi_=0;
    double metsig_=0;
 
    std::vector<double> metPtUp_(uncUpList.size(),0.);
    std::vector<double> metPhiUp_(uncUpList.size(),0.);
    std::vector<double> metPtDown_(uncDownList.size(),0.);
    std::vector<double> metPhiDown_(uncDownList.size(),0.);
-   
+
+   std::vector<double> puppiPtUp_(uncUpList.size(),0.);
+   std::vector<double> puppiPhiUp_(uncUpList.size(),0.);
+   std::vector<double> puppiPtDown_(uncDownList.size(),0.);
+   std::vector<double> puppiPhiDown_(uncDownList.size(),0.);
+
    edm::Handle< edm::View<pat::MET> > MET;
    iEvent.getByToken(metTok_,MET);
 
    edm::Handle< edm::View<pat::MET> > GenMET;
    iEvent.getByToken(genMetTok_,GenMET);
-   
+
+   edm::Handle< edm::View<pat::MET> > PuppiMET;
+   iEvent.getByToken(puppiMetTok_,PuppiMET);
+
    double dpnhat[3];
-   
+
    for(double & i : dpnhat)i=-999;
-   reco::MET::LorentzVector metLorentz(0,0,0,0);
    if(MET.isValid() ){
-      
       metpt_=MET->at(0).pt();
       metphi_=MET->at(0).phi();
-      metLorentz=MET->at(0).p4();
       metsig_=MET->at(0).metSignificance();
-      
+
       for(unsigned u = 0; u < uncUpList.size(); ++u){
         metPtUp_[u] = MET->at(0).shiftedPt(uncUpList[u], pat::MET::Type1);
         metPtDown_[u] = MET->at(0).shiftedPt(uncDownList[u], pat::MET::Type1);
@@ -156,6 +170,19 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
       rawmetphi_=MET->at(0).uncorPhi();
    }
    else edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<metTag_;
+
+   if(PuppiMET.isValid() ){
+      puppimetpt_=PuppiMET->at(0).pt();
+      puppimetphi_=PuppiMET->at(0).phi();
+
+      for(unsigned u = 0; u < uncUpList.size(); ++u){
+        puppiPtUp_[u] = PuppiMET->at(0).shiftedPt(uncUpList[u], pat::MET::Type1);
+        puppiPtDown_[u] = PuppiMET->at(0).shiftedPt(uncDownList[u], pat::MET::Type1);
+        puppiPhiUp_[u] = PuppiMET->at(0).shiftedPhi(uncUpList[u], pat::MET::Type1);
+        puppiPhiDown_[u] = PuppiMET->at(0).shiftedPhi(uncDownList[u], pat::MET::Type1);
+      }
+   }
+   else edm::LogWarning("TreeMaker")<<"METDouble::Invalid Tag: "<<puppiMetTag_;
 
    //GenMET is really the original MET collection from the event (re-correction zeroes out some values)
    if(GenMET.isValid()){
@@ -186,6 +213,11 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
    auto chtp2 = std::make_unique<double>(calometphi_);
    iEvent.put(std::move(chtp2),"CaloPhi");
 
+   auto phtp = std::make_unique<double>(puppimetpt_);
+   iEvent.put(std::move(phtp),"PuppiPt");
+   auto phtp2 = std::make_unique<double>(puppimetphi_);
+   iEvent.put(std::move(phtp2),"PuppiPhi");
+
    double ratio = metpt_/calometpt_;
    double ratio_inf = 0.;
    edm::Handle<edm::View<pat::Jet>> InfAK8;
@@ -208,6 +240,15 @@ METDouble::produce(edm::StreamID, edm::Event& iEvent, const edm::EventSetup& iSe
        iEvent.put(std::move(uncp3),"PhiUp");
        auto uncp4 = std::make_unique<std::vector<double>>(metPhiDown_);
        iEvent.put(std::move(uncp4),"PhiDown");
+
+       auto puncp1 = std::make_unique<std::vector<double>>(puppiPtUp_);
+       iEvent.put(std::move(puncp1),"PuppiPtUp");
+       auto puncp2 = std::make_unique<std::vector<double>>(puppiPtDown_);
+       iEvent.put(std::move(puncp2),"PuppiPtDown");
+       auto puncp3 = std::make_unique<std::vector<double>>(puppiPhiUp_);
+       iEvent.put(std::move(puncp3),"PuppiPhiUp");
+       auto puncp4 = std::make_unique<std::vector<double>>(puppiPhiDown_);
+       iEvent.put(std::move(puncp4),"PuppiPhiDown");
    }
 }
 
