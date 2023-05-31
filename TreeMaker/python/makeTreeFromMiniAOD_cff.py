@@ -1106,11 +1106,11 @@ def makeTreeFromMiniAOD(self,process):
         geninfo = cms.untracked.bool(self.geninfo),
         InfTagAK8 = JetAK8TagInf,
     )
-    self.VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)','MET:Significance(METSignificance)'])
-#    self.VarsDouble.extend(['MET:RawPt(RawMET)','MET:RawPhi(RawMETPhi)'])
+    self.VarsDouble.extend(['MET:Pt(MET)','MET:Phi(METPhi)','MET:CaloPt(CaloMET)','MET:CaloPhi(CaloMETPhi)','MET:PFCaloPtRatio(PFCaloMETRatio)','MET:Significance(METSignificance)', 'MET:PuppiPt(PuppiMET)', 'MET:PuppiPhi(PuppiMETPhi)'])
     if self.geninfo:
         self.VarsDouble.extend(['MET:GenPt(GenMET)','MET:GenPhi(GenMETPhi)'])
         self.VectorDouble.extend(['MET:PtUp(METUp)', 'MET:PtDown(METDown)', 'MET:PhiUp(METPhiUp)', 'MET:PhiDown(METPhiDown)'])
+        self.VectorDouble.extend(['MET:PuppiPtUp(PuppiMETUp)', 'MET:PuppiPtDown(PuppiMETDown)', 'MET:PuppiPhiUp(PuppiMETPhiUp)', 'MET:PuppiPhiDown(PuppiMETPhiDown)'])
 
     if self.doMT2:
         from TreeMaker.Utils.mt2producer_cfi import mt2Producer
