@@ -2,6 +2,7 @@
 from TreeMaker.Utils.CommandLineParams import CommandLineParams
 parameters = CommandLineParams()
 name = parameters.value("name","")
+num = parameters.value("num", 0)
 redir = parameters.value("redir","root://cmsxrootd.fnal.gov/")
 
 # handle site name usage
@@ -17,10 +18,10 @@ process.load("FWCore.MessageService.MessageLogger_cfi")
 # only need one event to get run info
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1) )
 
-# this selects the first input file
+# this selects the first input file by default
 readFiles = getattr(__import__("TreeMaker.Production."+name+"_cff",fromlist=["readFiles"]),"readFiles")
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(readFiles[0])
+    fileNames = cms.untracked.vstring(readFiles[num])
 )
 
 # log output
