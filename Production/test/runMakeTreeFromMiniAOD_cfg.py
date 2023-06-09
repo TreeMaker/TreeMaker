@@ -90,7 +90,7 @@ if debugjets:
     producer_types_to_debug.extend(["JetProperties"])
 # to check theory weights
 if debugweights:
-    producer_types_to_debug.extend(["LHEWeightProductProducer","GenWeightProductProducer"])
+    producer_types_to_debug.extend(["LHEWeightProductProducer","GenWeightProductProducer","PDFWeightProducer"])
 if len(producer_types_to_debug)>0:
     from HLTrigger.Configuration.common import producers_by_type
     for prod in producers_by_type(process,*producer_types_to_debug):
