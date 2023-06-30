@@ -1334,6 +1334,30 @@ def makeTreeFromMiniAOD(self,process):
             ]
         )
 
+        # AK15 jet uncertainties
+        if self.geninfo and self.systematics:
+            process, JetAK15TagJECTmp, JetAK15TagJECup, JetAK15TagJECdown, JetAK15TagJERup, JetAK15TagJERdown, JetAK15Tag = self.JetVariations(process, JetAK15Tag, SkipTag, suff="AK15", puppiSpecific="puppiSpecificAK15", vars="makeJetVarsAK8")
+        elif not self.geninfo:
+            # get JEC unc for data
+            process, JetAK15TagJECTmp, _ = JetDepot(process,
+                JetTag=JetAK15Tag,
+                jecUncDir=0,
+                storeJec=True, # get JEC unc value (in intermediate tag Tmp)
+                doSmear=False,
+            )
+            # append unc to central collection
+            process, JetAK15Tag = addJetInfo(process, JetAK15Tag, [JetAK15TagJECTmp.value()], [])
+
+        if self.geninfo:
+            # finally, do central smearing and replace jet tag
+            process, _, JetAK15Tag = JetDepot(process,
+                JetTag=JetAK15Tag,
+                jecUncDir=0,
+                doSmear=True,
+                jerUncDir=0,
+                storeJer=2, # get central jet smearing factor
+            )
+
         process = self.makeJetVarsAK8(
             process,
             JetTag=JetAK15Tag,
@@ -1344,7 +1368,7 @@ def makeTreeFromMiniAOD(self,process):
             doECFs = True,
         )
 
-        _omit_AK15 = ["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity", "jerFactor", "origIndex", "ecfN3b1", "ecfN3b2"]
+        _omit_AK15 = ["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity", "ecfN3b1", "ecfN3b2"]
         process.JetPropertiesAK15.properties = [x for x in process.JetPropertiesAK15.properties if x not in _omit_AK15]
         for branchlist in [self.VectorDouble, self.VectorInt, self.AssocVectorVectorDouble, self.AssocVectorVectorInt]:
             branchlist.setValue([x for x in branchlist if not ("AK15" in x and any([y in x for y in _omit_AK15]))])
@@ -1366,15 +1390,26 @@ def makeTreeFromMiniAOD(self,process):
         process.JetPropertiesAK15.NsubjettinessTau3 = cms.vstring('NjettinessAK15Puppi:tau3')
         process.JetPropertiesAK15.NsubjettinessTau4 = cms.vstring('NjettinessAK15Puppi:tau4')
 
-        process.JetPropertiesAK15.neutralHadronPuppiMultiplicity = cms.vstring("puppiSpecificAK15:neutralHadronPuppiMultiplicity")
-        process.JetPropertiesAK15.neutralPuppiMultiplicity = cms.vstring("puppiSpecificAK15:neutralPuppiMultiplicity")
-        process.JetPropertiesAK15.photonPuppiMultiplicity = cms.vstring("puppiSpecificAK15:photonPuppiMultiplicity")
-
         process.JetPropertiesAK15.properties.append("msd")
         process.JetPropertiesAK15.msd = cms.vstring("ak15PFJetsPuppiSoftDropMassBeta1")
         self.VectorDouble.extend([
             'JetPropertiesAK15:msd(JetsAK15_softDropMassBeta1)'
         ])
+
+        if self.systematics:
+            process.JetPropertiesAK15.properties.extend(["jecUnc"])
+            process.JetPropertiesAK15.jecUnc = cms.vstring(JetAK15TagJECTmp.value())
+            self.VectorDouble.extend([
+                'JetPropertiesAK15:jecUnc(JetsAK15_jecUnc)',
+            ])
+        if self.geninfo and self.systematics:
+            process.JetPropertiesAK15.properties.extend(["jerFactorUp","jerFactorDown"])
+            process.JetPropertiesAK15.jerFactorUp = cms.vstring(JetAK15TagJERup.value())
+            process.JetPropertiesAK15.jerFactorDown = cms.vstring(JetAK15TagJERdown.value())
+            self.VectorDouble.extend([
+                'JetPropertiesAK15:jerFactorUp(JetsAK15_jerFactorUp)',
+                'JetPropertiesAK15:jerFactorDown(JetsAK15_jerFactorDown)',
+            ])
 
         # record final jet collection
         self.JetsTags.append(JetAK15Tag)
