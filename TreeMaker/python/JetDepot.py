@@ -44,7 +44,7 @@ def JetDepot(process, JetTag, jecUncDir=0, storeJec=False, doSmear=True, jerUncD
 
 from TreeMaker.TreeMaker.addJetInfo import addJetInfo
 
-def JetVariations(self, process, JetTag, SkipTag=cms.VInputTag(), suff='', vars='makeJetVars'):
+def JetVariations(self, process, JetTag, SkipTag=cms.VInputTag(), suff='', puppiSpecific='puppiSpecificAK8', vars='makeJetVars'):
         makeJetVarsFn = getattr(self,vars)
 
         # JEC unc up
@@ -62,6 +62,7 @@ def JetVariations(self, process, JetTag, SkipTag=cms.VInputTag(), suff='', vars=
             storeProperties=0,
             SkipTag=SkipTag,
             systType="JEC",
+            puppiSpecific=puppiSpecific,
         )
         
         # JEC unc down
@@ -78,6 +79,7 @@ def JetVariations(self, process, JetTag, SkipTag=cms.VInputTag(), suff='', vars=
             storeProperties=0,
             SkipTag=SkipTag,
             systType="JEC",
+            puppiSpecific=puppiSpecific,
         )
 
         # JER unc up
@@ -94,6 +96,7 @@ def JetVariations(self, process, JetTag, SkipTag=cms.VInputTag(), suff='', vars=
             storeProperties=0,
             SkipTag=SkipTag,
             systType="JER",
+            puppiSpecific=puppiSpecific,
         )
         
         # JER unc down
@@ -110,6 +113,7 @@ def JetVariations(self, process, JetTag, SkipTag=cms.VInputTag(), suff='', vars=
             storeProperties=0,
             SkipTag=SkipTag,
             systType="JER",
+            puppiSpecific=puppiSpecific,
         )
 
         # append factors to central collection
