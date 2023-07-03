@@ -156,7 +156,7 @@ void PDFWeightProducer::fillPDF(std::vector<float>& product, const std::vector<d
 }
 
 void PDFWeightProducer::fillScale(std::vector<float>& product, const std::vector<double>& weights, const gen::ScaleWeightGroupInfo& info) const {
-  if(product.empty()){
+  if(weights.empty()){
     if(debug_)
       edm::LogWarning("TreeMaker") << "Did not find any scale weights for this event";
     return;
@@ -175,7 +175,7 @@ void PDFWeightProducer::fillScale(std::vector<float>& product, const std::vector
 }
 
 void PDFWeightProducer::fillPS(std::vector<float>& product, const std::vector<double>& weights, const gen::PartonShowerWeightGroupInfo& info) const {
-  if(product.empty()){
+  if(weights.empty()){
     if(debug_)
       edm::LogWarning("TreeMaker") << "Did not find any PS weights for this event";
     return;
@@ -205,6 +205,18 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
     const auto& lheWeights = lheWeightHandle->weights();
     const auto& lheWeightInfos = *runCache(iEvent.getRun().index());
 
+    if(debug_) {
+      std::stringstream ss;
+      ss << "LHE weight vector entries: ";
+      for(const auto& weightvec : lheWeights){
+        ss << weightvec.size() << ", ";
+      }
+      ss << "\nLHE weight indices: "
+         << (storePDFs_ and lheWeightInfos[0].group ? lheWeightInfos[0].index : -1) << ", "
+         << (storeScales_ and lheWeightInfos[1].group ? lheWeightInfos[1].index : -1);
+      edm::LogInfo("TreeMaker") << ss.str();
+    }
+
     //fill pdf weights
     if(storePDFs_ and lheWeightInfos[0].group)
       fillPDF(*pdfweights, lheWeights.at(lheWeightInfos[0].index));
@@ -219,6 +231,18 @@ void PDFWeightProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Ev
   if(genWeightHandle.isValid()){
     const auto& genWeights = genWeightHandle->weights();
     const auto& genWeightInfos = *luminosityBlockCache(iEvent.getLuminosityBlock().index());
+
+    if(debug_) {
+      std::stringstream ss;
+      ss << "Gen weight vector entries: ";
+      for(const auto& weightvec : genWeights){
+        ss << weightvec.size() << ", ";
+      }
+      ss << "\nGen weight indices: "
+         << (storeScales_ and genWeightInfos[1].group ? genWeightInfos[1].index : -1) << ", "
+         << (storePSs_ and genWeightInfos[2].group ? genWeightInfos[2].index : -1);
+      edm::LogInfo("TreeMaker") << ss.str();
+    }
 
     //fill scale weights if not already found in lhe
     if(storeScales_ and genWeightInfos[1].group and scaleweights->empty())
