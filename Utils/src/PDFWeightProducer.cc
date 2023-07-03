@@ -156,7 +156,7 @@ void PDFWeightProducer::fillPDF(std::vector<float>& product, const std::vector<d
 }
 
 void PDFWeightProducer::fillScale(std::vector<float>& product, const std::vector<double>& weights, const gen::ScaleWeightGroupInfo& info) const {
-  if(product.empty()){
+  if(weights.empty()){
     if(debug_)
       edm::LogWarning("TreeMaker") << "Did not find any scale weights for this event";
     return;
@@ -175,7 +175,7 @@ void PDFWeightProducer::fillScale(std::vector<float>& product, const std::vector
 }
 
 void PDFWeightProducer::fillPS(std::vector<float>& product, const std::vector<double>& weights, const gen::PartonShowerWeightGroupInfo& info) const {
-  if(product.empty()){
+  if(weights.empty()){
     if(debug_)
       edm::LogWarning("TreeMaker") << "Did not find any PS weights for this event";
     return;
