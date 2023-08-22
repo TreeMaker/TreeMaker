@@ -13,7 +13,7 @@ before_script:
     variables:
         CVMFS_MOUNTS: "none"
     tags:
-        - docker-privileged
+        - docker-privileged-xl
     image: docker:latest
     services:
         - docker:dind
