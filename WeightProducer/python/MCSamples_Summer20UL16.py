@@ -7,7 +7,9 @@ Summer20UL16samples = [
     # NB: amcatnlo samples have negative weight events, so NumberEvts = # positive - # negative
     MCSample('TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 1416230, 504910),
     MCSample('ZNuNuGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-amcatnloFXFX-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 436785, 221957),
+    MCSample('ZNuNuGJets_MonoPhoton_PtG-40to130_TuneCP5_13TeV-amcatnloFXFX-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 2269546, 1353114),
     MCSample('WGJets_MonoPhoton_PtG-40to130_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_v17-v2', 'RunIISummer20UL16MiniAODv2', 'Constant', 1386165),
+    MCSample('WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 1330669),
     MCSample('WWG_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 698000, 604960),
     MCSample('WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 2900000),
     MCSample('WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mcRun2_asymptotic_v17-v1', 'RunIISummer20UL16MiniAODv2', 'Constant', 4312000, 3909520), # subtotal = 62442, straight subtotal = 69000
