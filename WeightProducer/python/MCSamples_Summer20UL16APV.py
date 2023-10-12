@@ -8,8 +8,8 @@ Summer20UL16APVsamples = [
     MCSample('ZNuNuGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-amcatnloFXFX-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 403043, 204765),
     MCSample('ZNuNuGJets_MonoPhoton_PtG-40to130_TuneCP5_13TeV-amcatnloFXFX-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 2712333, 1619561),
     MCSample('TTGJets_TuneCP5_13TeV-amcatnloFXFX-madspin-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 1511805, 539295),
-    MCSample('WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 1457339, 1603255),
-    MCSample('WGJets_MonoPhoton_PtG-40to130_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 1603255, 1457339),
+    MCSample('WGJets_MonoPhoton_PtG-130_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 1457339),
+    MCSample('WGJets_MonoPhoton_PtG-40to130_TuneCP5_13TeV-madgraph-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v2', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 1603255),
     MCSample('WWG_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 800000, 693392),
     MCSample('WWTo2L2Nu_TuneCP5_13TeV-powheg-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 3018000),
     MCSample('WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8', '106X_mcRun2_asymptotic_preVFP_v11-v1', 'RunIISummer20UL16MiniAODAPVv2', 'Constant', 5261000, 4768918), # subtotal = 64296, straight subtotal = 71000
