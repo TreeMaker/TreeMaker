@@ -315,7 +315,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       }
     }
     // check if photon is a good loose photon
-    if( passAcc && passIDLoose && passIsoLoose && iPhoton.pt() > pt_cut_){//pure photons
+    if( passAcc && iPhoton.pt() > pt_cut_ && ((passIDLoose && passIsoLoose) || phoMVAID >-0.02)){//pure photons
       goodPhotons->push_back( iPhoton );
       if(iPhoton.pt() > high_pt_cut_) highPhotons->push_back( iPhoton );
       photon_isEB->push_back( iPhoton.isEB() );
