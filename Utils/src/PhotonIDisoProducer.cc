@@ -262,7 +262,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
     bool passIso=false;
     bool passIsoLoose=false;
     bool passAcc=false;
-
+    bool passMVAId =false;
     double PhEta=iPhoton.eta();
 
     if(fabs(PhEta) < 1.4442  ){
@@ -314,8 +314,15 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
 	}
       }
     }
+    //apply mva based ID criteria
+    if(isBarrelPhoton){
+      if(phoMVAID>-0.02) passMVAId=true;
+    }
+    else if(isEndcapPhoton){
+      if(phoMVAID >-0.26) passMVAId=true;
+    }
     // check if photon is a good loose photon
-    if( passAcc && iPhoton.pt() > pt_cut_ && ((passIDLoose && passIsoLoose) || phoMVAID >-0.02)){//pure photons
+    if( passAcc && iPhoton.pt() > pt_cut_ && ((passIDLoose && passIsoLoose) || passMVAId)){//pure photons
       goodPhotons->push_back( iPhoton );
       if(iPhoton.pt() > high_pt_cut_) highPhotons->push_back( iPhoton );
       photon_isEB->push_back( iPhoton.isEB() );
