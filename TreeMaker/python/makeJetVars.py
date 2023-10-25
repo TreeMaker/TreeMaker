@@ -60,7 +60,7 @@ def makeGoodJets(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInpu
 # 1 = 0 + 4vecs, masks, minimal set of properties
 # 2 = all properties
 # puppiSpecific is not used, but just there to make interfaces consistent
-def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", puppiSpecific=""):
+def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), onlyGoodJets=False, systType="", puppiSpecific="", GenJetTag=None):
     ## ----------------------------------------------------------------------------------------------
     ## GoodJets
     ## ----------------------------------------------------------------------------------------------
@@ -183,6 +183,14 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
             setattr(process,"pileupJetIdUpdated"+suff,pileupJetIdUpdated)
             process, GoodJetsTag = addJetInfo(process, GoodJetsTag, ["pileupJetIdUpdated" + suff + ":fullDiscriminant"], [])
 
+        if self.geninfo and GenJetTag is not None:
+            jetMatcher = cms.EDProducer("RecoGenMatcher",
+                JetTag = JetTag,
+                GenJetTag = GenJetTag,
+            )
+            setattr(process,'jetMatcher'+suff,jetMatcher)
+            self.VectorInt.extend(['jetMatcher'+suff+'(Jets'+suff+'_genIndex)'])
+
         # make jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetProperties = jetproperties.clone(
@@ -282,7 +290,7 @@ def makeJetVars(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInput
 # 2 = 1 + subjet properties + extra substructure
 # 3 = 2 + constituents (large)
 # SkipTag is not used, but just there to make interfaces consistent
-def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates"),puppiSpecific="puppiSpecificAK8", subjetTag='SoftDropPuppiUpdated'):
+def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VInputTag(), systType="", doECFs=True, doDeepAK8=True, doDeepDoubleB=True, CandTag=cms.InputTag("packedPFCandidates"), puppiSpecific="puppiSpecificAK8", subjetTag='SoftDropPuppiUpdated', GenJetTag=None):
     # select good jets before anything else - eliminates bad AK8 jets (low pT, no constituents stored, etc.)
     process, GoodJetsTag = self.makeGoodJets(process,JetTag,suff,storeProperties,jetConeSize=0.8,puppiSpecific=puppiSpecific)
 
@@ -335,6 +343,14 @@ def makeJetVarsAK8(self, process, JetTag, suff, storeProperties, SkipTag=cms.VIn
         setattr(process,"JetProperties"+suff,JetPropertiesAK8)
         self.VectorInt.extend(['JetProperties'+suff+':origIndex(Jets'+suff+'_origIndex)'])
     elif storeProperties>0:
+        if self.geninfo and GenJetTag is not None:
+            jetMatcher = cms.EDProducer("RecoGenMatcher",
+                JetTag = JetTag,
+                GenJetTag = GenJetTag,
+            )
+            setattr(process,'jetMatcher'+suff,jetMatcher)
+            self.VectorInt.extend(['jetMatcher'+suff+'(Jets'+suff+'_genIndex)'])
+
         # AK8 jet variables - separate instance of jet properties producer
         from TreeMaker.Utils.jetproperties_cfi import jetproperties
         JetPropertiesAK8 = jetproperties.clone(

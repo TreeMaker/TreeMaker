@@ -305,6 +305,7 @@ def makeTreeFromMiniAOD(self,process):
     # default miniAOD tags
     JetTag = cms.InputTag("slimmedJets")
     METTag = cms.InputTag('slimmedMETs')
+    GenJetTag = cms.InputTag("slimmedGenJets")
     # get rid of the pointless low-pt AK8 jets ASAP
     # also get rid of jets w/ inf constituents (CutParser doesn't support isinf or bitwise operations, so use this hack)
     process.slimmedJetsAK8Good = cms.EDFilter("PATJetSelector",
@@ -885,7 +886,8 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetTag,
         suff='',
         storeProperties=2,
-        SkipTag=SkipTag
+        SkipTag=SkipTag,
+        GenJetTag=GenJetTag,
     )
 
     if self.systematics:
@@ -929,6 +931,7 @@ def makeTreeFromMiniAOD(self,process):
         JetTag=JetAK8Tag,
         suff='AK8',
         storeProperties=2,
+        GenJetTag=GenJetAK8Tag,
     )
     if self.tchannel:
         process.JetPropertiesAK8.NsubjettinessTau1 = cms.vstring('NjettinessAK8PuppiLowCut:tau1')
@@ -972,19 +975,19 @@ def makeTreeFromMiniAOD(self,process):
         from TreeMaker.Utils.genjetproperties_cfi import genjetproperties
         if self.emerging:
             process.genJetProperties = genjetproperties.clone(
-                GenJetTag = cms.InputTag("slimmedGenJets"),
+                GenJetTag = GenJetTag,
                 doHV = cms.bool(True),
             )
             self.VectorRecoCand.extend(['genJetProperties(GenJets)'])
             self.VectorInt.extend(['genJetProperties:multiplicity(GenJets_multiplicity)'])
             self.VectorInt.extend(['genJetProperties:nHVAncestors(GenJets_nHVAncestors)'])
         else:
-            self.VectorRecoCand.extend(['slimmedGenJets(GenJets)'])
+            self.VectorRecoCand.extend([GenJetTag.value()+'(GenJets)'])
 
         from TreeMaker.Utils.subJetSelection_cfi import SubGenJetSelection
 
         process.GenHTJets = SubGenJetSelection.clone(
-            JetTag = cms.InputTag('slimmedGenJets'),
+            JetTag = GenJetTag,
             MinPt  = cms.double(30),
             MaxEta = cms.double(2.4),
         )
@@ -997,7 +1000,7 @@ def makeTreeFromMiniAOD(self,process):
         self.VarsDouble.extend(['GenHT'])
 
         process.GenMHTJets = SubGenJetSelection.clone(
-            JetTag = cms.InputTag('slimmedGenJets'),
+            JetTag = GenJetTag,
             MinPt  = cms.double(30),
             MaxEta = cms.double(5.0),
         )
@@ -1186,7 +1189,6 @@ def makeTreeFromMiniAOD(self,process):
             self.VectorInt.extend([
                 'HiddenSector:hvCategory(GenJetsAK8_hvCategory)',
                 'HiddenSector:MT2JetsID(GenJetsAK8_MT2JetsID)',
-                'HiddenSector:genIndex(JetsAK8_genIndex)'
             ])
             self.VectorDouble.extend([
                 'HiddenSector:darkPtFrac(GenJetsAK8_darkPtFrac)'
@@ -1300,6 +1302,7 @@ def makeTreeFromMiniAOD(self,process):
 
         JetAK15Tag = cms.InputTag("packedPatJetsAK15PFPuppiSoftDrop")
         subJetAK15Tag = cms.InputTag("selectedPatJetsAK15PFPuppiSoftDropPacked:SubJets")
+        GenJetAK15Tag = cms.InputTag("ak15GenJetsNoNu")
 
         # get puppi-specific multiplicities
         from PhysicsTools.PatAlgos.patPuppiJetSpecificProducer_cfi import patPuppiJetSpecificProducer
@@ -1366,6 +1369,7 @@ def makeTreeFromMiniAOD(self,process):
             puppiSpecific = 'puppiSpecificAK15',
             subjetTag = 'SoftDrop',
             doECFs = True,
+            GenJetTag = GenJetAK15Tag,
         )
 
         _omit_AK15 = ["jecFactorSubjets", "SJptD", "SJaxismajor", "SJaxisminor", "SJmultiplicity", "ecfN3b1", "ecfN3b2"]
@@ -1417,7 +1421,7 @@ def makeTreeFromMiniAOD(self,process):
 
         # store AK15 genjets
         if self.geninfo:
-            self.VectorRecoCand.extend(['ak15GenJetsNoNu(GenJetsAK15)'])
+            self.VectorRecoCand.extend([GenJetAK15Tag.value()+'(GenJetsAK15)'])
 
     ## ----------------------------------------------------------------------------------------------
     ## Jet constituents
