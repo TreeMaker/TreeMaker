@@ -2,8 +2,6 @@
 #include <memory>
 #include <vector>
 #include <cmath>
-#include <map>
-#include <tuple>
 #include <utility>
 #include <unordered_set>
 // user include files
@@ -15,6 +13,7 @@
 #include "FWCore/Framework/interface/MakerMacros.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "TreeMaker/Utils/interface/lester_mt2_bisect.h"
+#include "TreeMaker/Utils/interface/matchAB.h"
 // new includes
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
@@ -60,14 +59,6 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     int checkLast(const reco::GenJet& jet, const CandSet& stableDs, int value, double& frac) const;
     int checkFirst(const reco::GenJet& jet, const CandSet& firstP, int value) const;
     double calculateMT2(const edm::Handle<edm::View<reco::GenMET>>& h_genmets, const reco::GenJet& dQM1J, const reco::GenJet& SMM1J, const reco::GenJet& dQM2J, const reco::GenJet& SMM2J) const;
-    template <typename A, typename B>
-    std::vector<int> matchAB(const A& collA, const B& collB) const;
-    template <typename A, typename B>
-    double deltaRAB(const A& candA, const B& candB) const;
-    //looks like a specialization, but actually an overload...
-    template <typename B>
-    double deltaRAB(const reco::Candidate* candA, const B& candB) const;
-    std::vector<int> matchGenRec(const edm::View<pat::Jet>& jets, const edm::View<reco::GenJet>& gen) const;
     bool signal_;
     edm::InputTag JetTag_, MetTag_, GenMetTag_, GenTag_, GenJetTag_;
     edm::EDGetTokenT<edm::View<pat::Jet>> JetTok_;
@@ -205,43 +196,6 @@ double HiddenSectorProducer::calculateMT2(const edm::Handle<edm::View<reco::GenM
   );
 }
 
-//use official JetMET matching procedure: equiv to set<DR,jet_index,gen_index> sorted by DR
-//from https://github.com/cms-jet/JetMETAnalysis/blob/master/JetUtilities/plugins/MatchRecToGen.cc
-//returns index array of length A pointing to B
-template <typename A, typename B>
-std::vector<int> HiddenSectorProducer::matchAB(const A& collA, const B& collB) const {
-  std::map<double,std::pair<unsigned,unsigned>> matchMap;
-  for(unsigned a = 0; a < collA.size(); ++a){
-    for(unsigned b = 0; b < collB.size(); ++b){
-      matchMap.emplace(std::piecewise_construct, std::forward_as_tuple(deltaRAB(collA[a],collB[b])), std::forward_as_tuple(a,b));
-    }
-  }
-
-  std::vector<int> bIndex(collA.size(),-1);
-  std::unordered_set<unsigned> a_used, b_used;
-  for(const auto& matchItem: matchMap){
-    unsigned a = matchItem.second.first;
-    unsigned b = matchItem.second.second;
-    if(a_used.find(a)==a_used.end() and b_used.find(b)==b_used.end()){
-      bIndex[a] = b;
-      a_used.insert(a);
-      b_used.insert(b);
-    }
-  }
-
-  return bIndex;
-}
-
-template <typename A, typename B>
-double HiddenSectorProducer::deltaRAB(const A& candA, const B& candB) const {
-  return reco::deltaR(candA,candB);
-}
-
-template <typename B>
-double HiddenSectorProducer::deltaRAB(const reco::Candidate* candA, const B& candB) const {
-  return reco::deltaR(*candA,candB);
-}
-
 HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
   signal_(iConfig.getParameter<bool>("signal")),
   JetTag_(iConfig.getParameter<edm::InputTag>("JetTag")),
@@ -282,7 +236,6 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
     produces<std::vector<int>>("hvCategory");
     produces<std::vector<double>>("darkPtFrac");
     produces<std::vector<int>>("MT2JetsID");
-    produces<std::vector<int>>("genIndex");
   }
 }
 
@@ -324,7 +277,6 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
   auto hvCategory = std::make_unique<std::vector<int>>();
   auto darkPtFrac = std::make_unique<std::vector<double>>();
   auto MT2JetsID = std::make_unique<std::vector<int>>();
-  auto genIndex = std::make_unique<std::vector<int>>();
 
   LorentzVector vpartsSum;
   if(h_parts.isValid()){
@@ -407,7 +359,7 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     *MT2JetsID = std::vector<int>(h_genjets->size(),-1);
     bool matchedAll = true;
     if(firstMd.size()==2){
-      pgenIndex = matchAB(firsts,*(h_genjets.product()));
+      pgenIndex = utils::matchAB(firsts,*(h_genjets.product()));
       for(unsigned p = 0; p < pgenIndex.size(); ++p){
         if(pgenIndex[p]>-1) MT2JetsID->at(pgenIndex[p]) = p+1;
         else matchedAll = false;
@@ -415,9 +367,6 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
       if(matchedAll) GenMT2 = calculateMT2(h_genmets,h_genjets->at(pgenIndex[0]),h_genjets->at(pgenIndex[2]),h_genjets->at(pgenIndex[1]),h_genjets->at(pgenIndex[3]));
       else GenMT2 = 0.;
     }
-
-    //gen:reco jet matching
-    *genIndex = matchAB(*(h_jets.product()), *(h_genjets.product()));
   }
 
   if(signal_){
@@ -425,7 +374,6 @@ void HiddenSectorProducer::produce(edm::StreamID, edm::Event& iEvent, const edm:
     iEvent.put(std::move(hvCategory),"hvCategory");
     iEvent.put(std::move(darkPtFrac),"darkPtFrac");
     iEvent.put(std::move(MT2JetsID),"MT2JetsID");
-    iEvent.put(std::move(genIndex),"genIndex");
   }
   auto pMJJ = std::make_unique<double>(MJJ);
   iEvent.put(std::move(pMJJ),"MJJ");
