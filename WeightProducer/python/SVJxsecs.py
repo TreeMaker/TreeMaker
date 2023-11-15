@@ -4,6 +4,30 @@ from TreeMaker.WeightProducer.MCSampleValues import MCSampleValuesHelper
 XSValues = MCSampleValuesHelper.XSValues
 
 SVJxsecs = {
+    "s-channel_mMed-200_MADPT300" : {
+        "CrossSection" : XSValues(XS_13TeV=7.412),
+    },
+    "s-channel_mMed-250_MADPT300" : {
+        "CrossSection" : XSValues(XS_13TeV=7.044),
+    },
+    "s-channel_mMed-300_MADPT300" : {
+        "CrossSection" : XSValues(XS_13TeV=6.781),
+    },
+    "s-channel_mMed-350_MADPT300" : {
+        "CrossSection" : XSValues(XS_13TeV=6.158),
+    },
+    "s-channel_mMed-400_MADPT300" : {
+        "CrossSection" : XSValues(XS_13TeV=5.566),
+    },
+    "s-channel_mMed-450_MADPT300" : {
+        "CrossSection" : XSValues(XS_13TeV=5.021),
+    },
+    "s-channel_mMed-500_MADPT300" : {
+        "CrossSection" : XSValues(XS_13TeV=4.439),
+    },
+    "s-channel_mMed-550_MADPT300" : {
+        "CrossSection" : XSValues(XS_13TeV=3.795),
+    },
     "mZprime-500"  : {
         "CrossSection" : XSValues(XS_13TeV=71.37),
     },
