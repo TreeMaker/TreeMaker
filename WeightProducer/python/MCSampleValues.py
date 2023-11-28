@@ -35,7 +35,13 @@ class MCSampleHelper():
         "generators"    : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"         : ["(.Tune)([^_]*)"],
         "added_info"    : ["(.PS[W,w]eights)([^_]*)"],
-        "other"         : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD([v]*[0-9]*)_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","SVJ_","_erdON","_ext([0-9])","_hdamp(UP|DOWN)"],
+        "other"         : [
+            "(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$",
+            "step4_MINIAOD_2016_","step4_MINIAOD([v]*[0-9]*)_","step_MINIAOD_",
+            "(.mDark)([^_]*)","(.rinv)([^_]*)","(.alpha)([^_]*)",
+            "(.ctau)([^_]*)","(.unflavored)([^_]*)","(.kappa)([^_]*)","(.aligned)([^_]*)",
+            "_n([^_]*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","SVJ_","_erdON","_ext([0-9])","_hdamp(UP|DOWN)",
+        ],
     }
 
     def __init__(self, extra_dicts_energy=None, extra_dicts_strip=None):
