@@ -942,9 +942,6 @@ def makeTreeFromMiniAOD(self,process):
         process.JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb2AK8PuppiLowCutSoftDropN2')
         process.JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb1AK8PuppiLowCutSoftDropN3')
         process.JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb2AK8PuppiLowCutSoftDropN3')
-        process.JetPropertiesAK8.softDropMass = cms.vstring('SoftDrop')
-        process.JetPropertiesAK8.subjets = cms.vstring('SoftDrop')
-        process.JetPropertiesAK8.SJbDiscriminatorCSV = cms.vstring('SoftDrop', 'pfCombinedInclusiveSecondaryVertexV2BJetTags')
     if self.systematics:
         process.JetPropertiesAK8.properties.extend(["jecUnc"])
         process.JetPropertiesAK8.jecUnc = cms.vstring(JetAK8TagJECTmp.value())
