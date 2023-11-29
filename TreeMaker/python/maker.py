@@ -6,7 +6,7 @@ import subprocess
 # import functions to be assigned as class methods
 from TreeMaker.TreeMaker.makeTreeFromMiniAOD_cff import makeTreeFromMiniAOD, transformJetSeq
 from TreeMaker.TreeMaker.JetDepot import JetVariations
-from TreeMaker.TreeMaker.makeJetVars import makeJetVars, makeGoodJets, makeJetVarsAK8, makeMHTVars
+from TreeMaker.TreeMaker.makeJetVars import makeJetVars, makeGoodJets, makeJetVarsAK8, makeMHTVars, updateECFs
 from TreeMaker.TreeMaker.doHadTauBkg import doHadTauBkg, makeJetVarsHadTau
 from TreeMaker.TreeMaker.doPhotons import doPhotonVars
 from TreeMaker.TreeMaker.doLostLeptonBkg import doLostLeptonBkg
@@ -242,6 +242,7 @@ class maker:
     makeJetVars = makeJetVars
     makeJetVarsAK8 = makeJetVarsAK8
     makeMHTVars = makeMHTVars
+    updateECFs = updateECFs
     doHadTauBkg = doHadTauBkg
     makeJetVarsHadTau = makeJetVarsHadTau
     doLostLeptonBkg = doLostLeptonBkg
