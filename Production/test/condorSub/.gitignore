@@ -3,3 +3,6 @@ checkVomsTar.sh
 step1.sh
 jobExecCondor.sh
 jobExecCondor.jdl
+createChain.py
+jobExecCondorChain.sh
+manageJobs.py

@@ -2,8 +2,9 @@
 #
 
 import FWCore.ParameterSet.Config as cms
-import sys,os
+import sys,os,re
 from itertools import chain
+
 def makeTreeFromMiniAOD(self,process):
 
     ## ----------------------------------------------------------------------------------------------
@@ -80,7 +81,7 @@ def makeTreeFromMiniAOD(self,process):
         self.VectorDouble.extend(['SignalScan:SignalParameters'])
         # set scan type ("None" by default, producer does nothing)
         if self.signal:
-            if self.pmssm: process.SignalScan.signalType = "pMSSM"
+            if "PMSSM" in self.sample: process.SignalScan.signalType = "pMSSM"
             elif (self.fastsim and
                  any(pattern+"_Tune" in self.sample for pattern in ("SMS-TChiHH", "SMS-TChiHZ", "SMS-TChiZZ"))):
                     process.SignalScan.signalType = "SUSYGenPart"
@@ -208,6 +209,15 @@ def makeTreeFromMiniAOD(self,process):
             )
             self.VectorRecoCand.append("genTops(GenTops)")
             self.VarsDouble.append("genTops:weight(GenTopWeight)")
+
+        #Event weight to fix FastSim pre-UL bug
+        if self.fastsim:
+            process.FastSimWeightPR31285To36122 = cms.EDProducer("FastSimWeightPR31285To36122",
+                genCollection = cms.InputTag("prunedGenParticles"),
+                genJetTag = cms.InputTag('slimmedGenJets'),
+                recJetTag = cms.InputTag("slimmedJets")
+            )
+            self.VarsDouble.append("FastSimWeightPR31285To36122")
 
     ## ----------------------------------------------------------------------------------------------
     ## JECs
@@ -1161,6 +1171,47 @@ def makeTreeFromMiniAOD(self,process):
         process.TreeMaker2
     )
     process.WriteTree.associate(process.myTask)
+
+    ## ----------------------------------------------------------------------------------------------
+    ## Branch control
+    ## ----------------------------------------------------------------------------------------------
+
+    # apply branch inclusion/exclusion, if enabled
+    # must be done last
+    if len(self.includeBranches)>0 or len(self.excludeBranches)>0:
+        # same algorithm from class TreeObject in TreeMaker.h
+        def branchName(b):
+            pos1 = b.find('(')
+            pos2 = b.find(')')
+            pos3 = b.find(':')
+            # case 3/4
+            if pos1!=-1 and pos2!=-1:
+                return b[pos1+1:pos2]
+            # case 2
+            elif pos3!=-1:
+                return b[pos3+1:]
+            # case 1
+            else:
+                return b
+        if self.exactBranches:
+            def branchCheck(b, patterns):
+                return any(branchName(b)==pattern for pattern in patterns)
+        else:
+            def branchCheck(b, patterns):
+                return any(regex.match(branchName(b)) for regex in patterns)
+        def branchInclude(b, patterns):
+            return branchCheck(b, patterns)
+        def branchExclude(b, patterns):
+            return not branchCheck(b, patterns)
+
+        branches, action = (self.includeBranches, branchInclude) if len(self.includeBranches)>0 else (self.excludeBranches, branchExclude)
+        patterns = branches if self.exactBranches else [re.compile(b) for b in branches]
+
+        for branchList in self.branchLists:
+            allBranches = getattr(self,branchList).value()
+            selBranches = [b for b in allBranches if action(b, patterns)]
+            setattr(self,branchList,cms.vstring(selBranches))
+            setattr(process.TreeMaker2,branchList,getattr(self,branchList))
 
     return process
 
