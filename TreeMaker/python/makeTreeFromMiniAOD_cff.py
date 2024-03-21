@@ -403,7 +403,7 @@ def makeTreeFromMiniAOD(self,process):
                 addPruning = False,
                 addSoftDropSubjets = True,
                 addNsub = True,
-                maxTau = 4,
+                maxTau = 5,
                 bTagDiscriminators = None, # can't use ak8updates here because "pfDeepBoostedJetTagInfos only supports running via updateJetCollection"
                 subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
                 JETCorrLevels = levels,
@@ -941,6 +941,11 @@ def makeTreeFromMiniAOD(self,process):
         process.JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiLowCut:tau2')
         process.JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiLowCut:tau3')
         process.JetPropertiesAK8.NsubjettinessTau4 = cms.vstring('NjettinessAK8PuppiLowCut:tau4')
+        process.JetPropertiesAK8.NsubjettinessTau5 = cms.vstring('NjettinessAK8PuppiLowCut:tau5')
+        process.JetPropertiesAK8.properties.extend(["NsubjettinessTau5"])
+        self.VectorDouble.extend([
+            'JetPropertiesAK8:NsubjettinessTau5(JetsAK8_NsubjettinessTau5)',
+        ])
 
         # more ECFs
         self.updateECFs(
