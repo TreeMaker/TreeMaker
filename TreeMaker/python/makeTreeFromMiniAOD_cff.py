@@ -411,6 +411,7 @@ def makeTreeFromMiniAOD(self,process):
                 addEnergyCorrFunc = True,
                 ecfType = ["N","M","C","D"],
                 ecfBeta = [1.0,2.0],
+                ecfN3 = [0,10000,10000,10000], # corresponds to ecfType
                 verbosity = 2 if self.verbose else 0,
             )
 
@@ -941,7 +942,7 @@ def makeTreeFromMiniAOD(self,process):
         process.JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiLowCut:tau3')
         process.JetPropertiesAK8.NsubjettinessTau4 = cms.vstring('NjettinessAK8PuppiLowCut:tau4')
 
-        # more ECFs (N3 have dummy values)
+        # more ECFs
         self.updateECFs(
             process,
             ["ecfN2b1","ecfN2b2","ecfN3b1","ecfN3b2","ecfC2b1","ecfC2b2","ecfM2b1","ecfM2b2","ecfD2b1","ecfD2b2"],
