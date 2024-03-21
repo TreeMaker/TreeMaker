@@ -36,6 +36,7 @@ def doPhotonVars(self,process):
     self.VectorDouble.append("goodPhotons:pfNeutralIsoRhoCorr(Photons_pfNeutralIsoRhoCorr)")
     self.VectorDouble.append("goodPhotons:sigmaIetaIeta(Photons_sigmaIetaIeta)")
     self.VectorBool.append("goodPhotons:nonPrompt(Photons_nonPrompt)")
+    self.VectorBool.append("goodPhotons:looseID(Photons_looseID)")
     self.VectorBool.append("goodPhotons:fullID(Photons_fullID)")
     self.VectorBool.append("goodPhotons:electronFakes(Photons_electronFakes)")
     self.VarsBool.append("goodPhotons:hasGenPromptPhoton(hasGenPromptPhoton)")
