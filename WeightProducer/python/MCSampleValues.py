@@ -35,13 +35,7 @@ class MCSampleHelper():
         "generators"    : ["(.pythia)([^_-]*)","(.powheg)([^_-]*)","(.madgraph)([^_-]*)","(.madspin)([^_-]*)","(.amcatnlo)([^_-]*)"],
         "tunes"         : ["(.Tune)([^_]*)"],
         "added_info"    : ["(.PS[W,w]eights)([^_]*)"],
-        "other"         : [
-            "(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$",
-            "step4_MINIAOD_2016_","step4_MINIAOD([v]*[0-9]*)_","step_MINIAOD_",
-            "(.mDark)([^_]*)","(.rinv)([^_]*)","(.alpha)([^_]*)",
-            "(.ctau)([^_]*)","(.unflavored)([^_]*)","(.kappa)([^_]*)","(.aligned)([^_]*)",
-            "_n([^_]*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","SVJ_","_erdON","_ext([0-9])","_hdamp(UP|DOWN)",
-        ],
+        "other"         : ["(.NLO)([^_-]*)","^\s*(RelVal\s*)?|(\s*_13)?\s*$","step4_MINIAOD_2016_","step4_MINIAOD([v]*[0-9]*)_","(.mDark)(.*)","(.isr|.fsr)(up|down)","([_|-]v)([0-9]*)","(.mWCutfix)","([_])(ttHtranche3)","SVJ_","_erdON","_ext([0-9])","_hdamp(UP|DOWN)"],
     }
 
     def __init__(self, extra_dicts_energy=None, extra_dicts_strip=None):
@@ -987,8 +981,18 @@ class MCSampleValuesHelper():
             "CrossSection" : XSValues(
                 XS_13TeV=4.115, XSSource_13TeV="XSDB (unknown)",
             ),
+        },        
+        "ZLLGJets_MonoPhoton_PtG-15to130" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=96.34, XSSource_13TeV="XSDB (unknown)",
+            ),
         },
 
+        "ZLLGJets_MonoPhoton_PtG-130" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=0.206, XSSource_13TeV="XSDB (unknown)",
+            ),
+        },
         "ttHJetToNonbb_M125" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.509, XSSource_13TeV="http://cds.cern.ch/record/2227475/files/CERN-2017-002-M.pdf?version=1 (p. 146, NLO+NLL)",
