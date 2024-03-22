@@ -988,7 +988,16 @@ class MCSampleValuesHelper():
                 XS_13TeV=4.115, XSSource_13TeV="XSDB (unknown)",
             ),
         },
-
+        "ZLLGJets_MonoPhoton_PtG-15to130" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=96.34, XSSource_13TeV="XSDB (unknown)",
+            ),
+        },        
+        "ZLLGJets_MonoPhoton_PtG-130" : {
+            "CrossSection" : XSValues(
+                XS_13TeV=0.206, XSSource_13TeV="XSDB (unknown)",
+            ),
+        },
         "ttHJetToNonbb_M125" : {
             "CrossSection" : XSValues(
                 XS_13TeV=0.509, XSSource_13TeV="http://cds.cern.ch/record/2227475/files/CERN-2017-002-M.pdf?version=1 (p. 146, NLO+NLL)",
