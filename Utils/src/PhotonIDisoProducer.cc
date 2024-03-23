@@ -145,6 +145,7 @@ PhotonIDisoProducer::PhotonIDisoProducer(const edm::ParameterSet& iConfig):
   produces< std::vector< double > >("passElectronVeto"); 
   produces< std::vector< bool > >("hadronization");
   produces< std::vector< bool > >("nonPrompt");
+  produces< std::vector< bool > >("looseID");
   produces< std::vector< bool > >("fullID");
   produces< std::vector< bool > >("electronFakes");
   produces< bool >("hasGenPromptPhoton");
@@ -206,6 +207,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   auto photon_passElectronVeto = std::make_unique<std::vector<double>>();
   auto   photon_hadronization = std::make_unique<std::vector<bool>>();
   auto   photon_nonPrompt  = std::make_unique<std::vector<bool>>();
+  auto   photon_looseID  = std::make_unique<std::vector<bool>>();
   auto   photon_fullID  = std::make_unique<std::vector<bool>>();
   auto   photon_electronFakes  = std::make_unique<std::vector<bool>>();
   auto photon_mvaValuesID = std::make_unique<std::vector<double>>();
@@ -337,6 +339,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
       photon_pfNeutralIsoRhoCorr->push_back( nuIso );
       photon_hasPixelSeed->push_back( iPhoton.hasPixelSeed() );
       photon_passElectronVeto->push_back( !hasMatchedPromptElectron(iPhoton.superCluster(),electrons, conversions, beamSpot->position()) );
+      photon_looseID->push_back(passIDLoose&&passIsoLoose); //in case some photon passes MVA but not loose ID/iso
       photon_fullID->push_back(passID&&passIso);
       photon_mvaValuesID->push_back(phoMVAID);
       photon_cutBasedID->push_back(tmpphoIDbit);
@@ -405,6 +408,7 @@ PhotonIDisoProducer::produce(edm::StreamID, edm::Event& iEvent, const edm::Event
   iEvent.put(std::move(photon_hasPixelSeed ), "hasPixelSeed" );
   iEvent.put(std::move(photon_passElectronVeto ), "passElectronVeto" );
   iEvent.put(std::move(photon_nonPrompt ), "nonPrompt" );
+  iEvent.put(std::move(photon_looseID ), "looseID" );
   iEvent.put(std::move(photon_fullID ), "fullID" );
   iEvent.put(std::move(photon_electronFakes ), "electronFakes" );
   auto hasGenPromptPhoton = std::make_unique<bool>(foundGenPrompt);  

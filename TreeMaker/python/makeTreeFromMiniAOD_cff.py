@@ -403,13 +403,15 @@ def makeTreeFromMiniAOD(self,process):
                 addPruning = False,
                 addSoftDropSubjets = True,
                 addNsub = True,
-                maxTau = 4,
+                maxTau = 5,
                 bTagDiscriminators = None, # can't use ak8updates here because "pfDeepBoostedJetTagInfos only supports running via updateJetCollection"
                 subjetBTagDiscriminators = ['pfCombinedInclusiveSecondaryVertexV2BJetTags'],
                 JETCorrLevels = levels,
                 subJETCorrLevels = levels,
                 addEnergyCorrFunc = True,
+                ecfType = ["N","M","C","D"],
                 ecfBeta = [1.0,2.0],
+                ecfN3 = [0,10000,10000,10000], # corresponds to ecfType
                 verbosity = 2 if self.verbose else 0,
             )
 
@@ -939,10 +941,20 @@ def makeTreeFromMiniAOD(self,process):
         process.JetPropertiesAK8.NsubjettinessTau2 = cms.vstring('NjettinessAK8PuppiLowCut:tau2')
         process.JetPropertiesAK8.NsubjettinessTau3 = cms.vstring('NjettinessAK8PuppiLowCut:tau3')
         process.JetPropertiesAK8.NsubjettinessTau4 = cms.vstring('NjettinessAK8PuppiLowCut:tau4')
-        process.JetPropertiesAK8.ecfN2b1 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb1AK8PuppiLowCutSoftDropN2')
-        process.JetPropertiesAK8.ecfN2b2 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb2AK8PuppiLowCutSoftDropN2')
-        process.JetPropertiesAK8.ecfN3b1 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb1AK8PuppiLowCutSoftDropN3')
-        process.JetPropertiesAK8.ecfN3b2 = cms.vstring('ak8PFJetsPuppiLowCutSoftDropValueMap:nb2AK8PuppiLowCutSoftDropN3')
+        process.JetPropertiesAK8.NsubjettinessTau5 = cms.vstring('NjettinessAK8PuppiLowCut:tau5')
+        process.JetPropertiesAK8.properties.extend(["NsubjettinessTau5"])
+        self.VectorDouble.extend([
+            'JetPropertiesAK8:NsubjettinessTau5(JetsAK8_NsubjettinessTau5)',
+        ])
+
+        # more ECFs
+        self.updateECFs(
+            process,
+            ["ecfN2b1","ecfN2b2","ecfN3b1","ecfN3b2","ecfC2b1","ecfC2b2","ecfM2b1","ecfM2b2","ecfD2b1","ecfD2b2"],
+            "AK8",
+            "ak8PFJetsPuppiLowCutSoftDrop",
+            "AK8PuppiLowCutSoftDrop",
+        )
     if self.systematics:
         process.JetPropertiesAK8.properties.extend(["jecUnc"])
         process.JetPropertiesAK8.jecUnc = cms.vstring(JetAK8TagJECTmp.value())
@@ -1376,16 +1388,13 @@ def makeTreeFromMiniAOD(self,process):
             branchlist.setValue([x for x in branchlist if not ("AK15" in x and any([y in x for y in _omit_AK15]))])
 
         # more ECFs
-        _all_ECFs = ["ecfN2b1","ecfN2b2","ecfC2b1","ecfC2b2","ecfM2b1","ecfM2b2","ecfD2b1","ecfD2b2"]
-        process.JetPropertiesAK15.properties.extend(_all_ECFs[2:]) # N-types already included
-        self.VectorDouble.extend(['JetPropertiesAK15:{0}(JetsAK15_{0})'.format(_ecf) for _ecf in _all_ECFs[2:]])
-        for _ecf in _all_ECFs:
-            _ecfT = _ecf[3:5]
-            _ecfB = _ecf[6]
-            setattr(process.JetPropertiesAK15,
-                _ecf,
-                cms.vstring('ak15PFJetsPuppiSoftDropValueMap:{}b{}AK15PuppiSoftDrop{}'.format(_ecfT[0].lower(),_ecfB,_ecfT))
-            )
+        self.updateECFs(
+            process,
+            ["ecfN2b1","ecfN2b2","ecfC2b1","ecfC2b2","ecfM2b1","ecfM2b2","ecfD2b1","ecfD2b2"],
+            "AK15",
+            "ak15PFJetsPuppiSoftDrop",
+            "AK15PuppiSoftDrop",
+        )
 
         process.JetPropertiesAK15.NsubjettinessTau1 = cms.vstring('NjettinessAK15Puppi:tau1')
         process.JetPropertiesAK15.NsubjettinessTau2 = cms.vstring('NjettinessAK15Puppi:tau2')
