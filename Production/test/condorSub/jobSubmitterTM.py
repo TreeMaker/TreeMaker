@@ -118,11 +118,11 @@ class jobSubmitterTM(jobSubmitter):
                     if ( fileListLen % int( self.nFiles ) != 0 ) :
                         nJobs += 1
 
+                netJobs = nJobs - int(firstJob)
                 if self.maxJobs >= 0:
                     if self.verbose: print "Limiting to max {0} jobs".format(self.maxJobs)
-                    nJobs = min([nJobs, self.maxJobs])
+                    netJobs = min([netJobs, self.maxJobs])
 
-                netJobs = nJobs - int(firstJob)
                 if self.verbose:
                     print "I will create "+str(netJobs)+" jobs for you!"
                     if firstJob>0: print "(starting from job "+str(firstJob)+")"
@@ -135,7 +135,7 @@ class jobSubmitterTM(jobSubmitter):
                 # start loop over N jobs
                 nActualJobs = 0
                 discontinuousJobs = (firstJob>0)
-                for iJob in range( int(firstJob), nJobs ) :
+                for iJob in range( int(firstJob), netJobs+int(firstJob) ) :
                     # get starting file number
                     nstart = iJob*int(self.nFiles)
 
