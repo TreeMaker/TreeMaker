@@ -89,7 +89,7 @@ def main(args):
                 else:
                     oname = f.split('/')[1]
                     # check for extended sample
-                    extcheck = re.search("ext[0-9]",f.split('/')[2])
+                    extcheck = re.search("(ext[0-9]*|part[0-9]*)",f.split('/')[2])
                     if not extcheck==None and len(extcheck.group(0))>0: oname = oname+"_"+extcheck.group(0)
                 
                 # make python file with preamble
