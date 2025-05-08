@@ -170,7 +170,7 @@ class maker:
         self.branchLists = [
             'VarsXYZVector','VarsXYZPoint','VarsDouble','VarsInt','VarsBool',
             'VectorRecoCand','VectorLorentzVector','VectorXYZVector','VectorXYZPoint','VectorFloat','VectorDouble','VectorString','VectorInt','VectorBool',
-            'VectorVectorBool','VectorVectorInt','VectorVectorDouble','VectorVectorString','VectorVectorLorentzVector','VectorVectorXYZVector','VectorVectorXYZPoint',
+            'VectorVectorBool','VectorVectorInt','VectorVectorDouble','VectorVectorString','VectorVectorLorentzVector','VectorVectorVectorLorentzVector','VectorVectorXYZVector','VectorVectorXYZPoint',
             'AssocVectorVectorBool','AssocVectorVectorInt','AssocVectorVectorDouble','AssocVectorVectorString','AssocVectorVectorLorentzVector','AssocVectorVectorXYZVector','AssocVectorVectorXYZPoint',
         ]
         for branchList in self.branchLists:

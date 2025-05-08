@@ -32,14 +32,14 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 	VarTypeNames{
 		"VarsBool","VarsInt","VarsDouble","VarsString","VarsLorentzVector","VarsXYZVector","VarsXYZPoint",
 		"VectorBool","VectorInt","VectorDouble","VectorString","VectorLorentzVector","VectorXYZVector","VectorXYZPoint","VectorFloat",
-		"VectorVectorBool","VectorVectorInt","VectorVectorDouble","VectorVectorString","VectorVectorLorentzVector","VectorVectorXYZVector","VectorVectorXYZPoint",
+		"VectorVectorBool","VectorVectorInt","VectorVectorDouble","VectorVectorString","VectorVectorLorentzVector","VectorVectorVectorLorentzVector","VectorVectorXYZVector","VectorVectorXYZPoint",
 		"AssocVectorVectorBool","AssocVectorVectorInt","AssocVectorVectorDouble","AssocVectorVectorString","AssocVectorVectorLorentzVector","AssocVectorVectorXYZVector","AssocVectorVectorXYZPoint",
 		"VectorRecoCand"
 	},
 	VarTypes{
 		t_bool,t_int,t_double,t_string,t_lorentz,t_xyzv,t_xyzp,
 		t_vbool,t_vint,t_vdouble,t_vstring,t_vlorentz,t_vxyzv,t_vxyzp,t_vfloat,
-		t_vvbool,t_vvint,t_vvdouble,t_vvstring,t_vvlorentz,t_vvxyzv,t_vvxyzp,
+		t_vvbool,t_vvint,t_vvdouble,t_vvstring,t_vvlorentz,t_vvvlorentz,t_vvxyzv,t_vvxyzp,
 		t_avvbool,t_avvint,t_avvdouble,t_avvstring,t_avvlorentz,t_avvxyzv,t_avvxyzp,
 		t_recocand
 	}
@@ -129,6 +129,7 @@ TreeMaker::TreeMaker(const edm::ParameterSet& iConfig) :
 				case TreeTypes::t_vvdouble  : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVDoubleToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNVDouble(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
 				case TreeTypes::t_vvstring  : tmp = new TreeNVString(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel); break;
 				case TreeTypes::t_vvlorentz : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVLVToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNVLV(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
+			        case TreeTypes::t_vvvlorentz: tmp = saveFloat ? (TreeObjectBase*)(new TreeNNVLVToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNNVLV(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
 				case TreeTypes::t_vvxyzv    : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZVToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNVXYZV(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
 				case TreeTypes::t_vvxyzp    : tmp = saveFloat ? (TreeObjectBase*)(new TreeNVXYZPToF(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)) : (TreeObjectBase*)(new TreeNVXYZP(VarName,VarTitle,nestedVectors,storeOffsets,false,splitLevel)); break;
 				case TreeTypes::t_avvbool   : tmp = new TreeNVBool(VarName,VarTitle,nestedVectors,storeOffsets,true,splitLevel); break;
