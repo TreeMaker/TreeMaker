@@ -1185,7 +1185,6 @@ def makeTreeFromMiniAOD(self,process):
             DarkGluonIDs = cms.vuint32(4900021),
             SMQuarkIDs = cms.vuint32(1,2,3,4,5,6),
             nsubjettiness = cms.PSet(
-                useSoftDrop = cms.bool(True),
                 Rcutoff = cms.double(999.0),
                 beta = cms.double(1.0),
                 R0   = cms.double(0.8),
@@ -1194,7 +1193,6 @@ def makeTreeFromMiniAOD(self,process):
                 nPass = cms.int32(999),
                 akAxesR0 = cms.double(999.0),
             ),
-            #jetCollInstanceName=cms.string("SubJets"),                     
         )
 
         self.VarsDouble.extend([
@@ -1232,7 +1230,6 @@ def makeTreeFromMiniAOD(self,process):
                 'HiddenSector:JetsDarkHadronJetsConstituents(JetsAK8_darkHadronJets_constituents)',
                 'HiddenSector:JetsDarkHadronJetsConstituentsGenMatchOnly(JetsAK8_darkHadronJets_constituentsGenMatchOnly)',
                 'HiddenSector:JetsDarkHadronJetsConstituentsNextDH(JetsAK8_darkHadronJets_constituentsNextDH)',
-
             ])
             self.VectorVectorInt.extend([
                 'HiddenSector:GenJetsDarkHadronJetsMultiplicity(GenJetsAK8_darkHadronJetsMultiplicity)',
@@ -1242,7 +1239,6 @@ def makeTreeFromMiniAOD(self,process):
                 'HiddenSector:GenJetsConstituentPdgid(GenJetsAK8_ConstituentPdgid)',
                 'HiddenSector:GenJetsConstituentMatchIndex(GenJetsAK8_ConstituentMatchIndex)',
                 'HiddenSector:JetsConstituentMatchStageReco(JetsAK8_ConstituentMatchStageReco)',
-
             ])
             self.VectorVectorDouble.extend([
                 'HiddenSector:GenJetsDarkHadronJetsTau1(GenJetsAK8_darkHadronJetsTau1)',

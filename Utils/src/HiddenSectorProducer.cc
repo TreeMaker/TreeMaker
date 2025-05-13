@@ -81,13 +81,12 @@ class HiddenSectorProducer : public edm::global::EDProducer<edm::StreamCache<Nje
     edm::ParameterSet njhConfig;
     PidSet DarkSMediatorIDs_, DarkTMediatorIDs_, DarkQuarkIDs_, DarkHadronIDs_, DarkGluonIDs_, DarkStableIDs_, DarkFirstIDs_, SMQuarkIDs_;
     std::unique_ptr<NjettinessHelper> beginStream(edm::StreamID) const {
-      return std::unique_ptr<NjettinessHelper>(new NjettinessHelper(njhConfig));
+		return std::make_unique<NjettinessHelper>(njhConfig);
     }
 
 };
 
-void HiddenSectorProducer::fillSet(PidSet& IDset, const std::string& name, const edm::ParameterSet& iConfig)
-{
+void HiddenSectorProducer::fillSet(PidSet& IDset, const std::string& name, const edm::ParameterSet& iConfig){
   const auto& ids = iConfig.getParameter<std::vector<unsigned>>(name);
   IDset.insert(ids.begin(),ids.end());
 }
@@ -628,63 +627,58 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
     auto comp = [](CandPtr a, CandPtr b){ return a->pt() > b->pt(); };
     //loop over genjets
     for(const auto& i_jet : *(h_genjets.product())){
+		GenJets_nConstituents->push_back(i_jet.numberOfDaughters());
 
-      GenJets_nConstituents->push_back(i_jet.numberOfDaughters());
+		int nDaus = 0;
+		std::map<CandPtr,std::vector<CandPtr>,decltype(comp)> darkHadronMap(comp);
+		for(unsigned i = 0; i < i_jet.numberOfDaughters(); ++i){
+			CandPtr dau = daughter_noexcept(i_jet,i);
+			CandPtr darkHadron = getAncestor(DarkHadronIDs_,dau);
+			if (darkHadron!=nullptr){
+				darkHadronMap[darkHadron].push_back(dau);
+				nDaus++;
+			}
+		}
 
-      int nDaus = 0;
-      std::map<CandPtr,std::vector<CandPtr>,decltype(comp)> darkHadronMap(comp);
-      for(unsigned i = 0; i < i_jet.numberOfDaughters(); ++i){
-        CandPtr dau = daughter_noexcept(i_jet,i);
-        CandPtr darkHadron = getAncestor(DarkHadronIDs_,dau);
-        if (darkHadron!=nullptr){
-          darkHadronMap[darkHadron].push_back(dau);
-	  nDaus++;
-	}
-      }
+		GenJets_nConstituentsDarkHadrons->push_back(nDaus);
 
-      GenJets_nConstituentsDarkHadrons->push_back(nDaus);
-
-      std::vector<CLorentzVector> tmp_darkHadrons;
-      std::vector<CLorentzVector> tmp_darkHadronJets;
-      std::vector<std::vector<CLorentzVector> > tmp_darkHadronJets_constituents;
-      std::vector<std::vector<int> > tmp_darkHadronJets_ConstituentPdgid;
-      //std::vector<std::vector<CLorentzVector> > tmp_darkHadronSubjets_constituents;
-      std::vector<int> tmp_darkHadronJets_multiplicity;
-      std::vector<double> tmp_darkHadronJets_tau1;
-      std::vector<double> tmp_darkHadronJets_tau2;
-      std::vector<double> tmp_darkHadronJets_tau3;
-      for(const auto& entry : darkHadronMap){
-        tmp_darkHadrons.emplace_back(entry.first->pt(),entry.first->eta(),entry.first->phi(),entry.first->energy());
-        LorentzVector tmpjet;
-	std::vector<CLorentzVector> tmpjetconstituents;
-	std::vector<int> tmpjetconstituentspdgid;
-        for(const auto& dau : entry.second){
-	  tmpjet += dau->p4();
-	  tmpjetconstituents.emplace_back(dau->pt(),dau->eta(),dau->phi(),dau->energy());
-	  tmpjetconstituentspdgid.emplace_back(dau->pdgId());
-        }
-        tmp_darkHadronJets.emplace_back(tmpjet.pt(),tmpjet.eta(),tmpjet.phi(),tmpjet.energy());
-	tmp_darkHadronJets_constituents.push_back(tmpjetconstituents);
-	tmp_darkHadronJets_ConstituentPdgid.push_back(tmpjetconstituentspdgid);
-	tmp_darkHadronJets_multiplicity.push_back(entry.second.size());
-	tmp_darkHadronJets_tau1.push_back(streamCache(iID)->getTau(1, tmpjetconstituents));
-	tmp_darkHadronJets_tau2.push_back(streamCache(iID)->getTau(2, tmpjetconstituents));
-	tmp_darkHadronJets_tau3.push_back(streamCache(iID)->getTau(3, tmpjetconstituents));
-
-      }
-
-
-      GenJets_darkHadrons->push_back(tmp_darkHadrons);
-      GenJets_darkHadronJets->push_back(tmp_darkHadronJets);
-      GenJets_darkHadronJets_constituents->push_back(tmp_darkHadronJets_constituents);
-      GenJets_darkHadronJets_constituentsPdgid->push_back(tmp_darkHadronJets_ConstituentPdgid);
-      GenJets_darkHadronJets_multiplicity->push_back(tmp_darkHadronJets_multiplicity);
-      GenJets_darkHadronJets_tau1->push_back(tmp_darkHadronJets_tau1);
-      GenJets_darkHadronJets_tau2->push_back(tmp_darkHadronJets_tau2);
-      GenJets_darkHadronJets_tau3->push_back(tmp_darkHadronJets_tau3);
-      GenJets_nConstituents_unmatched->emplace_back(-1);
-      GenJets_constituents_pdgid->push_back({-1});
-      GenJets_constituents_matchIndex->push_back({-1});
+		std::vector<CLorentzVector> tmp_darkHadrons;
+		std::vector<CLorentzVector> tmp_darkHadronJets;
+		std::vector<std::vector<CLorentzVector> > tmp_darkHadronJets_constituents;
+		std::vector<std::vector<int> > tmp_darkHadronJets_ConstituentPdgid;
+		std::vector<int> tmp_darkHadronJets_multiplicity;
+		std::vector<double> tmp_darkHadronJets_tau1;
+		std::vector<double> tmp_darkHadronJets_tau2;
+		std::vector<double> tmp_darkHadronJets_tau3;
+		for(const auto& entry : darkHadronMap){
+			tmp_darkHadrons.emplace_back(entry.first->pt(),entry.first->eta(),entry.first->phi(),entry.first->energy());
+			LorentzVector tmpjet;
+			std::vector<CLorentzVector> tmpjetconstituents;
+			std::vector<int> tmpjetconstituentspdgid;
+			for(const auto& dau : entry.second){
+				tmpjet += dau->p4();
+				tmpjetconstituents.emplace_back(dau->pt(),dau->eta(),dau->phi(),dau->energy());
+				tmpjetconstituentspdgid.emplace_back(dau->pdgId());
+			}
+			tmp_darkHadronJets.emplace_back(tmpjet.pt(),tmpjet.eta(),tmpjet.phi(),tmpjet.energy());
+			tmp_darkHadronJets_constituents.push_back(tmpjetconstituents);
+			tmp_darkHadronJets_ConstituentPdgid.push_back(tmpjetconstituentspdgid);
+			tmp_darkHadronJets_multiplicity.push_back(entry.second.size());
+			tmp_darkHadronJets_tau1.push_back(streamCache(iID)->getTau(1, tmpjetconstituents));
+			tmp_darkHadronJets_tau2.push_back(streamCache(iID)->getTau(2, tmpjetconstituents));
+			tmp_darkHadronJets_tau3.push_back(streamCache(iID)->getTau(3, tmpjetconstituents));
+		}
+		GenJets_darkHadrons->push_back(tmp_darkHadrons);
+		GenJets_darkHadronJets->push_back(tmp_darkHadronJets);
+		GenJets_darkHadronJets_constituents->push_back(tmp_darkHadronJets_constituents);
+		GenJets_darkHadronJets_constituentsPdgid->push_back(tmp_darkHadronJets_ConstituentPdgid);
+		GenJets_darkHadronJets_multiplicity->push_back(tmp_darkHadronJets_multiplicity);
+		GenJets_darkHadronJets_tau1->push_back(tmp_darkHadronJets_tau1);
+		GenJets_darkHadronJets_tau2->push_back(tmp_darkHadronJets_tau2);
+		GenJets_darkHadronJets_tau3->push_back(tmp_darkHadronJets_tau3);
+		GenJets_nConstituents_unmatched->emplace_back(-1);
+		GenJets_constituents_pdgid->push_back({-1});
+		GenJets_constituents_matchIndex->push_back({-1});
     }
   }
 
