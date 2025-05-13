@@ -78,10 +78,10 @@ class HiddenSectorProducer : public edm::global::EDProducer<edm::StreamCache<Nje
     edm::EDGetTokenT<edm::View<reco::Candidate>> CandTok_;
     edm::EDGetTokenT<std::vector<int>> GenIndexTok_;
     double coneSize_;
-    edm::ParameterSet njhConfig;
+    edm::ParameterSet njhConfig_;
     PidSet DarkSMediatorIDs_, DarkTMediatorIDs_, DarkQuarkIDs_, DarkHadronIDs_, DarkGluonIDs_, DarkStableIDs_, DarkFirstIDs_, SMQuarkIDs_;
     std::unique_ptr<NjettinessHelper> beginStream(edm::StreamID) const {
-		return std::make_unique<NjettinessHelper>(njhConfig);
+		return std::make_unique<NjettinessHelper>(njhConfig_);
     }
 
 };
@@ -240,13 +240,12 @@ void HiddenSectorProducer::matchJetsCands(edm::Handle<edm::View<pat::Jet>>& h_je
 
 	//loop over PF candidate collection once: check every jet in every jet collection
 	//only PF candidates found in a jet collection will be kept
+	cands_out.resize(h_jets->size());
+	pdgids_out.resize(h_jets->size());
 	for(unsigned c = 0; c < h_cands->size(); ++c){
 		const auto& candPtr = h_cands->ptrs()[c];
 		//if this cand is kept, it will be appended to cands_out
-
 		for(unsigned j = 0; j < h_jets->size(); ++j){
-			if (cands_out.size() <= j) cands_out.emplace_back();
-			if (pdgids_out.size() <= j) pdgids_out.emplace_back();
 			const auto& jet = h_jets->at(j);
 			const auto& daughterPtrs = jet.daughterPtrVector();
 			if(cands_out[j].size()==daughterPtrs.size()) continue;
@@ -275,9 +274,6 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 		for(unsigned j = 0; j < indices[i].size(); j++) indices[i][j] = -1;
 	}
 
-	std::vector<bool> tmpRecoMatched(jetCands.size(), false);
-
-
 	struct matchInfo{
 		std::vector<int> genIndexTop;
 		std::vector<int> genIndex;
@@ -301,16 +297,18 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 	for(unsigned i = 0; i < genSubjetConstituents.size(); i++){
 		for(unsigned j = 0; j < genSubjetConstituents[i].size(); j++){
 			auto it = std::find(pdgids.begin(), pdgids.end(), genSubjetPdgid[i][j]);
-			if ( it != pdgids.end() ) {
-				int index = it - pdgids.begin();
+			int index = -1;
+			if ( it != pdgids.end()) {
+				index = it - pdgids.begin();
 				toMatch[index].genParts.push_back(genSubjetConstituents[i][j]);
 				toMatch[index].genIndexTop.push_back(i);
 				toMatch[index].genIndex.push_back(j);
 			}
-			else if (std::find(pdgids.begin(), pdgids.end(), genSubjetPdgid[i][j]) == pdgids.end() ) {
-				toMatch[pdgids.size()].genParts.push_back(genSubjetConstituents[i][j]);
-				toMatch[pdgids.size()].genIndexTop.push_back(i);
-				toMatch[pdgids.size()].genIndex.push_back(j);
+			else {
+				index = pdgids.size();
+				toMatch[index].genParts.push_back(genSubjetConstituents[i][j]);
+				toMatch[index].genIndexTop.push_back(i);
+				toMatch[index].genIndex.push_back(j);
 			}
 		}
 	}
@@ -318,14 +316,16 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 	// get list of reco particles for each pdgid/hadrons
 	for(unsigned r = 0; r < jetCands.size(); r++){
 		auto it = std::find(pdgids.begin(), pdgids.end(), jetCandsPdgid[r]);
-		if(it != pdgids.end() ) {
-			int index = it - pdgids.begin();
+		int index = -1;
+		if ( it != pdgids.end()) {
+			index = it - pdgids.begin();
 			toMatch[index].recoParts.push_back(jetCands[r]);
 			toMatch[index].recoIndex.push_back(r);
 		}
-		else if(std::find(pdgids.begin(), pdgids.end(), jetCandsPdgid[r]) == pdgids.end() ) {
-			toMatch[pdgids.size()].recoParts.push_back(jetCands[r]);
-			toMatch[pdgids.size()].recoIndex.push_back(r);
+		else {
+			index = pdgids.size();
+			toMatch[index].recoParts.push_back(jetCands[r]);
+			toMatch[index].recoIndex.push_back(r);
 		}
 	}
 
@@ -335,7 +335,7 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 		for(unsigned i = 0; i < m.matchedIndex.size(); i++){
 			if (m.matchedIndex[i] != -1) {
 				indices[m.genIndexTop[i]][m.genIndex[i]] = m.recoIndex[m.matchedIndex[i]];
-				tmpRecoMatched[m.recoIndex[m.matchedIndex[i]]] = true;
+				recoMatched[m.recoIndex[m.matchedIndex[i]]] = true;
 				matchStageReco[m.recoIndex[m.matchedIndex[i]]] = 0;
 			}
 		}
@@ -354,7 +354,7 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 	}
 
 	for(unsigned r = 0; r < jetCands.size(); r++){
-		if( tmpRecoMatched[r] == false ) {
+		if( recoMatched[r] == false ) {
 			leftovers.recoParts.push_back(jetCands[r]);
 			leftovers.recoIndex.push_back(r);
 		}
@@ -366,11 +366,11 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 	for(unsigned m = 0; m < leftovers.matchedIndex.size(); m++){
 		if (leftovers.matchedIndex[m] != -1) {
 			indices[leftovers.genIndexTop[m]][leftovers.genIndex[m]] = leftovers.recoIndex[leftovers.matchedIndex[m]];
-			tmpRecoMatched[leftovers.recoIndex[leftovers.matchedIndex[m]]] = true;
+			recoMatched[leftovers.recoIndex[leftovers.matchedIndex[m]]] = true;
 			matchStageReco[leftovers.recoIndex[leftovers.matchedIndex[m]]] = 2;
 		}
 	}
-	recoMatched = tmpRecoMatched;
+
 	return indices;
 }
 
@@ -391,7 +391,7 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
   CandTok_(consumes<edm::View<reco::Candidate>>(CandTag_)),
   GenIndexTok_(consumes<std::vector<int>>(GenIndexTag_)),
   coneSize_(iConfig.getParameter<double>("coneSize")),
-  njhConfig(iConfig.getParameter<edm::ParameterSet>("nsubjettiness"))
+  njhConfig_(iConfig.getParameter<edm::ParameterSet>("nsubjettiness"))
 {
   fillSet(DarkSMediatorIDs_,"DarkSMediatorIDs",iConfig);
   fillSet(DarkTMediatorIDs_,"DarkTMediatorIDs",iConfig);
@@ -696,7 +696,6 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 		  int genJetIndex = genIndex->at(recoJetIndex);
 
 		  Jets_nConstituents->push_back(jets_cands[recoJetIndex].size());
-		  //Jets_constituents_pdgid->push_back(cands_pdgids[recoJetIndex]);
 
 		  if (genJetIndex == -1) {
 			  std::vector<int> tmp = {-1};
@@ -721,7 +720,7 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 
 
 		  // Match gen to reco particles using pdgid and deltaR matching
-		  std::vector<bool> recoMatched;
+		  std::vector<bool> recoMatched(jets_cands[recoJetIndex].size(), -1);
 		  std::vector<int> matchStageReco(jets_cands[recoJetIndex].size(), -1);
 
 		  std::vector<std::vector<int>> matchedRecoIndex = matchParticles(GenJets_darkHadronJets_constituents->at(genJetIndex), GenJets_darkHadronJets_constituentsPdgid->at(genJetIndex), jets_cands[recoJetIndex], cands_pdgids[recoJetIndex], recoMatched, matchStageReco);

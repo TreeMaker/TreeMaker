@@ -730,4 +730,4 @@ typedef TreeNNVector<math::PtEtaPhiELorentzVector> TreeNNVLV;
 template <>
 const string TreeNNVLVToF::GetBaseType() { return "math::PtEtaPhiELorentzVectorF"; }
 template <>
-const string TreeNNVLV::GetBaseType() { return "math::PtEtaPhiELorentzVector"; }x
+const string TreeNNVLV::GetBaseType() { return "math::PtEtaPhiELorentzVector"; }
