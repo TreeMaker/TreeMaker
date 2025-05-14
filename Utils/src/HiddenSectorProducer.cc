@@ -300,16 +300,14 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 			int index = -1;
 			if ( it != pdgids.end()) {
 				index = it - pdgids.begin();
-				toMatch[index].genParts.push_back(genSubjetConstituents[i][j]);
-				toMatch[index].genIndexTop.push_back(i);
-				toMatch[index].genIndex.push_back(j);
 			}
 			else {
 				index = pdgids.size();
-				toMatch[index].genParts.push_back(genSubjetConstituents[i][j]);
-				toMatch[index].genIndexTop.push_back(i);
-				toMatch[index].genIndex.push_back(j);
 			}
+			toMatch[index].genParts.push_back(genSubjetConstituents[i][j]);
+			toMatch[index].genIndexTop.push_back(i);
+			toMatch[index].genIndex.push_back(j);
+
 		}
 	}
 
@@ -319,14 +317,13 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 		int index = -1;
 		if ( it != pdgids.end()) {
 			index = it - pdgids.begin();
-			toMatch[index].recoParts.push_back(jetCands[r]);
-			toMatch[index].recoIndex.push_back(r);
 		}
 		else {
 			index = pdgids.size();
-			toMatch[index].recoParts.push_back(jetCands[r]);
-			toMatch[index].recoIndex.push_back(r);
 		}
+		toMatch[index].recoParts.push_back(jetCands[r]);
+		toMatch[index].recoIndex.push_back(r);
+
 	}
 
 	for( auto& m: toMatch ) {

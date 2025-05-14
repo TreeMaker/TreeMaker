@@ -508,7 +508,7 @@ class TreeNestedVector : public TreeObject<std::vector<std::vector<BaseIn>>,std:
 			}
 			// This protects against the case where there were >=1 empty sub-vectors, and only empty vectors
 			// Thus, nothing will be in the output (accum) vector, but the offsets would be all '0'
-			if (storeOffsets && !associated && accum.size() == 0) offsets.clear();
+			if (storeOffsets && !associated && accum.empty()) offsets.clear();
 		}
 		void SetConsumes(edm::ConsumesCollector && iC) override{
 			tok = iC.consumes<TopIn>(this->tag);
@@ -635,7 +635,7 @@ class TreeNNVector : public TreeObject<std::vector<std::vector<std::vector<BaseI
 		// From: https://stackoverflow.com/questions/17294629/merging-flattening-sub-vectors-into-a-single-vector-c-converting-2d-to-1d
 		void flatten(TripIn const& all, SubOut &accum, vector<int> &offsets) {
 			// Don't store any offsets if there are no sub-vectors
-			if (all.size() == 0) return;
+			if (all.empty()) return;
 			if (!associated && storeOffsets) { offsets.insert(std::end(offsets),0); }
 			for(auto& sub : all) {
 				int subLength = 0;
