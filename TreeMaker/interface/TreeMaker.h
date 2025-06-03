@@ -40,8 +40,9 @@ using namespace std;
 enum TreeTypes { 
 	t_bool=0, t_int=1, t_double=2, t_string=3, t_lorentz=4, t_xyzv=5, t_xyzp=6,
 	t_vbool=100, t_vint=101, t_vdouble=102, t_vstring=103, t_vlorentz=104, t_vxyzv=105, t_vxyzp=106, t_vfloat=107,
-	t_vvbool=200, t_vvint=201, t_vvdouble=202, t_vvstring=203, t_vvlorentz=204, t_vvxyzv=205, t_vvxyzp=206, t_vvvlorentz=207,
+	t_vvbool=200, t_vvint=201, t_vvdouble=202, t_vvstring=203, t_vvlorentz=204, t_vvxyzv=205, t_vvxyzp=206,
 	t_avvbool=300, t_avvint=301, t_avvdouble=302, t_avvstring=303, t_avvlorentz=304, t_avvxyzv=305, t_avvxyzp=306,
+	t_vvvlorentz=407, t_vvvint=408,
 	t_recocand=1000
 };
 
@@ -222,7 +223,7 @@ typedef TreeObject<vector<vector<math::PtEtaPhiELorentzVector>>,vector<vector<ma
 typedef TreeObject<vector<vector<vector<math::PtEtaPhiELorentzVector>>>,vector<vector<vector<math::PtEtaPhiELorentzVectorF>>>> TreeObjectVVVLVToF;
 typedef TreeObject<vector<vector<math::XYZVector>>,vector<vector<math::XYZVectorF>>> TreeObjectVVXYZVToF;
 typedef TreeObject<vector<vector<math::XYZPoint>>,vector<vector<math::XYZPointF>>> TreeObjectVVXYZPToF;
-//typedefs for doubles
+//typedefs for doublesx
 typedef TreeObject<double> TreeObjectDouble;
 typedef TreeObject<vector<double>> TreeObjectVDouble;
 typedef TreeObject<vector<vector<double>>> TreeObjectVVDouble;
@@ -247,6 +248,7 @@ typedef TreeObject<vector<float>> TreeObjectVFloat;
 typedef TreeObject<vector<vector<bool>>> TreeObjectVVBool;
 typedef TreeObject<vector<vector<int>>> TreeObjectVVInt;
 typedef TreeObject<vector<vector<string>>> TreeObjectVVString;
+typedef TreeObject<vector<vector<vector<int>>>> TreeObjectVVVInt;
 
 //convert double to float
 template<>
@@ -345,6 +347,8 @@ template<>
 string TreeObjectVVBool::GetBranchType() { return "vector<vector<bool>>"; }
 template<>
 string TreeObjectVVInt::GetBranchType() { return "vector<vector<int>>"; }
+template<>
+string TreeObjectVVVInt::GetBranchType() { return "vector<vector<vector<int>>>"; }
 template<>
 string TreeObjectVVDoubleToF::GetBranchType() { return "vector<vector<float>>"; }
 template<>
@@ -628,6 +632,7 @@ class TreeNNVector : public TreeObject<std::vector<std::vector<std::vector<BaseI
 		TreeNNVector() : TreeObject<TripIn,TripOut>() {}
 		TreeNNVector(string tempFull_, string title_="", bool nestedVectors_=true, bool storeOffsets_=true, bool associated_=false, int splitLevel_=0) :
 		TreeObject<TripIn,TripOut>(tempFull_,title_,splitLevel_), nestedVectors(nestedVectors_), storeOffsets(storeOffsets_), associated(associated_) {}
+
 		// Destructor
 		~TreeNNVector() override {}
 		
@@ -724,9 +729,12 @@ class TreeNNVector : public TreeObject<std::vector<std::vector<std::vector<BaseI
 		vector<int> offsets;
 };
 
+typedef TreeNNVector<int> TreeNNVInt;
 typedef TreeNNVector<math::PtEtaPhiELorentzVector,math::PtEtaPhiELorentzVectorF> TreeNNVLVToF;
 typedef TreeNNVector<math::PtEtaPhiELorentzVector> TreeNNVLV;
 
+template <>
+const string TreeNNVInt::GetBaseType() { return "int"; }
 template <>
 const string TreeNNVLVToF::GetBaseType() { return "math::PtEtaPhiELorentzVectorF"; }
 template <>

@@ -16,7 +16,6 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "TreeMaker/Utils/interface/lester_mt2_bisect.h"
 #include "TreeMaker/Utils/interface/matchAB.h"
-#include "TreeMaker/Utils/interface/NjettinessHelper.h"
 // new includes
 #include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/PatCandidates/interface/Jet.h"
@@ -44,7 +43,7 @@ CandPtr daughter_noexcept(const T& mother, unsigned i) {
   return tmp.id().isValid() ? &*tmp : nullptr;
 }
 
-class HiddenSectorProducer : public edm::global::EDProducer<edm::StreamCache<NjettinessHelper>> {
+class HiddenSectorProducer : public edm::global::EDProducer<> {
   public:
     explicit HiddenSectorProducer(const edm::ParameterSet&);
   private:
@@ -80,13 +79,10 @@ class HiddenSectorProducer : public edm::global::EDProducer<edm::StreamCache<Nje
     double coneSize_;
     edm::ParameterSet njhConfig_;
     PidSet DarkSMediatorIDs_, DarkTMediatorIDs_, DarkQuarkIDs_, DarkHadronIDs_, DarkGluonIDs_, DarkStableIDs_, DarkFirstIDs_, SMQuarkIDs_;
-    std::unique_ptr<NjettinessHelper> beginStream(edm::StreamID) const {
-		return std::make_unique<NjettinessHelper>(njhConfig_);
-    }
-
 };
 
-void HiddenSectorProducer::fillSet(PidSet& IDset, const std::string& name, const edm::ParameterSet& iConfig){
+void HiddenSectorProducer::fillSet(PidSet& IDset, const std::string& name, const edm::ParameterSet& iConfig)
+{
   const auto& ids = iConfig.getParameter<std::vector<unsigned>>(name);
   IDset.insert(ids.begin(),ids.end());
 }
@@ -237,7 +233,6 @@ double HiddenSectorProducer::calculateMT2(const edm::Handle<edm::View<reco::GenM
 }
 
 void HiddenSectorProducer::matchJetsCands(edm::Handle<edm::View<pat::Jet>>& h_jets, edm::Handle<edm::View<reco::Candidate>>& h_cands, std::vector<std::vector<CLorentzVector> >& cands_out, std::vector<std::vector<int> >& pdgids_out) const {
-
 	//loop over PF candidate collection once: check every jet in every jet collection
 	//only PF candidates found in a jet collection will be kept
 	cands_out.resize(h_jets->size());
@@ -250,7 +245,7 @@ void HiddenSectorProducer::matchJetsCands(edm::Handle<edm::View<pat::Jet>>& h_je
 			const auto& daughterPtrs = jet.daughterPtrVector();
 			if(cands_out[j].size()==daughterPtrs.size()) continue;
 			bool keep = false;
-			for(const auto& candJetDau : jet.daughterPtrVector()){
+			for(const auto& candJetDau : daughterPtrs){
 				keep = candJetDau.key() == candPtr.key();
 				if (keep) {
 					cands_out[j].emplace_back(candPtr->pt(),candPtr->eta(),candPtr->phi(),candPtr->energy());
@@ -259,11 +254,8 @@ void HiddenSectorProducer::matchJetsCands(edm::Handle<edm::View<pat::Jet>>& h_je
 					break;
 				}
 			}
-			// if we are here either we broke out of candJetDau loop because we matched that jet dau, and we should skip the rest of the jets by breaking out of jet loop and going to next h_cand, or we went through all jet daughters and keep is false and we should go to next jet and see if we match there. Basically if we break out of daughters, also break out of jets loop
-			if (keep) break;
 		}
 	}
-	return;
 }
 
 
@@ -307,7 +299,6 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 			toMatch[index].genParts.push_back(genSubjetConstituents[i][j]);
 			toMatch[index].genIndexTop.push_back(i);
 			toMatch[index].genIndex.push_back(j);
-
 		}
 	}
 
@@ -326,14 +317,16 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 
 	}
 
-	for( auto& m: toMatch ) {
+	for( unsigned j = 0; j < toMatch.size(); j++ ) {
+		matchInfo m = toMatch[j];
+		int stage = j < pdgids.size() ? 0 : 1;
 		m.matchedIndex = utils::matchAB(m.genParts, m.recoParts);
 		//Save matched indices to final array
 		for(unsigned i = 0; i < m.matchedIndex.size(); i++){
 			if (m.matchedIndex[i] != -1) {
 				indices[m.genIndexTop[i]][m.genIndex[i]] = m.recoIndex[m.matchedIndex[i]];
 				recoMatched[m.recoIndex[m.matchedIndex[i]]] = true;
-				matchStageReco[m.recoIndex[m.matchedIndex[i]]] = 0;
+				matchStageReco[m.recoIndex[m.matchedIndex[i]]] = stage;
 			}
 		}
 	}
@@ -428,21 +421,16 @@ HiddenSectorProducer::HiddenSectorProducer(const edm::ParameterSet& iConfig) :
 
     produces<std::vector<std::vector<int>>>("GenJetsDarkHadronJetsMultiplicity");
     produces<std::vector<std::vector<int>>>("JetsNConstituentsUnmatchedPdgid");
-    produces<std::vector<std::vector<int>>>("JetsNConstituentsIsAssigned");
-
-    produces<std::vector<std::vector<int>>>("JetsConstituentPdgid");
-    produces<std::vector<std::vector<int>>>("GenJetsConstituentPdgid");
-    produces<std::vector<std::vector<int>>>("JetsConstituentMatchStageReco");
-    produces<std::vector<std::vector<int>>>("GenJetsConstituentMatchIndex");
-
-    produces<std::vector<std::vector<double>>>("GenJetsDarkHadronJetsTau1");
-    produces<std::vector<std::vector<double>>>("GenJetsDarkHadronJetsTau2");
-    produces<std::vector<std::vector<double>>>("GenJetsDarkHadronJetsTau3");
 
     produces<std::vector<std::vector<std::vector<CLorentzVector>>>>("GenJetsDarkHadronJetsConstituents");
     produces<std::vector<std::vector<std::vector<CLorentzVector>>>>("JetsDarkHadronJetsConstituents");
-    produces<std::vector<std::vector<std::vector<CLorentzVector>>>>("JetsDarkHadronJetsConstituentsGenMatchOnly");
-    produces<std::vector<std::vector<std::vector<CLorentzVector>>>>("JetsDarkHadronJetsConstituentsNextDH");
+
+    produces<std::vector<std::vector<std::vector<int>>>>("GenJetsConstituentPdgid");
+    produces<std::vector<std::vector<std::vector<int>>>>("GenJetsConstituentMatchStage");
+    produces<std::vector<std::vector<std::vector<int>>>>("JetsConstituentPdgid");
+    produces<std::vector<std::vector<std::vector<int>>>>("JetsConstituentMatchStage");
+    produces<std::vector<std::vector<std::vector<int>>>>("JetsConstituentsAssignedFirst");
+    produces<std::vector<std::vector<std::vector<int>>>>("JetsConstituentsAssignedSecond");
   }
 }
 
@@ -491,7 +479,7 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
   auto hvCategory = std::make_unique<std::vector<int>>();
   auto darkPtFrac = std::make_unique<std::vector<double>>();
   auto MT2JetsID = std::make_unique<std::vector<int>>();
-  auto GenJets_nLundSubjets = std::make_unique<std::vector<int>>();
+
   auto GenJets_nConstituents = std::make_unique<std::vector<int>>();
   auto GenJets_nConstituentsDarkHadrons = std::make_unique<std::vector<int>>();
   auto GenJets_nConstituents_unmatched = std::make_unique<std::vector<int>>();
@@ -504,28 +492,23 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 
   auto GenJets_darkHadronJets_multiplicity = std::make_unique<std::vector<std::vector<int>>>();
   auto Jets_nConstituents_unmatched_pdgid = std::make_unique<std::vector<std::vector<int>>>();
-  auto Jets_nConstituents_isAssigned = std::make_unique<std::vector<std::vector<int>>>();
 
   auto Jets_constituents_pdgid = std::make_unique<std::vector<std::vector<int>>>();
   auto GenJets_constituents_pdgid = std::make_unique<std::vector<std::vector<int>>>();
-  auto Jets_constituents_matchStageReco = std::make_unique<std::vector<std::vector<int>>>();
-  auto GenJets_constituents_matchIndex = std::make_unique<std::vector<std::vector<int>>>();
 
   auto GenJets_darkHadronJets_tau1 = std::make_unique<std::vector<std::vector<double>>>();
   auto GenJets_darkHadronJets_tau2 = std::make_unique<std::vector<std::vector<double>>>();
   auto GenJets_darkHadronJets_tau3 = std::make_unique<std::vector<std::vector<double>>>();
 
-  auto GenJets_darkHadronJets_constituents_2d = std::make_unique<std::vector<std::vector<CLorentzVector>>>();
-  auto Jets_darkHadronJets_constituents_2d = std::make_unique<std::vector<std::vector<CLorentzVector>>>();
+  auto GenJets_darkHadronJets_constituentsPdgid = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
+  auto GenJets_darkHadronJets_constituentsMatchStage = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
+  auto Jets_darkHadronJets_constituentsPdgid = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
+  auto Jets_darkHadronJets_constituentsMatchStage = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
+  auto Jets_darkHadronJets_constituentsAssignedFirst = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
+  auto Jets_darkHadronJets_constituentsAssignedSecond = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
 
   auto GenJets_darkHadronJets_constituents = std::make_unique<std::vector<std::vector<std::vector<CLorentzVector>>>>();
-  auto GenJets_darkHadronJets_constituentsPdgid = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
-  auto Jets_darkHadronJets_constituentsMatchStage = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
-  auto Jets_darkHadronJets_constituentsPdgid = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
   auto Jets_darkHadronJets_constituents = std::make_unique<std::vector<std::vector<std::vector<CLorentzVector>>>>();
-  auto Jets_darkHadronJets_constituents_genMatchOnly = std::make_unique<std::vector<std::vector<std::vector<CLorentzVector>>>>();
-  auto Jets_darkHadronJets_constituents_nextDH = std::make_unique<std::vector<std::vector<std::vector<CLorentzVector>>>>();
-
 
   LorentzVector vpartsSum;
   if(h_parts.isValid()){
@@ -585,7 +568,7 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
     CandSet stableDs, firstMd, firstQd, firstGd, firstQdM, firstQsM;
     CandPtr firstQdM1, firstQdM2, firstQsM1, firstQsM2;
     bool secondDM = false, secondSM = false;
-
+    
     //loop over gen particles
     for(const auto& i_part : *(h_parts.product())){
       firstDark(&i_part, firstMd, firstQd, firstGd, firstQdM, firstQsM, firstQdM1, firstQdM2, firstQsM1, firstQsM2,secondDM,secondSM);
@@ -643,10 +626,8 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 		std::vector<CLorentzVector> tmp_darkHadronJets;
 		std::vector<std::vector<CLorentzVector> > tmp_darkHadronJets_constituents;
 		std::vector<std::vector<int> > tmp_darkHadronJets_ConstituentPdgid;
+		std::vector<std::vector<int> > tmpMatchStage;
 		std::vector<int> tmp_darkHadronJets_multiplicity;
-		std::vector<double> tmp_darkHadronJets_tau1;
-		std::vector<double> tmp_darkHadronJets_tau2;
-		std::vector<double> tmp_darkHadronJets_tau3;
 		for(const auto& entry : darkHadronMap){
 			tmp_darkHadrons.emplace_back(entry.first->pt(),entry.first->eta(),entry.first->phi(),entry.first->energy());
 			LorentzVector tmpjet;
@@ -661,24 +642,19 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 			tmp_darkHadronJets_constituents.push_back(tmpjetconstituents);
 			tmp_darkHadronJets_ConstituentPdgid.push_back(tmpjetconstituentspdgid);
 			tmp_darkHadronJets_multiplicity.push_back(entry.second.size());
-			tmp_darkHadronJets_tau1.push_back(streamCache(iID)->getTau(1, tmpjetconstituents));
-			tmp_darkHadronJets_tau2.push_back(streamCache(iID)->getTau(2, tmpjetconstituents));
-			tmp_darkHadronJets_tau3.push_back(streamCache(iID)->getTau(3, tmpjetconstituents));
+			std::vector<int> tmpMatch(tmpjetconstituentspdgid.size(), -1);
+			tmpMatchStage.push_back(tmpMatch);
 		}
 		GenJets_darkHadrons->push_back(tmp_darkHadrons);
 		GenJets_darkHadronJets->push_back(tmp_darkHadronJets);
 		GenJets_darkHadronJets_constituents->push_back(tmp_darkHadronJets_constituents);
 		GenJets_darkHadronJets_constituentsPdgid->push_back(tmp_darkHadronJets_ConstituentPdgid);
 		GenJets_darkHadronJets_multiplicity->push_back(tmp_darkHadronJets_multiplicity);
-		GenJets_darkHadronJets_tau1->push_back(tmp_darkHadronJets_tau1);
-		GenJets_darkHadronJets_tau2->push_back(tmp_darkHadronJets_tau2);
-		GenJets_darkHadronJets_tau3->push_back(tmp_darkHadronJets_tau3);
 		GenJets_nConstituents_unmatched->emplace_back(-1);
 		GenJets_constituents_pdgid->push_back({-1});
-		GenJets_constituents_matchIndex->push_back({-1});
+		GenJets_darkHadronJets_constituentsMatchStage->push_back(tmpMatchStage);
     }
   }
-
 
   //Lund Reweighting Matching
   if(signal_){
@@ -702,14 +678,14 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 			  // If you don't do this coffea gets mad
 			  Jets_nConstituents_unmatched->push_back(-1);
 			  Jets_nConstituents_unmatched_pdgid->push_back(tmp);
-			  Jets_nConstituents_isAssigned->push_back(tmp);
 			  Jets_constituents_pdgid->push_back(tmp);
 			  Jets_darkHadronJets->push_back(tmpJet);
 			  Jets_darkHadronJets_constituents->push_back(tmpJetV);
-			  Jets_constituents_matchStageReco->push_back(tmp);
-			  Jets_darkHadronJets_constituents->push_back(tmpJetV);
+			  Jets_darkHadronJets_constituentsPdgid->push_back({tmp});
+			  Jets_darkHadronJets_constituentsAssignedFirst->push_back({tmp});
+			  Jets_darkHadronJets_constituentsAssignedSecond->push_back({tmp});
 			  Jets_darkHadronJets_constituentsMatchStage->push_back({tmp});
-			  Jets_darkHadronJets_constituents_nextDH->push_back(tmpJetV);
+			  Jets_darkHadronJets_constituents->push_back(tmpJetV);
 			  continue;
 		  }
 
@@ -717,63 +693,60 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 
 
 		  // Match gen to reco particles using pdgid and deltaR matching
-		  std::vector<bool> recoMatched(jets_cands[recoJetIndex].size(), -1);
+		  std::vector<bool> recoMatched(jets_cands[recoJetIndex].size(), false);
 		  std::vector<int> matchStageReco(jets_cands[recoJetIndex].size(), -1);
 
-		  std::vector<std::vector<int>> matchedRecoIndex = matchParticles(GenJets_darkHadronJets_constituents->at(genJetIndex), GenJets_darkHadronJets_constituentsPdgid->at(genJetIndex), jets_cands[recoJetIndex], cands_pdgids[recoJetIndex], recoMatched, matchStageReco);
+		  const std::vector<std::vector<int>>& matchedRecoIndex = matchParticles(GenJets_darkHadronJets_constituents->at(genJetIndex), GenJets_darkHadronJets_constituentsPdgid->at(genJetIndex), jets_cands[recoJetIndex], cands_pdgids[recoJetIndex], recoMatched, matchStageReco);
 
 		  // make list of "dark hadron subjets" in reco particles using the match to gen
 		  int unmatchedGen = 0;
 		  std::vector<std::vector<CLorentzVector> > recoSubjets;
 		  std::vector<CLorentzVector> recoDarkHadronJets;
-		  std::vector<int> flatIndex;
-		  std::vector<int> flatGenPdgId;
-		  std::vector<int> flatRecoPdgId;
-		  std::vector<int> RecoMatchStage;
 		  std::vector<std::vector<int>> matchStage;
-		  std::vector<std::vector<int>> RecoPdgid;
+		  std::vector<std::vector<int>> matchStageGen;
+		  std::vector<std::vector<int>> recoPdgid;
+		  std::vector<std::vector<int>> assigned;
 
 		  for(unsigned i = 0; i < matchedRecoIndex.size(); i++){
 			  std::vector<CLorentzVector> recoSubjetConstituents;
 			  CLorentzVector tmpJet;
 			  std::vector<int> tmpMatchStage;
+			  std::vector<int> tmpMatchStageGen;
 			  std::vector<int> tmpRecoPdgid;
+			  std::vector<int> tmpAssigned;
 			  for(unsigned j = 0; j < matchedRecoIndex[i].size(); j++){
 				  if (matchedRecoIndex[i][j] != -1) {
-					  flatIndex.push_back(matchedRecoIndex[i][j]);
-					  flatGenPdgId.push_back(GenJets_darkHadronJets_constituentsPdgid->at(genJetIndex)[i][j]);
-					  flatRecoPdgId.push_back(cands_pdgids[recoJetIndex][matchedRecoIndex[i][j]]);
-					  RecoMatchStage.push_back(matchStageReco[matchedRecoIndex[i][j]]);
+					  tmpAssigned.push_back(0);
 					  tmpMatchStage.push_back(matchStageReco[matchedRecoIndex[i][j]]);
+					  tmpMatchStageGen.push_back(matchStageReco[matchedRecoIndex[i][j]]);
 					  tmpRecoPdgid.push_back(cands_pdgids[recoJetIndex][matchedRecoIndex[i][j]]);
 					  tmpJet += jets_cands[recoJetIndex][matchedRecoIndex[i][j]];
 					  recoSubjetConstituents.emplace_back(jets_cands[recoJetIndex][matchedRecoIndex[i][j]]);
 				  }
 				  else {
 					  unmatchedGen++;
+					  tmpMatchStageGen.push_back(-1);
 				  }
 			  }
+			  assigned.emplace_back(tmpAssigned);
+			  matchStage.emplace_back(tmpMatchStage);
+			  matchStageGen.emplace_back(tmpMatchStageGen);
+			  recoPdgid.emplace_back(tmpRecoPdgid);
 			  recoDarkHadronJets.emplace_back(tmpJet);
 			  recoSubjets.emplace_back(recoSubjetConstituents);
-			  matchStage.emplace_back(tmpMatchStage);
-			  RecoPdgid.emplace_back(tmpRecoPdgid);
 		  }
 
-		  GenJets_constituents_pdgid->at(genJetIndex) = flatGenPdgId;
-		  GenJets_constituents_matchIndex->at(genJetIndex) = flatIndex;
 		  GenJets_nConstituents_unmatched->at(genJetIndex) = unmatchedGen;
-		  Jets_darkHadronJets->push_back(recoDarkHadronJets);
-		  Jets_darkHadronJets_constituents_genMatchOnly->push_back(recoSubjets);
+		  GenJets_darkHadronJets_constituentsMatchStage->at(genJetIndex) = matchStageGen;
+		  Jets_darkHadronJets_constituentsAssignedFirst->push_back(assigned);
+		  Jets_darkHadronJets_constituentsAssignedSecond->push_back(assigned);
+		  Jets_darkHadronJets_constituentsPdgid->push_back(recoPdgid);
 		  Jets_darkHadronJets_constituentsMatchStage->push_back(matchStage);
-		  Jets_darkHadronJets_constituentsPdgid->push_back(RecoPdgid);
-		  Jets_constituents_pdgid->push_back(flatRecoPdgId);
-		  Jets_constituents_matchStageReco->push_back(RecoMatchStage);
+		  Jets_darkHadronJets->push_back(recoDarkHadronJets);
+		  Jets_darkHadronJets_constituents->push_back(recoSubjets);
 
 		  //For unmatched reco particles, assign them to the closest dark hadron, and the second closest to demonstrate an uncertainty in this procedure
-		  std::vector<std::vector<CLorentzVector> > recoSubjetsNextDH = recoSubjets;
-		  std::vector<std::vector<CLorentzVector> > newRecoSubjets = recoSubjets;
 		  std::vector<int> recoUnmatchedPdgid = {};
-		  std::vector<int> isAssigned(recoMatched.size(), 0);
 		  int nRecoUnmatched = 0;
 		  for(unsigned i = 0; i < recoMatched.size(); i++){
 			  if (recoMatched[i] == false ) {
@@ -792,17 +765,24 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 					  std::iota(idx.begin(), idx.end(), 0);
 					  // sort indexes based on comparing deltaR values using std::stable_sort, now idx vector is a list of indices sorted by deltaR
 					  std::stable_sort(idx.begin(), idx.end(), [&dhjDeltaR](int i1, int i2) {return dhjDeltaR[i1] < dhjDeltaR[i2];});
-					  newRecoSubjets[idx[0]].push_back(jets_cands[recoJetIndex][i]);
-					  isAssigned[i] = 1;
-					  if (dhjDeltaR.size() > 1) recoSubjetsNextDH[idx[1]].push_back(jets_cands[recoJetIndex][i]);
+					  Jets_darkHadronJets_constituents->at(recoJetIndex)[idx[0]].push_back(jets_cands[recoJetIndex][i]);
+					  Jets_darkHadronJets_constituentsAssignedFirst->at(recoJetIndex)[idx[0]].push_back(1);
+					  Jets_darkHadronJets_constituentsAssignedSecond->at(recoJetIndex)[idx[0]].push_back(0);
+					  Jets_darkHadronJets_constituentsPdgid->at(recoJetIndex)[idx[0]].push_back(cands_pdgids[recoJetIndex][i]);
+					  Jets_darkHadronJets_constituentsMatchStage->at(recoJetIndex)[idx[0]].push_back(3);
+
+					  if (dhjDeltaR.size() > 1) {
+						  Jets_darkHadronJets_constituents->at(recoJetIndex)[idx[1]].push_back(jets_cands[recoJetIndex][i]);
+						  Jets_darkHadronJets_constituentsAssignedFirst->at(recoJetIndex)[idx[1]].push_back(0);
+						  Jets_darkHadronJets_constituentsAssignedSecond->at(recoJetIndex)[idx[1]].push_back(1);
+						  Jets_darkHadronJets_constituentsPdgid->at(recoJetIndex)[idx[1]].push_back(cands_pdgids[recoJetIndex][i]);
+						  Jets_darkHadronJets_constituentsMatchStage->at(recoJetIndex)[idx[1]].push_back(4);
+					  }
 				  }
 			  }
 		  }
 		  Jets_nConstituents_unmatched->push_back(nRecoUnmatched);
 		  Jets_nConstituents_unmatched_pdgid->push_back(recoUnmatchedPdgid);
-		  Jets_nConstituents_isAssigned->push_back(isAssigned);
-		  Jets_darkHadronJets_constituents->push_back(newRecoSubjets);
-		  Jets_darkHadronJets_constituents_nextDH->push_back(recoSubjetsNextDH);
 
 		  recoJetIndex++;
 	  }
@@ -823,20 +803,16 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
     iEvent.put(std::move(Jets_darkHadronJets),"JetsDarkHadronJets");
     iEvent.put(std::move(GenJets_darkHadronJets_multiplicity),"GenJetsDarkHadronJetsMultiplicity");
     iEvent.put(std::move(Jets_nConstituents_unmatched_pdgid),"JetsNConstituentsUnmatchedPdgid");
-    iEvent.put(std::move(Jets_nConstituents_isAssigned),"JetsNConstituentsIsAssigned");
-    iEvent.put(std::move(Jets_constituents_pdgid),"JetsConstituentPdgid");
-    iEvent.put(std::move(GenJets_constituents_pdgid),"GenJetsConstituentPdgid");
-    iEvent.put(std::move(Jets_constituents_matchStageReco),"JetsConstituentMatchStageReco");
-    iEvent.put(std::move(GenJets_constituents_matchIndex),"GenJetsConstituentMatchIndex");
 
-    iEvent.put(std::move(GenJets_darkHadronJets_tau1),"GenJetsDarkHadronJetsTau1");
-    iEvent.put(std::move(GenJets_darkHadronJets_tau2),"GenJetsDarkHadronJetsTau2");
-    iEvent.put(std::move(GenJets_darkHadronJets_tau3),"GenJetsDarkHadronJetsTau3");
+    iEvent.put(std::move(GenJets_darkHadronJets_constituentsPdgid),"GenJetsConstituentPdgid");
+    iEvent.put(std::move(GenJets_darkHadronJets_constituentsMatchStage),"GenJetsConstituentMatchStage");
+    iEvent.put(std::move(Jets_darkHadronJets_constituentsPdgid),"JetsConstituentPdgid");
+    iEvent.put(std::move(Jets_darkHadronJets_constituentsAssignedFirst),"JetsConstituentsAssignedFirst");
+    iEvent.put(std::move(Jets_darkHadronJets_constituentsAssignedSecond),"JetsConstituentsAssignedSecond");
+    iEvent.put(std::move(Jets_darkHadronJets_constituentsMatchStage),"JetsConstituentMatchStage");
 
     iEvent.put(std::move(GenJets_darkHadronJets_constituents),"GenJetsDarkHadronJetsConstituents");
     iEvent.put(std::move(Jets_darkHadronJets_constituents),"JetsDarkHadronJetsConstituents");
-    iEvent.put(std::move(Jets_darkHadronJets_constituents_genMatchOnly),"JetsDarkHadronJetsConstituentsGenMatchOnly");
-    iEvent.put(std::move(Jets_darkHadronJets_constituents_nextDH),"JetsDarkHadronJetsConstituentsNextDH");
   }
   auto pMJJ = std::make_unique<double>(MJJ);
   iEvent.put(std::move(pMJJ),"MJJ");

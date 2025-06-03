@@ -92,6 +92,7 @@ def makeTreeFromMiniAOD(self,process):
         VectorVectorString             = self.VectorVectorString,
         VectorVectorLorentzVector      = self.VectorVectorLorentzVector,
         VectorVectorVectorLorentzVector= self.VectorVectorVectorLorentzVector,
+        VectorVectorVectorInt          = self.VectorVectorVectorInt,
         VectorVectorXYZVector          = self.VectorVectorXYZVector,
         VectorVectorXYZPoint           = self.VectorVectorXYZVector,
         AssocVectorVectorBool          = self.AssocVectorVectorBool,
@@ -1228,23 +1229,20 @@ def makeTreeFromMiniAOD(self,process):
             self.VectorVectorVectorLorentzVector.extend([
                 'HiddenSector:GenJetsDarkHadronJetsConstituents(GenJetsAK8_darkHadronJets_constituents)',
                 'HiddenSector:JetsDarkHadronJetsConstituents(JetsAK8_darkHadronJets_constituents)',
-                'HiddenSector:JetsDarkHadronJetsConstituentsGenMatchOnly(JetsAK8_darkHadronJets_constituentsGenMatchOnly)',
-                'HiddenSector:JetsDarkHadronJetsConstituentsNextDH(JetsAK8_darkHadronJets_constituentsNextDH)',
             ])
             self.VectorVectorInt.extend([
                 'HiddenSector:GenJetsDarkHadronJetsMultiplicity(GenJetsAK8_darkHadronJetsMultiplicity)',
                 'HiddenSector:JetsNConstituentsUnmatchedPdgid(JetsAK8_UnmatchedPdgid)',
-                'HiddenSector:JetsNConstituentsIsAssigned(JetsAK8_isAssigned)',
-                'HiddenSector:JetsConstituentPdgid(JetsAK8_ConstituentPdgid)',
-                'HiddenSector:GenJetsConstituentPdgid(GenJetsAK8_ConstituentPdgid)',
-                'HiddenSector:GenJetsConstituentMatchIndex(GenJetsAK8_ConstituentMatchIndex)',
-                'HiddenSector:JetsConstituentMatchStageReco(JetsAK8_ConstituentMatchStageReco)',
             ])
-            self.VectorVectorDouble.extend([
-                'HiddenSector:GenJetsDarkHadronJetsTau1(GenJetsAK8_darkHadronJetsTau1)',
-                'HiddenSector:GenJetsDarkHadronJetsTau2(GenJetsAK8_darkHadronJetsTau2)',
-                'HiddenSector:GenJetsDarkHadronJetsTau3(GenJetsAK8_darkHadronJetsTau3)',
+            self.VectorVectorVectorInt.extend([
+                'HiddenSector:GenJetsConstituentPdgid(GenJetsAK8_darkHadronJets_constituentsPdgid)',
+                'HiddenSector:GenJetsConstituentMatchStage(GenJetsAK8_darkHadronJets_constituentsMatchStage)',
+                'HiddenSector:JetsConstituentPdgid(JetsAK8_darkHadronJets_constituentsPdgid)',
+                'HiddenSector:JetsConstituentMatchStage(JetsAK8_darkHadronJets_constituentsMatchStage)',
+                'HiddenSector:JetsConstituentsAssignedFirst(JetsAK8_darkHadronJets_constituentsAssignedFirst)',
+                'HiddenSector:JetsConstituentsAssignedSecond(JetsAK8_darkHadronJets_constituentsAssignedSecond)',
             ])
+
     ## ----------------------------------------------------------------------------------------------
     ## Photon information
     ## ----------------------------------------------------------------------------------------------
