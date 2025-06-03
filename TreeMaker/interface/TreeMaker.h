@@ -223,7 +223,7 @@ typedef TreeObject<vector<vector<math::PtEtaPhiELorentzVector>>,vector<vector<ma
 typedef TreeObject<vector<vector<vector<math::PtEtaPhiELorentzVector>>>,vector<vector<vector<math::PtEtaPhiELorentzVectorF>>>> TreeObjectVVVLVToF;
 typedef TreeObject<vector<vector<math::XYZVector>>,vector<vector<math::XYZVectorF>>> TreeObjectVVXYZVToF;
 typedef TreeObject<vector<vector<math::XYZPoint>>,vector<vector<math::XYZPointF>>> TreeObjectVVXYZPToF;
-//typedefs for doublesx
+//typedefs for doubles
 typedef TreeObject<double> TreeObjectDouble;
 typedef TreeObject<vector<double>> TreeObjectVDouble;
 typedef TreeObject<vector<vector<double>>> TreeObjectVVDouble;

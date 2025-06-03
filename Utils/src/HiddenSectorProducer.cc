@@ -79,6 +79,13 @@ class HiddenSectorProducer : public edm::global::EDProducer<> {
     double coneSize_;
     edm::ParameterSet njhConfig_;
     PidSet DarkSMediatorIDs_, DarkTMediatorIDs_, DarkQuarkIDs_, DarkHadronIDs_, DarkGluonIDs_, DarkStableIDs_, DarkFirstIDs_, SMQuarkIDs_;
+	const int egMatchStage = 0;
+	const int hadronMatchStage = 1;
+	const int leftoverMatchStage = 2;
+	const int assignedFirstStage = 3;
+	const int assignedSecondStage = 4;
+
+
 };
 
 void HiddenSectorProducer::fillSet(PidSet& IDset, const std::string& name, const edm::ParameterSet& iConfig)
@@ -254,6 +261,8 @@ void HiddenSectorProducer::matchJetsCands(edm::Handle<edm::View<pat::Jet>>& h_je
 					break;
 				}
 			}
+			// if we are here either we broke out of candJetDau loop because we matched that jet dau, and we should skip the rest of the jets by breaking out of jet loop and going to next h_cand, or we went through all jet daughters and keep is false and we should go to next jet and see if we match there. Basically if we break out of daughters, also break out of jets loop
+			if (keep) break;
 		}
 	}
 }
@@ -319,7 +328,7 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 
 	for( unsigned j = 0; j < toMatch.size(); j++ ) {
 		matchInfo m = toMatch[j];
-		int stage = j < pdgids.size() ? 0 : 1;
+		int stage = j < pdgids.size() ? egMatchStage : hadronMatchStage;
 		m.matchedIndex = utils::matchAB(m.genParts, m.recoParts);
 		//Save matched indices to final array
 		for(unsigned i = 0; i < m.matchedIndex.size(); i++){
@@ -357,7 +366,7 @@ std::vector<std::vector<int> > HiddenSectorProducer::matchParticles(std::vector<
 		if (leftovers.matchedIndex[m] != -1) {
 			indices[leftovers.genIndexTop[m]][leftovers.genIndex[m]] = leftovers.recoIndex[leftovers.matchedIndex[m]];
 			recoMatched[leftovers.recoIndex[leftovers.matchedIndex[m]]] = true;
-			matchStageReco[leftovers.recoIndex[leftovers.matchedIndex[m]]] = 2;
+			matchStageReco[leftovers.recoIndex[leftovers.matchedIndex[m]]] = leftoverMatchStage;
 		}
 	}
 
@@ -769,14 +778,14 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 					  Jets_darkHadronJets_constituentsAssignedFirst->at(recoJetIndex)[idx[0]].push_back(1);
 					  Jets_darkHadronJets_constituentsAssignedSecond->at(recoJetIndex)[idx[0]].push_back(0);
 					  Jets_darkHadronJets_constituentsPdgid->at(recoJetIndex)[idx[0]].push_back(cands_pdgids[recoJetIndex][i]);
-					  Jets_darkHadronJets_constituentsMatchStage->at(recoJetIndex)[idx[0]].push_back(3);
+					  Jets_darkHadronJets_constituentsMatchStage->at(recoJetIndex)[idx[0]].push_back(assignedFirstStage);
 
 					  if (dhjDeltaR.size() > 1) {
 						  Jets_darkHadronJets_constituents->at(recoJetIndex)[idx[1]].push_back(jets_cands[recoJetIndex][i]);
 						  Jets_darkHadronJets_constituentsAssignedFirst->at(recoJetIndex)[idx[1]].push_back(0);
 						  Jets_darkHadronJets_constituentsAssignedSecond->at(recoJetIndex)[idx[1]].push_back(1);
 						  Jets_darkHadronJets_constituentsPdgid->at(recoJetIndex)[idx[1]].push_back(cands_pdgids[recoJetIndex][i]);
-						  Jets_darkHadronJets_constituentsMatchStage->at(recoJetIndex)[idx[1]].push_back(4);
+						  Jets_darkHadronJets_constituentsMatchStage->at(recoJetIndex)[idx[1]].push_back(assignedSecondStage);
 					  }
 				  }
 			  }
