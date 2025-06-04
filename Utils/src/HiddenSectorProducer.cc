@@ -505,10 +505,6 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
   auto Jets_constituents_pdgid = std::make_unique<std::vector<std::vector<int>>>();
   auto GenJets_constituents_pdgid = std::make_unique<std::vector<std::vector<int>>>();
 
-  auto GenJets_darkHadronJets_tau1 = std::make_unique<std::vector<std::vector<double>>>();
-  auto GenJets_darkHadronJets_tau2 = std::make_unique<std::vector<std::vector<double>>>();
-  auto GenJets_darkHadronJets_tau3 = std::make_unique<std::vector<std::vector<double>>>();
-
   auto GenJets_darkHadronJets_constituentsPdgid = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
   auto GenJets_darkHadronJets_constituentsMatchStage = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
   auto Jets_darkHadronJets_constituentsPdgid = std::make_unique<std::vector<std::vector<std::vector<int>>>>();
@@ -694,7 +690,6 @@ void HiddenSectorProducer::produce(edm::StreamID iID, edm::Event& iEvent, const 
 			  Jets_darkHadronJets_constituentsAssignedFirst->push_back({tmp});
 			  Jets_darkHadronJets_constituentsAssignedSecond->push_back({tmp});
 			  Jets_darkHadronJets_constituentsMatchStage->push_back({tmp});
-			  Jets_darkHadronJets_constituents->push_back(tmpJetV);
 			  continue;
 		  }
 
