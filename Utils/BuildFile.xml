@@ -22,6 +22,7 @@
 <use name="rootmath"/>
 <use name="lhapdf"/>
 <use name="fastjet"/>
+<use name="fastjet-contrib"/>
 <use name="pythia8"/>
 <use name="PhysicsTools/Heppy"/>
 <flags   EDM_PLUGIN="1"/>

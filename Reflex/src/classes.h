@@ -14,6 +14,8 @@ namespace {
     std::vector<math::XYZPoint> vxyzp;
     std::vector<pat::Jet> vpj;
     std::vector<std::vector<math::PtEtaPhiELorentzVector> > vvlv;
+    std::vector<std::vector<std::vector<math::PtEtaPhiELorentzVector> > > vvvlv;
+    std::vector<std::vector<std::vector<int> > > vvvint;
     std::vector<std::vector<pat::Jet> > vvpj;
     std::vector<std::vector<bool> > vvb;
 	edm::PtrVector<pat::PackedCandidate> rv2pp;
